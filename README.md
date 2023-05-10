@@ -1,73 +1,71 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Basic Structure
 
-## Installation
+در بالاترین سطح دو دایرکتوری src , test قرار دارد
 
-```bash
-$ npm install
+دایرکتوری test برای e2e testing
+
+دایرکتوری src سورس های پروژه
+
+
+## SRC Structure
+
+<b>application</b> : ماژول های برنامه در آن قرار میگیرد
+
+<b>infrastructure</b> : سرویس ها و ماژول هایی که بصورت کلی قابل استفاده هستند قرار میگیرند
+
+<b>wrappers</b> : رپرهای برنامه قرار میگیرد
+
+
+## application Structure
+<h3>ساختار application</h1>
+
+بصورت کلی ساختار دایروکتوری ها در این بخش به این صورت میباشد :
+
+<b>
+section / feature / services, controllers, dtos,unit tests, interfaces, ....
+
+for example :
 ```
+vpc/ vm/ createVm.controller.ts, createVm.service.ts,....
 
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
 ```
+نمونه :
 
-## Test
+![image.png](./image.png)
 
-```bash
-# unit tests
-$ npm run test
+</b>
 
-# e2e tests
-$ npm run test:e2e
+<h5>
+در ماژول core
 
-# test coverage
-$ npm run test:cov
-```
+سرویس ها و کنترلر های پایه وعمومی نظیر فاکتور ، تسک ها ، تیکتینگ و ... قرار میگیرد
 
-## Support
+</h5>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+<h2>نکته مهم : رعایت ساختار ماژولار در این بخش میباشد<h2>
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+<h3>مانند تصویر نمونه ، بطور مثال در ماژول invoice 
+باید تمامی کنترلر ها و سرویس ها و اینترفیس ها و یونیت تست ها و انتیتی ها ( درصورت وجود)  مرتبط با invoice قرار بگیرد
+</h3>
 
-## License
+## infrastructure Structure
+<h3>
+در این قسمت کدهای پایه و عمومی مانند میدلویرها ، انتیتی های عمومی ، کانفیگ های برنامه ، فیلترها ، پایپ ها ، بخش های مربوط به اتنتیکیشن و اتوریزیشن و.... قرار میگیرد
+</h3>
 
-Nest is [MIT licensed](LICENSE).
+<h4>
+
+<b>configs</b> : کانفیگ های برنامه نظیر دیتابیس ها ، سرویس ها و ... قرار میگیرد
+
+<b>helpers</b> : سرویس های خارجی مورد استفاده نظیر سرویس های otp generator , email service , sms service ,... 
+</h4>
+
+## wrappers Structure
+
+
+
