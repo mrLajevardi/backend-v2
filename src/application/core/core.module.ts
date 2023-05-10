@@ -6,4 +6,4 @@ import { TasksModule } from './tasks/tasks.module';
 @Module({
   imports: [InvoicesModule, TicketsModule, TasksModule]
 })
-export class GlobalModule {}
+export class CoreModule {}

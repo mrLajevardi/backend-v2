@@ -5,4 +5,4 @@ import { EmailService } from './email/email.service';
 @Module({
   providers: [SmsService, EmailService]
 })
-export class NotificationModule {}
+export class UtilsModule {}

@@ -3,9 +3,10 @@ import { VpcModule } from './vpc/vpc.module';
 import { AiModule } from './ai/ai.module';
 import { GpuModule } from './gpu/gpu.module';
 import { VastModule } from './vast/vast.module';
-import { GlobalModule } from './global/global.module';
+import { CoreModule } from './core/core.module';
+
 
 @Module({
-  imports: [VpcModule, AiModule, GpuModule, VastModule, GlobalModule]
+  imports: [VpcModule, AiModule, GpuModule, VastModule, CoreModule]
 })
 export class ApplicationModule {}
