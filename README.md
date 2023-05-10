@@ -35,7 +35,7 @@ vpc/ vm/ createVm.controller.ts, createVm.service.ts,....
 ```
 نمونه :
 
-![image.png](./image.png)
+![image](uploads/14664fab3af7ba3e3b1613d51059cb57/image.png)
 
 </b>
 
