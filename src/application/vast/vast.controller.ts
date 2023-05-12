@@ -1,7 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from '../base/auth/decorators/ispublic.decorator';
-import { JwtAuthGuard } from '../base/auth/guards/jwt-auth.guard';
 
 @Controller('vast')
 @ApiTags('vast')

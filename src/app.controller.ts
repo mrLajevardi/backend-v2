@@ -1,11 +1,9 @@
 import { Controller, Get, Post, UseGuards, Request, Body } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { LocalAuthGuard } from './application/base/auth/guards/local-auth.guard';
 import { Public } from './application/base/auth/decorators/ispublic.decorator';
 import { ApiOperation } from '@nestjs/swagger';
-import { ApiBody } from '@nestjs/swagger';
 import { AuthService } from './application/base/auth/auth.service';
 import { LoginDto } from './application/base/auth/dto/login.dto';
 import { JwtAuthGuard } from './application/base/auth/guards/jwt-auth.guard';
