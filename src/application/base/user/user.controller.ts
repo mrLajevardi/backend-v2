@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Post, Body, Put, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Put, Delete, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBadRequestResponse, ApiBody } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { User } from 'src/infrastructure/entities/User';
 import { DeleteResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { JwtAuthGuard } from '../security/auth/jwt-auth.guard';
 
 @Controller('users')
 @ApiTags('Users')
@@ -11,6 +12,7 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Returns an array of users' })
   async getUsers(): Promise<User[] | undefined> {

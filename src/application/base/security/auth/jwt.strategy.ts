@@ -16,6 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // The validation that will be take place before any 
   // endpoint protected using Jwt-auth.guard
   async validate(payload: any) {
+    console.log(payload);
     return { userId: payload.sub, username: payload.username };
   }
 }

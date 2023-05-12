@@ -12,6 +12,7 @@ export class AuthService {
 
     // Validate user performs using Local.strategy
     async validateUser(username: string, pass: string): Promise<any> {
+      console.log("validate user");
       const user = await this.usersService.findOne({
         username: username
       });

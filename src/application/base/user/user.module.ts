@@ -8,7 +8,9 @@ import { GroupsMapping } from 'src/infrastructure/entities/GroupsMapping';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  providers: [UserService],
+  providers: [
+    UserService
+  ],
   exports: [UserService],
   controllers: [UserController] 
 })
