@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 
@@ -31,6 +31,7 @@ export class AuthService {
     // the success of local strategy
     // it will return the JWT token 
     async login(dto: LoginDto) {
+      console.log("auth service login")
       return {
         access_token: this.jwtService.sign(dto),
       };

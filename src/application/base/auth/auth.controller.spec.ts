@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersService } from '../../user/user.service';
+import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { TestDBProviders } from '../test-utils/providers';
+import { TestDBProviders } from 'src/infrastructure/test-utils/providers';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -13,7 +13,7 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         AuthService,
-        UsersService,
+        UserService,
         JwtService,
         TestDBProviders.userProvider,
         TestDBProviders.accessTokenProvider,

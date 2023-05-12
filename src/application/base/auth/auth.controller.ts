@@ -1,14 +1,15 @@
 import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './local-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/ispublic.decorator';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  //constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {}
 
   // @ApiOperation({ summary: 'User login' })
   // @ApiResponse({ status: 200, description: 'Returns the JWT token' })
@@ -28,4 +29,7 @@ export class AuthController {
   // getProfile(@Request() req) {
   //   return req.user;
   // }
+
+
+
 }
