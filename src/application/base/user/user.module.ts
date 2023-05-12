@@ -15,3 +15,4 @@ import { GroupsMapping } from 'src/infrastructure/entities/GroupsMapping';
   controllers: [UserController] 
 })
 export class UserModule {}
+
