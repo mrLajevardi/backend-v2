@@ -1,21 +1,31 @@
-import { Controller, Get, Param, Post, Body, Put, Delete, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Put, Delete, Request, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { User } from 'src/infrastructure/entities/User';
 import { DeleteResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { AbilityFactory, Action } from '../ability/ability.factory';
+import { Public } from '../auth/decorators/ispublic.decorator';
 
 @Controller('users')
 @ApiTags('Users')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly abilityFactory: AbilityFactory,
+    ) {}
 
   @Get()
+  @Public()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Returns an array of users' })
-  async getUsers(): Promise<User[] | undefined> {
+  async getUsers(@Request() req): Promise<User[] | undefined> {
+      const user = req.user;
+      const ability = this.abilityFactory.createForUser(user);
+        if (ability.can(Action.Read, 'all')) {
+          // "user" has read access to everything
+        }
     return this.userService.getUsers();
   }
 
