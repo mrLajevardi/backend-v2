@@ -4,7 +4,7 @@ import { UserService } from './user.service';
 import { User } from 'src/infrastructure/entities/User';
 import { DeleteResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Controller('users')
 @ApiTags('Users')
