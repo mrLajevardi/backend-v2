@@ -1,8 +1,17 @@
-import { InferSubjects } from "@casl/ability";
+import { Abilities, InferSubjects } from "@casl/ability";
+import { Acl } from "src/infrastructure/entities/Acl";
+import { User } from "src/infrastructure/entities/User";
 
-type Subjects = InferSubjects<typeof Article | typeof User> | 'all';
+export enum Action {
+    Manage = 'manage',
+    Create = 'create',
+    Read = 'read',
+    Update = 'update',
+    Delete = 'delete',
+  }
+type Subjects = InferSubjects<typeof User | typeof Acl > | 'all';
 
-export type AppAbility = Ability<[Action, Subjects]>;
+export type AppAbility = Abilities();
 
 @Injectable()
 export class CaslAbilityFactory {

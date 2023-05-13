@@ -9,7 +9,6 @@ import { JwtAuthGuard } from './application/base/auth/guard/jwt-auth.guard';
 import { UserModule } from './application/base/user/user.module';
 import { VastModule } from './application/vast/vast.module';
 import { AuthModule } from './application/base/auth/auth.module';
-import { AclModule } from './application/base/acl/acl.module';
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { AclModule } from './application/base/acl/acl.module';
     UserModule,
     AuthModule,
     VastModule,
-    AclModule,
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AppController],
