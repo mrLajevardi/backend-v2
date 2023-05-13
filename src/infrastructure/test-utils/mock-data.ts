@@ -4,6 +4,7 @@ export const testRemoteToken = "d7362f4f40da8a2c8c2f626a9354703ed9e8e488def74865
 export const testRemoteURL = "https://console.vast.ai/api/v0"
 
 export const mockData =  {
+  acl : [],
   accessToken : [{
     id: 'kz2LmgwdVvFN5sG3g6pHisNBhnsGbKfgK3BGAo7uDn1zrb0n98RFhHXrJlIULq6G',
     ttl: 28800,

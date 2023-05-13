@@ -6,9 +6,12 @@ import { AccessToken } from '../entities/AccessToken';
 import { Invoices } from "../entities/Invoices";
 import { Configs } from "../entities/Configs";
 import { User } from "../entities/User";
+import { Acl } from "../entities/Acl";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { mockData } from "./mock-data";
 import { FindOneOptions } from "typeorm";
+
+
 export const TestDBFunctions = {
     findOne : <T>(items : string[] , where : {}, mockArray : any[]) : T  => {
         let returnValue: T = null ; 
@@ -34,6 +37,17 @@ export const TestDBFunctions = {
     }
 }
 export const TestDBProviders = {
+    aclProvider: {
+        provide: getRepositoryToken(Acl),
+        useValue: {
+            create: jest.fn(),
+            save: jest.fn(),
+            find: jest.fn().mockResolvedValue(mockData.acl),
+            findOne: jest.fn().mockImplementation((arg : FindOneOptions<User> ) => {
+                return TestDBFunctions.findOne<User>(["id"],arg.where, mockData.acl);
+            })
+        }
+    },
     userProvider: {
         provide: getRepositoryToken(User),
         useValue: {
