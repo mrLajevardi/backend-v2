@@ -13,7 +13,6 @@ import { Public } from '../auth/decorators/ispublic.decorator';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly abilityFactory: AbilityFactory,
     ) {}
 
   @Get()
@@ -22,11 +21,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Returns an array of users' })
   async getUsers(@Request() req): Promise<User[] | undefined> {
       const user = req.user;
-      const ability = await this.abilityFactory.createForUser(user);
-        if (ability.can(Action.Read, 'all')) {
-          // "user" has read access to everything
-        }
-    return this.userService.getUsers();
+      return this.userService.getUsers();
   }
 
   @Post('hash')
