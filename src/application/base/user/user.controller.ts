@@ -7,8 +7,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { AbilityFactory, Action } from '../ability/ability.factory';
 import { Public } from '../auth/decorators/ispublic.decorator';
 
-@Controller('users')
 @ApiTags('Users')
+@Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class UserController {
   constructor(
