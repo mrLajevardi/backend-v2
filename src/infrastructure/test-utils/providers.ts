@@ -8,8 +8,13 @@ import { Configs } from "../entities/Configs";
 import { User } from "../entities/User";
 import { Acl } from "../entities/Acl";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { mockData } from "./mock-data";
 import { FindOneOptions } from "typeorm";
+import { aclMocData } from "./mockdata/acl.moc";
+import { usersMocData } from "./mockdata/users.moc";
+import { serviceInstancesMocData } from "./mockdata/service-instances.moc";
+import { servicePropertiesMocData } from "./mockdata/service-properties.moc";
+import { accessTokenMocData } from "./mockdata/access-token.moc";
+import { invoicesMocData } from "./mockdata/invoices.moc";
 
 
 export const TestDBFunctions = {
@@ -42,9 +47,9 @@ export const TestDBProviders = {
         useValue: {
             create: jest.fn(),
             save: jest.fn(),
-            find: jest.fn().mockResolvedValue(mockData.acl),
+            find: jest.fn().mockResolvedValue(aclMocData),
             findOne: jest.fn().mockImplementation((arg : FindOneOptions<User> ) => {
-                return TestDBFunctions.findOne<User>(["id"],arg.where, mockData.acl);
+                return TestDBFunctions.findOne<User>(["id"],arg.where, aclMocData);
             })
         }
     },
@@ -53,9 +58,9 @@ export const TestDBProviders = {
         useValue: {
             create: jest.fn(),
             save: jest.fn(),
-            find: jest.fn().mockResolvedValue(mockData.users),
+            find: jest.fn().mockResolvedValue(usersMocData),
             findOne: jest.fn().mockImplementation((arg : FindOneOptions<User> ) => {
-                return TestDBFunctions.findOne<User>(["id","phoneNumber","username"],arg.where, mockData.users);
+                return TestDBFunctions.findOne<User>(["id","phoneNumber","username"],arg.where, usersMocData);
             })
         }
     },
@@ -65,10 +70,10 @@ export const TestDBProviders = {
             create: jest.fn(),
             save: jest.fn(),
             findOne: jest.fn().mockImplementation((arg : FindOneOptions<ServiceInstances>) => {
-                return TestDBFunctions.findOne<ServiceInstances>(["id","userId"],arg.where, mockData.serviceInstances);
+                return TestDBFunctions.findOne<ServiceInstances>(["id","userId"],arg.where, serviceInstancesMocData);
             }),
             find: jest.fn().mockImplementation((arg : FindOneOptions<ServiceInstances>) => {
-                return TestDBFunctions.find<ServiceInstances>(["id","userId"],arg.where, mockData.serviceInstances);
+                return TestDBFunctions.find<ServiceInstances>(["id","userId"],arg.where, serviceInstancesMocData);
             }),
         }
     },
@@ -79,7 +84,7 @@ export const TestDBProviders = {
             save: jest.fn(),
             findOne: jest.fn().mockImplementation((arg : FindOneOptions<ServiceProperties>) => {
                 let returnValue = null ; 
-                    mockData.serviceProperties.forEach(obj => {
+                    servicePropertiesMocData.forEach(obj => {
                         if ((obj["ServiceInstanceID"] === arg.where["serviceInstance"].id )
                         && (obj["PropertyKey"] === arg.where["propertyKey"]))
                         {
@@ -96,7 +101,7 @@ export const TestDBProviders = {
             create: jest.fn(),
             save: jest.fn(),
             findOne: jest.fn().mockImplementation((arg : FindOneOptions<AccessToken> )=>{
-                return TestDBFunctions.findOne<AccessToken>(["id"],arg.where, mockData.accessToken);
+                return TestDBFunctions.findOne<AccessToken>(["id"],arg.where, accessTokenMocData);
             }),
             findOneBy: jest.fn(),
         }
@@ -117,7 +122,7 @@ export const TestDBProviders = {
             save: jest.fn(),
             findOne: jest.fn(),
             find: jest.fn().mockImplementation((args) : Invoices[] =>{
-                return TestDBFunctions.find(["userID"],args.where,mockData.invoices);
+                return TestDBFunctions.find(["userID"],args.where,invoicesMocData);
             })
         }
     },

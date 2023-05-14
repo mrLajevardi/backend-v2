@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { TestDBProviders } from 'src/infrastructure/test-utils/providers';
+import { AbilityFactory } from '../ability/ability.factory';
+import { AclService } from '../acl/acl.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -11,7 +13,10 @@ describe('UserController', () => {
       controllers: [UserController],
       providers: [
         UserService,
+        AbilityFactory,
+        AclService,
         TestDBProviders.userProvider,
+        TestDBProviders.aclProvider
       ]
     }).compile();
 

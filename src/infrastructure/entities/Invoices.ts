@@ -42,6 +42,9 @@ export class Invoices {
   @Column("bit", { name: "Voided" })
   voided: boolean;
 
+  @Column("int", {name: "UserID"})
+  userId: number;
+
   @Column("datetime", { name: "EndDateTime", default: () => "getdate()" })
   endDateTime: Date;
 

@@ -22,7 +22,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Returns an array of users' })
   async getUsers(@Request() req): Promise<User[] | undefined> {
       const user = req.user;
-      const ability = this.abilityFactory.createForUser(user);
+      const ability = await this.abilityFactory.createForUser(user);
         if (ability.can(Action.Read, 'all')) {
           // "user" has read access to everything
         }
