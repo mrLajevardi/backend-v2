@@ -13,17 +13,17 @@ export class AclService {
     // Create a new Acl record
     async create(aclData: Partial<Acl>): Promise<Acl> {
         const acl = this.aclRepository.create(aclData);
-        return this.aclRepository.save(acl);
+        return await this.aclRepository.save(acl);
     }
 
     // Find an Acl record by ID
     async findById(id: number): Promise<Acl | undefined> {
-        return this.aclRepository.findOne({ where : {id : id} });
+        return await this.aclRepository.findOne({ where : {id : id} });
     }
 
     // Find all Acl records
     async findAll(): Promise<Acl[]> {
-        return this.aclRepository.find();
+        return await this.aclRepository.find();
     }
 
     // Update an existing Acl record
@@ -31,7 +31,7 @@ export class AclService {
         const acl = await this.findById(id);
         if (acl) {
             Object.assign(acl, aclData);
-            return this.aclRepository.save(acl);
+            return await this.aclRepository.save(acl);
         }
         return undefined;
     }

@@ -47,12 +47,12 @@ export class UserService {
     async create(userData: Partial<User>): Promise<User> {
         userData.password = await this.getPasswordHash(userData.password);
         const user = this.userRepository.create(userData);
-        return this.userRepository.save(user);
+        return await  this.userRepository.save(user);
     }
     
     async update(id: number, userData: Partial<User>): Promise<User | undefined> {
         await this.userRepository.update(id, userData);
-        return this.findById(id);
+        return await  this.findById(id);
     }
     
     async delete(id: number): Promise<DeleteResult | undefined> {
@@ -64,7 +64,7 @@ export class UserService {
         if (user) {
           const hashedPassword = await this.getPasswordHash(newPassword); 
           user.password = hashedPassword;
-          return this.userRepository.save(user);
+          return await this.userRepository.save(user);
         }
         return undefined;
     }

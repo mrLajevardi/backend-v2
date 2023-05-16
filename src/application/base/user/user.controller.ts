@@ -4,7 +4,6 @@ import { UserService } from './user.service';
 import { User } from 'src/infrastructure/entities/User';
 import { DeleteResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { AbilityFactory, Action } from '../ability/ability.factory';
 import { Public } from '../auth/decorators/ispublic.decorator';
 
 @ApiTags('Users')
@@ -21,7 +20,7 @@ export class UserController {
   @ApiResponse({ status: 200, description: 'Returns an array of users' })
   async getUsers(@Request() req): Promise<User[] | undefined> {
       const user = req.user;
-      return this.userService.getUsers();
+      return await this.userService.getUsers();
   }
 
   @Post('hash')
@@ -41,14 +40,14 @@ export class UserController {
   @ApiParam({ name: 'id', type: Number, description: 'User ID' })
   @ApiResponse({ status: 200, description: 'Returns the user with the specified ID' })
   async getUserById(@Param('id') id: number): Promise<User | undefined> {
-    return this.userService.findById(id);
+    return await this.userService.findById(id);
   }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({ status: 201, description: 'Returns the created user' })
   async createUser(@Body() userData: CreateUserDto): Promise<User> {
-    return this.userService.create(userData);
+    return await this.userService.create(userData);
   }
 
   @Put(':id')
@@ -59,7 +58,7 @@ export class UserController {
     @Param('id') id: number,
     @Body() userData: Partial<User>,
   ): Promise<User | undefined> {
-    return this.userService.update(id, userData);
+    return await this.userService.update(id, userData);
   }
 
   @Delete(':id')
@@ -67,6 +66,6 @@ export class UserController {
   @ApiParam({ name: 'id', type: Number, description: 'User ID' })
   @ApiResponse({ status: 204, description: 'User deleted successfully' })
   async deleteUser(@Param('id') id: number): Promise<DeleteResult | undefined> {
-    return this.userService.delete(id);
+    return await this.userService.delete(id);
   }
 }
