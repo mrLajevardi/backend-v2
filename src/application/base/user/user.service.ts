@@ -15,7 +15,7 @@ export class UserService {
     ) {}
 
     async findByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
-        return this.userRepository.findOne({ where : { phoneNumber : phoneNumber} })
+        return await  this.userRepository.findOne({ where : { phoneNumber : phoneNumber} })
     }
 
 
@@ -25,7 +25,7 @@ export class UserService {
 
    
     async findById(id: number): Promise<User | undefined> {
-        return this.userRepository.findOne({
+        return await  this.userRepository.findOne({
             where : {
                 id: id 
             }
@@ -33,7 +33,7 @@ export class UserService {
     }
 
     async getUsers(): Promise<User[] | undefined> {
-        return this.userRepository.find({})
+        return await this.userRepository.find({})
     }
 
     async getPasswordHash(string: string): Promise<string> {
