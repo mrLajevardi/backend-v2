@@ -1,0 +1,4 @@
+convert script is responsible for converting everything in entities folder
+to sqlite compatible entities in test-entities folder. 
+Every time we had any change in entities folder, we should run this. 
+node ./convert.ts 
