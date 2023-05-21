@@ -1,12 +1,12 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm/browser";
 
 @Index("PK_InvoiceProperties", ["id"], { unique: true })
-@Entity("InvoiceProperties", { schema: "user" })
+@Entity()
 export class InvoiceProperties {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
-  @Column("int", { name: "InvoiceID" })
+  @Column("integer", { name: "InvoiceID" })
   invoiceId: number;
 
   @Column("varchar", { name: "PropertyKey", length: 50 })

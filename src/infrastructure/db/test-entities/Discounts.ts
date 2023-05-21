@@ -6,14 +6,14 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { ServiceTypes } from "./ServiceTypes";
 import { InvoiceDiscounts } from "./InvoiceDiscounts";
 
 @Index("PK_Discounts", ["id"], { unique: true })
-@Entity("Discounts", { schema: "services" })
+@Entity()
 export class Discounts {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "Title" })
@@ -25,14 +25,14 @@ export class Discounts {
   @Column("float", { name: "Amount", precision: 53 })
   amount: number;
 
-  // @Column("boolean", { name: "IsBuiltIn" })
+  // @Column("bit", { name: "IsBuiltIn" })
   @Column("boolean", { name: "IsBuiltIn" })
   isBuiltIn: boolean;
 
   @Column("datetime", { name: "ValidDate", nullable: true })
   validDate: Date | null;
 
-  @Column("int", { name: "Limit", nullable: true })
+  @Column("integer", { name: "Limit", nullable: true })
   limit: number | null;
 
   @Column("varchar", { name: "Code", nullable: true, length: 50 })

@@ -5,13 +5,13 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { Organization } from "./Organization";
 
 @Index("PK__sessions__3213E83FD79F4A05", ["id"], { unique: true })
-@Entity("Sessions", { schema: "vdc" })
+@Entity()
 export class Sessions {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "sessionId" })
@@ -20,7 +20,7 @@ export class Sessions {
   @Column("text", { name: "token" })
   token: string;
 
-  @Column("boolean", { name: "active" })
+  @Column("bit", { name: "active" })
   active: boolean;
 
   @Column("datetime", { name: "createDate", nullable: true })
@@ -29,7 +29,7 @@ export class Sessions {
   @Column("datetime", { name: "updateDate", nullable: true })
   updateDate: Date | null;
 
-  @Column("boolean", { name: "isAdmin", nullable: true })
+  @Column("bit", { name: "isAdmin", nullable: true })
   isAdmin: boolean | null;
 
   @ManyToOne(() => Organization, (organization) => organization.sessions, {

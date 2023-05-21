@@ -5,14 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { User } from "./User";
 import { ServiceInstances } from "./ServiceInstances";
 
 @Index("PK_Invoices", ["id"], { unique: true })
-@Entity("Invoices", { schema: "user" })
+@Entity()
 export class Invoices {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("varchar", { name: "ServiceTypeID", length: 50, default: () => "''" })
@@ -36,21 +36,21 @@ export class Invoices {
   @Column("datetime", { name: "DateTime" })
   dateTime: Date;
 
-  // @Column("boolean", { name: "Payed" })
+  // @Column("bit", { name: "Payed" })
   @Column("boolean", { name: "Payed" })
   payed: boolean;
 
-  // @Column("boolean", { name: "Voided" })
+  // @Column("bit", { name: "Voided" })
   @Column("boolean", { name: "Voided" })
   voided: boolean;
 
-  @Column("int", {name: "UserID"})
+  @Column("integer", {name: "UserID"})
   userId: number;
 
   @Column("datetime", { name: "EndDateTime", default: () => "getdate()" })
   endDateTime: Date;
 
-  @Column("int", { name: "Type", default: () => "(0)" })
+  @Column("integer", { name: "Type", default: () => "(0)" })
   type: number;
 
   @Column("nvarchar", { name: "Name", nullable: true, length: 50 })

@@ -1,9 +1,9 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm/browser";
 
 @Index("PK__SystemSe__3214EC271FD0CEF8", ["id"], { unique: true })
-@Entity("SystemSettings", { schema: "security" })
+@Entity()
 export class SystemSettings {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "PropertyKey", length: 50 })

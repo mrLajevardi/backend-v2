@@ -1,38 +1,41 @@
-import * as fs from "fs";
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+const fs = require("fs");
+const path = require("path");
 
-// Function to convert a single file
-function convertFile(sourcePath: string, destinationPath: string) {
-  // Read the TypeScript file
-  const fileContent = fs.readFileSync(sourcePath, "utf-8");
+// Source and destination directories
+const sourceDir = "./entities";
+const destinationDir = "./test-entities";
 
-  // Modify the entity class
-  const modifiedContent = fileContent
-    .replace(/@Index[^;]+;/g, "")
-    .replace(/@Entity\([^;]+;/g, "@Entity({ name: \"$1\" })")
-    .replace(/@PrimaryGeneratedColumn[^;]+;/g, "@PrimaryGeneratedColumn()")
-    .replace(/@Column\("nvarchar"[^;]+;/g, "@Column({ type: \"text\",$1 })");
+// Get a list of files in the source directory
+const files = fs.readdirSync(sourceDir);
 
-  // Write the modified content to the destination file
-  fs.writeFileSync(destinationPath, modifiedContent, "utf-8");
+// Iterate through each file
+files.forEach((file) => {
+  // Check if the file is a TypeScript entity file
+  if (file.endsWith(".ts")) {
+    const sourcePath = path.join(sourceDir, file);
+    const destinationPath = path.join(destinationDir, file);
 
-  console.log(`Converted ${sourcePath} to ${destinationPath}`);
-}
+    // Read the content of the source file
+    const content = fs.readFileSync(sourcePath, "utf8");
 
-// Function to convert files in a directory
-function convertFilesInDirectory(sourceDirectory: string, destinationDirectory: string) {
-  // Get all TypeScript files in the source directory
-  const fileNames = fs.readdirSync(sourceDirectory).filter((fileName) => fileName.endsWith(".ts"));
+    // Perform the necessary modifications to make it SQLite-compatible
+    const modifiedContent = content
+      // Modify import statement
+      .replace('from "typeorm";', 'from "typeorm/browser";')
+      // Update column types
+      .replace(/@Column\("uniqueidentifier"/g, '@Column("text"')
+      .replace(/@Column\("int"/g, '@Column("integer"')
+      .replace(/@Column\("datetime"/g, '@Column("datetime"')
+      // Remove schema option from @Entity decorator
+      .replace(/@Entity\([^)]*\)/g, '@Entity()')
+      // Update primaryGeneratedColumn type
+      .replace(/@PrimaryGeneratedColumn[^)]*\)/g, '@PrimaryGeneratedColumn({ type: "integer" })');
 
-  // Convert each file
-  fileNames.forEach((fileName) => {
-    const sourcePath = `${sourceDirectory}/${fileName}`;
-    const destinationPath = `${destinationDirectory}/${fileName}`;
-    convertFile(sourcePath, destinationPath);
-  });
-}
+    // Write the modified content to the destination file
+    fs.writeFileSync(destinationPath, modifiedContent);
 
-// Usage example: Convert all files in the "entities" directory to the "converted-entities" directory
-const sourceDirectoryPath = "./entities";
-const destinationDirectoryPath = "./test-entities";
-convertFilesInDirectory(sourceDirectoryPath, destinationDirectoryPath);
+    console.log(`Converted ${sourcePath} to ${destinationPath}`);
+  }
+});
+
+console.log("Conversion completed.");

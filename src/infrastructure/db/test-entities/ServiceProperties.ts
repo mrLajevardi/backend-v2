@@ -5,15 +5,15 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { ServiceInstances } from "./ServiceInstances";
 
 @Index("IX_ServiceProperties", ["serviceInstanceId"], {})
 @Index("PK_ServiceProperties", ["id"], { unique: true })
-@Entity("ServiceProperties", { schema: "user" })
+@Entity()
 export class ServiceProperties {
-  @Column("int", { name: "ServiceInstanceID" })
-  serviceInstanceId: number;
+  @Column("text", { name: "ServiceInstanceID" })
+  serviceInstanceId: string;
 
   @Column("varchar", { name: "PropertyKey", length: 50 })
   propertyKey: string;
@@ -21,7 +21,7 @@ export class ServiceProperties {
   @Column("nvarchar", { name: "Value", nullable: true })
   value: string | null;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @ManyToOne(

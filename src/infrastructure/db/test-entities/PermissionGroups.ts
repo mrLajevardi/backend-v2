@@ -4,14 +4,14 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { PermissionGroupsMappings } from "./PermissionGroupsMappings";
 import { PermissionMappings } from "./PermissionMappings";
 
 @Index("PK__Permissi__3214EC2736890AFB", ["id"], { unique: true })
-@Entity("PermissionGroups", { schema: "security" })
+@Entity()
 export class PermissionGroups {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "Name", length: 50 })

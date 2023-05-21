@@ -5,13 +5,13 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { ItemTypes } from "./ItemTypes";
 
 @Index("PK_InvoiceItems", ["id"], { unique: true })
-@Entity("InvoiceItems", { schema: "user" })
+@Entity()
 export class InvoiceItems {
-  @Column("int", { name: "InvoiceID" })
+  @Column("integer", { name: "InvoiceID" })
   invoiceId: number;
 
   @Column("float", { name: "Quantity", precision: 53 })
@@ -20,7 +20,7 @@ export class InvoiceItems {
   @Column("float", { name: "Fee", precision: 53 })
   fee: number;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.invoiceItems, {

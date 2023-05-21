@@ -6,16 +6,16 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { AiTransactionsLogs } from "./AiTransactionsLogs";
 import { InvoiceItems } from "./InvoiceItems";
 import { ServiceTypes } from "./ServiceTypes";
 import { ServiceItems } from "./ServiceItems";
 
 @Index("PK_ResourceTypes", ["id"], { unique: true })
-@Entity("ItemTypes", { schema: "services" })
+@Entity()
 export class ItemTypes {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "Title" })
@@ -27,16 +27,16 @@ export class ItemTypes {
   @Column("float", { name: "Fee", precision: 53 })
   fee: number;
 
-  @Column("int", { name: "MaxAvailable" })
+  @Column("integer", { name: "MaxAvailable" })
   maxAvailable: number;
 
   @Column("varchar", { name: "Code", length: 255 })
   code: string;
 
-  @Column("int", { name: "MaxPerRequest", nullable: true })
+  @Column("integer", { name: "MaxPerRequest", nullable: true })
   maxPerRequest: number | null;
 
-  @Column("int", { name: "MinPerRequest", nullable: true })
+  @Column("integer", { name: "MinPerRequest", nullable: true })
   minPerRequest: number | null;
 
   @OneToMany(

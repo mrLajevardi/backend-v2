@@ -5,14 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { ItemTypes } from "./ItemTypes";
 import { ServiceInstances } from "./ServiceInstances";
 
 @Index("PK_AITransactionsLogs", ["id"], { unique: true })
-@Entity("AITransactionsLogs", { schema: "user" })
+@Entity()
 export class AiTransactionsLogs {
-  @PrimaryGeneratedColumn({ type: "bigint", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: string;
 
   @Column("datetime", { name: "DateTime" })
@@ -33,7 +33,7 @@ export class AiTransactionsLogs {
   @Column("nvarchar", { name: "Method" })
   method: string;
 
-  @Column("int", { name: "CodeStatus", default: () => "(200)" })
+  @Column("integer", { name: "CodeStatus", default: () => "(200)" })
   codeStatus: number;
 
   @Column("nvarchar", { name: "MethodName" })

@@ -6,14 +6,14 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { User } from "./User";
 import { Sessions } from "./Sessions";
 
 @Index("PK__organiza__3213E83F513E7650", ["id"], { unique: true })
-@Entity("Organization", { schema: "vdc" })
+@Entity()
 export class Organization {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "name", length: 50 })
@@ -31,7 +31,7 @@ export class Organization {
   @Column("datetime", { name: "updateDate", nullable: true })
   updateDate: Date | null;
 
-  @Column("varchar", { name: "status", nullable: true, length: 1 })
+  @Column("char", { name: "status", nullable: true, length: 1 })
   status: string | null;
 
   @ManyToOne(() => User, (user) => user.organizations, {

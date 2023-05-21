@@ -4,14 +4,14 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { PermissionGroups } from "./PermissionGroups";
 import { Role } from "./Role";
 
 @Index("PK__Permissi__3214EC270BC5F24C", ["id"], { unique: true })
-@Entity("PermissionGroupsMappings", { schema: "security" })
+@Entity()
 export class PermissionGroupsMappings {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @ManyToOne(

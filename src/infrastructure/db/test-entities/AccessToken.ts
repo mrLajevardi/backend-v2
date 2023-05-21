@@ -1,22 +1,23 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Column, Entity, Index } from "typeorm/browser";
 
-@Entity({ name: "AccessToken" })
+@Index("PK__AccessTo__3213E83F2F499218", ["id"], { unique: true })
+@Entity()
 export class AccessToken {
-  @PrimaryColumn({ type: "text", length: 255 })
+  @Column("nvarchar", { primary: true, name: "id", length: 255 })
   id: string;
 
-  @Column({ type: "integer", nullable: true })
+  @Column("integer", { name: "ttl", nullable: true })
   ttl: number | null;
 
-  @Column({ type: "text", nullable: true, length: 255 })
+  @Column("nvarchar", { name: "scopes", nullable: true, length: 255 })
   scopes: string | null;
 
-  @Column({ type: "datetime", nullable: true })
+  @Column("datetime", { name: "created", nullable: true })
   created: Date | null;
 
-  @Column({ type: "text", nullable: true, length: 10 })
+  @Column("nvarchar", { name: "userId", nullable: true, length: 10 })
   userId: string | null;
 
-  @Column({ type: "text", nullable: true, length: 3000 })
+  @Column("nvarchar", { name: "realm", nullable: true, length: 3000 })
   realm: string | null;
 }

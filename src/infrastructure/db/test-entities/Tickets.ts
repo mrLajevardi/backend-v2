@@ -5,19 +5,19 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { ServiceInstances } from "./ServiceInstances";
 
 @Index("PK__Tickets__3214EC2736EDC157", ["id"], { unique: true })
-@Entity("Tickets", { schema: "user" })
+@Entity()
 export class Tickets {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
-  @Column("int", { name: "UserID" })
+  @Column("integer", { name: "UserID" })
   userId: number;
 
-  @Column("int", { name: "TicketID" })
+  @Column("integer", { name: "TicketID" })
   ticketId: number;
 
   @ManyToOne(

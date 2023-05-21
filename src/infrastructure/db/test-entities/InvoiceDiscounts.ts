@@ -5,16 +5,16 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { Discounts } from "./Discounts";
 
 @Index("PK_InvoiceDiscounts", ["id"], { unique: true })
-@Entity("InvoiceDiscounts", { schema: "user" })
+@Entity()
 export class InvoiceDiscounts {
-  @Column("int", { name: "InvoiceID" })
+  @Column("integer", { name: "InvoiceID" })
   invoiceId: number;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @ManyToOne(() => Discounts, (discounts) => discounts.invoiceDiscounts, {

@@ -4,13 +4,13 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { GroupsMapping } from "./GroupsMapping";
 
 @Index("PK__Groups__3214EC27686FB04E", ["id"], { unique: true })
-@Entity("Groups", { schema: "user" })
+@Entity()
 export class Groups {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "Name", length: 50 })

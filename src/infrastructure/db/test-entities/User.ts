@@ -4,17 +4,17 @@ import {
   Index,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { GroupsMapping } from "./GroupsMapping";
 import { Invoices } from "./Invoices";
 import { Organization } from "./Organization";
 import { Transactions } from "./Transactions";
 
 @Index("PK__User__3214EC0774485CFE", ["id"], { unique: true })
-@Entity({schema: "security", name:"User"})
+@Entity()
 
 export class User {
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("nvarchar", { name: "realm", nullable: true, length: 255 })
@@ -29,14 +29,14 @@ export class User {
   @Column("nvarchar", { name: "email", nullable: true, length: 255 })
   email: string | null;
 
-  @Column("boolean", {
+  @Column("bit", {
     name: "emailVerified",
     nullable: true,
     default: () => "(0)",
   })
   emailVerified: boolean | null;
 
-  @Column("boolean", { name: "active", default: () => "(1)" })
+  @Column("bit", { name: "active", default: () => "(1)" })
   active: boolean;
 
   @Column("nvarchar", { name: "name", length: 255 })
@@ -45,15 +45,14 @@ export class User {
   @Column("nvarchar", { name: "family", length: 255 })
   family: string;
 
-  @Column("boolean", {
+  @Column("bit", {
     name: "verificationToken",
     nullable: true,
     default: () => "(0)",
   })
   verificationToken: boolean | null;
 
-  // @Column("boolean", { name: "deleted", nullable: true, default: () => "(0)" })
-  @Column("boolean", { name: "deleted", nullable: true, default: () => "(0)" })
+  @Column("bit", { name: "deleted", nullable: true, default: () => "(0)" })
   deleted: boolean | null;
 
   @Column("datetime", {
@@ -76,14 +75,13 @@ export class User {
   @Column("nvarchar", { name: "emailToken", nullable: true, length: 50 })
   emailToken: string | null;
 
-  @Column("int", { name: "credit", nullable: true, default: () => "(0)" })
+  @Column("integer", { name: "credit", nullable: true, default: () => "(0)" })
   credit: number | null;
 
   @Column("nvarchar", { name: "vdcPassword", nullable: true })
   vdcPassword: string | null;
 
-  // @Column("boolean", { name: "hasVdc", nullable: true })
-  @Column("boolean", { name: "hasVdc", nullable: true })
+  @Column("bit", { name: "hasVdc", nullable: true })
   hasVdc: boolean | null;
 
   @Column("nvarchar", { name: "phoneNumber", nullable: true, length: 15 })
@@ -92,12 +90,10 @@ export class User {
   @Column("nvarchar", { name: "orgName", nullable: true, length: 50 })
   orgName: string | null;
 
-  // @Column("boolean", { name: "acceptTermsOfService", nullable: true })
-  @Column("boolean", { name: "acceptTermsOfService", nullable: true })
+  @Column("bit", { name: "acceptTermsOfService", nullable: true })
   acceptTermsOfService: boolean | null;
 
-  // @Column("boolean", { name: "phoneVerified", default: () => "(0)" })
-  @Column("boolean", { name: "phoneVerified", default: () => "(0)" })
+  @Column("bit", { name: "phoneVerified", default: () => "(0)" })
   phoneVerified: boolean;
 
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)

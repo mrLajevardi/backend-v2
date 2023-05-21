@@ -5,17 +5,17 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { ServiceInstances } from "./ServiceInstances";
 import { ItemTypes } from "./ItemTypes";
 
 @Index("PK_ServiceResources", ["id"], { unique: true })
-@Entity("ServiceItems", { schema: "user" })
+@Entity()
 export class ServiceItems {
   @Column("float", { name: "Quantity", precision: 53 })
   quantity: number;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("varchar", { name: "ItemTypeCode", nullable: true, length: 50 })

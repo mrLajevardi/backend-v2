@@ -1,18 +1,18 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm/browser";
 
 @Index("PK__Setting__3214EC07107FD346", ["id"], { unique: true })
-@Entity("Setting", { schema: "security" })
+@Entity()
 export class Setting {
-  @PrimaryGeneratedColumn({ type: "int", name: "Id" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
-  @Column("int", { name: "UserId", nullable: true })
+  @Column("integer", { name: "UserId", nullable: true })
   userId: number | null;
 
   @Column("nvarchar", { name: "Key", length: 50 })
   key: string;
 
-  @Column("nvarchar", { name: "Value", nullable: true })
+  @Column("ntext", { name: "Value", nullable: true })
   value: string | null;
 
   @Column("datetime", { name: "InsertTime", default: () => "getdate()" })

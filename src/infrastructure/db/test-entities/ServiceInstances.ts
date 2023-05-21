@@ -5,7 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-} from "typeorm";
+} from "typeorm/browser";
 import { AiTransactionsLogs } from "./AiTransactionsLogs";
 import { Invoices } from "./Invoices";
 import { ServiceTypes } from "./ServiceTypes";
@@ -15,15 +15,15 @@ import { Tasks } from "./Tasks";
 import { Tickets } from "./Tickets";
 
 @Index("PK_ServiceInstances", ["id"], { unique: true })
-@Entity("ServiceInstances", { schema: "user" })
+@Entity()
 export class ServiceInstances {
-  @Column("int", { primary: true, name: "ID" })
-  id: number;
+  @Column("text", { primary: true, name: "ID" })
+  id: string;
 
-  @Column("int", { name: "UserID" })
+  @Column("integer", { name: "UserID" })
   userId: number;
 
-  @Column("int", { name: "Status", nullable: true })
+  @Column("integer", { name: "Status", nullable: true })
   status: number | null;
 
   @Column("datetime", { name: "CreateDate" })
@@ -38,14 +38,14 @@ export class ServiceInstances {
   @Column("datetime", { name: "DeletedDate", nullable: true })
   deletedDate: Date | null;
 
-  // @Column("boolean", { name: "IsDeleted", default: () => "(0)" })
+  // @Column("bit", { name: "IsDeleted", default: () => "(0)" })
   @Column("boolean", { name: "IsDeleted", default: () => "(0)" })
   isDeleted: boolean;
 
-  @Column("int", { name: "Index", nullable: true })
+  @Column("integer", { name: "Index", nullable: true })
   index: number | null;
 
-  @Column("int", { name: "WarningSent", nullable: true, default: () => "(0)" })
+  @Column("integer", { name: "WarningSent", nullable: true, default: () => "(0)" })
   warningSent: number | null;
 
   @Column("tinyint", {

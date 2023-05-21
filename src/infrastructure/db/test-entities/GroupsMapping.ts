@@ -5,14 +5,14 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { Groups } from "./Groups";
 import { User } from "./User";
 
 @Index("PK__GroupsMa__3214EC2799DAAC74", ["id"], { unique: true })
-@Entity("GroupsMapping", { schema: "user" })
+@Entity()
 export class GroupsMapping {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("datetime", { name: "CreateDate" })

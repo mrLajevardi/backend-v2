@@ -1,11 +1,11 @@
-import { Column, Entity, Index, OneToMany } from "typeorm";
+import { Column, Entity, Index, OneToMany } from "typeorm/browser";
 import { Configs } from "./Configs";
 import { Discounts } from "./Discounts";
 import { ItemTypes } from "./ItemTypes";
 import { ServiceInstances } from "./ServiceInstances";
 
 @Index("PK_ServiceTypes", ["id"], { unique: true })
-@Entity("ServiceTypes", { schema: "services" })
+@Entity()
 export class ServiceTypes {
   @Column("varchar", { primary: true, name: "ID", length: 50 })
   id: string;
@@ -19,17 +19,17 @@ export class ServiceTypes {
   @Column("varchar", { name: "CreateInstanceScript", length: 255 })
   createInstanceScript: string;
 
-  // @Column("boolean", { name: "VerifyInstance" })
+  // @Column("bit", { name: "VerifyInstance" })
   @Column("boolean", { name: "VerifyInstance" })
   verifyInstance: boolean;
 
-  @Column("int", { name: "MaxAvailable" })
+  @Column("integer", { name: "MaxAvailable" })
   maxAvailable: number;
 
   @Column("tinyint", { name: "Type", default: () => "(0)" })
   type: number;
 
-  // @Column("boolean", { name: "IsPAYG" })
+  // @Column("bit", { name: "IsPAYG" })
   @Column("boolean", { name: "IsPAYG" })
   isPayg: boolean;
 

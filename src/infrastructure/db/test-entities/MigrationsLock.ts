@@ -1,11 +1,11 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm/browser";
 
 @Index("PK__Migratio__1D0A334817D136CF", ["index"], { unique: true })
-@Entity("Migrations_lock", { schema: "security" })
+@Entity()
 export class MigrationsLock {
-  @PrimaryGeneratedColumn({ type: "int", name: "index" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   index: number;
 
-  @Column("int", { name: "is_locked", nullable: true })
+  @Column("integer", { name: "is_locked", nullable: true })
   isLocked: number | null;
 }

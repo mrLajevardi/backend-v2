@@ -5,12 +5,13 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from "typeorm/browser";
 import { ServiceTypes } from "./ServiceTypes";
 
-@Entity("Configs", { schema: "services" })
+@Index("PK_services.Config", ["id"], { unique: true })
+@Entity()
 export class Configs {
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 
   @Column("varchar", { name: "PropertyKey", length: 50 })

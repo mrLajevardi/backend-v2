@@ -1,9 +1,9 @@
-import { Column, Entity, Index, OneToMany } from "typeorm";
+import { Column, Entity, Index, OneToMany } from "typeorm/browser";
 import { PermissionGroupsMappings } from "./PermissionGroupsMappings";
 import { RoleMapping } from "./RoleMapping";
 
 @Index("PK__Role__3213E83F33C5C466", ["id"], { unique: true })
-@Entity("Role", { schema: "security" })
+@Entity()
 export class Role {
   @Column("nvarchar", { primary: true, name: "id", length: 50 })
   id: string;

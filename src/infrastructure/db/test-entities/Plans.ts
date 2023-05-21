@@ -1,7 +1,7 @@
-import { Column, Entity, Index } from "typeorm";
+import { Column, Entity, Index } from "typeorm/browser";
 
 @Index("PK_QualityPlans", ["code"], { unique: true })
-@Entity("Plans", { schema: "services" })
+@Entity()
 export class Plans {
   @Column("varchar", { primary: true, name: "Code", length: 25 })
   code: string;
@@ -18,7 +18,7 @@ export class Plans {
   @Column("nvarchar", { name: "Condition", default: () => "''" })
   condition: string;
 
-  // @Column("boolean", { name: "Enabled", default: () => "(1)" })
+  // @Column("bit", { name: "Enabled", default: () => "(1)" })
   @Column("boolean", { name: "Enabled", default: () => "(1)" })
   enabled: boolean;
 

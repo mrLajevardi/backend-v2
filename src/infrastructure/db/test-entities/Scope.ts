@@ -1,7 +1,7 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm/browser";
 
 @Index("PK__Scope__3213E83F6ECDAE1D", ["id"], { unique: true })
-@Entity("Scope", { schema: "security" })
+@Entity()
 export class Scope {
   @Column("nvarchar", { name: "name", length: 255 })
   name: string;
@@ -9,6 +9,6 @@ export class Scope {
   @Column("nvarchar", { name: "description", nullable: true, length: 255 })
   description: string | null;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "id" })
+  @PrimaryGeneratedColumn({ type: "integer" })
   id: number;
 }

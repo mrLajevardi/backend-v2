@@ -1,13 +1,13 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm/browser";
 import { ServiceInstances } from "./ServiceInstances";
 
 @Index("PK__tasks__7C6949D195E39C4E", ["taskId"], { unique: true })
-@Entity("Tasks", { schema: "user" })
+@Entity()
 export class Tasks {
-  @Column("int", { primary: true, name: "TaskID" })
-  taskId: number;
+  @Column("text", { primary: true, name: "TaskID" })
+  taskId: string;
 
-  @Column("int", { name: "UserID" })
+  @Column("integer", { name: "UserID" })
   userId: number;
 
   @Column("varchar", { name: "Operation", length: 255 })

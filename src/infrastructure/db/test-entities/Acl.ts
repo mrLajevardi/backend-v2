@@ -1,25 +1,26 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm/browser";
 
-@Entity({ name: "ACL" })
+@Index("PK__ACL__3213E83F35E40E26", ["id"], { unique: true })
+@Entity()
 export class Acl {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ type: "text", nullable: true, length: 255 })
+  @Column("nvarchar", { name: "model", nullable: true, length: 255 })
   model: string | null;
 
-  @Column({ type: "text", nullable: true, length: 255 })
+  @Column("nvarchar", { name: "property", nullable: true, length: 255 })
   property: string | null;
 
-  @Column({ type: "text", nullable: true, length: 255 })
+  @Column("nvarchar", { name: "accessType", nullable: true, length: 255 })
   accessType: string | null;
 
-  @Column({ type: "text", nullable: true, length: 255 })
+  @Column("nvarchar", { name: "permission", nullable: true, length: 255 })
   permission: string | null;
 
-  @Column({ type: "text", nullable: true, length: 255 })
+  @Column("nvarchar", { name: "principalType", nullable: true, length: 255 })
   principalType: string | null;
 
-  @Column({ type: "text", nullable: true, length: 255 })
+  @Column("nvarchar", { name: "principalId", nullable: true, length: 255 })
   principalId: string | null;
+
+  @PrimaryGeneratedColumn({ type: "integer" })
+  id: number;
 }
