@@ -17,8 +17,8 @@ import { Tickets } from "./Tickets";
 @Index("PK_ServiceInstances", ["id"], { unique: true })
 @Entity("ServiceInstances", { schema: "user" })
 export class ServiceInstances {
-  @Column("uniqueidentifier", { primary: true, name: "ID" })
-  id: string;
+  @Column("int", { primary: true, name: "ID" })
+  id: number;
 
   @Column("int", { name: "UserID" })
   userId: number;
@@ -38,7 +38,8 @@ export class ServiceInstances {
   @Column("datetime", { name: "DeletedDate", nullable: true })
   deletedDate: Date | null;
 
-  @Column("bit", { name: "IsDeleted", default: () => "(0)" })
+  // @Column("boolean", { name: "IsDeleted", default: () => "(0)" })
+  @Column("boolean", { name: "IsDeleted", default: () => "(0)" })
   isDeleted: boolean;
 
   @Column("int", { name: "Index", nullable: true })

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Acl } from 'src/infrastructure/entities/Acl';
+import { Acl } from 'src/infrastructure/db/entities/Acl';
 import { Repository } from 'typeorm';
 
 @Injectable()

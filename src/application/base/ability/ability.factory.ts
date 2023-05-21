@@ -1,7 +1,7 @@
 import { Ability, AbilityBuilder, AbilityClass, ExtractSubjectType, InferSubjects } from "@casl/ability";
 import { Injectable } from "@nestjs/common";
-import { Acl } from "src/infrastructure/entities/Acl";
-import { User } from "src/infrastructure/entities/User";
+import { Acl } from "src/infrastructure/db/entities/Acl";
+import { User } from "src/infrastructure/db/entities/User";
 import { AclService } from "src/application/base/acl/acl.service"
 import { dbEntities } from "src/infrastructure/configs/ormconfig";
 

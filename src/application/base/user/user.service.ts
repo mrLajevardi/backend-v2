@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { User } from 'src/infrastructure/entities/User';
+import { User } from 'src/infrastructure/db/entities/User';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, FindOptionsWhere, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -15,7 +15,7 @@ export class UserService {
     ) {}
 
     async findByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
-        return await  this.userRepository.findOne({ where : { phoneNumber : phoneNumber} })
+        return await this.userRepository.findOne({ where : { phoneNumber : phoneNumber} })
     }
 
 

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { User } from './infrastructure/entities/User';
+import { User } from './infrastructure/db/entities/User';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ormconfig } from './infrastructure/configs/ormconfig';
 import { APP_GUARD } from '@nestjs/core';

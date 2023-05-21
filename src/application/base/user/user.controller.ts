@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Post, Body, Put, Delete, Request, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
-import { User } from 'src/infrastructure/entities/User';
+import { User } from 'src/infrastructure/db/entities/User';
 import { DeleteResult } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from '../auth/decorators/ispublic.decorator';

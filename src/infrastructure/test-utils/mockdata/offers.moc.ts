@@ -1,5 +1,5 @@
-import { User } from "../../entities/User"
-import { ServiceInstances } from "../../entities/ServiceInstances"
+import { User } from "../../db/entities/User"
+import { ServiceInstances } from "../../db/entities/ServiceInstances"
 
 export const offersModData = {
     offers: [

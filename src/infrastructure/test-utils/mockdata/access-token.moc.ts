@@ -1,5 +1,5 @@
-import { User } from "../../entities/User"
-import { ServiceInstances } from "../../entities/ServiceInstances"
+import { User } from "../../db/entities/User"
+import { ServiceInstances } from "../../db/entities/ServiceInstances"
 
 export const accessTokenMocData = [{
     id: 'kz2LmgwdVvFN5sG3g6pHisNBhnsGbKfgK3BGAo7uDn1zrb0n98RFhHXrJlIULq6G',
