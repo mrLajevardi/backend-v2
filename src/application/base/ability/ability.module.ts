@@ -3,7 +3,7 @@ import { AbilityFactory } from './ability.factory';
 import { AclService } from '../acl/acl.service';
 import { AclModule } from '../acl/acl.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Acl } from 'src/infrastructure/db/entities/Acl';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
 
 @Module({
     imports: [

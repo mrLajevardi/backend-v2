@@ -1,9 +1,9 @@
 import { Ability, MongoQuery, defineAbility, ɵvalue } from '@casl/ability';
 import { AbilityFactory, Action } from './ability.factory';
-import { User } from 'src/infrastructure/db/entities/User';
-import { Invoices } from 'src/infrastructure/db/entities/Invoices';
-import { Acl } from 'src/infrastructure/db/entities/Acl';
-import { ServiceInstances } from 'src/infrastructure/db/entities/ServiceInstances';
+import { User } from 'src/infrastructure/database/entities/User';
+import { Invoices } from 'src/infrastructure/database/entities/Invoices';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { AclService } from '../acl/acl.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestDBProviders } from 'src/infrastructure/test-utils/providers';

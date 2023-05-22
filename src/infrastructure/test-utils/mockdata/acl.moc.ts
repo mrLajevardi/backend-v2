@@ -1,5 +1,5 @@
-import { User } from "../../db/entities/User"
-import { ServiceInstances } from "../../db/entities/ServiceInstances"
+import { User } from "../../database/entities/User"
+import { ServiceInstances } from "../../database/entities/ServiceInstances"
 
 export const aclMocData =  [
     {
