@@ -1,3 +1,9 @@
+/*
+This file is responsible for loading config.json file
+and possibly other config files required
+
+*/
+
 import * as fs from 'fs';
 import * as path from 'path';
 

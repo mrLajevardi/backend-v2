@@ -1,3 +1,10 @@
+/*
+Because Engities in mssql and sqlite are different, 
+and we need these entities in sqlite for creating in memory tests, 
+so we need to convert all of entities effortlessly. 
+This script is responsible for that. 
+*/
+
 const fs = require("fs");
 const path = require("path");
 

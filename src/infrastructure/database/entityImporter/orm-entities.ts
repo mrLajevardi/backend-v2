@@ -1,3 +1,9 @@
+/*
+This is for laodiing all of entities in an array at once
+this helps us preventing cluttered app module. 
+*/
+
+
 import { GroupsMapping } from '../entities/GroupsMapping';
 import { AccessToken } from '../entities/AccessToken';
 import { Acl } from '../entities/Acl';

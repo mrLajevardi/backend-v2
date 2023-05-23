@@ -1,3 +1,9 @@
+/*
+This module is responsible for proper loading of main database of application
+Importing this module in the app.module.ts is sufficient for loading the databse. 
+
+*/
+
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';

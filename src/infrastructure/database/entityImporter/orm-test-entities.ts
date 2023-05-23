@@ -1,3 +1,10 @@
+/*
+This is for laodiing all of entities in an array at once
+this helps us preventing cluttered app module. 
+This is for Test purposes. 
+*/
+
+
 import { GroupsMapping } from '../test-entities/GroupsMapping';
 import { AccessToken } from '../test-entities/AccessToken';
 import { Acl } from '../test-entities/Acl';
