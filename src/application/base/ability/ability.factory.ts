@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { Acl } from "src/infrastructure/database/entities/Acl";
 import { User } from "src/infrastructure/database/entities/User";
 import { AclService } from "src/application/base/acl/acl.service"
-import { dbEntities } from "src/infrastructure/configs/ormconfig";
+import { dbEntities } from "src/infrastructure/database/entityImporter/orm-entities";
 
 export enum Action {
     Manage = 'manage',
