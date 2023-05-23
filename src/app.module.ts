@@ -10,10 +10,13 @@ import { VastModule } from './application/vast/vast.module';
 import { AuthModule } from './application/base/auth/auth.module';
 import { AclModule } from './application/base/acl/acl.module';
 import { DatabaseModule } from './infrastructure/database/database.module';
-import { dbTestEntities } from './infrastructure/database/entityImporter/orm-test-entities';
-
+import configurations from './infrastructure/config/configurations';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      load: [configurations],
+    }),
     DatabaseModule,
     UserModule,
     AuthModule,

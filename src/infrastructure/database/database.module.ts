@@ -2,27 +2,26 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dbEntities } from './entityImporter/orm-entities';
+import configurations from '../config/configurations';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      envFilePath: 'src/infrastructure/configs/database.json', 
-    }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule], // Import ConfigModule to use the ConfigService
+      imports: [ConfigModule.forRoot({load: [configurations]}),
+      ], // Import ConfigModule to use the ConfigService
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        "type": configService.get<string>('DB_TYPE'),
-        "host": configService.get<string>('DB_HOST'),
-        "port": configService.get<number>('DB_PORT'),
-        "username": configService.get<string>('DB_USERNAME'),
-        "password": configService.get<string>('DB_PASSWORD'),
-        "database": configService.get<string>('DB_NAME'),
+        "type": configService.get<string>('database.type'),
+        "host": configService.get<string>('database.host'),
+        "port": configService.get<number>('database.port'),
+        "username": configService.get<string>('database.username'),
+        "password": configService.get<string>('database.password'),
+        "database": configService.get<string>('database.database'),
         entities: dbEntities,
         extra: {
           trustServerCertificate: true,
         },
       } as TypeOrmModuleOptions ),
-      inject: [ConfigService],
     }),
   ],
 })

@@ -37,7 +37,7 @@ export class Transactions {
   })
   paymentToken: string | null;
 
-  @Column("bit", { name: "isApproved", default: () => "'0'" })
+  @Column("boolean", { name: "isApproved", default: () => "'0'" })
   isApproved: boolean;
 
   @Column("text", { name: "ServiceInstanceID", nullable: true })

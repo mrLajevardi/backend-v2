@@ -38,7 +38,6 @@ export class ServiceInstances {
   @Column("datetime", { name: "DeletedDate", nullable: true })
   deletedDate: Date | null;
 
-  // @Column("bit", { name: "IsDeleted", default: () => "(0)" })
   @Column("boolean", { name: "IsDeleted", default: () => "(0)" })
   isDeleted: boolean;
 

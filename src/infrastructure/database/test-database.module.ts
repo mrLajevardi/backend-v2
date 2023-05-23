@@ -4,7 +4,7 @@ import { dbTestEntities } from './entityImporter/orm-test-entities';
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
+    TypeOrmModule.forRoot({
         type: "sqlite",
         database: ":memory:",
         autoLoadEntities : true,

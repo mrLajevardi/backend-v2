@@ -25,8 +25,7 @@ export class Discounts {
   @Column("float", { name: "Amount", precision: 53 })
   amount: number;
 
-  // @Column("bit", { name: "IsBuiltIn" })
-  @Column("boolean", { name: "IsBuiltIn" })
+  @Column("bit", { name: "IsBuiltIn" })
   isBuiltIn: boolean;
 
   @Column("datetime", { name: "ValidDate", nullable: true })

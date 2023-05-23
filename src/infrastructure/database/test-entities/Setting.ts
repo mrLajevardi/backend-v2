@@ -12,7 +12,7 @@ export class Setting {
   @Column("nvarchar", { name: "Key", length: 50 })
   key: string;
 
-  @Column("ntext", { name: "Value", nullable: true })
+  @Column("nvarchar", { name: "Value", nullable: true })
   value: string | null;
 
   @Column("datetime", { name: "InsertTime", default: () => "getdate()" })

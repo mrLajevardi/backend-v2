@@ -36,11 +36,9 @@ export class Invoices {
   @Column("datetime", { name: "DateTime" })
   dateTime: Date;
 
-  // @Column("bit", { name: "Payed" })
   @Column("boolean", { name: "Payed" })
   payed: boolean;
 
-  // @Column("bit", { name: "Voided" })
   @Column("boolean", { name: "Voided" })
   voided: boolean;
 

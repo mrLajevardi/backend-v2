@@ -25,6 +25,11 @@ files.forEach((file) => {
       // Update column types
       .replace(/@Column\("uniqueidentifier"/g, '@Column("text"')
       .replace(/@Column\("int"/g, '@Column("integer"')
+      .replace(/@Column\("bit"/g, '@Column("boolean"')
+      .replace(/@Column\("char"/g, '@Column("varchar"')
+      .replace(/@Column\("datetime2"/g, '@Column("datetime"')
+      .replace(/@Column\("ntext"/g, '@Column("nvarchar"')
+
       .replace(/@Column\("datetime"/g, '@Column("datetime"')
       // Remove schema option from @Entity decorator
       .replace(/@Entity\([^)]*\)/g, '@Entity()')
@@ -38,4 +43,5 @@ files.forEach((file) => {
   }
 });
 
+console.log("Please remove PK_services record from Config table ");
 console.log("Conversion completed.");

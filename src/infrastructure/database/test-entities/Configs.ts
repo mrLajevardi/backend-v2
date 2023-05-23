@@ -8,7 +8,6 @@ import {
 } from "typeorm";
 import { ServiceTypes } from "./ServiceTypes";
 
-@Index("PK_services.Config", ["id"], { unique: true })
 @Entity()
 export class Configs {
   @PrimaryGeneratedColumn({ type: "integer" })

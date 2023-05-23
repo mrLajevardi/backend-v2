@@ -12,6 +12,6 @@ export class Migrations {
   @Column("integer", { name: "batch", nullable: true })
   batch: number | null;
 
-  @Column("datetime2", { name: "migration_time", nullable: true })
+  @Column("datetime", { name: "migration_time", nullable: true })
   migrationTime: Date | null;
 }

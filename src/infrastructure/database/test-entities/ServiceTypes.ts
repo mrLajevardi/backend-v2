@@ -19,7 +19,6 @@ export class ServiceTypes {
   @Column("varchar", { name: "CreateInstanceScript", length: 255 })
   createInstanceScript: string;
 
-  // @Column("bit", { name: "VerifyInstance" })
   @Column("boolean", { name: "VerifyInstance" })
   verifyInstance: boolean;
 
@@ -29,7 +28,6 @@ export class ServiceTypes {
   @Column("tinyint", { name: "Type", default: () => "(0)" })
   type: number;
 
-  // @Column("bit", { name: "IsPAYG" })
   @Column("boolean", { name: "IsPAYG" })
   isPayg: boolean;
 

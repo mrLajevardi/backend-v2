@@ -31,7 +31,7 @@ export class Organization {
   @Column("datetime", { name: "updateDate", nullable: true })
   updateDate: Date | null;
 
-  @Column("char", { name: "status", nullable: true, length: 1 })
+  @Column("varchar", { name: "status", nullable: true, length: 1 })
   status: string | null;
 
   @ManyToOne(() => User, (user) => user.organizations, {

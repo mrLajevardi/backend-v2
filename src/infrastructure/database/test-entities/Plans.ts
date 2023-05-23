@@ -18,7 +18,6 @@ export class Plans {
   @Column("nvarchar", { name: "Condition", default: () => "''" })
   condition: string;
 
-  // @Column("bit", { name: "Enabled", default: () => "(1)" })
   @Column("boolean", { name: "Enabled", default: () => "(1)" })
   enabled: boolean;
 

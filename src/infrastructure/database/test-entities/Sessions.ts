@@ -20,7 +20,7 @@ export class Sessions {
   @Column("text", { name: "token" })
   token: string;
 
-  @Column("bit", { name: "active" })
+  @Column("boolean", { name: "active" })
   active: boolean;
 
   @Column("datetime", { name: "createDate", nullable: true })
@@ -29,7 +29,7 @@ export class Sessions {
   @Column("datetime", { name: "updateDate", nullable: true })
   updateDate: Date | null;
 
-  @Column("bit", { name: "isAdmin", nullable: true })
+  @Column("boolean", { name: "isAdmin", nullable: true })
   isAdmin: boolean | null;
 
   @ManyToOne(() => Organization, (organization) => organization.sessions, {
