@@ -8,7 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "build:config": "mkdirp dist/infrastructure/config && cp src/infrastructure/config/config.json dist/infrastructure/config",
+    "build:config": "copyfiles -f  src/infrastructure/config/config.json dist/infrastructure/config",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prestart": "npm run build:config",
     "start": "nest start",
@@ -61,6 +61,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
