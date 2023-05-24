@@ -43,7 +43,7 @@ import { Transactions } from './test-entities/Transactions';
 
 describe('TestDataService', () => {
   let testDataService: TestDataService;
-  let accessTokenRepository: Repository<AccessToken>;
+  let aclRepository: Repository<Acl>;
   // Define other repository variables...
 
   beforeEach(async () => {
@@ -70,29 +70,28 @@ describe('TestDataService', () => {
     }).compile();
 
     testDataService = module.get<TestDataService>(TestDataService);
-    accessTokenRepository = module.get<Repository<AccessToken>>(
-      getRepositoryToken(AccessToken)
+    aclRepository = module.get<Repository<Acl>>(
+      getRepositoryToken(Acl)
     );
     // Initialize other repository variables...
   });
 
   describe('seedTestData', () => {
-    it('should seed data for all tables', async () => {
-      // Mock the seedTable function
-      jest.spyOn(testDataService, 'seedTable').mockImplementation(async () => {
-        // Mock implementation here if needed
-      });
 
-      await testDataService.seedTestData();
+    // it('should insert contents in the db', async () => {
+    //    // testDataService.seedTestData();
+    //     await testDataService.seedTable('acl.json',aclRepository);
+    //     const data = await aclRepository.find({});
+    //     expect(data.length).toBeGreaterThan(0);
+    // })
 
-      // Assert that seedTable was called for each repository
-      expect(testDataService.seedTable).toHaveBeenCalledWith(
-        'access-token.json',
-        accessTokenRepository
-      );
-      // Assert other seedTable calls...
 
-      // Assert any other expectations as needed
-    });
+    it('should insert contents in the db', async () => {
+        // testDataService.seedTestData();
+         await testDataService.seedTestData()
+         const data = await aclRepository.find({});
+         expect(data.length).toBeGreaterThan(0);
+    })
+
   });
 });

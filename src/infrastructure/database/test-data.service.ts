@@ -118,12 +118,15 @@ export class TestDataService {
   ) {}
 
   async seedTable<T>(filename: string, repository: Repository<T>): Promise<void> { 
-    const path = "test-seeds/" + filename;
+    console.log("seeding table ",filename);
+    const path = "src/infrastructure/database/test-seeds/" + filename;
     const jsonData = fs.readFileSync(path, 'utf8');
     const items = JSON.parse(jsonData);
     for (const item of items) {
       const entity = item as T; 
-      await repository.save(entity);
+      console.log("inserting ... ", entity);
+
+      const savedItem = await repository.save(entity);
     }
   }
 
@@ -135,11 +138,7 @@ export class TestDataService {
     await this.seedTable('discounts.json', this.discountsRepository);
     await this.seedTable('group-mapping.json', this.groupsMappingRepository);
     await this.seedTable('groups.json', this.groupsRepository);
-    await this.seedTable('invoice-discounts.json', this.invoiceDiscountsRepository);
-    await this.seedTable('invoice-items.json', this.invoiceItemsRepository);
-    await this.seedTable('invoice-plans.json', this.invoicePlansRepository);
-    await this.seedTable('invoice-properties.json', this.invoicePropertiesRepository);
-    await this.seedTable('invoices.json', this.invoicesRepository);
+
     await this.seedTable('item-types.json', this.itemTypesRepository);
     await this.seedTable('migrations.json', this.migrationsRepository);
     await this.seedTable('organization.json', this.organizationRepository);
@@ -153,8 +152,10 @@ export class TestDataService {
     await this.seedTable('scope.json', this.scopeRepository);
     await this.seedTable('service-instances.json', this.serviceInstancesRepository);
     await this.seedTable('service-items.json', this.serviceItemsRepository);    
-    await this.seedTable('service-properties.json', this.servicePropertiesRepository);
     await this.seedTable('service-types.json', this.serviceTypesRepository);
+
+    await this.seedTable('service-properties.json', this.servicePropertiesRepository);
+    
     await this.seedTable('sessions.json', this.sessionsRepository);
     await this.seedTable('setting.json', this.settingRepository);
     await this.seedTable('system-settings.json', this.systemSettingsRepository);
@@ -162,6 +163,12 @@ export class TestDataService {
     await this.seedTable('tickets.json', this.ticketsRepository);
     await this.seedTable('transactions.json', this.transactionsRepository);
     await this.seedTable('user.json', this.userRepository);
+
+    await this.seedTable('invoice-discounts.json', this.invoiceDiscountsRepository);
+    await this.seedTable('invoice-items.json', this.invoiceItemsRepository);
+    await this.seedTable('invoice-plans.json', this.invoicePlansRepository);
+    await this.seedTable('invoice-properties.json', this.invoicePropertiesRepository);
+    await this.seedTable('invoices.json', this.invoicesRepository);
 
   }
 }
