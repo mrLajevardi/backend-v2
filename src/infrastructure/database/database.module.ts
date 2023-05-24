@@ -8,7 +8,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dbEntities } from './entityImporter/orm-entities';
-import { SeedTestService } from './seed-test.service';
+import { SeedTestService } from './test-data.service';
 import configurations from '../config/configurations';
 
 @Module({

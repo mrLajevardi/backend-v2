@@ -42,7 +42,7 @@ import * as fs from 'fs';
 import { dbTestEntities } from './entityImporter/orm-test-entities';
 
 @Injectable()
-export class SeedTestService {
+export class TestDataService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -117,15 +117,51 @@ export class SeedTestService {
  
   ) {}
 
-  async seedUsers(): Promise<void> { 
-    const filePath = 'test-seeds/users.json';
-    const jsonData = fs.readFileSync(filePath, 'utf8');
-    const users = JSON.parse(jsonData);
-    for (const user of users) {
-      const entity = new User();
-      entity.name = user.name;
-      entity.email = user.email;
-      await this.userRepository.save(entity);
+  async seedTable<T>(filename: string, repository: Repository<T>): Promise<void> { 
+    const path = "test-seeds/" + filename;
+    const jsonData = fs.readFileSync(path, 'utf8');
+    const items = JSON.parse(jsonData);
+    for (const item of items) {
+      const entity = item as T; 
+      await repository.save(entity);
     }
+  }
+
+  async seedTestData() : Promise<void> {
+    await this.seedTable('access-token.json', this.accessTokenRepository);
+    await this.seedTable('acl.json', this.aclRepository);
+    await this.seedTable('ai-transaction-logs.json', this.aiTransactionsLogsRepository);
+    await this.seedTable('config.json', this.configsRepository);
+    await this.seedTable('discounts.json', this.discountsRepository);
+    await this.seedTable('group-mapping.json', this.groupsMappingRepository);
+    await this.seedTable('groups.json', this.groupsRepository);
+    await this.seedTable('invoice-discounts.json', this.invoiceDiscountsRepository);
+    await this.seedTable('invoice-items.json', this.invoiceItemsRepository);
+    await this.seedTable('invoice-plans.json', this.invoicePlansRepository);
+    await this.seedTable('invoice-properties.json', this.invoicePropertiesRepository);
+    await this.seedTable('invoices.json', this.invoicesRepository);
+    await this.seedTable('item-types.json', this.itemTypesRepository);
+    await this.seedTable('migrations.json', this.migrationsRepository);
+    await this.seedTable('organization.json', this.organizationRepository);
+    await this.seedTable('permission-groups.json', this.permissionGroupsRepository);
+    await this.seedTable('permission-groups-mappings.json', this.permissionGroupsMappingsRepository);
+    await this.seedTable('permission-mappings.json', this.permissionMappingsRepository);
+    await this.seedTable('permissions.json', this.permissionsRepository);
+    await this.seedTable('plans.json', this.plansRepository);
+    await this.seedTable('role.json', this.roleRepository);
+    await this.seedTable('role-mapping.json', this.roleMappingRepository);
+    await this.seedTable('scope.json', this.scopeRepository);
+    await this.seedTable('service-instances.json', this.serviceInstancesRepository);
+    await this.seedTable('service-items.json', this.serviceItemsRepository);    
+    await this.seedTable('service-properties.json', this.servicePropertiesRepository);
+    await this.seedTable('service-types.json', this.serviceTypesRepository);
+    await this.seedTable('sessions.json', this.sessionsRepository);
+    await this.seedTable('setting.json', this.settingRepository);
+    await this.seedTable('system-settings.json', this.systemSettingsRepository);
+    await this.seedTable('tasks.json', this.tasksRepository);
+    await this.seedTable('tickets.json', this.ticketsRepository);
+    await this.seedTable('transactions.json', this.transactionsRepository);
+    await this.seedTable('user.json', this.userRepository);
+
   }
 }

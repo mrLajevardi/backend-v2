@@ -27,7 +27,7 @@ import { Permissions } from '../entities/Permissions';
 import { Plans } from '../entities/Plans';
 import { Role } from '../entities/Role';
 import { RoleMapping } from '../entities/RoleMapping';
-import { Scope } from '@nestjs/common';
+import { Scope } from '../entities/Scope';
 import { ServiceInstances } from '../entities/ServiceInstances';
 import { ServiceItems } from '../entities/ServiceItems';
 import { ServiceProperties } from '../entities/ServiceProperties';
