@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Repository } from 'typeorm';
+import { Connection, Repository } from 'typeorm';
 import { TestDataService } from './test-data.service';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import { TestDatabaseModule } from './test-database.module';
@@ -50,23 +50,16 @@ describe('TestDataService', () => {
     const module: TestingModule = await Test.createTestingModule({
         imports: [
             TestDatabaseModule,
-            TypeOrmModule.forFeature([AccessToken,Acl,AiTransactionsLogs,Configs,Discounts,
-                Groups,GroupsMapping,InvoiceDiscounts,InvoiceItems,
-                InvoicePlans,InvoiceProperties,Invoices,
-                ItemTypes,Migrations,MigrationsLock,
-                Organization,PermissionGroups, PermissionGroupsMappings,
-                PermissionMappings,Permissions,
-                Plans, Role, RoleMapping, Scope, 
-                ServiceInstances, ServiceItems, ServiceProperties,
-                ServiceTypes, Sessions, Setting,
-                SystemSettings, Tasks, Tickets,
-                Transactions, User])
         ],
 
       providers: [
         TestDataService,
-        
+        {
+          provide: Connection,
+          useValue: Connection,
+        },
       ],
+      exports: [Connection]
     }).compile();
 
     testDataService = module.get<TestDataService>(TestDataService);

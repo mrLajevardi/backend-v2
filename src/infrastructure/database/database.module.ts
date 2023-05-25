@@ -31,6 +31,6 @@ import configurations from '../config/configurations';
       } as TypeOrmModuleOptions ),
     }),
   ],
-  providers: [SeedTestService],
+  providers: [TestDataService],
 })
 export class DatabaseModule {}

@@ -7,6 +7,8 @@ Importing this module in the test files is sufficient for loading the database f
 import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { dbTestEntities } from './entityImporter/orm-test-entities';
+import { TestDataService } from './test-data.service';
+import { Connection } from 'typeorm';
 
 @Module({
   imports: [
@@ -17,6 +19,11 @@ import { dbTestEntities } from './entityImporter/orm-test-entities';
         entities: dbTestEntities,
         synchronize: true,
     } as TypeOrmModuleOptions ),
+    TypeOrmModule.forFeature(dbTestEntities)
   ],
+  providers: [
+    TestDataService,
+  ],
+  exports: [TypeOrmModule]
 })
 export class TestDatabaseModule {}
