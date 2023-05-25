@@ -51,15 +51,9 @@ describe('TestDataService', () => {
         imports: [
             TestDatabaseModule,
         ],
-
       providers: [
         TestDataService,
-        {
-          provide: Connection,
-          useValue: Connection,
-        },
       ],
-      exports: [Connection]
     }).compile();
 
     testDataService = module.get<TestDataService>(TestDataService);
