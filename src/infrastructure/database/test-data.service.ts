@@ -40,82 +40,133 @@ import { User } from './test-entities/User';
 
 import * as fs from 'fs';
 import { dbTestEntities } from './entityImporter/orm-test-entities';
+import { DebugLog } from './test-entities/DebugLog';
+import { InfoLog } from './test-entities/InfoLog';
+import { ErrorLog } from './test-entities/ErrorLog';
 
 @Injectable()
 export class TestDataService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Transactions)
-    private readonly transactionsRepository: Repository<Transactions>,
-    @InjectRepository(Tickets)
-    private readonly ticketsRepository: Repository<Tickets>,
-    @InjectRepository(Tasks)
-    private readonly tasksRepository: Repository<Tasks>,
-    @InjectRepository(SystemSettings)
-    private readonly systemSettingsRepository: Repository<SystemSettings>,
-    @InjectRepository(Setting)
-    private readonly settingRepository: Repository<Setting>,
-    @InjectRepository(Sessions)
-    private readonly sessionsRepository: Repository<Sessions>,
-    @InjectRepository(ServiceTypes)
-    private readonly serviceTypesRepository: Repository<ServiceTypes>,
-    @InjectRepository(ServiceProperties)
-    private readonly servicePropertiesRepository: Repository<ServiceProperties>,
-    @InjectRepository(ServiceItems)
-    private readonly serviceItemsRepository: Repository<ServiceItems>,
-    @InjectRepository(ServiceInstances)
-    private readonly serviceInstancesRepository: Repository<ServiceInstances>,
-    @InjectRepository(RoleMapping)
-    private readonly roleMappingRepository: Repository<RoleMapping>,
-    @InjectRepository(Scope)
-    private readonly scopeRepository: Repository<Scope>,
-    @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>,
-    @InjectRepository(Plans)
-    private readonly plansRepository: Repository<Plans>,
-    @InjectRepository(Permissions)
-    private readonly permissionsRepository: Repository<Permissions>,
-    @InjectRepository(PermissionMappings)
-    private readonly permissionMappingsRepository: Repository<PermissionMappings>,
-    @InjectRepository(PermissionGroupsMappings)
-    private readonly permissionGroupsMappingsRepository: Repository<PermissionGroupsMappings>,
-    @InjectRepository(PermissionGroups)
-    private readonly permissionGroupsRepository: Repository<PermissionGroups>,
-    @InjectRepository(Organization)
-    private readonly organizationRepository: Repository<Organization>,
-    @InjectRepository(Migrations)
-    private readonly migrationsRepository: Repository<Migrations>,
-    @InjectRepository(MigrationsLock)
-    private readonly migrationsLockRepository: Repository<MigrationsLock>,
-    @InjectRepository(ItemTypes)
-    private readonly itemTypesRepository: Repository<ItemTypes>,
-    @InjectRepository(Invoices)
-    private readonly invoicesRepository: Repository<Invoices>,
-    @InjectRepository(InvoiceProperties)
-    private readonly invoicePropertiesRepository: Repository<InvoiceProperties>,
-    @InjectRepository(InvoicePlans)
-    private readonly invoicePlansRepository: Repository<InvoicePlans>,
-    @InjectRepository(InvoiceItems)
-    private readonly invoiceItemsRepository: Repository<InvoiceItems>,
-    @InjectRepository(InvoiceDiscounts)
-    private readonly invoiceDiscountsRepository: Repository<InvoiceDiscounts>,
-    @InjectRepository(Groups)
-    private readonly groupsRepository: Repository<Groups>,
-    @InjectRepository(Discounts)
-    private readonly discountsRepository: Repository<Discounts>,
-    @InjectRepository(Configs)
-    private readonly configsRepository: Repository<Configs>,
-    @InjectRepository(AiTransactionsLogs)
-    private readonly aiTransactionsLogsRepository: Repository<AiTransactionsLogs>,
-    @InjectRepository(Acl)
-    private readonly aclRepository: Repository<Acl>,
-    @InjectRepository(AccessToken)
-    private readonly accessTokenRepository: Repository<AccessToken>,
-    @InjectRepository(GroupsMapping)
-    private readonly groupsMappingRepository: Repository<GroupsMapping>,
+   // Logs Schema
+  @InjectRepository(DebugLog)
+  private readonly debugLogRepository: Repository<DebugLog>,
+
+  @InjectRepository(InfoLog)
+  private readonly infoLogRepository: Repository<InfoLog>,
+
+  @InjectRepository(ErrorLog)
+  private readonly errorLogRepository: Repository<ErrorLog>,
+
+  // Security Schema
+  @InjectRepository(AccessToken)
+  private readonly accessTokenRepository: Repository<AccessToken>,
+
+  @InjectRepository(Acl)
+  private readonly aclRepository: Repository<Acl>,
+
+  @InjectRepository(Migrations)
+  private readonly migrationsRepository: Repository<Migrations>,
+
+  @InjectRepository(MigrationsLock)
+  private readonly migrationsLockRepository: Repository<MigrationsLock>,
+
+  @InjectRepository(PermissionGroups)
+  private readonly permissionGroupsRepository: Repository<PermissionGroups>,
+
+  @InjectRepository(PermissionGroupsMappings)
+  private readonly permissionGroupsMappingsRepository: Repository<PermissionGroupsMappings>,
+
+  @InjectRepository(PermissionMappings)
+  private readonly permissionMappingsRepository: Repository<PermissionMappings>,
+
+  @InjectRepository(Permissions)
+  private readonly permissionsRepository: Repository<Permissions>,
+
+  @InjectRepository(Role)
+  private readonly roleRepository: Repository<Role>,
+
+  @InjectRepository(RoleMapping)
+  private readonly roleMappingRepository: Repository<RoleMapping>,
+
+  @InjectRepository(Scope)
+  private readonly scopeRepository: Repository<Scope>,
+
+  @InjectRepository(Setting)
+  private readonly settingRepository: Repository<Setting>,
+
+  @InjectRepository(SystemSettings)
+  private readonly systemSettingsRepository: Repository<SystemSettings>,
+
+  @InjectRepository(User)
+  private readonly userRepository: Repository<User>,
+
+  // Services Schema
+  @InjectRepository(Configs)
+  private readonly configsRepository: Repository<Configs>,
+
+  @InjectRepository(Discounts)
+  private readonly discountsRepository: Repository<Discounts>,
+
+  @InjectRepository(ItemTypes)
+  private readonly itemTypesRepository: Repository<ItemTypes>,
+
+  @InjectRepository(Plans)
+  private readonly plansRepository: Repository<Plans>,
+
+  @InjectRepository(ServiceTypes)
+  private readonly serviceTypesRepository: Repository<ServiceTypes>,
+
+  // VDC Schema
+  @InjectRepository(Organization)
+  private readonly organizationRepository: Repository<Organization>,
+
+  @InjectRepository(Sessions)
+  private readonly sessionsRepository: Repository<Sessions>,
+
+  // User Schema
+  @InjectRepository(AiTransactionsLogs)
+  private readonly aiTransactionsLogsRepository: Repository<AiTransactionsLogs>,
+
+  @InjectRepository(Groups)
+  private readonly groupsRepository: Repository<Groups>,
+
+  @InjectRepository(GroupsMapping)
+  private readonly groupsMappingRepository: Repository<GroupsMapping>,
+
+  @InjectRepository(InvoiceDiscounts)
+  private readonly invoiceDiscountsRepository: Repository<InvoiceDiscounts>,
+
+  @InjectRepository(InvoiceItems)
+  private readonly invoiceItemsRepository: Repository<InvoiceItems>,
+
+  @InjectRepository(InvoicePlans)
+  private readonly invoicePlansRepository: Repository<InvoicePlans>,
+
+  @InjectRepository(InvoiceProperties)
+  private readonly invoicePropertiesRepository: Repository<InvoiceProperties>,
+
+  @InjectRepository(Invoices)
+  private readonly invoicesRepository: Repository<Invoices>,
+
+  @InjectRepository(ServiceInstances)
+  private readonly serviceInstancesRepository: Repository<ServiceInstances>,
+
+  @InjectRepository(ServiceItems)
+  private readonly serviceItemsRepository: Repository<ServiceItems>,
+
+  @InjectRepository(ServiceProperties)
+  private readonly servicePropertiesRepository: Repository<ServiceProperties>,
+
+  @InjectRepository(Tasks)
+  private readonly tasksRepository: Repository<Tasks>,
+
+  @InjectRepository(Tickets)
+  private readonly ticketsRepository: Repository<Tickets>,
+
+  @InjectRepository(Transactions)
+  private readonly transactionsRepository: Repository<Transactions>,
  
-  ) {}
+) {}
 
   async seedTable<T>(filename: string, repository: Repository<T>): Promise<void> { 
     console.log("seeding table ",filename);

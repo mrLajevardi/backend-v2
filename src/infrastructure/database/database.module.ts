@@ -30,7 +30,10 @@ import configurations from '../config/configurations';
         },
       } as TypeOrmModuleOptions ),
     }),
+    TypeOrmModule.forFeature(dbEntities)
   ],
   providers: [TestDataService],
+  exports: [TypeOrmModule]
+  
 })
 export class DatabaseModule {}
