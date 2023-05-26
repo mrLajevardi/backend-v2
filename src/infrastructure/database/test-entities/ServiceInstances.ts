@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from "typeorm";
 import { AiTransactionsLogs } from "./AiTransactionsLogs";
+import { InfoLog } from "./InfoLog";
 import { Invoices } from "./Invoices";
 import { ServiceTypes } from "./ServiceTypes";
 import { ServiceItems } from "./ServiceItems";
@@ -71,6 +72,9 @@ export class ServiceInstances {
     (aiTransactionsLogs) => aiTransactionsLogs.serviceInstance
   )
   aiTransactionsLogs: AiTransactionsLogs[];
+
+  @OneToMany(() => InfoLog, (infoLog) => infoLog.serviceInstance)
+  infoLogs: InfoLog[];
 
   @OneToMany(() => Invoices, (invoices) => invoices.serviceInstance)
   invoices: Invoices[];

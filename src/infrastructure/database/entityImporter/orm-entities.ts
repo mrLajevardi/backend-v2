@@ -39,17 +39,26 @@ import { Tasks } from '../entities/Tasks';
 import { Tickets } from '../entities/Tickets';
 import { Transactions } from '../entities/Transactions';
 import { User } from '../entities/User';
+import { DebugLog } from '../entities/DebugLog';
+import { InfoLog } from '../entities/InfoLog';
+import { ErrorLog } from '../entities/ErrorLog';
 
 export const dbEntities = [
-    AccessToken,Acl,AiTransactionsLogs,Configs,Discounts,
-    Groups,GroupsMapping,InvoiceDiscounts,InvoiceItems,
-    InvoicePlans,InvoiceProperties,Invoices,
-    ItemTypes,Migrations,MigrationsLock,
-    Organization,PermissionGroups, PermissionGroupsMappings,
-    PermissionMappings,Permissions,
-    Plans, Role, RoleMapping, Scope, 
+    // Logs Schema 
+    DebugLog, InfoLog, ErrorLog,
+    // Security Schema
+    AccessToken,Acl,Migrations, MigrationsLock, 
+    PermissionGroups, PermissionGroupsMappings, PermissionMappings,Permissions,
+    Role, RoleMapping,
+    Scope, Setting, SystemSettings, User,
+    // services Schema 
+    Configs, Discounts, ItemTypes, Plans, ServiceTypes,
+    // VDC Schema
+    Organization,Sessions,
+    // User Schema 
+    AiTransactionsLogs,
+    Groups,GroupsMapping,
+    InvoiceDiscounts,InvoiceItems, InvoicePlans,InvoiceProperties,Invoices,
     ServiceInstances, ServiceItems, ServiceProperties,
-    ServiceTypes, Sessions, Setting,
-    SystemSettings, Tasks, Tickets,
-    Transactions, User
+    Tasks, Tickets, Transactions, 
   ];

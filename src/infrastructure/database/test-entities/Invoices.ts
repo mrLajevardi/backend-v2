@@ -42,9 +42,6 @@ export class Invoices {
   @Column("boolean", { name: "Voided" })
   voided: boolean;
 
-  @Column("integer", {name: "UserID"})
-  userId: number;
-
   @Column("datetime", { name: "EndDateTime", default: () => "getdate()" })
   endDateTime: Date;
 

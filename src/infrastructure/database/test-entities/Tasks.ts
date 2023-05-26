@@ -25,6 +25,15 @@ export class Tasks {
   @Column("varchar", { name: "Status", nullable: true, length: 255 })
   status: string | null;
 
+  @Column("nvarchar", { name: "Arguments", nullable: true })
+  arguments: string | null;
+
+  @Column("integer", { name: "StepCounts", nullable: true })
+  stepCounts: number | null;
+
+  @Column("varchar", { name: "CurrrentStep", nullable: true, length: 60 })
+  currrentStep: string | null;
+
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.tasks,

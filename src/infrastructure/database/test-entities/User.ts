@@ -12,7 +12,6 @@ import { Transactions } from "./Transactions";
 
 @Index("PK__User__3214EC0774485CFE", ["id"], { unique: true })
 @Entity()
-
 export class User {
   @PrimaryGeneratedColumn({ type: "integer" })
   id: number;

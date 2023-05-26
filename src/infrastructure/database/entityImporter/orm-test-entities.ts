@@ -1,9 +1,7 @@
 /*
 This is for laodiing all of entities in an array at once
 this helps us preventing cluttered app module. 
-This is for Test purposes. 
 */
-
 
 import { GroupsMapping } from '../test-entities/GroupsMapping';
 import { AccessToken } from '../test-entities/AccessToken';
@@ -40,17 +38,26 @@ import { Tasks } from '../test-entities/Tasks';
 import { Tickets } from '../test-entities/Tickets';
 import { Transactions } from '../test-entities/Transactions';
 import { User } from '../test-entities/User';
+import { DebugLog } from '../test-entities/DebugLog';
+import { InfoLog } from '../test-entities/InfoLog';
+import { ErrorLog } from '../test-entities/ErrorLog';
 
 export const dbTestEntities = [
-    AccessToken,Acl,AiTransactionsLogs,Configs,Discounts,
-    Groups,GroupsMapping,InvoiceDiscounts,InvoiceItems,
-    InvoicePlans,InvoiceProperties,Invoices,
-    ItemTypes,Migrations,MigrationsLock,
-    Organization,PermissionGroups, PermissionGroupsMappings,
-    PermissionMappings,Permissions,
-    Plans, Role, RoleMapping, Scope, 
+    // Logs Schema 
+    DebugLog, InfoLog, ErrorLog,
+    // Security Schema
+    AccessToken,Acl,Migrations, MigrationsLock, 
+    PermissionGroups, PermissionGroupsMappings, PermissionMappings,Permissions,
+    Role, RoleMapping,
+    Scope, Setting, SystemSettings, User,
+    // services Schema 
+    Configs, Discounts, ItemTypes, Plans, ServiceTypes,
+    // VDC Schema
+    Organization,Sessions,
+    // User Schema 
+    AiTransactionsLogs,
+    Groups,GroupsMapping,
+    InvoiceDiscounts,InvoiceItems, InvoicePlans,InvoiceProperties,Invoices,
     ServiceInstances, ServiceItems, ServiceProperties,
-    ServiceTypes, Sessions, Setting,
-    SystemSettings, Tasks, Tickets,
-    Transactions, User
+    Tasks, Tickets, Transactions, 
   ];
