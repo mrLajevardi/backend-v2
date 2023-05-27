@@ -15,6 +15,7 @@ describe('AbilityFactory', () => {
   let abilityFactory : AbilityFactory;
   let userService : UserService; 
   let testDataService : TestDataService; 
+  let aclService : AclService; 
 
   beforeAll( async ()=>{
     const module: TestingModule = await Test.createTestingModule({
@@ -31,119 +32,74 @@ describe('AbilityFactory', () => {
 
     abilityFactory = module.get<AbilityFactory>(AbilityFactory);
     userService = module.get<UserService>(UserService); 
+    aclService = module.get<AclService>(AclService); 
     testDataService = module.get<TestDataService>(TestDataService);
 
-    await testDataService.seedTestData(); 
+    //await testDataService.seedTestData(); 
 
   })
 
 
-  describe('AbilityFactory basic usage', () => {
-    it('should be defined', () => {
-      expect(abilityFactory).toBeDefined();
-    });
+  describe("Ability Factory tests" , () => {
+    beforeAll( async () => {
+      await userService.create({
+        id:1,
+        name:"majid1",
+        family:"a",
+        username:"majid1",
+        password:"123",
+        createDate: new Date(),
+        updateDate: new Date(),
+      });
 
-    it('should return true', () => {
-      const ability = defineAbility( (can) => {
-        can(Action.Create,'all');
+      await userService.create({
+        id:2,
+        name:"majid2",
+        family:"a",
+        username:"majid2",
+        password:"123",
+        createDate: new Date(),
+        updateDate: new Date(),
+      });
+
+      await aclService.create({
+          "model": "Acl",
+          "accessType": "read",
+          "principalType": "",
+          "principalId": "",
+          "property": "",
+          "permission": "can"
       })
-      expect(ability.can(Action.Create,'User')).toBe(true);
-    })
 
-    it('should return false', () => {
-      const ability = defineAbility( (can) => {
-        can(Action.Create,'Vast');
+      await aclService.create({
+        "model": "Acl",
+        "accessType": "read",
+        "principalType": "",
+        "principalId": "",
+        "property": "",
+        "permission": "cannot"
       })
-      expect(ability.can(Action.Create,'User')).toBe(false);
+
     })
 
-    it('should return true', () => {
-      const ability = defineAbility( (can,cannot) => {
-        can(Action.Create,'Vast');
-        cannot(Action.Create,'all');
-      })
-      expect(ability.can(Action.Create,'Vast')).toBe(false);
+    it("should return 2 for users.getAll" , async () => {
+      const users  = await userService.findAll(); 
+      expect(users.length).toBe(2);
     })
 
 
-  });
-
-  describe('check attribute', () => {
-    let ability : Ability;
-    let currentUser : User; 
-
-    beforeAll(()=> { 
-      currentUser = new  User();
-      ability = defineAbility( (can) => {
-        can(Action.Create,'Invoices',{ user : currentUser });
-        can(Action.Create,'ServiceInstances', 'index',{ userId : 1});
-      })
+    it("should return 2 for acl.getAll" , async () => {
+      const acls = await aclService.findAll(); 
+      console.log(acls);
+      expect(acls.length).toBe(2); 
     })
 
-    it('should return true', () => {
-      const invoice = new Invoices();
-      invoice.user = currentUser;
-      expect(ability.can(Action.Create,invoice)).toBeTruthy();
+    it("should return true", async () => {
+      const user1 = await userService.findById(1); 
+      const ability = await abilityFactory.createForUser(user1); 
+      const result = ability.can(Action.Read,Acl);
+      expect(result).toBeTruthy(); 
     })
-
-    it('should return false', () => {
-      const invoice = new Invoices();
-      const anotherUser = new User();
-      invoice.user = anotherUser;
-      expect(ability.can(Action.Create,invoice)).toBeFalsy();
-    })
-
-    it('should return true', () => {
-      const instance = new ServiceInstances();
-      instance.index = 1; 
-      instance.userId = 1; 
-      expect(ability.can(Action.Create,instance,'index')).toBeTruthy();
-    })
-    
-    it('should return true', () => {
-      const instance = new ServiceInstances();
-      instance.index = 2; 
-      instance.userId = 1; 
-      expect(ability.can(Action.Create,instance,'index')).toBeTruthy();
-    })
-
-    it('should return false', () => {
-      const instance = new ServiceInstances();
-      instance.index = 2; 
-      instance.userId = 2; 
-      expect(ability.can(Action.Create,instance,'index')).toBeFalsy();
-    })
-  })
-
-
-  describe("getModel",()=>{
-    it("should return Acl", () => {
-      const result = abilityFactory.getModel('Acl');
-      console.log(result);
-      expect(result).toBe(Acl);
-    })
-  })
-
-  describe("createForUser", () => { 
-
-    it("should find the user", async () => {
-      const user = await userService.findById(597);
-      expect(user.id).toBe(597);
-    })
-
-    it("should return create", () => {
-      console.log(Action.Create);
-      console.log(Action['create']);
-      expect(abilityFactory.actionLookup['create']).toBe(Action.Create);
-    })
-
-    // it("should return true", async () => {
-    //   const user = await userService.findById(597);
-    //   const ability = await abilityFactory.createForUser(user);
-    //   const invoice = new Invoices();
-    //   invoice.user = user; 
-    //   expect(ability.can(Action.Create,invoice,'index')).toBeTruthy(); 
-    // })
 
   })
 

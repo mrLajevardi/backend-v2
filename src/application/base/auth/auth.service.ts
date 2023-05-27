@@ -42,14 +42,12 @@ export class AuthService {
     // This function will be called in AuthController.login after 
     // the success of local strategy
     // it will return the JWT token 
-    async login(dto: LoginDto) {
-      console.log("auth service login", dto)
-      return {
-        access_token: this.jwtService.sign({
-          username: dto.username,
-          password: dto.password
-        }),
-      };
+    async login(user : any) {
+     // console.log("auth service login", dto)
+     const payload = { username: user.username, sub: user.id };
+     return {
+       access_token: this.jwtService.sign(payload),
+     };
     }
     
 }

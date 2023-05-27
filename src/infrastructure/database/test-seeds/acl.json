@@ -4,7 +4,7 @@
       "accessType": "create",
       "principalType": "userId",
       "principalId": "597",
-      "property": "index",
+      "property": "",
       "permission": "can"
     },
     {
@@ -12,7 +12,7 @@
       "accessType": "create",
       "principalType": "userId",
       "principalId": "589",
-      "property": "index",
+      "property": "",
       "permission": "cannot"
     },
     {
@@ -20,7 +20,7 @@
       "accessType": "create",
       "principalType": "userId",
       "principalId": "597",
-      "property": "index",
+      "property": "",
       "permission": "can"
     },
     {
@@ -28,7 +28,7 @@
       "accessType": "create",
       "principalType": "userId",
       "principalId": "518",
-      "property": "index",
+      "property": "",
       "permission": "cannot"
     },
     {
@@ -36,7 +36,7 @@
       "accessType": "create",
       "principalType": "userId",
       "principalId": "597",
-      "property": "index",
+      "property": "",
       "permission": "can"
     },
     {
@@ -44,7 +44,7 @@
       "accessType": "create",
       "principalType": "userId",
       "principalId": "518",
-      "property": "index",
+      "property": "",
       "permission": "cannot"
     }
 

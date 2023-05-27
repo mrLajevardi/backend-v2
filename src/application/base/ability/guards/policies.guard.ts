@@ -2,11 +2,14 @@ import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { PolicyHandler } from "../interfaces/policy-handler.interface";
 import { CHECK_POLICIES_KEY } from "../decorators/check-policies.decorator";
-import { AbilityFactory, AppAbility } from "../ability.factory";
+import { AbilityFactory, Action, AppAbility } from "../ability.factory";
+import { Acl } from "src/infrastructure/database/entities/Acl";
+import { UserService } from "../../user/user.service";
 
 @Injectable()
 export class PoliciesGuard implements CanActivate {
   constructor(
+    private userService: UserService,
     private reflector: Reflector,
     private caslAbilityFactory: AbilityFactory,
   ) {}
@@ -19,8 +22,12 @@ export class PoliciesGuard implements CanActivate {
       ) || [];
 
     const { user } = context.switchToHttp().getRequest();
-    const ability = await this.caslAbilityFactory.createForUser(user);
+    const realUser = await this.userService.findById(user.userId); 
 
+    const ability = await this.caslAbilityFactory.createForUser(realUser);
+        console.log("inside policies guard");
+        console.log(user); 
+        console.log(ability.can(Action.Read,Acl))
     return policyHandlers.every((handler) =>
       this.execPolicyHandler(handler, ability),
     );

@@ -50,15 +50,19 @@ export class AbilityFactory {
         }
         const acl = await this.aclService.findAll();
         acl.forEach(acl => {
-            const principalObject = { [acl.principalType]: JSON.parse(acl.principalId) };
+            
+            const principalObject = { [acl.principalType]: acl.principalId };
             if (acl.permission == 'can'){
+              console.log("can",acl.model,acl.accessType, acl.property, principalObject); 
               can(this.actionLookup[acl.accessType], this.getModel(acl.model), acl.property, principalObject);
             }else{
+              console.log("can not ",acl.model, acl.accessType, acl.property, principalObject); 
+
               cannot(this.actionLookup[acl.accessType], this.getModel(acl.model), acl.property, principalObject);
             }
         });
-
-
+       // can(Action.Read,Acl,"",{ id : 2} ); 
+        // action, subject, fields, conditions 
         if (user.username == 'admin') {
             can(Action.Manage, "all");
         }

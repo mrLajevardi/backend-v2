@@ -14,6 +14,10 @@ export class UserService {
         // private readonly accessTokenRepository : Repository<AccessToken>,
     ) {}
 
+    async findAll(): Promise<User[]> {
+        return await this.userRepository.find({});
+    }
+    
     async findByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
         return await this.userRepository.findOne({ where : { phoneNumber : phoneNumber} })
     }
