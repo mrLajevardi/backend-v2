@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { AclService } from './acl.service';
 import { Acl } from 'src/infrastructure/database/entities/Acl';
 import { ApiTags, ApiOperation, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { PoliciesGuard } from '../ability/guards/policies.guard';
+import { CheckPolicies } from '../ability/decorators/check-policies.decorator';
+import { Action, AppAbility } from '../ability/ability.factory';
 
 @ApiTags('ACL')
 @Controller('acl')

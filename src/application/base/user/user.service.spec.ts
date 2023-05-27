@@ -1,19 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestDBProviders } from 'src/infrastructure/test-utils/providers';
 import { UserService } from './user.service';
+import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
 describe('UserService', () => {
   let service: UserService;
+  let testDataService: TestDataService; 
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [TestDatabaseModule],
       providers: [
         UserService,
-        TestDBProviders.userProvider,
     ]
     }).compile();
 
     service = module.get<UserService>(UserService);
+    testDataService = module.get<TestDataService>(TestDataService);
+    await testDataService.seedTestData(); 
   });
 
   it('should be defined', () => {

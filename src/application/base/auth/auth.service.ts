@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -13,9 +13,21 @@ export class AuthService {
     // Validate user performs using Local.strategy
     async validateUser(username: string, pass: string): Promise<any> {
       console.log("validate user");
+      if (!username){
+        throw new UnauthorizedException("No username provided");
+      }
+
+      if (!pass) {
+        throw new UnauthorizedException("No password provided");
+      }
+
       const user = await this.usersService.findOne({
         username: username
       });
+
+      if (!user){
+        throw new UnauthorizedException("Wrong username or password");
+      }
 
       // checking the availablity of the user and
       const isValid = await this.usersService.comparePassword(user.password,pass);

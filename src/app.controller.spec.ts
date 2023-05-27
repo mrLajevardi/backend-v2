@@ -3,28 +3,26 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthService } from './application/base/auth/auth.service';
 import { UserService } from './application/base/user/user.service';
-import { JwtModule, JwtService } from '@nestjs/jwt';
-import { TestDBProviders } from './infrastructure/test-utils/providers';
+import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './application/base/auth/dto/login.dto';
-import { UserModule } from './application/base/user/user.module';
-import { AuthModule } from './application/base/auth/auth.module';
-import { VastModule } from './application/vast/vast.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './application/base/auth/guard/jwt-auth.guard';
-import { jwtConstants } from './application/base/auth/constants';
+import { TestDatabaseModule } from './infrastructure/database/test-database.module';
+import { TestDataService } from './infrastructure/database/test-data.service';
 
 describe('AppController', () => {
   let controller : AppController;
   let authService: AuthService;
+  let testDataService: TestDataService; 
 
 
-  beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+  beforeAll(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [TestDatabaseModule],
       controllers: [
         AppController,
       ],
       providers: [
-        TestDBProviders.userProvider,
         UserService,
         AppService,
         AuthService,
@@ -41,9 +39,10 @@ describe('AppController', () => {
       ],
     }).compile();
 
-    controller = app.get<AppController>(AppController);
-    authService = app.get<AuthService>(AuthService);
-
+    controller = module.get<AppController>(AppController);
+    authService = module.get<AuthService>(AuthService);
+    testDataService = module.get<TestDataService>(TestDataService);
+    await testDataService.seedTestData(); 
   });
 
   describe('root', () => {

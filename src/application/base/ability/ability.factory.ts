@@ -1,5 +1,5 @@
-import { Ability, AbilityBuilder, AbilityClass, ExtractSubjectType, InferSubjects } from "@casl/ability";
-import { Injectable } from "@nestjs/common";
+import { Ability, AbilityBuilder, AbilityClass, AbilityTuple, ExtractSubjectType, InferSubjects, MongoQuery } from "@casl/ability";
+import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { Acl } from "src/infrastructure/database/entities/Acl";
 import { User } from "src/infrastructure/database/entities/User";
 import { AclService } from "src/application/base/acl/acl.service"
@@ -40,9 +40,14 @@ export class AbilityFactory {
     };
 
     // creates the abilities related to the user . 
-    async createForUser(user : User){
-        const { can, cannot, build } = new AbilityBuilder(Ability);
+    async createForUser(user : User) {
+      const { can, cannot, build } = new AbilityBuilder<
+              Ability<[Action, Subjects]>
+            >(Ability as AbilityClass<AppAbility>);
 
+        if (!user){
+          throw new UnauthorizedException("No user is specified");
+        }
         const acl = await this.aclService.findAll();
         acl.forEach(acl => {
             const principalObject = { [acl.principalType]: JSON.parse(acl.principalId) };
@@ -52,6 +57,7 @@ export class AbilityFactory {
               cannot(this.actionLookup[acl.accessType], this.getModel(acl.model), acl.property, principalObject);
             }
         });
+
 
         if (user.username == 'admin') {
             can(Action.Manage, "all");

@@ -169,13 +169,13 @@ export class TestDataService {
 ) {}
 
   async seedTable<T>(filename: string, repository: Repository<T>): Promise<void> { 
-    console.log("seeding table ",filename);
+   // console.log("seeding table ",filename);
     const path = "src/infrastructure/database/test-seeds/" + filename;
     const jsonData = fs.readFileSync(path, 'utf8');
     const items = JSON.parse(jsonData);
     for (const item of items) {
       const entity = item as T; 
-      console.log("inserting ... ", entity);
+     // console.log("inserting ... ", entity);
       const savedItem = await repository.save(entity);
     }
   }
