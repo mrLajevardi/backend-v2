@@ -1,9 +1,9 @@
-import { AppAbility } from '../ability.factory';
+import { PureAbility } from "@casl/ability";
 
 interface IPolicyHandler {
-  handle(ability: AppAbility): boolean;
+  handle(ability: PureAbility): boolean;
 }
 
-type PolicyHandlerCallback = (ability: AppAbility) => boolean;
+type PolicyHandlerCallback = (ability: PureAbility) => boolean;
 
 export type PolicyHandler = IPolicyHandler | PolicyHandlerCallback;

@@ -1,4 +1,4 @@
-import { createMongoAbility, Subject, MongoQuery, PureAbility, AbilityBuilder, ExtractSubjectType } from '@casl/ability';
+import { createMongoAbility, Subject, AbilityBuilder, ExtractSubjectType } from '@casl/ability';
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { User } from "src/infrastructure/database/entities/User";
 import { AclService } from "src/application/base/acl/acl.service"
