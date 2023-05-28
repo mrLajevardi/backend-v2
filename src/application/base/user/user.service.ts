@@ -63,6 +63,10 @@ export class UserService {
         return await this.userRepository.delete(id);
     }
 
+    async deleteAll(){
+        await this.userRepository.delete({});
+    }
+
     async changePassword(id: number, newPassword: string): Promise<User | undefined> {
         const user = await this.findById(id);
         if (user) {

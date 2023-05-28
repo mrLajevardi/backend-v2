@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Acl } from 'src/infrastructure/database/entities/Acl';
-import { Repository } from 'typeorm';
+import { FindManyOptions, Repository } from 'typeorm';
+import { WhereClause } from 'typeorm/query-builder/WhereClause';
 
 @Injectable()
 export class AclService {
@@ -19,6 +20,11 @@ export class AclService {
     // Find an Acl record by ID
     async findById(id: number): Promise<Acl | undefined> {
         return await this.aclRepository.findOne({ where : {id : id} });
+    }
+
+    // conditional find 
+    async find(condition: FindManyOptions): Promise<Acl[]> {
+        return await this.aclRepository.find(condition); 
     }
 
     // Find all Acl records
@@ -40,6 +46,11 @@ export class AclService {
     async delete(id: number): Promise<boolean> {
         const result = await this.aclRepository.delete(id);
         return result.affected === 1;
+    }
+
+    // Flush the db
+    async deleteAll() {
+        await this.aclRepository.delete({});
     }
 
 }
