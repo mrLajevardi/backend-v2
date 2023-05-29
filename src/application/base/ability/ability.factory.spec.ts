@@ -6,6 +6,7 @@ import { UserService } from '../user/user.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvoiceService } from 'src/application/core/invoices/services/invoice.service';
+import { User } from 'src/infrastructure/database/test-entities/User';
 
 
 describe('AbilityFactory', () => {
@@ -84,7 +85,7 @@ describe('AbilityFactory', () => {
         "accessType": "read",
         "principalType": "",
         "principalId": "",
-        "property": "name",
+        "property": "'name'",
         "permission": "can"
       })
 
@@ -188,9 +189,9 @@ describe('AbilityFactory', () => {
     })
 
 
-    afterAll(()=>{
-      userService.deleteAll();
-      aclService.deleteAll(); 
+    afterAll( async ()=>{
+      await userService.deleteAll();
+      await aclService.deleteAll(); 
     })
 
 
@@ -260,16 +261,16 @@ describe('AbilityFactory', () => {
         "accessType": "read",
         "principalType": "User",
         "principalId": "1",
-        "property": "{ user : user }",
+        "property": "{ 'user' : user }",
         "permission": "can"
       })
 
     })
 
 
-    afterAll(()=>{
-      userService.deleteAll();
-      aclService.deleteAll(); 
+    afterAll( async ()=>{
+      await userService.deleteAll();
+      await aclService.deleteAll(); 
     })
 
 
@@ -297,6 +298,114 @@ describe('AbilityFactory', () => {
       expect(result).toBeFalsy(); 
     })
 
+  })
+
+  describe("checking error states", () => {
+    beforeAll( async () => {
+     
+    })
+
+    // no rules in acl table 
+    it("should return 0 " , async () => {
+      const result = await aclService.findAll(); 
+      expect(result.length).toBe(0);
+    }) 
+
+    // no user defined 
+    it("should return 0", async () => {
+      const result = await userService.findAll();
+      expect(result.length).toBe(0);
+    })
+
+
+
+    // If user is null 
+    it("should not throw exceptions", async () => {
+      let err = undefined; 
+      try {
+        const ability = await abilityFactory.createForUser(null);
+        ability.can(Action.Create,'Acl');
+      }catch(error){
+        err = error; 
+      }
+      expect(err).toBeUndefined();
+    })
+
+    // If user has no ID 
+    it("should not throw exceptions", async () => {
+      let err = undefined; 
+      try {
+        let user = new User();
+        user.name = 'test';
+        const ability = await abilityFactory.createForUser(user);
+        ability.can(Action.Create,'Acl');
+      }catch(error){
+        err = error; 
+      }
+      expect(err).toBeUndefined();
+    })
+
+    // If acl is null 
+    it("should not throw exceptions", async () => {
+      let err = undefined; 
+      try {
+        const ability = await abilityFactory.createForUser(null);
+        ability.can(Action.Create,null);
+      }catch(error){
+        err = error; 
+      }
+      expect(err).toBeUndefined();
+    })    
+    
+  })
+
+
+  describe("Some complicated scenarios", ()=>{
+    let inv1 : Invoices; 
+    let inv2 : Invoices; 
+    let user : User; 
+    beforeAll(async ()=>{
+      user = new User();
+      user.id = 1;
+      user.name = 'majid';
+
+      inv1 = new Invoices();
+      inv2 = new Invoices(); 
+
+      inv1.user = user;
+      inv2.user = user; 
+
+      inv1.name = 'test1'; 
+      inv2.name = 'test2';
+
+      inv1.payed = false; 
+      inv2.payed = true; 
+
+    })
+
+    describe("User can see only his not payed invoices, so " , () => {
+      beforeAll(async ()=>{
+        await aclService.create({
+          "model": "Invoices",
+          "accessType": "read",
+          "principalType": "",
+          "principalId": "",
+          "property": '{ "payed" : false , "user": user } ',
+          "permission": "can"
+        })
+      })
+
+      it("should return true for inv1", async () => {
+        const ability = await abilityFactory.createForUser(user);
+        expect(ability.can(Action.Read,inv1)).toBeTruthy();
+      })
+
+      it("should return false for inv2", async () => {
+        const ability = await abilityFactory.createForUser(user);
+        expect(ability.can(Action.Read,inv2)).toBeFalsy();
+      })
+    })
+  
   })
 
 })

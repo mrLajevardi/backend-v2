@@ -26,9 +26,6 @@ export class PoliciesGuard implements CanActivate {
     const realUser = await this.userService.findById(user.userId); 
 
     const ability = await this.caslAbilityFactory.createForUser(realUser);
-        console.log("inside policies guard");
-        console.log(user); 
-        console.log(ability.can(Action.Read,'Acl'))
     
     return policyHandlers.every((handler) =>
       this.execPolicyHandler(handler, ability),

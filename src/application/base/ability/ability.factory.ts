@@ -1,5 +1,5 @@
 import { createMongoAbility, Subject, AbilityBuilder, ExtractSubjectType } from '@casl/ability';
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { User } from "src/infrastructure/database/entities/User";
 import { AclService } from "src/application/base/acl/acl.service"
 import { dbEntities } from "src/infrastructure/database/entityImporter/orm-entities";
@@ -13,10 +13,10 @@ export enum Action {
 }
 
 
-//export type AppAbility = Ability<[Action,Subjects]>;
 
 
-type Subjects = 'User' | 'Acl' | 'Invoices' | 'all';
+
+type Subjects = typeof dbEntities[number] |  'all';
 const ability = createMongoAbility<[Action, Subject]>();
 
 @Injectable()
@@ -37,6 +37,7 @@ export class AbilityFactory {
     }
 
 
+
     // creates the abilities related to the user . 
     async createForUser(user : User) {
         const builder = new AbilityBuilder(createMongoAbility);
@@ -45,7 +46,7 @@ export class AbilityFactory {
         const acls = await this.aclService.find({
           where: [
             { principalType: '' },
-            { principalType: 'User', principalId: user.id },
+            { principalType: 'User', principalId: user ? user.id : ''  },
           ],
         });
 
@@ -53,25 +54,21 @@ export class AbilityFactory {
             console.log(this.getModel(acl.model));
             let propertyCondition = '' ; 
             try {
-              propertyCondition = JSON.parse(acl.property);
-            }catch{
+              eval("propertyCondition=" + acl.property);         
+              //console.log("parsed query: ", propertyCondition);
+            }catch(error){
               propertyCondition = acl.property;
+              console.log(error);
+              console.log("Error parsing query, treat as simple field list ");
             }
-            propertyCondition = acl.property;
             if (acl.permission == 'can'){
               console.log(propertyCondition);
-             // console.log("can",acl.model,acl.accessType, acl.property, principalObject); 
-             // builder.can(acl.accessType, this.getModel(acl.model), propertyCondition);
               builder.can(acl.accessType, acl.model, propertyCondition);
-
             }else{
-             // console.log("can not ",acl.model, acl.accessType, acl.property, principalObject); 
-         //     builder.cannot(acl.accessType, this.getModel(acl.model), propertyCondition);
               builder.cannot(acl.accessType, acl.model, propertyCondition);
-
             }
         };
-        // builder.can(Action.Read, 'Invoices' , { user : user } ); 
+       //  builder.can(Action.Read, 'Invoices' , JSON.parse('{ "payed" : false, "user": {}  }') ); 
         // action, subject, fields, conditions 
         if (user && user.username == 'admin') {
           builder.can(Action.Manage, "all");

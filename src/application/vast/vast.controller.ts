@@ -3,7 +3,6 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PoliciesGuard } from '../base/ability/guards/policies.guard';
 import { CheckPolicies } from '../base/ability/decorators/check-policies.decorator';
 import { Action } from '../base/ability/ability.factory';
-import { Acl } from 'src/infrastructure/database/entities/Acl';
 import { PureAbility } from '@casl/ability';
 
 @Controller('vast')
