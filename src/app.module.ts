@@ -12,6 +12,7 @@ import { AclModule } from './application/base/acl/acl.module';
 import { DatabaseModule } from './infrastructure/database/database.module';
 import configurations from './infrastructure/config/configurations';
 import { ConfigModule } from '@nestjs/config';
+import { AiController } from 'src/application/ai/ai.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,7 +25,7 @@ import { ConfigModule } from '@nestjs/config';
     AclModule,
     TypeOrmModule.forFeature([User]),
   ],
-  controllers: [AppController],
+  controllers: [AppController, AiController],
   providers: [
     AppService,
     {
