@@ -8,7 +8,6 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "build:config": "copyfiles -f  src/infrastructure/config/config.json dist/infrastructure/config",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "prestart": "npm run build:config",
     "start": "nest start",
