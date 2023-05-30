@@ -1,8 +1,5 @@
 
 {
-  "assets": [
-    { "include": "**/*.yaml", "exclude": "**/omitted.yaml", "watchAssets": true }
-  ],
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "src"
