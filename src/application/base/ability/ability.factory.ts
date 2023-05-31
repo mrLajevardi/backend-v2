@@ -51,9 +51,9 @@ export class AbilityFactory {
         });
 
         for (let acl of acls) {
-            console.log(this.getModel(acl.model));
             let propertyCondition = '' ; 
             try {
+              console.log(acl.property);
               eval("propertyCondition=" + acl.property);         
               //console.log("parsed query: ", propertyCondition);
             }catch(error){
