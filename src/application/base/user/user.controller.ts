@@ -15,25 +15,12 @@ export class UserController {
     ) {}
 
   @Get()
-  @Public()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Returns an array of users' })
   async getUsers(@Request() req): Promise<User[] | undefined> {
-      const user = req.user;
       return await this.userService.getUsers();
   }
 
-  @Post('hash')
-  @ApiBody({ type: "string"})
-  @ApiResponse({
-    status: 200,
-    description: 'Returns the hashed password',
-  })
-  async getPasswordHash(@Body('password') password: string): Promise<{ hash: string }> {
-    const hash = await this.userService.getPasswordHash(password);
-    return { "hash" : hash };
-  }
-  
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by ID' })

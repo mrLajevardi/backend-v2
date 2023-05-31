@@ -3,6 +3,7 @@ import { User } from 'src/infrastructure/database/entities/User';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, FindOptionsWhere, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { BadRequestError } from 'passport-headerapikey';
 
 
 @Injectable()
@@ -41,6 +42,9 @@ export class UserService {
     }
 
     async getPasswordHash(string: string): Promise<string> {
+        if (!string){
+            throw new BadRequestError("bad parameters");
+        }
         return await bcrypt.hash(string , 10);
     }
 

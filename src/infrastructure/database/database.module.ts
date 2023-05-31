@@ -25,6 +25,7 @@ import configurations from '../config/configurations';
         "password": configService.get<string>('database.password'),
         "database": configService.get<string>('database.database'),
         entities: dbEntities,
+        
         extra: {
           trustServerCertificate: true,
         },

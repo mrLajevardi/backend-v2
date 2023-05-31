@@ -15,6 +15,7 @@ export class AppController {
     private readonly authService : AuthService) {}
 
   @Get()
+  @Public()
   getHello(): string {
     return this.appService.getHello();
   }

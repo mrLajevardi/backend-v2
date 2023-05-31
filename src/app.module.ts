@@ -13,6 +13,7 @@ import { DatabaseModule } from './infrastructure/database/database.module';
 import configurations from './infrastructure/config/configurations';
 import { ConfigModule } from '@nestjs/config';
 import { AiController } from 'src/application/ai/ai.controller';
+import { AiModule } from './application/ai/ai.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,9 +24,10 @@ import { AiController } from 'src/application/ai/ai.controller';
     AuthModule,
     VastModule,
     AclModule,
+    AiModule,
     TypeOrmModule.forFeature([User]),
   ],
-  controllers: [AppController, AiController],
+  controllers: [AppController],
   providers: [
     AppService,
     {
