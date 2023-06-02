@@ -14,6 +14,11 @@ import configurations from './infrastructure/config/configurations';
 import { ConfigModule } from '@nestjs/config';
 import { AiController } from 'src/application/ai/ai.controller';
 import { AiModule } from './application/ai/ai.module';
+import { ServicePropertiesModule } from './src/application/base/service-properties/service-properties.module';
+import { ServicePropertiesModule } from './application/base/service-properties/service-properties.module';
+import { ServiceItemsModule } from './application/base/service-items/service-items.module';
+import { ServiceInstancesModule } from './application/base/service-instances/service-instances.module';
+import { ServiceTypesModule } from './application/base/service-types/service-types.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +31,10 @@ import { AiModule } from './application/ai/ai.module';
     AclModule,
     AiModule,
     TypeOrmModule.forFeature([User]),
+    ServicePropertiesModule,
+    ServiceItemsModule,
+    ServiceInstancesModule,
+    ServiceTypesModule,
   ],
   controllers: [AppController],
   providers: [

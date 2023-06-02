@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
   
   export class invalidQualityPlanId extends HttpException {
-    constructor(message = 'invalid plan', cause : Error) {
+    constructor(message = 'invalid plan', cause? : Error) {
       super(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,

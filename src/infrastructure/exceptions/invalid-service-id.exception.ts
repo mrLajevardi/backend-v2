@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
   
   export class invalidServiceId extends HttpException {
-    constructor(message = 'invalid service id', cause : Error) {
+    constructor(message = 'invalid service id', cause? : Error) {
       super(
         {
           status: HttpStatus.UNPROCESSABLE_ENTITY,

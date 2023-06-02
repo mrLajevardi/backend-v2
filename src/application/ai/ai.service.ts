@@ -1,43 +1,51 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { invalidToken } from 'src/infrastructure/exceptions/invalid-token.exception';
+import { UserService } from '../base/user/user.service';
+import { error } from 'console';
 
 @Injectable()
 export class AiService {
-    async checkAIToken()  {
-    //     const verified = await verifyToken(token).then((res) => {
-    //       return res;
-    //     }).catch((err) => {
-    //       return err;
-    //     });
-    //     if (!verified) {
-    //         throw new HttpException({
-    //             status: HttpStatus.FORBIDDEN,
-    //             error: 'This is a custom message',
-    //           }, HttpStatus.FORBIDDEN, {
-    //             cause: error
-    //           });
-    //       return cb(new HttpExceptions().invalidToken(), null);
-    //     }
-    //     const userId = verified.userId;
-    //     const user = await app.models.Users.findById(userId);
+
+    constructor(private readonly userService: UserService){} 
+
+    async verifyToken(token: string){
+        const JWT_SECRET_KEY = require('src/infrastructure/config/aradAIConfig.js').JWT_SECRET_KEY;
+        const jwt = require('jsonwebtoken');
+        return await jwt.verify(token, JWT_SECRET_KEY);
+    }
+
+    async checkAIToken(token : string)  {
+        const verified = await this.verifyToken(token).then((res) => {
+          return res;
+        }).catch((err) => {
+          throw new invalidToken(err); 
+        });
+
+        if (!verified) {
+          throw new invalidToken();
+        }
+
+        const userId = verified.userId;
+        const user = await this.userService.findById(userId);
       
-    //     const expireDate = new Date(verified.expireDate);
-    //     const currentDate = new Date();
-    //     if (expireDate < currentDate) {
-    //       return cb(new HttpExceptions().invalidToken(), null);
-    //     }
+        const expireDate = new Date(verified.expireDate);
+        const currentDate = new Date();
+        if (expireDate < currentDate) {
+          throw new invalidToken();
+        }
       
-    //     const ServiceProperties = await app.models.ServiceProperties.findOne({
-    //       where:
-    //       {
-    //         and: [
-    //           {Value: {like: '%'+token+'%'}},
-    //           {PropertyKey: {like: '%aradAi%'}},
-    //         ],
-    //       },
-    //     });
-    //     if (isEmpty(ServiceProperties)) {
-    //       return cb(new HttpExceptions().invalidToken(), null);
-    //     }
+        const ServiceProperties = await app.models.ServiceProperties.findOne({
+          where:
+          {
+            and: [
+              {Value: {like: '%'+token+'%'}},
+              {PropertyKey: {like: '%aradAi%'}},
+            ],
+          },
+        });
+        if (isEmpty(ServiceProperties)) {
+          return cb(new HttpExceptions().invalidToken(), null);
+        }
       
     //     const serviceInstance = await app.models.ServiceInstances.findOne({
     //       where: {
