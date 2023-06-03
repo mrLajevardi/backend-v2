@@ -1,60 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
-import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
-import { Repository } from 'typeorm';
+import { CreateServiceInstanceDto } from 'src/infrastructure/dto/create/create-service-instances.dto';
+import { UpdateServiceInstanceDto } from 'src/infrastructure/dto/update/update-service-instances.dto';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class ServiceInstancesService {
-
     constructor(
         @InjectRepository(ServiceInstances)
-        private readonly serviceInstanceRepository : Repository<ServiceInstances>,
-        @InjectRepository(ServiceProperties)
-        private readonly servicePropertiesRepository : Repository<ServiceProperties>,
+        private readonly repository : Repository<ServiceInstances>
     ){}
-    
 
-    async findByID(id : string) : Promise<ServiceInstances>{
-        const serviceInstance = await this.serviceInstanceRepository.findOne({
-            where : {
-                id : id
-            }
-        })
-        return serviceInstance;
+    // Find One Item by its ID 
+    async findById(id : string) : Promise<ServiceInstances> {
+        const serviceType = await this.repository.findOne({ where: { id: id}})
+        return serviceType;
     }
-
-    async create(serviceInstance : ServiceInstances ) : Promise<ServiceInstances> {
-        const instance = this.serviceInstanceRepository.create(serviceInstance);
-        const saved = this.serviceInstanceRepository.save(instance);
-        return saved;
-    }
-
-    async getUserInstances(userID : number) : Promise<ServiceInstances[] | undefined>{
-        const instances = await this.serviceInstanceRepository.find({
-            where: {
-                userId : userID 
-            }
-        })
-        return instances
-    }
-
-
-    async setInstanceAsDeleted(instanceID : string , deletedDate : Date) : Promise<boolean> {
-        const instance = await this.findByID(instanceID);
-
-        if (instance){
-            instance.isDeleted = true 
-            instance.deletedDate = deletedDate
-            await this.serviceInstanceRepository.save(instance)
-            return true 
-        }else{
-            return false 
-        }
-    }
-
 
     
+    // Find Items using search criteria 
+    async find(options?: FindManyOptions) : Promise<ServiceInstances[]>{
+        const result = await this.repository.find(options);
+        return result;
+    }
+    
+    // Find one item 
+    async findOne(options?: FindOneOptions) : Promise<ServiceInstances>{
+        const result = await this.repository.findOne(options);
+        return result;
+    }
 
 
+    // Create an Item using createDTO 
+    async create(dto : CreateServiceInstanceDto){
+        const newItem = plainToClass(ServiceInstances, dto);
+        let createdItem = this.repository.create(newItem);
+        await this.repository.save(createdItem)
+    }
+
+    // Update an Item using updateDTO
+    async update(id : string, dto : UpdateServiceInstanceDto){
+        const item = await this.findById(id);
+        const updateItem : Partial<ServiceInstances> = Object.assign(item,dto);
+        await this.repository.save(updateItem);
+    }
+
+    // delete an Item
+    async delete(id : string){
+        await this.repository.delete(id);
+    }
+
+    // delete all items 
+    async deleteAll(){
+        await this.repository.delete({});
+    }
 }

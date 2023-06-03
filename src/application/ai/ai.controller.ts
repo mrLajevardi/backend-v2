@@ -1,6 +1,5 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
 import { AiService } from './ai.service';
 
 @Controller('ai')
@@ -8,15 +7,15 @@ import { AiService } from './ai.service';
 export class AiController {
     constructor(private readonly service : AiService ){}
 
-    @ApiOperation({ summary: 'Check a Validation Token' })
-    @Get('/CheckAradAiToken/:token')
-    checkAradAiToken(
-      @Param('token') token: string,
-      @Query() options: object,
-    ): { tokenValidity: boolean } {
-      // Your implementation here
-      return { tokenValidity: true };
-    }
+    // @ApiOperation({ summary: 'Check a Validation Token' })
+    // @Get('/CheckAradAiToken/:token')
+    // checkAradAiToken(
+    //   @Param('token') token: string,
+    //   @Query() options: object,
+    // ): { tokenValidity: boolean } {
+    //   // Your implementation here
+    //   return { tokenValidity: true };
+    // }
 
 
 //   @Post('/aiTransactionsLogs')

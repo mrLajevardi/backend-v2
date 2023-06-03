@@ -1,56 +1,58 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Acl } from 'src/infrastructure/database/entities/Acl';
-import { FindManyOptions, Repository } from 'typeorm';
-import { WhereClause } from 'typeorm/query-builder/WhereClause';
+import { Acl } from 'src/infrastructure/database/test-entities/Acl';
+import { CreateAclDto } from 'src/infrastructure/dto/create/create-acl.dto';
+import { UpdateAclDto } from 'src/infrastructure/dto/update/update-acl.dto';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AclService {
     constructor(
         @InjectRepository(Acl)
-        private readonly aclRepository : Repository<Acl>
+        private readonly repository : Repository<Acl>
     ){}
 
-    // Create a new Acl record
-    async create(aclData: Partial<Acl>): Promise<Acl> {
-        const acl = this.aclRepository.create(aclData);
-        return await this.aclRepository.save(acl);
+    // Find One Item by its ID 
+    async findById(id : number) : Promise<Acl> {
+        const serviceType = await this.repository.findOne({ where: { id: id}})
+        return serviceType;
     }
 
-    // Find an Acl record by ID
-    async findById(id: number): Promise<Acl | undefined> {
-        return await this.aclRepository.findOne({ where : {id : id} });
+    // Find Items using search criteria 
+    async find(options?: FindManyOptions) : Promise<Acl[]>{
+        const result = await this.repository.find(options);
+        return result;
+    }
+    
+    // Find one item 
+    async findOne(options?: FindOneOptions) : Promise<Acl>{
+        const result = await this.repository.findOne(options);
+        return result;
     }
 
-    // conditional find 
-    async find(condition: FindManyOptions): Promise<Acl[]> {
-        return await this.aclRepository.find(condition); 
+    // Create an Item using createDTO 
+    async create(dto : CreateAclDto){
+        const newItem = plainToClass(Acl, dto);
+        let createdItem = this.repository.create(newItem);
+        await this.repository.save(createdItem)
     }
 
-    // Find all Acl records
-    async findAll(): Promise<Acl[]> {
-        return await this.aclRepository.find();
+    // Update an Item using updateDTO
+    async update(id : number, dto : UpdateAclDto){
+        const item = await this.findById(id);
+        const updateItem : Partial<Acl> = Object.assign(item,dto);
+        await this.repository.save(updateItem);
     }
 
-    // Update an existing Acl record
-    async update(id: number, aclData: Partial<Acl>): Promise<Acl | undefined> {
-        const acl = await this.findById(id);
-        if (acl) {
-            Object.assign(acl, aclData);
-            return await this.aclRepository.save(acl);
-        }
-        return undefined;
+    // delete an Item
+    async delete(id : number){
+        await this.repository.delete(id);
     }
-
-    // Delete an Acl record
-    async delete(id: number): Promise<boolean> {
-        const result = await this.aclRepository.delete(id);
-        return result.affected === 1;
-    }
-
-    // Flush the db
-    async deleteAll() {
-        await this.aclRepository.delete({});
-    }
+    
+    // delete all items 
+    async deleteAll(){
+        await this.repository.delete({});
+    }    
 
 }

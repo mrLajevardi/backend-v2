@@ -1,9 +1,15 @@
 import { Module } from '@nestjs/common';
-import { InvoicesModule } from './invoices/invoices.module';
-import { TicketsModule } from './tickets/tickets.module';
-import { TasksModule } from './tasks/tasks.module';
+import { CoreInvoiceModule } from './core-invoice/core-invoice.module';
+import { CoreTaskModule } from './core-task/core-task.module';
+import { CoreTicketModule } from './core-ticket/core-ticket.module';
+
 
 @Module({
-  imports: [InvoicesModule, TicketsModule, TasksModule]
+  imports: [
+    CoreInvoiceModule,
+    CoreTaskModule,
+    CoreTicketModule,
+    
+  ]
 })
 export class CoreModule {}

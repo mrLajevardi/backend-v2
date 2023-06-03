@@ -2,57 +2,56 @@ import { Controller, Get, Param, Post, Body, Put, Delete, Request, UseGuards } f
 import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { User } from 'src/infrastructure/database/entities/User';
-import { DeleteResult } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { Public } from '../auth/decorators/ispublic.decorator';
+import { CreateUserDto } from 'src/infrastructure/dto/create/create-user.dto';
+import { UpdateUserDto } from 'src/infrastructure/dto/update/update-user.dto';
+
 
 @ApiTags('Users')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class UserController {
   constructor(
-    private readonly userService: UserService,
+    private readonly service: UserService,
     ) {}
 
-  @Get()
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Returns an array of users' })
-  async getUsers(@Request() req): Promise<User[] | undefined> {
-      return await this.userService.getUsers();
-  }
-
-
+  // Find an item by id 
+  @ApiOperation({ summary: 'Find an item by ID' })
+  @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  @ApiOperation({ summary: 'Get a user by ID' })
-  @ApiParam({ name: 'id', type: Number, description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'Returns the user with the specified ID' })
-  async getUserById(@Param('id') id: number): Promise<User | undefined> {
-    return await this.userService.findById(id);
+  async findById(@Param('id') id: number): Promise<User> {
+    return this.service.findById(id);
   }
 
+  // find items using search criteria 
+  @ApiOperation({ summary: 'Find items using search criteria' })
+  @ApiResponse({ status: 200, description: 'Return the found items' })
+  @Get()
+  async findAll(): Promise<User[]> {
+    return this.service.find({});
+  }
+
+  // create new item 
+  @ApiOperation({ summary: 'Create a new item' })
+  @ApiResponse({ status: 201, description: 'The item has been successfully created' })
   @Post()
-  @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'Returns the created user' })
-  async createUser(@Body() userData: CreateUserDto): Promise<User> {
-    return await this.userService.create(userData);
+  async create(@Body() dto: CreateUserDto): Promise<void> {
+    await this.service.create(dto);
   }
 
+  // update an existing item 
+  @ApiOperation({ summary: 'Update an existing item' })
+  @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
   @Put(':id')
-  @ApiOperation({ summary: 'Update a user by ID' })
-  @ApiParam({ name: 'id', type: Number, description: 'User ID' })
-  @ApiResponse({ status: 200, description: 'Returns the updated user' })
-  async updateUser(
-    @Param('id') id: number,
-    @Body() userData: Partial<User>,
-  ): Promise<User | undefined> {
-    return await this.userService.update(id, userData);
+  async update(@Param('id') id: number, @Body() dto: UpdateUserDto): Promise<void> {
+    await this.service.update(id, dto);
   }
 
+
+  //delete an item
+  @ApiOperation({ summary: 'Delete an item' })
+  @ApiResponse({ status: 200, description: 'The item has been successfully deleted' })
   @Delete(':id')
-  @ApiOperation({ summary: 'Delete a user by ID' })
-  @ApiParam({ name: 'id', type: Number, description: 'User ID' })
-  @ApiResponse({ status: 204, description: 'User deleted successfully' })
-  async deleteUser(@Param('id') id: number): Promise<DeleteResult | undefined> {
-    return await this.userService.delete(id);
+  async delete(@Param('id') id: number): Promise<void> {
+    await this.service.delete(id);
   }
 }

@@ -1,67 +1,59 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
-import { Repository } from 'typeorm';
+import { CreateServicePropertyDto } from 'src/infrastructure/dto/create/create-service-properties.dto';
+import { UpdateServicePropertyDto } from 'src/infrastructure/dto/update/update-service-properties.dto';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class ServicePropertiesService {
-
     constructor(
         @InjectRepository(ServiceProperties)
-        private readonly servicePropertiesRepository : Repository<ServiceProperties>,
+        private readonly repository : Repository<ServiceProperties>
     ){}
 
-    
-    // find properties 
-    async findAll() : Promise<ServiceProperties[] | undefined> {
-        const result = this.servicePropertiesRepository.find();
-        return result; 
+    // Find One Item by its ID 
+    async findById(id : number) : Promise<ServiceProperties> {
+        const serviceType = await this.repository.findOne({ where: { id: id}})
+        return serviceType;
     }
 
-    // get all the properties of the service 
-    async getServiceProperties(serviceInstance) : Promise<ServiceProperties[] | undefined> {
-        const result = this.servicePropertiesRepository.find({
-            where: {
-                serviceInstance: serviceInstance
-            }
-        })
+
+    // Find Items using search criteria 
+    async find(options?: FindManyOptions) : Promise<ServiceProperties[]>{
+        const result = await this.repository.find(options);
+        return result;
+    }
+    
+    // Find one item 
+    async findOne(options?: FindOneOptions) : Promise<ServiceProperties>{
+        const result = await this.repository.findOne(options);
         return result;
     }
 
-    // get's service property 
-    async getServiceProperty(serviceInstance,propertyKey) : Promise<string> {
-        const prop = await this.servicePropertiesRepository.findOne({
-            where: {
-              serviceInstance: serviceInstance, 
-              propertyKey: propertyKey
-            }})
-        return prop.value
+
+    // Create an Item using createDTO 
+    async create(dto : CreateServicePropertyDto){
+        const newItem = plainToClass(ServiceProperties, dto);
+        let createdItem = this.repository.create(newItem);
+        await this.repository.save(createdItem)
     }
 
-    // creating or updating service propery for user 
-    async setServiceProperty(serviceInstance : ServiceInstances  , propertyKey : string, value : string)
-    : Promise<ServiceProperties>{
-        const filter = { 
-            where : {
-                serviceInstance  : serviceInstance ,
-                propertyKey : propertyKey
-            }
-        }
+    // Update an Item using updateDTO
+    async update(id : number, dto : UpdateServicePropertyDto){
+        const item = await this.findById(id);
+        const updateItem : Partial<ServiceProperties> = Object.assign(item,dto);
+        await this.repository.save(updateItem);
+    }
 
-        const serviceProperty  = await this.servicePropertiesRepository.findOne(filter)
-        if (serviceProperty){
-            serviceProperty.value = value 
-            const savedProperty = await this.servicePropertiesRepository.save(serviceProperty)
-            return savedProperty
-        }else{
-            let newProperty = new ServiceProperties
-            newProperty.serviceInstance = serviceInstance 
-            newProperty.propertyKey = propertyKey 
-            newProperty.value = value
-            const createdProperty = await this.servicePropertiesRepository.save(newProperty)
-            return createdProperty
-        }
-    }    
+    // delete an Item
+    async delete(id : number){
+        await this.repository.delete(id);
+    }
 
+    // delete all items 
+    async deleteAll(){
+        await this.repository.delete({});
+    }
 }
