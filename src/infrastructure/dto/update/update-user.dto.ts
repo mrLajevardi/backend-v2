@@ -56,11 +56,6 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   updateDate: Date | null;
 
-  @IsDate()
-  @IsOptional()
-  @ApiProperty({ required: false })
-  updateDate: Date | null;
-
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })

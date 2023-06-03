@@ -22,10 +22,6 @@ export class UpdateOrganizationDto {
   @ApiProperty({ type: String, format: 'date-time', required: false })
   updateDate: Date | null;
 
-  @IsDate()
-  @ApiProperty({ type: String, format: 'date-time', required: false })
-  updateDate: Date | null;
-
   @IsString()
   @ApiProperty({ required: false })
   status: string | null;

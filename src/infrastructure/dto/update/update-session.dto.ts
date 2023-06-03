@@ -19,10 +19,6 @@ export class UpdateSessionDto {
   @ApiProperty({ type: Date, required: false })
   updateDate: Date | null;
 
-  @IsDate()
-  @IsOptional()
-  @ApiProperty({ type: Date, required: false })
-  updateDate: Date | null;
 
   @IsBoolean()
   @IsOptional()

@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../user/user.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { InvoiceService } from 'src/application/core/invoices/services/invoice.service';
+import { InvoiceService } from 'src/application/core/core-invoice/invoice/invoice.service';
 import { User } from 'src/infrastructure/database/test-entities/User';
 
 
@@ -42,25 +42,18 @@ describe('AbilityFactory', () => {
 
   describe("Generic Access Tests, that are not based on specific user " , () => {
     beforeAll( async () => {
-      await userService.create({
-        id:1,
-        name:"majid1",
-        family:"a",
-        username:"majid1",
-        password:"123",
-        createDate: new Date(),
-        updateDate: new Date(),
-      });
+      let user = new User; 
+      user.id = 1;
+      user.name = "majid1";
+      user.family = "ziaei";
+      user.username = "majid1";
+      user.password = "123";
+      user.createDate = new Date();
+      user.updateDate = new Date();
+      await userService.create(user);
 
-      await userService.create({
-        id:2,
-        name:"majid2",
-        family:"a",
-        username:"majid2",
-        password:"123",
-        createDate: new Date(),
-        updateDate: new Date(),
-      });
+      user.id = 2;
+      await userService.create(user );
 
       await aclService.create({
         "model": "Acl",
@@ -97,13 +90,13 @@ describe('AbilityFactory', () => {
     })
 
     it("should return 2 for users.getAll" , async () => {
-      const users  = await userService.findAll(); 
+      const users  = await userService.find(); 
       expect(users.length).toBe(2);
     })
 
 
     it("should return 2 for acl.getAll" , async () => {
-      const acls = await aclService.findAll(); 
+      const acls = await aclService.find(); 
       console.log(acls);
       expect(acls.length).toBe(3); 
     })
@@ -139,25 +132,18 @@ describe('AbilityFactory', () => {
 
   describe("User specific access " , () => {
     beforeAll( async () => {
-      await userService.create({
-        id:1,
-        name:"majid1",
-        family:"a",
-        username:"majid1",
-        password:"123",
-        createDate: new Date(),
-        updateDate: new Date(),
-      });
+      let user = new User; 
+      user.id = 1;
+      user.name = "majid1";
+      user.family = "ziaei";
+      user.username = "majid1";
+      user.password = "123";
+      user.createDate = new Date();
+      user.updateDate = new Date();
+      await userService.create(user);
 
-      await userService.create({
-        id:2,
-        name:"majid2",
-        family:"a",
-        username:"majid2",
-        password:"123",
-        createDate: new Date(),
-        updateDate: new Date(),
-      });
+      user.id = 2;
+      await userService.create(user );
 
       await aclService.create({
         "model": "Acl",
@@ -196,13 +182,13 @@ describe('AbilityFactory', () => {
 
 
     it("should return 2 for users.getAll" , async () => {
-      const users  = await userService.findAll(); 
+      const users  = await userService.find(); 
       expect(users.length).toBe(2);
     })
 
 
     it("should return 3 for acl.getAll" , async () => {
-      const acls = await aclService.findAll(); 
+      const acls = await aclService.find(); 
       console.log(acls);
       expect(acls.length).toBe(3); 
     })
@@ -236,25 +222,18 @@ describe('AbilityFactory', () => {
 
   describe("User specific access with Query  " , () => {
     beforeAll( async () => {
-      await userService.create({
-        id:1,
-        name:"majid1",
-        family:"a",
-        username:"majid1",
-        password:"123",
-        createDate: new Date(),
-        updateDate: new Date(),
-      });
+      let user = new User; 
+      user.id = 1;
+      user.name = "majid1";
+      user.family = "ziaei";
+      user.username = "majid1";
+      user.password = "123";
+      user.createDate = new Date();
+      user.updateDate = new Date();
+      await userService.create(user);
 
-      await userService.create({
-        id:2,
-        name:"majid2",
-        family:"a",
-        username:"majid2",
-        password:"123",
-        createDate: new Date(),
-        updateDate: new Date(),
-      });
+      user.id = 2;
+      await userService.create(user );
 
       await aclService.create({
         "model": "Invoices",
@@ -307,13 +286,13 @@ describe('AbilityFactory', () => {
 
     // no rules in acl table 
     it("should return 0 " , async () => {
-      const result = await aclService.findAll(); 
+      const result = await aclService.find(); 
       expect(result.length).toBe(0);
     }) 
 
     // no user defined 
     it("should return 0", async () => {
-      const result = await userService.findAll();
+      const result = await userService.find();
       expect(result.length).toBe(0);
     })
 

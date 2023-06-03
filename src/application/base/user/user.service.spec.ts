@@ -34,19 +34,19 @@ describe('UserService', () => {
 
   describe('getUsers', () => {
     it('should return some users', async ()=> {
-      const users = await service.getUsers();
+      const users = await service.find({});
       expect(users.length).toBeGreaterThan(0)
     })
   })
 
   describe('findOne', () => {
     it('should be null if user not found', async () => {
-      const user = await service.findOne({username: "back2-test1111"});
+      const user = await service.findOne({ where : {username: "back2-test1111"}} );
       expect(user).toBeNull();
     });
 
     it("should return user if user exists", async () => {
-      const user = await service.findOne({username: "back2-test"});
+      const user = await service.findOne({ where : { username: "back2-test"}});
       expect(user.username).toBeDefined();
       expect(user.username).toBe("back2-test");
     });

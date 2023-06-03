@@ -22,7 +22,7 @@ export class AuthService {
       }
 
       const user = await this.usersService.findOne({
-        username: username
+        where : { username: username }
       });
 
       if (!user){
