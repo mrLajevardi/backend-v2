@@ -3,8 +3,7 @@ import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBody, ApiBearerAuth } 
 import { UserService } from './user.service';
 import { User } from 'src/infrastructure/database/entities/User';
 import { DeleteResult } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { Public } from '../auth/decorators/ispublic.decorator';
+import { CreateUserDto } from 'src/infrastructure/dto/create/create-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
