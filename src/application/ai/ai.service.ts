@@ -1,7 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { invalidToken } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { UserService } from '../base/user/user.service';
-import { error } from 'console';
 
 @Injectable()
 export class AiService {
@@ -34,18 +33,18 @@ export class AiService {
           throw new invalidToken();
         }
       
-        const ServiceProperties = await app.models.ServiceProperties.findOne({
-          where:
-          {
-            and: [
-              {Value: {like: '%'+token+'%'}},
-              {PropertyKey: {like: '%aradAi%'}},
-            ],
-          },
-        });
-        if (isEmpty(ServiceProperties)) {
-          return cb(new HttpExceptions().invalidToken(), null);
-        }
+        // const ServiceProperties = await app.models.ServiceProperties.findOne({
+        //   where:
+        //   {
+        //     and: [
+        //       {Value: {like: '%'+token+'%'}},
+        //       {PropertyKey: {like: '%aradAi%'}},
+        //     ],
+        //   },
+        // });
+        // if (isEmpty(ServiceProperties)) {
+        //   return cb(new HttpExceptions().invalidToken(), null);
+        // }
       
     //     const serviceInstance = await app.models.ServiceInstances.findOne({
     //       where: {
