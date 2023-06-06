@@ -1,7 +1,7 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateServiceItemDto {
+export class CreateServiceItemsDto {
   @IsNumber()
   @ApiProperty()
   quantity: number;

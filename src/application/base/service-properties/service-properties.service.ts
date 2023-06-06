@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
-import { CreateServicePropertyDto } from 'src/infrastructure/dto/create/create-service-properties.dto';
-import { UpdateServicePropertyDto } from 'src/infrastructure/dto/update/update-service-properties.dto';
+import { CreateServicePropertiesDto } from 'src/infrastructure/dto/create/create-service-properties.dto';
+import { UpdateServicePropertiesDto } from 'src/infrastructure/dto/update/update-service-properties.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -19,7 +19,7 @@ export class ServicePropertiesService {
         return serviceType;
     }
 
-
+    
     // Find Items using search criteria 
     async find(options?: FindManyOptions) : Promise<ServiceProperties[]>{
         const result = await this.repository.find(options);
@@ -34,14 +34,14 @@ export class ServicePropertiesService {
 
 
     // Create an Item using createDTO 
-    async create(dto : CreateServicePropertyDto){
+    async create(dto : CreateServicePropertiesDto){
         const newItem = plainToClass(ServiceProperties, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
 
     // Update an Item using updateDTO
-    async update(id : number, dto : UpdateServicePropertyDto){
+    async update(id : number, dto : UpdateServicePropertiesDto){
         const item = await this.findById(id);
         const updateItem : Partial<ServiceProperties> = Object.assign(item,dto);
         await this.repository.save(updateItem);
