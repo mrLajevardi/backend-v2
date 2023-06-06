@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Groups } from 'src/infrastructure/database/entities/Groups';
-import { CreateGroupsDto } from 'src/infrastructure/dto/create/create-groups.dto';
-import { UpdateGroupsDto } from 'src/infrastructure/dto/update/update-groups.dto';
+import { CreateGroupDto } from 'src/infrastructure/dto/create/create-group.dto';
+import { UpdateGroupDto } from 'src/infrastructure/dto/update/update-group.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -14,7 +14,7 @@ export class GroupsService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<Groups> {
+    async findById(id : number) : Promise<Groups> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -34,21 +34,21 @@ export class GroupsService {
 
 
     // Create an Item using createDTO 
-    async create(dto : CreateGroupsDto){
+    async create(dto : CreateGroupDto){
         const newItem = plainToClass(Groups, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateGroupsDto){
+    async update(id : number, dto : UpdateGroupDto){
         const item = await this.findById(id);
         const updateItem : Partial<Groups> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

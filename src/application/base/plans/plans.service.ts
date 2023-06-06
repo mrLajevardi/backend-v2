@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Plans } from 'src/infrastructure/database/entities/Plans';
-import { CreatePlansDto } from 'src/infrastructure/dto/create/create-plans.dto';
-import { UpdatePlansDto } from 'src/infrastructure/dto/update/update-plans.dto';
+import { CreatePlanDto } from 'src/infrastructure/dto/create/create-plan.dto';
+import { UpdatePlanDto } from 'src/infrastructure/dto/update/update-plan.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -15,7 +15,7 @@ export class PlansService {
 
     // Find One Item by its ID 
     async findById(id : string) : Promise<Plans> {
-        const serviceType = await this.repository.findOne({ where: { id: id}})
+        const serviceType = await this.repository.findOne({ where: {code : id }})
         return serviceType;
     }
 
@@ -34,14 +34,14 @@ export class PlansService {
 
 
     // Create an Item using createDTO 
-    async create(dto : CreatePlansDto){
+    async create(dto : CreatePlanDto){
         const newItem = plainToClass(Plans, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdatePlansDto){
+    async update(id : string, dto : UpdatePlanDto){
         const item = await this.findById(id);
         const updateItem : Partial<Plans> = Object.assign(item,dto);
         await this.repository.save(updateItem);

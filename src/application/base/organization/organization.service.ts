@@ -14,7 +14,7 @@ export class OrganizationService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<Organization> {
+    async findById(id : number) : Promise<Organization> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -41,14 +41,14 @@ export class OrganizationService {
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateOrganizationDto){
+    async update(id : number, dto : UpdateOrganizationDto){
         const item = await this.findById(id);
         const updateItem : Partial<Organization> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

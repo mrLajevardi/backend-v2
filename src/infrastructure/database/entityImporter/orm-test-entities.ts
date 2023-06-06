@@ -41,6 +41,7 @@ import { User } from '../test-entities/User';
 import { DebugLog } from '../test-entities/DebugLog';
 import { InfoLog } from '../test-entities/InfoLog';
 import { ErrorLog } from '../test-entities/ErrorLog';
+import { Sysdiagrams } from '../test-entities/Sysdiagrams';
 
 export const dbTestEntities = [
     // Logs Schema 
@@ -53,7 +54,7 @@ export const dbTestEntities = [
     // services Schema 
     Configs, Discounts, ItemTypes, Plans, ServiceTypes,
     // VDC Schema
-    Organization,Sessions,
+    Organization,Sessions,Sysdiagrams,
     // User Schema 
     AiTransactionsLogs,
     Groups,GroupsMapping,

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
-import { CreateInvoicesDto } from 'src/infrastructure/dto/create/create-invoices.dto';
-import { UpdateInvoicesDto } from 'src/infrastructure/dto/update/update-invoices.dto';
+import { CreateInvoiceDto } from 'src/infrastructure/dto/create/create-invoice.dto';
+import { UpdateInvoiceDto } from 'src/infrastructure/dto/update/update-invoice.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -14,7 +14,7 @@ export class InvoicesService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<Invoices> {
+    async findById(id : number) : Promise<Invoices> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -34,21 +34,21 @@ export class InvoicesService {
 
 
     // Create an Item using createDTO 
-    async create(dto : CreateInvoicesDto){
+    async create(dto : CreateInvoiceDto){
         const newItem = plainToClass(Invoices, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateInvoicesDto){
+    async update(id : number, dto : UpdateInvoiceDto){
         const item = await this.findById(id);
         const updateItem : Partial<Invoices> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

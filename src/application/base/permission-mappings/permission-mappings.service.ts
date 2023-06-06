@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PermissionMappings } from 'src/infrastructure/database/entities/PermissionMappings';
-import { CreatePermissionMappingsDto } from 'src/infrastructure/dto/create/create-permission-mappings.dto';
-import { UpdatePermissionMappingsDto } from 'src/infrastructure/dto/update/update-permission-mappings.dto';
+import { CreatePermissionMappingDto } from 'src/infrastructure/dto/create/create-permission-mapping.dto';
+import { UpdatePermissionMappingDto } from 'src/infrastructure/dto/update/update-permission-mapping.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -14,7 +14,7 @@ export class PermissionMappingsService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<PermissionMappings> {
+    async findById(id : number) : Promise<PermissionMappings> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -34,21 +34,21 @@ export class PermissionMappingsService {
 
 
     // Create an Item using createDTO 
-    async create(dto : CreatePermissionMappingsDto){
+    async create(dto : CreatePermissionMappingDto){
         const newItem = plainToClass(PermissionMappings, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdatePermissionMappingsDto){
+    async update(id : number, dto : UpdatePermissionMappingDto){
         const item = await this.findById(id);
         const updateItem : Partial<PermissionMappings> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

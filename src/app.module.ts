@@ -18,7 +18,8 @@ import { ServicePropertiesModule } from './application/base/service-properties/s
 import { ServiceItemsModule } from './application/base/service-items/service-items.module';
 import { ServiceInstancesModule } from './application/base/service-instances/service-instances.module';
 import { ServiceTypesModule } from './application/base/service-types/service-types.module';
-import { InvoicePropertiesModule } from './src/application/core/invoices/invoice-properties/invoice-properties.module';
+import { InvoicePropertiesModule } from './application/base/invoice-properties/invoice-properties.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({

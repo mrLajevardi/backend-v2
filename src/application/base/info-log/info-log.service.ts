@@ -14,7 +14,7 @@ export class InfoLogService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<InfoLog> {
+    async findById(id : number) : Promise<InfoLog> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -41,14 +41,14 @@ export class InfoLogService {
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateInfoLogDto){
+    async update(id : number, dto : UpdateInfoLogDto){
         const item = await this.findById(id);
         const updateItem : Partial<InfoLog> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

@@ -1,7 +1,7 @@
 import { IsBoolean, IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateServiceInstanceDto {
+export class CreateServiceInstancesDto {
   @IsString()
   @ApiProperty()
   id: string;

@@ -16,7 +16,7 @@ export class InvoiceItemsController {
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<InvoiceItems> {
+  async findById(@Param('id') id : number): Promise<InvoiceItems> {
     return this.service.findById(id);
   }
 
@@ -40,7 +40,7 @@ export class InvoiceItemsController {
   @ApiOperation({ summary: 'Update an existing item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateInvoiceItemsDto): Promise<void> {
+  async update(@Param('id') id : number, @Body() dto: UpdateInvoiceItemsDto): Promise<void> {
     await this.service.update(id, dto);
   }
 
@@ -49,7 +49,7 @@ export class InvoiceItemsController {
   @ApiOperation({ summary: 'Delete an item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully deleted' })
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
+  async delete(@Param('id') id : number): Promise<void> {
     await this.service.delete(id);
   }
 }

@@ -1,33 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceInstancess } from 'src/infrastructure/database/entities/ServiceInstancess';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { CreateServiceInstancesDto } from 'src/infrastructure/dto/create/create-service-instances.dto';
 import { UpdateServiceInstancesDto } from 'src/infrastructure/dto/update/update-service-instances.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
-export class ServiceInstancessService {
+export class ServiceInstancesService {
     constructor(
-        @InjectRepository(ServiceInstancess)
-        private readonly repository : Repository<ServiceInstancess>
+        @InjectRepository(ServiceInstances)
+        private readonly repository : Repository<ServiceInstances>
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<ServiceInstancess> {
+    async findById(id : string) : Promise<ServiceInstances> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
 
     
     // Find Items using search criteria 
-    async find(options?: FindManyOptions) : Promise<ServiceInstancess[]>{
+    async find(options?: FindManyOptions) : Promise<ServiceInstances[]>{
         const result = await this.repository.find(options);
         return result;
     }
     
     // Find one item 
-    async findOne(options?: FindOneOptions) : Promise<ServiceInstancess>{
+    async findOne(options?: FindOneOptions) : Promise<ServiceInstances>{
         const result = await this.repository.findOne(options);
         return result;
     }
@@ -35,7 +35,7 @@ export class ServiceInstancessService {
 
     // Create an Item using createDTO 
     async create(dto : CreateServiceInstancesDto){
-        const newItem = plainToClass(ServiceInstancess, dto);
+        const newItem = plainToClass(ServiceInstances, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
@@ -43,7 +43,7 @@ export class ServiceInstancessService {
     // Update an Item using updateDTO
     async update(id : string, dto : UpdateServiceInstancesDto){
         const item = await this.findById(id);
-        const updateItem : Partial<ServiceInstancess> = Object.assign(item,dto);
+        const updateItem : Partial<ServiceInstances> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 

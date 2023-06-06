@@ -14,7 +14,7 @@ export class InvoiceDiscountsService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<InvoiceDiscounts> {
+    async findById(id : number) : Promise<InvoiceDiscounts> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -41,14 +41,14 @@ export class InvoiceDiscountsService {
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateInvoiceDiscountsDto){
+    async update(id : number, dto : UpdateInvoiceDiscountsDto){
         const item = await this.findById(id);
         const updateItem : Partial<InvoiceDiscounts> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PermissionGroups } from 'src/infrastructure/database/entities/PermissionGroups';
-import { CreatePermissionGroupsDto } from 'src/infrastructure/dto/create/create-permission-groups.dto';
-import { UpdatePermissionGroupsDto } from 'src/infrastructure/dto/update/update-permission-groups.dto';
+import { CreatePermissionGroupDto } from 'src/infrastructure/dto/create/create-permission-group.dto';
+import { UpdatePermissionGroupDto } from 'src/infrastructure/dto/update/update-permission-group.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -14,7 +14,7 @@ export class PermissionGroupsService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<PermissionGroups> {
+    async findById(id : number) : Promise<PermissionGroups> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -34,21 +34,21 @@ export class PermissionGroupsService {
 
 
     // Create an Item using createDTO 
-    async create(dto : CreatePermissionGroupsDto){
+    async create(dto : CreatePermissionGroupDto){
         const newItem = plainToClass(PermissionGroups, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdatePermissionGroupsDto){
+    async update(id : number, dto : UpdatePermissionGroupDto){
         const item = await this.findById(id);
         const updateItem : Partial<PermissionGroups> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

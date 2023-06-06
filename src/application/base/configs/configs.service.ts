@@ -14,7 +14,7 @@ export class ConfigsService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<Configs> {
+    async findById(id : number) : Promise<Configs> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -41,14 +41,14 @@ export class ConfigsService {
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateConfigsDto){
+    async update(id : number, dto : UpdateConfigsDto){
         const item = await this.findById(id);
         const updateItem : Partial<Configs> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

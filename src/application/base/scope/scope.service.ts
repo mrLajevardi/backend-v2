@@ -14,7 +14,7 @@ export class ScopeService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<Scope> {
+    async findById(id : number) : Promise<Scope> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -41,14 +41,14 @@ export class ScopeService {
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateScopeDto){
+    async update(id : number, dto : UpdateScopeDto){
         const item = await this.findById(id);
         const updateItem : Partial<Scope> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

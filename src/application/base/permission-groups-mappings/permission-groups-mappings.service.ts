@@ -14,7 +14,7 @@ export class PermissionGroupsMappingsService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<PermissionGroupsMappings> {
+    async findById(id : number) : Promise<PermissionGroupsMappings> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -41,14 +41,14 @@ export class PermissionGroupsMappingsService {
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdatePermissionGroupsMappingsDto){
+    async update(id : number, dto : UpdatePermissionGroupsMappingsDto){
         const item = await this.findById(id);
         const updateItem : Partial<PermissionGroupsMappings> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

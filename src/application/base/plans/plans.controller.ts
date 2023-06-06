@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Plans } from 'src/infrastructure/database/entities/Plans';
 import { PlansService } from './plans.service';
-import { CreatePlansDto } from 'src/infrastructure/dto/create/create-plans.dto';
-import { UpdatePlansDto } from 'src/infrastructure/dto/update/update-plans.dto';
+import { CreatePlanDto } from 'src/infrastructure/dto/create/create-plan.dto';
+import { UpdatePlanDto } from 'src/infrastructure/dto/update/update-plan.dto';
 
 
 @ApiTags('Plans')
@@ -32,7 +32,7 @@ export class PlansController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'The item has been successfully created' })
   @Post()
-  async create(@Body() dto: CreatePlansDto): Promise<void> {
+  async create(@Body() dto: CreatePlanDto): Promise<void> {
     await this.service.create(dto);
   }
 
@@ -40,7 +40,7 @@ export class PlansController {
   @ApiOperation({ summary: 'Update an existing item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdatePlansDto): Promise<void> {
+  async update(@Param('id') id: string, @Body() dto: UpdatePlanDto): Promise<void> {
     await this.service.update(id, dto);
   }
 

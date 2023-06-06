@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GroupsMapping } from 'src/infrastructure/database/entities/GroupsMapping';
-import { CreateGroupsMappingDto } from 'src/infrastructure/dto/create/create-groups-mapping.dto';
-import { UpdateGroupsMappingDto } from 'src/infrastructure/dto/update/update-groups-mapping.dto';
+import { CreateGroupsMappingDto } from 'src/infrastructure/dto/create/create-groups-mappings.dto';
+import { UpdateGroupsMappingDto } from 'src/infrastructure/dto/update/update-groups-mappings.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -14,7 +14,7 @@ export class GroupsMappingService {
     ){}
 
     // Find One Item by its ID 
-    async findById(id : string) : Promise<GroupsMapping> {
+    async findById(id : number) : Promise<GroupsMapping> {
         const serviceType = await this.repository.findOne({ where: { id: id}})
         return serviceType;
     }
@@ -41,14 +41,14 @@ export class GroupsMappingService {
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateGroupsMappingDto){
+    async update(id : number, dto : UpdateGroupsMappingDto){
         const item = await this.findById(id);
         const updateItem : Partial<GroupsMapping> = Object.assign(item,dto);
         await this.repository.save(updateItem);
     }
 
     // delete an Item
-    async delete(id : string){
+    async delete(id : number){
         await this.repository.delete(id);
     }
 

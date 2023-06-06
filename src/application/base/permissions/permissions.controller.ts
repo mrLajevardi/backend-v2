@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Permissions } from 'src/infrastructure/database/entities/Permissions';
 import { PermissionsService } from './permissions.service';
-import { CreatePermissionsDto } from 'src/infrastructure/dto/create/create-permissions.dto';
-import { UpdatePermissionsDto } from 'src/infrastructure/dto/update/update-permissions.dto';
+import { CreatePermissionDto } from 'src/infrastructure/dto/create/create-permission.dto';
+import { UpdatePermissionDto } from 'src/infrastructure/dto/update/update-permission.dto';
 
 
 @ApiTags('Permissions')
@@ -16,7 +16,7 @@ export class PermissionsController {
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<Permissions> {
+  async findById(@Param('id') id: number): Promise<Permissions> {
     return this.service.findById(id);
   }
 
@@ -32,7 +32,7 @@ export class PermissionsController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'The item has been successfully created' })
   @Post()
-  async create(@Body() dto: CreatePermissionsDto): Promise<void> {
+  async create(@Body() dto: CreatePermissionDto): Promise<void> {
     await this.service.create(dto);
   }
 
@@ -40,7 +40,7 @@ export class PermissionsController {
   @ApiOperation({ summary: 'Update an existing item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdatePermissionsDto): Promise<void> {
+  async update(@Param('id') id: number, @Body() dto: UpdatePermissionDto): Promise<void> {
     await this.service.update(id, dto);
   }
 
@@ -49,7 +49,7 @@ export class PermissionsController {
   @ApiOperation({ summary: 'Delete an item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully deleted' })
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
+  async delete(@Param('id') id: number): Promise<void> {
     await this.service.delete(id);
   }
 }

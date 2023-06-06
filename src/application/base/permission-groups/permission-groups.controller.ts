@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PermissionGroups } from 'src/infrastructure/database/entities/PermissionGroups';
 import { PermissionGroupsService } from './permission-groups.service';
-import { CreatePermissionGroupsDto } from 'src/infrastructure/dto/create/create-permission-groups.dto';
-import { UpdatePermissionGroupsDto } from 'src/infrastructure/dto/update/update-permission-groups.dto';
+import { CreatePermissionGroupDto } from 'src/infrastructure/dto/create/create-permission-group.dto';
+import { UpdatePermissionGroupDto } from 'src/infrastructure/dto/update/update-permission-group.dto';
 
 
 @ApiTags('PermissionGroups')
@@ -16,7 +16,7 @@ export class PermissionGroupsController {
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<PermissionGroups> {
+  async findById(@Param('id') id: number): Promise<PermissionGroups> {
     return this.service.findById(id);
   }
 
@@ -32,7 +32,7 @@ export class PermissionGroupsController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'The item has been successfully created' })
   @Post()
-  async create(@Body() dto: CreatePermissionGroupsDto): Promise<void> {
+  async create(@Body() dto: CreatePermissionGroupDto): Promise<void> {
     await this.service.create(dto);
   }
 
@@ -40,7 +40,7 @@ export class PermissionGroupsController {
   @ApiOperation({ summary: 'Update an existing item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdatePermissionGroupsDto): Promise<void> {
+  async update(@Param('id') id: number, @Body() dto: UpdatePermissionGroupDto): Promise<void> {
     await this.service.update(id, dto);
   }
 
@@ -49,7 +49,7 @@ export class PermissionGroupsController {
   @ApiOperation({ summary: 'Delete an item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully deleted' })
   @Delete(':id')
-  async delete(@Param('id') id: string): Promise<void> {
+  async delete(@Param('id') id: number): Promise<void> {
     await this.service.delete(id);
   }
 }

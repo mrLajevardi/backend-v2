@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { ServiceInstancess } from 'src/infrastructure/database/entities/ServiceInstancess';
-import { ServiceInstancessService } from './service-instances.service';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { ServiceInstancesService } from './service-instances.service';
 import { CreateServiceInstancesDto } from 'src/infrastructure/dto/create/create-service-instances.dto';
 import { UpdateServiceInstancesDto } from 'src/infrastructure/dto/update/update-service-instances.dto';
 
@@ -9,14 +9,14 @@ import { UpdateServiceInstancesDto } from 'src/infrastructure/dto/update/update-
 @ApiTags('ServiceInstances')
 @Controller('service-instances')
 @ApiBearerAuth() // Requires authentication with a JWT token
-export class ServiceInstancessController {
-  constructor(private readonly service: ServiceInstancessService) {}
+export class ServiceInstancesController {
+  constructor(private readonly service: ServiceInstancesService) {}
 
   // Find an item by id 
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<ServiceInstancess> {
+  async findById(@Param('id') id: string): Promise<ServiceInstances> {
     return this.service.findById(id);
   }
 
@@ -24,7 +24,7 @@ export class ServiceInstancessController {
   @ApiOperation({ summary: 'Find items using search criteria' })
   @ApiResponse({ status: 200, description: 'Return the found items' })
   @Get()
-  async findAll(): Promise<ServiceInstancess[]> {
+  async findAll(): Promise<ServiceInstances[]> {
     return this.service.find({});
   }
 
