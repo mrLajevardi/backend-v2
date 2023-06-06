@@ -1,7 +1,7 @@
 import { IsString, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateServicePropertyDto {
+export class UpdateServicePropertiesDto {
   @IsString()
   @ApiProperty()
   serviceInstanceId: string;

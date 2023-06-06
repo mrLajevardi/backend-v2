@@ -2,10 +2,11 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ServiceItems } from 'src/infrastructure/database/entities/ServiceItems';
 import { ServiceItemsService } from './service-items.service';
-import { CreateServiceItemDto } from 'src/infrastructure/dto/create/create-service-items.dto';
-import { UpdateServiceItemDto } from 'src/infrastructure/dto/update/update-service-items.dto';
+import { CreateServiceItemsDto } from 'src/infrastructure/dto/create/create-service-items.dto';
+import { UpdateServiceItemsDto } from 'src/infrastructure/dto/update/update-service-items.dto';
 
-@ApiTags('Service Items')
+
+@ApiTags('ServiceItems')
 @Controller('service-items')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class ServiceItemsController {
@@ -31,7 +32,7 @@ export class ServiceItemsController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'The item has been successfully created' })
   @Post()
-  async create(@Body() dto: CreateServiceItemDto): Promise<void> {
+  async create(@Body() dto: CreateServiceItemsDto): Promise<void> {
     await this.service.create(dto);
   }
 
@@ -39,7 +40,7 @@ export class ServiceItemsController {
   @ApiOperation({ summary: 'Update an existing item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
   @Put(':id')
-  async update(@Param('id') id: number, @Body() dto: UpdateServiceItemDto): Promise<void> {
+  async update(@Param('id') id: number, @Body() dto: UpdateServiceItemsDto): Promise<void> {
     await this.service.update(id, dto);
   }
 

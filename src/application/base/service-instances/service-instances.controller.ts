@@ -1,22 +1,22 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
-import { ServiceInstancesService } from './service-instances.service';
-import { CreateServiceInstanceDto } from 'src/infrastructure/dto/create/create-service-instances.dto';
-import { UpdateServiceInstanceDto } from 'src/infrastructure/dto/update/update-service-instances.dto';
+import { ServiceInstancess } from 'src/infrastructure/database/entities/ServiceInstancess';
+import { ServiceInstancessService } from './service-instances.service';
+import { CreateServiceInstancesDto } from 'src/infrastructure/dto/create/create-service-instances.dto';
+import { UpdateServiceInstancesDto } from 'src/infrastructure/dto/update/update-service-instances.dto';
 
 
-@ApiTags('Service Instances')
+@ApiTags('ServiceInstances')
 @Controller('service-instances')
 @ApiBearerAuth() // Requires authentication with a JWT token
-export class ServiceInstancesController {
-  constructor(private readonly service: ServiceInstancesService) {}
+export class ServiceInstancessController {
+  constructor(private readonly service: ServiceInstancessService) {}
 
   // Find an item by id 
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<ServiceInstances> {
+  async findById(@Param('id') id: string): Promise<ServiceInstancess> {
     return this.service.findById(id);
   }
 
@@ -24,7 +24,7 @@ export class ServiceInstancesController {
   @ApiOperation({ summary: 'Find items using search criteria' })
   @ApiResponse({ status: 200, description: 'Return the found items' })
   @Get()
-  async findAll(): Promise<ServiceInstances[]> {
+  async findAll(): Promise<ServiceInstancess[]> {
     return this.service.find({});
   }
 
@@ -32,7 +32,7 @@ export class ServiceInstancesController {
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({ status: 201, description: 'The item has been successfully created' })
   @Post()
-  async create(@Body() dto: CreateServiceInstanceDto): Promise<void> {
+  async create(@Body() dto: CreateServiceInstancesDto): Promise<void> {
     await this.service.create(dto);
   }
 
@@ -40,7 +40,7 @@ export class ServiceInstancesController {
   @ApiOperation({ summary: 'Update an existing item' })
   @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
   @Put(':id')
-  async update(@Param('id') id: string, @Body() dto: UpdateServiceInstanceDto): Promise<void> {
+  async update(@Param('id') id: string, @Body() dto: UpdateServiceInstancesDto): Promise<void> {
     await this.service.update(id, dto);
   }
 

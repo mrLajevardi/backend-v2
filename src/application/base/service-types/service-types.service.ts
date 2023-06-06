@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
-import { CreateServiceTypeDto } from 'src/infrastructure/dto/create/create-service-types.dto';
-import { UpdateServiceTypeDto } from 'src/infrastructure/dto/update/update-service-types.dto';
+import { CreateServiceTypesDto } from 'src/infrastructure/dto/create/create-service-types.dto';
+import { UpdateServiceTypesDto } from 'src/infrastructure/dto/update/update-service-types.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -19,6 +19,7 @@ export class ServiceTypesService {
         return serviceType;
     }
 
+    
     // Find Items using search criteria 
     async find(options?: FindManyOptions) : Promise<ServiceTypes[]>{
         const result = await this.repository.find(options);
@@ -33,14 +34,14 @@ export class ServiceTypesService {
 
 
     // Create an Item using createDTO 
-    async create(dto : CreateServiceTypeDto){
+    async create(dto : CreateServiceTypesDto){
         const newItem = plainToClass(ServiceTypes, dto);
         let createdItem = this.repository.create(newItem);
         await this.repository.save(createdItem)
     }
 
     // Update an Item using updateDTO
-    async update(id : string, dto : UpdateServiceTypeDto){
+    async update(id : string, dto : UpdateServiceTypesDto){
         const item = await this.findById(id);
         const updateItem : Partial<ServiceTypes> = Object.assign(item,dto);
         await this.repository.save(updateItem);
