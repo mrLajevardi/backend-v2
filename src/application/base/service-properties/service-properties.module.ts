@@ -4,10 +4,8 @@ import { ServicePropertiesController } from './service-properties.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [ServicePropertiesService],
-  controllers: [ServicePropertiesController]
+  controllers: [ServicePropertiesController],
 })
 export class ServicePropertiesModule {}

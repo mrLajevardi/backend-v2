@@ -5,28 +5,28 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { ItemTypes } from "./ItemTypes";
+} from 'typeorm';
+import { ItemTypes } from './ItemTypes';
 
-@Index("PK_InvoiceItems", ["id"], { unique: true })
+@Index('PK_InvoiceItems', ['id'], { unique: true })
 @Entity()
 export class InvoiceItems {
-  @Column("integer", { name: "InvoiceID" })
+  @Column('integer', { name: 'InvoiceID' })
   invoiceId: number;
 
-  @Column("float", { name: "Quantity", precision: 53 })
+  @Column('float', { name: 'Quantity', precision: 53 })
   quantity: number;
 
-  @Column("float", { name: "Fee", precision: 53 })
+  @Column('float', { name: 'Fee', precision: 53 })
   fee: number;
 
-  @PrimaryGeneratedColumn({ type: "integer" })
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
   @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.invoiceItems, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "ItemID", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'ItemID', referencedColumnName: 'id' }])
   item: ItemTypes;
 }

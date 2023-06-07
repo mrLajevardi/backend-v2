@@ -6,17 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Acl } from 'src/infrastructure/database/entities/Acl';
 
 @Module({
-    imports: [
-        AclModule,
-        TypeOrmModule.forFeature([Acl])
-    ],
-    providers: [
-        AbilityFactory,
-        AclService,
-        
-    ],
-    exports: [
-        AbilityFactory,
-    ]
+  imports: [AclModule, TypeOrmModule.forFeature([Acl])],
+  providers: [AbilityFactory, AclService],
+  exports: [AbilityFactory],
 })
 export class AbilityModule {}

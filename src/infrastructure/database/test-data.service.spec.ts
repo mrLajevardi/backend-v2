@@ -48,23 +48,16 @@ describe('TestDataService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-        imports: [
-            TestDatabaseModule,
-        ],
-      providers: [
-        TestDataService,
-      ],
+      imports: [TestDatabaseModule],
+      providers: [TestDataService],
     }).compile();
 
     testDataService = module.get<TestDataService>(TestDataService);
-    aclRepository = module.get<Repository<Acl>>(
-      getRepositoryToken(Acl)
-    );
+    aclRepository = module.get<Repository<Acl>>(getRepositoryToken(Acl));
     // Initialize other repository variables...
   });
 
   describe('seedTestData', () => {
-
     // it('should insert contents in the db', async () => {
     //    // testDataService.seedTestData();
     //     await testDataService.seedTable('acl.json',aclRepository);
@@ -72,13 +65,11 @@ describe('TestDataService', () => {
     //     expect(data.length).toBeGreaterThan(0);
     // })
 
-
     it('should insert contents in the db', async () => {
-        // testDataService.seedTestData();
-         await testDataService.seedTestData()
-         const data = await aclRepository.find({});
-         expect(data.length).toBeGreaterThan(0);
-    })
-
+      // testDataService.seedTestData();
+      await testDataService.seedTestData();
+      const data = await aclRepository.find({});
+      expect(data.length).toBeGreaterThan(0);
+    });
   });
 });

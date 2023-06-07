@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class InvalidUsernameException extends HttpException {
-  constructor(message='Unauthorized request',cause? : Error) {
+  constructor(message = 'Unauthorized request', cause?: Error) {
     super(
       {
         status: HttpStatus.UNAUTHORIZED,
@@ -9,8 +9,8 @@ export class InvalidUsernameException extends HttpException {
       },
       HttpStatus.UNAUTHORIZED,
       {
-        cause: cause
-      }
+        cause: cause,
+      },
     );
   }
 }

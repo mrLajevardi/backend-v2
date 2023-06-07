@@ -4,10 +4,8 @@ import { AiTransactionsLogsController } from './ai-transactions-logs.controller'
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [AiTransactionsLogsService],
-  controllers: [AiTransactionsLogsController]
+  controllers: [AiTransactionsLogsController],
 })
 export class AiTransactionsLogsModule {}

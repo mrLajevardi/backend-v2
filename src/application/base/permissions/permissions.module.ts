@@ -4,10 +4,8 @@ import { PermissionsController } from './permissions.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [PermissionsService],
-  controllers: [PermissionsController]
+  controllers: [PermissionsController],
 })
 export class PermissionsModule {}

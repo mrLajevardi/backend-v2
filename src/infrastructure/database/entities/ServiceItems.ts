@@ -5,34 +5,34 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { ServiceInstances } from "./ServiceInstances";
-import { ItemTypes } from "./ItemTypes";
+} from 'typeorm';
+import { ServiceInstances } from './ServiceInstances';
+import { ItemTypes } from './ItemTypes';
 
-@Index("PK_ServiceResources", ["id"], { unique: true })
-@Entity("ServiceItems", { schema: "user" })
+@Index('PK_ServiceResources', ['id'], { unique: true })
+@Entity('ServiceItems', { schema: 'user' })
 export class ServiceItems {
-  @Column("float", { name: "Quantity", precision: 53 })
+  @Column('float', { name: 'Quantity', precision: 53 })
   quantity: number;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
-  @Column("varchar", { name: "ItemTypeCode", nullable: true, length: 50 })
+  @Column('varchar', { name: 'ItemTypeCode', nullable: true, length: 50 })
   itemTypeCode: string | null;
 
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.serviceItems,
-    { onDelete: "CASCADE", onUpdate: "CASCADE" }
+    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
   )
-  @JoinColumn([{ name: "ServiceInstanceID", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
 
   @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.serviceItems, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "ItemTypeID", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'ItemTypeID', referencedColumnName: 'id' }])
   itemType: ItemTypes;
 }

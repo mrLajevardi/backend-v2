@@ -1,20 +1,20 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Index("PK_InvoicePlans", ["id"], { unique: true })
-@Entity("InvoicePlans", { schema: "user" })
+@Index('PK_InvoicePlans', ['id'], { unique: true })
+@Entity('InvoicePlans', { schema: 'user' })
 export class InvoicePlans {
-  @Column("int", { name: "InvoiceID" })
+  @Column('int', { name: 'InvoiceID' })
   invoiceId: number;
 
-  @Column("varchar", { name: "PlanCode", length: 25 })
+  @Column('varchar', { name: 'PlanCode', length: 25 })
   planCode: string;
 
-  @Column("float", { name: "Ratio", precision: 53 })
+  @Column('float', { name: 'Ratio', precision: 53 })
   ratio: number;
 
-  @Column("float", { name: "Amount", precision: 53 })
+  @Column('float', { name: 'Amount', precision: 53 })
   amount: number;
 
-  @PrimaryGeneratedColumn({ type: "int", name: "ID" })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 }

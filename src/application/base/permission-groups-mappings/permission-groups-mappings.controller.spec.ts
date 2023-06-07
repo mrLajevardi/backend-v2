@@ -11,7 +11,9 @@ describe('PermissionGroupsMappingsService', () => {
       providers: [PermissionGroupsMappingsService],
     }).compile();
 
-    service = module.get<PermissionGroupsMappingsService>(PermissionGroupsMappingsService);
+    service = module.get<PermissionGroupsMappingsService>(
+      PermissionGroupsMappingsService,
+    );
   });
 
   it('should be defined', () => {

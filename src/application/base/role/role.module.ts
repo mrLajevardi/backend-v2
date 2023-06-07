@@ -4,10 +4,8 @@ import { RoleController } from './role.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [RoleService],
-  controllers: [RoleController]
+  controllers: [RoleController],
 })
 export class RoleModule {}

@@ -4,10 +4,8 @@ import { InfoLogController } from './info-log.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [InfoLogService],
-  controllers: [InfoLogController]
+  controllers: [InfoLogController],
 })
 export class InfoLogModule {}

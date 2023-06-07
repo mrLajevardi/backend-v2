@@ -8,51 +8,50 @@ import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class AclService {
-    constructor(
-        @InjectRepository(Acl)
-        private readonly repository : Repository<Acl>
-    ){}
+  constructor(
+    @InjectRepository(Acl)
+    private readonly repository: Repository<Acl>,
+  ) {}
 
-    // Find One Item by its ID 
-    async findById(id : number) : Promise<Acl> {
-        const serviceType = await this.repository.findOne({ where: { id: id}})
-        return serviceType;
-    }
+  // Find One Item by its ID
+  async findById(id: number): Promise<Acl> {
+    const serviceType = await this.repository.findOne({ where: { id: id } });
+    return serviceType;
+  }
 
-    // Find Items using search criteria 
-    async find(options?: FindManyOptions) : Promise<Acl[]>{
-        const result = await this.repository.find(options);
-        return result;
-    }
-    
-    // Find one item 
-    async findOne(options?: FindOneOptions) : Promise<Acl>{
-        const result = await this.repository.findOne(options);
-        return result;
-    }
+  // Find Items using search criteria
+  async find(options?: FindManyOptions): Promise<Acl[]> {
+    const result = await this.repository.find(options);
+    return result;
+  }
 
-    // Create an Item using createDTO 
-    async create(dto : CreateAclDto){
-        const newItem = plainToClass(Acl, dto);
-        let createdItem = this.repository.create(newItem);
-        await this.repository.save(createdItem)
-    }
+  // Find one item
+  async findOne(options?: FindOneOptions): Promise<Acl> {
+    const result = await this.repository.findOne(options);
+    return result;
+  }
 
-    // Update an Item using updateDTO
-    async update(id : number, dto : UpdateAclDto){
-        const item = await this.findById(id);
-        const updateItem : Partial<Acl> = Object.assign(item,dto);
-        await this.repository.save(updateItem);
-    }
+  // Create an Item using createDTO
+  async create(dto: CreateAclDto) {
+    const newItem = plainToClass(Acl, dto);
+    const createdItem = this.repository.create(newItem);
+    await this.repository.save(createdItem);
+  }
 
-    // delete an Item
-    async delete(id : number){
-        await this.repository.delete(id);
-    }
-    
-    // delete all items 
-    async deleteAll(){
-        await this.repository.delete({});
-    }    
+  // Update an Item using updateDTO
+  async update(id: number, dto: UpdateAclDto) {
+    const item = await this.findById(id);
+    const updateItem: Partial<Acl> = Object.assign(item, dto);
+    await this.repository.save(updateItem);
+  }
 
+  // delete an Item
+  async delete(id: number) {
+    await this.repository.delete(id);
+  }
+
+  // delete all items
+  async deleteAll() {
+    await this.repository.delete({});
+  }
 }

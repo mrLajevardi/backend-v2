@@ -4,10 +4,8 @@ import { DiscountsController } from './discounts.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [DiscountsService],
-  controllers: [DiscountsController]
+  controllers: [DiscountsController],
 })
 export class DiscountsModule {}

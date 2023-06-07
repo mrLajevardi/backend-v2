@@ -13,7 +13,9 @@ describe('PermissionMappingsController', () => {
       controllers: [PermissionMappingsController],
     }).compile();
 
-    controller = module.get<PermissionMappingsController>(PermissionMappingsController);
+    controller = module.get<PermissionMappingsController>(
+      PermissionMappingsController,
+    );
   });
 
   it('should be defined', () => {

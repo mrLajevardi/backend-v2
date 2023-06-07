@@ -1,4 +1,4 @@
-import { PureAbility } from "@casl/ability";
+import { PureAbility } from '@casl/ability';
 
 interface IPolicyHandler {
   handle(ability: PureAbility): boolean;

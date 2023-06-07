@@ -4,10 +4,8 @@ import { TransactionsController } from './transactions.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [TransactionsService],
-  controllers: [TransactionsController]
+  controllers: [TransactionsController],
 })
 export class TransactionsModule {}

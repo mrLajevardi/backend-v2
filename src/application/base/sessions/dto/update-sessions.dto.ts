@@ -1,4 +1,10 @@
-import { IsString, IsBoolean, IsDate, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsString,
+  IsBoolean,
+  IsDate,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateSessionsDto {
@@ -18,7 +24,6 @@ export class UpdateSessionsDto {
   @IsOptional()
   @ApiProperty({ type: Date, required: false })
   updateDate?: Date | null;
-
 
   @IsBoolean()
   @IsOptional()

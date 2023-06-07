@@ -4,10 +4,8 @@ import { SettingController } from './setting.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [SettingService],
-  controllers: [SettingController]
+  controllers: [SettingController],
 })
 export class SettingModule {}

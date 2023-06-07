@@ -4,10 +4,8 @@ import { ErrorLogController } from './error-log.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [ErrorLogService],
-  controllers: [ErrorLogController]
+  controllers: [ErrorLogController],
 })
 export class ErrorLogModule {}

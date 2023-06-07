@@ -8,22 +8,18 @@ import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
 describe('AuthController', () => {
   let controller: AuthController;
-  let testDataService: TestDataService; 
+  let testDataService: TestDataService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       controllers: [AuthController],
-      providers: [
-        AuthService,
-        UserService,
-        JwtService,
-      ]
+      providers: [AuthService, UserService, JwtService],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
     testDataService = module.get<TestDataService>(TestDataService);
-    await testDataService.seedTestData(); 
+    await testDataService.seedTestData();
   });
 
   it('should be defined', () => {

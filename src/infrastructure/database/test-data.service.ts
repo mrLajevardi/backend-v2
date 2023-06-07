@@ -47,143 +47,148 @@ import { ErrorLog } from './test-entities/ErrorLog';
 @Injectable()
 export class TestDataService {
   constructor(
-   // Logs Schema
-  @InjectRepository(DebugLog)
-  private readonly debugLogRepository: Repository<DebugLog>,
+    // Logs Schema
+    @InjectRepository(DebugLog)
+    private readonly debugLogRepository: Repository<DebugLog>,
 
-  @InjectRepository(InfoLog)
-  private readonly infoLogRepository: Repository<InfoLog>,
+    @InjectRepository(InfoLog)
+    private readonly infoLogRepository: Repository<InfoLog>,
 
-  @InjectRepository(ErrorLog)
-  private readonly errorLogRepository: Repository<ErrorLog>,
+    @InjectRepository(ErrorLog)
+    private readonly errorLogRepository: Repository<ErrorLog>,
 
-  // Security Schema
-  @InjectRepository(AccessToken)
-  private readonly accessTokenRepository: Repository<AccessToken>,
+    // Security Schema
+    @InjectRepository(AccessToken)
+    private readonly accessTokenRepository: Repository<AccessToken>,
 
-  @InjectRepository(Acl)
-  private readonly aclRepository: Repository<Acl>,
+    @InjectRepository(Acl)
+    private readonly aclRepository: Repository<Acl>,
 
-  @InjectRepository(Migrations)
-  private readonly migrationsRepository: Repository<Migrations>,
+    @InjectRepository(Migrations)
+    private readonly migrationsRepository: Repository<Migrations>,
 
-  @InjectRepository(MigrationsLock)
-  private readonly migrationsLockRepository: Repository<MigrationsLock>,
+    @InjectRepository(MigrationsLock)
+    private readonly migrationsLockRepository: Repository<MigrationsLock>,
 
-  @InjectRepository(PermissionGroups)
-  private readonly permissionGroupsRepository: Repository<PermissionGroups>,
+    @InjectRepository(PermissionGroups)
+    private readonly permissionGroupsRepository: Repository<PermissionGroups>,
 
-  @InjectRepository(PermissionGroupsMappings)
-  private readonly permissionGroupsMappingsRepository: Repository<PermissionGroupsMappings>,
+    @InjectRepository(PermissionGroupsMappings)
+    private readonly permissionGroupsMappingsRepository: Repository<PermissionGroupsMappings>,
 
-  @InjectRepository(PermissionMappings)
-  private readonly permissionMappingsRepository: Repository<PermissionMappings>,
+    @InjectRepository(PermissionMappings)
+    private readonly permissionMappingsRepository: Repository<PermissionMappings>,
 
-  @InjectRepository(Permissions)
-  private readonly permissionsRepository: Repository<Permissions>,
+    @InjectRepository(Permissions)
+    private readonly permissionsRepository: Repository<Permissions>,
 
-  @InjectRepository(Role)
-  private readonly roleRepository: Repository<Role>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
 
-  @InjectRepository(RoleMapping)
-  private readonly roleMappingRepository: Repository<RoleMapping>,
+    @InjectRepository(RoleMapping)
+    private readonly roleMappingRepository: Repository<RoleMapping>,
 
-  @InjectRepository(Scope)
-  private readonly scopeRepository: Repository<Scope>,
+    @InjectRepository(Scope)
+    private readonly scopeRepository: Repository<Scope>,
 
-  @InjectRepository(Setting)
-  private readonly settingRepository: Repository<Setting>,
+    @InjectRepository(Setting)
+    private readonly settingRepository: Repository<Setting>,
 
-  @InjectRepository(SystemSettings)
-  private readonly systemSettingsRepository: Repository<SystemSettings>,
+    @InjectRepository(SystemSettings)
+    private readonly systemSettingsRepository: Repository<SystemSettings>,
 
-  @InjectRepository(User)
-  private readonly userRepository: Repository<User>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
 
-  // Services Schema
-  @InjectRepository(Configs)
-  private readonly configsRepository: Repository<Configs>,
+    // Services Schema
+    @InjectRepository(Configs)
+    private readonly configsRepository: Repository<Configs>,
 
-  @InjectRepository(Discounts)
-  private readonly discountsRepository: Repository<Discounts>,
+    @InjectRepository(Discounts)
+    private readonly discountsRepository: Repository<Discounts>,
 
-  @InjectRepository(ItemTypes)
-  private readonly itemTypesRepository: Repository<ItemTypes>,
+    @InjectRepository(ItemTypes)
+    private readonly itemTypesRepository: Repository<ItemTypes>,
 
-  @InjectRepository(Plans)
-  private readonly plansRepository: Repository<Plans>,
+    @InjectRepository(Plans)
+    private readonly plansRepository: Repository<Plans>,
 
-  @InjectRepository(ServiceTypes)
-  private readonly serviceTypesRepository: Repository<ServiceTypes>,
+    @InjectRepository(ServiceTypes)
+    private readonly serviceTypesRepository: Repository<ServiceTypes>,
 
-  // VDC Schema
-  @InjectRepository(Organization)
-  private readonly organizationRepository: Repository<Organization>,
+    // VDC Schema
+    @InjectRepository(Organization)
+    private readonly organizationRepository: Repository<Organization>,
 
-  @InjectRepository(Sessions)
-  private readonly sessionsRepository: Repository<Sessions>,
+    @InjectRepository(Sessions)
+    private readonly sessionsRepository: Repository<Sessions>,
 
-  // User Schema
-  @InjectRepository(AiTransactionsLogs)
-  private readonly aiTransactionsLogsRepository: Repository<AiTransactionsLogs>,
+    // User Schema
+    @InjectRepository(AiTransactionsLogs)
+    private readonly aiTransactionsLogsRepository: Repository<AiTransactionsLogs>,
 
-  @InjectRepository(Groups)
-  private readonly groupsRepository: Repository<Groups>,
+    @InjectRepository(Groups)
+    private readonly groupsRepository: Repository<Groups>,
 
-  @InjectRepository(GroupsMapping)
-  private readonly groupsMappingRepository: Repository<GroupsMapping>,
+    @InjectRepository(GroupsMapping)
+    private readonly groupsMappingRepository: Repository<GroupsMapping>,
 
-  @InjectRepository(InvoiceDiscounts)
-  private readonly invoiceDiscountsRepository: Repository<InvoiceDiscounts>,
+    @InjectRepository(InvoiceDiscounts)
+    private readonly invoiceDiscountsRepository: Repository<InvoiceDiscounts>,
 
-  @InjectRepository(InvoiceItems)
-  private readonly invoiceItemsRepository: Repository<InvoiceItems>,
+    @InjectRepository(InvoiceItems)
+    private readonly invoiceItemsRepository: Repository<InvoiceItems>,
 
-  @InjectRepository(InvoicePlans)
-  private readonly invoicePlansRepository: Repository<InvoicePlans>,
+    @InjectRepository(InvoicePlans)
+    private readonly invoicePlansRepository: Repository<InvoicePlans>,
 
-  @InjectRepository(InvoiceProperties)
-  private readonly invoicePropertiesRepository: Repository<InvoiceProperties>,
+    @InjectRepository(InvoiceProperties)
+    private readonly invoicePropertiesRepository: Repository<InvoiceProperties>,
 
-  @InjectRepository(Invoices)
-  private readonly invoicesRepository: Repository<Invoices>,
+    @InjectRepository(Invoices)
+    private readonly invoicesRepository: Repository<Invoices>,
 
-  @InjectRepository(ServiceInstances)
-  private readonly serviceInstancesRepository: Repository<ServiceInstances>,
+    @InjectRepository(ServiceInstances)
+    private readonly serviceInstancesRepository: Repository<ServiceInstances>,
 
-  @InjectRepository(ServiceItems)
-  private readonly serviceItemsRepository: Repository<ServiceItems>,
+    @InjectRepository(ServiceItems)
+    private readonly serviceItemsRepository: Repository<ServiceItems>,
 
-  @InjectRepository(ServiceProperties)
-  private readonly servicePropertiesRepository: Repository<ServiceProperties>,
+    @InjectRepository(ServiceProperties)
+    private readonly servicePropertiesRepository: Repository<ServiceProperties>,
 
-  @InjectRepository(Tasks)
-  private readonly tasksRepository: Repository<Tasks>,
+    @InjectRepository(Tasks)
+    private readonly tasksRepository: Repository<Tasks>,
 
-  @InjectRepository(Tickets)
-  private readonly ticketsRepository: Repository<Tickets>,
+    @InjectRepository(Tickets)
+    private readonly ticketsRepository: Repository<Tickets>,
 
-  @InjectRepository(Transactions)
-  private readonly transactionsRepository: Repository<Transactions>,
- 
-) {}
+    @InjectRepository(Transactions)
+    private readonly transactionsRepository: Repository<Transactions>,
+  ) {}
 
-  async seedTable<T>(filename: string, repository: Repository<T>): Promise<void> { 
-   // console.log("seeding table ",filename);
-    const path = "src/infrastructure/database/test-seeds/" + filename;
+  async seedTable<T>(
+    filename: string,
+    repository: Repository<T>,
+  ): Promise<void> {
+    // console.log("seeding table ",filename);
+    const path = 'src/infrastructure/database/test-seeds/' + filename;
     const jsonData = fs.readFileSync(path, 'utf8');
     const items = JSON.parse(jsonData);
     for (const item of items) {
-      const entity = item as T; 
-     // console.log("inserting ... ", entity);
+      const entity = item as T;
+      // console.log("inserting ... ", entity);
       const savedItem = await repository.save(entity);
     }
   }
 
-  async seedTestData() : Promise<void> {
+  async seedTestData(): Promise<void> {
     await this.seedTable('access-token.json', this.accessTokenRepository);
     await this.seedTable('acl.json', this.aclRepository);
-    await this.seedTable('ai-transaction-logs.json', this.aiTransactionsLogsRepository);
+    await this.seedTable(
+      'ai-transaction-logs.json',
+      this.aiTransactionsLogsRepository,
+    );
     await this.seedTable('config.json', this.configsRepository);
     await this.seedTable('discounts.json', this.discountsRepository);
     await this.seedTable('group-mapping.json', this.groupsMappingRepository);
@@ -192,19 +197,34 @@ export class TestDataService {
     await this.seedTable('item-types.json', this.itemTypesRepository);
     await this.seedTable('migrations.json', this.migrationsRepository);
     await this.seedTable('organization.json', this.organizationRepository);
-    await this.seedTable('permission-groups.json', this.permissionGroupsRepository);
-    await this.seedTable('permission-groups-mappings.json', this.permissionGroupsMappingsRepository);
-    await this.seedTable('permission-mappings.json', this.permissionMappingsRepository);
+    await this.seedTable(
+      'permission-groups.json',
+      this.permissionGroupsRepository,
+    );
+    await this.seedTable(
+      'permission-groups-mappings.json',
+      this.permissionGroupsMappingsRepository,
+    );
+    await this.seedTable(
+      'permission-mappings.json',
+      this.permissionMappingsRepository,
+    );
     await this.seedTable('permissions.json', this.permissionsRepository);
     await this.seedTable('plans.json', this.plansRepository);
     await this.seedTable('role.json', this.roleRepository);
     await this.seedTable('role-mapping.json', this.roleMappingRepository);
     await this.seedTable('scope.json', this.scopeRepository);
-    await this.seedTable('service-instances.json', this.serviceInstancesRepository);
-    await this.seedTable('service-items.json', this.serviceItemsRepository);    
+    await this.seedTable(
+      'service-instances.json',
+      this.serviceInstancesRepository,
+    );
+    await this.seedTable('service-items.json', this.serviceItemsRepository);
     await this.seedTable('service-types.json', this.serviceTypesRepository);
 
-    await this.seedTable('service-properties.json', this.servicePropertiesRepository);
+    await this.seedTable(
+      'service-properties.json',
+      this.servicePropertiesRepository,
+    );
 
     await this.seedTable('sessions.json', this.sessionsRepository);
     await this.seedTable('setting.json', this.settingRepository);
@@ -214,11 +234,16 @@ export class TestDataService {
     await this.seedTable('transactions.json', this.transactionsRepository);
     await this.seedTable('user.json', this.userRepository);
 
-    await this.seedTable('invoice-discounts.json', this.invoiceDiscountsRepository);
+    await this.seedTable(
+      'invoice-discounts.json',
+      this.invoiceDiscountsRepository,
+    );
     await this.seedTable('invoice-items.json', this.invoiceItemsRepository);
     await this.seedTable('invoice-plans.json', this.invoicePlansRepository);
-    await this.seedTable('invoice-properties.json', this.invoicePropertiesRepository);
+    await this.seedTable(
+      'invoice-properties.json',
+      this.invoicePropertiesRepository,
+    );
     await this.seedTable('invoices.json', this.invoicesRepository);
-
   }
 }

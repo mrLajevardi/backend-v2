@@ -1,10 +1,22 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { Scope } from 'src/infrastructure/database/entities/Scope';
 import { ScopeService } from './scope.service';
 import { CreateScopeDto } from 'src/application/base/scope/dto/create-scope.dto';
 import { UpdateScopeDto } from 'src/application/base/scope/dto/update-scope.dto';
-
 
 @ApiTags('Scope')
 @Controller('scope')
@@ -12,7 +24,7 @@ import { UpdateScopeDto } from 'src/application/base/scope/dto/update-scope.dto'
 export class ScopeController {
   constructor(private readonly service: ScopeService) {}
 
-  // Find an item by id 
+  // Find an item by id
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
@@ -20,7 +32,7 @@ export class ScopeController {
     return this.service.findById(id);
   }
 
-  // find items using search criteria 
+  // find items using search criteria
   @ApiOperation({ summary: 'Find items using search criteria' })
   @ApiResponse({ status: 200, description: 'Return the found items' })
   @Get()
@@ -28,26 +40,37 @@ export class ScopeController {
     return this.service.find({});
   }
 
-  // create new item 
+  // create new item
   @ApiOperation({ summary: 'Create a new item' })
-  @ApiResponse({ status: 201, description: 'The item has been successfully created' })
+  @ApiResponse({
+    status: 201,
+    description: 'The item has been successfully created',
+  })
   @Post()
   async create(@Body() dto: CreateScopeDto): Promise<void> {
     await this.service.create(dto);
   }
 
-  // update an existing item 
+  // update an existing item
   @ApiOperation({ summary: 'Update an existing item' })
-  @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
+  @ApiResponse({
+    status: 200,
+    description: 'The item has been successfully updated',
+  })
   @Put(':id')
-  async update(@Param('id') id: number, @Body() dto: UpdateScopeDto): Promise<void> {
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateScopeDto,
+  ): Promise<void> {
     await this.service.update(id, dto);
   }
 
-
   //delete an item
   @ApiOperation({ summary: 'Delete an item' })
-  @ApiResponse({ status: 200, description: 'The item has been successfully deleted' })
+  @ApiResponse({
+    status: 200,
+    description: 'The item has been successfully deleted',
+  })
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     await this.service.delete(id);

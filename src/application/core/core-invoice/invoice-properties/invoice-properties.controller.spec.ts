@@ -10,10 +10,12 @@ describe('InvoicePropertiesController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       controllers: [InvoicePropertiesController],
-      providers: [InvoicePropertiesService]
+      providers: [InvoicePropertiesService],
     }).compile();
 
-    controller = module.get<InvoicePropertiesController>(InvoicePropertiesController);
+    controller = module.get<InvoicePropertiesController>(
+      InvoicePropertiesController,
+    );
   });
 
   it('should be defined', () => {

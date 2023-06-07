@@ -4,10 +4,8 @@ import { OrganizationController } from './organization.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [OrganizationService],
-  controllers: [OrganizationController]
+  controllers: [OrganizationController],
 })
 export class OrganizationModule {}

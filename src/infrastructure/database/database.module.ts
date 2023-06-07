@@ -14,27 +14,26 @@ import configurations from '../config/configurations';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule.forRoot({load: [configurations]}),
-      ], // Import ConfigModule to use the ConfigService
+      imports: [ConfigModule.forRoot({ load: [configurations] })], // Import ConfigModule to use the ConfigService
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        "type": configService.get<string>('database.type'),
-        "host": configService.get<string>('database.host'),
-        "port": configService.get<number>('database.port'),
-        "username": configService.get<string>('database.username'),
-        "password": configService.get<string>('database.password'),
-        "database": configService.get<string>('database.database'),
-        entities: dbEntities,
-        
-        extra: {
-          trustServerCertificate: true,
-        },
-      } as TypeOrmModuleOptions ),
+      useFactory: (configService: ConfigService) =>
+        ({
+          type: configService.get<string>('database.type'),
+          host: configService.get<string>('database.host'),
+          port: configService.get<number>('database.port'),
+          username: configService.get<string>('database.username'),
+          password: configService.get<string>('database.password'),
+          database: configService.get<string>('database.database'),
+          entities: dbEntities,
+
+          extra: {
+            trustServerCertificate: true,
+          },
+        } as TypeOrmModuleOptions),
     }),
-    TypeOrmModule.forFeature(dbEntities)
+    TypeOrmModule.forFeature(dbEntities),
   ],
   providers: [TestDataService],
-  exports: [TypeOrmModule]
-  
+  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}

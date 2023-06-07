@@ -4,10 +4,8 @@ import { SessionsController } from './sessions.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [SessionsService],
-  controllers: [SessionsController]
+  controllers: [SessionsController],
 })
 export class SessionsModule {}

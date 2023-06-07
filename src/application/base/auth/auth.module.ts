@@ -7,22 +7,17 @@ import { jwtConstants } from './constants';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
-
 @Module({
   imports: [
-    UserModule, 
+    UserModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '1800s' },
-    })],
+    }),
+  ],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy, 
-    JwtStrategy],
-  exports: [
-    AuthService,
-  ]
+  providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
 })
 export class AuthModule {}

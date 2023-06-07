@@ -13,7 +13,9 @@ describe('ServicePropertiesController', () => {
       controllers: [ServicePropertiesController],
     }).compile();
 
-    controller = module.get<ServicePropertiesController>(ServicePropertiesController);
+    controller = module.get<ServicePropertiesController>(
+      ServicePropertiesController,
+    );
   });
 
   it('should be defined', () => {

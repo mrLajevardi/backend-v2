@@ -1,10 +1,22 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { InvoiceDiscounts } from 'src/infrastructure/database/entities/InvoiceDiscounts';
 import { InvoiceDiscountsService } from './invoice-discounts.service';
 import { CreateInvoiceDiscountsDto } from 'src/application/base/invoice-discounts/dto/create-invoice-discounts.dto';
 import { UpdateInvoiceDiscountsDto } from 'src/application/base/invoice-discounts/dto/update-invoice-discounts.dto';
-
 
 @ApiTags('InvoiceDiscounts')
 @Controller('invoice-discounts')
@@ -12,15 +24,15 @@ import { UpdateInvoiceDiscountsDto } from 'src/application/base/invoice-discount
 export class InvoiceDiscountsController {
   constructor(private readonly service: InvoiceDiscountsService) {}
 
-  // Find an item by id 
+  // Find an item by id
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  async findById(@Param('id') id : number): Promise<InvoiceDiscounts> {
+  async findById(@Param('id') id: number): Promise<InvoiceDiscounts> {
     return this.service.findById(id);
   }
 
-  // find items using search criteria 
+  // find items using search criteria
   @ApiOperation({ summary: 'Find items using search criteria' })
   @ApiResponse({ status: 200, description: 'Return the found items' })
   @Get()
@@ -28,28 +40,39 @@ export class InvoiceDiscountsController {
     return this.service.find({});
   }
 
-  // create new item 
+  // create new item
   @ApiOperation({ summary: 'Create a new item' })
-  @ApiResponse({ status: 201, description: 'The item has been successfully created' })
+  @ApiResponse({
+    status: 201,
+    description: 'The item has been successfully created',
+  })
   @Post()
   async create(@Body() dto: CreateInvoiceDiscountsDto): Promise<void> {
     await this.service.create(dto);
   }
 
-  // update an existing item 
+  // update an existing item
   @ApiOperation({ summary: 'Update an existing item' })
-  @ApiResponse({ status: 200, description: 'The item has been successfully updated' })
+  @ApiResponse({
+    status: 200,
+    description: 'The item has been successfully updated',
+  })
   @Put(':id')
-  async update(@Param('id') id : number, @Body() dto: UpdateInvoiceDiscountsDto): Promise<void> {
+  async update(
+    @Param('id') id: number,
+    @Body() dto: UpdateInvoiceDiscountsDto,
+  ): Promise<void> {
     await this.service.update(id, dto);
   }
 
-
   //delete an item
   @ApiOperation({ summary: 'Delete an item' })
-  @ApiResponse({ status: 200, description: 'The item has been successfully deleted' })
+  @ApiResponse({
+    status: 200,
+    description: 'The item has been successfully deleted',
+  })
   @Delete(':id')
-  async delete(@Param('id') id : number): Promise<void> {
+  async delete(@Param('id') id: number): Promise<void> {
     await this.service.delete(id);
   }
 }

@@ -8,6 +8,6 @@ import { UserService } from '../base/user/user.service';
 @Module({
   imports: [DatabaseModule, UserModule],
   controllers: [AiController],
-  providers: [AiService, UserService]
+  providers: [AiService, UserService],
 })
 export class AiModule {}

@@ -1,40 +1,40 @@
-import { Column, Entity, Index, OneToMany } from "typeorm";
-import { Configs } from "./Configs";
-import { Discounts } from "./Discounts";
-import { ItemTypes } from "./ItemTypes";
-import { ServiceInstances } from "./ServiceInstances";
+import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { Configs } from './Configs';
+import { Discounts } from './Discounts';
+import { ItemTypes } from './ItemTypes';
+import { ServiceInstances } from './ServiceInstances';
 
-@Index("PK_ServiceTypes", ["id"], { unique: true })
+@Index('PK_ServiceTypes', ['id'], { unique: true })
 @Entity()
 export class ServiceTypes {
-  @Column("varchar", { primary: true, name: "ID", length: 50 })
+  @Column('varchar', { primary: true, name: 'ID', length: 50 })
   id: string;
 
-  @Column("nvarchar", { name: "Title" })
+  @Column('nvarchar', { name: 'Title' })
   title: string;
 
-  @Column("float", { name: "BaseFee", precision: 53 })
+  @Column('float', { name: 'BaseFee', precision: 53 })
   baseFee: number;
 
-  @Column("varchar", { name: "CreateInstanceScript", length: 255 })
+  @Column('varchar', { name: 'CreateInstanceScript', length: 255 })
   createInstanceScript: string;
 
-  @Column("boolean", { name: "VerifyInstance" })
+  @Column('boolean', { name: 'VerifyInstance' })
   verifyInstance: boolean;
 
-  @Column("integer", { name: "MaxAvailable" })
+  @Column('integer', { name: 'MaxAvailable' })
   maxAvailable: number;
 
-  @Column("tinyint", { name: "Type", default: () => "(0)" })
+  @Column('tinyint', { name: 'Type', default: () => '(0)' })
   type: number;
 
-  @Column("boolean", { name: "IsPAYG" })
+  @Column('boolean', { name: 'IsPAYG' })
   isPayg: boolean;
 
-  @Column("time", { name: "PAYGInterval", nullable: true })
+  @Column('time', { name: 'PAYGInterval', nullable: true })
   paygInterval: Date | null;
 
-  @Column("varchar", { name: "PAYGScript", nullable: true, length: 255 })
+  @Column('varchar', { name: 'PAYGScript', nullable: true, length: 255 })
   paygScript: string | null;
 
   @OneToMany(() => Configs, (configs) => configs.serviceType)
@@ -48,7 +48,7 @@ export class ServiceTypes {
 
   @OneToMany(
     () => ServiceInstances,
-    (serviceInstances) => serviceInstances.serviceType
+    (serviceInstances) => serviceInstances.serviceType,
   )
   serviceInstances: ServiceInstances[];
 }

@@ -13,7 +13,9 @@ describe('ServiceInstancesController', () => {
       controllers: [ServiceInstancesController],
     }).compile();
 
-    controller = module.get<ServiceInstancesController>(ServiceInstancesController);
+    controller = module.get<ServiceInstancesController>(
+      ServiceInstancesController,
+    );
   });
 
   it('should be defined', () => {

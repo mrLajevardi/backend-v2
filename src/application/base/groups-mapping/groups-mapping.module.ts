@@ -4,10 +4,8 @@ import { GroupsMappingController } from './groups-mapping.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [GroupsMappingService],
-  controllers: [GroupsMappingController]
+  controllers: [GroupsMappingController],
 })
 export class GroupsMappingModule {}

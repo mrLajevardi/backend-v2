@@ -13,7 +13,9 @@ describe('AiTransactionsLogsController', () => {
       controllers: [AiTransactionsLogsController],
     }).compile();
 
-    controller = module.get<AiTransactionsLogsController>(AiTransactionsLogsController);
+    controller = module.get<AiTransactionsLogsController>(
+      AiTransactionsLogsController,
+    );
   });
 
   it('should be defined', () => {

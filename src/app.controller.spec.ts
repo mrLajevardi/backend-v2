@@ -11,17 +11,14 @@ import { TestDatabaseModule } from './infrastructure/database/test-database.modu
 import { TestDataService } from './infrastructure/database/test-data.service';
 
 describe('AppController', () => {
-  let controller : AppController;
+  let controller: AppController;
   let authService: AuthService;
-  let testDataService: TestDataService; 
-
+  let testDataService: TestDataService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      controllers: [
-        AppController,
-      ],
+      controllers: [AppController],
       providers: [
         UserService,
         AppService,
@@ -29,7 +26,7 @@ describe('AppController', () => {
         {
           provide: JwtService,
           useValue: new JwtService({
-            secret: 'aaa'
+            secret: 'aaa',
           }),
         },
         {
@@ -42,7 +39,7 @@ describe('AppController', () => {
     controller = module.get<AppController>(AppController);
     authService = module.get<AuthService>(AuthService);
     testDataService = module.get<TestDataService>(TestDataService);
-    await testDataService.seedTestData(); 
+    await testDataService.seedTestData();
   });
 
   describe('root', () => {
@@ -51,27 +48,27 @@ describe('AppController', () => {
     });
   });
 
-  describe('login' , () => {
+  describe('login', () => {
     it('should return token', async () => {
-      let loginDto  = new LoginDto(); 
+      const loginDto = new LoginDto();
       loginDto.username = 'back2-test';
       loginDto.password = 'abc123';
-      jest.spyOn(authService, 'login').mockResolvedValueOnce({ access_token: 'testtoken' });
+      jest
+        .spyOn(authService, 'login')
+        .mockResolvedValueOnce({ access_token: 'testtoken' });
 
       const response = await controller.login(loginDto);
-      expect(response.access_token).toBeDefined(); 
-    })
+      expect(response.access_token).toBeDefined();
+    });
 
-    it('should not respond', async() => {
-      let loginDto  = new LoginDto(); 
+    it('should not respond', async () => {
+      const loginDto = new LoginDto();
       loginDto.username = 'back2-test';
       loginDto.password = '123132';
       jest.spyOn(authService, 'login').mockResolvedValueOnce(null);
 
       const response = await controller.login(loginDto);
       expect(response).toBe(null);
-    })
-  })
-
-
+    });
+  });
 });

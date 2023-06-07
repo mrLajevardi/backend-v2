@@ -4,10 +4,8 @@ import { ScopeController } from './scope.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [ScopeService],
-  controllers: [ScopeController]
+  controllers: [ScopeController],
 })
 export class ScopeModule {}

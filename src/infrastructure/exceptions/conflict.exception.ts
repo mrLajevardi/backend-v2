@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-
 export class ConflictException extends HttpException {
-  constructor(message = 'The request could not be processed because of conflict in the request', cause? : Error ) {
+  constructor(
+    message = 'The request could not be processed because of conflict in the request',
+    cause?: Error,
+  ) {
     super(
       {
         status: HttpStatus.CONFLICT,
@@ -10,8 +12,8 @@ export class ConflictException extends HttpException {
       },
       HttpStatus.CONFLICT,
       {
-        cause: cause 
-      }
+        cause: cause,
+      },
     );
   }
 }

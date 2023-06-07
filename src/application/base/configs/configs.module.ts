@@ -4,10 +4,8 @@ import { ConfigsController } from './configs.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [ConfigsService],
-  controllers: [ConfigsController]
+  controllers: [ConfigsController],
 })
 export class ConfigsModule {}

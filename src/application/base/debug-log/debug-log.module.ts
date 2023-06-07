@@ -4,10 +4,8 @@ import { DebugLogController } from './debug-log.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [DebugLogService],
-  controllers: [DebugLogController]
+  controllers: [DebugLogController],
 })
 export class DebugLogModule {}

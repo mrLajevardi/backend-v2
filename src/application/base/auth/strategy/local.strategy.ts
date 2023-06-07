@@ -9,7 +9,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  // The validation that will be checked before 
+  // The validation that will be checked before
   // any endpoint protected with jwt-auth guard
   async validate(username: string, password: string): Promise<any> {
     const user = await this.authService.validateUser(username, password);

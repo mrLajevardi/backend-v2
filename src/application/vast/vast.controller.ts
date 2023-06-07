@@ -1,4 +1,10 @@
-import { Controller, Get, InternalServerErrorException, UseFilters, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  InternalServerErrorException,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PoliciesGuard } from '../base/ability/guards/policies.guard';
 import { CheckPolicies } from '../base/ability/decorators/check-policies.decorator';
@@ -13,17 +19,15 @@ import { InvalidUsernameException } from 'src/infrastructure/exceptions/invalid-
 @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VastController {
-
-    @Public()
-    @ApiOperation({ summary: 'for testing auth' })
-    @Get('test')
-    test() : string {
-        try {
-            throw new InternalServerErrorException();
-        }catch(error){
-            throw new InvalidUsernameException('invalid username',error);
-        }
-        return 'hello';
+  @Public()
+  @ApiOperation({ summary: 'for testing auth' })
+  @Get('test')
+  test(): string {
+    try {
+      throw new InternalServerErrorException();
+    } catch (error) {
+      throw new InvalidUsernameException('invalid username', error);
     }
-    
+    return 'hello';
+  }
 }

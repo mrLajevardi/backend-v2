@@ -13,7 +13,9 @@ describe('InvoicePropertiesController', () => {
       controllers: [InvoicePropertiesController],
     }).compile();
 
-    controller = module.get<InvoicePropertiesController>(InvoicePropertiesController);
+    controller = module.get<InvoicePropertiesController>(
+      InvoicePropertiesController,
+    );
   });
 
   it('should be defined', () => {

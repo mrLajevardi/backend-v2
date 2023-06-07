@@ -13,17 +13,15 @@ import { Connection } from 'typeorm';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-        type: "sqlite",
-        database: ":memory:",
-        autoLoadEntities : true,
-        entities: dbTestEntities,
-        synchronize: true,
-    } as TypeOrmModuleOptions ),
-    TypeOrmModule.forFeature(dbTestEntities)
+      type: 'sqlite',
+      database: ':memory:',
+      autoLoadEntities: true,
+      entities: dbTestEntities,
+      synchronize: true,
+    } as TypeOrmModuleOptions),
+    TypeOrmModule.forFeature(dbTestEntities),
   ],
-  providers: [
-    TestDataService,
-  ],
-  exports: [TypeOrmModule]
+  providers: [TestDataService],
+  exports: [TypeOrmModule],
 })
 export class TestDatabaseModule {}

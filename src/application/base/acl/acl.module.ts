@@ -7,12 +7,8 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { AbilityModule } from '../ability/ability.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
-  providers: [
-    AclService,
-  ],
+  imports: [DatabaseModule],
+  providers: [AclService],
   controllers: [AclController],
 })
 export class AclModule {}

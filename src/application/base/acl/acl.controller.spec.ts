@@ -5,22 +5,17 @@ import { TestDatabaseModule } from 'src/infrastructure/database/test-database.mo
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { UserService } from '../user/user.service';
 
-
 describe('AclController', () => {
   let controller: AclController;
-  let aclService: AclService; 
+  let aclService: AclService;
   let testDataService: TestDataService;
-  let userService: UserService; 
+  let userService: UserService;
 
-  
   beforeAll(async () => {
     const module = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       controllers: [AclController],
-      providers: [
-        AclService,
-        UserService,
-      ],
+      providers: [AclService, UserService],
     }).compile();
 
     controller = module.get<AclController>(AclController);
@@ -28,14 +23,8 @@ describe('AclController', () => {
     testDataService = module.get<TestDataService>(TestDataService);
     userService = module.get<UserService>(UserService);
 
-
     await testDataService.seedTestData();
-
-
   });
-
-
-  
 
   describe('findAll', () => {
     it('should return an array of ACL records', async () => {
@@ -43,8 +32,4 @@ describe('AclController', () => {
       expect(response).toBeInstanceOf(Array);
     });
   });
-
- 
-
-
 });

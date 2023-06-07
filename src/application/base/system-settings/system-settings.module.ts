@@ -4,10 +4,8 @@ import { SystemSettingsController } from './system-settings.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [SystemSettingsService],
-  controllers: [SystemSettingsController]
+  controllers: [SystemSettingsController],
 })
 export class SystemSettingsModule {}

@@ -4,8 +4,8 @@ import { InvoicePropertiesController } from './invoice-properties.controller';
 import { InvoicePropertiesService } from './invoice-properties.service';
 
 @Module({
-    imports: [DatabaseModule],
-    controllers: [InvoicePropertiesController],
-    providers: [InvoicePropertiesService]
+  imports: [DatabaseModule],
+  controllers: [InvoicePropertiesController],
+  providers: [InvoicePropertiesService],
 })
 export class InvoicePropertiesModule {}

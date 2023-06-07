@@ -6,47 +6,47 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { ServiceTypes } from "./ServiceTypes";
-import { InvoiceDiscounts } from "./InvoiceDiscounts";
+} from 'typeorm';
+import { ServiceTypes } from './ServiceTypes';
+import { InvoiceDiscounts } from './InvoiceDiscounts';
 
-@Index("PK_Discounts", ["id"], { unique: true })
+@Index('PK_Discounts', ['id'], { unique: true })
 @Entity()
 export class Discounts {
-  @PrimaryGeneratedColumn({ type: "integer" })
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @Column("nvarchar", { name: "Title" })
+  @Column('nvarchar', { name: 'Title' })
   title: string;
 
-  @Column("float", { name: "Ratio", precision: 53 })
+  @Column('float', { name: 'Ratio', precision: 53 })
   ratio: number;
 
-  @Column("float", { name: "Amount", precision: 53 })
+  @Column('float', { name: 'Amount', precision: 53 })
   amount: number;
 
-  @Column("boolean", { name: "IsBuiltIn" })
+  @Column('boolean', { name: 'IsBuiltIn' })
   isBuiltIn: boolean;
 
-  @Column("datetime", { name: "ValidDate", nullable: true })
+  @Column('datetime', { name: 'ValidDate', nullable: true })
   validDate: Date | null;
 
-  @Column("integer", { name: "Limit", nullable: true })
+  @Column('integer', { name: 'Limit', nullable: true })
   limit: number | null;
 
-  @Column("varchar", { name: "Code", nullable: true, length: 50 })
+  @Column('varchar', { name: 'Code', nullable: true, length: 50 })
   code: string | null;
 
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.discounts, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "ServiceTypeID", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
   serviceType: ServiceTypes;
 
   @OneToMany(
     () => InvoiceDiscounts,
-    (invoiceDiscounts) => invoiceDiscounts.discount
+    (invoiceDiscounts) => invoiceDiscounts.discount,
   )
   invoiceDiscounts: InvoiceDiscounts[];
 }

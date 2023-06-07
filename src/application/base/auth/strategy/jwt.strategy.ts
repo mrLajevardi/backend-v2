@@ -13,7 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  // The validation that will be take place before any 
+  // The validation that will be take place before any
   // endpoint protected using Jwt-auth.guard
   async validate(payload: any) {
     return { userId: payload.sub.toString(), username: payload.username };

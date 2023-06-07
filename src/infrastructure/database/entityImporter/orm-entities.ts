@@ -3,7 +3,6 @@ This is for laodiing all of entities in an array at once
 this helps us preventing cluttered app module. 
 */
 
-
 import { GroupsMapping } from '../entities/GroupsMapping';
 import { AccessToken } from '../entities/AccessToken';
 import { Acl } from '../entities/Acl';
@@ -45,21 +44,48 @@ import { ErrorLog } from '../entities/ErrorLog';
 import { Sysdiagrams } from '../entities/Sysdiagrams';
 
 export const dbEntities = [
-    // Logs Schema 
-    DebugLog, InfoLog, ErrorLog,
-    // Security Schema
-    AccessToken,Acl,Migrations, MigrationsLock, 
-    PermissionGroups, PermissionGroupsMappings, PermissionMappings,Permissions,
-    Role, RoleMapping,
-    Scope, Setting, SystemSettings, User,
-    // services Schema 
-    Configs, Discounts, ItemTypes, Plans, ServiceTypes,
-    // VDC Schema
-    Organization,Sessions,Sysdiagrams,
-    // User Schema 
-    AiTransactionsLogs,
-    Groups,GroupsMapping,
-    InvoiceDiscounts,InvoiceItems, InvoicePlans,InvoiceProperties,Invoices,
-    ServiceInstances, ServiceItems, ServiceProperties,
-    Tasks, Tickets, Transactions, 
-  ];
+  // Logs Schema
+  DebugLog,
+  InfoLog,
+  ErrorLog,
+  // Security Schema
+  AccessToken,
+  Acl,
+  Migrations,
+  MigrationsLock,
+  PermissionGroups,
+  PermissionGroupsMappings,
+  PermissionMappings,
+  Permissions,
+  Role,
+  RoleMapping,
+  Scope,
+  Setting,
+  SystemSettings,
+  User,
+  // services Schema
+  Configs,
+  Discounts,
+  ItemTypes,
+  Plans,
+  ServiceTypes,
+  // VDC Schema
+  Organization,
+  Sessions,
+  Sysdiagrams,
+  // User Schema
+  AiTransactionsLogs,
+  Groups,
+  GroupsMapping,
+  InvoiceDiscounts,
+  InvoiceItems,
+  InvoicePlans,
+  InvoiceProperties,
+  Invoices,
+  ServiceInstances,
+  ServiceItems,
+  ServiceProperties,
+  Tasks,
+  Tickets,
+  Transactions,
+];

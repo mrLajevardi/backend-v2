@@ -4,10 +4,8 @@ import { ItemTypesController } from './item-types.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [ItemTypesService],
-  controllers: [ItemTypesController]
+  controllers: [ItemTypesController],
 })
 export class ItemTypesModule {}

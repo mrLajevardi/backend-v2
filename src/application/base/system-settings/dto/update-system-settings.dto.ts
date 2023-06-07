@@ -18,6 +18,4 @@ export class UpdateSystemSettingsDto {
   @IsOptional()
   @ApiProperty({ required: false })
   updateDate?: Date | null;
-
-
 }

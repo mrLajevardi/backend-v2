@@ -1,17 +1,17 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Index("PK__Migratio__3213E83FC60BF224", ["id"], { unique: true })
+@Index('PK__Migratio__3213E83FC60BF224', ['id'], { unique: true })
 @Entity()
 export class Migrations {
-  @PrimaryGeneratedColumn({ type: "integer" })
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @Column("nvarchar", { name: "name", nullable: true, length: 255 })
+  @Column('nvarchar', { name: 'name', nullable: true, length: 255 })
   name: string | null;
 
-  @Column("integer", { name: "batch", nullable: true })
+  @Column('integer', { name: 'batch', nullable: true })
   batch: number | null;
 
-  @Column("datetime", { name: "migration_time", nullable: true })
+  @Column('datetime', { name: 'migration_time', nullable: true })
   migrationTime: Date | null;
 }

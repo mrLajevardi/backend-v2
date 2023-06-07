@@ -4,10 +4,8 @@ import { InvoicePlansController } from './invoice-plans.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [InvoicePlansService],
-  controllers: [InvoicePlansController]
+  controllers: [InvoicePlansController],
 })
 export class InvoicePlansModule {}

@@ -4,10 +4,8 @@ import { ServiceItemsController } from './service-items.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [ServiceItemsService],
-  controllers: [ServiceItemsController]
+  controllers: [ServiceItemsController],
 })
 export class ServiceItemsModule {}

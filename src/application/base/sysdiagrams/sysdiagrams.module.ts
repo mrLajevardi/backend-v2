@@ -4,10 +4,8 @@ import { SysdiagramsController } from './sysdiagrams.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [SysdiagramsService],
-  controllers: [SysdiagramsController]
+  controllers: [SysdiagramsController],
 })
 export class SysdiagramsModule {}

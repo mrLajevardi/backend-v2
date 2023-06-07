@@ -6,42 +6,42 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { AiTransactionsLogs } from "./AiTransactionsLogs";
-import { InvoiceItems } from "./InvoiceItems";
-import { ServiceTypes } from "./ServiceTypes";
-import { ServiceItems } from "./ServiceItems";
+} from 'typeorm';
+import { AiTransactionsLogs } from './AiTransactionsLogs';
+import { InvoiceItems } from './InvoiceItems';
+import { ServiceTypes } from './ServiceTypes';
+import { ServiceItems } from './ServiceItems';
 
-@Index("PK_ResourceTypes", ["id"], { unique: true })
+@Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity()
 export class ItemTypes {
-  @PrimaryGeneratedColumn({ type: "integer" })
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @Column("nvarchar", { name: "Title" })
+  @Column('nvarchar', { name: 'Title' })
   title: string;
 
-  @Column("nvarchar", { name: "Unit" })
+  @Column('nvarchar', { name: 'Unit' })
   unit: string;
 
-  @Column("float", { name: "Fee", precision: 53 })
+  @Column('float', { name: 'Fee', precision: 53 })
   fee: number;
 
-  @Column("integer", { name: "MaxAvailable" })
+  @Column('integer', { name: 'MaxAvailable' })
   maxAvailable: number;
 
-  @Column("varchar", { name: "Code", length: 255 })
+  @Column('varchar', { name: 'Code', length: 255 })
   code: string;
 
-  @Column("integer", { name: "MaxPerRequest", nullable: true })
+  @Column('integer', { name: 'MaxPerRequest', nullable: true })
   maxPerRequest: number | null;
 
-  @Column("integer", { name: "MinPerRequest", nullable: true })
+  @Column('integer', { name: 'MinPerRequest', nullable: true })
   minPerRequest: number | null;
 
   @OneToMany(
     () => AiTransactionsLogs,
-    (aiTransactionsLogs) => aiTransactionsLogs.itemType
+    (aiTransactionsLogs) => aiTransactionsLogs.itemType,
   )
   aiTransactionsLogs: AiTransactionsLogs[];
 
@@ -49,10 +49,10 @@ export class ItemTypes {
   invoiceItems: InvoiceItems[];
 
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "ServiceTypeID", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
   serviceType: ServiceTypes;
 
   @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)

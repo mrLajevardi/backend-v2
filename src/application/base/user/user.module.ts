@@ -7,16 +7,10 @@ import { AbilityFactory } from 'nest-casl/dist/factories/ability.factory';
 import { AbilityModule } from '../ability/ability.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
-
 @Module({
-  imports: [
-    DatabaseModule
-  ],
-  providers: [
-    UserService,
-  ],
+  imports: [DatabaseModule],
+  providers: [UserService],
   exports: [UserService],
-  controllers: [UserController] 
+  controllers: [UserController],
 })
 export class UserModule {}
-

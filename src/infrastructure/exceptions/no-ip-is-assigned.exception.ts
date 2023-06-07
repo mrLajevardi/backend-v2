@@ -1,8 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-
 export class NoIpIsAssignedException extends HttpException {
-  constructor(message =  'no ip is assigned to this virtual data center', cause? : Error ) {
+  constructor(
+    message = 'no ip is assigned to this virtual data center',
+    cause?: Error,
+  ) {
     super(
       {
         status: HttpStatus.UNPROCESSABLE_ENTITY,
@@ -10,9 +12,8 @@ export class NoIpIsAssignedException extends HttpException {
       },
       HttpStatus.UNPROCESSABLE_ENTITY,
       {
-        cause: cause
-      }
+        cause: cause,
+      },
     );
   }
 }
-

@@ -9,7 +9,6 @@ describe('InvoiceService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [InvoiceService],
-      
     }).compile();
 
     service = module.get<InvoiceService>(InvoiceService);
@@ -18,6 +17,4 @@ describe('InvoiceService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  
 });

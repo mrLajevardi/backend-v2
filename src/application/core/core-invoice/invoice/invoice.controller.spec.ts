@@ -10,12 +10,8 @@ describe('InvoiceController', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        InvoiceService,
-      ],
-      controllers: [
-        InvoiceController
-      ],
+      providers: [InvoiceService],
+      controllers: [InvoiceController],
     }).compile();
 
     controller = module.get<InvoiceController>(InvoiceController);

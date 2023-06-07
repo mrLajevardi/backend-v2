@@ -10,7 +10,7 @@ import * as path from 'path';
 const JSON_CONFIG_FILENAME = 'config.json';
 
 export default () => {
-  const filePath = path.join(__dirname,  JSON_CONFIG_FILENAME);
+  const filePath = path.join(__dirname, JSON_CONFIG_FILENAME);
   const fileContents = fs.readFileSync(filePath, 'utf8');
   const config = JSON.parse(fileContents);
   console.log(config);

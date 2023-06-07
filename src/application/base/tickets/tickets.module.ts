@@ -4,10 +4,8 @@ import { TicketsController } from './tickets.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [TicketsService],
-  controllers: [TicketsController]
+  controllers: [TicketsController],
 })
 export class TicketsModule {}

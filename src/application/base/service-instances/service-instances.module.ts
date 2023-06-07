@@ -4,10 +4,8 @@ import { ServiceInstancesController } from './service-instances.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [ServiceInstancesService],
-  controllers: [ServiceInstancesController]
+  controllers: [ServiceInstancesController],
 })
 export class ServiceInstancesModule {}

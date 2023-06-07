@@ -1,23 +1,23 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Index("PK__Setting__3214EC07107FD346", ["id"], { unique: true })
+@Index('PK__Setting__3214EC07107FD346', ['id'], { unique: true })
 @Entity()
 export class Setting {
-  @PrimaryGeneratedColumn({ type: "integer" })
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
-  @Column("integer", { name: "UserId", nullable: true })
+  @Column('integer', { name: 'UserId', nullable: true })
   userId: number | null;
 
-  @Column("nvarchar", { name: "Key", length: 50 })
+  @Column('nvarchar', { name: 'Key', length: 50 })
   key: string;
 
-  @Column("nvarchar", { name: "Value", nullable: true })
+  @Column('nvarchar', { name: 'Value', nullable: true })
   value: string | null;
 
-  @Column("datetime", { name: "InsertTime", default: () => "getdate()" })
+  @Column('datetime', { name: 'InsertTime', default: () => 'getdate()' })
   insertTime: Date;
 
-  @Column("datetime", { name: "UpdateTime", default: () => "getdate()" })
+  @Column('datetime', { name: 'UpdateTime', default: () => 'getdate()' })
   updateTime: Date;
 }

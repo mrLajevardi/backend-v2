@@ -4,10 +4,8 @@ import { PermissionGroupsMappingsController } from './permission-groups-mappings
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [PermissionGroupsMappingsService],
-  controllers: [PermissionGroupsMappingsController]
+  controllers: [PermissionGroupsMappingsController],
 })
 export class PermissionGroupsMappingsModule {}

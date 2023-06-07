@@ -44,21 +44,48 @@ import { ErrorLog } from '../test-entities/ErrorLog';
 import { Sysdiagrams } from '../test-entities/Sysdiagrams';
 
 export const dbTestEntities = [
-    // Logs Schema 
-    DebugLog, InfoLog, ErrorLog,
-    // Security Schema
-    AccessToken,Acl,Migrations, MigrationsLock, 
-    PermissionGroups, PermissionGroupsMappings, PermissionMappings,Permissions,
-    Role, RoleMapping,
-    Scope, Setting, SystemSettings, User,
-    // services Schema 
-    Configs, Discounts, ItemTypes, Plans, ServiceTypes,
-    // VDC Schema
-    Organization,Sessions,Sysdiagrams,
-    // User Schema 
-    AiTransactionsLogs,
-    Groups,GroupsMapping,
-    InvoiceDiscounts,InvoiceItems, InvoicePlans,InvoiceProperties,Invoices,
-    ServiceInstances, ServiceItems, ServiceProperties,
-    Tasks, Tickets, Transactions, 
-  ];
+  // Logs Schema
+  DebugLog,
+  InfoLog,
+  ErrorLog,
+  // Security Schema
+  AccessToken,
+  Acl,
+  Migrations,
+  MigrationsLock,
+  PermissionGroups,
+  PermissionGroupsMappings,
+  PermissionMappings,
+  Permissions,
+  Role,
+  RoleMapping,
+  Scope,
+  Setting,
+  SystemSettings,
+  User,
+  // services Schema
+  Configs,
+  Discounts,
+  ItemTypes,
+  Plans,
+  ServiceTypes,
+  // VDC Schema
+  Organization,
+  Sessions,
+  Sysdiagrams,
+  // User Schema
+  AiTransactionsLogs,
+  Groups,
+  GroupsMapping,
+  InvoiceDiscounts,
+  InvoiceItems,
+  InvoicePlans,
+  InvoiceProperties,
+  Invoices,
+  ServiceInstances,
+  ServiceItems,
+  ServiceProperties,
+  Tasks,
+  Tickets,
+  Transactions,
+];

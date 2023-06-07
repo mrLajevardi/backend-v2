@@ -5,22 +5,22 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Discounts } from "./Discounts";
+} from 'typeorm';
+import { Discounts } from './Discounts';
 
-@Index("PK_InvoiceDiscounts", ["id"], { unique: true })
+@Index('PK_InvoiceDiscounts', ['id'], { unique: true })
 @Entity()
 export class InvoiceDiscounts {
-  @Column("integer", { name: "InvoiceID" })
+  @Column('integer', { name: 'InvoiceID' })
   invoiceId: number;
 
-  @PrimaryGeneratedColumn({ type: "integer" })
+  @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
   @ManyToOne(() => Discounts, (discounts) => discounts.invoiceDiscounts, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "DiscountID", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'DiscountID', referencedColumnName: 'id' }])
   discount: Discounts;
 }

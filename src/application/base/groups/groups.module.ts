@@ -4,10 +4,8 @@ import { GroupsController } from './groups.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-  ],
+  imports: [DatabaseModule],
   providers: [GroupsService],
-  controllers: [GroupsController]
+  controllers: [GroupsController],
 })
 export class GroupsModule {}

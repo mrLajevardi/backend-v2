@@ -1,5 +1,17 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { LoginDto } from './dto/login.dto';
@@ -29,7 +41,4 @@ export class AuthController {
   // getProfile(@Request() req) {
   //   return req.user;
   // }
-
-
-
 }
