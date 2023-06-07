@@ -1,4 +1,4 @@
-import { IsInt, IsNumber, IsString, IsDate } from 'class-validator';
+import { IsInt, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateItemTypeDto {

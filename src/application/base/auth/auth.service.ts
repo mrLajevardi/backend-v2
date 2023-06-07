@@ -1,7 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -35,8 +34,10 @@ export class AuthService {
       pass,
     );
     if (user && isValid) {
+      // eslint-disable-next-line
       const { password, ...result } = user;
-      console.log(result);
+
+      //console.log(result);
       return result;
     }
     return null;

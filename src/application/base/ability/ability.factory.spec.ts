@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from '../user/user.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { InvoiceService } from 'src/application/core/core-invoice/invoice/invoice.service';
+import { InvoicesService } from '../invoices/invoices.service';
 import { User } from 'src/infrastructure/database/test-entities/User';
 
 describe('AbilityFactory', () => {
@@ -13,7 +13,7 @@ describe('AbilityFactory', () => {
   let userService: UserService;
   let testDataService: TestDataService;
   let aclService: AclService;
-  let invoiceService: InvoiceService;
+  let invoiceService: InvoicesService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,7 +22,7 @@ describe('AbilityFactory', () => {
         AclService,
         AbilityFactory,
         UserService,
-        InvoiceService,
+        InvoicesService,
         TestDataService,
       ],
     }).compile();
@@ -31,7 +31,7 @@ describe('AbilityFactory', () => {
     userService = module.get<UserService>(UserService);
     aclService = module.get<AclService>(AclService);
     testDataService = module.get<TestDataService>(TestDataService);
-    invoiceService = module.get<InvoiceService>(InvoiceService);
+    invoiceService = module.get<InvoicesService>(InvoicesService);
     //await testDataService.seedTestData();
   });
 
@@ -259,8 +259,6 @@ describe('AbilityFactory', () => {
   });
 
   describe('checking error states', () => {
-    beforeAll(async () => {});
-
     // no rules in acl table
     it('should return 0 ', async () => {
       const result = await aclService.find();

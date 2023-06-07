@@ -1,14 +1,5 @@
-import {
-  createMongoAbility,
-  Subject,
-  AbilityBuilder,
-  ExtractSubjectType,
-} from '@casl/ability';
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { createMongoAbility, Subject, AbilityBuilder } from '@casl/ability';
+import { Injectable } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
 import { AclService } from 'src/application/base/acl/acl.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
@@ -21,8 +12,8 @@ export enum Action {
   Delete = 'delete',
 }
 
-type Subjects = (typeof dbEntities)[number] | 'all';
-const ability = createMongoAbility<[Action, Subject]>();
+export type Subjects = (typeof dbEntities)[number] | 'all';
+export const ability = createMongoAbility<[Action, Subject]>();
 
 @Injectable()
 export class AbilityFactory {

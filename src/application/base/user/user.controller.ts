@@ -6,15 +6,11 @@ import {
   Body,
   Put,
   Delete,
-  Request,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
-  ApiParam,
   ApiResponse,
-  ApiBody,
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { UserService } from './user.service';

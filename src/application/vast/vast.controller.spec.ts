@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VastController } from './vast.controller';
-import { AbilityModule } from '../base/ability/ability.module';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
 describe('VastController', () => {

@@ -39,7 +39,6 @@ import { Transactions } from './test-entities/Transactions';
 import { User } from './test-entities/User';
 
 import * as fs from 'fs';
-import { dbTestEntities } from './entityImporter/orm-test-entities';
 import { DebugLog } from './test-entities/DebugLog';
 import { InfoLog } from './test-entities/InfoLog';
 import { ErrorLog } from './test-entities/ErrorLog';
@@ -178,7 +177,7 @@ export class TestDataService {
     for (const item of items) {
       const entity = item as T;
       // console.log("inserting ... ", entity);
-      const savedItem = await repository.save(entity);
+      await repository.save(entity);
     }
   }
 
@@ -245,5 +244,68 @@ export class TestDataService {
       this.invoicePropertiesRepository,
     );
     await this.seedTable('invoices.json', this.invoicesRepository);
+
+    await this.seedTable('debug-log.json', this.debugLogRepository);
+    await this.seedTable('info-log.json', this.infoLogRepository);
+    await this.seedTable('error-log.json', this.errorLogRepository);
+    await this.seedTable('access-token.json', this.accessTokenRepository);
+    await this.seedTable('acl.json', this.aclRepository);
+    await this.seedTable('migrations.json', this.migrationsRepository);
+    await this.seedTable('migrations-lock.json', this.migrationsLockRepository);
+    await this.seedTable(
+      'permission-groups.json',
+      this.permissionGroupsRepository,
+    );
+    await this.seedTable(
+      'permission-groups-mappings.json',
+      this.permissionGroupsMappingsRepository,
+    );
+    await this.seedTable(
+      'permission-mappings.json',
+      this.permissionMappingsRepository,
+    );
+    await this.seedTable('permissions.json', this.permissionsRepository);
+    await this.seedTable('role.json', this.roleRepository);
+    await this.seedTable('role-mapping.json', this.roleMappingRepository);
+    await this.seedTable('scope.json', this.scopeRepository);
+    await this.seedTable('setting.json', this.settingRepository);
+    await this.seedTable('system-settings.json', this.systemSettingsRepository);
+    await this.seedTable('user.json', this.userRepository);
+    await this.seedTable('configs.json', this.configsRepository);
+    await this.seedTable('discounts.json', this.discountsRepository);
+    await this.seedTable('item-types.json', this.itemTypesRepository);
+    await this.seedTable('plans.json', this.plansRepository);
+    await this.seedTable('service-types.json', this.serviceTypesRepository);
+    await this.seedTable('organization.json', this.organizationRepository);
+    await this.seedTable('sessions.json', this.sessionsRepository);
+    await this.seedTable(
+      'ai-transactions-logs.json',
+      this.aiTransactionsLogsRepository,
+    );
+    await this.seedTable('groups.json', this.groupsRepository);
+    await this.seedTable('groups-mapping.json', this.groupsMappingRepository);
+    await this.seedTable(
+      'invoice-discounts.json',
+      this.invoiceDiscountsRepository,
+    );
+    await this.seedTable('invoice-items.json', this.invoiceItemsRepository);
+    await this.seedTable('invoice-plans.json', this.invoicePlansRepository);
+    await this.seedTable(
+      'invoice-properties.json',
+      this.invoicePropertiesRepository,
+    );
+    await this.seedTable('invoices.json', this.invoicesRepository);
+    await this.seedTable(
+      'service-instances.json',
+      this.serviceInstancesRepository,
+    );
+    await this.seedTable('service-items.json', this.serviceItemsRepository);
+    await this.seedTable(
+      'service-properties.json',
+      this.servicePropertiesRepository,
+    );
+    await this.seedTable('tasks.json', this.tasksRepository);
+    await this.seedTable('tickets.json', this.ticketsRepository);
+    await this.seedTable('transactions.json', this.transactionsRepository);
   }
 }
