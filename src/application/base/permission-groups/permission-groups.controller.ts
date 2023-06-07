@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PermissionGroups } from 'src/infrastructure/database/entities/PermissionGroups';
 import { PermissionGroupsService } from './permission-groups.service';
-import { CreatePermissionGroupDto } from 'src/infrastructure/dto/create/create-permission-group.dto';
-import { UpdatePermissionGroupDto } from 'src/infrastructure/dto/update/update-permission-group.dto';
+import { CreatePermissionGroupDto } from 'src/application/base/permission-groups/dto/create-permission-group.dto';
+import { UpdatePermissionGroupDto } from 'src/application/base/permission-groups/dto/update-permission-group.dto';
 
 
 @ApiTags('PermissionGroups')

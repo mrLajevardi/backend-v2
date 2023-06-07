@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Acl } from 'src/infrastructure/database/test-entities/Acl';
-import { CreateAclDto } from 'src/infrastructure/dto/create/create-acl.dto';
-import { UpdateAclDto } from 'src/infrastructure/dto/update/update-acl.dto';
+import { CreateAclDto } from 'src/application/base/acl/dto/create-acl.dto';
+import { UpdateAclDto } from 'src/application/base/acl/dto/update-acl.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

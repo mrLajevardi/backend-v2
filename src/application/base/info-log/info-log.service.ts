@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InfoLog } from 'src/infrastructure/database/entities/InfoLog';
-import { CreateInfoLogDto } from 'src/infrastructure/dto/create/create-info-log.dto';
-import { UpdateInfoLogDto } from 'src/infrastructure/dto/update/update-info-log.dto';
+import { CreateInfoLogDto } from 'src/application/base/info-log/dto/create-info-log.dto';
+import { UpdateInfoLogDto } from 'src/application/base/info-log/dto/update-info-log.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

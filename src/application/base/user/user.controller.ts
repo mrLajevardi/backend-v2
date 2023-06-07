@@ -2,8 +2,8 @@ import { Controller, Get, Param, Post, Body, Put, Delete, Request, UseGuards } f
 import { ApiTags, ApiOperation, ApiParam, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { User } from 'src/infrastructure/database/entities/User';
-import { CreateUserDto } from 'src/infrastructure/dto/create/create-user.dto';
-import { UpdateUserDto } from 'src/infrastructure/dto/update/update-user.dto';
+import { CreateUserDto } from 'src/application/base/user/dto/create-user.dto';
+import { UpdateUserDto } from 'src/application/base/user/dto/update-user.dto';
 
 
 @ApiTags('Users')

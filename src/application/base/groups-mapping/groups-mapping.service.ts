@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GroupsMapping } from 'src/infrastructure/database/entities/GroupsMapping';
-import { CreateGroupsMappingDto } from 'src/infrastructure/dto/create/create-groups-mappings.dto';
-import { UpdateGroupsMappingDto } from 'src/infrastructure/dto/update/update-groups-mappings.dto';
+import { CreateGroupsMappingDto } from 'src/application/base/groups-mapping/dto/create-groups-mappings.dto';
+import { UpdateGroupsMappingDto } from 'src/application/base/groups-mapping/dto/update-groups-mappings.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

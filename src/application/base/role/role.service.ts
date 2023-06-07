@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from 'src/infrastructure/database/entities/Role';
-import { CreateRoleDto } from 'src/infrastructure/dto/create/create-role.dto';
-import { UpdateRoleDto } from 'src/infrastructure/dto/update/update-role.dto';
+import { CreateRoleDto } from 'src/application/base/role/dto/create-role.dto';
+import { UpdateRoleDto } from 'src/application/base/role/dto/update-role.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permissions } from 'src/infrastructure/database/entities/Permissions';
-import { CreatePermissionDto } from 'src/infrastructure/dto/create/create-permission.dto';
-import { UpdatePermissionDto } from 'src/infrastructure/dto/update/update-permission.dto';
+import { CreatePermissionDto } from 'src/application/base/permissions/dto/create-permission.dto';
+import { UpdatePermissionDto } from 'src/application/base/permissions/dto/update-permission.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

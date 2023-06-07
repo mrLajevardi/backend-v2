@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sysdiagrams } from 'src/infrastructure/database/entities/Sysdiagrams';
-import { CreateSysdiagramsDto } from 'src/infrastructure/dto/create/create-sysdiagrams.dto';
-import { UpdateSysdiagramsDto } from 'src/infrastructure/dto/update/update-sysdiagrams.dto';
+import { CreateSysdiagramsDto } from 'src/application/base/sysdiagrams/dto/create-sysdiagrams.dto';
+import { UpdateSysdiagramsDto } from 'src/application/base/sysdiagrams/dto/update-sysdiagrams.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

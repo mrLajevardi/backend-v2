@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceItems } from 'src/infrastructure/database/entities/ServiceItems';
-import { CreateServiceItemsDto } from 'src/infrastructure/dto/create/create-service-items.dto';
-import { UpdateServiceItemsDto } from 'src/infrastructure/dto/update/update-service-items.dto';
+import { CreateServiceItemsDto } from 'src/application/base/service-items/dto/create-service-items.dto';
+import { UpdateServiceItemsDto } from 'src/application/base/service-items/dto/update-service-items.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

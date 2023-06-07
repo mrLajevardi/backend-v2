@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoicePlans } from 'src/infrastructure/database/entities/InvoicePlans';
-import { CreateInvoicePlansDto } from 'src/infrastructure/dto/create/create-invoice-plans.dto';
-import { UpdateInvoicePlansDto } from 'src/infrastructure/dto/update/update-invoice-plans.dto';
+import { CreateInvoicePlansDto } from 'src/application/base/invoice-plans/dto/create-invoice-plans.dto';
+import { UpdateInvoicePlansDto } from 'src/application/base/invoice-plans/dto/update-invoice-plans.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

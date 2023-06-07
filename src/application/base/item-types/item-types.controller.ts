@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { ItemTypesService } from './item-types.service';
-import { CreateItemTypeDto } from 'src/infrastructure/dto/create/create-item-type.dto';
-import { UpdateItemTypeDto } from 'src/infrastructure/dto/update/update-item-type.dto';
+import { CreateItemTypeDto } from 'src/application/base/item-types/dto/create-item-type.dto';
+import { UpdateItemTypeDto } from 'src/application/base/item-types/dto/update-item-type.dto';
 
 
 @ApiTags('ItemTypes')

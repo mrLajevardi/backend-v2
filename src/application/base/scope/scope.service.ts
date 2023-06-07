@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Scope } from 'src/infrastructure/database/entities/Scope';
-import { CreateScopeDto } from 'src/infrastructure/dto/create/create-scope.dto';
-import { UpdateScopeDto } from 'src/infrastructure/dto/update/update-scope.dto';
+import { CreateScopeDto } from 'src/application/base/scope/dto/create-scope.dto';
+import { UpdateScopeDto } from 'src/application/base/scope/dto/update-scope.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

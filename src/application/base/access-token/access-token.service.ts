@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AccessToken } from 'src/infrastructure/database/entities/AccessToken';
-import { CreateAccessTokenDto } from 'src/infrastructure/dto/create/create-access-token.dto';
-import { UpdateAccessTokenDto } from 'src/infrastructure/dto/update/update-access-token.dto';
+import { CreateAccessTokenDto } from 'src/application/base/access-token/dto/create-access-token.dto';
+import { UpdateAccessTokenDto } from 'src/application/base/access-token/dto/update-access-token.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

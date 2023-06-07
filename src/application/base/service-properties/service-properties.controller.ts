@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
 import { ServicePropertiesService } from './service-properties.service';
-import { CreateServicePropertiesDto } from 'src/infrastructure/dto/create/create-service-properties.dto';
-import { UpdateServicePropertiesDto } from 'src/infrastructure/dto/update/update-service-properties.dto';
+import { CreateServicePropertiesDto } from 'src/application/base/service-properties/dto/create-service-properties.dto';
+import { UpdateServicePropertiesDto } from 'src/application/base/service-properties/dto/update-service-properties.dto';
 
 
 @ApiTags('ServiceProperties')

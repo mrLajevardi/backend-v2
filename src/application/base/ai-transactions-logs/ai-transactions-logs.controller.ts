@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
 import { AiTransactionsLogsService } from './ai-transactions-logs.service';
-import { CreateAiTransactionsLogsDto } from 'src/infrastructure/dto/create/create-ai-transactions-logs.dto';
-import { UpdateAiTransactionsLogsDto } from 'src/infrastructure/dto/update/update-ai-transactions-logs.dto';
+import { CreateAiTransactionsLogsDto } from 'src/application/base/ai-transactions-logs/dto/create-ai-transactions-logs.dto';
+import { UpdateAiTransactionsLogsDto } from 'src/application/base/ai-transactions-logs/dto/update-ai-transactions-logs.dto';
 
 
 @ApiTags('AiTransactionsLogs')

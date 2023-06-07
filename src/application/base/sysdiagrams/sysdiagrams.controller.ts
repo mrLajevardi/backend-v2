@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Sysdiagrams } from 'src/infrastructure/database/entities/Sysdiagrams';
 import { SysdiagramsService } from './sysdiagrams.service';
-import { CreateSysdiagramsDto } from 'src/infrastructure/dto/create/create-sysdiagrams.dto';
-import { UpdateSysdiagramsDto } from 'src/infrastructure/dto/update/update-sysdiagrams.dto';
+import { CreateSysdiagramsDto } from 'src/application/base/sysdiagrams/dto/create-sysdiagrams.dto';
+import { UpdateSysdiagramsDto } from 'src/application/base/sysdiagrams/dto/update-sysdiagrams.dto';
 
 
 @ApiTags('Sysdiagrams')

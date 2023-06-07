@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Sessions } from 'src/infrastructure/database/entities/Sessions';
 import { SessionsService } from './sessions.service';
-import { CreateSessionsDto } from 'src/infrastructure/dto/create/create-sessions.dto';
-import { UpdateSessionsDto } from 'src/infrastructure/dto/update/update-sessions.dto';
+import { CreateSessionsDto } from 'src/application/base/sessions/dto/create-sessions.dto';
+import { UpdateSessionsDto } from 'src/application/base/sessions/dto/update-sessions.dto';
 
 
 @ApiTags('Sessions')

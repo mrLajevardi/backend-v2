@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Discounts } from 'src/infrastructure/database/entities/Discounts';
-import { CreateDiscountDto } from 'src/infrastructure/dto/create/create-discounts.dto';
-import { UpdateDiscountDto } from 'src/infrastructure/dto/update/update-discounts.dto';
+import { CreateDiscountDto } from 'src/application/base/discounts/dto/create-discounts.dto';
+import { UpdateDiscountDto } from 'src/application/base/discounts/dto/update-discounts.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

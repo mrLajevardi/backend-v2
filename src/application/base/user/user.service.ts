@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { BadRequestError } from 'passport-headerapikey';
-import { CreateUserDto } from 'src/infrastructure/dto/create/create-user.dto';
-import { UpdateUserDto } from 'src/infrastructure/dto/update/update-user.dto';
+import { CreateUserDto } from 'src/application/base/user/dto/create-user.dto';
+import { UpdateUserDto } from 'src/application/base/user/dto/update-user.dto';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()

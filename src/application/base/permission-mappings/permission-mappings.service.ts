@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PermissionMappings } from 'src/infrastructure/database/entities/PermissionMappings';
-import { CreatePermissionMappingDto } from 'src/infrastructure/dto/create/create-permission-mapping.dto';
-import { UpdatePermissionMappingDto } from 'src/infrastructure/dto/update/update-permission-mapping.dto';
+import { CreatePermissionMappingDto } from 'src/application/base/permission-mappings/dto/create-permission-mapping.dto';
+import { UpdatePermissionMappingDto } from 'src/application/base/permission-mappings/dto/update-permission-mapping.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

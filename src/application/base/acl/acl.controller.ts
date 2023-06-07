@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Acl } from 'src/infrastructure/database/test-entities/Acl';
 import { AclService } from './acl.service';
-import { CreateAclDto } from 'src/infrastructure/dto/create/create-acl.dto';
-import { UpdateAclDto } from 'src/infrastructure/dto/update/update-acl.dto';
+import { CreateAclDto } from 'src/application/base/acl/dto/create-acl.dto';
+import { UpdateAclDto } from 'src/application/base/acl/dto/update-acl.dto';
 
 @ApiTags('Acl')
 @Controller('acl')

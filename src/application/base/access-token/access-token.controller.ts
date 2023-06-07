@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { AccessToken } from 'src/infrastructure/database/entities/AccessToken';
 import { AccessTokenService } from './access-token.service';
-import { CreateAccessTokenDto } from 'src/infrastructure/dto/create/create-access-token.dto';
-import { UpdateAccessTokenDto } from 'src/infrastructure/dto/update/update-access-token.dto';
+import { CreateAccessTokenDto } from 'src/application/base/access-token/dto/create-access-token.dto';
+import { UpdateAccessTokenDto } from 'src/application/base/access-token/dto/update-access-token.dto';
 
 
 @ApiTags('AccessToken')

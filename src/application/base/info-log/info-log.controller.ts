@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InfoLog } from 'src/infrastructure/database/entities/InfoLog';
 import { InfoLogService } from './info-log.service';
-import { CreateInfoLogDto } from 'src/infrastructure/dto/create/create-info-log.dto';
-import { UpdateInfoLogDto } from 'src/infrastructure/dto/update/update-info-log.dto';
+import { CreateInfoLogDto } from 'src/application/base/info-log/dto/create-info-log.dto';
+import { UpdateInfoLogDto } from 'src/application/base/info-log/dto/update-info-log.dto';
 
 
 @ApiTags('InfoLog')

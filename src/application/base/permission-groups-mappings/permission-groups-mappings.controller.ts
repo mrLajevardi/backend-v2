@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { PermissionGroupsMappings } from 'src/infrastructure/database/entities/PermissionGroupsMappings';
 import { PermissionGroupsMappingsService } from './permission-groups-mappings.service';
-import { CreatePermissionGroupsMappingsDto } from 'src/infrastructure/dto/create/create-permission-groups-mappings.dto';
-import { UpdatePermissionGroupsMappingsDto } from 'src/infrastructure/dto/update/update-permission-groups-mappings.dto';
+import { CreatePermissionGroupsMappingsDto } from 'src/application/base/permission-groups-mappings/dto/create-permission-groups-mappings.dto';
+import { UpdatePermissionGroupsMappingsDto } from 'src/application/base/permission-groups-mappings/dto/update-permission-groups-mappings.dto';
 
 
 @ApiTags('PermissionGroupsMappings')

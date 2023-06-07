@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InvoicePropertiesService } from './invoice-properties.service';
 import { InvoiceProperties } from 'src/infrastructure/database/entities/InvoiceProperties';
-import { CreateInvoicePropertiesDto } from 'src/infrastructure/dto/create/create-invoice-properties.dto';
-import { UpdateInvoicePropertiesDto } from 'src/infrastructure/dto/update/update-invoice-properties.dto';
+import { CreateInvoicePropertiesDto } from 'src/application/base/invoice-properties/dto/create-invoice-properties.dto';
+import { UpdateInvoicePropertiesDto } from 'src/application/base/invoice-properties/dto/update-invoice-properties.dto';
 
 @ApiTags('Invoice Properties')
 @Controller('invoice-properties')

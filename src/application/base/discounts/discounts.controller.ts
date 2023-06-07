@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Discounts } from 'src/infrastructure/database/entities/Discounts';
 import { DiscountsService } from './discounts.service';
-import { CreateDiscountDto } from 'src/infrastructure/dto/create/create-discounts.dto';
-import { UpdateDiscountDto } from 'src/infrastructure/dto/update/update-discounts.dto';
+import { CreateDiscountDto } from 'src/application/base/discounts/dto/create-discounts.dto';
+import { UpdateDiscountDto } from 'src/application/base/discounts/dto/update-discounts.dto';
 
 
 @ApiTags('Discounts')

@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { RoleMapping } from 'src/infrastructure/database/entities/RoleMapping';
 import { RoleMappingService } from './role-mapping.service';
-import { CreateRoleMappingDto } from 'src/infrastructure/dto/create/create-role-mapping.dto';
-import { UpdateRoleMappingDto } from 'src/infrastructure/dto/update/update-role-mapping.dto';
+import { CreateRoleMappingDto } from 'src/application/base/role-mapping/dto/create-role-mapping.dto';
+import { UpdateRoleMappingDto } from 'src/application/base/role-mapping/dto/update-role-mapping.dto';
 
 
 @ApiTags('RoleMapping')

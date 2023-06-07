@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { DebugLog } from 'src/infrastructure/database/entities/DebugLog';
 import { DebugLogService } from './debug-log.service';
-import { CreateDebugLogDto } from 'src/infrastructure/dto/create/create-debug-log.dto';
-import { UpdateDebugLogDto } from 'src/infrastructure/dto/update/update-debug-log.dto';
+import { CreateDebugLogDto } from 'src/application/base/debug-log/dto/create-debug-log.dto';
+import { UpdateDebugLogDto } from 'src/application/base/debug-log/dto/update-debug-log.dto';
 
 
 @ApiTags('DebugLog')

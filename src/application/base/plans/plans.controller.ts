@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Plans } from 'src/infrastructure/database/entities/Plans';
 import { PlansService } from './plans.service';
-import { CreatePlanDto } from 'src/infrastructure/dto/create/create-plan.dto';
-import { UpdatePlanDto } from 'src/infrastructure/dto/update/update-plan.dto';
+import { CreatePlanDto } from 'src/application/base/plans/dto/create-plan.dto';
+import { UpdatePlanDto } from 'src/application/base/plans/dto/update-plan.dto';
 
 
 @ApiTags('Plans')

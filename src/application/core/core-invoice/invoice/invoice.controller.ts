@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InvoiceService } from './invoice.service';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
-import { CreateInvoiceDto } from 'src/infrastructure/dto/create/create-invoice.dto';
-import { UpdateInvoiceDto } from 'src/infrastructure/dto/update/update-invoice.dto';
+import { CreateInvoiceDto } from 'src/application/base/invoices/dto/create-invoice.dto';
+import { UpdateInvoiceDto } from 'src/application/base/invoices/dto/update-invoice.dto';
 
 @ApiTags('Invoice Controller')
 @Controller('invoice')

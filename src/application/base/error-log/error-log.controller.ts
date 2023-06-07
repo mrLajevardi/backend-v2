@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ErrorLog } from 'src/infrastructure/database/entities/ErrorLog';
 import { ErrorLogService } from './error-log.service';
-import { CreateErrorLogDto } from 'src/infrastructure/dto/create/create-error-log.dto';
-import { UpdateErrorLogDto } from 'src/infrastructure/dto/update/update-error-log.dto';
+import { CreateErrorLogDto } from 'src/application/base/error-log/dto/create-error-log.dto';
+import { UpdateErrorLogDto } from 'src/application/base/error-log/dto/update-error-log.dto';
 
 
 @ApiTags('ErrorLog')

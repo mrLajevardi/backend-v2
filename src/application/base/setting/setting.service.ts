@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Setting } from 'src/infrastructure/database/entities/Setting';
-import { CreateSettingDto } from 'src/infrastructure/dto/create/create-setting.dto';
-import { UpdateSettingDto } from 'src/infrastructure/dto/update/update-setting.dto';
+import { CreateSettingDto } from 'src/application/base/setting/dto/create-setting.dto';
+import { UpdateSettingDto } from 'src/application/base/setting/dto/update-setting.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

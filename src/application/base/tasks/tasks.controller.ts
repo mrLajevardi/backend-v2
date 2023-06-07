@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Tasks } from 'src/infrastructure/database/entities/Tasks';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto } from 'src/infrastructure/dto/create/create-task.dto';
-import { UpdateTaskDto } from 'src/infrastructure/dto/update/update-task.dto';
+import { CreateTaskDto } from 'src/application/base/tasks/dto/create-task.dto';
+import { UpdateTaskDto } from 'src/application/base/tasks/dto/update-task.dto';
 
 
 @ApiTags('Tasks')

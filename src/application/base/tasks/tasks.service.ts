@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Tasks } from 'src/infrastructure/database/entities/Tasks';
-import { CreateTaskDto } from 'src/infrastructure/dto/create/create-task.dto';
-import { UpdateTaskDto } from 'src/infrastructure/dto/update/update-task.dto';
+import { CreateTaskDto } from 'src/application/base/tasks/dto/create-task.dto';
+import { UpdateTaskDto } from 'src/application/base/tasks/dto/update-task.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

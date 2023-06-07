@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Groups } from 'src/infrastructure/database/entities/Groups';
 import { GroupsService } from './groups.service';
-import { CreateGroupDto } from 'src/infrastructure/dto/create/create-group.dto';
-import { UpdateGroupDto } from 'src/infrastructure/dto/update/update-group.dto';
+import { CreateGroupDto } from 'src/application/base/groups/dto/create-group.dto';
+import { UpdateGroupDto } from 'src/application/base/groups/dto/update-group.dto';
 
 
 @ApiTags('Groups')

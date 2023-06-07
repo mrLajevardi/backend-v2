@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Scope } from 'src/infrastructure/database/entities/Scope';
 import { ScopeService } from './scope.service';
-import { CreateScopeDto } from 'src/infrastructure/dto/create/create-scope.dto';
-import { UpdateScopeDto } from 'src/infrastructure/dto/update/update-scope.dto';
+import { CreateScopeDto } from 'src/application/base/scope/dto/create-scope.dto';
+import { UpdateScopeDto } from 'src/application/base/scope/dto/update-scope.dto';
 
 
 @ApiTags('Scope')

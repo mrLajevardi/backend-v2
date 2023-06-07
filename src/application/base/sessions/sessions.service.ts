@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sessions } from 'src/infrastructure/database/entities/Sessions';
-import { CreateSessionsDto } from 'src/infrastructure/dto/create/create-sessions.dto';
-import { UpdateSessionsDto } from 'src/infrastructure/dto/update/update-sessions.dto';
+import { CreateSessionsDto } from 'src/application/base/sessions/dto/create-sessions.dto';
+import { UpdateSessionsDto } from 'src/application/base/sessions/dto/update-sessions.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

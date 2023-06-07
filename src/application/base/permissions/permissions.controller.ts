@@ -2,8 +2,8 @@ import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Permissions } from 'src/infrastructure/database/entities/Permissions';
 import { PermissionsService } from './permissions.service';
-import { CreatePermissionDto } from 'src/infrastructure/dto/create/create-permission.dto';
-import { UpdatePermissionDto } from 'src/infrastructure/dto/update/update-permission.dto';
+import { CreatePermissionDto } from 'src/application/base/permissions/dto/create-permission.dto';
+import { UpdatePermissionDto } from 'src/application/base/permissions/dto/update-permission.dto';
 
 
 @ApiTags('Permissions')
