@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthService } from './application/base/auth/auth.service';
+import { AuthService } from './application/core/auth/auth.service';
 import { UserService } from './application/base/user/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { LoginDto } from './application/base/auth/dto/login.dto';
+import { LoginDto } from './application/core/auth/dto/login.dto';
 import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './application/base/auth/guard/jwt-auth.guard';
+import { JwtAuthGuard } from './application/core/auth/guard/jwt-auth.guard';
 import { TestDatabaseModule } from './infrastructure/database/test-database.module';
 import { TestDataService } from './infrastructure/database/test-data.service';
 

@@ -1,11 +1,11 @@
 import { AbilityFactory, Action } from './ability.factory';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
-import { AclService } from '../acl/acl.service';
+import { AclService } from 'src/application/base/acl/acl.service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserService } from '../user/user.service';
+import { UserService } from '../../base/user/user.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { InvoicesService } from '../invoices/invoices.service';
+import { InvoicesService } from '../../base/invoices/invoices.service';
 import { User } from 'src/infrastructure/database/test-entities/User';
 
 describe('AbilityFactory', () => {

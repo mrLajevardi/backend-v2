@@ -15,8 +15,8 @@ import {
 } from '@nestjs/swagger';
 import { Acl } from 'src/infrastructure/database/test-entities/Acl';
 import { AclService } from './acl.service';
-import { CreateAclDto } from 'src/application/base/acl/dto/create-acl.dto';
-import { UpdateAclDto } from 'src/application/base/acl/dto/update-acl.dto';
+import { CreateAclDto } from './dto/create-acl.dto';
+import { UpdateAclDto } from './dto/update-acl.dto';
 
 @ApiTags('Acl')
 @Controller('acl')

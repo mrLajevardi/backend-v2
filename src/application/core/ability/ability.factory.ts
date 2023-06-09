@@ -1,7 +1,7 @@
 import { createMongoAbility, Subject, AbilityBuilder } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
-import { AclService } from 'src/application/base/acl/acl.service';
+import { AclService } from '../../base/acl/acl.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 
 export enum Action {
