@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AbilityFactory } from '../../core/ability/ability.factory';
-import { AclService } from '../../core/acl/acl.service';
+import { AclService } from '../acl/acl.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
