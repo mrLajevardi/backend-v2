@@ -25,6 +25,12 @@ export class ConfigsService {
     return result;
   }
 
+  // Count the items 
+  async count(options?: FindManyOptions): Promise<number> {
+    const result = await this.repository.count(options);
+    return result;
+  }
+
   // Find one item
   async findOne(options?: FindOneOptions): Promise<Configs> {
     const result = await this.repository.findOne(options);

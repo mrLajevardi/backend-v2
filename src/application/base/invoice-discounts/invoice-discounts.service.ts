@@ -25,6 +25,12 @@ export class InvoiceDiscountsService {
     return result;
   }
 
+  // Count the items 
+  async count(options?: FindManyOptions): Promise<number> {
+    const result = await this.repository.count(options);
+    return result;
+  }
+  
   // Find one item
   async findOne(options?: FindOneOptions): Promise<InvoiceDiscounts> {
     const result = await this.repository.findOne(options);
