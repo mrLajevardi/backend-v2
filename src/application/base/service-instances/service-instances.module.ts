@@ -6,14 +6,8 @@ import { ServiceTypesService } from '../service-types/service-types.service';
 import { ServiceTypesModule } from '../service-types/service-types.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    ServiceTypesModule
-  ],
-  providers: [
-    ServiceInstancesService,
-    ServiceTypesService,
-  ],
+  imports: [DatabaseModule, ServiceTypesModule],
+  providers: [ServiceInstancesService, ServiceTypesService],
   controllers: [ServiceInstancesController],
 })
 export class ServiceInstancesModule {}

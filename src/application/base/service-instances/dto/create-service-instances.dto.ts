@@ -20,8 +20,7 @@ export class CreateServiceInstancesDto {
 
   @IsNumber()
   @ApiProperty()
-  serviceType : ServiceTypes
-
+  serviceType: ServiceTypes;
 
   @IsOptional()
   @IsNumber()
@@ -85,6 +84,4 @@ export class CreateServiceInstancesDto {
   @IsDate()
   @ApiProperty()
   nextPayg?: Date;
-
-
 }

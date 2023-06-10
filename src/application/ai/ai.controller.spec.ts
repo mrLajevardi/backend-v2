@@ -16,13 +16,13 @@ describe('AiController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [
-        AiService, 
+        AiService,
         UserService,
         ServicePropertiesService,
         ServiceInstancesService,
         ServiceTypesService,
         AiTransactionsLogsService,
-        SettingService
+        SettingService,
       ],
       controllers: [AiController],
     }).compile();

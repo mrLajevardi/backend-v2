@@ -25,13 +25,12 @@ export class RoleService {
     return result;
   }
 
-
-  // Count the items 
+  // Count the items
   async count(options?: FindManyOptions): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
-  
+
   // Find one item
   async findOne(options?: FindOneOptions): Promise<Role> {
     const result = await this.repository.findOne(options);

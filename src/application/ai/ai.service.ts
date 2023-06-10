@@ -10,17 +10,24 @@ import { invalidUseRequestPerMonth } from 'src/infrastructure/exceptions/invalid
 import { AiTransactionsLogsService } from '../base/ai-transactions-logs/ai-transactions-logs.service';
 import { SettingService } from '../base/setting/setting.service';
 import { invalidServiceInstanceID } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
-import { addMonths, dayDiff, monthDiff } from 'src/infrastructure/helpers/date-time.helper';
+import {
+  addMonths,
+  dayDiff,
+  monthDiff,
+} from 'src/infrastructure/helpers/date-time.helper';
+import { ConfigsService } from '../base/configs/configs.service';
+import { invalidAradAIConfig } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
 
 @Injectable()
 export class AiService {
   constructor(
     private readonly userService: UserService,
-    private readonly servicePropertiesService : ServicePropertiesService,
-    private readonly serviceInstancesService : ServiceInstancesService,
-    private readonly aiTransactionLogsService : AiTransactionsLogsService,
-    private readonly settingService : SettingService,
-    ) {}
+    private readonly servicePropertiesService: ServicePropertiesService,
+    private readonly serviceInstancesService: ServiceInstancesService,
+    private readonly aiTransactionLogsService: AiTransactionsLogsService,
+    private readonly settingService: SettingService,
+    private readonly configsService: ConfigsService,
+  ) {}
 
   async verifyToken(token: string) {
     const JWT_SECRET_KEY =
@@ -29,7 +36,7 @@ export class AiService {
     return await jwt.verify(token, JWT_SECRET_KEY);
   }
 
-  async checkAIToken(token: string) : Promise<boolean> {
+  async checkAIToken(token: string): Promise<boolean> {
     const verified = await this.verifyToken(token)
       .then((res) => {
         return res;
@@ -52,15 +59,14 @@ export class AiService {
     }
 
     const serviceProperties = await this.servicePropertiesService.findOne({
-      where:
-      {
+      where: {
         and: [
-          {Value: {like: '%'+token+'%'}},
-          {PropertyKey: {like: '%aradAi%'}},
+          { Value: { like: '%' + token + '%' } },
+          { PropertyKey: { like: '%aradAi%' } },
         ],
       },
     });
-    
+
     if (isEmpty(serviceProperties)) {
       throw new invalidToken();
     }
@@ -71,70 +77,86 @@ export class AiService {
       },
     });
 
-    if (isEmpty(verified.costPerRequest) || isEmpty(verified.createdDate) ||
-    (verified.qualityPlanCode != 'demo'&& (serviceInstance.isDisabled || serviceInstance.isDeleted))) {
-      throw new invalidToken(); 
+    if (
+      isEmpty(verified.costPerRequest) ||
+      isEmpty(verified.createdDate) ||
+      (verified.qualityPlanCode != 'demo' &&
+        (serviceInstance.isDisabled || serviceInstance.isDeleted))
+    ) {
+      throw new invalidToken();
     }
     const constPerRequest = parseInt(verified.costPerRequest);
 
     if (constPerRequest > user.credit) {
-      throw new NotEnoughCreditException(); 
+      throw new NotEnoughCreditException();
     }
     if (verified.qualityPlanCode == 'demo') {
       // Muximum use per day
-      const usePerDay = await this.usedPerDay(serviceProperties.serviceInstanceId);
-      if (verified.maxRequestPerDay != 'unlimited' && verified.maxRequestPerDay < usePerDay) {
+      const usePerDay = await this.usedPerDay(
+        serviceProperties.serviceInstanceId,
+      );
+      if (
+        verified.maxRequestPerDay != 'unlimited' &&
+        verified.maxRequestPerDay < usePerDay
+      ) {
         throw new invalidUseRequestPerDay();
       }
       // Muximum use pre month
-      const usePerMonth = await this.usedPerMonth(serviceProperties.serviceInstanceId, verified.createdDate);
-      if (verified.maxRequestPerMonth != 'unlimited' && verified.maxRequestPerMonth < usePerMonth) {
+      const usePerMonth = await this.usedPerMonth(
+        serviceProperties.serviceInstanceId,
+        verified.createdDate,
+      );
+      if (
+        verified.maxRequestPerMonth != 'unlimited' &&
+        verified.maxRequestPerMonth < usePerMonth
+      ) {
         throw new invalidUseRequestPerMonth();
       }
     }
-    return true;; 
-  };
+    return true;
+  }
 
-
-  async usedPerDay(serviceInstanceId : string) {
+  async usedPerDay(serviceInstanceId: string) {
     const todayDate = new Date().toISOString().slice(0, 10);
     return await this.aiTransactionLogsService.count({
       where: {
         and: [
-          {ServiceInstanceID: serviceInstanceId},
-          {DateTime: {'gte': todayDate + 'T00:00:00'}},
-          {DateTime: {'lte': todayDate + 'T23:11:59'}},
+          { ServiceInstanceID: serviceInstanceId },
+          { DateTime: { gte: todayDate + 'T00:00:00' } },
+          { DateTime: { lte: todayDate + 'T23:11:59' } },
         ],
-      }
-    });    
+      },
+    });
   }
 
-  async usedPerMonth(serviceInstanceId : string , createdDate : Date ) {
+  async usedPerMonth(serviceInstanceId: string, createdDate: Date) {
     const todayDate = new Date().toISOString().slice(0, 10);
     const difference = monthDiff(new Date(createdDate), new Date(todayDate));
-    const fromDay = new Date(addMonths(createdDate, difference)).toISOString().slice(0, 10);
-    const endDay = addMonths(createdDate, difference + 1).toISOString().slice(0, 10);
-  
-    return await this.aiTransactionLogsService.count({
-      where : {
-        and: [
-          {ServiceInstanceID: serviceInstanceId},
-          {DateTime: {'gte': fromDay + 'T00:00:00'}},
-          {DateTime: {'lte': endDay + 'T23:11:59'}},
-        ],
-      }
-    });
-  };
-  
+    const fromDay = new Date(addMonths(createdDate, difference))
+      .toISOString()
+      .slice(0, 10);
+    const endDay = addMonths(createdDate, difference + 1)
+      .toISOString()
+      .slice(0, 10);
 
-  async allRequestused (serviceInstanceID) {
+    return await this.aiTransactionLogsService.count({
+      where: {
+        and: [
+          { ServiceInstanceID: serviceInstanceId },
+          { DateTime: { gte: fromDay + 'T00:00:00' } },
+          { DateTime: { lte: endDay + 'T23:11:59' } },
+        ],
+      },
+    });
+  }
+
+  async allRequestused(serviceInstanceID) {
     return await this.aiTransactionLogsService.count({
       where: {
         serviceInstanceId: serviceInstanceID,
-      }
+      },
     });
-  };
-  
+  }
 
   sumAllServiceUsed(eachServiceUsed) {
     let numberOfAllServiceUsed = 0;
@@ -146,9 +168,9 @@ export class AiService {
       }
     });
     return numberOfAllServiceUsed;
-  };
-  
-  async createDemoToken(userId, token){
+  }
+
+  async createDemoToken(userId, token) {
     return await this.settingService.create({
       userId: userId,
       key: 'aradAi.tokenDemo',
@@ -156,13 +178,11 @@ export class AiService {
       insertTime: new Date(),
       updateTime: new Date(),
     });
-  };
-  
+  }
 
-
-  async getAradAIDashboard(userId : number , serviceInstanceId : string ) {
+  async getAradAIDashboard(userId: number, serviceInstanceId: string) {
     const serviceProperties = await this.servicePropertiesService.findOne({
-      where: {ServiceInstanceID: serviceInstanceId},
+      where: { ServiceInstanceID: serviceInstanceId },
     });
 
     if (isEmpty(serviceProperties)) {
@@ -170,20 +190,30 @@ export class AiService {
     }
 
     const token = serviceProperties.value;
-    const verified = await this.verifyToken(token).then((res) => {
-      return res;
-    }).catch((err) => {
-      return err;
-    });
+    const verified = await this.verifyToken(token)
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        return err;
+      });
     if (!verified) {
-      throw new invalidToken(); 
+      throw new invalidToken();
     }
     const user = await this.userService.findById(userId);
     const usePerDay = await this.usedPerDay(serviceInstanceId);
-    const usePerMonth = await this.usedPerMonth(serviceInstanceId, verified.createdDate);
+    const usePerMonth = await this.usedPerMonth(
+      serviceInstanceId,
+      verified.createdDate,
+    );
     const remainingDays = await dayDiff(verified.expireDate);
-    const numberOfServiceCalled = this.serviceInstancesService.spCountAradAiUsedEachService(serviceProperties.serviceInstanceId);
-    const allRequestuse = await this.allRequestused(serviceProperties.serviceInstanceId);
+    const numberOfServiceCalled =
+      this.serviceInstancesService.spCountAradAiUsedEachService(
+        serviceProperties.serviceInstanceId,
+      );
+    const allRequestuse = await this.allRequestused(
+      serviceProperties.serviceInstanceId,
+    );
     const constPerRequest = parseInt(verified.costPerRequest);
     const creditUsed = allRequestuse * constPerRequest;
     const creditRemaining = user.credit;
@@ -198,5 +228,33 @@ export class AiService {
       numberOfServiceCalled: numberOfServiceCalled,
       QualityPlan: verified,
     };
+  }
+
+  async getAiServiceInfo(userId, serviceId, qualityPlanCode, duration) {
+    const aiServiceConfigs = await this.configsService.find({
+      where: {
+        and: [
+          { PropertyKey: { like: '%' + qualityPlanCode + '%' } },
+          { ServiceTypeID: serviceId },
+        ],
+      },
+    });
+    const ServiceAiInfo = {
+      qualityPlanCode,
+      createdDate: new Date().toISOString(),
+      userId,
+      duration,
+      expireDate: addMonths(new Date(), duration),
+    };
+    if (isEmpty(aiServiceConfigs)) {
+      throw new invalidAradAIConfig();
+    }
+
+    aiServiceConfigs.forEach((element) => {
+      const key = element.propertyKey.split('.').slice(-1)[0];
+      const item = element.value;
+      ServiceAiInfo[key] = item;
+    });
+    return ServiceAiInfo;
   }
 }

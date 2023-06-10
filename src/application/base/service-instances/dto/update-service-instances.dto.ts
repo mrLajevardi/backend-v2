@@ -82,6 +82,5 @@ export class UpdateServiceInstancesDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty()
-  serviceTypeId? : number
-
+  serviceTypeId?: number;
 }

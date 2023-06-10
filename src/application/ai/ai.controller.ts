@@ -14,7 +14,7 @@ export class AiController {
     @Param('token') token: string,
     @Query() options: object,
   ): Promise<CheckTokenDto> {
-    const result =  await this.service.checkAIToken(token);
+    const result = await this.service.checkAIToken(token);
     return { tokenValidity: result };
   }
 
@@ -22,7 +22,7 @@ export class AiController {
   // createAITransactionsLogs(
   //   @Body() data: CreateAiTransactionsLogsDto,
   // ): void {
-    
+
   // }
 
   // @Post('aradAi')

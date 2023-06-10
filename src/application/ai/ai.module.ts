@@ -14,7 +14,7 @@ import { ServiceTypesService } from '../base/service-types/service-types.service
   imports: [DatabaseModule, UserModule],
   controllers: [AiController],
   providers: [
-    AiService, 
+    AiService,
     UserService,
     ServicePropertiesService,
     ServiceInstancesService,

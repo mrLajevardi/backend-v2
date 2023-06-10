@@ -1,4 +1,11 @@
-import { IsInt, IsNumber, IsString, IsBoolean, IsDate, IsOptional } from 'class-validator';
+import {
+  IsInt,
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsDate,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateInvoiceDto {

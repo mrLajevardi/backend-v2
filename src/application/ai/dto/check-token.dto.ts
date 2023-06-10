@@ -1,3 +1,3 @@
-class CheckTokenDto { 
-    tokenValidity: boolean 
+class CheckTokenDto {
+  tokenValidity: boolean;
 }

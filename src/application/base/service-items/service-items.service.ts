@@ -25,12 +25,12 @@ export class ServiceItemsService {
     return result;
   }
 
-  // Count the items 
+  // Count the items
   async count(options?: FindManyOptions): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
-  
+
   // Find one item
   async findOne(options?: FindOneOptions): Promise<ServiceItems> {
     const result = await this.repository.findOne(options);
@@ -42,6 +42,19 @@ export class ServiceItemsService {
     const newItem = plainToClass(ServiceItems, dto);
     const createdItem = this.repository.create(newItem);
     await this.repository.save(createdItem);
+  }
+
+  // Create Service Items
+  async createServiceItems(serviceInstanceID, items, data) {
+    for (const item of Object.keys(items)) {
+      let dto: CreateServiceItemsDto;
+      const itemTitle = items[item].Code;
+      dto.quantity = data[itemTitle];
+      dto.itemTypeId = items[item].ID;
+      dto.serviceInstanceId = serviceInstanceID;
+      dto.itemTypeCode = items[item].Code;
+      await this.create(dto);
+    }
   }
 
   // Update an Item using updateDTO

@@ -5,15 +5,21 @@ import { ServiceTypesService } from '../service-types/service-types.service';
 import { ServiceInstancesController } from './service-instances.controller';
 
 describe('ServiceInstancessService', () => {
-  let controller : ServiceInstancesController;
+  let controller: ServiceInstancesController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [ServiceInstancesService, ServiceTypesService, ServiceInstancesController],
+      providers: [
+        ServiceInstancesService,
+        ServiceTypesService,
+        ServiceInstancesController,
+      ],
     }).compile();
 
-    controller = module.get<ServiceInstancesController>(ServiceInstancesController);
+    controller = module.get<ServiceInstancesController>(
+      ServiceInstancesController,
+    );
   });
 
   it('should be defined', () => {

@@ -6,7 +6,7 @@ export class CreateOrganizationDto {
   @ApiProperty()
   @IsOptional()
   id?: number;
-  
+
   @IsString()
   @ApiProperty()
   name: string;

@@ -25,7 +25,7 @@ export class PermissionMappingsService {
     return result;
   }
 
-  // Count the items 
+  // Count the items
   async count(options?: FindManyOptions): Promise<number> {
     const result = await this.repository.count(options);
     return result;

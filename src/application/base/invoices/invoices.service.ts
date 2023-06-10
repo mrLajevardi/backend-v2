@@ -25,12 +25,12 @@ export class InvoicesService {
     return result;
   }
 
-  // Count the items 
+  // Count the items
   async count(options?: FindManyOptions): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
-  
+
   // Find one item
   async findOne(options?: FindOneOptions): Promise<Invoices> {
     const result = await this.repository.findOne(options);
@@ -38,10 +38,11 @@ export class InvoicesService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateInvoiceDto) {
+  async create(dto: CreateInvoiceDto): Promise<number> {
     const newItem = plainToClass(Invoices, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    const result = await this.repository.save(createdItem);
+    return result.id;
   }
 
   // Update an Item using updateDTO

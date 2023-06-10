@@ -16,7 +16,7 @@ export class ServiceInstancesService {
   constructor(
     @InjectRepository(ServiceInstances)
     private readonly repository: Repository<ServiceInstances>,
-    private readonly serviceTypeService : ServiceTypesService,
+    private readonly serviceTypeService: ServiceTypesService,
   ) {}
 
   // Find One Item by its ID
@@ -31,24 +31,26 @@ export class ServiceInstancesService {
     return result;
   }
 
-  // Exec Sp_CountAradAIUsedEachService 
-  async spCountAradAiUsedEachService(instanceId : string ) : Promise<number>  {
-    const query = 'EXEC Sp_CountAradAIUsedEachService @ServiceInstanceID=\'' + instanceId + '\'';
+  // Exec Sp_CountAradAIUsedEachService
+  async spCountAradAiUsedEachService(instanceId: string): Promise<number> {
+    const query =
+      "EXEC Sp_CountAradAIUsedEachService @ServiceInstanceID='" +
+      instanceId +
+      "'";
     try {
       const result = await this.repository.query(query);
       return result;
-    }catch(err){
-      throw new DatabaseErrorException("sp_count problem", err);
+    } catch (err) {
+      throw new DatabaseErrorException('sp_count problem', err);
     }
   }
 
-
-  // Count the items 
+  // Count the items
   async count(options?: FindManyOptions): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
-  
+
   // Find one item
   async findOne(options?: FindOneOptions): Promise<ServiceInstances> {
     const result = await this.repository.findOne(options);
@@ -64,20 +66,24 @@ export class ServiceInstancesService {
   }
 
   //create service instance
-  async createServiceInstance(userId : number , serviceTypeID : string , duration : number ) {
-    let expireDate = null
-    if (! isEmpty(duration)) {
-        expireDate = addMonths(new Date(), duration)
+  async createServiceInstance(
+    userId: number,
+    serviceTypeID: string,
+    duration: number,
+  ) {
+    let expireDate = null;
+    if (!isEmpty(duration)) {
+      expireDate = addMonths(new Date(), duration);
     }
     const lastServiceInstanceId = await this.findOne({
-        where:{
-          UserID: userId,
-        },
-        order: { Index : -1 }
-    })
+      where: {
+        UserID: userId,
+      },
+      order: { Index: -1 },
+    });
 
-    const index = lastServiceInstanceId  ? lastServiceInstanceId.index + 1 : 0;
-    let dto : CreateServiceInstancesDto;
+    const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
+    let dto: CreateServiceInstancesDto;
     const serviceType = await this.serviceTypeService.findById(serviceTypeID);
     dto = {
       id: 1,
@@ -87,10 +93,10 @@ export class ServiceInstancesService {
       createDate: new Date(),
       lastUpdateDate: new Date(),
       expireDate: expireDate,
-      index: index
+      index: index,
     };
     const serivce = await this.create(dto);
-    return Promise.resolve(serivce.id)
+    return Promise.resolve(serivce.id);
   }
 
   // Update an Item using updateDTO

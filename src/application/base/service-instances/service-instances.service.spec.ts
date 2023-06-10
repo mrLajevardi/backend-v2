@@ -10,20 +10,18 @@ import { CreateServiceTypesDto } from '../service-types/dto/create-service-types
 import { CreateServiceInstancesDto } from './dto/create-service-instances.dto';
 
 describe('ServiceInstancesController', () => {
-  let service : ServiceInstancesService;
-  let serviceTypesService : ServiceTypesService; 
-  let testDataService : TestDataService;
+  let service: ServiceInstancesService;
+  let serviceTypesService: ServiceTypesService;
+  let testDataService: TestDataService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule,
-      ],
+      imports: [TestDatabaseModule],
       providers: [
-        ServiceInstancesService, 
+        ServiceInstancesService,
         ServiceTypesService,
         ServiceItemsService,
-        ServicePropertiesService
+        ServicePropertiesService,
       ],
       controllers: [ServiceInstancesController],
     }).compile();
@@ -32,30 +30,29 @@ describe('ServiceInstancesController', () => {
     serviceTypesService = module.get<ServiceTypesService>(ServiceTypesService);
     testDataService = module.get<TestDataService>(TestDataService);
 
-    await testDataService.seedTestData(); 
-
+    await testDataService.seedTestData();
   });
-
- 
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
   it('should create serviceInstance', async () => {
-    const dto : CreateServiceTypesDto = {
-      id: "1",
-      title: "test-service-type",
+    const dto: CreateServiceTypesDto = {
+      id: '1',
+      title: 'test-service-type',
       baseFee: 12,
-      createInstanceScript: "string",
+      createInstanceScript: 'string',
       verifyInstance: true,
       maxAvailable: 1,
-      isPayg: true
-    }
+      isPayg: true,
+    };
     await serviceTypesService.create(dto);
-    const serviceType = await serviceTypesService.findOne({ where : {title: "test-service-type"}});
+    const serviceType = await serviceTypesService.findOne({
+      where: { title: 'test-service-type' },
+    });
     console.log(serviceType);
-    const siDto : CreateServiceInstancesDto = {
+    const siDto: CreateServiceInstancesDto = {
       id: 2,
       userId: 1,
       serviceType: serviceType,
@@ -63,12 +60,12 @@ describe('ServiceInstancesController', () => {
       createDate: new Date(),
       lastUpdateDate: new Date(),
       expireDate: new Date(),
-      index: 1
+      index: 1,
     };
     siDto.serviceType = serviceType;
 
-    const result = await service.create(siDto); 
+    const result = await service.create(siDto);
     expect(result.id).toBe('2');
     expect(result.serviceType.id).toBe('1');
-  })
+  });
 });

@@ -6,7 +6,7 @@ export class CreatePermissionDto {
   @ApiProperty()
   @IsOptional()
   id?: number;
-  
+
   @IsString()
   @ApiProperty()
   name: string;

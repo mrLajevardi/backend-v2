@@ -50,9 +50,9 @@ import { AbilityModule } from './application/core/ability/ability.module';
     ConfigModule.forRoot({
       load: [configurations],
     }),
-    //infrastructure 
+    //infrastructure
     DatabaseModule,
-    // tables 
+    // tables
     UserModule,
     AclModule,
     AccessTokenModule,
@@ -87,7 +87,7 @@ import { AbilityModule } from './application/core/ability/ability.module';
     TasksModule,
     TicketsModule,
     TransactionsModule,
-    //core 
+    //core
     AuthModule,
     AiModule,
     VastModule,
