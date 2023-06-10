@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidServiceInstanceID extends HttpException {
+export class InvalidServiceInstanceIdException extends HttpException {
   constructor(message = 'invalid serviceinstance ID', cause?: Error) {
     super(
       {

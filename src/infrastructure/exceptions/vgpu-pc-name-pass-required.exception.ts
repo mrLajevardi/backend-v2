@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class vgpuPcNamePassRequired extends HttpException {
+export class VgpuPcNamePassRequired extends HttpException {
   constructor(message = 'pcName and pcPassword is required', cause?: Error) {
     super(
       {

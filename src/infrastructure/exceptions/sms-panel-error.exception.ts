@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class smsPanelError extends HttpException {
+export class SmsPanelErrorException extends HttpException {
   constructor(message = 'sms not send', cause?: Error) {
     super(
       {

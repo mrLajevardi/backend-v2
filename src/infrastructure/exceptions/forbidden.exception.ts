@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class forbidden extends HttpException {
+export class ForbiddenException extends HttpException {
   constructor(message = 'Forbidden Access', cause?: Error) {
     super(
       {

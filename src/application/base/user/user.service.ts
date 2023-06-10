@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
@@ -96,4 +96,43 @@ export class UserService {
     }
     return undefined;
   }
+
+  async checkUserCredit (costs , userId, options, serviceType) {
+    try {
+      const user = await this.findById(userId);
+      const userCredit = user.credit;
+      console.log(costs);
+      if (userCredit >= costs) {
+        const updatedCredit = userCredit - costs;
+        // Implement 
+        /** Should be implemented  */
+throw(new InternalServerErrorException('complete the code and remove comments '));
+       // const updateResult = await this.repository.updateAll({id: userId}, {credit: updatedCredit});
+        //MUST BE IMPLEMENTED 
+
+        // ****** 
+
+
+        // await logger.info(
+        //     'services',
+        //     'buyService',
+        //     {
+        //       costs,
+        //       serviceType,
+        //       _object: userId,
+        //     },
+        //     {...options.locals},
+        // );
+        // if (updateResult.count < 1) {
+        //   return Promise.reject(new Error('not updated'));
+        // }
+        return Promise.resolve(true);
+      } else {
+        return Promise.resolve(false);
+      }
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  };
+
 }

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class unavailableResource extends HttpException {
+export class UnavailableResource extends HttpException {
   constructor(message = 'resource is unavailable', cause?: Error) {
     super(
       {

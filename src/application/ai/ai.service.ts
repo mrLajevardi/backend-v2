@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { invalidToken } from 'src/infrastructure/exceptions/invalid-token.exception';
+import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { UserService } from '../base/user/user.service';
 import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
 import { isEmpty } from 'class-validator';
 import { ServiceInstancesService } from '../base/service-instances/service-instances.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
-import { invalidUseRequestPerDay } from 'src/infrastructure/exceptions/invalid-use-request-per-day.exception';
-import { invalidUseRequestPerMonth } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
+import { InvalidUseRequestPerDayException } from 'src/infrastructure/exceptions/invalid-use-request-per-day.exception';
+import { InvalidUseRequestPerMonthException } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
 import { AiTransactionsLogsService } from '../base/ai-transactions-logs/ai-transactions-logs.service';
 import { SettingService } from '../base/setting/setting.service';
-import { invalidServiceInstanceID } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
+import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import {
   addMonths,
   dayDiff,
   monthDiff,
 } from 'src/infrastructure/helpers/date-time.helper';
 import { ConfigsService } from '../base/configs/configs.service';
-import { invalidAradAIConfig } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
+import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
 
 @Injectable()
 export class AiService {
@@ -42,11 +42,11 @@ export class AiService {
         return res;
       })
       .catch((err) => {
-        throw new invalidToken(err);
+        throw new InvalidTokenException(err);
       });
 
     if (!verified) {
-      throw new invalidToken();
+      throw new InvalidTokenException();
     }
 
     const userId = verified.userId;
@@ -55,7 +55,7 @@ export class AiService {
     const expireDate = new Date(verified.expireDate);
     const currentDate = new Date();
     if (expireDate < currentDate) {
-      throw new invalidToken();
+      throw new InvalidTokenException();
     }
 
     const serviceProperties = await this.servicePropertiesService.findOne({
@@ -68,7 +68,7 @@ export class AiService {
     });
 
     if (isEmpty(serviceProperties)) {
-      throw new invalidToken();
+      throw new InvalidTokenException();
     }
 
     const serviceInstance = await this.serviceInstancesService.findOne({
@@ -83,7 +83,7 @@ export class AiService {
       (verified.qualityPlanCode != 'demo' &&
         (serviceInstance.isDisabled || serviceInstance.isDeleted))
     ) {
-      throw new invalidToken();
+      throw new InvalidTokenException();
     }
     const constPerRequest = parseInt(verified.costPerRequest);
 
@@ -99,7 +99,7 @@ export class AiService {
         verified.maxRequestPerDay != 'unlimited' &&
         verified.maxRequestPerDay < usePerDay
       ) {
-        throw new invalidUseRequestPerDay();
+        throw new InvalidUseRequestPerDayException();
       }
       // Muximum use pre month
       const usePerMonth = await this.usedPerMonth(
@@ -110,7 +110,7 @@ export class AiService {
         verified.maxRequestPerMonth != 'unlimited' &&
         verified.maxRequestPerMonth < usePerMonth
       ) {
-        throw new invalidUseRequestPerMonth();
+        throw new InvalidUseRequestPerMonthException();
       }
     }
     return true;
@@ -186,7 +186,7 @@ export class AiService {
     });
 
     if (isEmpty(serviceProperties)) {
-      throw new invalidServiceInstanceID();
+      throw new InvalidServiceInstanceIdException();
     }
 
     const token = serviceProperties.value;
@@ -198,7 +198,7 @@ export class AiService {
         return err;
       });
     if (!verified) {
-      throw new invalidToken();
+      throw new InvalidTokenException();
     }
     const user = await this.userService.findById(userId);
     const usePerDay = await this.usedPerDay(serviceInstanceId);
@@ -247,7 +247,7 @@ export class AiService {
       expireDate: addMonths(new Date(), duration),
     };
     if (isEmpty(aiServiceConfigs)) {
-      throw new invalidAradAIConfig();
+      throw new InvalidAradAIConfigException();
     }
 
     aiServiceConfigs.forEach((element) => {

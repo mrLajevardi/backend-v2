@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidServiceParams extends HttpException {
+export class InvalidServiceParamsException extends HttpException {
   constructor(message = 'invalid service param', cause?: Error) {
     super(
       {

@@ -16,7 +16,7 @@ export class CreateInvoiceDto {
 
   @IsString()
   @ApiProperty()
-  serviceTypeId: string;
+  serviceTypeId?: string;
 
   @IsNumber()
   @ApiProperty()
@@ -24,11 +24,11 @@ export class CreateInvoiceDto {
 
   @IsNumber()
   @ApiProperty()
-  planAmount: number;
+  planAmount?: number;
 
   @IsNumber()
   @ApiProperty({ required: false })
-  planRatio: number | null;
+  planRatio?: number | null;
 
   @IsNumber()
   @ApiProperty()
@@ -52,15 +52,15 @@ export class CreateInvoiceDto {
 
   @IsDate()
   @ApiProperty()
-  endDateTime: Date;
+  endDateTime?: Date;
 
   @IsInt()
   @ApiProperty()
-  type: number;
+  type?: number;
 
   @IsString()
   @ApiProperty({ required: false })
-  name: string | null;
+  name?: string | null;
 
   @IsInt()
   @ApiProperty()

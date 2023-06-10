@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidAradAIConfig extends HttpException {
+export class InvalidAradAIConfigException extends HttpException {
   constructor(message = 'invalid arad ai config', cause?: Error) {
     super(
       {

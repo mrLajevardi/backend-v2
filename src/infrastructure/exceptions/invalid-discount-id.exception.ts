@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidDiscountId extends HttpException {
+export class InvalidDiscountIdException extends HttpException {
   constructor(message = 'invalid discount id', cause?: Error) {
     super(
       {

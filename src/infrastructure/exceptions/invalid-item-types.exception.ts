@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidItemTypes extends HttpException {
+export class InvalidItemTypesException extends HttpException {
   constructor(message = 'invalid item types', cause?: Error) {
     super(
       {

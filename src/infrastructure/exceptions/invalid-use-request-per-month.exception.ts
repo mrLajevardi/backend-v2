@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidUseRequestPerMonth extends HttpException {
+export class InvalidUseRequestPerMonthException extends HttpException {
   constructor(message = 'use more than RequestPerMonth', cause?: Error) {
     super(
       {

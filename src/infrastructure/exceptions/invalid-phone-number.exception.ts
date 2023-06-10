@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidPhoneNumber extends HttpException {
+export class InvalidPhoneNumberException extends HttpException {
   constructor(message = 'phone is invalid', cause?: Error) {
     super(
       {

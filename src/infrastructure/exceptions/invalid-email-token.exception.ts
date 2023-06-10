@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class invalidEmailToken extends HttpException {
+export class InvalidEmailTokenException extends HttpException {
   constructor(message = 'token is invalid', cause?: Error) {
     super(
       {
