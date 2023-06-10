@@ -9,6 +9,8 @@ import { invalidUseRequestPerDay } from 'src/infrastructure/exceptions/invalid-u
 import { invalidUseRequestPerMonth } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
 import { AiTransactionsLogsService } from '../base/ai-transactions-logs/ai-transactions-logs.service';
 import { SettingService } from '../base/setting/setting.service';
+import { invalidServiceInstanceID } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
+import { addMonths, dayDiff, monthDiff } from 'src/infrastructure/helpers/date-time.helper';
 
 @Injectable()
 export class AiService {
@@ -17,7 +19,7 @@ export class AiService {
     private readonly servicePropertiesService : ServicePropertiesService,
     private readonly serviceInstancesService : ServiceInstancesService,
     private readonly aiTransactionLogsService : AiTransactionsLogsService,
-    private readonly settingService : SettingService
+    private readonly settingService : SettingService,
     ) {}
 
   async verifyToken(token: string) {
@@ -109,9 +111,9 @@ export class AiService {
 
   async usedPerMonth(serviceInstanceId : string , createdDate : Date ) {
     const todayDate = new Date().toISOString().slice(0, 10);
-    const difference = this.monthDiff(new Date(createdDate), new Date(todayDate));
-    const fromDay = new Date(this.addMonths(createdDate, difference)).toISOString().slice(0, 10);
-    const endDay = this.addMonths(createdDate, difference + 1).toISOString().slice(0, 10);
+    const difference = monthDiff(new Date(createdDate), new Date(todayDate));
+    const fromDay = new Date(addMonths(createdDate, difference)).toISOString().slice(0, 10);
+    const endDay = addMonths(createdDate, difference + 1).toISOString().slice(0, 10);
   
     return await this.aiTransactionLogsService.count({
       where : {
@@ -133,33 +135,7 @@ export class AiService {
     });
   };
   
-  async dayDiff(endDate) {
-    const startDate = new Date();
-    const endADate = new Date(endDate);
-    const difference = endADate.getTime() - startDate.getTime();
-    return Math.ceil(difference / (1000 * 3600 * 24));
-  };
-  
-  monthDiff(startDate, endDate) {
-    let months;
-    months = (endDate.getFullYear() - startDate.getFullYear()) * 12;
-    months -= startDate.getMonth();
-    months += endDate.getMonth();
-    return months <= 0 ? 0 : months;
-  };
-  
-  getDaysInMonth(year, month) {
-    return new Date(year, month, 0).getDate();
-  };
-  
-  addMonths(input, months) {
-    const date = new Date(input);
-    date.setDate(1);
-    date.setMonth(date.getMonth() + months);
-    date.setDate(Math.min(new Date(input).getDate(), this.getDaysInMonth(date.getFullYear(), date.getMonth()+1)));
-    return date;
-  };
-  
+
   sumAllServiceUsed(eachServiceUsed) {
     let numberOfAllServiceUsed = 0;
     eachServiceUsed.forEach((service) => {
@@ -182,4 +158,45 @@ export class AiService {
     });
   };
   
+
+
+  async getAradAIDashboard(userId : number , serviceInstanceId : string ) {
+    const serviceProperties = await this.servicePropertiesService.findOne({
+      where: {ServiceInstanceID: serviceInstanceId},
+    });
+
+    if (isEmpty(serviceProperties)) {
+      throw new invalidServiceInstanceID();
+    }
+
+    const token = serviceProperties.value;
+    const verified = await this.verifyToken(token).then((res) => {
+      return res;
+    }).catch((err) => {
+      return err;
+    });
+    if (!verified) {
+      throw new invalidToken(); 
+    }
+    const user = await this.userService.findById(userId);
+    const usePerDay = await this.usedPerDay(serviceInstanceId);
+    const usePerMonth = await this.usedPerMonth(serviceInstanceId, verified.createdDate);
+    const remainingDays = await dayDiff(verified.expireDate);
+    const numberOfServiceCalled = this.serviceInstancesService.spCountAradAiUsedEachService(serviceProperties.serviceInstanceId);
+    const allRequestuse = await this.allRequestused(serviceProperties.serviceInstanceId);
+    const constPerRequest = parseInt(verified.costPerRequest);
+    const creditUsed = allRequestuse * constPerRequest;
+    const creditRemaining = user.credit;
+    return {
+      token,
+      usedPerDay: usePerDay,
+      allRequestused: allRequestuse,
+      usedPerMonth: usePerMonth,
+      creditUsed,
+      creditRemaining,
+      remainingDays,
+      numberOfServiceCalled: numberOfServiceCalled,
+      QualityPlan: verified,
+    };
+  }
 }

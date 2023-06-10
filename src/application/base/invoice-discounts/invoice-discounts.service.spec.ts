@@ -1,24 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { InvoiceDiscountsController } from './invoice-discounts.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { InvoiceDiscountsService } from './invoice-discounts.service';
+import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
-describe('InvoiceDiscountsController', () => {
-  let controller: InvoiceDiscountsController;
+describe('InvoiceDiscountsService', () => {
+  let service: InvoiceDiscountsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [InvoiceDiscountsService],
-      controllers: [InvoiceDiscountsController],
     }).compile();
 
-    controller = module.get<InvoiceDiscountsController>(
-      InvoiceDiscountsController,
-    );
+    service = module.get<InvoiceDiscountsService>(InvoiceDiscountsService);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

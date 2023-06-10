@@ -1,20 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TransactionsService } from './transactions.service';
+import { TransactionsController } from './transactions.controller';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { TransactionsService } from './transactions.service';
 
-describe('TransactionsService', () => {
-  let service: TransactionsService;
+describe('TransactionsController', () => {
+  let controller: TransactionsController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [TransactionsService],
+      controllers: [TransactionsController],
     }).compile();
 
-    service = module.get<TransactionsService>(TransactionsService);
+    controller = module.get<TransactionsController>(TransactionsController);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(controller).toBeDefined();
   });
 });

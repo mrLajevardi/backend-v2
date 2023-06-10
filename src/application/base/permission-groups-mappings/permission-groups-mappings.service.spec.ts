@@ -1,24 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { PermissionGroupsMappingsController } from './permission-groups-mappings.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { PermissionGroupsMappingsService } from './permission-groups-mappings.service';
+import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
-describe('PermissionGroupsMappingsController', () => {
-  let controller: PermissionGroupsMappingsController;
+describe('PermissionGroupsMappingsService', () => {
+  let service: PermissionGroupsMappingsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [PermissionGroupsMappingsService],
-      controllers: [PermissionGroupsMappingsController],
     }).compile();
 
-    controller = module.get<PermissionGroupsMappingsController>(
-      PermissionGroupsMappingsController,
+    service = module.get<PermissionGroupsMappingsService>(
+      PermissionGroupsMappingsService,
     );
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

@@ -1,20 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceInstancesService } from './service-instances.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { ServiceTypesService } from '../service-types/service-types.service';
+import { ServiceInstancesController } from './service-instances.controller';
 
 describe('ServiceInstancessService', () => {
-  let service: ServiceInstancesService;
+  let controller : ServiceInstancesController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [ServiceInstancesService],
+      providers: [ServiceInstancesService, ServiceTypesService, ServiceInstancesController],
     }).compile();
 
-    service = module.get<ServiceInstancesService>(ServiceInstancesService);
+    controller = module.get<ServiceInstancesController>(ServiceInstancesController);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(controller).toBeDefined();
   });
 });

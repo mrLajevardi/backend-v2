@@ -3,7 +3,7 @@ import { AclController } from './acl.controller';
 import { AclService } from './acl.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { UserService } from '../../base/user/user.service';
+import { UserService } from '../user/user.service';
 
 describe('AclController', () => {
   let controller: AclController;

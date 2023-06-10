@@ -1,22 +1,20 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleMappingController } from './role-mapping.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { RoleMappingService } from './role-mapping.service';
+import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
-describe('RoleMappingController', () => {
-  let controller: RoleMappingController;
+describe('RoleMappingService', () => {
+  let service: RoleMappingService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [RoleMappingService],
-      controllers: [RoleMappingController],
     }).compile();
 
-    controller = module.get<RoleMappingController>(RoleMappingController);
+    service = module.get<RoleMappingService>(RoleMappingService);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

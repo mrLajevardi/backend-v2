@@ -1,20 +1,22 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccessTokenService } from './access-token.service';
+import { AccessTokenController } from './access-token.controller';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { AccessTokenService } from './access-token.service';
 
-describe('AccessTokenService', () => {
-  let service: AccessTokenService;
+describe('AccessTokenController', () => {
+  let controller: AccessTokenController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [AccessTokenService],
+      controllers: [AccessTokenController],
     }).compile();
 
-    service = module.get<AccessTokenService>(AccessTokenService);
+    controller = module.get<AccessTokenController>(AccessTokenController);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(controller).toBeDefined();
   });
 });

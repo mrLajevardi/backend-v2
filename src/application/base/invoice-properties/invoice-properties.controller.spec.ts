@@ -1,20 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { InvoicePropertiesService } from './invoice-properties.service';
+import { InvoicePropertiesController } from './invoice-properties.controller';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { InvoicePropertiesService } from './invoice-properties.service';
 
-describe('InvoicePropertiesService', () => {
-  let service: InvoicePropertiesService;
+describe('InvoicePropertiesController', () => {
+  let controller: InvoicePropertiesController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [InvoicePropertiesService],
+      controllers: [InvoicePropertiesController],
     }).compile();
 
-    service = module.get<InvoicePropertiesService>(InvoicePropertiesService);
+    controller = module.get<InvoicePropertiesController>(
+      InvoicePropertiesController,
+    );
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(controller).toBeDefined();
   });
 });

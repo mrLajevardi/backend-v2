@@ -1,0 +1,3 @@
+class CheckTokenDto { 
+    tokenValidity: boolean 
+}

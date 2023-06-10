@@ -6,15 +6,20 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 
 export class CreateServiceInstancesDto {
-  @IsString()
-  @ApiProperty()
-  id: string;
+  @IsNumber()
+  id: number;
 
   @IsNumber()
   @ApiProperty()
   userId: number;
+
+  @IsNumber()
+  @ApiProperty()
+  serviceType : ServiceTypes
+
 
   @IsOptional()
   @IsNumber()
@@ -78,4 +83,6 @@ export class CreateServiceInstancesDto {
   @IsDate()
   @ApiProperty()
   nextPayg?: Date;
+
+
 }

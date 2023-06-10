@@ -1,34 +1,37 @@
-import { Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { AiService } from './ai.service';
+import { CreateAiTransactionsLogsDto } from '../base/ai-transactions-logs/dto/create-ai-transactions-logs.dto';
 
 @Controller('ai')
 //@UseGuards(PoliciesGuard)
 export class AiController {
   constructor(private readonly service: AiService) {}
 
-  // @ApiOperation({ summary: 'Check a Validation Token' })
-  // @Get('/CheckAradAiToken/:token')
-  // checkAradAiToken(
-  //   @Param('token') token: string,
-  //   @Query() options: object,
-  // ): { tokenValidity: boolean } {
-  //   // Your implementation here
-  //   return { tokenValidity: true };
+  @ApiOperation({ summary: 'Check a Validation Token' })
+  @Get('CheckToken')
+  async checkAradAiToken(
+    @Param('token') token: string,
+    @Query() options: object,
+  ): Promise<CheckTokenDto> {
+    const result =  await this.service.checkAIToken(token);
+    return { tokenValidity: result };
+  }
+
+  // @Post('aiTransactionsLogs')
+  // createAITransactionsLogs(
+  //   @Body() data: CreateAiTransactionsLogsDto,
+  // ): void {
+    
   // }
 
-  //   @Post('/aiTransactionsLogs')
-  //   createAITransactionsLogs(
-  //     @Body() data: AiTransactionsLogs,
-  //   ): void {
-  //   }
+  // @Post('aradAi')
+  // createAradAi(
+  //   @Body() data: Arad ,
+  // ): { token: string } {
 
-  //   @Post('/aradAi')
-  //   createAradAi(
-  //     @Body() data: Arad,
-  //   ): { token: string } {
-  //     return { token: 'xyz' };
-  //   }
+  //   return { token: 'xyz' };
+  // }
 
   //   @Get('/createOrGetDemoToken')
   //   createOrGetDemoToken(): { demoToken: string } {
