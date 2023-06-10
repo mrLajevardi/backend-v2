@@ -4,6 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateAccessTokenDto {
   @IsString()
   @ApiProperty()
+  @IsOptional()
   id?: string;
 
   @IsOptional()

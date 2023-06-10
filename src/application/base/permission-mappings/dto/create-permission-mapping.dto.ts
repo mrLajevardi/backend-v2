@@ -1,10 +1,11 @@
-import { IsInt } from 'class-validator';
+import { IsInt, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePermissionMappingDto {
   @IsInt()
   @ApiProperty()
-  id: number;
+  @IsOptional()
+  id?: number;
 
   @IsInt()
   @ApiProperty()

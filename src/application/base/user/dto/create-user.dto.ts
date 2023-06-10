@@ -11,7 +11,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateUserDto {
   @IsNumber()
   @ApiProperty()
-  id: number;
+  @IsOptional()
+  id?: number;
 
   @IsString()
   @IsOptional()

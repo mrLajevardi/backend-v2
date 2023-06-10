@@ -10,7 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateServiceInstancesDto {
   @IsString()
   @ApiProperty()
-  id?: string;
+  id: string;
 
   @IsNumber()
   @ApiProperty()
@@ -83,5 +83,5 @@ export class UpdateServiceInstancesDto {
   @IsNumber()
   @ApiProperty()
   serviceTypeId? : number
-  
+
 }

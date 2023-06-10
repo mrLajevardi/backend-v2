@@ -4,8 +4,6 @@ import { TestDatabaseModule } from 'src/infrastructure/database/test-database.mo
 import { ServiceInstancesService } from './service-instances.service';
 import { ServiceTypesService } from '../service-types/service-types.service';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { ServiceInstancesModule } from './service-instances.module';
-import { ServiceTypesModule } from '../service-types/service-types.module';
 import { ServiceItemsService } from '../service-items/service-items.service';
 import { ServicePropertiesService } from '../service-properties/service-properties.service';
 import { CreateServiceTypesDto } from '../service-types/dto/create-service-types.dto';

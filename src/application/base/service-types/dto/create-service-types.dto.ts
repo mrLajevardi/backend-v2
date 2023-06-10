@@ -4,7 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateServiceTypesDto {
   @IsString()
   @ApiProperty()
-  id: string;
+  @IsOptional()
+  id?: string;
 
   @IsString()
   @ApiProperty()

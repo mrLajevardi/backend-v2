@@ -1,10 +1,11 @@
-import { IsString, IsNumber } from 'class-validator';
+import { IsString, IsNumber, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateRoleMappingDto {
   @IsNumber()
   @ApiProperty()
-  id: number;
+  @IsOptional()
+  id?: number;
 
   @IsString()
   @ApiProperty()

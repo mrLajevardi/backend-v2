@@ -6,6 +6,7 @@ import { ServicePropertiesService } from '../base/service-properties/service-pro
 import { ServiceInstancesService } from '../base/service-instances/service-instances.service';
 import { AiTransactionsLogsService } from '../base/ai-transactions-logs/ai-transactions-logs.service';
 import { SettingService } from '../base/setting/setting.service';
+import { ServiceTypesService } from '../base/service-types/service-types.service';
 
 describe('AiService', () => {
   let service: AiService;
@@ -18,6 +19,7 @@ describe('AiService', () => {
         UserService,
         ServicePropertiesService,
         ServiceInstancesService,
+        ServiceTypesService,
         AiTransactionsLogsService,
         SettingService
       ],

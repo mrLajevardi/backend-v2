@@ -4,7 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateSystemSettingsDto {
   @IsNumber()
   @ApiProperty()
-  id: number;
+  @IsOptional()
+  id?: number;
 
   @IsString()
   @ApiProperty()

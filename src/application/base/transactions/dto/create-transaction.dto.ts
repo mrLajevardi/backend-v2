@@ -4,7 +4,8 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateTransactionDto {
   @IsString()
   @ApiProperty()
-  id: string;
+  @IsOptional()
+  id?: string;
 
   @IsDate()
   @ApiProperty()
