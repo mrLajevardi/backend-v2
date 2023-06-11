@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sessions } from 'src/infrastructure/database/entities/Sessions';
 import { CreateSessionsDto } from 'src/application/base/sessions/dto/create-sessions.dto';
 import { UpdateSessionsDto } from 'src/application/base/sessions/dto/update-sessions.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { UserService } from '../user/user.service';
+import { OrganizationService } from '../organization/organization.service';
 
 @Injectable()
 export class SessionsService {
   constructor(
     @InjectRepository(Sessions)
     private readonly repository: Repository<Sessions>,
+    private readonly userService : UserService,
+    private readonly organizationService : OrganizationService,
+    private readonly sessionService: SessionsService
   ) {}
 
   // Find One Item by its ID
@@ -44,6 +49,49 @@ export class SessionsService {
     await this.repository.save(createdItem);
   }
 
+  async createAdminSession(orgId,userId) {
+    throw new InternalServerErrorException("MUST BE IMPLEMENTED");
+    //This part is because of preventing errors and should be deleted 
+     const sessionData = {sessionId:'1',token:""}
+    // const sessionData = await mainWrapper.admin.user.createSession()
+    //     .providerSession(
+    //         vcdAuth.username, vcdAuth.password, this.sysOrgName,
+    //     );
+    await this.sessionService.create({
+      isAdmin: true,
+      orgId,
+      sessionId: sessionData.sessionId,
+      token: sessionData.token,
+      active: true,
+      createDate: new Date(),
+      updateDate: new Date(),
+    });
+    return Promise.resolve(sessionData);
+  }
+
+  async createUserSession(orgId,userId) {
+    const user = await this.userService.findById(userId);
+    const org = await this.organizationService.findById(orgId);
+    const filteredUsername = user.username.replace('@', '_').replace('.', '_');
+    throw new InternalServerErrorException("MUST BE IMPLEMENTED");
+    //This part is because of preventing errors and should be deleted 
+      const sessionData = {sessionId:'1',token:""}
+    //
+    // const sessionData = await mainWrapper.admin.user.createSession()
+    //     .userSession(filteredUsername, user.vdcPassword, org.name);
+    this.sessionService.create({
+      isAdmin: false,
+      orgId,
+      sessionId: sessionData.sessionId,
+      token: sessionData.token,
+      active: true,
+      createDate: new Date(),
+      updateDate: new Date(),
+    });
+    return Promise.resolve(sessionData);
+  }
+
+
   // Update an Item using updateDTO
   async update(id: number, dto: UpdateSessionsDto) {
     const item = await this.findById(id);
@@ -59,5 +107,77 @@ export class SessionsService {
   // delete all items
   async deleteAll() {
     await this.repository.delete({});
+  }
+
+
+
+   /**
+   * checks admin session
+   * @return {Promise}
+   */
+   async checkAdminSession() {
+    const session = await this.findOne({
+      where: {
+        and: [
+          {isAdmin: true},
+          {active: true},
+        ],
+      },
+    });
+    if (session) {
+      const currentDate = new Date().getTime() + 1000 * 60;
+      const sessionExpire = new Date(session.createDate).getTime() + 1000 * 60 * 30;
+      if (sessionExpire > currentDate) {
+        return Promise.resolve(session.token);
+      } else {
+        await this.update(
+          session.id,
+          {
+            active: false,
+          },
+        );
+        //const adminSession = new AdminSession(this.userId, t);
+        const createdSession = await this.createAdminSession(null,this.userId);
+        return Promise.resolve(createdSession.token);
+      }
+    } else {
+     // const adminSession = new AdminSession(null,this.userId);
+      const createdSession = await this.checkAdminSession(null,this.userID);
+      return Promise.resolve(createdSession.token);
+    }
+  }
+  /**
+   * @param {String} orgId
+   * @return {Promise}
+   */
+  async checkUserSession(orgId) {
+    const session = await this.findOne({
+      where: {
+        and: [
+          {orgId},
+          {active: true},
+        ],
+      },
+    });
+    if (session) {
+      const currentDate = new Date().getTime() + 1000 * 60;
+      const sessionExpire = new Date(session.createDate).getTime() + 1000 * 60 * 30;
+      if (sessionExpire > currentDate) {
+        return Promise.resolve(session.token);
+      } else {
+        await this.update(session.id,
+          {
+            active: false,
+          },
+        );
+        const userSession = new UserSession(this.userId, this.app);
+        const createdSession = await userSession.createUserSession(orgId);
+        return Promise.resolve(createdSession.token);
+      }
+    } else {
+      const userSession = new UserSession(this.userId, this.app);
+      const createdSession = await userSession.createUserSession(orgId);
+      return Promise.resolve(createdSession.token);
+    }
   }
 }

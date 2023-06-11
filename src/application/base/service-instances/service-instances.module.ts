@@ -18,6 +18,9 @@ import { DiscountsModule } from '../discounts/discounts.module';
 import { InvoiceDiscountsModule } from '../invoice-discounts/invoice-discounts.module';
 import { AiModule } from 'src/application/ai/ai.module';
 import { ConfigsService } from '../configs/configs.service';
+import { CreateServiceService } from './create-service.service';
+import { ExtendServiceService } from './extend-service.service';
+import { ServiceChecksService } from './service-checks.service';
 
 @Module({
   imports: [
@@ -27,7 +30,7 @@ import { ConfigsService } from '../configs/configs.service';
     InvoiceDiscountsModule,
     AiModule,
   ],
-  providers: [ServiceInstancesService, ServiceTypesService, DiscountsService],
+  providers: [ServiceInstancesService, ServiceTypesService, DiscountsService, CreateServiceService, ExtendServiceService, ServiceChecksService],
   controllers: [ServiceInstancesController],
 })
 export class ServiceInstancesModule {}
