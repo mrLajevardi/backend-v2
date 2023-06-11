@@ -69,3 +69,4 @@ deploy-job:      # This job runs in the deploy stage.
     - main
   script:
     - cmd.exe /c .\deploy.bat
+
