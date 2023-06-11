@@ -8,6 +8,7 @@ import { ServiceItemsService } from '../service-items/service-items.service';
 import { ServicePropertiesService } from '../service-properties/service-properties.service';
 import { CreateServiceTypesDto } from '../service-types/dto/create-service-types.dto';
 import { CreateServiceInstancesDto } from './dto/create-service-instances.dto';
+import { DiscountsService } from '../discounts/discounts.service';
 
 describe('ServiceInstancesController', () => {
   let service: ServiceInstancesService;
@@ -22,6 +23,7 @@ describe('ServiceInstancesController', () => {
         ServiceTypesService,
         ServiceItemsService,
         ServicePropertiesService,
+        DiscountsService
       ],
       controllers: [ServiceInstancesController],
     }).compile();

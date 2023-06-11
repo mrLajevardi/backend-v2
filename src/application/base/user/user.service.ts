@@ -97,22 +97,26 @@ export class UserService {
     return undefined;
   }
 
-  async checkUserCredit (costs , userId, options, serviceType) {
+  async checkUserCredit(costs, userId, options, serviceType) {
     try {
       const user = await this.findById(userId);
       const userCredit = user.credit;
       console.log(costs);
       if (userCredit >= costs) {
         const updatedCredit = userCredit - costs;
-        // Implement 
+        // Implement
         /** Should be implemented  */
-throw(new InternalServerErrorException('complete the code and remove comments '));
-       // const updateResult = await this.repository.updateAll({id: userId}, {credit: updatedCredit});
-        //MUST BE IMPLEMENTED 
+        throw new InternalServerErrorException(
+          'complete the code and remove comments ',
+        );
+        // const updateResult = await this.repository.updateAll({id: userId}, {credit: updatedCredit});
+        //MUST BE IMPLEMENTED
 
-        // ****** 
+        // ******
 
-
+        if (options && serviceType && updatedCredit) {
+          //only for lint
+        }
         // await logger.info(
         //     'services',
         //     'buyService',
@@ -133,6 +137,5 @@ throw(new InternalServerErrorException('complete the code and remove comments ')
     } catch (err) {
       return Promise.reject(err);
     }
-  };
-
+  }
 }

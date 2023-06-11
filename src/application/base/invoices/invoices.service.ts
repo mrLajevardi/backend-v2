@@ -45,23 +45,28 @@ export class InvoicesService {
     return result.id;
   }
 
-  async createInvoice(userId, ServiceInstanceID, totalCost, qualityPlanId,payed) {
-    let dto : CreateInvoiceDto; 
-    dto = {
-        userId: userId,
-        serviceInstanceId: ServiceInstanceID, 
-        rawAmount: totalCost.rawAmount,
-        finalAmount: totalCost.finalAmount,
-        description: "dsc",
-        dateTime: new Date(),
-        payed: payed,
-        voided: false,
-        // Why it isn't presnt in the entity???
-        // qualityPlan: qualityPlanId
-    }
+  async createInvoice(
+    userId,
+    ServiceInstanceID,
+    totalCost,
+    qualityPlanId,
+    payed,
+  ) {
+    const dto: CreateInvoiceDto = {
+      userId: userId,
+      serviceInstanceId: ServiceInstanceID,
+      rawAmount: totalCost.rawAmount,
+      finalAmount: totalCost.finalAmount,
+      description: 'dsc',
+      dateTime: new Date(),
+      payed: payed,
+      voided: false,
+      // Why it isn't presnt in the entity???
+      // qualityPlan: qualityPlanId
+    };
     await this.repository.create(dto);
-    const invoice = await this.findOne({where: {ServiceInstanceID }})
-    return Promise.resolve(invoice.id)
+    const invoice = await this.findOne({ where: { ServiceInstanceID } });
+    return Promise.resolve(invoice.id);
   }
 
   // Update an Item using updateDTO

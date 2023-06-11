@@ -1,5 +1,13 @@
 class Costs {
-  totalCosts(data: any, discount: any, plan: any, items: any, duration: number, bulitInDiscount: any, costSerive?: number) {
+  totalCosts(
+    data: any,
+    discount: any,
+    plan: any,
+    items: any,
+    duration: number,
+    bulitInDiscount: any,
+    costSerive?: number,
+  ) {
     let itemCost = this.#itemCosts(items, data, duration);
     if (costSerive !== 0) {
       itemCost = costSerive;
@@ -20,7 +28,13 @@ class Costs {
     };
   }
 
-  totalCostsAi(cost: number, discount: any, plan: any, bulitInDiscount: any, duration: number) {
+  totalCostsAi(
+    cost: number,
+    discount: any,
+    plan: any,
+    bulitInDiscount: any,
+    duration: number,
+  ) {
     cost = cost * duration;
     const planCost = this.#planCost(plan, cost);
     let totalCost = planCost;

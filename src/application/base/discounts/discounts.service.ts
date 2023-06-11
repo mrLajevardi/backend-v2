@@ -61,28 +61,28 @@ export class DiscountsService {
     await this.repository.delete({});
   }
 
-  // Moved from createService.js 
+  // Moved from createService.js
   async findBuiltInDiscount(duration) {
     const builtInDiscounts = [
-        {
-          duration: 3,
-          builtInDiscountCode: "threeMonthPeriod"
-        },
-        {
-          duration: 6,
-          builtInDiscountCode: "sixMonthPeriod"
-        }
-    ]
+      {
+        duration: 3,
+        builtInDiscountCode: 'threeMonthPeriod',
+      },
+      {
+        duration: 6,
+        builtInDiscountCode: 'sixMonthPeriod',
+      },
+    ];
     for (const discount of builtInDiscounts) {
       if (discount.duration === duration) {
         const builtInDiscount = await this.findOne({
-          where : {
-            code: discount.builtInDiscountCode
-          }
-        })
-        return Promise.resolve(builtInDiscount)
+          where: {
+            code: discount.builtInDiscountCode,
+          },
+        });
+        return Promise.resolve(builtInDiscount);
       }
     }
-    return null
-  } 
+    return null;
+  }
 }

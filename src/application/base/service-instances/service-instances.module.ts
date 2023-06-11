@@ -21,17 +21,13 @@ import { ConfigsService } from '../configs/configs.service';
 
 @Module({
   imports: [
-    DatabaseModule, 
+    DatabaseModule,
     ServiceTypesModule,
     DiscountsModule,
     InvoiceDiscountsModule,
     AiModule,
   ],
-  providers: [
-    ServiceInstancesService, 
-    ServiceTypesService,
-    DiscountsService
-  ],
+  providers: [ServiceInstancesService, ServiceTypesService, DiscountsService],
   controllers: [ServiceInstancesController],
 })
 export class ServiceInstancesModule {}

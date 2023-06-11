@@ -1,4 +1,8 @@
-import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { CreateServiceInstancesDto } from 'src/application/base/service-instances/dto/create-service-instances.dto';
@@ -36,7 +40,7 @@ export class ServiceInstancesService {
     @InjectRepository(ServiceInstances)
     private readonly repository: Repository<ServiceInstances>,
     private readonly serviceTypeService: ServiceTypesService,
-    private readonly discountsService : DiscountsService
+    private readonly discountsService: DiscountsService,
   ) {}
 
   // Find One Item by its ID
@@ -90,7 +94,7 @@ export class ServiceInstancesService {
     userId: number,
     serviceTypeID: string,
     duration: number,
-  ) : Promise<string> {
+  ): Promise<string> {
     let expireDate = null;
     if (!isEmpty(duration)) {
       expireDate = addMonths(new Date(), duration);
@@ -103,9 +107,8 @@ export class ServiceInstancesService {
     });
 
     const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
-    let dto: CreateServiceInstancesDto;
     const serviceType = await this.serviceTypeService.findById(serviceTypeID);
-    dto = {
+    const dto: CreateServiceInstancesDto = {
       id: 1,
       userId: userId,
       serviceType: serviceType,
@@ -116,7 +119,7 @@ export class ServiceInstancesService {
       index: index,
     };
     const service = await this.create(dto);
-    return service.id ;
+    return service.id;
   }
 
   // Update an Item using updateDTO
@@ -152,26 +155,26 @@ export class ServiceInstancesService {
       return errorDetail;
     }
     return null;
-  };
+  }
 
   // Moved from service checks
   async checkMaxService(unlimitedMax, serviceMaxAvailable, serviceId, userId) {
     // checks max service
     const userServiceCount = await this.count({
-      where : {
-        and: [
-          {UserID: userId},
-          {ServiceTypeID: serviceId},
-        ],
-      }
+      where: {
+        and: [{ UserID: userId }, { ServiceTypeID: serviceId }],
+      },
     });
-    if (serviceMaxAvailable <= userServiceCount && serviceMaxAvailable !== unlimitedMax) {
+    if (
+      serviceMaxAvailable <= userServiceCount &&
+      serviceMaxAvailable !== unlimitedMax
+    ) {
       return false;
     }
     return true;
-  };
+  }
 
-  // Moved from service checks 
+  // Moved from service checks
   async checkServiceItems(data, items, serviceItemsSum) {
     const itemsList = [];
     const errorDetail = {
@@ -182,33 +185,47 @@ export class ServiceInstancesService {
     }
     let status = 0;
     for (const item of itemsList) {
-      if (! data[item] || typeof data[item] !== 'number') {
+      if (!data[item] || typeof data[item] !== 'number') {
         // MUST BE REVIEWd
-        errorDetail.codes[item] = [new InvalidServiceParamsException('absense')];
+        errorDetail.codes[item] = [
+          new InvalidServiceParamsException('absense'),
+        ];
         status = 1;
       }
     }
     for (const item of itemsList) {
       const itemSum = serviceItemsSum.find((itemSum) => itemSum.id == item);
-      const sum = ! isNil(itemSum) ? itemSum.Sum + data[item] : data[item];
+      const sum = !isNil(itemSum) ? itemSum.Sum + data[item] : data[item];
       if (
-        (sum > items[itemsList.indexOf(item)].MaxAvailable &&
-         items[itemsList.indexOf(item)].MaxAvailable !== 0)) {
-        if (! errorDetail.codes[item]) {
-          errorDetail.codes[item] = [new InvalidServiceParamsException('max_available')];
+        sum > items[itemsList.indexOf(item)].MaxAvailable &&
+        items[itemsList.indexOf(item)].MaxAvailable !== 0
+      ) {
+        if (!errorDetail.codes[item]) {
+          errorDetail.codes[item] = [
+            new InvalidServiceParamsException('max_available'),
+          ];
         } else {
-          errorDetail.codes[item].push(new InvalidServiceParamsException('max_per_request'));
+          errorDetail.codes[item].push(
+            new InvalidServiceParamsException('max_per_request'),
+          );
         }
         status = 1;
       }
       // checks maxPerRequest
-      if (parseInt(data[item]) > parseInt(items[itemsList.indexOf(item)].MaxPerRequest)) {
-        if (! errorDetail.codes[item]) {
+      if (
+        parseInt(data[item]) >
+        parseInt(items[itemsList.indexOf(item)].MaxPerRequest)
+      ) {
+        if (!errorDetail.codes[item]) {
           // if errorDetails.codes[item] does not exist
-          errorDetail.codes[item] = [new InvalidServiceParamsException('max_per_request')];
+          errorDetail.codes[item] = [
+            new InvalidServiceParamsException('max_per_request'),
+          ];
         } else {
           // if errorDetails.codes[item] does exist
-          errorDetail.codes[item].push(new InvalidServiceParamsException('max_per_request'));
+          errorDetail.codes[item].push(
+            new InvalidServiceParamsException('max_per_request'),
+          );
         }
         status = 1;
       }
@@ -217,55 +234,60 @@ export class ServiceInstancesService {
       return errorDetail;
     }
     return null;
-  };
+  }
 
-
-
-  // create billing service 
+  // create billing service
   // moved from services/creteservice.js
   async createBillingService(data, options, serviceId) {
-    let totalCosts = null
-    const unlimitedService = 0
-    const userId = options.accessToken.userId
-    const checkParams = this.checkServiceParams(data, ["qualityPlanCode", "duration"])
+    const totalCosts = null;
+    const unlimitedService = 0;
+    const userId = options.accessToken.userId;
+    const checkParams = this.checkServiceParams(data, [
+      'qualityPlanCode',
+      'duration',
+    ]);
     if (checkParams) {
       throw new InvalidServiceParamsException();
     }
     const serviceType = await this.serviceTypeService.findOne({
-        where:{ID: serviceId}
-    })
+      where: { ID: serviceId },
+    });
     //check validity of serviceId
     if (isEmpty(serviceType)) {
       throw new InvalidServiceIdException();
     }
-    const isMaxAvailable= await this.checkMaxService(unlimitedService, serviceType.maxAvailable, serviceId, userId)
-    if (! isMaxAvailable) {
-      throw new MaxAvailableServiceException(); 
+    const isMaxAvailable = await this.checkMaxService(
+      unlimitedService,
+      serviceType.maxAvailable,
+      serviceId,
+      userId,
+    );
+    if (!isMaxAvailable) {
+      throw new MaxAvailableServiceException();
     }
     let discount = await this.discountsService.findOne({
-        where:{
-            and:[
-                {ServiceTypeID : serviceId}, 
-                {Code : data.disocuntCode}
-            ]
-        } 
-    })
+      where: {
+        and: [{ ServiceTypeID: serviceId }, { Code: data.disocuntCode }],
+      },
+    });
     if (isEmpty(discount)) {
       throw new InvalidDiscountIdException();
     }
     const discountId = discount.id;
     if (discount.isBuiltIn || isEmpty(discountId)) {
-        discount = null
+      discount = null;
     }
     /** Should be implemented  */
-throw(new InternalServerErrorException('complete the code and remove comments '));
+    throw new InternalServerErrorException(
+      'complete the code and remove comments ',
+    );
     // const qualityPlan = await app.models.QualityPlans.findOne({
     //     where: {ServiceTypeID : serviceId, Code: data.qualityPlanCode}
     // })
 
     //checks if qualityPlan id is correct
     // if (isEmpty(qualityPlan)) {
-    //   throw new InvalidQualityPlanException(); 
+    //   throw new InvalidQualityPlanException();
     // }
 
     // const builtInDiscount = await this.discountsService.findBuiltInDiscount(data.duration)
@@ -279,14 +301,16 @@ throw(new InternalServerErrorException('complete the code and remove comments ')
     //   const jwt = require('jsonwebtoken');
     //   token =  jwt.sign(serviceAiInfo, JWT_SECRET_KEY);
     //   totalCosts = costs.totalCostsAi(parseInt(serviceAiInfo['costPerMonth']), discount, qualityPlan, builtInDiscount, data.duration);
-    // } 
+    // }
     // else {
     //     itemTypes = await this.itemTypesService.find({
     //         where:{ ServiceTypeID : serviceId}
     //     })
-/** Should be implemented  */
-throw(new InternalServerErrorException('complete the code and remove comments '));
-      //  const serviceItemsSum = await app.models.ServiceItemsSum.find({})
+    /** Should be implemented  */
+    throw new InternalServerErrorException(
+      'complete the code and remove comments ',
+    );
+    //  const serviceItemsSum = await app.models.ServiceItemsSum.find({})
 
     //     const checkItems = await this.checkServiceItems(data, itemTypes, serviceItemsSum)
     //     if (checkItems) {
@@ -298,7 +322,7 @@ throw(new InternalServerErrorException('complete the code and remove comments ')
     // const checkCredit = await this.userService.checkUserCredit(totalCosts.finalAmount, userId, options, serviceType.id)
     // if (! checkCredit) {
     //   throw new NotEnoughCreditException();
-    // } 
+    // }
     // const serviceInstanceId = await this.createServiceInstance(userId, serviceId, data.duration)
     // const invoiceId = await this.invoiceService.createInvoice(userId, serviceInstanceId, totalCosts, qualityPlan.ID, true)
 
@@ -320,15 +344,13 @@ throw(new InternalServerErrorException('complete the code and remove comments ')
     //     await this.invoiceDiscountsService.create({invoiceId : invoiceId, discountId: builtInDiscount.id})
     // }
 
-
     // await this.transactionService.createTransaction(totalCosts.finalAmount, invoiceId, serviceType.title , userId)
 
     // if (serviceId == 'aradAi') {
     //     return token;
     // }
     // return Promise.resolve({
-       // scriptPath: serviceType.CreateInstanceScript,serviceInstanceId, itemTypes
+    // scriptPath: serviceType.CreateInstanceScript,serviceInstanceId, itemTypes
     // })
   }
-
 }

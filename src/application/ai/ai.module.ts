@@ -25,7 +25,6 @@ import { DiscountsService } from '../base/discounts/discounts.service';
     SettingService,
     ConfigsService,
     DiscountsService,
-
   ],
 })
 export class AiModule {}

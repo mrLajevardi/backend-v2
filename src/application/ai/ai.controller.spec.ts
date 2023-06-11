@@ -8,6 +8,8 @@ import { ServiceInstancesService } from '../base/service-instances/service-insta
 import { AiTransactionsLogsService } from '../base/ai-transactions-logs/ai-transactions-logs.service';
 import { SettingService } from '../base/setting/setting.service';
 import { ServiceTypesService } from '../base/service-types/service-types.service';
+import { ConfigsService } from '../base/configs/configs.service';
+import { DiscountsService } from '../base/discounts/discounts.service';
 
 describe('AiController', () => {
   let controller: AiController;
@@ -23,6 +25,8 @@ describe('AiController', () => {
         ServiceTypesService,
         AiTransactionsLogsService,
         SettingService,
+        ConfigsService,
+        DiscountsService
       ],
       controllers: [AiController],
     }).compile();
