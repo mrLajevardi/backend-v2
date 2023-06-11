@@ -37,6 +37,14 @@ unit-test-job:   # This job runs in the test stage.
   script:
     - npm install 
     - npm run test
+  artifacts:
+    when: always
+    paths:
+      - jest-junit.xml
+    reports:
+      junit: jest-junit.xml
+    expire_in: 1 day  
+
 lint-test-job:   # This job also runs in the test stage.
   only:
     - develop
@@ -44,6 +52,13 @@ lint-test-job:   # This job also runs in the test stage.
   script:
     - npm install 
     - npm run lint
+  artifacts:
+    when: always
+    paths:
+      - eslint-junit.xml
+    reports:
+      junit: eslint-junit.xml
+    expire_in: 1 day
 
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
