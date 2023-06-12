@@ -13,15 +13,14 @@ import { InvalidDiscountIdException } from 'src/infrastructure/exceptions/invali
 
 @Injectable()
 export class CreateServiceService {
-
-constructor(
+  constructor(
     private readonly serviceTypeService: ServiceTypesService,
     private readonly discountsService: DiscountsService,
-    private readonly serviceInstancesService : ServiceInstancesService,
-    private readonly serviceChecksService: ServiceChecksService
-    ){}    
+    private readonly serviceInstancesService: ServiceInstancesService,
+    private readonly serviceChecksService: ServiceChecksService,
+  ) {}
 
-    //create service instance
+  //create service instance
   async createServiceInstance(
     userId: number,
     serviceTypeID: string,
@@ -54,8 +53,7 @@ constructor(
     return service.id;
   }
 
-
-   // create billing service
+  // create billing service
   // moved from services/creteservice.js
   async createBillingService(data, options, serviceId) {
     const totalCosts = null;
@@ -171,8 +169,5 @@ constructor(
     // return Promise.resolve({
     // scriptPath: serviceType.CreateInstanceScript,serviceInstanceId, itemTypes
     // })
-  
-}
-
-
+  }
 }

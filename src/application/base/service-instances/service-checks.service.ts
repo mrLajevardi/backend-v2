@@ -7,21 +7,20 @@ import { ServiceInstancesService } from './service-instances.service';
 
 @Injectable()
 export class ServiceChecksService {
-
   constructor(
     private readonly serviceTypeService: ServiceTypesService,
     private readonly discountsService: DiscountsService,
-    private readonly serviceInstancesService : ServiceInstancesService
-  ){}
-  //Moved from serviceChecks 
-  checkNatParams(data, keys){
+    private readonly serviceInstancesService: ServiceInstancesService,
+  ) {}
+  //Moved from serviceChecks
+  checkNatParams(data, keys) {
     let status = 0;
     const errorDetail = {
       codes: {},
     };
     for (const key of keys) {
       if (isEmpty(data[key]) || data[key] == '') {
-        errorDetail.codes[key] = [new InvalidServiceParamsException("absense")];
+        errorDetail.codes[key] = [new InvalidServiceParamsException('absense')];
         status = 1;
       }
     }
@@ -29,8 +28,7 @@ export class ServiceChecksService {
       return errorDetail;
     }
     return false;
-  };
-
+  }
 
   // Moved from service checks
   async checkMaxService(unlimitedMax, serviceMaxAvailable, serviceId, userId) {
@@ -49,15 +47,14 @@ export class ServiceChecksService {
     return true;
   }
 
-  // Moved from service checks 
-  checkNetworkType(networkType){
+  // Moved from service checks
+  checkNetworkType(networkType) {
     const networkTypes = ['NAT_ROUTED', 'ISOLATED'];
     if (networkTypes.includes(networkType)) {
       return true;
     }
     return false;
-  };
-
+  }
 
   // Moved from service checks
   async checkServiceItems(data, items, serviceItemsSum) {
@@ -121,22 +118,21 @@ export class ServiceChecksService {
     return null;
   }
 
-    // Moved from service checks
-    checkServiceParams(data, keys) {
-        let status = 0;
-        const errorDetail = {
-          codes: {},
-        };
-        for (const key of keys) {
-          if (isEmpty(data[key])) {
-            errorDetail.codes[key] = [new InvalidServiceParamsException()];
-            status = 1;
-          }
-        }
-        if (status) {
-          return errorDetail;
-        }
-        return null;
+  // Moved from service checks
+  checkServiceParams(data, keys) {
+    let status = 0;
+    const errorDetail = {
+      codes: {},
+    };
+    for (const key of keys) {
+      if (isEmpty(data[key])) {
+        errorDetail.codes[key] = [new InvalidServiceParamsException()];
+        status = 1;
+      }
     }
-
+    if (status) {
+      return errorDetail;
+    }
+    return null;
+  }
 }

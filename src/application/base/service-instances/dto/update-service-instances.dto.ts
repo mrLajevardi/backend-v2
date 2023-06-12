@@ -10,7 +10,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateServiceInstancesDto {
   @IsString()
   @ApiProperty()
-  id: string;
+  id?: string;
 
   @IsNumber()
   @ApiProperty()

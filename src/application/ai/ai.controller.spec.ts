@@ -26,7 +26,7 @@ describe('AiController', () => {
         AiTransactionsLogsService,
         SettingService,
         ConfigsService,
-        DiscountsService
+        DiscountsService,
       ],
       controllers: [AiController],
     }).compile();

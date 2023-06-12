@@ -7,7 +7,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { CreateServiceInstancesDto } from 'src/application/base/service-instances/dto/create-service-instances.dto';
 import { UpdateServiceInstancesDto } from 'src/application/base/service-instances/dto/update-service-instances.dto';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { DatabaseErrorException } from 'src/infrastructure/exceptions/database-error.exception';
 
@@ -64,7 +69,13 @@ export class ServiceInstancesService {
     return result;
   }
 
-  
+  // update many items
+  async updateAll(
+    where: FindOptionsWhere<ServiceInstances>,
+    dto: UpdateServiceInstancesDto,
+  ) {
+    await this.repository.update(where, dto);
+  }
 
   // Update an Item using updateDTO
   async update(id: string, dto: UpdateServiceInstancesDto) {

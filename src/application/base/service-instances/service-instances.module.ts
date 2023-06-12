@@ -21,6 +21,9 @@ import { ConfigsService } from '../configs/configs.service';
 import { CreateServiceService } from './create-service.service';
 import { ExtendServiceService } from './extend-service.service';
 import { ServiceChecksService } from './service-checks.service';
+import { PlansService } from '../plans/plans.service';
+import { SessionsService } from '../sessions/sessions.service';
+import { OrganizationService } from '../organization/organization.service';
 
 @Module({
   imports: [
@@ -30,7 +33,23 @@ import { ServiceChecksService } from './service-checks.service';
     InvoiceDiscountsModule,
     AiModule,
   ],
-  providers: [ServiceInstancesService, ServiceTypesService, DiscountsService, CreateServiceService, ExtendServiceService, ServiceChecksService],
+  providers: [
+    ServiceInstancesService,
+    ServiceTypesService,
+    ServicePropertiesService,
+    SessionsService,
+    DiscountsService,
+    CreateServiceService,
+    ExtendServiceService,
+    ServiceChecksService,
+    PlansService,
+    ConfigsService,
+    ServiceItemsService,
+    UserService,
+    OrganizationService,
+    ItemTypesService, 
+    
+  ],
   controllers: [ServiceInstancesController],
 })
 export class ServiceInstancesModule {}

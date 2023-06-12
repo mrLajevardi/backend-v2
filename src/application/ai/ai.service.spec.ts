@@ -25,7 +25,7 @@ describe('AiService', () => {
         ServiceTypesService,
         AiTransactionsLogsService,
         SettingService,
-        ConfigsService
+        ConfigsService,
       ],
     }).compile();
 

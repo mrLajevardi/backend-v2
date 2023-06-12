@@ -23,7 +23,7 @@ describe('ServiceInstancesController', () => {
         ServiceTypesService,
         ServiceItemsService,
         ServicePropertiesService,
-        DiscountsService
+        DiscountsService,
       ],
       controllers: [ServiceInstancesController],
     }).compile();

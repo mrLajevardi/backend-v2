@@ -37,7 +37,7 @@ export class AiService {
   }
 
   async checkAIToken(token: string): Promise<boolean> {
-    return false; 
+    return false;
     const verified = await this.verifyToken(token)
       .then((res) => {
         return res;
