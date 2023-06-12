@@ -5,9 +5,11 @@ import { CreateInvoicePlansDto } from 'src/application/base/invoice-plans/dto/cr
 import { UpdateInvoicePlansDto } from 'src/application/base/invoice-plans/dto/update-invoice-plans.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { CreateInvoicePluralDto } from './dto/create-invoice-plural.dto';
 
 @Injectable()
 export class InvoicePlansService {
+
   constructor(
     @InjectRepository(InvoicePlans)
     private readonly repository: Repository<InvoicePlans>,
@@ -42,6 +44,18 @@ export class InvoicePlansService {
     const newItem = plainToClass(InvoicePlans, dto);
     const createdItem = this.repository.create(newItem);
     await this.repository.save(createdItem);
+  }
+
+  // Create multiple invoice plans 
+  async createInvoicePlans(dto: CreateInvoicePluralDto) {
+    for (const plan of dto.plans) {
+        await this.create({
+          invoiceId: dto.invoiceId,
+          planCode: plan.planCode,
+          ratio: plan.ratio,
+          amount: plan.amount,
+      });
+    }
   }
 
   // Update an Item using updateDTO

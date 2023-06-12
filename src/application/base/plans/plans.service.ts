@@ -25,6 +25,11 @@ export class PlansService {
     return result;
   }
 
+  // Moved from Invoice->checkPlanCondition
+  async serviceInstanceExe(sql: string): Promise<any> {
+    const result = await this.repository.query(sql); 
+  }
+  
   // Count the items
   async count(options?: FindManyOptions): Promise<number> {
     const result = await this.repository.count(options);

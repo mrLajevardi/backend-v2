@@ -53,6 +53,13 @@ export class CreateServiceService {
     return service.id;
   }
 
+  //checks if any of service params is not sent by client
+  runScript(path, services, serviceInstanceId, data, itemTypes, options){
+    const script = require(path)
+    console.log(script)
+    return new script(services, serviceInstanceId, data, itemTypes, options)
+  }
+
   // create billing service
   // moved from services/creteservice.js
   async createBillingService(data, options, serviceId) {

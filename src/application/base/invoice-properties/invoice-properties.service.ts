@@ -5,6 +5,8 @@ import { CreateInvoicePropertiesDto } from 'src/application/base/invoice-propert
 import { UpdateInvoicePropertiesDto } from 'src/application/base/invoice-properties/dto/update-invoice-properties.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { VgpuPcNamePassRequired } from 'src/infrastructure/exceptions/vgpu-pc-name-pass-required.exception';
+import { isNil } from 'lodash';
 
 @Injectable()
 export class InvoicePropertiesService {
@@ -43,6 +45,26 @@ export class InvoicePropertiesService {
     const createdItem = this.repository.create(newItem);
     await this.repository.save(createdItem);
   }
+
+
+  async createInvoiceProperties(data, InvoiceID, serviceType){
+    if (serviceType == 'vgpu') {
+      const pcProp = {
+        pcName: data.pcName,
+        pcPassword: data.pcPassword,
+      };
+      if (isNil(data.pcName) || isNil(data.pcPassword)) {
+        return Promise.reject(new VgpuPcNamePassRequired());
+      }
+      for (const item of Object.keys(pcProp)) {
+        await this.repository.create({
+          invoiceId: InvoiceID,
+          propertyKey: item,
+          value: pcProp[item],
+        });
+      }
+    }
+  };
 
   // Update an Item using updateDTO
   async update(id: number, dto: UpdateInvoicePropertiesDto) {
