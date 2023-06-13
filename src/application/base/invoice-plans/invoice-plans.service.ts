@@ -9,7 +9,6 @@ import { CreateInvoicePluralDto } from './dto/create-invoice-plural.dto';
 
 @Injectable()
 export class InvoicePlansService {
-
   constructor(
     @InjectRepository(InvoicePlans)
     private readonly repository: Repository<InvoicePlans>,
@@ -46,14 +45,14 @@ export class InvoicePlansService {
     await this.repository.save(createdItem);
   }
 
-  // Create multiple invoice plans 
+  // Create multiple invoice plans
   async createInvoicePlans(dto: CreateInvoicePluralDto) {
     for (const plan of dto.plans) {
-        await this.create({
-          invoiceId: dto.invoiceId,
-          planCode: plan.planCode,
-          ratio: plan.ratio,
-          amount: plan.amount,
+      await this.create({
+        invoiceId: dto.invoiceId,
+        planCode: plan.planCode,
+        ratio: plan.ratio,
+        amount: plan.amount,
       });
     }
   }

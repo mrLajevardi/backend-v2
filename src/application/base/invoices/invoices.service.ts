@@ -18,21 +18,23 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { InvoicePlansService } from '../invoice-plans/invoice-plans.service';
 import { InvoicePropertiesService } from '../invoice-properties/invoice-properties.service';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
+import { VgpuService } from 'src/application/vgpu/vgpu.service';
 
 @Injectable()
 export class InvoicesService {
   constructor(
     @InjectRepository(Invoices)
     private readonly repository: Repository<Invoices>,
-    private readonly plansService : PlansService,
-    private readonly itemTypesService : ItemTypesService,
-    private readonly serviceTypesService : ServiceTypesService,
-    private readonly invoiceChecksService : InvoicesChecksService, 
-    private readonly costCalculationService : CostCalculationService,
-    private readonly invoiceItemsService : InvoiceItemsService,
-    private readonly transactionService : TransactionsService,
-    private readonly invoicePlansService : InvoicePlansService,
-    private readonly invoicePropertiesService : InvoicePropertiesService
+    private readonly plansService: PlansService,
+    private readonly itemTypesService: ItemTypesService,
+    private readonly serviceTypesService: ServiceTypesService,
+    private readonly invoiceChecksService: InvoicesChecksService,
+    private readonly costCalculationService: CostCalculationService,
+    private readonly invoiceItemsService: InvoiceItemsService,
+    private readonly transactionService: TransactionsService,
+    private readonly invoicePlansService: InvoicePlansService,
+    private readonly invoicePropertiesService: InvoicePropertiesService,
+    private readonly vgpuService: VgpuService,
   ) {}
 
   // Find One Item by its ID
@@ -84,22 +86,44 @@ export class InvoicesService {
       throw new InvalidServiceIdException();
     }
     // check Availablity of creating new Service
-    await this.invoiceChecksService.checkServiceMaxAvailable(unlimitedService,serviceType.maxAvailable,serviceId,userId);
+    await this.invoiceChecksService.checkServiceMaxAvailable(
+      unlimitedService,
+      serviceType.maxAvailable,
+      serviceId,
+      userId,
+    );
     // checking plans condition
-    const approvedPlans = await this.invoiceChecksService.checkPlanCondition(data.plans, serviceId, data.duration * 30);
+    const approvedPlans = await this.invoiceChecksService.checkPlanCondition(
+      data.plans,
+      serviceId,
+      data.duration * 30,
+    );
     // calculate costs
-    const itemCost = this.costCalculationService.itemsCost(itemTypes, data, serviceType);
+    const itemCost = this.costCalculationService.itemsCost(
+      itemTypes,
+      data,
+      serviceType,
+    );
     const plansCost = this.costCalculationService.plansCost(plans, data);
-    const plansRatioForInvoice = this.costCalculationService.plansRatioForInvoice(plans, data);
-    const plansRatioForItems = this.costCalculationService.plansRatioForItems(plans, data);
-    const totalCosts = this.costCalculationService.totalCosts(serviceType, data, plans, itemTypes);
+    const plansRatioForInvoice =
+      this.costCalculationService.plansRatioForInvoice(plans, data);
+    const plansRatioForItems = this.costCalculationService.plansRatioForItems(
+      plans,
+      data,
+    );
+    const totalCosts = this.costCalculationService.totalCosts(
+      serviceType,
+      data,
+      plans,
+      itemTypes,
+    );
     let duration = data.duration;
     if (data.ServiceTypeID == 'vgpu') {
-      await chackAvalibleToPowerOnVgpu(userId);
+      await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
       duration = 36;
     }
     // create service Invoice
-    let dto : CreateInvoiceDto;
+    let dto: CreateInvoiceDto;
     dto.userId = userId;
     dto.rawAmount = itemCost;
     dto.finalAmount = totalCosts;
@@ -110,10 +134,13 @@ export class InvoicesService {
     dto.name = data.name;
     dto.planAmount = plansCost;
     dto.planRatio = plansRatioForItems;
-    const invoiceId = await this.create(dto); 
+    const invoiceId = await this.create(dto);
 
-
-    await this.invoiceItemsService.createInvoiceItems(invoiceId, itemTypes, data.items);
+    await this.invoiceItemsService.createInvoiceItems(
+      invoiceId,
+      itemTypes,
+      data.items,
+    );
     await this.transactionService.create({
       userId: userId,
       dateTime: new Date(),
@@ -123,10 +150,17 @@ export class InvoicesService {
       value: totalCosts,
       invoiceId: invoiceId,
       description: serviceType.title,
-      serviceInstanceId: serviceId
+      serviceInstanceId: serviceId,
     });
-    await this.invoicePlansService.createInvoicePlans({plans: approvedPlans, invoiceId: invoiceId});
-    await this.invoicePropertiesService.createInvoiceProperties( data, invoiceId, data.ServiceTypeID);
+    await this.invoicePlansService.createInvoicePlans({
+      plans: approvedPlans,
+      invoiceId: invoiceId,
+    });
+    await this.invoicePropertiesService.createInvoiceProperties(
+      data,
+      invoiceId,
+      data.ServiceTypeID,
+    );
     return Promise.resolve({ invoiceId: invoiceId });
   }
 
@@ -134,56 +168,62 @@ export class InvoicesService {
     return await this.findOne({
       where: {
         and: [
-          {UserID: userId},
-          {ServiceInstanceID: serviceInstanceId},
-          {Type: 0},
-          {Payed: true},
+          { UserID: userId },
+          { ServiceInstanceID: serviceInstanceId },
+          { Type: 0 },
+          { Payed: true },
         ],
       },
     });
-  };
+  }
 
-  async getUserLastInvoices(userId, serviceInstanceId){
+  async getUserLastInvoices(userId, serviceInstanceId) {
     return await this.find({
       where: {
         and: [
-          {UserID: userId},
-          {ServiceInstanceID: serviceInstanceId},
-          {Type: 1},
-          {Payed: true},
+          { UserID: userId },
+          { ServiceInstanceID: serviceInstanceId },
+          { Type: 1 },
+          { Payed: true },
         ],
       },
     });
-  };
+  }
 
-  async findAlreadyInvoiceCreated(userId, serviceInstanceId){
+  async findAlreadyInvoiceCreated(userId, serviceInstanceId) {
     return await this.findOne({
       where: {
         and: [
-          {UserID: userId},
-          {ServiceInstanceID: serviceInstanceId},
-          {Type: 1},
-          {Payed: false},
+          { UserID: userId },
+          { ServiceInstanceID: serviceInstanceId },
+          { Type: 1 },
+          { Payed: false },
         ],
       },
     });
-  };
+  }
 
   async extendServiceInvoice(app, options, serviceInstanceId) {
     const userId = options.accessToken.userId;
     let expiredInvoice = null;
     // find user expired service invoice
-    expiredInvoice = await this.getExpiredInvoice(userId,serviceInstanceId)
-    const lastUserInvoicesList = await this.getUserLastInvoices(userId,serviceInstanceId)
+    expiredInvoice = await this.getExpiredInvoice(userId, serviceInstanceId);
+    const lastUserInvoicesList = await this.getUserLastInvoices(
+      userId,
+      serviceInstanceId,
+    );
     let lastUserInvoiceID;
     lastUserInvoicesList.forEach((element) => {
       lastUserInvoiceID = Math.max(element.id);
     });
     const lastUserInvoice = lastUserInvoicesList.find(
-      (el) => el.id == lastUserInvoiceID
+      (el) => el.id == lastUserInvoiceID,
     );
     // find already created invoice or not
-    const alreadyInvoiceCreated = await this.findAlreadyInvoiceCreated(userId,serviceInstanceId)
+    const alreadyInvoiceCreated = await this.findAlreadyInvoiceCreated(
+      userId,
+      serviceInstanceId,
+    );
     if (expiredInvoice === null) {
       return Promise.reject(new ForbiddenException());
     }
@@ -192,7 +232,7 @@ export class InvoicesService {
     }
     if (!alreadyInvoiceCreated) {
       const duration = Math.round(
-        (expiredInvoice.EndDateTime - expiredInvoice.DateTime) / 86400000
+        (expiredInvoice.EndDateTime - expiredInvoice.DateTime) / 86400000,
       );
       let DateTime;
       let EndDateTime;
@@ -208,8 +248,8 @@ export class InvoicesService {
           InvoiceID: expiredInvoice.ID,
         },
       });
-      
-      throw new InternalServerErrorException("MOVE: Plans cost undefined ")
+
+      throw new InternalServerErrorException('MOVE: Plans cost undefined ');
       const invoiceId = await this.create({
         userId: userId,
         rawAmount: expiredInvoice.rawAmount, // Total cost of service items
@@ -222,21 +262,20 @@ export class InvoicesService {
         type: 1,
         serviceTypeId: expiredInvoice.ServiceTypeID,
         name: expiredInvoice.ServiceTypeID.Name,
-      //  planAmount: plansCost,
-      //  planRatio: plansRatio,
-        serviceInstanceId: serviceInstanceId
+        //  planAmount: plansCost,
+        //  planRatio: plansRatio,
+        serviceInstanceId: serviceInstanceId,
       });
 
+      throw new InternalServerErrorException('MOVE: data undefined  ');
 
-      throw new InternalServerErrorException("MOVE: data undefined  ")
-
-   //   await createInvoiceItems(invoiceId, itemTypes, data, app);
-   //   await createTransaction(expiredInvoice.FinalAmount,invoiceId,expiredInvoice.ServiceTypeID.Title,userId,app);
+      //   await createInvoiceItems(invoiceId, itemTypes, data, app);
+      //   await createTransaction(expiredInvoice.FinalAmount,invoiceId,expiredInvoice.ServiceTypeID.Title,userId,app);
       return Promise.resolve({ invoiceId: invoiceId });
     }
     return Promise.resolve({ invoiceId: null });
   }
-  
+
   // Update an Item using updateDTO
   async update(id: number, dto: UpdateInvoiceDto) {
     const item = await this.findById(id);

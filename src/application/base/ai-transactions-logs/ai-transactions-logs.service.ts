@@ -37,6 +37,19 @@ export class AiTransactionsLogsService {
     return result;
   }
 
+  async getChartAIUsed(
+    startDate: string,
+    endDate: string,
+    serviceInstanceId: string,
+  ) {
+    const query = `EXEC Sp_ChartAIUsed '${startDate}', '${endDate}', '${serviceInstanceId}'`;
+
+    // Execute the query using the appropriate database connector or ORM method
+    const result = await this.repository.query(query);
+
+    return result;
+  }
+
   // Create an Item using createDTO
   async create(dto: CreateAiTransactionsLogsDto) {
     const newItem = plainToClass(AiTransactionsLogs, dto);
@@ -60,4 +73,6 @@ export class AiTransactionsLogsService {
   async deleteAll() {
     await this.repository.delete({});
   }
+
+  //
 }

@@ -15,12 +15,19 @@ import {
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { DatabaseErrorException } from 'src/infrastructure/exceptions/database-error.exception';
+import { isNil } from 'lodash';
+import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
+import { TransactionsService } from '../transactions/transactions.service';
+import { UserService } from '../user/user.service';
+import { PaymentRequiredException } from 'src/infrastructure/exceptions/payment-required.exception';
 
 @Injectable()
 export class ServiceInstancesService {
   constructor(
     @InjectRepository(ServiceInstances)
     private readonly repository: Repository<ServiceInstances>,
+    private readonly transactionsService: TransactionsService,
+    private readonly userService: UserService,
   ) {}
 
   // Find One Item by its ID
@@ -92,5 +99,38 @@ export class ServiceInstancesService {
   // delete all items
   async deleteAll() {
     await this.repository.delete({});
+  }
+
+  async payAsYouGoService(serviceInstanceId, cost) {
+    if (isNil(serviceInstanceId)) {
+      return Promise.reject(new ForbiddenException());
+    }
+    const service = await this.findOne({
+      where: {
+        ID: serviceInstanceId,
+      },
+    });
+    if (!service) {
+      return Promise.reject(new ForbiddenException());
+    }
+    const { userId: userId } = service;
+    await this.transactionsService.create({
+      userId: userId.toString(),
+      dateTime: new Date(),
+      value: -cost,
+      invoiceId: null,
+      description: `PAYG`,
+      isApproved: true,
+      serviceInstanceId: serviceInstanceId,
+      paymentType: 2, // payAsYouGo payment method
+      paymentToken: null,
+    });
+    const { credit } = await this.userService.findById(userId);
+    if (credit < cost) {
+      return Promise.reject(new PaymentRequiredException());
+    }
+    await this.userService.update(userId, {
+      credit: credit - cost,
+    });
   }
 }

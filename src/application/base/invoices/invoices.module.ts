@@ -9,7 +9,13 @@ import { CreateInvoiceService } from './create-invoice.service';
 
 @Module({
   imports: [DatabaseModule],
-  providers: [InvoicesService, CostCalculationService, InvoicesChecksService, InvoicesCreatesService, CreateInvoiceService],
+  providers: [
+    InvoicesService,
+    CostCalculationService,
+    InvoicesChecksService,
+    InvoicesCreatesService,
+    CreateInvoiceService,
+  ],
   controllers: [InvoicesController],
 })
 export class InvoicesModule {}

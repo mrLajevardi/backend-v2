@@ -6,63 +6,62 @@ import { InvalidQualityPlanException } from 'src/infrastructure/exceptions/inval
 
 @Injectable()
 export class InvoicesChecksService {
+  constructor(
+    private readonly plansService: PlansService,
+    private readonly serviceChecksService: ServiceChecksService,
+  ) {}
 
-    constructor(
-        private readonly plansService: PlansService,
-        private readonly serviceChecksService: ServiceChecksService,
-    ) { }
+  async checkServiceMaxAvailable(
+    unlimitedService,
+    serviceTypeMaxAvailable,
+    serviceId,
+    userId,
+  ) {
+    const isMaxAvailable = await this.serviceChecksService.checkMaxService(
+      unlimitedService,
+      serviceTypeMaxAvailable,
+      serviceId,
+      userId,
+    );
+    if (!isMaxAvailable) {
+      throw new MaxAvailableServiceException();
+    }
+  }
 
+  async checkPlanCondition(data, serviceId, duration) {
+    const plansList = await this.plansService.find();
+    let matchedPlansList = [];
+    data.forEach((el) =>
+      matchedPlansList.push(plansList.find((element) => element.code == el)),
+    );
+    matchedPlansList = Array.from(new Set(matchedPlansList));
 
-    async checkServiceMaxAvailable(
-        unlimitedService,
-        serviceTypeMaxAvailable,
-        serviceId,
-        userId,
-    ) {
-        const isMaxAvailable = await this.serviceChecksService.checkMaxService(
-            unlimitedService,
-            serviceTypeMaxAvailable,
-            serviceId,
-            userId,
-        );
-        if (!isMaxAvailable) {
-            throw new MaxAvailableServiceException();
-        }
-    };
+    if (matchedPlansList.includes(undefined)) {
+      const error = new InvalidQualityPlanException();
+      return Promise.reject(error);
+    }
 
-    async checkPlanCondition(data, serviceId, duration) {
-        const plansList = await this.plansService.find();
-        let matchedPlansList = [];
-        data.forEach((el) =>
-            matchedPlansList.push(plansList.find((element) => element.code == el)),
-        );
-        matchedPlansList = Array.from(new Set(matchedPlansList));
+    // replacing condition keys
+    matchedPlansList.forEach((el) => {
+      el.Condition = el.Condition.replace('@ServiceTypeID', `'${serviceId}'`);
+      el.Condition = el.Condition.replace('@duration', `${duration}`);
+    });
 
-        if (matchedPlansList.includes(undefined)) {
-            const error = new InvalidQualityPlanException();
-            return Promise.reject(error);
-        }
+    for (const item of matchedPlansList) {
+      let planValidationSql = `SELECT Code, CASE  WHEN  parameters THEN 'true' ELSE 'false' END as approved  FROM [services].[Plans]`;
+      planValidationSql = planValidationSql.replace(
+        'parameters',
+        item.Condition,
+      );
 
-        // replacing condition keys
-        matchedPlansList.forEach((el) => {
-            el.Condition = el.Condition.replace('@ServiceTypeID', `'${serviceId}'`);
-            el.Condition = el.Condition.replace('@duration', `${duration}`);
-        });
-
-        for (const item of matchedPlansList) {
-            let planValidationSql = `SELECT Code, CASE  WHEN  parameters THEN 'true' ELSE 'false' END as approved  FROM [services].[Plans]`;
-            planValidationSql = planValidationSql.replace('parameters', item.Condition);
-
-            const executedSql = await this.plansService.serviceInstanceExe(planValidationSql);
-            if (executedSql[0].approved == 'false') {
-                const err = new InvalidQualityPlanException();
-                return Promise.reject(err);
-            }
-        }
-        return matchedPlansList;
-    };
-
-
-
-
+      const executedSql = await this.plansService.serviceInstanceExe(
+        planValidationSql,
+      );
+      if (executedSql[0].approved == 'false') {
+        const err = new InvalidQualityPlanException();
+        return Promise.reject(err);
+      }
+    }
+    return matchedPlansList;
+  }
 }

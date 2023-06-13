@@ -17,9 +17,7 @@ describe('ExtendServiceService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule,
-      ],
+      imports: [TestDatabaseModule],
       providers: [
         ExtendServiceService,
         ItemTypesService,

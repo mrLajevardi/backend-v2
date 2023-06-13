@@ -46,8 +46,7 @@ export class InvoicePropertiesService {
     await this.repository.save(createdItem);
   }
 
-
-  async createInvoiceProperties(data, InvoiceID, serviceType){
+  async createInvoiceProperties(data, InvoiceID, serviceType) {
     if (serviceType == 'vgpu') {
       const pcProp = {
         pcName: data.pcName,
@@ -64,7 +63,7 @@ export class InvoicePropertiesService {
         });
       }
     }
-  };
+  }
 
   // Update an Item using updateDTO
   async update(id: number, dto: UpdateInvoicePropertiesDto) {

@@ -7,12 +7,7 @@ import { OrganizationService } from '../organization/organization.service';
 
 @Module({
   imports: [DatabaseModule],
-  providers: [
-    SessionsService,
-    UserService,
-    OrganizationService,
-    
-  ],
+  providers: [SessionsService, UserService, OrganizationService],
   controllers: [SessionsController],
 })
 export class SessionsModule {}

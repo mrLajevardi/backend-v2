@@ -54,10 +54,10 @@ export class CreateServiceService {
   }
 
   //checks if any of service params is not sent by client
-  runScript(path, services, serviceInstanceId, data, itemTypes, options){
-    const script = require(path)
-    console.log(script)
-    return new script(services, serviceInstanceId, data, itemTypes, options)
+  runScript(path, services, serviceInstanceId, data, itemTypes, options) {
+    const script = require(path);
+    console.log(script);
+    return new script(services, serviceInstanceId, data, itemTypes, options);
   }
 
   // create billing service

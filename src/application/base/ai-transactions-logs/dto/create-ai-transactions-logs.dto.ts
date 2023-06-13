@@ -6,6 +6,9 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Optional } from '@nestjs/common';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 
 export class CreateAiTransactionsLogsDto {
   @IsOptional()
@@ -17,6 +20,12 @@ export class CreateAiTransactionsLogsDto {
   @IsString()
   @ApiProperty()
   request: string;
+
+  @IsOptional()
+  itemType: ItemTypes;
+
+  @IsOptional()
+  serviceInstance: ServiceInstances;
 
   @IsNotEmpty()
   @IsString()

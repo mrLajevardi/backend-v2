@@ -11,11 +11,7 @@ describe('SessionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        SessionsService,
-        UserService,
-        OrganizationService
-      ],
+      providers: [SessionsService, UserService, OrganizationService],
       controllers: [SessionsController],
     }).compile();
 

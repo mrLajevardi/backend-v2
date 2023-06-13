@@ -35,7 +35,7 @@ describe('CreateServiceService', () => {
         ServicePropertiesService,
         SessionsService,
         UserService,
-        OrganizationService
+        OrganizationService,
       ],
     }).compile();
 
