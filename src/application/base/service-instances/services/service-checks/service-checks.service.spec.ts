@@ -1,9 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceChecksService } from './service-checks.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { ServiceTypesService } from '../service-types/service-types.service';
-import { DiscountsService } from '../discounts/discounts.service';
-import { ServiceInstancesService } from './service-instances.service';
+import { ServiceTypesService } from '../../../service-types/service-types.service';
+import { DiscountsService } from '../../../discounts/discounts.service';
+import { ServiceInstancesService } from '../../service-instances.service';
+import { TransactionsService } from '../../../transactions/transactions.service';
+import { UserService } from '../../../user/user.service';
 
 describe('ServiceChecksService', () => {
   let service: ServiceChecksService;
@@ -16,6 +18,8 @@ describe('ServiceChecksService', () => {
         ServiceTypesService,
         ServiceInstancesService,
         DiscountsService,
+        TransactionsService,
+        UserService,
       ],
     }).compile();
 

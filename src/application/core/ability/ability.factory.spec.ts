@@ -7,6 +7,22 @@ import { TestDatabaseModule } from 'src/infrastructure/database/test-database.mo
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvoicesService } from '../../base/invoices/invoices.service';
 import { User } from 'src/infrastructure/database/test-entities/User';
+import { PlansService } from 'src/application/base/plans/plans.service';
+import { ItemTypesService } from 'src/application/base/item-types/item-types.service';
+import { ServiceTypesService } from 'src/application/base/service-types/service-types.service';
+import { InvoicesChecksService } from 'src/application/base/invoices/invoices-checks.service';
+import { CostCalculationService } from 'src/application/base/invoices/cost-calculation.service';
+import { InvoiceItemsService } from 'src/application/base/invoice-items/invoice-items.service';
+import { TransactionsService } from 'src/application/base/transactions/transactions.service';
+import { InvoicePlansService } from 'src/application/base/invoice-plans/invoice-plans.service';
+import { InvoicePropertiesService } from 'src/application/base/invoice-properties/invoice-properties.service';
+import { VgpuService } from 'src/application/vgpu/vgpu.service';
+import { ServiceChecksService } from 'src/application/base/service-instances/service-checks.service';
+import { ConfigsService } from 'src/application/base/configs/configs.service';
+import { SessionsService } from 'src/application/base/sessions/sessions.service';
+import { DiscountsService } from 'src/application/base/discounts/discounts.service';
+import { ServiceInstancesService } from 'src/application/base/service-instances/service-instances.service';
+import { OrganizationService } from 'src/application/base/organization/organization.service';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
@@ -24,6 +40,22 @@ describe('AbilityFactory', () => {
         UserService,
         InvoicesService,
         TestDataService,
+        PlansService,
+        ItemTypesService,
+        ServiceTypesService,
+        InvoicesChecksService,
+        CostCalculationService,
+        InvoiceItemsService,
+        TransactionsService,
+        InvoicePlansService,
+        InvoicePropertiesService,
+        VgpuService,
+        ServiceChecksService,
+        ConfigsService,
+        SessionsService,
+        DiscountsService,
+        ServiceInstancesService,
+        OrganizationService,
       ],
     }).compile();
 

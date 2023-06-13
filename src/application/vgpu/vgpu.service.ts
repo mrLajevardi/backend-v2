@@ -1,13 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigsService } from '../base/configs/configs.service';
 import { ServiceChecksService } from '../base/service-instances/service-checks.service';
+import { UnavailableResource } from 'src/infrastructure/exceptions/unavailable-resource.exception';
+import { SessionsService } from '../base/sessions/sessions.service';
 
 @Injectable()
 export class VgpuService {
   constructor(
     private readonly configsService: ConfigsService,
-    private readonly serviceChecksSvc: ServiceChecksService,
+    private readonly sessionService: SessionsService,
   ) {}
+
+  async getVmsInfo(session, vdcIdVgpu, orgId, orgName, filter = '') {
+    if (filter !== '') {
+      filter = `(isVAppTemplate==false;vdc==${vdcIdVgpu});` + `(${filter})`;
+    } else {
+      filter = `(isVAppTemplate==false;vdc==${vdcIdVgpu})`;
+    }
+
+    throw new InternalServerErrorException('Not Implemented');
+    let query;
+    // query = await mainWrapper.user.vdc.vcloudQuery(session, {
+    //   type: 'vm',
+    //   filter,
+    // },
+    // {
+    //   'X-vCloud-Authorization': orgName,
+    //   'X-VMWARE-VCLOUD-AUTH-CONTEXT': orgName,
+    //   'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgId,
+    // },
+    // );
+
+    const vmdataRecord = query.data.record;
+    return vmdataRecord;
+  }
 
   async chackAvalibleToPowerOnVgpu(userId) {
     const props = {};
@@ -22,27 +48,25 @@ export class VgpuService {
       props[key] = item;
     }
     const vdcIdVgpu = props['vdcId'].split(':').slice(-1);
-    const session = await new CheckSession(app, userId).checkAdminSession(
-      props.orgId,
-    );
-    const vmInfo = await getVmsInfo(
+    const session = await this.sessionService.checkAdminSession(userId);
+    const vmInfo = await this.getVmsInfo(
       session,
       vdcIdVgpu,
-      props.orgId,
-      props.orgName,
+      props['orgId'],
+      props['orgName'],
     );
     const poweredOnVm = await vmInfo.filter((value) => {
       return value.status === 'POWERED_ON';
     });
 
-    const availablePowerOnService = await app.models.Configs.findOne({
+    const availablePowerOnService = await this.configsService.findOne({
       where: {
         PropertyKey: 'config.vgpu.availablePowerOnVgpu',
       },
     });
 
-    if (poweredOnVm.length >= parseInt(availablePowerOnService.Value)) {
-      const err = new HttpExceptions().unavailableResource();
+    if (poweredOnVm.length >= parseInt(availablePowerOnService.value)) {
+      const err = new UnavailableResource();
       return Promise.reject(err);
     }
   }

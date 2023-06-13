@@ -10,6 +10,11 @@ import { SettingService } from '../base/setting/setting.service';
 import { ServiceTypesService } from '../base/service-types/service-types.service';
 import { ConfigsService } from '../base/configs/configs.service';
 import { DiscountsService } from '../base/discounts/discounts.service';
+import { TransactionsService } from '../base/transactions/transactions.service';
+import { ItemTypesService } from '../base/item-types/item-types.service';
+import { CreateServiceService } from '../base/service-instances/create-service.service';
+import { ServiceChecksService } from '../base/service-instances/service-checks.service';
+import { PlansService } from '../base/plans/plans.service';
 
 describe('AiController', () => {
   let controller: AiController;
@@ -27,6 +32,11 @@ describe('AiController', () => {
         SettingService,
         ConfigsService,
         DiscountsService,
+        TransactionsService,
+        ItemTypesService,
+        CreateServiceService,
+        ServiceChecksService,
+        PlansService,
       ],
       controllers: [AiController],
     }).compile();

@@ -4,6 +4,10 @@ import { TestDatabaseModule } from 'src/infrastructure/database/test-database.mo
 import { ServiceTypesService } from '../service-types/service-types.service';
 import { ServiceInstancesController } from './service-instances.controller';
 import { DiscountsService } from '../discounts/discounts.service';
+import { ServiceItemsService } from '../service-items/service-items.service';
+import { ServicePropertiesService } from '../service-properties/service-properties.service';
+import { TransactionsService } from '../transactions/transactions.service';
+import { UserService } from '../user/user.service';
 
 describe('ServiceInstancessService', () => {
   let controller: ServiceInstancesController;
@@ -12,10 +16,14 @@ describe('ServiceInstancessService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [
+        ServiceInstancesController,
         ServiceInstancesService,
         ServiceTypesService,
-        ServiceInstancesController,
+        ServiceItemsService,
+        ServicePropertiesService,
         DiscountsService,
+        TransactionsService,
+        UserService,
       ],
     }).compile();
 

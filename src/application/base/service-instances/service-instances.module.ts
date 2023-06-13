@@ -48,6 +48,8 @@ import { OrganizationService } from '../organization/organization.service';
     UserService,
     OrganizationService,
     ItemTypesService,
+    TransactionsService,
+    ItemTypesService,
   ],
   controllers: [ServiceInstancesController],
 })

@@ -1,11 +1,11 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
-import { ServiceTypesService } from '../service-types/service-types.service';
-import { DiscountsService } from '../discounts/discounts.service';
-import { ServiceInstancesService } from './service-instances.service';
-import { CreateServiceInstancesDto } from './dto/create-service-instances.dto';
-import { ServiceChecksService } from './service-checks.service';
+import { ServiceTypesService } from 'src/application/base/service-types/service-types.service';
+import { DiscountsService } from 'src/application/base/discounts/discounts.service';
+import { ServiceInstancesService } from '../../service-instances.service';
+import { CreateServiceInstancesDto } from '../../dto/create-service-instances.dto';
+import { ServiceChecksService } from '../service-checks/service-checks.service';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
 import { InvalidServiceIdException } from 'src/infrastructure/exceptions/invalid-service-id.exception';
 import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
@@ -54,8 +54,15 @@ export class CreateServiceService {
   }
 
   //checks if any of service params is not sent by client
-  runScript(path, services, serviceInstanceId, data, itemTypes, options) {
-    const script = require(path);
+  runScript(
+    path: string,
+    services: any,
+    serviceInstanceId: string,
+    data: any,
+    itemTypes: any,
+    options: any,
+  ): any {
+    const script: any = require(path);
     console.log(script);
     return new script(services, serviceInstanceId, data, itemTypes, options);
   }
