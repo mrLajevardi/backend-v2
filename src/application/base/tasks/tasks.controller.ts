@@ -14,7 +14,7 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Tasks } from 'src/infrastructure/database/entities/Tasks';
-import { TasksService } from './tasks.service';
+import { TasksService } from './service/tasks.service';
 import { CreateTaskDto } from 'src/application/base/tasks/dto/create-task.dto';
 import { UpdateTaskDto } from 'src/application/base/tasks/dto/update-task.dto';
 

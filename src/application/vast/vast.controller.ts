@@ -5,7 +5,7 @@ import {
   UseFilters,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Public } from '../core/auth/decorators/ispublic.decorator';
+import { Public } from '../base/security/auth/decorators/ispublic.decorator';
 import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.filter';
 import { InvalidUsernameException } from 'src/infrastructure/exceptions/invalid-username.exception';
 

@@ -5,7 +5,7 @@ import { CreateSessionsDto } from 'src/application/base/sessions/dto/create-sess
 import { UpdateSessionsDto } from 'src/application/base/sessions/dto/update-sessions.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/user/user.service';
 import { OrganizationService } from '../organization/organization.service';
 
 @Injectable()

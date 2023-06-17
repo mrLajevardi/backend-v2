@@ -7,5 +7,7 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [TicketsService],
   controllers: [TicketsController],
+  exports: [TicketsService],
+
 })
 export class TicketsModule {}

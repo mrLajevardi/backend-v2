@@ -1,18 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiService } from './ai.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { UserService } from '../base/user/user.service';
-import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
-import { ServiceInstancesService } from '../base/service-instances/service-instances.service';
-import { AiTransactionsLogsService } from '../base/ai-transactions-logs/ai-transactions-logs.service';
-import { SettingService } from '../base/setting/setting.service';
-import { ServiceTypesService } from '../base/service-types/service-types.service';
-import { ConfigsService } from '../base/configs/configs.service';
-import { DiscountsService } from '../base/discounts/discounts.service';
+import { UserService } from '../base/user/user/user.service';
+import { ServicePropertiesService } from '../base/service/service-properties/service-properties.service';
+import { ServiceInstancesService } from '../base/service/service-instances/service-instances.service';
+import { AiTransactionsLogsService } from '../base/service/ai-transactions-logs/ai-transactions-logs.service';
+import { SettingService } from '../base/security/setting/setting.service';
+import { ServiceTypesService } from '../base/service/service-types/service-types.service';
+import { ConfigsService } from '../base/service/configs/configs.service';
+import { DiscountsService } from '../base/service/discounts/discounts.service';
 import { TransactionsService } from '../base/transactions/transactions.service';
-import { ItemTypesService } from '../base/item-types/item-types.service';
-import { CreateServiceService } from '../base/service-instances/create-service.service';
-import { ServiceChecksService } from '../base/service-instances/service-checks.service';
+import { ItemTypesService } from '../base/service/item-types/item-types.service';
+import { CreateServiceService } from '../base/service/service-instances/create-service.service';
+import { ServiceChecksService } from '../base/service/service-instances/service-checks.service';
 import { PlansService } from '../base/plans/plans.service';
 
 describe('AiService', () => {

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SessionsController } from './sessions.controller';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { SessionsService } from './sessions.service';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/user/user.service';
 import { OrganizationService } from '../organization/organization.service';
 
 describe('SessionsController', () => {

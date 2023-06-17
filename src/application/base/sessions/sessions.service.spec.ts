@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SessionsService } from './sessions.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/user/user.service';
 import { OrganizationService } from '../organization/organization.service';
 
 describe('SessionsService', () => {
