@@ -12,8 +12,8 @@ import { ServicePropertiesService } from '../service/service-properties/service-
 import { ServiceItemsService } from '../service/service-items/service-items.service';
 import { ConfigsService } from '../service/configs/configs.service';
 import { UserService } from '../user/user/user.service';
-const mainWrapper = require('src/wrappers/mainWrapper/mainWrapper');
-const vcdConfig = require('src/wrappers/mainWrapper/vcdConfig');
+import mainWrapper from 'src/wrappers/mainWrapper/mainWrapper';
+import vcdConfig from 'src/wrappers/mainWrapper/vcdConfig';
 
 @Injectable()
 export class OrganizationService {

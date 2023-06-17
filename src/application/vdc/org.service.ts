@@ -8,6 +8,7 @@ import { ServicePropertiesService } from '../base/service/service-properties/ser
 import { TasksService } from '../base/tasks/service/tasks.service';
 import { UserService } from '../base/user/user/user.service';
 import { isEmpty } from 'lodash';
+import { Organization } from 'src/infrastructure/database/entities/Organization';
 const mainWrapper = require('src/wrappers/mainWrapper/mainWrapper');
 const vcdConfig = require('src/wrappers/mainWrapper/vcdConfig');
 
@@ -27,15 +28,16 @@ export class OrgService {
     ){}
 
     async checkOrg(userId) {
-        let org = await this.organizationService.findOne({
+        let org : any; 
+        org = await this.organizationService.findOne({
           where: {userId},
         });
         if (isEmpty(org)) {
           org = await this.organizationService.initOrg(userId);
-          org.isNew = true;
+         // org.isNew = true;
         } else {
           org = {
-            isNew: false,
+          //  isNew: false,
             id: org.id,
             vcloudOrgId: org.orgId,
             name: org.name,

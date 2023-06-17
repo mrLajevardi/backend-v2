@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
    * @param {String} externalNetworkId
    * @param {String} authToken
    */
-async function getEdgeCluster(vdcId, authToken) {
+export async function getEdgeCluster(vdcId, authToken) {
   const options = {
     headers: {
       Authorization: `Bearer ${authToken}`,

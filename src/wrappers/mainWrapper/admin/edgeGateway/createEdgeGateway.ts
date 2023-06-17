@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getAvailableIpAddresses = require('./getAvailableIpAddresses');
 const getExternalNetworks = require('./getExternalNetworks');
 
-const createEdgeGateway = () => {
+export const createEdgeGateway = () => {
   /**
    * get external networks
    * @param {String} authToken

@@ -6,7 +6,7 @@ const enableVdc = require('./enableVdc');
 const disableVdc = require('./disableVdc');
 const updateNetworkProfile = require('./updateNetworkProfile');
 
-const adminVdcWrapper = {
+export const adminVdcWrapper = {
   createVdc: createVdc,
   updateVdc: updateVdc,
   updateVdcStorageProfile: updateVdcStorageProfile,

@@ -8,7 +8,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
      * @param {string} config.username
      * @param {string} config.password
      */
-async function createUser(config) {
+export async function createUser(config) {
   const vcloudQueryOptions = {
     headers: {
       'x-vcloud-authorization': config.orgName,

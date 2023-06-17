@@ -7,7 +7,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
   * @param {Number} pageSize
   * @return {Promise} return data of external networks
   */
-async function getExternalNetworks(authToken, page = 1, pageSize = 25) {
+export async function getExternalNetworks(authToken, page = 1, pageSize = 25) {
   const options = {
     params: {
       page,

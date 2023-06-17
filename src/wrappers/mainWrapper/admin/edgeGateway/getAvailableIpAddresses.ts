@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
    * @param {String} externalNetworkId
    * @param {String} authToken
    */
-async function getAvailableIpAddresses(externalNetworkId, authToken) {
+export async function getAvailableIpAddresses(externalNetworkId, authToken) {
   const options = {
     urlParams: {
       externalNetworkId,

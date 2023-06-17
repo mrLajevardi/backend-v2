@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-module.exports = () => {
+export class createSessionWrapper {
   /**
      * base session
      * @param {String} username
@@ -8,7 +8,7 @@ module.exports = () => {
      * @param {Boolean} isProvider
      * @return {Promise}
      */
-  async function session(username, password, orgName, isProvider = false) {
+  async session(username, password, orgName, isProvider = false) {
     // convert username@organization:password to base64
     const basicAuth = Buffer.from(`${username}@${orgName}:${password}`).toString('base64');
     const options = {
@@ -38,8 +38,8 @@ module.exports = () => {
      * @param {String} orgName
      * @return {Promise}
      */
-  function providerSession(username, password, orgName) {
-    return session(username, password, orgName, true);
+  async providerSession(username, password, orgName) {
+    return await this.session(username, password, orgName, true);
   }
   /**
      * user login
@@ -48,12 +48,14 @@ module.exports = () => {
      * @param {String} orgName
      * @return {Promise}
      */
-  function userSession(username, password, orgName) {
-    return session(username, password, orgName);
+  async userSession(username, password, orgName) {
+    return await this.session(username, password, orgName);
   }
 
-  return {
-    providerSession,
-    userSession,
-  };
+  async createSession(){
+    return {
+      providerSession: await this.providerSession,
+      userSession: await this.userSession,
+    };
+  } 
 };

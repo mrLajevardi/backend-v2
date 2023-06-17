@@ -3,7 +3,7 @@ const getAvailableIpAddresses = require('./getAvailableIpAddresses');
 const getEdgeCluster = require('./getEdgeCluster');
 const getExternalNetworks = require('./getExternalNetworks');
 
-const adminEdgeGatewayWrapper = {
+export const adminEdgeGatewayWrapper = {
   createEdgeGateway,
   getAvailableIpAddresses: getAvailableIpAddresses,
   getExternalNetworks: getExternalNetworks,

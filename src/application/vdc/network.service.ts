@@ -34,7 +34,7 @@ export class NetworkService {
    * @param {String} edgeName
    * @param {String} userId
    */
-async createNetwork(gateway, vdcId, orgId, app, edgeName, userId) {
+async createNetwork(gateway, vdcId, orgId, edgeName, userId) {
     const startAddress = '192.168.1.2';
     const endAddress = '192.168.1.11';
     const session = await this.sessionService.checkUserSession(userId,orgId);

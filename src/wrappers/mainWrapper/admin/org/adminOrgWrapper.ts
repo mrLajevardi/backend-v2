@@ -3,7 +3,7 @@ const createOrgCatalog = require('./createOrgCatalog');
 const getOrg = require('./getOrg');
 const deleteCatalogOrg = require('./deleteCatalog');
 
-const adminOrgWrapper = {
+export const adminOrgWrapper = {
   createOrg: createOrg,
   createOrgCatalog: createOrgCatalog,
   getOrg: getOrg,

@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
    * @param {String} catalogId
    * @return {void}
    */
-async function deleteCatalog(session, catalogId) {
+export async function deleteCatalog(session, catalogId) {
   const options = {
     headers: {Authorization: `Bearer ${session}`},
     urlParams: {catalogId: catalogId},

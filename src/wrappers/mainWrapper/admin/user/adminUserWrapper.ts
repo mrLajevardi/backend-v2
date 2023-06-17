@@ -1,7 +1,7 @@
 const createSession = require('./createSession');
 const createUser = require('./createUser');
 
-const adminUserWrapper = {
+export const adminUserWrapper = {
   createSession: createSession,
   createUser: createUser,
 };

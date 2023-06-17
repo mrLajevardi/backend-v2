@@ -7,7 +7,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} orgId
  * @return {Promise}
  */
-async function createOrgCatalog(authToken, description, name = 'user-catalog', orgId) {
+export async function createOrgCatalog(authToken, description, name = 'user-catalog', orgId) {
   const requestBody = {
     name,
     description,

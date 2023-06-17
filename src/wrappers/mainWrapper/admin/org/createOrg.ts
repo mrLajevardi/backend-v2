@@ -5,7 +5,7 @@ const config = require('../../vcdConfig').admin.org;
  * @param {String} authToken
  * @return {Promise}
  */
-module.exports = async function createOrg(name, authToken) {
+export  async function createOrg(name, authToken) {
   const requestBody = {
     ...config,
     name: name,

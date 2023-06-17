@@ -5,7 +5,7 @@ const config = require('../../vcdConfig').admin.org;
  * @param {String} authToken
  * @return {Promise}
  */
-async function getOrg(params, authToken) {
+export async function getOrg(params, authToken) {
   const options = {
     headers: {
       Authorization: `Bearer ${authToken}`,
