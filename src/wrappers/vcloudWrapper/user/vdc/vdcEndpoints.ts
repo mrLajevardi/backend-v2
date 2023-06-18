@@ -8,7 +8,7 @@ const attachNamedDisk = require('./attachNamedDisk');
 const dettachNamedDisk = require('./dettachNamedDisk');
 const vmAttachedNamedDisk = require('./getVmAttachedNamedDisk');
 
-const vdcEndpoints = {
+export const vdcEndpoints = {
   getHardwareInfo: getHardwareInfoEndpoint,
   getVdcComputePolicy: getVdcComputePolicyEndpoint,
   vcloudQuery: vcloudQueryEndpoint,

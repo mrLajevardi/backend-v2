@@ -3,20 +3,16 @@ import { InvoicesService } from './invoices.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { CostCalculationService } from './cost-calculation.service';
 import { InvoicesChecksService } from './invoices-checks.service';
-import { PlansService } from '../../../plans/plans.service';
-import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { ConfigsService } from '../../../service/configs/configs.service';
-import { DiscountsService } from '../../../service/discounts/discounts.service';
+import { PlansService } from 'src/application/base/plans/plans.service';
+import { ItemTypesService } from 'src/application/base/service/item-types/item-types.service';
+import { ServiceTypesService } from 'src/application/base/service/service-types/service-types.service';
 import { InvoiceItemsService } from '../../invoice-items/invoice-items.service';
+import { TransactionsService } from 'src/application/base/transactions/transactions.service';
 import { InvoicePlansService } from '../../invoice-plans/invoice-plans.service';
 import { InvoicePropertiesService } from '../../invoice-properties/invoice-properties.service';
-import { ItemTypesService } from '../../../service/item-types/item-types.service';
-import { OrganizationService } from '../../../organization/organization.service';
-import { ServiceInstancesService } from '../../../service/service-instances/service-instances.service';
-import { ServiceTypesService } from '../../../service/service-types/service-types.service';
-import { SessionsService } from '../../../sessions/sessions.service';
-import { TransactionsService } from '../../../transactions/transactions.service';
-import { UserService } from '../../../user/user/user.service';
+import { VgpuService } from 'src/application/vgpu/vgpu.service';
+import { ConfigsService } from 'src/application/base/service/configs/configs.service';
+import { SessionsService } from 'src/application/base/sessions/sessions.service';
 
 describe('InvoicesService', () => {
   let service: InvoicesService;
@@ -27,7 +23,17 @@ describe('InvoicesService', () => {
       providers: [
         InvoicesService,
         CostCalculationService,
-        InvoicesChecksService
+        InvoicesChecksService,
+        PlansService,
+        ItemTypesService,
+        ServiceTypesService, 
+        InvoiceItemsService, 
+        TransactionsService, 
+        InvoicePlansService, 
+        InvoicePropertiesService, 
+        VgpuService,
+        ConfigsService,
+        SessionsService
       ],
       exports:[
         InvoicesService,

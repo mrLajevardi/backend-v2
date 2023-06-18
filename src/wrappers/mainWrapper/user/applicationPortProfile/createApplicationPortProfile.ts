@@ -9,7 +9,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Object} config.applicationPorts
  * @return {Promise}
  */
-async function userCreateApplicationPortProfile(authToken, config) {
+export async function userCreateApplicationPortProfile(authToken, config) {
   const requestBody = {
     name: config.name,
     description: config.description,

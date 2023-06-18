@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function questionEndpoint(options = {}) {
+export function questionEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/api/vApp/${options.urlParams.vmId}/question`,

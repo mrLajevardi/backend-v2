@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} networkId
  * @return {Promise}
  */
-async function userDeleteNetwork(authToken, networkId) {
+export async function userDeleteNetwork(authToken, networkId) {
   const options = {
     params: {
       force: true,

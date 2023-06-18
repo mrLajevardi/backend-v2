@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function vcloudQueryEndpoint(options = {}) {
+export function vcloudQueryEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/api/query`,

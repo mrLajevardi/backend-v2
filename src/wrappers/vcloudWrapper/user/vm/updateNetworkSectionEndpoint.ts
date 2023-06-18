@@ -5,7 +5,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function updateNetworkSectionEndpoint(options = {}) {
+export function updateNetworkSectionEndpoint(options? : any) {
   return {
     method: 'put',
     resource: `api/vApp/${options.urlParams.vmId}/networkConnectionSection/`,

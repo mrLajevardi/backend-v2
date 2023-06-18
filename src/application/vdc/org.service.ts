@@ -9,22 +9,16 @@ import { TasksService } from '../base/tasks/service/tasks.service';
 import { UserService } from '../base/user/user/user.service';
 import { isEmpty } from 'lodash';
 import { Organization } from 'src/infrastructure/database/entities/Organization';
-const mainWrapper = require('src/wrappers/mainWrapper/mainWrapper');
-const vcdConfig = require('src/wrappers/mainWrapper/vcdConfig');
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
+
 
 
 @Injectable()
 export class OrgService {
 
     constructor(
-        private readonly taskService: TasksService,
-        private readonly sessionService: SessionsService,
-        private readonly serviceInstanceService: ServiceInstancesService,
-        private readonly servicePropertiesService: ServicePropertiesService,
-        private readonly serviceItemsService: ServiceItemsService,
-        private readonly configService: ConfigsService,
         private readonly organizationService: OrganizationService,
-        private readonly userService: UserService,
     ){}
 
     async checkOrg(userId) {

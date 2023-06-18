@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getOrgEndpoint(options = {}) {
+export function getOrgEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/orgs`,

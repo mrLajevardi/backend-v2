@@ -7,7 +7,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppAction
  * @return {Promise}
  */
-async function userRevertSnapShot(authToken, vAppId) {
+export async function userRevertSnapShot(authToken, vAppId) {
   const options = {
     urlParams: {vmId: vAppId},
     headers: {Authorization: `Bearer ${authToken}`},

@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getAllDhcpBindingEndpoint(options = {}) {
+export function getAllDhcpBindingEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp/bindings`,

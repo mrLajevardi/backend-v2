@@ -1,7 +1,7 @@
 const cancelTaskEndpoint = require('./cancelTaskEndpoint');
 const getTaskEndpoint = require('./getTaskEndpoint');
 const getTaskListEndpoint = require('./getTaskListEndPoint');
-const tasksEndpoints = {
+export const tasksEndpoints = {
   getTask: getTaskEndpoint,
   getTaskList: getTaskListEndpoint,
   cancelTask: cancelTaskEndpoint,

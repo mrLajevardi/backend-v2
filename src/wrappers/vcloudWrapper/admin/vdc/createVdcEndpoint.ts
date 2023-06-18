@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function createVdcEndpoint(options = {}) {
+export function createVdcEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `/api/admin/org/${options.urlParams.orgId}/vdcsparams`,

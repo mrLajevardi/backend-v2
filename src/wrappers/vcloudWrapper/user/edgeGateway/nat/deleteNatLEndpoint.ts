@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function deleteNatEndpoint(options = {}) {
+export function deleteNatEndpoint(options? : any ) {
   return {
     method: 'delete',
     // eslint-disable-next-line max-len

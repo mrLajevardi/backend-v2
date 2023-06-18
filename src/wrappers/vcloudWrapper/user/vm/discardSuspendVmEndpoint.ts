@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function discardSuspendVmEndpoint(options = {}) {
+export function discardSuspendVmEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/discardSuspendedState`,

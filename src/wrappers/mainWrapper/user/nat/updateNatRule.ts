@@ -16,7 +16,7 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
  * @param {String} config.type
  * @param {String} edgeName edgeGateway name
  */
-async function userUpdateNatRule(config, edgeName) {
+export async function userUpdateNatRule(config, edgeName) {
   const gateway = await getEdgeGateway(config.authToken);
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
       .id;

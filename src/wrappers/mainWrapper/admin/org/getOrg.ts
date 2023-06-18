@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const config = require('../../vcdConfig').admin.org;
+import { vcdConfig } from "../../vcdConfig";
 /**
  * @param {String} params
  * @param {String} authToken

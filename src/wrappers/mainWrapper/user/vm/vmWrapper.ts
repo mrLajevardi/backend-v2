@@ -33,7 +33,7 @@ const userDeleteTemplate = require('./deleteTemplate');
 const userUpdateVAppTemplate = require('./updateVAppTemplate');
 const userUpdateMedia = require('./updateMedia');
 
-const vmWrapper = {
+export const vmWrapper = {
   acquireVappTicket: userAcquireVappTicket,
   createVm: userCreateVm,
   deleteVm: userDeletevApp,

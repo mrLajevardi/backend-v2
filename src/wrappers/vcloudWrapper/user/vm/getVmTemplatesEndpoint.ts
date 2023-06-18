@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getVmTemplatesEndpoint(options = {}) {
+export function getVmTemplatesEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/api/vAppTemplate/${options.urlParams.vmId}`,

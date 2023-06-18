@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function updateVmEndpoint(options = {}) {
+export function updateVmEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/reconfigureVm`,

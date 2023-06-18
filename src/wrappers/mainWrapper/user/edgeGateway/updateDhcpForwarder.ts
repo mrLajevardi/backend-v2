@@ -9,7 +9,7 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
  * @param {string} authToken
  * @return {Promise}
  */
-async function updateDhcpForwarder(dhcpServers, enabled, version, edgeName, authToken) {
+export async function updateDhcpForwarder(dhcpServers, enabled, version, edgeName, authToken) {
   const gateway = await getEdgeGateway(authToken);
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
       .id;

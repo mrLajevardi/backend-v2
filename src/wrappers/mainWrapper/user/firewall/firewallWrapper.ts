@@ -4,7 +4,7 @@ const userGetSingleFirewall = require('./getSingleFirewall');
 const userUpdateFirewallList = require('./updateFirewallList');
 const userUpdateSingleFirewall = require('./updateSingleFirewall');
 
-const firewallWrapper = {
+export const firewallWrapper = {
   getFirewallList: userGetFirewallList,
   getSingleFirewall: userGetSingleFirewall,
   updateFirewallList: userUpdateFirewallList,

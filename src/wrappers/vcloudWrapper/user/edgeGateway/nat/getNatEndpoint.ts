@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getNatEndpoint(options = {}) {
+export function getNatEndpoint(options? : any ) {
   return {
     method: 'get',
     // eslint-disable-next-line max-len

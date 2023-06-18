@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-async function userUpdateMedia(authToken, mediaId, name) {
+export async function userUpdateMedia(authToken, mediaId, name) {
   const request = {
     name,
   };

@@ -14,14 +14,15 @@ import { VdcService } from 'src/application/vdc/vdc.service';
 import { EdgeService } from 'src/application/vdc/edge.service';
 import { OrgService } from 'src/application/vdc/org.service';
 import { NetworkService } from 'src/application/vdc/network.service';
-const mainWrapper = require('src/wrappers/mainWrapper/mainWrapper');
-const userVcloudQuery = require('src/wrappers/mainWrapper/user/vdc/vcloudQuery');
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { userVcloudQuery } from 'src/wrappers/mainWrapper/user/vdc/vcloudQuery';
 
 
 @Injectable()
 export class TaskManagerService {
     constructor(
-        @InjectQueue('tasks') private taskQueue: Queue,
+        @InjectQueue('tasks') 
+        private taskQueue: Queue,
         private readonly taskService: TasksService,
         private readonly sessionService: SessionsService,
         private readonly serviceInstanceService: ServiceInstancesService,

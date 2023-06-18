@@ -6,7 +6,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Object} additionalHeaders
  * @return {Promise}
  */
-async function userVcloudQuery(authToken, params, additionalHeaders = {}) {
+export async function userVcloudQuery(authToken, params, additionalHeaders = {}) {
   const options = {
     params,
     headers: {

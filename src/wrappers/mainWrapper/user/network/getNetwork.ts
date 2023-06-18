@@ -8,7 +8,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Number} filter
  * @return {Promise}
  */
-async function userGetNetwork(authToken, page = 1, pageSize = 25, filter = '') {
+export async function userGetNetwork(authToken, page = 1, pageSize = 25, filter = '') {
   const params = {
     page,
     pageSize,

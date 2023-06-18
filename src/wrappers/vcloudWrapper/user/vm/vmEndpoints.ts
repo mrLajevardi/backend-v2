@@ -30,7 +30,7 @@ const deleteTemplateEndpoint = require('./deleteTemplateEndpoint');
 const updateVAppTemplateEndpoint = require('./updateVAppTemplateEndpoint');
 const updateMediaEndpoint = require('./updateMediaEndpoint');
 
-const vmEndpoints = {
+export const vmEndpoints = {
   createVm: createVmEndpoint,
   deleteVm: deleteVmEndpoint,
   acquireVmTicket: acquireVmTicketEndpoint,

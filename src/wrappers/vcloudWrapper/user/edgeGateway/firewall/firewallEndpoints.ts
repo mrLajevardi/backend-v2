@@ -4,7 +4,7 @@ const getFirewallListEndpoint = require('./getFirewallListEndpint');
 const updateFirewallEndpoint = require('./updateFirewallEndpoint');
 const updateFirewallListEndpoint = require('./updateFirewallListEndpoint');
 
-const firewallEndpoints = {
+export const firewallEndpoints = {
   updateFirewallList: updateFirewallListEndpoint,
   updateFirewall: updateFirewallEndpoint,
   getFirewallList: getFirewallListEndpoint,

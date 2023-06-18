@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getNetworkIPUsageListEndpoint(options = {}) {
+export function getNetworkIPUsageListEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/allocatedIpAddresses`,

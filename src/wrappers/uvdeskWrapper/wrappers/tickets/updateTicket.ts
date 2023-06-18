@@ -1,7 +1,7 @@
 const UvDeskWrapper = require('../../uvdeskWrapper');
 const uvDeskConfig = require('../../uvdeskConfig.json');
 
-async function updateTicket(property, value, ticketId) {
+export async function updateTicket(property, value, ticketId) {
   const ticket = await new UvDeskWrapper().posts('ticket.updateTicket', {
     body: {
       property,

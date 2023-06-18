@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function removeVmSnapShot(options = {}) {
+export function removeVmSnapShot(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/removeAllSnapshots`,

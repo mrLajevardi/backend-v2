@@ -6,7 +6,7 @@ const updateVdcStorageProfileEndpoint = require('./updateVdcStorageProfileEndpoi
 const disableVdcEndpoint = require('./disableVdcEndpoint');
 const updateNetworkProfileEndpoint = require('./updateNetworkProfileEndpoint');
 
-const adminVdcEndpoints = {
+export const adminVdcEndpoints = {
   createVdc: createVdcEndpoint,
   updateVdc: updateVdcEndpoint,
   updateVdcStorageProfile: updateVdcStorageProfileEndpoint,

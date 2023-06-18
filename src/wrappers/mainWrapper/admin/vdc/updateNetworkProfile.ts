@@ -4,7 +4,7 @@ const getEdgeCluster = require('../edgeGateway/getEdgeCluster');
    * @param {String} vdcId
    * @param {String} session
    */
-async function updateNetworkProfile(vdcId, session) {
+export async function updateNetworkProfile(vdcId, session) {
   const edgeClusterId = await getEdgeCluster(vdcId, session);
   const options = {
     headers: {Authorization: `Bearer ${session}`},

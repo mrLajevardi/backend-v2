@@ -6,7 +6,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} nameDiskID
  * @return {Promise}
  */
-async function userRemoveNamedDisk(authToken, nameDiskID) {
+export async function userRemoveNamedDisk(authToken, nameDiskID) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
   };

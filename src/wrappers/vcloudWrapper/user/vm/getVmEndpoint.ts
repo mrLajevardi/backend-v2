@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getVmEndpoint(options = {}) {
+export function getVmEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/api/vApp/${options.urlParams.vmId}`,

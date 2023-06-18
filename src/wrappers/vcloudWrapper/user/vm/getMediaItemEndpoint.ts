@@ -6,7 +6,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function getMediaItemEndpoint(options = {}) {
+export function getMediaItemEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/api/media/${options.urlParams.mediaItemId}`,

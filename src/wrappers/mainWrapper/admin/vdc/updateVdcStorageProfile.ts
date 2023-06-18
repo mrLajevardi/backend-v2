@@ -10,7 +10,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
    * @param {String} config.authToken provider auth token
    * @return {Promise}
    */
-async function updateVdcStorageProfile(config, vdcId) {
+export async function updateVdcStorageProfile(config, vdcId) {
   const queryOptions = {
     headers: {Authorization: `Bearer ${config.authToken}`},
     params: {

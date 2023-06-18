@@ -6,7 +6,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Number} pageSize
  * @return {Promise}
  */
-async function userGetVdcComputePolicy(authToken, vdcId, page = 1, pageSize = 10) {
+export async function userGetVdcComputePolicy(authToken, vdcId, page = 1, pageSize = 10) {
   const params = {
     page,
     pageSize,

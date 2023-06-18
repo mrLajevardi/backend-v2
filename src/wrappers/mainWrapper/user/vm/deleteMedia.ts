@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} authToken
  * @param {String} mediaId
  */
-async function userDeleteMedia(authToken, mediaId) {
+export async function userDeleteMedia(authToken, mediaId) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {mediaId},

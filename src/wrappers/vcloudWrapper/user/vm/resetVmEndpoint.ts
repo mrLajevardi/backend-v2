@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function resetVmEndpoint(options = {}) {
+export function resetVmEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/power/action/reset`,

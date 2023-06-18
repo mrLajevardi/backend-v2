@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function insertOrEjectEndpoint(options = {}) {
+export function insertOrEjectEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/media/action/${options.urlParams.action}`,

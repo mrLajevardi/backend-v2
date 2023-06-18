@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function deleteMediaEndpoint(options = {}) {
+export function deleteMediaEndpoint(options? : any) {
   return {
     method: 'delete',
     resource: `/api/media/${options.urlParams.mediaId}`,

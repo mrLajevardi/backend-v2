@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function createNamedDisk(options = {}) {
+export function createNamedDisk(options? : any) {
   return {
     method: 'post',
     resource: `/api/vdc/${options.urlParams.vdcId}/disk`,

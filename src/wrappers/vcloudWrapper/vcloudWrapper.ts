@@ -2,7 +2,6 @@ const lodash = require('lodash');
 const {default: axios} = require('axios');
 const {isNil} = require('lodash');
 const https = require('https');
-const HttpExceptions = require('../../exceptions/httpExceptions');
 const networkEndpoints = require('./user/edgeGateway/network/networkEndpoints');
 const tasksEndpoints = require('./user/tasks/tasksEndpoints');
 const natEndpoints = require('./user/edgeGateway/nat/natEndPoints');

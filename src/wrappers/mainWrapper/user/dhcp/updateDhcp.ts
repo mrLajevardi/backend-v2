@@ -1,5 +1,5 @@
-const HttpExceptions = require('../../../../exceptions/httpExceptions');
-const {isEmpty} = require('../../../../utils/helpers');
+import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { isEmpty } from "class-validator";
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 /**
@@ -20,12 +20,12 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
  * @param {String} mode  EDGE, NETWORK and RELAY
  * @return {Promise}
  */
-async function userUpdateDhcp(
+export async function userUpdateDhcp(
     authToken, dhcpPools, ipAddress, dnsServers, leaseTime, networkId, mode,
 ) {
   const gateway = await getEdgeGateway(authToken);
   if (isEmpty(gateway.values[0])) {
-    return Promise.reject(new HttpExceptions().noIpIsAssigned());
+    return Promise.reject(new NoIpIsAssignedException());
   }
   const dhcp = await new VcloudWrapper().posts('user.dhcp.updateDhcp', {
     headers: {Authorization: `Bearer ${authToken}`},

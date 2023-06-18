@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function deleteIpSetsEndpoint(options = {}) {
+export function deleteIpSetsEndpoint(options? : any ) {
   return {
     method: 'delete',
     resource: `/cloudapi/1.0.0/firewallGroups/${options.urlParams.ipSetId}`,

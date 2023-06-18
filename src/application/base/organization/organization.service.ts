@@ -5,28 +5,17 @@ import { CreateOrganizationDto } from 'src/application/base/organization/dto/cre
 import { UpdateOrganizationDto } from 'src/application/base/organization/dto/update-organization.dto';
 import { FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
-import { TasksService } from '../tasks/service/tasks.service';
 import { SessionsService } from '../sessions/sessions.service';
-import { ServiceInstancesService } from '../service/service-instances/service-instances.service';
-import { ServicePropertiesService } from '../service/service-properties/service-properties.service';
-import { ServiceItemsService } from '../service/service-items/service-items.service';
-import { ConfigsService } from '../service/configs/configs.service';
 import { UserService } from '../user/user/user.service';
-import mainWrapper from 'src/wrappers/mainWrapper/mainWrapper';
-import vcdConfig from 'src/wrappers/mainWrapper/vcdConfig';
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 
 @Injectable()
 export class OrganizationService {
   constructor(
     @InjectRepository(Organization)
     private readonly repository: Repository<Organization>,
-    private readonly taskService: TasksService,
     private readonly sessionService: SessionsService,
-    private readonly serviceInstanceService: ServiceInstancesService,
-    private readonly servicePropertiesService: ServicePropertiesService,
-    private readonly serviceItemsService: ServiceItemsService,
-    private readonly configService: ConfigsService,
-    private readonly organizationService: OrganizationService,
     private readonly userService: UserService,
   ) {}
 
@@ -90,7 +79,7 @@ export class OrganizationService {
 
 
   async initOrg(userId) {
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
+   const sessionToken = await this.sessionService.checkAdminSession(userId);
     const user = await this.userService.findById(userId);
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     const name = `${filteredUsername}_org`;

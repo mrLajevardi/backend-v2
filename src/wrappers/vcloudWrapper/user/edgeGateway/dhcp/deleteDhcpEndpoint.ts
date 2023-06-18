@@ -5,7 +5,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function deleteDhcpEndpoint(options = {}) {
+export function deleteDhcpEndpoint(options? : any ) {
   return {
     method: 'delete',
     resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp`,

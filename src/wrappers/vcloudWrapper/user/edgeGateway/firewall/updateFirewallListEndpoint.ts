@@ -4,7 +4,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function updateFirewallListEndpoint(options = {}) {
+export function updateFirewallListEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules`,

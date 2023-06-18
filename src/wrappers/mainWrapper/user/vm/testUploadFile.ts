@@ -58,7 +58,7 @@ const uploadFile = require('./uploadFile');
 const fs = require('fs');
 const {pipeline} = require('stream');
 
-async function test(authToken, catalogId, data, filePath) {
+export async function test(authToken, catalogId, data, filePath) {
   const file = await uploadFile(authToken, catalogId, data);
   const {id: catalogItemId} = file.data.entity;
   const catalogItem = await userGetMediaItem(authToken, catalogItemId.split(':').slice(-1)[0]);
@@ -90,7 +90,7 @@ function sendFile(fullAddress, filePath, authToken, uploadSize, fileSize) {
       if (uploadSize !== fileSize) {
         return sendFile(fullAddress, filePath, authToken, uploadSize, fileSize);
       }
-      resolve();
+      //resolve();
     }).catch((err) => {
       reject(err);
     });

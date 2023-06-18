@@ -6,7 +6,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function updateMediaEndpoint(options = {}) {
+export function updateMediaEndpoint(options? : any) {
   return {
     method: 'put',
     resource: `/api/media/${options.urlParams.mediaId}`,

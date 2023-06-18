@@ -4,7 +4,7 @@ const dnsForwarderList = require('./getDnsForwarder');
 const updateDhcpForwarder = require('./updateDhcpForwarder');
 const getDhcpForwarder = require('./getDhcpForwarder');
 
-const edgeGatewayWrapper = {
+export const edgeGatewayWrapper = {
   getEdgeGateway: userGetEdgeGateway,
   updateDnsForwarder: dnsForwarder,
   getDnsForwarder: dnsForwarderList,

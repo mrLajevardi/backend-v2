@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function attachNamedDisk(options = {}) {
+export function attachNamedDisk(options? : any ) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmID}/disk/action/attach`,

@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function updateNetworkProfileEndpoint(options = {}) {
+export function updateNetworkProfileEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/cloudapi/1.0.0/vdcs/${options.urlParams.vdcId}/networkProfile`,

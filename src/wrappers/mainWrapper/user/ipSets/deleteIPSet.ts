@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} ipSetId
  * @return {Promise}
  */
-async function userDeleteIPSet(authToken, ipSetId) {
+export async function userDeleteIPSet(authToken, ipSetId) {
   const options = {
     urlParams: {ipSetId},
     headers: {Authorization: `Bearer ${authToken}`},

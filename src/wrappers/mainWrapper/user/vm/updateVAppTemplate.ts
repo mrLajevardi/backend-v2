@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-async function userUpdateVAppTemplate(authToken, templateId, name, description) {
+export async function userUpdateVAppTemplate(authToken, templateId, name, description) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {templateId},

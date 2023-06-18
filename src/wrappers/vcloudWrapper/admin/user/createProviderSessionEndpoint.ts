@@ -3,7 +3,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function createProviderSessionEndpoint(options = {}) {
+export function createProviderSessionEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/sessions/provider`,

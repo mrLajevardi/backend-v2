@@ -9,7 +9,7 @@ const vcloudQuery = require('../vdc/vcloudQuery');
  * @param {String} vAppAction
  * @return {Promise}
  */
-async function userUpdateNamedDisk(
+export async function userUpdateNamedDisk(
     authToken,
     vdcId,
     nameDiskID,

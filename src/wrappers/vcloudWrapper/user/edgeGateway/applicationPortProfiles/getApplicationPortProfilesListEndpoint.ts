@@ -5,7 +5,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function getApplicationPortProfilesListEndpoint(options = {}) {
+export function getApplicationPortProfilesListEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/applicationPortProfiles`,

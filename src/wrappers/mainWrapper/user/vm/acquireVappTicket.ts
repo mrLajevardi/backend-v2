@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppId
  * @return {Promise}
  */
-function userAcquireVappTicket(authToken, vAppId) {
+export function userAcquireVappTicket(authToken, vAppId) {
   const ticket = new VcloudWrapper().posts('user.vm.acquireVmTicket', {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {vmId: vAppId},

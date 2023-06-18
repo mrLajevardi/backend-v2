@@ -5,7 +5,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function createTemplateEndpoint(options = {}) {
+export function createTemplateEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/catalog/${options.urlParams.catalogId}/action/captureVApp`,

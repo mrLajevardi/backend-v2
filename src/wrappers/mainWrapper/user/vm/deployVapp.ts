@@ -7,7 +7,7 @@ const builder = new xml2js.Builder();
  * @param {String} vAppId
  * @return {Promise}
  */
-async function userDeployvApp(authToken, vAppId) {
+export async function userDeployvApp(authToken, vAppId) {
   const request = {
     'root:DeployVAppParams': {
       $: {

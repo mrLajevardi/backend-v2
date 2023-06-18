@@ -6,7 +6,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppAction
  * @return {Promise}
  */
-async function userDettachNamedDisk(authToken, nameDiskID, vmID) {
+export async function userDettachNamedDisk(authToken, nameDiskID, vmID) {
   const request = {
     disk: {
       href: `https://vcd.aradcloud.com/api/disk/${nameDiskID}`,

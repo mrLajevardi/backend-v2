@@ -4,7 +4,7 @@ const getApplicationPortProfileEndpoint = require('./getApplicationPortProfileEn
 const getApplicationPortProfilesListEndpoint = require('./getApplicationPortProfilesListEndpoint');
 const updateApplicationPortProfilesEndpoint = require('./updateApplicationPortProfileEndpoint');
 
-const applicationPortProfilesEndpoints = {
+export const applicationPortProfilesEndpoints = {
   createApplicationPortProfile: createApplicationPortProfilesEndpoint,
   deleteApplicationPortProfile: deleteApplicationPortProfilesEndpoint,
   updateApplicationPortProfile: updateApplicationPortProfilesEndpoint,

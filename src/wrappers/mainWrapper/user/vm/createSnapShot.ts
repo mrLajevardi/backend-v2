@@ -8,7 +8,7 @@ const builder = new xml2js.Builder();
  * @param {Object} snapShotProperties
  * @return {Promise}
  */
-async function userCreateSnapShot(authToken, vAppId, snapShotProperties) {
+export async function userCreateSnapShot(authToken, vAppId, snapShotProperties) {
   const request = {
     'root:CreateSnapshotParams': {
       $: {

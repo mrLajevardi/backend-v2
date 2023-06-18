@@ -5,7 +5,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function updateVAppTemplateEndpoint(options = {}) {
+export function updateVAppTemplateEndpoint(options? : any) {
   return {
     method: 'put',
     resource: `api/vAppTemplate/${options.urlParams.templateId}`,

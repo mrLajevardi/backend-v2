@@ -4,7 +4,7 @@ const userGetApplicationPortProfiles = require('./getApplicationPortProfiles');
 const userGetSingleApplicationPortProfile = require('./getSingleApplicationPortProfile');
 const userUpdateApplicationPortProfile = require('./updateApplicationPortProfile');
 
-const applicationPortProfilesWrapper = {
+export const applicationPortProfilesWrapper = {
   getApplicationPortProfile: userGetSingleApplicationPortProfile,
   createApplicationPortProfile: userCreateApplicationPortProfile,
   updateApplicationPortProfile: userUpdateApplicationPortProfile,

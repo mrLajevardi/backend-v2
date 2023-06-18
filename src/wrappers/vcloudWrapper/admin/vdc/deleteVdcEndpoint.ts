@@ -7,7 +7,7 @@
  * @return {Object}
  */
 
-function deleteVdcEndpoint(options = {}) {
+export function deleteVdcEndpoint(options? : any ) {
   return {
     method: 'delete',
     resource: `/api/admin/vdc/${options.urlParams.vdcId[0]}?force=true&recursive=true`,

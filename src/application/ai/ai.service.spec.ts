@@ -11,9 +11,21 @@ import { ConfigsService } from '../base/service/configs/configs.service';
 import { DiscountsService } from '../base/service/discounts/discounts.service';
 import { TransactionsService } from '../base/transactions/transactions.service';
 import { ItemTypesService } from '../base/service/item-types/item-types.service';
-import { CreateServiceService } from '../base/service/service-instances/create-service.service';
-import { ServiceChecksService } from '../base/service/service-instances/service-checks.service';
+import { CreateServiceService } from '../base/service/service-instances/services/create-service/create-service.service';
+import { ServiceChecksService } from '../base/service/service-instances/services/service-checks/service-checks.service';
 import { PlansService } from '../base/plans/plans.service';
+import { QualityPlansService } from '../base/service/quality-plans/quality-plans.service';
+import { ServiceItemsSumService } from '../base/service/service-items-sum/service-items-sum.service';
+import { InvoicesService } from '../base/invoice/invoices/service/invoices.service';
+import { ServiceItemsService } from '../base/service/service-items/service-items.service';
+import { InvoiceItemsService } from '../base/invoice/invoice-items/invoice-items.service';
+import { InvoiceDiscountsService } from '../base/invoice/invoice-discounts/invoice-discounts.service';
+import { InvoicesChecksService } from '../base/invoice/invoices/service/invoices-checks.service';
+import { CostCalculationService } from '../base/invoice/invoices/service/cost-calculation.service';
+import { InvoicePlansService } from '../base/invoice/invoice-plans/invoice-plans.service';
+import { InvoicePropertiesService } from '../base/invoice/invoice-properties/invoice-properties.service';
+import { VgpuService } from '../vgpu/vgpu.service';
+import { SessionsService } from '../base/sessions/sessions.service';
 
 describe('AiService', () => {
   let service: AiService;
@@ -36,6 +48,19 @@ describe('AiService', () => {
         CreateServiceService,
         ServiceChecksService,
         PlansService,
+        QualityPlansService,
+        ServiceItemsSumService,
+        InvoicesService,
+        InvoiceItemsService,
+        InvoiceDiscountsService,
+        InvoicesChecksService,
+        CostCalculationService,
+        InvoicePlansService,
+        InvoicePropertiesService,
+        VgpuService,
+        SessionsService,
+        ServiceItemsService
+
       ],
     }).compile();
 

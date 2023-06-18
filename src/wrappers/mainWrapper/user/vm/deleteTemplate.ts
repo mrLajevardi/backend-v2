@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} authToken
  * @param {String} mediaId
  */
-async function userDeleteTemplate(authToken, templateId) {
+export async function userDeleteTemplate(authToken, templateId) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {templateId},

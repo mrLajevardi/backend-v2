@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function deployVmEndpoint(options = {}) {
+export function deployVmEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/deploy`,

@@ -8,7 +8,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  index of primary network connection in networks array
  * @return {Promise}
  */
-async function userUpdateNetworkSection(authToken, vmId, networks, primaryNetworkConnectionIndex) {
+ export async function userUpdateNetworkSection(authToken, vmId, networks, primaryNetworkConnectionIndex) {
   networks = networks.map((network) => {
     return {
       ...network,

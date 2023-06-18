@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppId
  * @return {Promise}
  */
-async function userPartialUpload(authToken, fullAddress, data, header) {
+export async function userPartialUpload(authToken, fullAddress, data, header) {
   const file = await new VcloudWrapper().posts('user.vm.partialUpload', {
     urlParams: {fullAddress},
     headers: {Authorization: `Bearer ${authToken}`, ...header},

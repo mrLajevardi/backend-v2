@@ -5,7 +5,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function getDhcpForwarderEndpoint(options = {}) {
+export function getDhcpForwarderEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/dhcpForwarder`,

@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getNsxtEdgeClustersEndpoint(options = {}) {
+export function getNsxtEdgeClustersEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/nsxTResources/edgeClusters`,

@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getExternalNetworksEndpoint(options = {}) {
+export function getExternalNetworksEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/externalNetworks`,

@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Number} pageSize
  * @return {Promise}
  */
-async function userGetEdgeGateway(authToken, page = 1, pageSize = 25) {
+export async function userGetEdgeGateway(authToken, page = 1, pageSize = 25) {
   const options = {
     params: {
       page,

@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppId
  * @return {Promise}
  */
-function uploadFile(authToken, catalogId, data) {
+export function uploadFile(authToken, catalogId, data) {
   const response = new VcloudWrapper().posts('user.vm.uploadFile', {
     urlParams: {catalogId},
     headers: {Authorization: `Bearer ${authToken}`},

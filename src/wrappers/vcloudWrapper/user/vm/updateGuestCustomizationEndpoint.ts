@@ -6,7 +6,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function updateGuestCustomizationEndpoint(options = {}) {
+export function updateGuestCustomizationEndpoint(options? : any) {
   return {
     method: 'put',
     resource: `/api/vApp/${options.urlParams.vmId}/guestCustomizationSection/`,

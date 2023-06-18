@@ -4,7 +4,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function createOrgEndpoint(options = {}) {
+export function createOrgEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/orgs`,

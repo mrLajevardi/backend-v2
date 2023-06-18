@@ -1,7 +1,7 @@
 const UvDeskWrapper = require('../../uvdeskWrapper');
 const uvDeskConfig = require('../../uvdeskConfig.json');
 
-async function replyTicket(ticketId, message, actAsType, threadType, email, to = null) {
+export async function replyTicket(ticketId, message, actAsType, threadType, email, to = null) {
   const ticket = await new UvDeskWrapper().posts('ticket.replyTicket', {
     body: {
       message, to, actAsType, actAsEmail: email, threadType,

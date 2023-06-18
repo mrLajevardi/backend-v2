@@ -3,7 +3,7 @@ const getAvailableIpAddressesEndpoint = require('./getAvailableIpAddressesEndpoi
 const getExternalNetworksEndpoint = require('./getExternalNetworks');
 const getNsxtEdgeClustersEndpoint = require('./getNsxtEdgeClustersEndpoint');
 
-const adminEdgeGatewayEndpoints = {
+export const adminEdgeGatewayEndpoints = {
   createEdgeGateway: createEdgeGatewayEndpoint,
   getExternalNetworks: getExternalNetworksEndpoint,
   getAvailableIpAddresses: getAvailableIpAddressesEndpoint,

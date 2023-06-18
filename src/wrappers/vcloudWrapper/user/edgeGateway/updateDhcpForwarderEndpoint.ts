@@ -5,7 +5,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function updateDhcpForwarderEndpoint(options = {}) {
+export function updateDhcpForwarderEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/dhcpForwarder`,

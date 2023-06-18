@@ -12,7 +12,7 @@ const userGetVApp = require('./getVapp');
  * @param {Boolean} enterBIOSSetup
  * @return {Promise<Object>}
  */
-async function userUpdateVmGeneralSection(
+export async function userUpdateVmGeneralSection(
     authToken,
     vmId,
     name,

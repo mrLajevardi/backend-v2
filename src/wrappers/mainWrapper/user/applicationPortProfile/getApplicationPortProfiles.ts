@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} params
  * @return {Promise}
  */
-async function userGetApplicationPortProfiles(authToken, params) {
+export async function userGetApplicationPortProfiles(authToken, params) {
   const applicationPortProfile = await new VcloudWrapper()
       .posts('user.applicationPortProfiles.getApplicationPortProfilesList', {
         headers: {Authorization: `Bearer ${authToken}`},

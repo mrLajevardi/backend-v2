@@ -5,7 +5,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function updateTicketEndpoint(options = {}) {
+export function updateTicketEndpoint(options? : any) {
   return {
     method: 'patch',
     resource: `/ticket/${options.urlParams.ticketId}`,

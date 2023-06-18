@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getNatListEndpoint(options = {}) {
+export function getNatListEndpoint(options? :  any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules`,

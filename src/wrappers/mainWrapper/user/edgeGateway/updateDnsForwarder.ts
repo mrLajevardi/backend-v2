@@ -11,7 +11,7 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 //  * @param {String} config.ruleId
  * @param {String} edgeName edgeGateway name
  */
-async function updateDnsForwarder(config, edgeName) {
+export async function updateDnsForwarder(config, edgeName) {
   const gateway = await getEdgeGateway(config.authToken);
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
       .id;

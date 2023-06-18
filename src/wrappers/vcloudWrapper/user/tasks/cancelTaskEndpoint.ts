@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function cancelTaskEndpoint(options = {}) {
+export function cancelTaskEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/task/${options.urlParams.taskId}/action/cancel`,

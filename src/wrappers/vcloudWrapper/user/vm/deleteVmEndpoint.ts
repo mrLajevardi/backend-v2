@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function deleteVmEndpoint(options = {}) {
+export function deleteVmEndpoint(options? : any) {
   return {
     method: 'delete',
     resource: `/api/vApp/${options.urlParams.vmId}`,

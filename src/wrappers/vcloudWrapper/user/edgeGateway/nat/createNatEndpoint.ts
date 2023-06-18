@@ -5,7 +5,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function createNatEndpoint(options = {}) {
+export function createNatEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules`,

@@ -7,7 +7,7 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
  * @param {String} edgeName,
  * @return {Promise}
  */
-async function userDeleteNatRule(authToken, ruleId, edgeName) {
+export async function userDeleteNatRule(authToken, ruleId, edgeName) {
   const gateway = await getEdgeGateway(authToken);
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
   const options = {

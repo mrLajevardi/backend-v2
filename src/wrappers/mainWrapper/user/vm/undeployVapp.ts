@@ -8,7 +8,7 @@ const builder = new xml2js.Builder();
  * @param {String} vAppAction suspend, powerOff, shutdown(shutdown guest)
  * @return {Promise}
  */
-async function userUndeployvApp(authToken, vAppId, vAppAction) {
+export async function userUndeployvApp(authToken, vAppId, vAppAction) {
   const request = {
     'root:UndeployVAppParams': {
       '$': {

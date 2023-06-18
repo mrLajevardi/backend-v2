@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function createUserEndpoint(options = {}) {
+export function createUserEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `/api/admin/org/${options.urlParams.orgId}/users`,

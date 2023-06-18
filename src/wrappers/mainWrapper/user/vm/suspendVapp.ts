@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppId
  * @return {Promise}
  */
-async function userSuspendVapp(authToken, vAppId) {
+export async function userSuspendVapp(authToken, vAppId) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {vmId: vAppId},

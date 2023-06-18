@@ -6,7 +6,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function partialUploadEndpoint(options = {}) {
+export function partialUploadEndpoint(options? : any) {
   return {
     method: 'put',
     resource: options.urlParams.fullAddress,

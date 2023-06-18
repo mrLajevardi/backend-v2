@@ -6,7 +6,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function installVmToolsEndpoint(options = {}) {
+export function installVmToolsEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/installVMwareTools`,

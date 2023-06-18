@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function dettachNamedDisk(options = {}) {
+export function dettachNamedDisk(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmID}/disk/action/detach`,

@@ -1,12 +1,19 @@
+import { WrapperErrorException } from "src/infrastructure/exceptions/wrapper-error.exception";
+
 const lodash = require('lodash');
 const {default: axios} = require('axios');
 const {isNil} = require('lodash');
-const HttpExceptions = require('../exceptions/httpExceptions');
-class Wrapper {
+//const HttpExceptions = require('../exceptions/httpExceptions');
+export class Wrapper {
   static baseUrl = '';
   /**
      * initialize endpoints object
      */
+  
+  httpsAgent : any; 
+  endPoints: any; 
+  errHandling: any; 
+
   constructor(httpsAgent, endpoints, baseURL, errHandling = 'vcloud') {
     Wrapper.baseUrl = baseURL;
     this.httpsAgent = httpsAgent;
@@ -34,7 +41,7 @@ class Wrapper {
      * @param {Object} endpoint endpoint object created by endpoint methods
      * @return {Promise}
      */
-  async #request(endpoint = {}) {
+  async #request(endpoint : any ) {
     try {
       const additionalConfig = endpoint?.additionalConfig || {};
       const request = await axios.request({
@@ -54,7 +61,7 @@ class Wrapper {
       return Promise.resolve(request);
     } catch (err) {
       console.log(err);
-      return Promise.reject(new HttpExceptions().wrapperError(err, this.errHandling));
+      return Promise.reject(new WrapperErrorException(err));
     }
   }
 }

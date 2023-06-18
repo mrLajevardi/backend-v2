@@ -4,7 +4,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function createIpSetsEndpoint(options = {}) {
+export function createIpSetsEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/firewallGroups`,

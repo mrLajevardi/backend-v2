@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} networkId
  * @return {Promise}
  */
-async function userDeleteDhcp(authToken, networkId) {
+export async function userDeleteDhcp(authToken, networkId) {
   const dhcp = await new VcloudWrapper().posts('user.dhcp.deleteDhcp', {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {

@@ -1,7 +1,7 @@
 const UvDeskWrapper = require('../../uvdeskWrapper');
 const uvDeskConfig = require('../../uvdeskConfig.json');
 
-async function getTicket(ticketId) {
+export async function getTicket(ticketId) {
   const ticket = await new UvDeskWrapper().posts('ticket.getTicket', {
     headers: {
       'Authorization': uvDeskConfig.accessToken,

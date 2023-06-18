@@ -7,7 +7,7 @@ const userVcloudQuery = require('../vdc/vcloudQuery');
  * @param {String} authToken
  * @return {Promise}
  */
-async function checkCatalog(authToken) {
+export async function checkCatalog(authToken) {
   const catalogName = 'user-catalog';
   const queryOptions = {
     type: 'catalog',

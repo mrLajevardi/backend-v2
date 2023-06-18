@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function updateVdcEndpoint(options = {}) {
+export function updateVdcEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/api/admin/vdc/${options.urlParams.vdcId}`,

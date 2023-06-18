@@ -1,5 +1,6 @@
-const HttpExceptions = require('../../../../exceptions/httpExceptions');
-const {isEmpty} = require('../../../../utils/helpers');
+import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+
+import { isEmpty } from "class-validator";
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 /**
@@ -9,10 +10,10 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
  * @param {String} edgeName
  * @return {Promise}
  */
-async function userUpdateFirewallList(authToken, config, edgeName) {
+export async function userUpdateFirewallList(authToken, config, edgeName) {
   const gateway = await getEdgeGateway(authToken);
   if (isEmpty(gateway.values[0])) {
-    return Promise.reject(new HttpExceptions().noIpIsAssigned());
+    return Promise.reject(new NoIpIsAssignedException());
   }
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
   const requestBody = {

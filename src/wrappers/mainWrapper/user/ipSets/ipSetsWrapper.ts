@@ -4,7 +4,7 @@ const userGetIPSetsList = require('./getIPSetsList');
 const userGetSingleIPSet = require('./getSingleIPSet');
 const userUpdateIPSet = require('./updateIPSet');
 
-const ipSetsWrapper = {
+export const ipSetsWrapper = {
   getIPSetsList: userGetIPSetsList,
   getSingleIPSet: userGetSingleIPSet,
   createIPSet: userCreateIPSet,

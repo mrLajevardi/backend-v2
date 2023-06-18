@@ -3,7 +3,7 @@ const deleteOrgCatalogEndpoint = require('./deleteOrgCatalogEndpoint');
 const createOrgEndpoint = require('./createOrgEndpoint');
 const getOrgEndpoint = require('./getOrgEndpoint');
 
-const adminOrgEndpoints = {
+export const adminOrgEndpoints = {
   createOrg: createOrgEndpoint,
   createOrgCatalog: createOrgCatalogEndpoint,
   getOrg: getOrgEndpoint,

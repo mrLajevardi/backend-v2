@@ -2,7 +2,7 @@ const xml2js = require('xml2js');
 const builder = new xml2js.Builder();
 const getVdcComputePolicy = require('../vdc/getVdcComputePolicy');
 const vcloudQuery = require('../vdc/vcloudQuery');
-const {isEmpty} = require('../../../../utils/helpers');
+import { isEmpty } from "class-validator";
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 /**
  *
@@ -30,7 +30,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} config.networks.networkName
  * @param {String} config.networks.isConnected
  */
-async function userUpdateVm(authToken, vdcId, config, vAppId) {
+export async function userUpdateVm(authToken, vdcId, config, vAppId) {
   const computePolicy = await getVdcComputePolicy(authToken, vdcId);
   const computePolicyId = computePolicy.values[0].id;
   const query = await vcloudQuery(authToken, {

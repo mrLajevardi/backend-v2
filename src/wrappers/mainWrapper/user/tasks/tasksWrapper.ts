@@ -1,7 +1,7 @@
 const cancelTask = require('./cancelTask');
 const userGetTask = require('./getTask');
 
-const tasksWrapper = {
+export const tasksWrapper = {
   getTask: userGetTask,
   cancelTask: cancelTask,
 };

@@ -4,7 +4,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function createEdgeGatewayEndpoint(options = {}) {
+export function createEdgeGatewayEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/edgeGateways`,

@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppId
  * @return {Promise}
  */
-async function userGetMediaItem(authToken, mediaItemId) {
+export async function userGetMediaItem(authToken, mediaItemId) {
   const mediaItem = await new VcloudWrapper().posts('user.vm.getMediaItem', {
     urlParams: {mediaItemId},
     headers: {Authorization: `Bearer ${authToken}`},

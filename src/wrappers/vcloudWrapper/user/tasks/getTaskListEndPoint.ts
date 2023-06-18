@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function getTaskListEndpoint(options = {}) {
+export function getTaskListEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/api/query`,

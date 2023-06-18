@@ -4,7 +4,7 @@ const getNatEndpoint = require('./getNatEndpoint');
 const getNatListEndpoint = require('./getNatListEndpoint');
 const updateNatEndpoint = require('./updateNatEndpoint');
 
-const natEndpoints = {
+export const natEndpoints = {
   getNatList: getNatListEndpoint,
   deleteNat: deleteNatEndpoint,
   getNat: getNatEndpoint,

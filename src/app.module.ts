@@ -44,7 +44,7 @@ import { TasksModule } from './application/base/tasks/tasks.module';
 import { TicketsModule } from './application/base/tickets/tickets.module';
 import { TransactionsModule } from './application/base/transactions/transactions.module';
 import { AbilityModule } from './application/base/security/ability/ability.module';
-import { BullModule } from '@nestjs/bull';
+import { BullModule, BullQueueEvents } from '@nestjs/bull';
 import { VdcModule } from './application/vdc/vdc.module';
 import { NetworkService } from './application/vdc/network.service';
 
@@ -112,5 +112,8 @@ import { NetworkService } from './application/vdc/network.service';
     },
     NetworkService,
   ],
+  exports: [
+
+  ]
 })
 export class AppModule {}

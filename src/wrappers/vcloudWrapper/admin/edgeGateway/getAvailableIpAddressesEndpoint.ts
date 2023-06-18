@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getAvailableIpAddressesEndpoint(options = {}) {
+export function getAvailableIpAddressesEndpoint(options? : any ) {
   return {
     method: 'get',
     resource:

@@ -7,22 +7,14 @@ import { ServiceInstancesService } from '../base/service/service-instances/servi
 import { ServiceItemsService } from '../base/service/service-items/service-items.service';
 import { ServicePropertiesService } from '../base/service/service-properties/service-properties.service';
 import { UserService } from '../base/user/user/user.service';
-const mainWrapper = require('src/wrappers/mainWrapper/mainWrapper');
-const vcdConfig = require('src/wrappers/mainWrapper/vcdConfig');
-
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 
 @Injectable()
 export class NetworkService {
 
     constructor(
-        private readonly taskService: TasksService,
         private readonly sessionService: SessionsService,
-        private readonly serviceInstanceService: ServiceInstancesService,
-        private readonly servicePropertiesService: ServicePropertiesService,
-        private readonly serviceItemsService: ServiceItemsService,
-        private readonly configService: ConfigsService,
-        private readonly organizationService: OrganizationService,
-        private readonly userService: UserService,
     ){}
 
 

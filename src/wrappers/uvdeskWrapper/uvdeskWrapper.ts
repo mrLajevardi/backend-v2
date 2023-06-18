@@ -5,7 +5,7 @@ const ticketEndpoints = require('./endpoints/tickets/ticketEndpoints');
 /**
  ** this wrapper directly send request to vcloud server
  */
-class UvDeskWrapper extends Wrapper {
+ export class UvDeskWrapper extends Wrapper {
   /**
    * initialize endpoints object
    */

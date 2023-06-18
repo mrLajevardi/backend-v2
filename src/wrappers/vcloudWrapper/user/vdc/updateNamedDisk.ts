@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function updateNamedDisk(options = {}) {
+export function updateNamedDisk(options? : any) {
   return {
     method: 'put',
     resource: `/api/disk/${options.urlParams.nameDiskID}`,

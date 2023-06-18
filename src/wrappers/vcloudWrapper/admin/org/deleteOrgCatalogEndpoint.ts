@@ -7,7 +7,7 @@
  * @return {Object}
  */
 
-function deleteOrgCatalogEndpoint(options = {}) {
+export function deleteOrgCatalogEndpoint(options? : any ) {
   return {
     method: 'delete',
     resource: `/api/admin/catalog/${options.urlParams.catalogId}?recursive=true&force=true`,

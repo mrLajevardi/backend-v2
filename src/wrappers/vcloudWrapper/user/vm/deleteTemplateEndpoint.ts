@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function deleteTemplateEndpoint(options = {}) {
+export function deleteTemplateEndpoint(options? : any) {
   return {
     method: 'delete',
     resource: `/api/vAppTemplate/${options.urlParams.templateId}`,

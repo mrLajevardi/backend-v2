@@ -5,7 +5,7 @@ const getNetworkListEndpoint = require('./getNetworkListEndpoint');
 const updateNetworkEndpoint = require('./updateNetworkEndpoint');
 const getNetworkIPUsageListEndpoint = require('./getNetworkIPUsageListEndpoint');
 
-const networkEndpoints = {
+export const networkEndpoints = {
   deleteNetwork: deleteNetworkEndpoint,
   createNetwork: createNetworkEndpoint,
   updateNetwork: updateNetworkEndpoint,

@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function getTicketEndpoint(options = {}) {
+export function getTicketEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/ticket/${options.urlParams.ticketId}`,

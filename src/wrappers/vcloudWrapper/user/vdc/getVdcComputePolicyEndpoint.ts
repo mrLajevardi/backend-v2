@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getVdcComputePolicyEndpoint(options = {}) {
+export function getVdcComputePolicyEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/cloudapi/2.0.0/vdcs/${options.urlParams.vdcId}/computePolicies`,

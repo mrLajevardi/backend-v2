@@ -4,17 +4,43 @@ import { TasksController } from './tasks.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { BullModule } from '@nestjs/bull';
 import { TaskManagerService } from './service/task-manager.service';
+import { SessionsModule } from '../sessions/sessions.module';
+import { ServiceInstancesModule } from '../service/service-instances/service-instances.module';
+import { ServicePropertiesModule } from '../service/service-properties/service-properties.module';
+import { ServiceItemsModule } from '../service/service-items/service-items.module';
+import { ConfigsModule } from '../service/configs/configs.module';
+import { OrganizationModule } from '../organization/organization.module';
+import { UserModule } from '../user/user/user.module';
+import { VdcModule } from 'src/application/vdc/vdc.module';
+import { EdgeService } from 'src/application/vdc/edge.service';
+import { OrgService } from 'src/application/vdc/org.service';
+import { NetworkService } from 'src/application/vdc/network.service';
+import { VdcService } from 'src/application/vdc/vdc.service';
 
 @Module({
   imports: [
     DatabaseModule,
     BullModule.registerQueue({
       name: 'tasks',
-    })
+    }),
+    SessionsModule,
+    ServiceInstancesModule,
+    ServicePropertiesModule,
+    ServiceItemsModule,
+    ConfigsModule,
+    OrganizationModule,
+    UserModule,
+    VdcModule,
   ],
-  providers: [TasksService, TaskManagerService],
+  providers: [
+    TasksService, 
+    TaskManagerService, 
+    EdgeService,
+    OrgService,
+    NetworkService,
+    VdcService
+  ],
   controllers: [TasksController],
-  exports: [TasksService],
-
+  exports: [TasksService, TaskManagerService],
 })
 export class TasksModule {}

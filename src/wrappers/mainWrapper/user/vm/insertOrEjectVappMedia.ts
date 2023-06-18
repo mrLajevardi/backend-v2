@@ -11,7 +11,7 @@ const builder = new xml2js.Builder();
  * @param {String} mediaId
  * @return {Promise}
  */
-async function userInsertOrEjectVappMedia(
+export async function userInsertOrEjectVappMedia(
     authToken, vAppId, insert, mediaName = null, mediaHref = null, mediaId = null,
 ) {
   const request = {

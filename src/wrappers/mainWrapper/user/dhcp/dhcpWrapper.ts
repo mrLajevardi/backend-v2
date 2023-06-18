@@ -7,7 +7,7 @@ const userGetDhcpBinding = require('./getDhcpBinding');
 const userUpdateDhcp = require('./updateDhcp');
 const userUpdateDhcpBinding = require('./updateDhcpBinding');
 
-const dhcpWrapper = {
+export const dhcpWrapper = {
   updateDhcp: userUpdateDhcp,
   getDhcp: userGetDhcp,
   deleteDhcp: userDeleteDhcp,

@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getFirewallEndpoint(options = {}) {
+export function getFirewallEndpoint(options? : any ) {
   return {
     method: 'get',
     // eslint-disable-next-line max-len

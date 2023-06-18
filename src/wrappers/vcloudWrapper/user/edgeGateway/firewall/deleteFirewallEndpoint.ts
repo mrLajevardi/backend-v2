@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function deleteFirewallEndpoint(options = {}) {
+export function deleteFirewallEndpoint(options? : any ) {
   return {
     method: 'delete',
     // eslint-disable-next-line max-len

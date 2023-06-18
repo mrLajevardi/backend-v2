@@ -4,7 +4,7 @@ const userGetNetwork = require('./getNetwork');
 const userUpdateNetwork = require('./updateNetwork');
 const usergetIPUsageNetwrok = require('./getIPUsageNetwrok');
 
-const networkWrapper = {
+export const networkWrapper = {
   createNetwork: userCreateNetwork,
   deleteNetwork: userDeleteNetwork,
   getNetwork: userGetNetwork,

@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function getTaskEndpoint(options = {}) {
+export function getTaskEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/api/task/${options.urlParams.taskId}`,

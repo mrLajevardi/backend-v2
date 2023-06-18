@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function createVmSnapShot(options = {}) {
+export function createVmSnapShot(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/createSnapshot`,

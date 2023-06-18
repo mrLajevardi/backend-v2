@@ -7,7 +7,7 @@ const getDhcpEndpoint = require('./getDhcpEndpoint');
 const updateDhcpBindingEndpoint = require('./updateDhcpBindingEndpoing');
 const updateDhcpEndpoint = require('./updateDhcpEndpoint');
 
-const dhcpEndpoints = {
+export const dhcpEndpoints = {
   updateDhcp: updateDhcpEndpoint,
   getDhcp: getDhcpEndpoint,
   deleteDhcp: deleteDhcpEndpoint,

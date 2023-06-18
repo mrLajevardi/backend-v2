@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function acquireVmTicketEndpoint(options = {}) {
+export function acquireVmTicketEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/screen/action/acquireMksTicket`,

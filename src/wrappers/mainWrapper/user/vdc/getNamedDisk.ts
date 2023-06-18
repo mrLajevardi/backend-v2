@@ -7,7 +7,7 @@ const vcloudQuery = require('../vdc/vcloudQuery');
  * @param {String} vAppAction
  * @return {Promise}
  */
-async function userGetNamedDisk(authToken, vdcId) {
+export async function userGetNamedDisk(authToken, vdcId) {
   const formattedVdcId = vdcId.split(':').slice(-1);
   const query = await vcloudQuery(authToken, {
     type: 'disk',

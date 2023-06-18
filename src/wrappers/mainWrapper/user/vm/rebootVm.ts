@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vmId
  * @return {Promise}
  */
-async function userRebootVm(authToken, vmId) {
+export async function userRebootVm(authToken, vmId) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {vmId},

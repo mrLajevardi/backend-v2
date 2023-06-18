@@ -6,7 +6,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function updateApplicationPortProfilesEndpoint(options = {}) {
+export function updateApplicationPortProfilesEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,

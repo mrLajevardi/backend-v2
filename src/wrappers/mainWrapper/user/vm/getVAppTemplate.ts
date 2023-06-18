@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const userGetVAppTemplate = (authToken, templateId) => {
+export const userGetVAppTemplate = (authToken, templateId) => {
   const vmTemplate = new VcloudWrapper().posts('user.vm.getVmTemplates', {
     urlParams: {
       vmId: templateId,

@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function removeNamedDisk(options = {}) {
+export function removeNamedDisk(options? : any) {
   return {
     method: 'delete',
     resource: `/api/disk/${options.urlParams.nameDiskID}`,

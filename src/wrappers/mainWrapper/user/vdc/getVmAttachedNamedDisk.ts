@@ -6,7 +6,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppAction
  * @return {Promise}
  */
-async function userGetVmAttachedNamedDisk(authToken, nameDiskID) {
+export async function userGetVmAttachedNamedDisk(authToken, nameDiskID) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
   };

@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function updateDnsForwarderEndpoint(options = {}) {
+export function updateDnsForwarderEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/dns`,

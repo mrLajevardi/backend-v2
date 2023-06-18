@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 
    * @param {String} vdcId
    */
-async function enableVdc(vdcId, session) {
+export async function enableVdc(vdcId, session) {
   const vdcConfig = vCloudConfig.admin.vdc;
   // convert from urn:vcloud:org:vdcId -> vdcId
   vdcId = vdcId.split(':').slice(-1);

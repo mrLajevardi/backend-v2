@@ -18,7 +18,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} bindingId
  * @return {Promise}
  */
-async function userUpdateDhcpBinding(authToken, networkId, config, bindingId) {
+export async function userUpdateDhcpBinding(authToken, networkId, config, bindingId) {
   const dhcp = await new VcloudWrapper().posts('user.dhcp.updateDhcpBinding', {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {

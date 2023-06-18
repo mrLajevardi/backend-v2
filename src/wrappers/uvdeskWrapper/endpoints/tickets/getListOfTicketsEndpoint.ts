@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function getListOfTicketsEndpoint(options = {}) {
+export function getListOfTicketsEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/tickets`,

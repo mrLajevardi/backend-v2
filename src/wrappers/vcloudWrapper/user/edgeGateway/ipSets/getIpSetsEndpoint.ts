@@ -7,7 +7,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getIpSetsEndpoint(options = {}) {
+export function getIpSetsEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/firewallGroups/${options.urlParams.ipSetId}`,

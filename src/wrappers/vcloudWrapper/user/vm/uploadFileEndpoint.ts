@@ -6,7 +6,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function uploadFileEndpoint(options = {}) {
+export function uploadFileEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/catalog/${options.urlParams.catalogId}/action/upload`,

@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function powerOnVmEndpoint(options = {}) {
+export function powerOnVmEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/power/action/powerOn`,

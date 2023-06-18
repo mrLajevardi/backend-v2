@@ -9,7 +9,7 @@ const userAttachNamedDisk = require('./attachNamedDisk');
 const userDettachNamedDisk = require('./dettachNamedDisk');
 const userGetVmAttachedNamedDisk = require('./getVmAttachedNamedDisk');
 
-const vdcWrapper = {
+export const vdcWrapper = {
   vcloudQuery: userVcloudQuery,
   getVdcComputePolicy: userGetVdcComputePolicy,
   getHardwareInfo: userGetHardwareInfo,

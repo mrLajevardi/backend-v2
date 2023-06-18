@@ -1,5 +1,6 @@
+import { BadRequestException } from "src/infrastructure/exceptions/bad-request.exception";
+
 /* eslint-disable guard-for-in */
-const HttpExceptions = require('../../../../exceptions/httpExceptions');
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const {getHardwareInfo} = require('../vdc/vdcWrapper');
 const userGetVApp = require('./getVapp');
@@ -10,7 +11,7 @@ const userGetVApp = require('./getVapp');
  * @param {Object} diskSettings user disk settings
  * @return {Promise}
  */
-async function userUpdateDiskSection(authToken, vmId, diskSettings, vdcId) {
+export async function userUpdateDiskSection(authToken, vmId, diskSettings, vdcId) {
   const vmInfo = await userGetVApp(authToken, vmId);
   const vmInfoData = vmInfo.data;
   const controllers = await calcBusCombination(diskSettings, authToken, vdcId);
@@ -118,7 +119,7 @@ async function calcBusCombination(settings, authToken, vdcId) {
     }
     // check if there is enough combinations for given disks
     if (validCombCount < element.length) {
-      const err = new HttpExceptions().badRequest();
+      const err = new BadRequestException();
       err.message = 'invalid adaptor type';
       return Promise.reject(err);
     }

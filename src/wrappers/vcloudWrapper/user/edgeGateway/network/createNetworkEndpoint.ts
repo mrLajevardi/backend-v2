@@ -4,7 +4,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function createNetworkEndpoint(options = {}) {
+export function createNetworkEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/orgVdcNetworks`,

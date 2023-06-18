@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const userPostAnswer = async (authToken, vmId, questionId, choiceId) => {
+export const userPostAnswer = async (authToken, vmId, questionId, choiceId) => {
   const answer = await new VcloudWrapper().posts('user.vm.answer', {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {vmId},

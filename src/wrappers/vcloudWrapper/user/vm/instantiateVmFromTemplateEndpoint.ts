@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function instantiateVmFromTemplateEndpoint(options = {}) {
+export function instantiateVmFromTemplateEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/api/vdc/${options.urlParams.vdcId}/action/instantiateVmFromTemplate`,

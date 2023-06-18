@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getDhcpBindingEndpoint(options = {}) {
+export function getDhcpBindingEndpoint(options? : any ) {
   return {
     method: 'get',
     // eslint-disable-next-line max-len

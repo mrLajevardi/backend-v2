@@ -1,4 +1,4 @@
-module.exports = {
+export const vcdConfig =  {
   user: {
     network: {
       connectionType: 'INTERNAL',

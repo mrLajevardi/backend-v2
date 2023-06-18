@@ -15,7 +15,7 @@ const tasksWrapper = require('./user/tasks/tasksWrapper');
 const vdcWrapper = require('./user/vdc/vdcWrapper');
 const vmWrapper = require('./user/vm/vmWrapper');
 
-const mainWrapper = {
+export const mainWrapper = {
   admin: {
     edgeGateway: adminEdgeGatewayWrapper,
     org: adminOrgWrapper,

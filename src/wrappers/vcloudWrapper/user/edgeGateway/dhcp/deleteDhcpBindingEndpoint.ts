@@ -5,7 +5,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function deleteDhcpBindingsEndpoint(options = {}) {
+export function deleteDhcpBindingsEndpoint(options? : any ) {
   return {
     method: 'delete',
     // eslint-disable-next-line max-len

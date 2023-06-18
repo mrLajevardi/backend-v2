@@ -1,5 +1,5 @@
 const {baseUrl, httpsAgent} = require('../../postConfig');
-const configs = {
+export const configs = {
   getTask: {
     headers: {
       'Accept': 'application/* +json;version=38.0.0-alpha',

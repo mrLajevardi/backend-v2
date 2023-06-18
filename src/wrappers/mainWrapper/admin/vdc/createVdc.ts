@@ -17,7 +17,7 @@ const vCloudConfig = require('../../vcdConfig');
  * @param {Number} config.ResourceGuaranteedMemory
  * @return {Promise}
  */
-async function createVdc(config, orgId) {
+export async function createVdc(config, orgId) {
   const vdcConfig = vCloudConfig.admin.vdc;
   orgId = orgId.split(':').slice(-1);
   const cores = config.cores;
@@ -41,8 +41,8 @@ async function createVdc(config, orgId) {
       },
     },
     includeMemoryOverhead: false,
-    usesFastProvisioning: false,
-    isThinProvision: false,
+    //usesFastProvisioning: false,
+    //isThinProvision: false,
     isElastic: false,
     vCpuInMhz: config.vCpuInMhz,
     resourceGuaranteedCpu: config.ResourceGuaranteedCpu,

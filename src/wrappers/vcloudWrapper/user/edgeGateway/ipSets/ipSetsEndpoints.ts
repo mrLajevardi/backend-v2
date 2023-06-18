@@ -4,7 +4,7 @@ const getIpSetsEndpoint = require('./getIpSetsEndpoint');
 const getIpSetsListEndpoint = require('./getIpSetsListEndpoint');
 const updateIpSetsEndpoint = require('./updateIpSetsEndpoint');
 
-const ipSetsEndpoints = {
+export const ipSetsEndpoints = {
   createIpSets: createIpSetsEndpoint,
   updateIpSets: updateIpSetsEndpoint,
   getIpSetsList: getIpSetsListEndpoint,

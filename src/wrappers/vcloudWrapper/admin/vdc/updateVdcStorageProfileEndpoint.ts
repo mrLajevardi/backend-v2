@@ -6,7 +6,7 @@
  * @param {Object} options.fullUrl
  * @return {Object}
  */
-function updateVdcStorageProfileEndpoint(options = {}) {
+export function updateVdcStorageProfileEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: options.fullUrl,

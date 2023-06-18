@@ -1,7 +1,8 @@
+import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
-const {isEmpty} = require('../../../../utils/helpers');
-const HttpExceptions = require('../../../../exceptions/httpExceptions');
+import { isEmpty } from "class-validator";
 
 /**
  * get dns forwarder lists
@@ -10,11 +11,11 @@ const HttpExceptions = require('../../../../exceptions/httpExceptions');
  * @return {Promise}
  */
 
-async function getDnsForwarder(authToken, edgeName) {
+export async function getDnsForwarder(authToken, edgeName) {
   const gateway = await getEdgeGateway(authToken);
 
   if (isEmpty(gateway.values[0])) {
-    return Promise.reject(new HttpExceptions().noIpIsAssigned());
+    return Promise.reject(new NoIpIsAssignedException());
   }
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
       .id;

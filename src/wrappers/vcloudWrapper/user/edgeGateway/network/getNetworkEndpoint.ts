@@ -7,7 +7,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getNetworkEndpoint(options = {}) {
+export function getNetworkEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/orgVdcNetworks`,

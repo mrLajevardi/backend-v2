@@ -5,7 +5,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} vAppId
  * @return {Promise}
  */
-async function userPowerOnvApp(authToken, vAppId) {
+export async function userPowerOnvApp(authToken, vAppId) {
   const options = {
     urlParams: {vmId: vAppId},
     headers: {Authorization: `Bearer ${authToken}`},

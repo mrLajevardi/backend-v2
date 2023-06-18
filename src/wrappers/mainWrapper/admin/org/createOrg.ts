@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const config = require('../../vcdConfig').admin.org;
+import { vcdConfig } from "../../vcdConfig";
 /**
  * @param {String} name
  * @param {String} authToken
@@ -7,7 +7,7 @@ const config = require('../../vcdConfig').admin.org;
  */
 export  async function createOrg(name, authToken) {
   const requestBody = {
-    ...config,
+    ...vcdConfig.admin.org,
     name: name,
     displayName: name,
   };

@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function vmAttachedNamedDisk(options = {}) {
+export function vmAttachedNamedDisk(options? : any) {
   return {
     method: 'get',
     resource: `/api/disk/${options.urlParams.nameDiskID}/attachedVms`,

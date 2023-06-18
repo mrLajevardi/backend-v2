@@ -5,7 +5,7 @@
  * @param {String} options.body
  * @return {Object}
  */
-function revertVmSnapShot(options = {}) {
+export function revertVmSnapShot(options? : any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/revertToCurrentSnapshot`,

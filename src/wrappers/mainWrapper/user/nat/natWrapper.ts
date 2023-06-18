@@ -4,7 +4,7 @@ const userGetNatRule = require('./getNatRule');
 const userGetNatRuleList = require('./getNatRules');
 const userUpdateNatRule = require('./updateNatRule');
 
-const natWrapper = {
+export const natWrapper = {
   createNatRule: userCreateNatRule,
   deleteNatRule: userDeleteNatRule,
   getNatRule: userGetNatRule,

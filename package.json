@@ -43,6 +43,7 @@
     "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",
     "eslint-junit": "^1.0.1",
+    "get-ip-range": "^4.0.1",
     "jest-junit": "^16.0.0",
     "jest-mock": "^29.5.0",
     "js-yaml": "^4.1.0",

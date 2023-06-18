@@ -4,7 +4,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} authToken
  * @param {String} vAppId
  */
-async function userDeletevApp(authToken, vAppId) {
+export async function userDeletevApp(authToken, vAppId) {
   const options = {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {vmId: vAppId},

@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function createTicketEndpoint(options = {}) {
+export function createTicketEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/ticket`,

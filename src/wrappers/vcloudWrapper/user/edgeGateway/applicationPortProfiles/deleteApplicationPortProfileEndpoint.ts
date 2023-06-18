@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function deleteApplicationPortProfilesEndpoint(options = {}) {
+export function deleteApplicationPortProfilesEndpoint(options? : any ) {
   return {
     method: 'delete',
     resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,

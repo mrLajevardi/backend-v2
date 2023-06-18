@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function updateIpSetsEndpoint(options = {}) {
+export function updateIpSetsEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/cloudapi/1.0.0/firewallGroups/${options.urlParams.ipSetId}`,

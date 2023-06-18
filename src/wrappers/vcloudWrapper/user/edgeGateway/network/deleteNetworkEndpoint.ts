@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function deleteNetworkEndpoint(options = {}) {
+export function deleteNetworkEndpoint(options? : any ) {
   return {
     method: 'delete',
     resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}`,

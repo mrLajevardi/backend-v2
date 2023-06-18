@@ -12,7 +12,7 @@ const userGetVApp = require('./getVapp');
  * @param {Boolean} nestedHypervisorEnabled
  * @return {Promise<Object>}
  */
-async function userUpdateVmComputeSection(
+export async function userUpdateVmComputeSection(
     authToken,
     vmId,
     numCpus,

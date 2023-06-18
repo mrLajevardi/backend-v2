@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getHardwareInfoEndpoint(options = {}) {
+export function getHardwareInfoEndpoint(options? : any) {
   return {
     method: 'get',
     resource: `/api/vdc/${options.urlParams.vdcId}/hwv/vmx-19`,

@@ -5,7 +5,7 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-function createOrgCatalogEndpoint(options = {}) {
+export function createOrgCatalogEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `/api/admin/org/${options.urlParams.orgId}/catalogs`,

@@ -15,7 +15,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
    * @param {String} config.providerVdcReference number of vm
    * @return {void}
    */
-async function updateVdc(config, vdcId) {
+export async function updateVdc(config, vdcId) {
   const vdcConfig = vCloudConfig.admin.vdc;
   // convert from urn:vcloud:org:vdcId -> vdcId
   vdcId = vdcId.split(':').slice(-1);

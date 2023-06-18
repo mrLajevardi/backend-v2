@@ -5,7 +5,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-function replyTicketEndpoint(options = {}) {
+export function replyTicketEndpoint(options? : any) {
   return {
     method: 'post',
     resource: `/ticket/${options.urlParams.ticketId}/thread`,

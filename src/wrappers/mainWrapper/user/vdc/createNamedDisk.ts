@@ -9,7 +9,7 @@ const vcloudQuery = require('../vdc/vcloudQuery');
  * @param {String} vAppAction
  * @return {Promise}
  */
-async function userCreateNamedDisk(authToken, vdcId, namedDiskProperties) {
+export async function userCreateNamedDisk(authToken, vdcId, namedDiskProperties) {
   const query = await vcloudQuery(authToken, {
     type: 'orgVdcStorageProfile',
     format: 'records',

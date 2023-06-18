@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function disableVdcEndpoint(options = {}) {
+export function disableVdcEndpoint(options? : any ) {
   return {
     method: 'post',
     resource: `api/admin/vdc/${options.urlParams.vdcId}/action/disable`,

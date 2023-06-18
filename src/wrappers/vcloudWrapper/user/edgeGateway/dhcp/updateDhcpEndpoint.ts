@@ -5,7 +5,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-function updateDhcpEndpoint(options = {}) {
+export function updateDhcpEndpoint(options? : any ) {
   return {
     method: 'put',
     resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp`,

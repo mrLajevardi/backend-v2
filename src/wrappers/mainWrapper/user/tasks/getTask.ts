@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const userGetTask = (authToken, taskId) => {
+export const userGetTask = (authToken, taskId) => {
   const task = new VcloudWrapper().posts('user.tasks.getTask', {
     headers: {Authorization: `Bearer ${authToken}`},
     urlParams: {taskId},

@@ -4,7 +4,7 @@ const getTicketEndpoint = require('./getTicketEndpoint');
 const replyTicketEndpoint = require('./replyTicketEndpoint');
 const updateTicketEndpoint = require('./updateTicketEndpoint');
 
-const ticketEndpoints = {
+export const ticketEndpoints = {
   createTicket: createTicketEndpoint,
   getListOfTickets: getListOfTicketsEndpoint,
   replyTicket: replyTicketEndpoint,

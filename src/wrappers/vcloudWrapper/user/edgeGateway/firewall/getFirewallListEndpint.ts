@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-function getFirewallListEndpoint(options = {}) {
+export function getFirewallListEndpoint(options? : any ) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules`,

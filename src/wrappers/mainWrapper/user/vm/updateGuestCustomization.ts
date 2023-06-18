@@ -6,7 +6,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Object} config
  * @return {Promise}
  */
-async function userUpdateGuestCustomization(authToken, vmId, config) {
+export async function userUpdateGuestCustomization(authToken, vmId, config) {
   const requestBody = {
     _type: 'GuestCustomizationSectionType',
     enabled: config.enabled,
