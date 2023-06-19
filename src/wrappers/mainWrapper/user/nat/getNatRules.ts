@@ -1,6 +1,6 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 /**
@@ -11,22 +11,28 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
  * @param {String} edgeName
  * @return {Promise}
  */
-export async function userGetNatRuleList(authToken, pageSize = 1, cursor = '', edgeName) {
+export async function userGetNatRuleList(
+  authToken,
+  pageSize = 1,
+  cursor = '',
+  edgeName,
+) {
   const gateway = await getEdgeGateway(authToken);
   if (isEmpty(gateway.values[0])) {
     return Promise.reject(new NoIpIsAssignedException());
   }
-  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
+  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
+    .id;
   const params = {
     pageSize,
     cursor,
   };
   const natRules = await new VcloudWrapper().posts('user.nat.getNatList', {
     params,
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {gatewayId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { gatewayId },
   });
   return Promise.resolve(natRules);
-};
+}
 
 module.exports = userGetNatRuleList;

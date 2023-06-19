@@ -4,14 +4,14 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function acquireVmTicketEndpoint(options? : any) {
+export function acquireVmTicketEndpoint(options?: any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/screen/action/acquireMksTicket`,
     params: {},
     body: null,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +xml;',
       ...options.headers,
     },
@@ -19,5 +19,3 @@ export function acquireVmTicketEndpoint(options? : any) {
 }
 
 module.exports = acquireVmTicketEndpoint;
-
-

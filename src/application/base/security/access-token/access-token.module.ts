@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [AccessTokenService],
   controllers: [AccessTokenController],
-  exports: [AccessTokenService]
+  exports: [AccessTokenService],
 })
 export class AccessTokenModule {}

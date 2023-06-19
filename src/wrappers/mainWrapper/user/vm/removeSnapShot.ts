@@ -9,13 +9,13 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userRemoveSnapShot(authToken, vAppId) {
   const options = {
-    urlParams: {vmId: vAppId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { vmId: vAppId },
+    headers: { Authorization: `Bearer ${authToken}` },
   };
 
   const action = await new VcloudWrapper().posts('user.vm.removeSnapShot', {
     ...options,
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
   });
   return Promise.resolve({
     __vcloudTask: action.headers['location'],

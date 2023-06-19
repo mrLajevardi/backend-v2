@@ -10,10 +10,10 @@ const vcloudQuery = require('../vdc/vcloudQuery');
  * @return {Promise}
  */
 export async function userUpdateNamedDisk(
-    authToken,
-    vdcId,
-    nameDiskID,
-    namedDiskProperties,
+  authToken,
+  vdcId,
+  nameDiskID,
+  namedDiskProperties,
 ) {
   const query = await vcloudQuery(authToken, {
     type: 'orgVdcStorageProfile',
@@ -28,13 +28,13 @@ export async function userUpdateNamedDisk(
   const formattedVdcId = vdcId.split(':').slice(-1);
   const request = {
     'root:Disk': {
-      '$': {
+      $: {
         'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
-        'name': namedDiskProperties.name,
-        'busType': namedDiskProperties.busType,
-        'busSubType': namedDiskProperties.busSubType,
-        'sizeMb': namedDiskProperties.size,
-        'sharingType': namedDiskProperties.sharingType,
+        name: namedDiskProperties.name,
+        busType: namedDiskProperties.busType,
+        busSubType: namedDiskProperties.busSubType,
+        sizeMb: namedDiskProperties.size,
+        sharingType: namedDiskProperties.sharingType,
       },
       'root:Description': namedDiskProperties.description,
       'root:StorageProfile': {
@@ -47,14 +47,14 @@ export async function userUpdateNamedDisk(
   };
   const xmlRequest = builder.buildObject(request);
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     body: xmlRequest,
   };
 
   const action = await new VcloudWrapper().posts('user.vdc.updateNamedDisk', {
     ...options,
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {vdcId: formattedVdcId, nameDiskID},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { vdcId: formattedVdcId, nameDiskID },
   });
   return Promise.resolve({
     __vcloudTask: action.headers['location'],

@@ -26,20 +26,16 @@ describe('InvoicesService', () => {
         InvoicesChecksService,
         PlansService,
         ItemTypesService,
-        ServiceTypesService, 
-        InvoiceItemsService, 
-        TransactionsService, 
-        InvoicePlansService, 
-        InvoicePropertiesService, 
+        ServiceTypesService,
+        InvoiceItemsService,
+        TransactionsService,
+        InvoicePlansService,
+        InvoicePropertiesService,
         VgpuService,
         ConfigsService,
-        SessionsService
+        SessionsService,
       ],
-      exports:[
-        InvoicesService,
-        CostCalculationService,
-        InvoicesChecksService
-      ]
+      exports: [InvoicesService, CostCalculationService, InvoicesChecksService],
     }).compile();
 
     service = module.get<InvoicesService>(InvoicesService);

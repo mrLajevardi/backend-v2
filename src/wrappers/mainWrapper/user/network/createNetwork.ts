@@ -1,5 +1,5 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
-import { isEmpty } from "class-validator";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 /**
@@ -25,7 +25,7 @@ export async function userCreateNetwork(config, edgeName = null) {
   if (isEmpty(gateway.values[0])) {
     return Promise.reject(new NoIpIsAssignedException());
   }
-  gateway = gateway.values.filter((value)=> value.name === edgeName);
+  gateway = gateway.values.filter((value) => value.name === edgeName);
   const gatewayId = gateway[0].id;
   let connection = null;
   if (config.networkType !== 'ISOLATED') {
@@ -42,17 +42,19 @@ export async function userCreateNetwork(config, edgeName = null) {
     name: config.name,
     networkType: config.networkType,
     subnets: {
-      values: [{
-        dnsServer1: config.dnsServer1,
-        dnsServer2: config.dnsServer2,
-        dnsSuffix: config.dnsSuffix,
-        enabled: true,
-        gateway: config.gateway,
-        ipRanges: {
-          values: config.ipRanges.values,
+      values: [
+        {
+          dnsServer1: config.dnsServer1,
+          dnsServer2: config.dnsServer2,
+          dnsSuffix: config.dnsSuffix,
+          enabled: true,
+          gateway: config.gateway,
+          ipRanges: {
+            values: config.ipRanges.values,
+          },
+          prefixLength: config.prefixLength,
         },
-        prefixLength: config.prefixLength,
-      }],
+      ],
     },
     ownerRef: {
       id: config.vdcId,
@@ -60,13 +62,16 @@ export async function userCreateNetwork(config, edgeName = null) {
     connection,
   };
   const options = {
-    headers: {Authorization: `Bearer ${config.authToken}`},
+    headers: { Authorization: `Bearer ${config.authToken}` },
     body: request,
   };
-  const createdNetwork = await new VcloudWrapper().posts('user.network.createNetwork', options);
+  const createdNetwork = await new VcloudWrapper().posts(
+    'user.network.createNetwork',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: createdNetwork.headers['location'],
   });
-};
+}
 
 module.exports = userCreateNetwork;

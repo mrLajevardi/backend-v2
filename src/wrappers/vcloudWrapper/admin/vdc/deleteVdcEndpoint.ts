@@ -7,13 +7,13 @@
  * @return {Object}
  */
 
-export function deleteVdcEndpoint(options? : any ) {
+export function deleteVdcEndpoint(options?: any) {
   return {
     method: 'delete',
     resource: `/api/admin/vdc/${options.urlParams.vdcId[0]}?force=true&recursive=true`,
     params: {},
     headers: {
-      'Accept': 'application/*+json;version=36.3',
+      Accept: 'application/*+json;version=36.3',
       'Content-Type': 'application/*+json',
       ...options.headers,
     },

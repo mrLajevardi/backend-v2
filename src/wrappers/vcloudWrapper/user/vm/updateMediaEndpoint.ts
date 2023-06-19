@@ -6,14 +6,14 @@
  * @param {String} options.body
  * @return {Object}
  */
-export function updateMediaEndpoint(options? : any) {
+export function updateMediaEndpoint(options?: any) {
   return {
     method: 'put',
     resource: `/api/media/${options.urlParams.mediaId}`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +json;',
       ...options.headers,
     },
@@ -21,5 +21,3 @@ export function updateMediaEndpoint(options? : any) {
 }
 
 module.exports = updateMediaEndpoint;
-
-

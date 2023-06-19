@@ -6,14 +6,14 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function createUserEndpoint(options? : any ) {
+export function createUserEndpoint(options?: any) {
   return {
     method: 'post',
     resource: `/api/admin/org/${options.urlParams.orgId}/users`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/*+json;version=36.3',
+      Accept: 'application/*+json;version=36.3',
       'Content-Type': 'application/*+json',
       ...options.headers,
     },
@@ -21,5 +21,3 @@ export function createUserEndpoint(options? : any ) {
 }
 
 module.exports = createUserEndpoint;
-
-

@@ -8,13 +8,13 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userGetVmAttachedNamedDisk(authToken, nameDiskID) {
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
   };
 
   const action = new VcloudWrapper().posts('user.vdc.vmAttachedNamedDisk', {
     ...options,
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {nameDiskID},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { nameDiskID },
   });
   return action;
 }

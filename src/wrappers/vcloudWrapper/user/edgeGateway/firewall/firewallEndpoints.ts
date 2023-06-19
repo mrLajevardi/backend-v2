@@ -13,4 +13,3 @@ export const firewallEndpoints = {
 };
 
 module.exports = firewallEndpoints;
-

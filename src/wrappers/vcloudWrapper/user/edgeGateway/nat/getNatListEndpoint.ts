@@ -6,14 +6,14 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function getNatListEndpoint(options? :  any ) {
+export function getNatListEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules`,
     params: options.params,
     body: null,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -21,5 +21,3 @@ export function getNatListEndpoint(options? :  any ) {
 }
 
 module.exports = getNatListEndpoint;
-
-

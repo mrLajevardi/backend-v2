@@ -1,20 +1,20 @@
 const vCloudConfig = require('../../vcdConfig');
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 /**
-   * @param {Object} config config for creating vdc
-   * @param {String} vdcId
-   * @param {Number} config.cores number of cores
-   * @param {Number} config.ram ram in GB
-   * @param {Number} config.prevRam ram in GB
-   * @param {Number} config.prevCores ram in GB
-   * @param {String} config.name vdc name
-   * @param {String} config.authToken vdc name
-   * @param {String} config.vm number of vm
-   * @param {String} config.nicQuota number of vm
-   * @param {String} config.networkQuota number of vm
-   * @param {String} config.providerVdcReference number of vm
-   * @return {void}
-   */
+ * @param {Object} config config for creating vdc
+ * @param {String} vdcId
+ * @param {Number} config.cores number of cores
+ * @param {Number} config.ram ram in GB
+ * @param {Number} config.prevRam ram in GB
+ * @param {Number} config.prevCores ram in GB
+ * @param {String} config.name vdc name
+ * @param {String} config.authToken vdc name
+ * @param {String} config.vm number of vm
+ * @param {String} config.nicQuota number of vm
+ * @param {String} config.networkQuota number of vm
+ * @param {String} config.providerVdcReference number of vm
+ * @return {void}
+ */
 export async function updateVdc(config, vdcId) {
   const vdcConfig = vCloudConfig.admin.vdc;
   // convert from urn:vcloud:org:vdcId -> vdcId
@@ -46,8 +46,8 @@ export async function updateVdc(config, vdcId) {
     networkQuota: config.networkQuota,
   };
   const options = {
-    headers: {Authorization: `Bearer ${config.authToken}`},
-    urlParams: {vdcId: vdcId},
+    headers: { Authorization: `Bearer ${config.authToken}` },
+    urlParams: { vdcId: vdcId },
     body: request,
   };
   await new VcloudWrapper().posts('admin.vdc.updateVdc', options);

@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Tasks } from 'src/infrastructure/database/entities/Tasks';
 import { CreateTaskDto } from 'src/application/base/tasks/dto/create-task.dto';
 import { UpdateTaskDto } from 'src/application/base/tasks/dto/update-task.dto';
-import { FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
@@ -13,7 +18,6 @@ export class TasksService {
   constructor(
     @InjectRepository(Tasks)
     private readonly repository: Repository<Tasks>,
-
   ) {}
 
   // Find One Item by its ID
@@ -59,14 +63,9 @@ export class TasksService {
   }
 
   // update many items
-  async updateAll(
-    where: FindOptionsWhere<Tasks>,
-    dto: UpdateTaskDto,
-  ) {
+  async updateAll(where: FindOptionsWhere<Tasks>, dto: UpdateTaskDto) {
     await this.repository.update(where, dto);
   }
-
-    
 
   // delete an Item
   async delete(id: string) {

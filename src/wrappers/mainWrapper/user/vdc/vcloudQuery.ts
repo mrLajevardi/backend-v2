@@ -6,7 +6,11 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Object} additionalHeaders
  * @return {Promise}
  */
-export async function userVcloudQuery(authToken, params, additionalHeaders = {}) {
+export async function userVcloudQuery(
+  authToken,
+  params,
+  additionalHeaders = {},
+) {
   const options = {
     params,
     headers: {
@@ -14,8 +18,11 @@ export async function userVcloudQuery(authToken, params, additionalHeaders = {})
       ...additionalHeaders,
     },
   };
-  const response = await new VcloudWrapper().posts('user.vdc.vcloudQuery', options);
+  const response = await new VcloudWrapper().posts(
+    'user.vdc.vcloudQuery',
+    options,
+  );
   return Promise.resolve(response);
-};
+}
 
 module.exports = userVcloudQuery;

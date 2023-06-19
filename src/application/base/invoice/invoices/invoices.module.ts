@@ -31,7 +31,6 @@ import { TransactionsModule } from '../../transactions/transactions.module';
 import { ServiceInstancesModule } from '../../service/service-instances/service-instances.module';
 import { ServiceItemsSumModule } from '../../service/service-items-sum/service-items-sum.module';
 
-
 @Module({
   imports: [
     DatabaseModule,
@@ -47,12 +46,8 @@ import { ServiceItemsSumModule } from '../../service/service-items-sum/service-i
     ServiceTypesModule,
     ServiceItemsSumModule,
   ],
-  providers: [
-    InvoicesService,
-    InvoicesChecksService,
-    CostCalculationService
-  ],
+  providers: [InvoicesService, InvoicesChecksService, CostCalculationService],
   controllers: [InvoicesController],
-  exports: [InvoicesService]
+  exports: [InvoicesService],
 })
 export class InvoicesModule {}

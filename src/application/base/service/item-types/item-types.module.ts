@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [ItemTypesService],
   controllers: [ItemTypesController],
-  exports: [ItemTypesService]
+  exports: [ItemTypesService],
 })
 export class ItemTypesModule {}

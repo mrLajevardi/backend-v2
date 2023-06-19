@@ -12,9 +12,7 @@ import { OrganizationService } from '../organization/organization.service';
 export class SessionsService {
   constructor(
     @InjectRepository(Sessions)
-    private readonly repository: Repository<Sessions>,
-  //  private readonly userService: UserService,
-  //  private readonly organizationService: OrganizationService,
+    private readonly repository: Repository<Sessions>, //  private readonly userService: UserService, //  private readonly organizationService: OrganizationService,
   ) {}
 
   // Find One Item by its ID
@@ -70,7 +68,7 @@ export class SessionsService {
 
   async createUserSession(orgId, userId) {
     // const user = await this.userService.findById(userId);
-   // const org = await this.organizationService.findById(orgId);
+    // const org = await this.organizationService.findById(orgId);
     //const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     throw new InternalServerErrorException('MUST BE IMPLEMENTED');
     //This part is because of preventing errors and should be deleted

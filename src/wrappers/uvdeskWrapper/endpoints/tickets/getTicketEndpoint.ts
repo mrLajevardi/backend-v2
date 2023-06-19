@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-export function getTicketEndpoint(options? : any) {
+export function getTicketEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/ticket/${options.urlParams.ticketId}`,
@@ -15,5 +15,3 @@ export function getTicketEndpoint(options? : any) {
 }
 
 module.exports = getTicketEndpoint;
-
-

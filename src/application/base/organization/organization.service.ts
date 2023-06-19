@@ -3,7 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from 'src/infrastructure/database/entities/Organization';
 import { CreateOrganizationDto } from 'src/application/base/organization/dto/create-organization.dto';
 import { UpdateOrganizationDto } from 'src/application/base/organization/dto/update-organization.dto';
-import { FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { SessionsService } from '../sessions/sessions.service';
 import { UserService } from '../user/user/user.service';
@@ -44,11 +49,11 @@ export class OrganizationService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateOrganizationDto) : Promise<Organization> {
+  async create(dto: CreateOrganizationDto): Promise<Organization> {
     const newItem = plainToClass(Organization, dto);
     const createdItem = this.repository.create(newItem);
     const savedItem = await this.repository.save(createdItem);
-    return savedItem; 
+    return savedItem;
   }
 
   // Update an Item using updateDTO
@@ -58,15 +63,14 @@ export class OrganizationService {
     await this.repository.save(updateItem);
   }
 
-    // update many items
-    async updateAll(
-      where: FindOptionsWhere<Organization>,
-      dto: UpdateOrganizationDto,
-    ) {
-      await this.repository.update(where, dto);
-    }
+  // update many items
+  async updateAll(
+    where: FindOptionsWhere<Organization>,
+    dto: UpdateOrganizationDto,
+  ) {
+    await this.repository.update(where, dto);
+  }
 
-    
   // delete an Item
   async delete(id: number) {
     await this.repository.delete(id);
@@ -77,17 +81,19 @@ export class OrganizationService {
     await this.repository.delete({});
   }
 
-
   async initOrg(userId) {
-   const sessionToken = await this.sessionService.checkAdminSession(userId);
+    const sessionToken = await this.sessionService.checkAdminSession(userId);
     const user = await this.userService.findById(userId);
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     const name = `${filteredUsername}_org`;
-    const checkOrg = await mainWrapper.admin.org.getOrg({
-      filter: `name==${name}`,
-      page: 1,
-      pageSize: 25,
-    }, sessionToken);
+    const checkOrg = await mainWrapper.admin.org.getOrg(
+      {
+        filter: `name==${name}`,
+        page: 1,
+        pageSize: 25,
+      },
+      sessionToken,
+    );
     console.log(checkOrg);
     // if org exists in cloud save it into database
     if (checkOrg.values.length > 0) {
@@ -118,12 +124,16 @@ export class OrganizationService {
       orgId: orgInfo.id,
       status: '1',
     });
-    const checkUser = await mainWrapper.user.vdc.vcloudQuery(sessionToken, {
-      type: 'user',
-      filter: `name==${filteredUsername}`,
-    }, {
-      'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgInfo.id.split('org:')[1],
-    });
+    const checkUser = await mainWrapper.user.vdc.vcloudQuery(
+      sessionToken,
+      {
+        type: 'user',
+        filter: `name==${filteredUsername}`,
+      },
+      {
+        'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgInfo.id.split('org:')[1],
+      },
+    );
     if (checkUser.data.record.length > 0) {
       return Promise.resolve({
         id: createdOrg.id,
@@ -142,9 +152,12 @@ export class OrganizationService {
       roleName: vcdConfig.admin.users.roleEntityRefs.name,
     });
     // user created
-    await this.updateAll({id: createdOrg.id}, {
-      status: '2',
-    });
+    await this.updateAll(
+      { id: createdOrg.id },
+      {
+        status: '2',
+      },
+    );
     return Promise.resolve({
       id: createdOrg.id,
       vcloudOrgId: orgInfo.id,
@@ -152,6 +165,4 @@ export class OrganizationService {
       __vcloudTask: null,
     });
   }
-
-
 }

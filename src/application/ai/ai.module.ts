@@ -31,7 +31,7 @@ import { ServiceItemsSumModule } from '../base/service/service-items-sum/service
 
 @Module({
   imports: [
-    DatabaseModule, 
+    DatabaseModule,
     UserModule,
     ServicePropertiesModule,
     ServiceInstancesModule,
@@ -45,8 +45,6 @@ import { ServiceItemsSumModule } from '../base/service/service-items-sum/service
     PlansModule,
   ],
   controllers: [AiController],
-  providers: [
-    AiService,
-  ],
+  providers: [AiService],
 })
 export class AiModule {}

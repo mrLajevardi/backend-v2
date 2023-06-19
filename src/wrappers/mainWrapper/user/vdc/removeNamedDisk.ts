@@ -8,13 +8,13 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userRemoveNamedDisk(authToken, nameDiskID) {
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
   };
 
   const action = await new VcloudWrapper().posts('user.vdc.removeNamedDisk', {
     ...options,
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {nameDiskID},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { nameDiskID },
   });
   return Promise.resolve({
     __vcloudTask: action.headers['location'],

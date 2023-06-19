@@ -8,6 +8,5 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   providers: [SysdiagramsService],
   controllers: [SysdiagramsController],
   exports: [SysdiagramsService],
-
 })
 export class SysdiagramsModule {}

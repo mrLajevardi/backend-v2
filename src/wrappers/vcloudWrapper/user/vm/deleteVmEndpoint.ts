@@ -5,14 +5,14 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function deleteVmEndpoint(options? : any) {
+export function deleteVmEndpoint(options?: any) {
   return {
     method: 'delete',
     resource: `/api/vApp/${options.urlParams.vmId}`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +xml;',
       ...options.headers,
     },
@@ -20,5 +20,3 @@ export function deleteVmEndpoint(options? : any) {
 }
 
 module.exports = deleteVmEndpoint;
-
-

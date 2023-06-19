@@ -4,13 +4,18 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} applicationId
  * @return {Promise}
  */
-export async function userDeleteApplicationPortProfile(authToken, applicationId) {
+export async function userDeleteApplicationPortProfile(
+  authToken,
+  applicationId,
+) {
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {applicationId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { applicationId },
   };
-  const applicationPortProfile = await new VcloudWrapper()
-      .posts('user.applicationPortProfiles.deleteApplicationPortProfile', options);
+  const applicationPortProfile = await new VcloudWrapper().posts(
+    'user.applicationPortProfiles.deleteApplicationPortProfile',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: applicationPortProfile.headers['location'],
   });

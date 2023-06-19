@@ -7,11 +7,11 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userPartialUpload(authToken, fullAddress, data, header) {
   const file = await new VcloudWrapper().posts('user.vm.partialUpload', {
-    urlParams: {fullAddress},
-    headers: {Authorization: `Bearer ${authToken}`, ...header},
+    urlParams: { fullAddress },
+    headers: { Authorization: `Bearer ${authToken}`, ...header },
     body: data,
   });
   return file;
-};
+}
 
 module.exports = userPartialUpload;

@@ -8,17 +8,25 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Number} filter
  * @return {Promise}
  */
-export async function getIPUsageNetwrok(authToken, page = 1, pageSize = 25, networkId) {
+export async function getIPUsageNetwrok(
+  authToken,
+  page = 1,
+  pageSize = 25,
+  networkId,
+) {
   const params = {
     page,
     pageSize,
   };
 
-  const networks = await new VcloudWrapper().posts('user.network.getNetworkIPUsageList', {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {networkId},
-    params,
-  });
+  const networks = await new VcloudWrapper().posts(
+    'user.network.getNetworkIPUsageList',
+    {
+      headers: { Authorization: `Bearer ${authToken}` },
+      urlParams: { networkId },
+      params,
+    },
+  );
   return Promise.resolve(networks.data);
-};
+}
 module.exports = getIPUsageNetwrok;

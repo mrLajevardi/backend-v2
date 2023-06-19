@@ -57,21 +57,23 @@ export async function createVdc(config, orgId) {
       href: config.NetworkPoolReference.href,
     },
     networkQuota: config.NetworkQuota,
-    vdcStorageProfile: [{
-      ...vdcConfig.VdcStorageProfileParams,
-      limit: config.storage * 1024,
-      providerVdcStorageProfile: {
-        href: config.VdcStorageProfileParams.providerVdcStorageProfile.href,
-        name: config.VdcStorageProfileParams.providerVdcStorageProfile.name,
+    vdcStorageProfile: [
+      {
+        ...vdcConfig.VdcStorageProfileParams,
+        limit: config.storage * 1024,
+        providerVdcStorageProfile: {
+          href: config.VdcStorageProfileParams.providerVdcStorageProfile.href,
+          name: config.VdcStorageProfileParams.providerVdcStorageProfile.name,
+        },
       },
-    }],
+    ],
     isThinProvision: vdcConfig.isThinProvision,
     usesFastProvisioning: vdcConfig.usesFastProvisioning,
   };
   const options = {
-    headers: {Authorization: `Bearer ${config.authToken}`},
+    headers: { Authorization: `Bearer ${config.authToken}` },
     body: request,
-    urlParams: {orgId},
+    urlParams: { orgId },
   };
   const vdc = await new VcloudWrapper().posts('admin.vdc.createVdc', options);
   return Promise.resolve({

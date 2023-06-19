@@ -112,8 +112,6 @@ import { NetworkService } from './application/vdc/network.service';
     },
     NetworkService,
   ],
-  exports: [
-
-  ]
+  exports: [],
 })
 export class AppModule {}

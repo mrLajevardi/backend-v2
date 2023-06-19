@@ -10,14 +10,8 @@ describe('OrganizationController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule,
-      ],
-      providers: [
-        OrganizationService,
-        SessionsService,
-        UserService
-      ],
+      imports: [TestDatabaseModule],
+      providers: [OrganizationService, SessionsService, UserService],
       controllers: [OrganizationController],
     }).compile();
 

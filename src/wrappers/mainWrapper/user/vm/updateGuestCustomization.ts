@@ -26,15 +26,17 @@ export async function userUpdateGuestCustomization(authToken, vmId, config) {
     customizationScript: config.customizationScript,
     computerName: config.computerName,
   };
-  const guestCustomizationSection = await new VcloudWrapper()
-      .posts('user.vm.updateGuestCustomization', {
-        headers: {Authorization: `Bearer ${authToken}`},
-        urlParams: {vmId},
-        body: requestBody,
-      });
+  const guestCustomizationSection = await new VcloudWrapper().posts(
+    'user.vm.updateGuestCustomization',
+    {
+      headers: { Authorization: `Bearer ${authToken}` },
+      urlParams: { vmId },
+      body: requestBody,
+    },
+  );
   return Promise.resolve({
     __vcloudTask: guestCustomizationSection.headers['location'],
   });
-};
+}
 
 module.exports = userUpdateGuestCustomization;

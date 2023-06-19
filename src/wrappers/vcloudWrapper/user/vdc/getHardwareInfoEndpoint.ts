@@ -4,7 +4,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function getHardwareInfoEndpoint(options? : any) {
+export function getHardwareInfoEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/api/vdc/${options.urlParams.vdcId}/hwv/vmx-19`,
@@ -12,12 +12,10 @@ export function getHardwareInfoEndpoint(options? : any) {
     body: null,
     headers: {
       'Content-Type': 'application/* +json;',
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       ...options.headers,
     },
   };
 }
 
 module.exports = getHardwareInfoEndpoint;
-
-

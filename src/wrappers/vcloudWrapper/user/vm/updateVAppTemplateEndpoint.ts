@@ -5,14 +5,14 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-export function updateVAppTemplateEndpoint(options? : any) {
+export function updateVAppTemplateEndpoint(options?: any) {
   return {
     method: 'put',
     resource: `api/vAppTemplate/${options.urlParams.templateId}`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +json;',
       ...options.headers,
     },
@@ -20,5 +20,3 @@ export function updateVAppTemplateEndpoint(options? : any) {
 }
 
 module.exports = updateVAppTemplateEndpoint;
-
-

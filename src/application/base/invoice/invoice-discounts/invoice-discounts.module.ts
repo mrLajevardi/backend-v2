@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [InvoiceDiscountsService],
   controllers: [InvoiceDiscountsController],
-  exports: [InvoiceDiscountsService]
+  exports: [InvoiceDiscountsService],
 })
 export class InvoiceDiscountsModule {}

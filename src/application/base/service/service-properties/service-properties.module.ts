@@ -8,6 +8,5 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   providers: [ServicePropertiesService],
   controllers: [ServicePropertiesController],
   exports: [ServicePropertiesService],
-
 })
 export class ServicePropertiesModule {}

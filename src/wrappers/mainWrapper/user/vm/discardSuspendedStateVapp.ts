@@ -7,11 +7,11 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userDiscardSuspendedStatevApp(authToken, vAppId) {
   const action = await new VcloudWrapper().posts('user.vm.discardSuspendVm', {
-    urlParams: {vmId: vAppId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { vmId: vAppId },
+    headers: { Authorization: `Bearer ${authToken}` },
   });
   return Promise.resolve({
     __vcloudTask: action.headers['location'],
   });
-};
+}
 module.exports = userDiscardSuspendedStatevApp;

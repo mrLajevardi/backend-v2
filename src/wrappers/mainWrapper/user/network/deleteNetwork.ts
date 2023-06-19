@@ -10,13 +10,16 @@ export async function userDeleteNetwork(authToken, networkId) {
     params: {
       force: true,
     },
-    urlParams: {networkId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { networkId },
+    headers: { Authorization: `Bearer ${authToken}` },
   };
-  const deletedNetwork = await new VcloudWrapper().posts('user.network.deleteNetwork', options);
+  const deletedNetwork = await new VcloudWrapper().posts(
+    'user.network.deleteNetwork',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: deletedNetwork.headers['location'],
   });
-};
+}
 
 module.exports = userDeleteNetwork;

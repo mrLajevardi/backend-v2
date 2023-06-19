@@ -8,7 +8,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userDeleteDhcpBinding(authToken, networkId, bindingId) {
   const dhcp = await new VcloudWrapper().posts('user.dhcp.deleteDhcpBinding', {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     urlParams: {
       networkId,
       bindingId,

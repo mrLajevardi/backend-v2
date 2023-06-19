@@ -22,11 +22,8 @@ import { UserModule } from '../base/user/user/user.module';
     ServiceItemsModule,
     ConfigsModule,
     OrganizationModule,
-    UserModule
+    UserModule,
   ],
-  providers: [
-    VdcService, 
-    OrgService, 
-    EdgeService]
+  providers: [VdcService, OrgService, EdgeService],
 })
 export class VdcModule {}

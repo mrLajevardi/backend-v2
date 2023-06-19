@@ -6,13 +6,9 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { UserModule } from '../user/user/user.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    SessionsModule,
-    UserModule
-  ],
+  imports: [DatabaseModule, SessionsModule, UserModule],
   providers: [OrganizationService],
   controllers: [OrganizationController],
-  exports: [OrganizationService]
+  exports: [OrganizationService],
 })
 export class OrganizationModule {}

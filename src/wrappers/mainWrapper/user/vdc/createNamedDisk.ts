@@ -9,7 +9,11 @@ const vcloudQuery = require('../vdc/vcloudQuery');
  * @param {String} vAppAction
  * @return {Promise}
  */
-export async function userCreateNamedDisk(authToken, vdcId, namedDiskProperties) {
+export async function userCreateNamedDisk(
+  authToken,
+  vdcId,
+  namedDiskProperties,
+) {
   const query = await vcloudQuery(authToken, {
     type: 'orgVdcStorageProfile',
     format: 'records',
@@ -23,11 +27,11 @@ export async function userCreateNamedDisk(authToken, vdcId, namedDiskProperties)
   const formattedVdcId = vdcId.split(':').slice(-1);
   const request = {
     'root:DiskCreateParams': {
-      '$': {
+      $: {
         'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
       },
       'root:Disk': {
-        '$': {
+        $: {
           name: namedDiskProperties.name,
           busType: namedDiskProperties.busType,
           busSubType: namedDiskProperties.busSubType,
@@ -46,14 +50,14 @@ export async function userCreateNamedDisk(authToken, vdcId, namedDiskProperties)
   };
   const xmlRequest = builder.buildObject(request);
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     body: xmlRequest,
   };
 
   const action = await new VcloudWrapper().posts('user.vdc.createNamedDisk', {
     ...options,
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {vdcId: formattedVdcId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { vdcId: formattedVdcId },
   });
   console.log(action.headers);
   return Promise.resolve({

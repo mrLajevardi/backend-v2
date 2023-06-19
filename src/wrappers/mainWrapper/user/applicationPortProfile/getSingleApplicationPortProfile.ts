@@ -5,13 +5,18 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} applicationId
  * @return {Promise}
  */
-export async function userGetSingleApplicationPortProfile(authToken, applicationId) {
+export async function userGetSingleApplicationPortProfile(
+  authToken,
+  applicationId,
+) {
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {applicationId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { applicationId },
   };
-  const applicationPortProfile = await new VcloudWrapper()
-      .posts('user.applicationPortProfiles.getApplicationPortProfile', options);
+  const applicationPortProfile = await new VcloudWrapper().posts(
+    'user.applicationPortProfiles.getApplicationPortProfile',
+    options,
+  );
   return Promise.resolve(applicationPortProfile.data);
 }
 

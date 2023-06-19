@@ -1,20 +1,20 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 /**
-     * @param {Object} config
-     * @param {String} config.orgId org id stored in server
-     * @param {String} config.orgName org name stored in server
-     * @param {String} config.roleId global role id in vm sever
-     * @param {String} config.authToken
-     * @param {string} config.username
-     * @param {string} config.password
-     */
+ * @param {Object} config
+ * @param {String} config.orgId org id stored in server
+ * @param {String} config.orgName org name stored in server
+ * @param {String} config.roleId global role id in vm sever
+ * @param {String} config.authToken
+ * @param {string} config.username
+ * @param {string} config.password
+ */
 export async function createUser(config) {
   const vcloudQueryOptions = {
     headers: {
       'x-vcloud-authorization': config.orgName,
       'x-vmware-vcloud-auth-context': config.orgName,
       'x-vmware-vcloud-tenant-context': config.orgId.split(':').slice(-1),
-      'Authorization': `Bearer ${config.authToken}`,
+      Authorization: `Bearer ${config.authToken}`,
     },
     params: {
       type: 'role',
@@ -25,7 +25,10 @@ export async function createUser(config) {
       sortAsc: 'name',
     },
   };
-  let roleId = await new VcloudWrapper().posts('user.vdc.vcloudQuery', vcloudQueryOptions);
+  let roleId = await new VcloudWrapper().posts(
+    'user.vdc.vcloudQuery',
+    vcloudQueryOptions,
+  );
   // parse data to get role id
   roleId = roleId.data.record[0].href.split('role/')[1];
   const requestBody = {
@@ -47,13 +50,15 @@ export async function createUser(config) {
   };
   const formattedOrgId = config.orgId.split(':').slice(-1);
   const options = {
-    headers: {Authorization: `Bearer ${config.authToken}`},
+    headers: { Authorization: `Bearer ${config.authToken}` },
     body: requestBody,
-    urlParams: {orgId: formattedOrgId},
+    urlParams: { orgId: formattedOrgId },
   };
-  const response = await new VcloudWrapper().posts('admin.user.createUser', options);
+  const response = await new VcloudWrapper().posts(
+    'admin.user.createUser',
+    options,
+  );
   return Promise.resolve(response.data);
 }
 
 module.exports = createUser;
-

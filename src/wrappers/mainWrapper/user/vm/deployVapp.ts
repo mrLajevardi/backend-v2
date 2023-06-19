@@ -12,18 +12,18 @@ export async function userDeployvApp(authToken, vAppId) {
     'root:DeployVAppParams': {
       $: {
         'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
-        'forceCustomization': true,
+        forceCustomization: true,
       },
     },
   };
   const xmlRequest = builder.buildObject(request);
   const action = await new VcloudWrapper().posts('user.vm.deployVm', {
-    urlParams: {vmId: vAppId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { vmId: vAppId },
+    headers: { Authorization: `Bearer ${authToken}` },
     body: xmlRequest,
   });
   return Promise.resolve({
     __vcloudTask: action.headers['location'],
   });
-};
+}
 module.exports = userDeployvApp;

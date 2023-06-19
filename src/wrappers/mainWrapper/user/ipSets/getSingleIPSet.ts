@@ -7,8 +7,8 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userGetSingleIPSet(authToken, ipSetId) {
   const ipSet = await new VcloudWrapper().posts('user.ipSets.getIpSets', {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {ipSetId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { ipSetId },
   });
   return Promise.resolve(ipSet.data);
 }

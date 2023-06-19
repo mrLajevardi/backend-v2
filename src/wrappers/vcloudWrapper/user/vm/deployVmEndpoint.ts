@@ -5,14 +5,14 @@
  * @param {String} options.body
  * @return {Object}
  */
-export function deployVmEndpoint(options? : any) {
+export function deployVmEndpoint(options?: any) {
   return {
     method: 'post',
     resource: `/api/vApp/${options.urlParams.vmId}/action/deploy`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +xml;',
       ...options.headers,
     },
@@ -20,5 +20,3 @@ export function deployVmEndpoint(options? : any) {
 }
 
 module.exports = deployVmEndpoint;
-
-

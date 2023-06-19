@@ -33,12 +33,12 @@ import { VdcService } from 'src/application/vdc/vdc.service';
     VdcModule,
   ],
   providers: [
-    TasksService, 
-    TaskManagerService, 
+    TasksService,
+    TaskManagerService,
     EdgeService,
     OrgService,
     NetworkService,
-    VdcService
+    VdcService,
   ],
   controllers: [TasksController],
   exports: [TasksService, TaskManagerService],

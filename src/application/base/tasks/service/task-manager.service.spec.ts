@@ -41,9 +41,8 @@ describe('TaskManagerService', () => {
         EdgeService,
         OrgService,
         NetworkService,
-        VdcService
+        VdcService,
       ],
-
     }).compile();
 
     service = module.get<TaskManagerService>(TaskManagerService);

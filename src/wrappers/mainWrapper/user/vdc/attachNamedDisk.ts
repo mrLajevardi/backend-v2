@@ -16,14 +16,14 @@ export async function userAttachNamedDisk(authToken, nameDiskID, vmID) {
   };
 
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     body: request,
   };
 
   const action = await new VcloudWrapper().posts('user.vdc.attachNamedDisk', {
     ...options,
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {vmID},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { vmID },
   });
   return Promise.resolve({
     __vcloudTask: action.headers['location'],

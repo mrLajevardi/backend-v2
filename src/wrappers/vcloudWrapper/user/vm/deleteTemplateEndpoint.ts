@@ -5,14 +5,14 @@
  * @param {String} options.body
  * @return {Object}
  */
-export function deleteTemplateEndpoint(options? : any) {
+export function deleteTemplateEndpoint(options?: any) {
   return {
     method: 'delete',
     resource: `/api/vAppTemplate/${options.urlParams.templateId}`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +json;',
       ...options.headers,
     },
@@ -20,5 +20,3 @@ export function deleteTemplateEndpoint(options? : any) {
 }
 
 module.exports = deleteTemplateEndpoint;
-
-

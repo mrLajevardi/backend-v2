@@ -7,11 +7,11 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export function uploadFile(authToken, catalogId, data) {
   const response = new VcloudWrapper().posts('user.vm.uploadFile', {
-    urlParams: {catalogId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { catalogId },
+    headers: { Authorization: `Bearer ${authToken}` },
     body: data,
   });
   return response;
-};
+}
 
 module.exports = uploadFile;

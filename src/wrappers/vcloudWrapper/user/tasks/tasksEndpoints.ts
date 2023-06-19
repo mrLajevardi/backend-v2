@@ -7,5 +7,4 @@ export const tasksEndpoints = {
   cancelTask: cancelTaskEndpoint,
 };
 
-
 module.exports = tasksEndpoints;

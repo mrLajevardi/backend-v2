@@ -5,14 +5,14 @@
  * @param {Object} options.body
  * @return {Object}
  */
-export function createNatEndpoint(options? : any ) {
+export function createNatEndpoint(options?: any) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -20,5 +20,3 @@ export function createNatEndpoint(options? : any ) {
 }
 
 module.exports = createNatEndpoint;
-
-

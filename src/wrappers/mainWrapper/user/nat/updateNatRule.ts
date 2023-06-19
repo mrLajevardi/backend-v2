@@ -19,7 +19,7 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 export async function userUpdateNatRule(config, edgeName) {
   const gateway = await getEdgeGateway(config.authToken);
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
-      .id;
+    .id;
   const request = {
     enabled: config.enabled,
     logging: config.logging,
@@ -42,7 +42,7 @@ export async function userUpdateNatRule(config, edgeName) {
       gatewayId,
       natId: config.ruleId,
     },
-    headers: {Authorization: `Bearer ${config.authToken}`},
+    headers: { Authorization: `Bearer ${config.authToken}` },
   };
   const nat = await new VcloudWrapper().posts('user.nat.updateNat', options);
   return Promise.resolve({

@@ -58,20 +58,20 @@ import { InvoiceItemsModule } from '../../invoice/invoice-items/invoice-items.mo
     ItemTypesModule,
     ServiceItemsSumModule,
     InvoicesModule,
-    InvoiceItemsModule
+    InvoiceItemsModule,
   ],
   providers: [
     ServiceInstancesService,
     CreateServiceService,
     ExtendServiceService,
-    ServiceChecksService
+    ServiceChecksService,
   ],
   controllers: [ServiceInstancesController],
   exports: [
     ServiceInstancesService,
     CreateServiceService,
     ExtendServiceService,
-    ServiceChecksService
-  ]
+    ServiceChecksService,
+  ],
 })
 export class ServiceInstancesModule {}

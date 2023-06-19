@@ -57,7 +57,7 @@ describe('CreateServiceService', () => {
         InvoicePropertiesService,
         InvoicesChecksService,
         CostCalculationService,
-        VgpuService
+        VgpuService,
       ],
     }).compile();
 

@@ -6,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function getFirewallEndpoint(options? : any ) {
+export function getFirewallEndpoint(options?: any) {
   return {
     method: 'get',
     // eslint-disable-next-line max-len
@@ -14,12 +14,10 @@ export function getFirewallEndpoint(options? : any ) {
     params: options.params,
     body: options.body,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       ...options.headers,
     },
   };
 }
 
 module.exports = getFirewallEndpoint;
-
-

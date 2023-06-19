@@ -5,14 +5,14 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function createVdcEndpoint(options? : any ) {
+export function createVdcEndpoint(options?: any) {
   return {
     method: 'post',
     resource: `/api/admin/org/${options.urlParams.orgId}/vdcsparams`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/*+json;version=36.3',
+      Accept: 'application/*+json;version=36.3',
       'Content-Type': 'application/*+json',
       ...options.headers,
     },
@@ -20,5 +20,3 @@ export function createVdcEndpoint(options? : any ) {
 }
 
 module.exports = createVdcEndpoint;
-
-

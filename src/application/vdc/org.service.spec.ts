@@ -16,21 +16,19 @@ describe('OrgService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule
-      ],
-      providers: [        
+      imports: [TestDatabaseModule],
+      providers: [
         VdcService,
         OrganizationService,
-        ServiceInstancesService, 
-        ServicePropertiesService, 
-        ServiceItemsService, 
-        ConfigsService, 
-        OrganizationService, 
+        ServiceInstancesService,
+        ServicePropertiesService,
+        ServiceItemsService,
+        ConfigsService,
+        OrganizationService,
         UserService,
         SessionsService,
         TransactionsService,
-        OrgService
+        OrgService,
       ],
     }).compile();
 

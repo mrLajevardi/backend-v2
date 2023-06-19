@@ -4,7 +4,7 @@ export const userGetVAppTemplate = (authToken, templateId) => {
     urlParams: {
       vmId: templateId,
     },
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
   });
   return vmTemplate;
 };

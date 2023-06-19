@@ -1,8 +1,8 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 
 /**
  * get dns forwarder lists
@@ -18,18 +18,18 @@ export async function getDnsForwarder(authToken, edgeName) {
     return Promise.reject(new NoIpIsAssignedException());
   }
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
-      .id;
+    .id;
 
   const dns = await new VcloudWrapper().posts(
-      'user.edgeGateway.getDnsForwarder',
-      {
-        headers: {Authorization: `Bearer ${authToken}`},
-        urlParams: {gatewayId},
-      },
+    'user.edgeGateway.getDnsForwarder',
+    {
+      headers: { Authorization: `Bearer ${authToken}` },
+      urlParams: { gatewayId },
+    },
   );
   console.log(
-      '🚀 ~ file: getDnsForwarder.js ~ line 29 ~ getDnsForwarder ~ Promise.resolve(dns)',
-      Promise.resolve(dns.data),
+    '🚀 ~ file: getDnsForwarder.js ~ line 29 ~ getDnsForwarder ~ Promise.resolve(dns)',
+    Promise.resolve(dns.data),
   );
   return Promise.resolve(dns.data);
 }

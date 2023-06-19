@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [ServiceItemsService],
   controllers: [ServiceItemsController],
-  exports: [ServiceItemsService]
+  exports: [ServiceItemsService],
 })
 export class ServiceItemsModule {}

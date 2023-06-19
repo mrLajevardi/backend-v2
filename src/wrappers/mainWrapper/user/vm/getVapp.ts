@@ -7,10 +7,10 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export function userGetVApp(authToken, vAppId) {
   const vApp = new VcloudWrapper().posts('user.vm.getVm', {
-    urlParams: {vmId: vAppId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { vmId: vAppId },
+    headers: { Authorization: `Bearer ${authToken}` },
   });
   return vApp;
-};
+}
 
 module.exports = userGetVApp;

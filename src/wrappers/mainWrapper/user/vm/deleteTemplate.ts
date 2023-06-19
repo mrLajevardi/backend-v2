@@ -6,12 +6,15 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userDeleteTemplate(authToken, templateId) {
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {templateId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { templateId },
   };
-  const deletedTemplate = await new VcloudWrapper().posts('user.vm.deleteTemplate', options);
+  const deletedTemplate = await new VcloudWrapper().posts(
+    'user.vm.deleteTemplate',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: deletedTemplate.headers['location'],
   });
-};
+}
 module.exports = userDeleteTemplate;

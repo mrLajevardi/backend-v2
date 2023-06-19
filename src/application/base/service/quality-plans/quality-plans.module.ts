@@ -5,6 +5,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 @Module({
   imports: [DatabaseModule],
   providers: [QualityPlansService],
-  exports: [QualityPlansService]
+  exports: [QualityPlansService],
 })
 export class QualityPlansModule {}

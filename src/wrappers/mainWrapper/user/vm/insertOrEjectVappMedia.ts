@@ -12,7 +12,12 @@ const builder = new xml2js.Builder();
  * @return {Promise}
  */
 export async function userInsertOrEjectVappMedia(
-    authToken, vAppId, insert, mediaName = null, mediaHref = null, mediaId = null,
+  authToken,
+  vAppId,
+  insert,
+  mediaName = null,
+  mediaHref = null,
+  mediaId = null,
 ) {
   const request = {
     'root:MediaInsertOrEjectParams': {
@@ -38,12 +43,12 @@ export async function userInsertOrEjectVappMedia(
       vmId: vAppId,
       action,
     },
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     body: xmlRequest,
   });
   return Promise.resolve({
     __vcloudTask: response.headers['location'],
   });
-};
+}
 
 module.exports = userInsertOrEjectVappMedia;

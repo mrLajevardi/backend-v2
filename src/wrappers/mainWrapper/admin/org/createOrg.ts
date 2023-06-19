@@ -1,11 +1,11 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-import { vcdConfig } from "../../vcdConfig";
+import { vcdConfig } from '../../vcdConfig';
 /**
  * @param {String} name
  * @param {String} authToken
  * @return {Promise}
  */
-export  async function createOrg(name, authToken) {
+export async function createOrg(name, authToken) {
   const requestBody = {
     ...vcdConfig.admin.org,
     name: name,
@@ -16,12 +16,14 @@ export  async function createOrg(name, authToken) {
       Authorization: `Bearer ${authToken}`,
     },
     body: requestBody,
-
   };
-  const response = await new VcloudWrapper().posts('admin.org.createOrg', options);
+  const response = await new VcloudWrapper().posts(
+    'admin.org.createOrg',
+    options,
+  );
   return Promise.resolve({
     id: response.data.id,
     name: response.data.name,
     __vcloudTask: response.headers['location'],
   });
-};
+}

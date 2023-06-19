@@ -1,6 +1,6 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 /**
@@ -15,16 +15,17 @@ export async function userGetNatRule(authToken, ruleId, edgeName) {
   if (isEmpty(gateway.values[0])) {
     return Promise.reject(new NoIpIsAssignedException());
   }
-  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
+  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
+    .id;
   const options = {
     urlParams: {
       gatewayId,
       natId: ruleId,
     },
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
   };
   const natRule = await new VcloudWrapper().posts('user.nat.getNat', options);
   return Promise.resolve(natRule.data);
-};
+}
 
 module.exports = userGetNatRule;

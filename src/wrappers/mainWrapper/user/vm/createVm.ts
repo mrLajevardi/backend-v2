@@ -2,7 +2,7 @@ const xml2js = require('xml2js');
 const builder = new xml2js.Builder();
 const getVdcComputePolicy = require('../vdc/getVdcComputePolicy');
 const vcloudQuery = require('../vdc/vcloudQuery');
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 /**
  *
@@ -44,10 +44,10 @@ export async function userCreateVm(authToken, vdcId, config) {
   const vdcStorageProfileLink = query.data.record[0].href;
   const networks = [];
   const storage = [];
-  if (! isEmpty(config.networks)) {
+  if (!isEmpty(config.networks)) {
     config.networks.forEach((network, index) => {
       const networkObj = {
-        '$': {'network': network.networkName},
+        $: { network: network.networkName },
         'root:NetworkConnectionIndex': index,
         'root:IpAddress': network.ipAddress,
         'root:IsConnected': network.isConnected,
@@ -58,16 +58,16 @@ export async function userCreateVm(authToken, vdcId, config) {
     });
   }
   const busCombination = [
-    {busNumber: 0, unitNumber: 0},
-    {busNumber: 0, unitNumber: 1},
-    {busNumber: 0, unitNumber: 2},
-    {busNumber: 0, unitNumber: 3},
-    {busNumber: 0, unitNumber: 4},
-    {busNumber: 0, unitNumber: 5},
-    {busNumber: 0, unitNumber: 6},
-    {busNumber: 1, unitNumber: 0},
-    {busNumber: 1, unitNumber: 1},
-    {busNumber: 1, unitNumber: 1},
+    { busNumber: 0, unitNumber: 0 },
+    { busNumber: 0, unitNumber: 1 },
+    { busNumber: 0, unitNumber: 2 },
+    { busNumber: 0, unitNumber: 3 },
+    { busNumber: 0, unitNumber: 4 },
+    { busNumber: 0, unitNumber: 5 },
+    { busNumber: 0, unitNumber: 6 },
+    { busNumber: 1, unitNumber: 0 },
+    { busNumber: 1, unitNumber: 1 },
+    { busNumber: 1, unitNumber: 1 },
   ];
   config.storage.forEach((storageElem, index) => {
     const storageObj = {
@@ -78,8 +78,8 @@ export async function userCreateVm(authToken, vdcId, config) {
       'root:ThinProvisioned': 'true',
       'root:StorageProfile': {
         $: {
-          'href': vdcStorageProfileLink,
-          'type': 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
+          href: vdcStorageProfileLink,
+          type: 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
         },
       },
       'root:overrideVmDefault': 'true',
@@ -88,14 +88,14 @@ export async function userCreateVm(authToken, vdcId, config) {
   });
   const request = {
     'root:CreateVmParams': {
-      '$': {
-        'powerOn': config.powerOn,
+      $: {
+        powerOn: config.powerOn,
         'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
         'xmlns:ns3': 'http://schemas.dmtf.org/ovf/envelope/1',
       },
       'root:Description': config.description,
       'root:CreateVm': {
-        '$': {'name': config.name},
+        $: { name: config.name },
         'root:GuestCustomizationSection': {
           'ns3:Info': 'Specifies Guest OS Customization Settings',
           'root:ComputerName': config.computerName,
@@ -106,7 +106,7 @@ export async function userCreateVm(authToken, vdcId, config) {
           'root:NetworkConnection': networks,
         },
         'root:VmSpecSection': {
-          '$': {'Modified': 'true'},
+          $: { Modified: 'true' },
           'ns3:Info': 'Virtual Machine specification',
           'root:OsType': config.osType,
           'root:NumCpus': config.cpuNumber,
@@ -126,28 +126,28 @@ export async function userCreateVm(authToken, vdcId, config) {
         'root:ComputePolicy': {
           'root:VmSizingPolicy': {
             $: {
-              'href': computePolicyId,
+              href: computePolicyId,
             },
           },
         },
       },
       'root:Media': {
         $: {
-          'href': config.mediaHref,
-          'name': config.mediaName,
+          href: config.mediaHref,
+          name: config.mediaName,
         },
       },
     },
   };
   const xml = builder.buildObject(request);
   const createdVm = await new VcloudWrapper().posts('user.vm.createVm', {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     body: xml,
-    urlParams: {vdcId: formattedVdcId},
+    urlParams: { vdcId: formattedVdcId },
   });
   return Promise.resolve({
     __vcloudTask: createdVm.headers['location'],
   });
-};
+}
 
 module.exports = userCreateVm;

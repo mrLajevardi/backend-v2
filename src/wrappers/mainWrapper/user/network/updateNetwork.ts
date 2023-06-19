@@ -21,7 +21,8 @@ const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
  */
 export async function userUpdateNetwork(config, networkId, edgeName) {
   const gateway = await getEdgeGateway(config.authToken);
-  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
+  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
+    .id;
   let connection = null;
   if (config.networkType !== 'ISOLATED') {
     connection = {
@@ -37,17 +38,19 @@ export async function userUpdateNetwork(config, networkId, edgeName) {
     name: config.name,
     networkType: config.networkType,
     subnets: {
-      values: [{
-        dnsServer1: config.dnsServer1,
-        dnsServer2: config.dnsServer2,
-        dnsSuffix: config.dnsSuffix,
-        enabled: true,
-        gateway: config.gateway,
-        ipRanges: {
-          values: config.ipRanges.values,
+      values: [
+        {
+          dnsServer1: config.dnsServer1,
+          dnsServer2: config.dnsServer2,
+          dnsSuffix: config.dnsSuffix,
+          enabled: true,
+          gateway: config.gateway,
+          ipRanges: {
+            values: config.ipRanges.values,
+          },
+          prefixLength: config.prefixLength,
         },
-        prefixLength: config.prefixLength,
-      }],
+      ],
     },
     ownerRef: {
       id: config.vdcId,
@@ -56,12 +59,14 @@ export async function userUpdateNetwork(config, networkId, edgeName) {
   };
   const options = {
     body: request,
-    urlParams: {networkId},
-    headers: {Authorization: `Bearer ${config.authToken}`},
+    urlParams: { networkId },
+    headers: { Authorization: `Bearer ${config.authToken}` },
   };
-  const updatedNetwork = await new VcloudWrapper().posts('user.network.updateNetwork', options);
+  const updatedNetwork = await new VcloudWrapper().posts(
+    'user.network.updateNetwork',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: updatedNetwork.headers['location'],
   });
-};
-
+}

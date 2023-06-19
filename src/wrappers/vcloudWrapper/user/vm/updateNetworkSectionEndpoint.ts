@@ -5,14 +5,14 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-export function updateNetworkSectionEndpoint(options? : any) {
+export function updateNetworkSectionEndpoint(options?: any) {
   return {
     method: 'put',
     resource: `api/vApp/${options.urlParams.vmId}/networkConnectionSection/`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +json;',
       ...options.headers,
     },
@@ -20,5 +20,3 @@ export function updateNetworkSectionEndpoint(options? : any) {
 }
 
 module.exports = updateNetworkSectionEndpoint;
-
-

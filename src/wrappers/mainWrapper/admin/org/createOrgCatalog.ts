@@ -7,7 +7,12 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} orgId
  * @return {Promise}
  */
-export async function createOrgCatalog(authToken, description, name = 'user-catalog', orgId) {
+export async function createOrgCatalog(
+  authToken,
+  description,
+  name = 'user-catalog',
+  orgId,
+) {
   const requestBody = {
     name,
     description,
@@ -17,13 +22,11 @@ export async function createOrgCatalog(authToken, description, name = 'user-cata
     headers: {
       Authorization: `Bearer ${authToken}`,
     },
-    urlParams: {orgId: filteredOrgId},
+    urlParams: { orgId: filteredOrgId },
     body: requestBody,
-
   };
   await new VcloudWrapper().posts('admin.org.createOrgCatalog', options);
   return Promise.resolve();
-};
+}
 
 module.exports = createOrgCatalog;
-

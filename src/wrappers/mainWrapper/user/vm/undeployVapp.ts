@@ -11,7 +11,7 @@ const builder = new xml2js.Builder();
 export async function userUndeployvApp(authToken, vAppId, vAppAction) {
   const request = {
     'root:UndeployVAppParams': {
-      '$': {
+      $: {
         'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
       },
       'root:UndeployPowerAction': vAppAction,
@@ -19,13 +19,13 @@ export async function userUndeployvApp(authToken, vAppId, vAppAction) {
   };
   const xmlRequest = builder.buildObject(request);
   const options = {
-    urlParams: {vmId: vAppId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { vmId: vAppId },
+    headers: { Authorization: `Bearer ${authToken}` },
     body: xmlRequest,
   };
   const action = await new VcloudWrapper().posts('user.vm.undeployVm', options);
   return Promise.resolve({
     __vcloudTask: action.headers['location'],
   });
-};
+}
 module.exports = userUndeployvApp;

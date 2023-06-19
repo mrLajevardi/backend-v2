@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [DiscountsService],
   controllers: [DiscountsController],
-  exports: [DiscountsService]
+  exports: [DiscountsService],
 })
 export class DiscountsModule {}

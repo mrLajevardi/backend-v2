@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [InfoLogService],
   controllers: [InfoLogController],
-  exports: [InfoLogService]
+  exports: [InfoLogService],
 })
 export class InfoLogModule {}

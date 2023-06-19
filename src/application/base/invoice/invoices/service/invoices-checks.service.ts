@@ -6,11 +6,7 @@ import { InvalidQualityPlanException } from 'src/infrastructure/exceptions/inval
 
 @Injectable()
 export class InvoicesChecksService {
-  constructor(
-    private readonly plansService: PlansService,
-  ) {}
-
-
+  constructor(private readonly plansService: PlansService) {}
 
   async checkPlanCondition(data, serviceId, duration) {
     const plansList = await this.plansService.find();

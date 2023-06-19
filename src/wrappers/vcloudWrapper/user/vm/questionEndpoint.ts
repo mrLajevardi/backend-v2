@@ -4,14 +4,14 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-export function questionEndpoint(options? : any) {
+export function questionEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/api/vApp/${options.urlParams.vmId}/question`,
     params: {},
     body: null,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +json',
       ...options.headers,
     },
@@ -19,4 +19,3 @@ export function questionEndpoint(options? : any) {
 }
 
 module.exports = questionEndpoint;
-

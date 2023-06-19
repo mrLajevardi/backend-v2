@@ -6,14 +6,14 @@
  * @param {Object} options.fullUrl
  * @return {Object}
  */
-export function updateVdcStorageProfileEndpoint(options? : any ) {
+export function updateVdcStorageProfileEndpoint(options?: any) {
   return {
     method: 'put',
     resource: options.fullUrl,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/*+json;version=36.3',
+      Accept: 'application/*+json;version=36.3',
       'Content-Type': 'application/*+json',
       ...options.headers,
     },
@@ -21,5 +21,3 @@ export function updateVdcStorageProfileEndpoint(options? : any ) {
 }
 
 module.exports = updateVdcStorageProfileEndpoint;
-
-

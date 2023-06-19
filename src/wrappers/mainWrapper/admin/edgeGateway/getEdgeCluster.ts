@@ -1,9 +1,9 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 /**
-   * get available ip addresses from vcloud
-   * @param {String} externalNetworkId
-   * @param {String} authToken
-   */
+ * get available ip addresses from vcloud
+ * @param {String} externalNetworkId
+ * @param {String} authToken
+ */
 export async function getEdgeCluster(vdcId, authToken) {
   const options = {
     headers: {
@@ -15,8 +15,10 @@ export async function getEdgeCluster(vdcId, authToken) {
       filter: `orgVdcId==${vdcId}`,
     },
   };
-  const edgeClusters = await new VcloudWrapper()
-      .posts('admin.edgeGateway.getEdgeClusters', options);
+  const edgeClusters = await new VcloudWrapper().posts(
+    'admin.edgeGateway.getEdgeClusters',
+    options,
+  );
   return Promise.resolve(edgeClusters.data.values[0]?.id);
 }
 module.exports = getEdgeCluster;

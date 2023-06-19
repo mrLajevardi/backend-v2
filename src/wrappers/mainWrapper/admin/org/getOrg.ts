@@ -1,5 +1,5 @@
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-import { vcdConfig } from "../../vcdConfig";
+import { vcdConfig } from '../../vcdConfig';
 /**
  * @param {String} params
  * @param {String} authToken
@@ -11,10 +11,9 @@ export async function getOrg(params, authToken) {
       Authorization: `Bearer ${authToken}`,
     },
     params,
-
   };
   const response = await new VcloudWrapper().posts('admin.org.getOrg', options);
   return Promise.resolve(response.data);
-};
+}
 
 module.exports = getOrg;

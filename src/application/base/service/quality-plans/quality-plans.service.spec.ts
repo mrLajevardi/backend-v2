@@ -8,12 +8,8 @@ describe('QualityPlansService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule,
-      ],
-      providers: [
-        QualityPlansService
-      ],
+      imports: [TestDatabaseModule],
+      providers: [QualityPlansService],
     }).compile();
 
     service = module.get<QualityPlansService>(QualityPlansService);

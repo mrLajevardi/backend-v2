@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [PermissionsService],
   controllers: [PermissionsController],
-  exports: [PermissionsService]
+  exports: [PermissionsService],
 })
 export class PermissionsModule {}

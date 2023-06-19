@@ -1,6 +1,6 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 /**
@@ -12,12 +12,19 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} edgeName
  * @return {Promise}
  */
-export async function userCreateIPSet(authToken, description, name, ipAddresses, edgeName) {
+export async function userCreateIPSet(
+  authToken,
+  description,
+  name,
+  ipAddresses,
+  edgeName,
+) {
   const gateway = await getEdgeGateway(authToken);
   if (isEmpty(gateway.values[0])) {
     return Promise.reject(new NoIpIsAssignedException());
   }
-  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
+  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
+    .id;
   const requestBody = {
     name,
     description,
@@ -29,9 +36,12 @@ export async function userCreateIPSet(authToken, description, name, ipAddresses,
   };
   const options = {
     body: requestBody,
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
   };
-  const response = await new VcloudWrapper().posts('user.ipSets.createIpSets', options);
+  const response = await new VcloudWrapper().posts(
+    'user.ipSets.createIpSets',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: response.headers['location'],
   });

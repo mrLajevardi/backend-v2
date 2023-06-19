@@ -1,5 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ServiceTypes } from "../ServiceTypes";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ServiceTypes } from '../ServiceTypes';
 
 @Entity()
 export class QualityPlans {

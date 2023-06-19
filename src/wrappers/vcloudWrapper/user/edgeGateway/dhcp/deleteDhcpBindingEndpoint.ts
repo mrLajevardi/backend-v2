@@ -5,7 +5,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-export function deleteDhcpBindingsEndpoint(options? : any ) {
+export function deleteDhcpBindingsEndpoint(options?: any) {
   return {
     method: 'delete',
     // eslint-disable-next-line max-len
@@ -13,12 +13,10 @@ export function deleteDhcpBindingsEndpoint(options? : any ) {
     params: {},
     body: null,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       ...options.headers,
     },
   };
 }
 
 module.exports = deleteDhcpBindingsEndpoint;
-
-

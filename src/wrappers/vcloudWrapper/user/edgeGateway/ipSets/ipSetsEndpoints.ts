@@ -13,4 +13,3 @@ export const ipSetsEndpoints = {
 };
 
 module.exports = ipSetsEndpoints;
-

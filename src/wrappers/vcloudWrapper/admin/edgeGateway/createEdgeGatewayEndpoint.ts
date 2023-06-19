@@ -4,14 +4,14 @@
  * @param {Object} options.body
  * @return {Object}
  */
-export function createEdgeGatewayEndpoint(options? : any) {
+export function createEdgeGatewayEndpoint(options?: any) {
   return {
     method: 'post',
     resource: `/cloudapi/1.0.0/edgeGateways`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -19,5 +19,3 @@ export function createEdgeGatewayEndpoint(options? : any) {
 }
 
 module.exports = createEdgeGatewayEndpoint;
-
-

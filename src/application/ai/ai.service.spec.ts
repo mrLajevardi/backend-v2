@@ -59,8 +59,7 @@ describe('AiService', () => {
         InvoicePropertiesService,
         VgpuService,
         SessionsService,
-        ServiceItemsService
-
+        ServiceItemsService,
       ],
     }).compile();
 

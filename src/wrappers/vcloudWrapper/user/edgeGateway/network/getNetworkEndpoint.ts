@@ -1,4 +1,3 @@
-
 /**
  * gets network by given id
  * @param {Object} options
@@ -7,7 +6,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function getNetworkEndpoint(options? : any ) {
+export function getNetworkEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/orgVdcNetworks`,
@@ -16,7 +15,7 @@ export function getNetworkEndpoint(options? : any ) {
     },
     body: null,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -24,5 +23,3 @@ export function getNetworkEndpoint(options? : any ) {
 }
 
 module.exports = getNetworkEndpoint;
-
-

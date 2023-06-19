@@ -5,7 +5,7 @@
  * @param {Object} options.body
  * @return {Object}
  */
-export function updateDhcpBindingEndpoint(options? : any ) {
+export function updateDhcpBindingEndpoint(options?: any) {
   return {
     method: 'put',
     // eslint-disable-next-line max-len
@@ -13,12 +13,10 @@ export function updateDhcpBindingEndpoint(options? : any ) {
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       ...options.headers,
     },
   };
 }
 
 module.exports = updateDhcpBindingEndpoint;
-
-

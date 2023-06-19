@@ -1,4 +1,4 @@
-const {isNil} = require('lodash');
+const { isNil } = require('lodash');
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const createOrgCatalog = require('../../admin/org/createOrgCatalog');
 const userVcloudQuery = require('../vdc/vcloudQuery');
@@ -19,7 +19,7 @@ export async function checkCatalog(authToken) {
   const catalogsList = await userVcloudQuery(authToken, queryOptions);
   let catalogId = null;
   const catalogRecord = catalogsList?.data?.record;
-  if (! isNil(catalogRecord) && catalogRecord[0]?.name === catalogName) {
+  if (!isNil(catalogRecord) && catalogRecord[0]?.name === catalogName) {
     catalogId = catalogRecord[0].href.split('catalog/')[1];
   }
   return Promise.resolve(catalogId);
@@ -33,7 +33,13 @@ export async function checkCatalog(authToken) {
  * @param {String} containerId
  * @return {Promise}
  */
-async function userCreateTemplate(authToken, description, name, orgId, containerId) {
+async function userCreateTemplate(
+  authToken,
+  description,
+  name,
+  orgId,
+  containerId,
+) {
   const check = await checkCatalog(authToken);
   let catalogId = check;
   if (isNil(check)) {
@@ -49,13 +55,13 @@ async function userCreateTemplate(authToken, description, name, orgId, container
     customizeOnInstantiate: true,
   };
   const template = await new VcloudWrapper().posts('user.vm.createTemplate', {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {catalogId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { catalogId },
     body: requestBody,
   });
   return Promise.resolve({
     __vcloudTask: template.headers['location'],
   });
-};
+}
 
 module.exports = userCreateTemplate;

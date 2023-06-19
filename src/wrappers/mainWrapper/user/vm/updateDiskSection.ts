@@ -1,8 +1,8 @@
-import { BadRequestException } from "src/infrastructure/exceptions/bad-request.exception";
+import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 
 /* eslint-disable guard-for-in */
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const {getHardwareInfo} = require('../vdc/vdcWrapper');
+const { getHardwareInfo } = require('../vdc/vdcWrapper');
 const userGetVApp = require('./getVapp');
 /**
  *
@@ -11,7 +11,12 @@ const userGetVApp = require('./getVapp');
  * @param {Object} diskSettings user disk settings
  * @return {Promise}
  */
-export async function userUpdateDiskSection(authToken, vmId, diskSettings, vdcId) {
+export async function userUpdateDiskSection(
+  authToken,
+  vmId,
+  diskSettings,
+  vdcId,
+) {
   const vmInfo = await userGetVApp(authToken, vmId);
   const vmInfoData = vmInfo.data;
   const controllers = await calcBusCombination(diskSettings, authToken, vdcId);
@@ -34,7 +39,11 @@ export async function userUpdateDiskSection(authToken, vmId, diskSettings, vdcId
       });
       diskSettings.forEach((settings) => {
         let targetAdaptor = settings.adapterType;
-        if (targetAdaptor == '3' || targetAdaptor == '5' || targetAdaptor == 2) {
+        if (
+          targetAdaptor == '3' ||
+          targetAdaptor == '5' ||
+          targetAdaptor == 2
+        ) {
           targetAdaptor = '4';
         }
         if (settings.diskId === null) {
@@ -58,15 +67,14 @@ export async function userUpdateDiskSection(authToken, vmId, diskSettings, vdcId
     }
   });
   const diskSection = await new VcloudWrapper().posts('user.vm.updateVm', {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {vmId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { vmId },
     body: vmInfoData,
   });
   return Promise.resolve({
     __vcloudTask: diskSection.headers['location'],
   });
-};
-
+}
 
 async function calcBusCombination(settings, authToken, vdcId) {
   const combinations = {
@@ -94,7 +102,8 @@ async function calcBusCombination(settings, authToken, vdcId) {
       oldCombinations[adaptor].push(setting);
     }
   });
-  let bus; let element = null;
+  let bus;
+  let element = null;
   for (const key in combinations) {
     element = combinations[key];
     if (element.length === 0) {
@@ -113,9 +122,10 @@ async function calcBusCombination(settings, authToken, vdcId) {
         validUnitNumberRange.push(index);
       }
     });
-    let validCombCount = validBusNumberRange.length * validUnitNumberRange.length;
+    let validCombCount =
+      validBusNumberRange.length * validUnitNumberRange.length;
     if (bus.reservedBusUnitNumber) {
-      validCombCount --;
+      validCombCount--;
     }
     // check if there is enough combinations for given disks
     if (validCombCount < element.length) {
@@ -134,15 +144,28 @@ async function calcBusCombination(settings, authToken, vdcId) {
         let combExists = false;
         // checks old combs
         for (const oldDisk of oldCombinations[key]) {
-          if (oldDisk.unitNumber == validUnitNumberRange[j] && oldDisk.busNumber == validBusNumberRange[i]) {
+          if (
+            oldDisk.unitNumber == validUnitNumberRange[j] &&
+            oldDisk.busNumber == validBusNumberRange[i]
+          ) {
             combExists = true;
           }
-          if ((oldDisk.adapterType == 3 || oldDisk.adapterType == 4 || oldDisk.adapterType == 2) && element[index].adapterType == 5) {
+          if (
+            (oldDisk.adapterType == 3 ||
+              oldDisk.adapterType == 4 ||
+              oldDisk.adapterType == 2) &&
+            element[index].adapterType == 5
+          ) {
             if (oldDisk.busNumber == validBusNumberRange[i]) {
               combExists = true;
             }
           }
-          if ((element[index].adapterType == 3 || element[index].adapterType == 4 || element[index].adapterType == 2) && oldDisk.adapterType == 5) {
+          if (
+            (element[index].adapterType == 3 ||
+              element[index].adapterType == 4 ||
+              element[index].adapterType == 2) &&
+            oldDisk.adapterType == 5
+          ) {
             if (oldDisk.busNumber == validBusNumberRange[i]) {
               combExists = true;
             }
@@ -151,34 +174,49 @@ async function calcBusCombination(settings, authToken, vdcId) {
         // checks new combs
         for (const otherDisk of element) {
           // check if combination is duplicate
-          if (otherDisk.unitNumber == validUnitNumberRange[j] && otherDisk.busNumber == validBusNumberRange[i]) {
+          if (
+            otherDisk.unitNumber == validUnitNumberRange[j] &&
+            otherDisk.busNumber == validBusNumberRange[i]
+          ) {
             combExists = true;
           }
           // اداپتور با ایدی 5 نباید باس یکسان با بقیه اداپتور های اسکازی داشته باشد
-          if ((otherDisk.adapterType == 3 || otherDisk.adapterType == 4 || otherDisk.adapterType == 2) && element[index].adapterType == 5) {
+          if (
+            (otherDisk.adapterType == 3 ||
+              otherDisk.adapterType == 4 ||
+              otherDisk.adapterType == 2) &&
+            element[index].adapterType == 5
+          ) {
             if (otherDisk.busNumber == validBusNumberRange[i]) {
               combExists = true;
             }
           }
-          if ((element[index].adapterType == 3 || element[index].adapterType == 4 || element[index].adapterType == 2) && otherDisk.adapterType == 5) {
+          if (
+            (element[index].adapterType == 3 ||
+              element[index].adapterType == 4 ||
+              element[index].adapterType == 2) &&
+            otherDisk.adapterType == 5
+          ) {
             if (otherDisk.busNumber == validBusNumberRange[i]) {
               combExists = true;
             }
           }
         }
         if (
-          bus.reservedBusUnitNumber && bus.reservedBusUnitNumber.unitNumber ==
-          validUnitNumberRange[j] && bus.reservedBusUnitNumber.busNumber === validBusNumberRange[i]) {
+          bus.reservedBusUnitNumber &&
+          bus.reservedBusUnitNumber.unitNumber == validUnitNumberRange[j] &&
+          bus.reservedBusUnitNumber.busNumber === validBusNumberRange[i]
+        ) {
           combExists = true;
         }
-        if (! combExists) {
+        if (!combExists) {
           element[index].unitNumber = validUnitNumberRange[j];
           element[index].busNumber = validBusNumberRange[i];
           index++;
         }
         j++;
       }
-      i ++;
+      i++;
     }
   }
   console.log(combinations, '💀💀💀');

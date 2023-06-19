@@ -60,7 +60,7 @@ describe('AiController', () => {
         InvoicePlansService,
         InvoicePropertiesService,
         VgpuService,
-        SessionsService
+        SessionsService,
       ],
       controllers: [AiController],
     }).compile();

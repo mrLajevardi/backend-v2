@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [RoleMappingService],
   controllers: [RoleMappingController],
-  exports: [RoleMappingService]
+  exports: [RoleMappingService],
 })
 export class RoleMappingModule {}

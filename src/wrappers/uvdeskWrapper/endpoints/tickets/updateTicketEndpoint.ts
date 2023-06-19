@@ -5,7 +5,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-export function updateTicketEndpoint(options? : any) {
+export function updateTicketEndpoint(options?: any) {
   return {
     method: 'patch',
     resource: `/ticket/${options.urlParams.ticketId}`,
@@ -16,5 +16,3 @@ export function updateTicketEndpoint(options? : any) {
 }
 
 module.exports = updateTicketEndpoint;
-
-

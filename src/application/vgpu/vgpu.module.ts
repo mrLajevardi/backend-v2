@@ -7,14 +7,9 @@ import { SessionsModule } from '../base/sessions/sessions.module';
 import { ConfigsModule } from '../base/service/configs/configs.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    VgpuModule,
-    SessionsModule,
-    ConfigsModule
-  ],
+  imports: [DatabaseModule, VgpuModule, SessionsModule, ConfigsModule],
   providers: [VgpuService],
   controllers: [VgpuController],
-  exports: [VgpuService]
+  exports: [VgpuService],
 })
 export class VgpuModule {}

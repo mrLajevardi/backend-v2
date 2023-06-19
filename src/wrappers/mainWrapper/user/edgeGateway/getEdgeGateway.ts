@@ -11,11 +11,13 @@ export async function userGetEdgeGateway(authToken, page = 1, pageSize = 25) {
       page,
       pageSize,
     },
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
   };
-  const edgeGateways = await new VcloudWrapper()
-      .posts('user.edgeGateway.getEdgeGateway', options);
+  const edgeGateways = await new VcloudWrapper().posts(
+    'user.edgeGateway.getEdgeGateway',
+    options,
+  );
   return Promise.resolve(edgeGateways.data);
-};
+}
 
 module.exports = userGetEdgeGateway;

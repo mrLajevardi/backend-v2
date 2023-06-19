@@ -10,7 +10,11 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Object} config.applicationPorts
  * @return {Promise}
  */
-export async function userUpdateApplicationPortProfile(authToken, applicationId, config) {
+export async function userUpdateApplicationPortProfile(
+  authToken,
+  applicationId,
+  config,
+) {
   const requestBody = {
     name: config.name,
     description: config.description,
@@ -22,12 +26,14 @@ export async function userUpdateApplicationPortProfile(authToken, applicationId,
     scope: 'TENANT',
   };
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {applicationId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { applicationId },
     body: requestBody,
   };
-  const response = await new VcloudWrapper()
-      .posts('user.applicationPortProfiles.updateApplicationPortProfile', options);
+  const response = await new VcloudWrapper().posts(
+    'user.applicationPortProfiles.updateApplicationPortProfile',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: response.headers['location'],
   });

@@ -1,6 +1,6 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 /**
@@ -23,7 +23,8 @@ export const userCreateNatRule = async (config, edgeName) => {
   if (isEmpty(gateway.values[0])) {
     return Promise.reject(new NoIpIsAssignedException());
   }
-  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
+  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
+    .id;
   const request = {
     enabled: config.enabled,
     dnatExternalPort: config.dnatExternalPort,
@@ -40,9 +41,9 @@ export const userCreateNatRule = async (config, edgeName) => {
     firewallMatch: config.firewallMatch,
   };
   const options = {
-    headers: {Authorization: `Bearer ${config.authToken}`},
+    headers: { Authorization: `Bearer ${config.authToken}` },
     body: request,
-    urlParams: {gatewayId},
+    urlParams: { gatewayId },
   };
   const nat = await new VcloudWrapper().posts('user.nat.createNat', options);
   return Promise.resolve({

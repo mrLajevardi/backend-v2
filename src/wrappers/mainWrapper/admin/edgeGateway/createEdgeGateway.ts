@@ -1,5 +1,5 @@
-const {getIPRange} = require('get-ip-range');
-const {isNil} = require('lodash');
+const { getIPRange } = require('get-ip-range');
+const { isNil } = require('lodash');
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getAvailableIpAddresses = require('./getAvailableIpAddresses');
 const getExternalNetworks = require('./getExternalNetworks');
@@ -24,7 +24,10 @@ export const createEdgeGateway = () => {
    * @return {Promise<Array>} list of allocated ips to user
    */
   async function ipAllocation(externalNetworkId, authToken, userIpCount) {
-    const availableIp = await getAvailableIpAddresses(externalNetworkId, authToken);
+    const availableIp = await getAvailableIpAddresses(
+      externalNetworkId,
+      authToken,
+    );
     let index = 0;
     if (isNil(availableIp)) {
       return Promise.reject(new Error('there is no ip remaining'));
@@ -32,9 +35,12 @@ export const createEdgeGateway = () => {
     const allocatedIPAddresses = [];
     let ipRange = availableIp[index];
     let ipAddresses = getIPRange(ipRange.startAddress, ipRange.endAddress);
-    for (let remainingIp = userIpCount; remainingIp > 0;) {
+    for (let remainingIp = userIpCount; remainingIp > 0; ) {
       if (ipAddresses.length > 0) {
-        allocatedIPAddresses.push({startAddress: ipAddresses[0], endAddress: ipAddresses[0]});
+        allocatedIPAddresses.push({
+          startAddress: ipAddresses[0],
+          endAddress: ipAddresses[0],
+        });
         ipAddresses.shift();
         remainingIp--;
       } else {
@@ -60,33 +66,41 @@ export const createEdgeGateway = () => {
   async function createEdge(config) {
     const network = await findExternalNetwork(config.authToken);
     const networkValue = network.values[0];
-    const ipRange = await ipAllocation(networkValue.id, config.authToken, config.userIpCount);
+    const ipRange = await ipAllocation(
+      networkValue.id,
+      config.authToken,
+      config.userIpCount,
+    );
     const request = {
       name: config.name,
       description: '',
       ownerRef: {
         id: config.vdcId,
       },
-      edgeGatewayUplinks: [{
-        uplinkId: networkValue.id,
-        uplinkName: networkValue.name,
-        subnets: {
-          values: [{
-            gateway: networkValue.subnets.values[0].gateway,
-            prefixLength: networkValue.subnets.values[0].prefixLength,
-            dnsSuffix: null,
-            dnsServer1: '',
-            dnsServer2: '',
-            ipRanges: {
-              values: ipRange,
-            },
-            enabled: true,
-            totalIpCount: networkValue.subnets.values[0].totalIpCount,
-            usedIpCount: networkValue.subnets.values[0].usedIpCount,
-          }],
+      edgeGatewayUplinks: [
+        {
+          uplinkId: networkValue.id,
+          uplinkName: networkValue.name,
+          subnets: {
+            values: [
+              {
+                gateway: networkValue.subnets.values[0].gateway,
+                prefixLength: networkValue.subnets.values[0].prefixLength,
+                dnsSuffix: null,
+                dnsServer1: '',
+                dnsServer2: '',
+                ipRanges: {
+                  values: ipRange,
+                },
+                enabled: true,
+                totalIpCount: networkValue.subnets.values[0].totalIpCount,
+                usedIpCount: networkValue.subnets.values[0].usedIpCount,
+              },
+            ],
+          },
+          dedicated: false,
         },
-        dedicated: false,
-      }],
+      ],
     };
     const options = {
       headers: {
@@ -94,8 +108,10 @@ export const createEdgeGateway = () => {
       },
       body: request,
     };
-    const edgeGateway = await new VcloudWrapper()
-        .posts('admin.edgeGateway.createEdgeGateway', options);
+    const edgeGateway = await new VcloudWrapper().posts(
+      'admin.edgeGateway.createEdgeGateway',
+      options,
+    );
     return Promise.resolve({
       name: config.name,
       ipRange: ipRange,

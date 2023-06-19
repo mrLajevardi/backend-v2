@@ -8,7 +8,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userGetDhcpBinding(authToken, networkId, bindingId) {
   const dhcp = await new VcloudWrapper().posts('user.dhcp.getDhcpBinding', {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     urlParams: {
       networkId,
       bindingId,

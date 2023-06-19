@@ -8,6 +8,5 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   providers: [TransactionsService],
   controllers: [TransactionsController],
   exports: [TransactionsService],
-
 })
 export class TransactionsModule {}

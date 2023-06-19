@@ -12,46 +12,42 @@ import { Organization } from 'src/infrastructure/database/entities/Organization'
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 
-
-
 @Injectable()
 export class OrgService {
+  constructor(private readonly organizationService: OrganizationService) {}
 
-    constructor(
-        private readonly organizationService: OrganizationService,
-    ){}
-
-    async checkOrg(userId) {
-        let org : any; 
-        org = await this.organizationService.findOne({
-          where: {userId},
-        });
-        if (isEmpty(org)) {
-          org = await this.organizationService.initOrg(userId);
-         // org.isNew = true;
-        } else {
-          org = {
-          //  isNew: false,
-            id: org.id,
-            vcloudOrgId: org.orgId,
-            name: org.name,
-            __vcloudTask: null,
-          };
-        }
-        return Promise.resolve(org);
+  async checkOrg(userId) {
+    let org: any;
+    org = await this.organizationService.findOne({
+      where: { userId },
+    });
+    if (isEmpty(org)) {
+      org = await this.organizationService.initOrg(userId);
+      // org.isNew = true;
+    } else {
+      org = {
+        //  isNew: false,
+        id: org.id,
+        vcloudOrgId: org.orgId,
+        name: org.name,
+        __vcloudTask: null,
       };
+    }
+    return Promise.resolve(org);
+  }
 
-      
   /**
- * @param {String} userSession
- * @param {String} catalogId
- * @return {Promise}
- */
-async deleteCatalogOrg(userSession, catalogId) {
-    const deleteCatalog = await mainWrapper.admin.org.deleteCatalog(userSession, catalogId);
+   * @param {String} userSession
+   * @param {String} catalogId
+   * @return {Promise}
+   */
+  async deleteCatalogOrg(userSession, catalogId) {
+    const deleteCatalog = await mainWrapper.admin.org.deleteCatalog(
+      userSession,
+      catalogId,
+    );
     return Promise.resolve({
       __vcloudTask: deleteCatalog.headers['location'],
     });
   }
-
 }

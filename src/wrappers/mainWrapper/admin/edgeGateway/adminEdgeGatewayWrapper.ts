@@ -8,6 +8,5 @@ export const adminEdgeGatewayWrapper = {
   getAvailableIpAddresses: getAvailableIpAddresses,
   getExternalNetworks: getExternalNetworks,
   getEdgeClusters: getEdgeCluster,
-
 };
 module.exports = adminEdgeGatewayWrapper;

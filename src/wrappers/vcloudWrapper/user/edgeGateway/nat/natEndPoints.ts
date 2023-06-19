@@ -13,4 +13,3 @@ export const natEndpoints = {
 };
 
 module.exports = natEndpoints;
-

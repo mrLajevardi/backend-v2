@@ -1,7 +1,7 @@
 const xml2js = require('xml2js');
 const getVdcComputePolicy = require('../vdc/getVdcComputePolicy');
 const vcloudQuery = require('../vdc/vcloudQuery');
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const builder = new xml2js.Builder();
 /**
@@ -22,7 +22,12 @@ const builder = new xml2js.Builder();
  * @param {String} config.sourceId
  * @param {String} config.sourceName
  */
-export async function instantiateVmFromTemplateAdmin(authToken, vdcId, config, computePolicyId) {
+export async function instantiateVmFromTemplateAdmin(
+  authToken,
+  vdcId,
+  config,
+  computePolicyId,
+) {
   const formatedVdcId = vdcId.split(':').slice(-1);
   const query = await vcloudQuery(authToken, {
     type: 'adminOrgVdcStorageProfile',
@@ -35,28 +40,28 @@ export async function instantiateVmFromTemplateAdmin(authToken, vdcId, config, c
   });
   const vdcStorageProfileLink = query.data.record[0].href;
   const networks = [];
-  if (! isEmpty(config.networks)) {
+  if (!isEmpty(config.networks)) {
     let index = 0;
     config.networks.forEach((network) => {
       const networkObj = {
-        '$': {'network': network.networkName},
+        $: { network: network.networkName },
         'root:NetworkConnectionIndex': index,
         'root:IpAddress': network.ipAddress,
         'root:IsConnected': network.isConnected,
         'root:IpAddressAllocationMode': network.allocationMode,
         'root:NetworkAdapterType': network.networkAdaptorType,
       };
-      index ++;
+      index++;
       networks.push(networkObj);
     });
   }
   const request = {
     'root:InstantiateVmTemplateParams': {
-      '$': {
+      $: {
         'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
         'xmlns:ns0': 'http://schemas.dmtf.org/ovf/envelope/1',
-        'name': config.name,
-        'powerOn': config.powerOn,
+        name: config.name,
+        powerOn: config.powerOn,
       },
       'root:SourcedVmTemplateItem': {
         'root:Source': {
@@ -82,8 +87,8 @@ export async function instantiateVmFromTemplateAdmin(authToken, vdcId, config, c
         },
         'root:StorageProfile': {
           $: {
-            'href': vdcStorageProfileLink,
-            'type': 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
+            href: vdcStorageProfileLink,
+            type: 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
           },
         },
       },
@@ -101,13 +106,16 @@ export async function instantiateVmFromTemplateAdmin(authToken, vdcId, config, c
   const xmlRequest = builder.buildObject(request);
   const options = {
     body: xmlRequest,
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {vdcId: formatedVdcId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { vdcId: formatedVdcId },
   };
-  const createdVm = await new VcloudWrapper().posts('user.vm.instantiateVmFromTemplate', options);
+  const createdVm = await new VcloudWrapper().posts(
+    'user.vm.instantiateVmFromTemplate',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: createdVm.headers['location'],
   });
-};
+}
 
 module.exports = instantiateVmFromTemplateAdmin;

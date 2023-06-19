@@ -19,14 +19,14 @@ describe('VdcService', () => {
       providers: [
         VdcService,
         OrganizationService,
-        ServiceInstancesService, 
-        ServicePropertiesService, 
-        ServiceItemsService, 
-        ConfigsService, 
-        OrganizationService, 
+        ServiceInstancesService,
+        ServicePropertiesService,
+        ServiceItemsService,
+        ConfigsService,
+        OrganizationService,
         UserService,
         SessionsService,
-        TransactionsService
+        TransactionsService,
       ],
     }).compile();
 

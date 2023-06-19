@@ -6,10 +6,13 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userDeleteIPSet(authToken, ipSetId) {
   const options = {
-    urlParams: {ipSetId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { ipSetId },
+    headers: { Authorization: `Bearer ${authToken}` },
   };
-  const response = await new VcloudWrapper().posts('user.ipSets.deleteIpSets', options);
+  const response = await new VcloudWrapper().posts(
+    'user.ipSets.deleteIpSets',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: response.headers['location'],
   });

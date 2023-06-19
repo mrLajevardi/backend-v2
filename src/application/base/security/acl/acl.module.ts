@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [AclService],
   controllers: [AclController],
-  exports: [AclService]
+  exports: [AclService],
 })
 export class AclModule {}

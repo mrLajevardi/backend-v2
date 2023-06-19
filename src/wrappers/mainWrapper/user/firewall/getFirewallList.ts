@@ -1,6 +1,6 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
 /**
@@ -13,13 +13,17 @@ export async function userGetFirewallList(authToken, edgeName) {
   if (isEmpty(gateway.values[0])) {
     return Promise.reject(new NoIpIsAssignedException());
   }
-  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0].id;
-  const firewall = await new VcloudWrapper().posts('user.firewall.getFirewallList', {
-    headers: {
-      Authorization: `Bearer ${authToken}`,
+  const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
+    .id;
+  const firewall = await new VcloudWrapper().posts(
+    'user.firewall.getFirewallList',
+    {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      urlParams: { gatewayId },
     },
-    urlParams: {gatewayId},
-  });
+  );
   return Promise.resolve(firewall.data);
 }
 

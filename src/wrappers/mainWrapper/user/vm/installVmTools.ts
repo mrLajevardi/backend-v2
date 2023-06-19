@@ -7,11 +7,11 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  */
 export async function userInstallVmTools(authToken, vmId) {
   const action = await new VcloudWrapper().posts('user.vm.installVmTools', {
-    urlParams: {vmId: vmId},
-    headers: {Authorization: `Bearer ${authToken}`},
+    urlParams: { vmId: vmId },
+    headers: { Authorization: `Bearer ${authToken}` },
   });
   return Promise.resolve({
     __vcloudTask: action.headers['location'],
   });
-};
+}
 module.exports = userInstallVmTools;

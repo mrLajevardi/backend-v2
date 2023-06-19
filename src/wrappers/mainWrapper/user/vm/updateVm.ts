@@ -2,7 +2,7 @@ const xml2js = require('xml2js');
 const builder = new xml2js.Builder();
 const getVdcComputePolicy = require('../vdc/getVdcComputePolicy');
 const vcloudQuery = require('../vdc/vcloudQuery');
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 /**
  *
@@ -44,10 +44,10 @@ export async function userUpdateVm(authToken, vdcId, config, vAppId) {
   });
   const vdcStorageProfileLink = query.data.record[0].href;
   const networks = [];
-  if (! isEmpty(config.networks)) {
+  if (!isEmpty(config.networks)) {
     config.networks.forEach((network) => {
       const networkObj = {
-        '$': {'network': network.networkName},
+        $: { network: network.networkName },
         'root:NetworkConnectionIndex': '0',
         'root:IpAddress': network.ipAddress,
         'root:IsConnected': network.isConnected,
@@ -59,14 +59,14 @@ export async function userUpdateVm(authToken, vdcId, config, vAppId) {
   }
   const request = {
     'root:CreateVmParams': {
-      '$': {
-        'powerOn': config.powerOn,
+      $: {
+        powerOn: config.powerOn,
         'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
         'xmlns:ns3': 'http://schemas.dmtf.org/ovf/envelope/1',
       },
       'root:Description': null,
       'root:CreateVm': {
-        '$': {'name': config.name},
+        $: { name: config.name },
         'root:GuestCustomizationSection': {
           'ns3:Info': 'Specifies Guest OS Customization Settings',
           'root:ComputerName': config.computerName,
@@ -77,7 +77,7 @@ export async function userUpdateVm(authToken, vdcId, config, vAppId) {
           'root:NetworkConnection': networks,
         },
         'root:VmSpecSection': {
-          '$': {'Modified': 'true'},
+          $: { Modified: 'true' },
           'ns3:Info': 'Virtual Machine specification',
           'root:OsType': config.osType,
           'root:NumCpus': config.cpuNumber,
@@ -97,8 +97,8 @@ export async function userUpdateVm(authToken, vdcId, config, vAppId) {
               'root:ThinProvisioned': 'true',
               'root:StorageProfile': {
                 $: {
-                  'href': vdcStorageProfileLink,
-                  'type': 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
+                  href: vdcStorageProfileLink,
+                  type: 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
                 },
               },
               'root:overrideVmDefault': 'true',
@@ -110,27 +110,30 @@ export async function userUpdateVm(authToken, vdcId, config, vAppId) {
         'root:ComputePolicy': {
           'root:VmSizingPolicy': {
             $: {
-              'href': computePolicyId,
+              href: computePolicyId,
             },
           },
         },
       },
       'root:Media': {
         $: {
-          'href': config.mediaHref,
-          'name': config.mediaName,
+          href: config.mediaHref,
+          name: config.mediaName,
         },
       },
     },
   };
   const xml = builder.buildObject(request);
-  const options= {
-    urlParams: {vmId: vAppId},
-    headers: {Authorization: `Bearer ${authToken}`},
+  const options = {
+    urlParams: { vmId: vAppId },
+    headers: { Authorization: `Bearer ${authToken}` },
     body: xml,
   };
-  const createdVm = await new VcloudWrapper().posts('user.vm.updateVm', options);
+  const createdVm = await new VcloudWrapper().posts(
+    'user.vm.updateVm',
+    options,
+  );
   return Promise.resolve(createdVm.data);
-};
+}
 
 module.exports = userUpdateVm;

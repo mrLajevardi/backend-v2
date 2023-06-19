@@ -7,13 +7,13 @@
  * @return {Object}
  */
 
-export function deleteOrgCatalogEndpoint(options? : any ) {
+export function deleteOrgCatalogEndpoint(options?: any) {
   return {
     method: 'delete',
     resource: `/api/admin/catalog/${options.urlParams.catalogId}?recursive=true&force=true`,
     params: {},
     headers: {
-      'Accept': 'application/*+json;version=36.3',
+      Accept: 'application/*+json;version=36.3',
       'Content-Type': 'application/*+json',
       ...options.headers,
     },

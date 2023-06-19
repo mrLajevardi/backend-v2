@@ -4,7 +4,7 @@
  * @param {Object} options.headers
  * @return {Object}
  */
-export function getListOfTicketsEndpoint(options? : any ) {
+export function getListOfTicketsEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/tickets`,
@@ -15,4 +15,3 @@ export function getListOfTicketsEndpoint(options? : any ) {
 }
 
 module.exports = getListOfTicketsEndpoint;
-

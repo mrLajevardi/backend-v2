@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [AiTransactionsLogsService],
   controllers: [AiTransactionsLogsController],
-  exports: [AiTransactionsLogsService]
+  exports: [AiTransactionsLogsService],
 })
 export class AiTransactionsLogsModule {}

@@ -10,8 +10,8 @@ export async function enableVdc(vdcId, session) {
   vdcId = vdcId.split(':').slice(-1);
 
   const options = {
-    headers: {Authorization: `Bearer ${session}`},
-    urlParams: {vdcId: vdcId},
+    headers: { Authorization: `Bearer ${session}` },
+    urlParams: { vdcId: vdcId },
     body: null,
   };
   await new VcloudWrapper().posts('admin.vdc.enableVdc', options);

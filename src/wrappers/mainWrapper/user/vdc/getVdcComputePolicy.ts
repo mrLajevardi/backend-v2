@@ -6,17 +6,25 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {Number} pageSize
  * @return {Promise}
  */
-export async function userGetVdcComputePolicy(authToken, vdcId, page = 1, pageSize = 10) {
+export async function userGetVdcComputePolicy(
+  authToken,
+  vdcId,
+  page = 1,
+  pageSize = 10,
+) {
   const params = {
     page,
     pageSize,
   };
-  const response = await new VcloudWrapper().posts('user.vdc.getVdcComputePolicy', {
-    params,
-    urlParams: {vdcId},
-    headers: {Authorization: `Bearer ${authToken}`},
-  });
+  const response = await new VcloudWrapper().posts(
+    'user.vdc.getVdcComputePolicy',
+    {
+      params,
+      urlParams: { vdcId },
+      headers: { Authorization: `Bearer ${authToken}` },
+    },
+  );
   return Promise.resolve(response.data);
-};
+}
 
 module.exports = userGetVdcComputePolicy;

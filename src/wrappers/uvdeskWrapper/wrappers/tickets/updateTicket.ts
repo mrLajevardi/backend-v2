@@ -8,7 +8,7 @@ export async function updateTicket(property, value, ticketId) {
       value,
     },
     headers: {
-      'Authorization': uvDeskConfig.accessToken,
+      Authorization: uvDeskConfig.accessToken,
     },
     urlParams: {
       ticketId,

@@ -5,19 +5,17 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function getApplicationPortProfileEndpoint(options? : any ) {
+export function getApplicationPortProfileEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,
     params: options.params,
     body: null,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       ...options.headers,
     },
   };
 }
 
 module.exports = getApplicationPortProfileEndpoint;
-
-

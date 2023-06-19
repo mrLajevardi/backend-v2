@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [ScopeService],
   controllers: [ScopeController],
-  exports: [ScopeService]
+  exports: [ScopeService],
 })
 export class ScopeModule {}

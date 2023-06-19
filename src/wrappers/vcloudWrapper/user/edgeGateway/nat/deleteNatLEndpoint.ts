@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function deleteNatEndpoint(options? : any ) {
+export function deleteNatEndpoint(options?: any) {
   return {
     method: 'delete',
     // eslint-disable-next-line max-len
@@ -13,7 +13,7 @@ export function deleteNatEndpoint(options? : any ) {
     params: {},
     body: null,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -21,5 +21,3 @@ export function deleteNatEndpoint(options? : any ) {
 }
 
 module.exports = deleteNatEndpoint;
-
-

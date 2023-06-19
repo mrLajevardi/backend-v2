@@ -2,9 +2,7 @@ const adminEdgeGatewayWrapper = require('./admin/edgeGateway/adminEdgeGatewayWra
 const adminOrgWrapper = require('./admin/org/adminOrgWrapper');
 const adminUserWrapper = require('./admin/user/adminUserWrapper');
 const adminVdcWrapper = require('./admin/vdc/adminVdcWrapper');
-const applicationPortProfilesWrapper = require(
-    './user/applicationPortProfile/applicationPortProfileWrapper',
-);
+const applicationPortProfilesWrapper = require('./user/applicationPortProfile/applicationPortProfileWrapper');
 const dhcpWrapper = require('./user/dhcp/dhcpWrapper');
 const edgeGatewayWrapper = require('./user/edgeGateway/edgeGatewayWrapper');
 const firewallWrapper = require('./user/firewall/firewallWrapper');

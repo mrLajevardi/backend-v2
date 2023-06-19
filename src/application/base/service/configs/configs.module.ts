@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [ConfigsService],
   controllers: [ConfigsController],
-  exports: [ConfigsService]
+  exports: [ConfigsService],
 })
 export class ConfigsModule {}

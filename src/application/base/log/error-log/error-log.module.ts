@@ -7,6 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [ErrorLogService],
   controllers: [ErrorLogController],
-  exports: [ErrorLogService]
+  exports: [ErrorLogService],
 })
 export class ErrorLogModule {}

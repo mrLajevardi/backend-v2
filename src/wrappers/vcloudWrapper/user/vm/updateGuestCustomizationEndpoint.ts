@@ -6,14 +6,14 @@
  * @param {String} options.body
  * @return {Object}
  */
-export function updateGuestCustomizationEndpoint(options? : any) {
+export function updateGuestCustomizationEndpoint(options?: any) {
   return {
     method: 'put',
     resource: `/api/vApp/${options.urlParams.vmId}/guestCustomizationSection/`,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/* +json;',
       ...options.headers,
     },
@@ -21,5 +21,3 @@ export function updateGuestCustomizationEndpoint(options? : any) {
 }
 
 module.exports = updateGuestCustomizationEndpoint;
-
-

@@ -1,18 +1,18 @@
-import { WrapperErrorException } from "src/infrastructure/exceptions/wrapper-error.exception";
+import { WrapperErrorException } from 'src/infrastructure/exceptions/wrapper-error.exception';
 
 const lodash = require('lodash');
-const {default: axios} = require('axios');
-const {isNil} = require('lodash');
+const { default: axios } = require('axios');
+const { isNil } = require('lodash');
 //const HttpExceptions = require('../exceptions/httpExceptions');
 export class Wrapper {
   static baseUrl = '';
   /**
-     * initialize endpoints object
-     */
-  
-  httpsAgent : any; 
-  endPoints: any; 
-  errHandling: any; 
+   * initialize endpoints object
+   */
+
+  httpsAgent: any;
+  endPoints: any;
+  errHandling: any;
 
   constructor(httpsAgent, endpoints, baseURL, errHandling = 'vcloud') {
     Wrapper.baseUrl = baseURL;
@@ -21,11 +21,11 @@ export class Wrapper {
     this.errHandling = errHandling;
   }
   /**
-     * this method converts path to real path and call request
-     * @param {String} path path to method
-     * @param {Object} options options of a method
-     * @return {Promise}
-     */
+   * this method converts path to real path and call request
+   * @param {String} path path to method
+   * @param {Object} options options of a method
+   * @return {Promise}
+   */
   posts(path = '', options = {}) {
     const existingEndPoint = lodash.get(this.endPoints, path);
     if (!isNil(existingEndPoint)) {
@@ -38,10 +38,10 @@ export class Wrapper {
     }
   }
   /**
-     * @param {Object} endpoint endpoint object created by endpoint methods
-     * @return {Promise}
-     */
-  async #request(endpoint : any ) {
+   * @param {Object} endpoint endpoint object created by endpoint methods
+   * @return {Promise}
+   */
+  async #request(endpoint: any) {
     try {
       const additionalConfig = endpoint?.additionalConfig || {};
       const request = await axios.request({
@@ -55,7 +55,8 @@ export class Wrapper {
         maxContentLength: Infinity,
         maxBodyLength: Infinity,
         ...additionalConfig,
-        onUploadProgress: (progressEvent) => console.log('file progress', progressEvent.loaded),
+        onUploadProgress: (progressEvent) =>
+          console.log('file progress', progressEvent.loaded),
       });
       console.log(endpoint);
       return Promise.resolve(request);
@@ -67,4 +68,3 @@ export class Wrapper {
 }
 
 module.exports = Wrapper;
-

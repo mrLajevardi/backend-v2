@@ -1,8 +1,8 @@
-import { NoIpIsAssignedException } from "src/infrastructure/exceptions/no-ip-is-assigned.exception";
+import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
 const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
 const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
-import { isEmpty } from "class-validator";
+import { isEmpty } from 'class-validator';
 
 /**
  * get dns forwarder lists
@@ -18,14 +18,14 @@ export async function getDhcpForwarder(authToken, edgeName) {
     return Promise.reject(new NoIpIsAssignedException());
   }
   const gatewayId = gateway.values.filter((value) => value.name === edgeName)[0]
-      .id;
+    .id;
 
   const dhcpForwarder = await new VcloudWrapper().posts(
-      'user.edgeGateway.getDhcpForwarder',
-      {
-        headers: {Authorization: `Bearer ${authToken}`},
-        urlParams: {gatewayId},
-      },
+    'user.edgeGateway.getDhcpForwarder',
+    {
+      headers: { Authorization: `Bearer ${authToken}` },
+      urlParams: { gatewayId },
+    },
   );
   return Promise.resolve(dhcpForwarder.data);
 }

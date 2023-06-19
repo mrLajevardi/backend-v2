@@ -8,12 +8,11 @@ import { OrganizationModule } from '../organization/organization.module';
 @Module({
   imports: [
     DatabaseModule,
-  //  UserModule,
-  //  OrganizationModule
+    //  UserModule,
+    //  OrganizationModule
   ],
   providers: [SessionsService],
   controllers: [SessionsController],
   exports: [SessionsService],
-
 })
 export class SessionsModule {}

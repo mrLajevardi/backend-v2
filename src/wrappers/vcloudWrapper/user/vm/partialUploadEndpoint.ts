@@ -6,14 +6,14 @@
  * @param {Object} options.urlParams
  * @return {Object}
  */
-export function partialUploadEndpoint(options? : any) {
+export function partialUploadEndpoint(options?: any) {
   return {
     method: 'put',
     resource: options.urlParams.fullAddress,
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.0.0-alpha',
       'Content-Type': 'application/octet-stream',
       ...options.headers,
     },
@@ -24,5 +24,3 @@ export function partialUploadEndpoint(options? : any) {
 }
 
 module.exports = partialUploadEndpoint;
-
-

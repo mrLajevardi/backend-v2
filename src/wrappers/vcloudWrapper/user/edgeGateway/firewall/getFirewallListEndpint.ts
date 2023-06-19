@@ -6,19 +6,17 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function getFirewallListEndpoint(options? : any ) {
+export function getFirewallListEndpoint(options?: any) {
   return {
     method: 'get',
     resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules`,
     params: options.params,
     body: options.body,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       ...options.headers,
     },
   };
 }
 
 module.exports = getFirewallListEndpoint;
-
-

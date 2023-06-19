@@ -5,7 +5,7 @@
  * @param {Object} options.params
  * @return {Object}
  */
-export function updateNatEndpoint(options? : any ) {
+export function updateNatEndpoint(options?: any) {
   return {
     method: 'put',
     // eslint-disable-next-line max-len
@@ -13,7 +13,7 @@ export function updateNatEndpoint(options? : any ) {
     params: {},
     body: options.body,
     headers: {
-      'Accept': 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.0.0-alpha',
       'Content-Type': 'application/json',
       ...options.headers,
     },
@@ -21,5 +21,3 @@ export function updateNatEndpoint(options? : any ) {
 }
 
 module.exports = updateNatEndpoint;
-
-

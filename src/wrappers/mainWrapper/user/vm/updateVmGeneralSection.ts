@@ -13,14 +13,14 @@ const userGetVApp = require('./getVapp');
  * @return {Promise<Object>}
  */
 export async function userUpdateVmGeneralSection(
-    authToken,
-    vmId,
-    name,
-    computerName,
-    description,
-    osType,
-    bootDelay,
-    enterBIOSSetup,
+  authToken,
+  vmId,
+  name,
+  computerName,
+  description,
+  osType,
+  bootDelay,
+  enterBIOSSetup,
 ) {
   const vmInfo = await userGetVApp(authToken, vmId);
   const vmInfoData = vmInfo.data;
@@ -31,7 +31,8 @@ export async function userUpdateVmGeneralSection(
   vmInfoData.section.forEach((section) => {
     if (section._type === 'OperatingSystemSectionType') {
       // change os type
-      section.otherAttributes['{http://www.vmware.com/schema/ovf}osType'] = osType;
+      section.otherAttributes['{http://www.vmware.com/schema/ovf}osType'] =
+        osType;
     }
     if (section._type === 'GuestCustomizationSectionType') {
       // change computer name
@@ -43,13 +44,13 @@ export async function userUpdateVmGeneralSection(
     vmInfoData.bootOptions.bootDelay = bootDelay;
   }
   const generalSection = await new VcloudWrapper().posts('user.vm.updateVm', {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {vmId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { vmId },
     body: vmInfoData,
   });
   return Promise.resolve({
     __vcloudTask: generalSection.headers['location'],
   });
-};
+}
 
 module.exports = userUpdateVmGeneralSection;

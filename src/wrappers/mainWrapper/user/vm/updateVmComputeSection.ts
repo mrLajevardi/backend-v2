@@ -13,14 +13,14 @@ const userGetVApp = require('./getVapp');
  * @return {Promise<Object>}
  */
 export async function userUpdateVmComputeSection(
-    authToken,
-    vmId,
-    numCpus,
-    numCoresPerSocket,
-    memory,
-    memoryHotAddEnabled,
-    cpuHotAddEnabled,
-    nestedHypervisorEnabled,
+  authToken,
+  vmId,
+  numCpus,
+  numCoresPerSocket,
+  memory,
+  memoryHotAddEnabled,
+  cpuHotAddEnabled,
+  nestedHypervisorEnabled,
 ) {
   const vmInfo = await userGetVApp(authToken, vmId);
   const vmInfoData = vmInfo.data;
@@ -37,13 +37,13 @@ export async function userUpdateVmComputeSection(
   vmInfoData.vmCapabilities.memoryHotAddEnabled = memoryHotAddEnabled;
   vmInfoData.vmCapabilities.cpuHotAddEnabled = cpuHotAddEnabled;
   const computeSection = await new VcloudWrapper().posts('user.vm.updateVm', {
-    headers: {Authorization: `Bearer ${authToken}`},
-    urlParams: {vmId},
+    headers: { Authorization: `Bearer ${authToken}` },
+    urlParams: { vmId },
     body: vmInfoData,
   });
   return Promise.resolve({
     __vcloudTask: computeSection.headers['location'],
   });
-};
+}
 
 module.exports = userUpdateVmComputeSection;

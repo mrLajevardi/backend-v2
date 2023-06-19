@@ -21,11 +21,13 @@ export async function userCreateApplicationPortProfile(authToken, config) {
     scope: 'TENANT',
   };
   const options = {
-    headers: {Authorization: `Bearer ${authToken}`},
+    headers: { Authorization: `Bearer ${authToken}` },
     body: requestBody,
   };
-  const applicationPortProfile = await new VcloudWrapper()
-      .posts('user.applicationPortProfiles.createApplicationPortProfile', options);
+  const applicationPortProfile = await new VcloudWrapper().posts(
+    'user.applicationPortProfiles.createApplicationPortProfile',
+    options,
+  );
   return Promise.resolve({
     __vcloudTask: applicationPortProfile.headers['location'],
   });

@@ -1,4 +1,4 @@
-export const vcdConfig =  {
+export const vcdConfig = {
   user: {
     network: {
       connectionType: 'INTERNAL',
@@ -54,12 +54,11 @@ export const vcdConfig =  {
       NetworkQuota: 1000,
       isThinProvision: false,
       usesFastProvisioning: false,
-
     },
     users: {
-      'storedVmQuota': 0,
-      'deployedVmQuota': 0,
-      'roleEntityRefs': {
+      storedVmQuota: 0,
+      deployedVmQuota: 0,
+      roleEntityRefs: {
         name: 'Organization Administrator',
         id: 'urn:vcloud:globalRole:a08a8798-7d9b-34d6-8dad-48c7182c5f66',
       },

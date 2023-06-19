@@ -3,7 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
 import { CreateServicePropertiesDto } from 'src/application/base/service/service-properties/dto/create-service-properties.dto';
 import { UpdateServicePropertiesDto } from 'src/application/base/service/service-properties/dto/update-service-properties.dto';
-import { DeleteOptions, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  DeleteOptions,
+  FindManyOptions,
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -57,7 +63,7 @@ export class ServicePropertiesService {
   }
 
   // delete all items
-  async deleteAll(options? : FindOptionsWhere<ServiceProperties> ) {
-    await this.repository.delete(options)
+  async deleteAll(options?: FindOptionsWhere<ServiceProperties>) {
+    await this.repository.delete(options);
   }
 }

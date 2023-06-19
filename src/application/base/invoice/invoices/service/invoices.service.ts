@@ -1,4 +1,9 @@
-import { Inject, Injectable, InternalServerErrorException, forwardRef } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { CreateInvoiceDto } from 'src/application/base/invoice/invoices/dto/create-invoice.dto';
@@ -36,7 +41,6 @@ export class InvoicesService {
     private readonly invoicePlansService: InvoicePlansService,
     private readonly invoicePropertiesService: InvoicePropertiesService,
     private readonly vgpuService: VgpuService,
-
   ) {}
 
   // Find One Item by its ID
@@ -71,23 +75,28 @@ export class InvoicesService {
     return result.id;
   }
 
-  async createInvoice(userId, ServiceInstanceID, totalCost, qualityPlanId,payed) {
-    throw new InternalServerErrorException("Not Implemented")
+  async createInvoice(
+    userId,
+    ServiceInstanceID,
+    totalCost,
+    qualityPlanId,
+    payed,
+  ) {
+    throw new InternalServerErrorException('Not Implemented');
     await this.create({
-        userId: userId,
-        serviceInstanceId: ServiceInstanceID, 
-        rawAmount: totalCost.rawAmount,
-        finalAmount: totalCost.finalAmount,
-        description: "dsc",
-        dateTime: new Date(),
-        payed: payed,
-        voided: false,
-        //qualityPlan: qualityPlanId ??????
-    })
-    const invoice = await this.findOne({where: {ServiceInstanceID }})
-    return Promise.resolve(invoice.id)
-}
-
+      userId: userId,
+      serviceInstanceId: ServiceInstanceID,
+      rawAmount: totalCost.rawAmount,
+      finalAmount: totalCost.finalAmount,
+      description: 'dsc',
+      dateTime: new Date(),
+      payed: payed,
+      voided: false,
+      //qualityPlan: qualityPlanId ??????
+    });
+    const invoice = await this.findOne({ where: { ServiceInstanceID } });
+    return Promise.resolve(invoice.id);
+  }
 
   async createServiceInvoice(data, options, serviceId) {
     const userId = options.accessToken.userId;
@@ -106,7 +115,7 @@ export class InvoicesService {
       throw new InvalidServiceIdException();
     }
 
-    throw new InternalServerErrorException("Must be resolved")
+    throw new InternalServerErrorException('Must be resolved');
     // check Availablity of creating new Service
     // await this.serviceChecksService.checkServiceMaxAvailable(
     //   unlimitedService,
