@@ -15,6 +15,16 @@ import { DiscountsService } from '../../../discounts/discounts.service';
 import { ServiceChecksService } from '../service-checks/service-checks.service';
 import { PlansService } from '../../../../plans/plans.service';
 import { TransactionsService } from '../../../../transactions/transactions.service';
+import { QualityPlansService } from '../../../quality-plans/quality-plans.service';
+import { ServiceItemsSumService } from '../../../service-items-sum/service-items-sum.service';
+import { InvoicesService } from 'src/application/base/invoice/invoices/service/invoices.service';
+import { InvoiceItemsService } from 'src/application/base/invoice/invoice-items/invoice-items.service';
+import { InvoiceDiscountsService } from 'src/application/base/invoice/invoice-discounts/invoice-discounts.service';
+import { InvoicesChecksService } from 'src/application/base/invoice/invoices/service/invoices-checks.service';
+import { CostCalculationService } from 'src/application/base/invoice/invoices/service/cost-calculation.service';
+import { InvoicePlansService } from 'src/application/base/invoice/invoice-plans/invoice-plans.service';
+import { InvoicePropertiesService } from 'src/application/base/invoice/invoice-properties/invoice-properties.service';
+import { VgpuService } from 'src/application/vgpu/vgpu.service';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -38,6 +48,16 @@ describe('CreateServiceService', () => {
         UserService,
         OrganizationService,
         TransactionsService,
+        QualityPlansService,
+        ServiceItemsSumService,
+        InvoicesService,
+        InvoiceItemsService,
+        InvoicePlansService,
+        InvoiceDiscountsService,
+        InvoicePropertiesService,
+        InvoicesChecksService,
+        CostCalculationService,
+        VgpuService
       ],
     }).compile();
 
