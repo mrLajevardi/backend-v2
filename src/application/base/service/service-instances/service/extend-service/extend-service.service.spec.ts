@@ -4,7 +4,7 @@ import { ItemTypesService } from '../../../item-types/item-types.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { ConfigsService } from '../../../configs/configs.service';
 import { ServiceItemsService } from '../../../service-items/service-items.service';
-import { ServiceInstancesService } from '../../service-instances.service';
+import { ServiceInstancesService } from '../service-instances.service';
 import { ServiceTypesService } from '../../../service-types/service-types.service';
 import { ServicePropertiesService } from '../../../service-properties/service-properties.service';
 import { SessionsService } from '../../../../sessions/sessions.service';

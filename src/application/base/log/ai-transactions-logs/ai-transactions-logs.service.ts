@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
-import { CreateAiTransactionsLogsDto } from 'src/application/base/service/ai-transactions-logs/dto/create-ai-transactions-logs.dto';
-import { UpdateAiTransactionsLogsDto } from 'src/application/base/service/ai-transactions-logs/dto/update-ai-transactions-logs.dto';
+import { CreateAiTransactionsLogsDto } from 'src/application/base/log/ai-transactions-logs/dto/create-ai-transactions-logs.dto';
+import { UpdateAiTransactionsLogsDto } from 'src/application/base/log/ai-transactions-logs/dto/update-ai-transactions-logs.dto';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 

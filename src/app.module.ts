@@ -17,7 +17,7 @@ import { ServiceInstancesModule } from './application/base/service/service-insta
 import { ServiceTypesModule } from './application/base/service/service-types/service-types.module';
 import { InvoicePropertiesModule } from './application/base/invoice/invoice-properties/invoice-properties.module';
 import { AccessTokenModule } from './application/base/security/access-token/access-token.module';
-import { AiTransactionsLogsModule } from './application/base/service/ai-transactions-logs/ai-transactions-logs.module';
+import { AiTransactionsLogsModule } from './application/base/log/ai-transactions-logs/ai-transactions-logs.module';
 import { ConfigsModule } from './application/base/service/configs/configs.module';
 import { DebugLogModule } from './application/base/log/debug-log/debug-log.module';
 import { DiscountsModule } from './application/base/service/discounts/discounts.module';

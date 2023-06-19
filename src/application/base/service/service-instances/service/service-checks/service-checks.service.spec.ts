@@ -3,7 +3,7 @@ import { ServiceChecksService } from './service-checks.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { ServiceTypesService } from '../../../service-types/service-types.service';
 import { DiscountsService } from '../../../discounts/discounts.service';
-import { ServiceInstancesService } from '../../service-instances.service';
+import { ServiceInstancesService } from '../service-instances.service';
 import { TransactionsService } from '../../../../transactions/transactions.service';
 import { UserService } from '../../../../user/user/user.service';
 

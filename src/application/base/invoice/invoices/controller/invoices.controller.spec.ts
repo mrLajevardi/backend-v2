@@ -11,8 +11,8 @@ import { InvoicePropertiesService } from '../../invoice-properties/invoice-prope
 import { ItemTypesService } from '../../../service/item-types/item-types.service';
 import { OrganizationService } from '../../../organization/organization.service';
 import { PlansService } from '../../../plans/plans.service';
-import { ServiceChecksService } from 'src/application/base/service/service-instances/services/service-checks/service-checks.service';
-import { ServiceInstancesService } from '../../../service/service-instances/service-instances.service';
+import { ServiceChecksService } from 'src/application/base/service/service-instances/service/service-checks/service-checks.service';
+import { ServiceInstancesService } from '../../../service/service-instances/service/service-instances.service';
 import { ServiceTypesService } from '../../../service/service-types/service-types.service';
 import { SessionsService } from '../../../sessions/sessions.service';
 import { TransactionsService } from '../../../transactions/transactions.service';

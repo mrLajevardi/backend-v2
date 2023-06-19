@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskManagerService } from './task-manager.service';
 import { SessionsService } from '../../sessions/sessions.service';
-import { ServiceInstancesService } from '../../service/service-instances/service-instances.service';
+import { ServiceInstancesService } from '../../service/service-instances/service/service-instances.service';
 import { ServicePropertiesService } from '../../service/service-properties/service-properties.service';
 import { ServiceItemsService } from '../../service/service-items/service-items.service';
 import { ConfigsService } from '../../service/configs/configs.service';

@@ -13,22 +13,22 @@ import {
   ApiResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
-import { ServiceInstancesService } from './service-instances.service';
-import { CreateServiceInstancesDto } from 'src/application/base/service/service-instances/dto/create-service-instances.dto';
-import { UpdateServiceInstancesDto } from 'src/application/base/service/service-instances/dto/update-service-instances.dto';
+import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
+import { AiTransactionsLogsService } from './ai-transactions-logs.service';
+import { CreateAiTransactionsLogsDto } from 'src/application/base/log/ai-transactions-logs/dto/create-ai-transactions-logs.dto';
+import { UpdateAiTransactionsLogsDto } from 'src/application/base/log/ai-transactions-logs/dto/update-ai-transactions-logs.dto';
 
-@ApiTags('ServiceInstances')
-@Controller('service-instances')
+@ApiTags('AiTransactionsLogs')
+@Controller('ai-transactions-logs')
 @ApiBearerAuth() // Requires authentication with a JWT token
-export class ServiceInstancesController {
-  constructor(private readonly service: ServiceInstancesService) {}
+export class AiTransactionsLogsController {
+  constructor(private readonly service: AiTransactionsLogsService) {}
 
   // Find an item by id
   @ApiOperation({ summary: 'Find an item by ID' })
   @ApiResponse({ status: 200, description: 'Return the found item' })
   @Get(':id')
-  async findById(@Param('id') id: string): Promise<ServiceInstances> {
+  async findById(@Param('id') id: string): Promise<AiTransactionsLogs> {
     return this.service.findById(id);
   }
 
@@ -36,7 +36,7 @@ export class ServiceInstancesController {
   @ApiOperation({ summary: 'Find items using search criteria' })
   @ApiResponse({ status: 200, description: 'Return the found items' })
   @Get()
-  async findAll(): Promise<ServiceInstances[]> {
+  async findAll(): Promise<AiTransactionsLogs[]> {
     return this.service.find({});
   }
 
@@ -47,7 +47,7 @@ export class ServiceInstancesController {
     description: 'The item has been successfully created',
   })
   @Post()
-  async create(@Body() dto: CreateServiceInstancesDto): Promise<void> {
+  async create(@Body() dto: CreateAiTransactionsLogsDto): Promise<void> {
     await this.service.create(dto);
   }
 
@@ -60,7 +60,7 @@ export class ServiceInstancesController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() dto: UpdateServiceInstancesDto,
+    @Body() dto: UpdateAiTransactionsLogsDto,
   ): Promise<void> {
     await this.service.update(id, dto);
   }

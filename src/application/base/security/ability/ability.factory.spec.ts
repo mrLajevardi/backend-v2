@@ -17,10 +17,10 @@ import { TransactionsService } from 'src/application/base/transactions/transacti
 import { InvoicePlansService } from 'src/application/base/invoice/invoice-plans/invoice-plans.service';
 import { InvoicePropertiesService } from 'src/application/base/invoice/invoice-properties/invoice-properties.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { ServiceChecksService } from '../../service/service-instances/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../../service/service-instances/service/service-checks/service-checks.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { DiscountsService } from 'src/application/base/service/discounts/discounts.service';
-import { ServiceInstancesService } from 'src/application/base/service/service-instances/service-instances.service';
+import { ServiceInstancesService } from 'src/application/base/service/service-instances/service/service-instances.service';
 import { OrganizationService } from 'src/application/base/organization/organization.service';
 import { ConfigsService } from '../../service/configs/configs.service';
 

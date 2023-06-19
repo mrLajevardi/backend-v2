@@ -17,8 +17,8 @@ import { plainToClass } from 'class-transformer';
 import { DatabaseErrorException } from 'src/infrastructure/exceptions/database-error.exception';
 import { isNil } from 'lodash';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/user/user.service';
+import { TransactionsService } from '../../../transactions/transactions.service';
+import { UserService } from '../../../user/user/user.service';
 import { PaymentRequiredException } from 'src/infrastructure/exceptions/payment-required.exception';
 
 @Injectable()

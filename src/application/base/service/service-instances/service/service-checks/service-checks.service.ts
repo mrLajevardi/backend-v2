@@ -3,7 +3,7 @@ import { ServiceTypesService } from 'src/application/base/service/service-types/
 import { DiscountsService } from 'src/application/base/service/discounts/discounts.service';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
 import { isEmpty, isNil } from 'lodash';
-import { ServiceInstancesService } from '../../service-instances.service';
+import { ServiceInstancesService } from '../service-instances.service';
 import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
 
 @Injectable()

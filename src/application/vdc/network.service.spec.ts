@@ -4,7 +4,7 @@ import { TestDatabaseModule } from 'src/infrastructure/database/test-database.mo
 import { VdcService } from './vdc.service';
 import { OrganizationService } from '../base/organization/organization.service';
 import { ConfigsService } from '../base/service/configs/configs.service';
-import { ServiceInstancesService } from '../base/service/service-instances/service-instances.service';
+import { ServiceInstancesService } from '../base/service/service-instances/service/service-instances.service';
 import { ServiceItemsService } from '../base/service/service-items/service-items.service';
 import { ServicePropertiesService } from '../base/service/service-properties/service-properties.service';
 import { SessionsService } from '../base/sessions/sessions.service';

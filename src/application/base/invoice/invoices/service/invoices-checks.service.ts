@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PlansService } from '../../../plans/plans.service';
-import { ServiceChecksService } from '../../../service/service-instances/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../../../service/service-instances/service/service-checks/service-checks.service';
 import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
 import { InvalidQualityPlanException } from 'src/infrastructure/exceptions/invalid-quality-plan.exception';
 

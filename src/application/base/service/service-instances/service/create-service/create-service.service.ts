@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash';
 import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
 import { ServiceTypesService } from 'src/application/base/service/service-types/service-types.service';
 import { DiscountsService } from 'src/application/base/service/discounts/discounts.service';
-import { ServiceInstancesService } from '../../service-instances.service';
+import { ServiceInstancesService } from '../service-instances.service';
 import { CreateServiceInstancesDto } from '../../dto/create-service-instances.dto';
 import { ServiceChecksService } from '../service-checks/service-checks.service';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';

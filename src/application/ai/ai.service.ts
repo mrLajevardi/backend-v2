@@ -3,11 +3,11 @@ import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-tok
 import { UserService } from '../base/user/user/user.service';
 import { ServicePropertiesService } from '../base/service/service-properties/service-properties.service';
 import { isEmpty } from 'class-validator';
-import { ServiceInstancesService } from '../base/service/service-instances/service-instances.service';
+import { ServiceInstancesService } from '../base/service/service-instances/service/service-instances.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { InvalidUseRequestPerDayException } from 'src/infrastructure/exceptions/invalid-use-request-per-day.exception';
 import { InvalidUseRequestPerMonthException } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
-import { AiTransactionsLogsService } from '../base/service/ai-transactions-logs/ai-transactions-logs.service';
+import { AiTransactionsLogsService } from '../base/log/ai-transactions-logs/ai-transactions-logs.service';
 import { SettingService } from '../base/security/setting/setting.service';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import {

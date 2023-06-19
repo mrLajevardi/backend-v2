@@ -2,7 +2,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { Injectable } from '@nestjs/common';
 import { Queue } from 'bull';
 import { SessionsService } from '../../sessions/sessions.service';
-import { ServiceInstancesService } from '../../service/service-instances/service-instances.service';
+import { ServiceInstancesService } from '../../service/service-instances/service/service-instances.service';
 import { ServicePropertiesService } from '../../service/service-properties/service-properties.service';
 import { TasksService } from './tasks.service';
 import { ServiceItemsService } from '../../service/service-items/service-items.service';

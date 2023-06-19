@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigsService } from '../base/service/configs/configs.service';
-import { ServiceChecksService } from '../base/service/service-instances/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../base/service/service-instances/service/service-checks/service-checks.service';
 import { UnavailableResource } from 'src/infrastructure/exceptions/unavailable-resource.exception';
 import { SessionsService } from '../base/sessions/sessions.service';
 

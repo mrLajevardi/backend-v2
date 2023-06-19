@@ -5,7 +5,7 @@ import { ItemTypesService } from 'src/application/base/service/item-types/item-t
 import { PlansService } from 'src/application/base/plans/plans.service';
 import { ConfigsService } from 'src/application/base/service/configs/configs.service';
 import { ServiceItemsService } from 'src/application/base/service/service-items/service-items.service';
-import { ServiceInstancesService } from '../../service-instances.service';
+import { ServiceInstancesService } from '../service-instances.service';
 import { ServiceTypesService } from 'src/application/base/service/service-types/service-types.service';
 import { ServicePropertiesService } from 'src/application/base/service/service-properties/service-properties.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';

@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServiceInstancesController } from './service-instances.controller';
+import { ServiceInstancesController } from '../controller/service-instances.controller';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { ServiceInstancesService } from './service-instances.service';
-import { ServiceTypesService } from '../service-types/service-types.service';
+import { ServiceTypesService } from '../../service-types/service-types.service';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { ServiceItemsService } from '../service-items/service-items.service';
-import { ServicePropertiesService } from '../service-properties/service-properties.service';
-import { CreateServiceTypesDto } from '../service-types/dto/create-service-types.dto';
-import { CreateServiceInstancesDto } from './dto/create-service-instances.dto';
-import { DiscountsService } from '../discounts/discounts.service';
-import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/user/user.service';
+import { ServiceItemsService } from '../../service-items/service-items.service';
+import { ServicePropertiesService } from '../../service-properties/service-properties.service';
+import { CreateServiceTypesDto } from '../../service-types/dto/create-service-types.dto';
+import { CreateServiceInstancesDto } from '../dto/create-service-instances.dto';
+import { DiscountsService } from '../../discounts/discounts.service';
+import { TransactionsService } from '../../../transactions/transactions.service';
+import { UserService } from '../../../user/user/user.service';
 
 describe('ServiceInstancesController', () => {
   let service: ServiceInstancesService;

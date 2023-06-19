@@ -19,7 +19,7 @@ import { InvoicePlansService } from '../../invoice-plans/invoice-plans.service';
 import { InvoicePropertiesService } from '../../invoice-properties/invoice-properties.service';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { ServiceChecksService } from '../../../service/service-instances/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../../../service/service-instances/service/service-checks/service-checks.service';
 
 @Injectable()
 export class InvoicesService {
