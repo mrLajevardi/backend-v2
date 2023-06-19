@@ -1,5 +1,4 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const vcloudQuery = require('../vdc/vcloudQuery');
+import { vcloudQuery } from '../vdc/vcloudQuery';
 /**
  *
  * @param {String} authToken

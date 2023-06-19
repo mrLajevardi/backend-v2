@@ -1,9 +1,9 @@
-const xml2js = require('xml2js');
+import { xml2js } from 'xml2js';
 const builder = new xml2js.Builder();
-const getVdcComputePolicy = require('../vdc/getVdcComputePolicy');
-const vcloudQuery = require('../vdc/vcloudQuery');
+import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
+import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 /**
  *
  * @param {String} authToken
@@ -31,7 +31,7 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @param {String} config.networks.isConnected
  */
 export async function userUpdateVm(authToken, vdcId, config, vAppId) {
-  const computePolicy = await getVdcComputePolicy(authToken, vdcId);
+  const computePolicy = await userGetVdcComputePolicy(authToken, vdcId);
   const computePolicyId = computePolicy.values[0].id;
   const query = await vcloudQuery(authToken, {
     type: 'orgVdcStorageProfile',

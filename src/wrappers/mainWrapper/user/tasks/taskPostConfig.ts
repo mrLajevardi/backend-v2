@@ -1,4 +1,4 @@
-const { baseUrl, httpsAgent } = require('../../postConfig');
+import { baseUrl, httpsAgent } from '../../postConfig';
 export const configs = {
   getTask: {
     headers: {

@@ -1,4 +1,4 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 
 export const userGetHardwareInfo = async (authToken, vdcId) => {
   const formattedVdcId = vdcId.split(':').slice(-1);

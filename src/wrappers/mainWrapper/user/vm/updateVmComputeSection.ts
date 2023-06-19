@@ -1,5 +1,5 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const userGetVApp = require('./getVapp');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { userGetVApp } from './getVapp';
 /**
  * compute part in vcloud panel
  * @param {String} authToken

@@ -1,11 +1,11 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 /**
  * @param {String} authToken
  * @param {Number} page
  * @param {Number} pageSize
  * @return {Promise}
  */
-export async function userGetEdgeGateway(authToken, page = 1, pageSize = 25) {
+export async function getEdgeGateway(authToken, page = 1, pageSize = 25) {
   const options = {
     params: {
       page,
@@ -20,4 +20,4 @@ export async function userGetEdgeGateway(authToken, page = 1, pageSize = 25) {
   return Promise.resolve(edgeGateways.data);
 }
 
-module.exports = userGetEdgeGateway;
+module.exports = getEdgeGateway;

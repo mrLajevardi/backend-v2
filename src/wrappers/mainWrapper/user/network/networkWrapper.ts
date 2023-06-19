@@ -1,15 +1,15 @@
-const userCreateNetwork = require('./createNetwork');
-const userDeleteNetwork = require('./deleteNetwork');
-const userGetNetwork = require('./getNetwork');
-const userUpdateNetwork = require('./updateNetwork');
-const usergetIPUsageNetwrok = require('./getIPUsageNetwrok');
+import { userCreateNetwork } from './createNetwork';
+import { userDeleteNetwork } from './deleteNetwork';
+import { userGetNetwork } from './getNetwork';
+import { userUpdateNetwork } from './updateNetwork';
+import { getIPUsageNetwrok } from './getIPUsageNetwrok';
 
 export const networkWrapper = {
   createNetwork: userCreateNetwork,
   deleteNetwork: userDeleteNetwork,
   getNetwork: userGetNetwork,
   updateNetwork: userUpdateNetwork,
-  getIPUsageNetwrok: usergetIPUsageNetwrok,
+  getIPUsageNetwrok: getIPUsageNetwrok,
 };
 
 module.exports = networkWrapper;

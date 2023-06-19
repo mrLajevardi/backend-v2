@@ -1,9 +1,9 @@
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 
 /* eslint-disable guard-for-in */
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const { getHardwareInfo } = require('../vdc/vdcWrapper');
-const userGetVApp = require('./getVapp');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { getHardwareInfo } from '../vdc/vdcWrapper';
+import { userGetVApp } from './getVapp';
 /**
  *
  * @param {String} authToken

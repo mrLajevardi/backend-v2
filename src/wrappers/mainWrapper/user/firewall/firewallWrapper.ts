@@ -1,8 +1,8 @@
-const userDeleteFirewall = require('./deleteFirewall');
-const userGetFirewallList = require('./getFirewallList');
-const userGetSingleFirewall = require('./getSingleFirewall');
-const userUpdateFirewallList = require('./updateFirewallList');
-const userUpdateSingleFirewall = require('./updateSingleFirewall');
+import { userDeleteFirewall } from './deleteFirewall';
+import { userGetFirewallList } from './getFirewallList';
+import { userGetSingleFirewall } from './getSingleFirewall';
+import { userUpdateFirewallList } from './updateFirewallList';
+import { userUpdateSingleFirewall } from './updateSingleFirewall';
 
 export const firewallWrapper = {
   getFirewallList: userGetFirewallList,

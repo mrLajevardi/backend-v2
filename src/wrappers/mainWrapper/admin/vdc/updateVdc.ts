@@ -1,5 +1,6 @@
-const vCloudConfig = require('../../vcdConfig');
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { vcdConfig } from '../../vcdConfig';
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { IntegerType } from 'typeorm';
 /**
  * @param {Object} config config for creating vdc
  * @param {String} vdcId
@@ -16,11 +17,11 @@ const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
  * @return {void}
  */
 export async function updateVdc(config, vdcId) {
-  const vdcConfig = vCloudConfig.admin.vdc;
+  const vdcConfig = vcdConfig.admin.vdc;
   // convert from urn:vcloud:org:vdcId -> vdcId
   vdcId = vdcId.split(':').slice(-1);
   const cores = config.cores;
-  const vCpuInMhz = vdcConfig.VCpuInMhz;
+  const vCpuInMhz: any = vdcConfig.VCpuInMhz;
   const cpuAllocation = parseInt(cores) * parseInt(vCpuInMhz);
   const cpuLimit = parseInt(config.prevCores) * parseInt(vCpuInMhz);
   const request = {

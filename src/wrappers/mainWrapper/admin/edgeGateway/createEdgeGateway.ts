@@ -1,8 +1,8 @@
-const { getIPRange } = require('get-ip-range');
-const { isNil } = require('lodash');
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const getAvailableIpAddresses = require('./getAvailableIpAddresses');
-const getExternalNetworks = require('./getExternalNetworks');
+import { getIPRange } from 'get-ip-range';
+import { isNil } from 'lodash';
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { getAvailableIpAddresses } from './getAvailableIpAddresses';
+import { getExternalNetworks } from './getExternalNetworks';
 
 export const createEdgeGateway = () => {
   /**

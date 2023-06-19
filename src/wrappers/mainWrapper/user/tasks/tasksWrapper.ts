@@ -1,5 +1,5 @@
-const cancelTask = require('./cancelTask');
-const userGetTask = require('./getTask');
+import { cancelTask } from './cancelTask';
+import { userGetTask } from './getTask';
 
 export const tasksWrapper = {
   getTask: userGetTask,

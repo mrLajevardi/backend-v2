@@ -1,8 +1,8 @@
-const xml2js = require('xml2js');
-const getVdcComputePolicy = require('../vdc/getVdcComputePolicy');
-const vcloudQuery = require('../vdc/vcloudQuery');
+import { xml2js } from 'xml2js';
+import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
+import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 const builder = new xml2js.Builder();
 /**
  *
@@ -24,7 +24,7 @@ const builder = new xml2js.Builder();
  */
 export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
   const formatedVdcId = vdcId.split(':').slice(-1);
-  const computePolicy = await getVdcComputePolicy(authToken, vdcId);
+  const computePolicy = await userGetVdcComputePolicy(authToken, vdcId);
   const computePolicyId = computePolicy.values[0].id;
   const query = await vcloudQuery(authToken, {
     type: 'orgVdcStorageProfile',

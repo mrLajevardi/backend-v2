@@ -1,8 +1,8 @@
-const userCreateNatRule = require('./createNatRule');
-const userDeleteNatRule = require('./deleteNatRule');
-const userGetNatRule = require('./getNatRule');
-const userGetNatRuleList = require('./getNatRules');
-const userUpdateNatRule = require('./updateNatRule');
+import { userCreateNatRule } from './createNatRule';
+import { userDeleteNatRule } from './deleteNatRule';
+import { userGetNatRule } from './getNatRule';
+import { userGetNatRuleList } from './getNatRules';
+import { userUpdateNatRule } from './updateNatRule';
 
 export const natWrapper = {
   createNatRule: userCreateNatRule,

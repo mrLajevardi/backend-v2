@@ -1,4 +1,4 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 export class createSessionWrapper {
   /**
    * base session
@@ -62,7 +62,7 @@ export class createSessionWrapper {
     return await this.session(username, password, orgName);
   }
 
-  async createSession() {
+  public async createSession() {
     return {
       providerSession: await this.providerSession,
       userSession: await this.userSession,

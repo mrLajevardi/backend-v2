@@ -1,7 +1,7 @@
 import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { getEdgeGateway } from '../edgeGateway/getEdgeGateway';
 import { isEmpty } from 'class-validator';
 
 /**
