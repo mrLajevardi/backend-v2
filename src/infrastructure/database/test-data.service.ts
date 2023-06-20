@@ -29,7 +29,7 @@ import { InvoiceItems } from './test-entities/InvoiceItems';
 import { Organization } from './test-entities/Organization';
 import { InvoicePlans } from './test-entities/InvoicePlans';
 import { ItemTypes } from './test-entities/ItemTypes';
-import { Sysdiagrams } from './test-entities/sysdiagrams';
+import { Sysdiagrams } from './test-entities/Sysdiagrams';
 import { Sessions } from './test-entities/Sessions';
 import { InvoiceProperties } from './test-entities/InvoiceProperties';
 import { SystemSettings } from './test-entities/SystemSettings';

@@ -1,4 +1,4 @@
-const uvdeskConfig = {
+const uvDeskConfig = {
     accessToken: 'Basic HTBFXPSIXKXYBXVDDVOU1XGYYSLJWUG9Y3HC6FAZDN82FDZKCEAYXLMIIYKYYCJA',
 };
-export default uvdeskConfig;
+export default uvDeskConfig;
