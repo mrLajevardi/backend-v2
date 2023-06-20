@@ -33,7 +33,7 @@ export async function checkCatalog(authToken) {
  * @param {String} containerId
  * @return {Promise}
  */
-async function createTemplate(
+export async function createTemplate(
   authToken,
   description,
   name,

@@ -2,7 +2,7 @@ import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.e
 
 /* eslint-disable guard-for-in */
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
-import { getHardwareInfo } from '../vdc/vdcWrapper';
+import { vdcWrapper } from '../vdc/vdcWrapper';
 import { userGetVApp } from './getVapp';
 /**
  *
@@ -223,7 +223,7 @@ async function calcBusCombination(settings, authToken, vdcId) {
   return combinations;
 }
 async function getHardDiskControllers(authToken, vdcId) {
-  const hardwareInfo = await getHardwareInfo(authToken, vdcId);
+  const hardwareInfo = await vdcWrapper.getHardwareInfo(authToken, vdcId);
   console.log(hardwareInfo);
   const adaptors = {};
   hardwareInfo.hardDiskAdapter.forEach((adaptor) => {

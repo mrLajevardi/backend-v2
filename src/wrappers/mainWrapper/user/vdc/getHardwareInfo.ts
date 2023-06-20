@@ -9,4 +9,3 @@ export const userGetHardwareInfo = async (authToken, vdcId) => {
   return Promise.resolve(response.data);
 };
 
-module.exports = userGetHardwareInfo;
