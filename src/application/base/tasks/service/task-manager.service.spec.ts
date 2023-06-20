@@ -7,10 +7,10 @@ import { ServiceItemsService } from '../../service/service-items/service-items.s
 import { ConfigsService } from '../../service/configs/configs.service';
 import { OrganizationService } from '../../organization/organization.service';
 import { UserService } from '../../user/user/user.service';
-import { EdgeService } from 'src/application/vdc/edge.service';
-import { OrgService } from 'src/application/vdc/org.service';
-import { NetworkService } from 'src/application/vdc/network.service';
-import { VdcService } from 'src/application/vdc/vdc.service';
+import { EdgeService } from 'src/application/vdc/service/edge.service';
+import { OrgService } from 'src/application/vdc/service/org.service';
+import { NetworkService } from 'src/application/vdc/service/network.service';
+import { VdcService } from 'src/application/vdc/service/vdc.service';
 import { BullModule } from '@nestjs/bull';
 import { TasksService } from './tasks.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';

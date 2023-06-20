@@ -10,12 +10,13 @@ import { ConfigsService } from '../../service/configs/configs.service';
 import { isEmpty } from 'lodash';
 import { OrganizationService } from '../../organization/organization.service';
 import { UserService } from '../../user/user/user.service';
-import { VdcService } from 'src/application/vdc/vdc.service';
-import { EdgeService } from 'src/application/vdc/edge.service';
-import { OrgService } from 'src/application/vdc/org.service';
-import { NetworkService } from 'src/application/vdc/network.service';
+import { VdcService } from 'src/application/vdc/service/vdc.service';
+import { EdgeService } from 'src/application/vdc/service/edge.service';
+import { OrgService } from 'src/application/vdc/service/org.service';
+import { NetworkService } from 'src/application/vdc/service/network.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { userVcloudQuery } from 'src/wrappers/mainWrapper/user/vdc/vcloudQuery';
+import { iTask } from '../interface/task.interface';
 
 @Injectable()
 export class TaskManagerService {
@@ -96,6 +97,13 @@ export class TaskManagerService {
       }
     });
   }
+
+
+  // adds a task to task queue 
+  async addTask(task : iTask){
+    await this.taskQueue.add(task);
+  }
+
   /**
    *
    * @param {Object} app

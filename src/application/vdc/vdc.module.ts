@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { VdcService } from './vdc.service';
-import { OrgService } from './org.service';
-import { EdgeService } from './edge.service';
+import { VdcService } from './service/vdc.service';
+import { OrgService } from './service/org.service';
+import { EdgeService } from './service/edge.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TasksModule } from '../base/tasks/tasks.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
@@ -11,6 +11,9 @@ import { ServiceItemsModule } from '../base/service/service-items/service-items.
 import { ConfigsModule } from '../base/service/configs/configs.module';
 import { OrganizationModule } from '../base/organization/organization.module';
 import { UserModule } from '../base/user/user/user.module';
+import { VdcController } from './vdc/vdc.controller';
+import { VdcController } from './vdc.controller';
+import { VdcAdminController } from './vdc-admin.controller';
 
 @Module({
   imports: [
@@ -25,5 +28,6 @@ import { UserModule } from '../base/user/user/user.module';
     UserModule,
   ],
   providers: [VdcService, OrgService, EdgeService],
+  controllers: [VdcController, VdcAdminController],
 })
 export class VdcModule {}

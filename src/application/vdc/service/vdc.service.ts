@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { TasksService } from '../base/tasks/service/tasks.service';
-import { SessionsService } from '../base/sessions/sessions.service';
-import { ServiceInstancesService } from '../base/service/service-instances/service/service-instances.service';
-import { ServicePropertiesService } from '../base/service/service-properties/service-properties.service';
-import { ServiceItemsService } from '../base/service/service-items/service-items.service';
-import { ConfigsService } from '../base/service/configs/configs.service';
-import { OrganizationService } from '../base/organization/organization.service';
-import { UserService } from '../base/user/user/user.service';
+import { TasksService } from '../../base/tasks/service/tasks.service';
+import { SessionsService } from '../../base/sessions/sessions.service';
+import { ServiceInstancesService } from '../../base/service/service-instances/service/service-instances.service';
+import { ServicePropertiesService } from '../../base/service/service-properties/service-properties.service';
+import { ServiceItemsService } from '../../base/service/service-items/service-items.service';
+import { ConfigsService } from '../../base/service/configs/configs.service';
+import { OrganizationService } from '../../base/organization/organization.service';
+import { UserService } from '../../base/user/user/user.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 

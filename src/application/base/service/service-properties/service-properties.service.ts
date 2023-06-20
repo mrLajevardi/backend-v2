@@ -66,4 +66,21 @@ export class ServicePropertiesService {
   async deleteAll(options?: FindOptionsWhere<ServiceProperties>) {
     await this.repository.delete(options);
   }
+
+
+  async getAllServiceProperties(serviceId) {
+    const ServiceProperties = await this.find({
+      where: {
+        ServiceInstanceID: serviceId,
+      },
+    });
+    const props = {};
+    for (const prop of ServiceProperties) {
+      props[prop.propertyKey] = prop.value;
+    }
+    return Promise.resolve(props);
+  }
+
+  
+
 }

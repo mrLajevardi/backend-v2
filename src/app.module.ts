@@ -46,7 +46,7 @@ import { TransactionsModule } from './application/base/transactions/transactions
 import { AbilityModule } from './application/base/security/ability/ability.module';
 import { BullModule, BullQueueEvents } from '@nestjs/bull';
 import { VdcModule } from './application/vdc/vdc.module';
-import { NetworkService } from './application/vdc/network.service';
+import { NetworkService } from './application/vdc/service/network.service';
 
 @Module({
   imports: [

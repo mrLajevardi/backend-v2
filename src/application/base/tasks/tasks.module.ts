@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TasksService } from './service/tasks.service';
-import { TasksController } from './tasks.controller';
+import { TasksController } from './controller/tasks.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { BullModule } from '@nestjs/bull';
 import { TaskManagerService } from './service/task-manager.service';
@@ -12,10 +12,10 @@ import { ConfigsModule } from '../service/configs/configs.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { UserModule } from '../user/user/user.module';
 import { VdcModule } from 'src/application/vdc/vdc.module';
-import { EdgeService } from 'src/application/vdc/edge.service';
-import { OrgService } from 'src/application/vdc/org.service';
-import { NetworkService } from 'src/application/vdc/network.service';
-import { VdcService } from 'src/application/vdc/vdc.service';
+import { EdgeService } from 'src/application/vdc/service/edge.service';
+import { OrgService } from 'src/application/vdc/service/org.service';
+import { NetworkService } from 'src/application/vdc/service/network.service';
+import { VdcService } from 'src/application/vdc/service/vdc.service';
 
 @Module({
   imports: [
