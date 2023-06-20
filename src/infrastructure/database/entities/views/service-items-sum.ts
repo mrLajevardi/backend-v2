@@ -5,6 +5,6 @@ export class ServiceItemsSum {
   @PrimaryColumn()
   id: string;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   Sum: number;
 }

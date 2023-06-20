@@ -14,19 +14,19 @@ export class QualityPlans {
   @Column({ type: 'string' })
   ServiceTypeID: string;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   AdditionRatio: number;
 
-  @Column({ type: 'number' })
+  @Column({ type: 'int' })
   AdditionAmount: number;
 
-  @Column({ type: 'string' })
+  @Column({ type: 'nvarchar' })
   Description: string;
 
-  @Column({ type: 'string' })
+  @Column({ type: 'nvarchar' })
   Code: string;
 
   @ManyToOne(() => ServiceTypes, { eager: true })
-  @JoinColumn({ name: 'ServiceTypeID', referencedColumnName: 'ID' })
+  @JoinColumn({ name: 'ServiceTypeID', referencedColumnName: 'id' })
   ServiceTypes: ServiceTypes;
 }
