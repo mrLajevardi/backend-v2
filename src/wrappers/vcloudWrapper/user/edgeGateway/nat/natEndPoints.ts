@@ -1,8 +1,8 @@
-const createNatEndpoint = require('./createNatEndpoint');
-const deleteNatEndpoint = require('./deleteNatLEndpoint');
-const getNatEndpoint = require('./getNatEndpoint');
-const getNatListEndpoint = require('./getNatListEndpoint');
-const updateNatEndpoint = require('./updateNatEndpoint');
+import { createNatEndpoint } from './createNatEndpoint';
+import { deleteNatEndpoint } from './deleteNatLEndpoint';
+import { getNatEndpoint } from './getNatEndpoint';
+import { getNatListEndpoint } from './getNatListEndpoint';
+import { updateNatEndpoint } from './updateNatEndpoint';
 
 export const natEndpoints = {
   getNatList: getNatListEndpoint,

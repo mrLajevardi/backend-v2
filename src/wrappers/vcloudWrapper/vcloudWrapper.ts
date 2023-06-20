@@ -1,7 +1,4 @@
-import { lodash } from 'lodash';
-import { default: axios } from 'axios';
-import { isNil } from 'lodash';
-import { https } from 'https';
+import * as https from 'https';
 import { networkEndpoints } from './user/edgeGateway/network/networkEndpoints';
 import { tasksEndpoints } from './user/tasks/tasksEndpoints';
 import { natEndpoints } from './user/edgeGateway/nat/natEndPoints';
@@ -9,7 +6,7 @@ import { firewallEndpoints } from './user/edgeGateway/firewall/firewallEndpoints
 import { ipSetsEndpoints } from './user/edgeGateway/ipSets/ipSetsEndpoints';
 import { edgeGatewayEndpoints } from './user/edgeGateway/edgeGatewayEndpoints';
 import { vdcEndpoints } from './user/vdc/vdcEndpoints';
-import { applicationPortProfilesEndpoints } from `./user/edgeGateway/applicationPortProfiles/applicationPortProfilesEndpoints`);
+import { applicationPortProfilesEndpoints } from './user/edgeGateway/applicationPortProfiles/applicationPortProfilesEndpoints';
 import { adminEdgeGatewayEndpoints } from './admin/edgeGateway/adminEdgeGatewayEndpoints';
 import { adminOrgEndpoints } from './admin/org/adminOrgEndpoints';
 import { adminVdcEndpoints } from './admin/vdc/adminVdcEndpoints';
@@ -17,7 +14,7 @@ import { userEndpoints } from './admin/user/userEndpoints';
 import { vmEndpoints } from './user/vm/vmEndpoints';
 import { dhcpEndpoints } from './user/edgeGateway/dhcp/dhcpEndpoints';
 import { Wrapper } from '../wrapper';
-import { baseUrl } from '../wrapper';
+// import { baseUrl } from '../wrapper';
 /**
  ** this wrapper directly send request to vcloud server
  */

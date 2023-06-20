@@ -1,8 +1,8 @@
-const createIpSetsEndpoint = require('./createIpSetsEndpoint');
-const deleteIpSetsEndpoint = require('./deleteIpSetsEndpoint');
-const getIpSetsEndpoint = require('./getIpSetsEndpoint');
-const getIpSetsListEndpoint = require('./getIpSetsListEndpoint');
-const updateIpSetsEndpoint = require('./updateIpSetsEndpoint');
+import { createIpSetsEndpoint } from './createIpSetsEndpoint';
+import { deleteIpSetsEndpoint } from './deleteIpSetsEndpoint';
+import { getIpSetsEndpoint } from './getIpSetsEndpoint';
+import { getIpSetsListEndpoint } from './getIpSetsListEndpoint';
+import { updateIpSetsEndpoint } from './updateIpSetsEndpoint';
 
 export const ipSetsEndpoints = {
   createIpSets: createIpSetsEndpoint,

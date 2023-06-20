@@ -1,11 +1,11 @@
-const createDhcpBindingEndpoint = require('./createDhcpBindingEndpoint');
-const deleteDhcpBindingsEndpoint = require('./deleteDhcpBindingEndpoint');
-const deleteDhcpEndpoint = require('./deleteDhcpEndpoint');
-const getAllDhcpBindingEndpoint = require('./getAllDhcpBindingsEndpoint');
-const getDhcpBindingEndpoint = require('./getDhcpBinidngEndpoint');
-const getDhcpEndpoint = require('./getDhcpEndpoint');
-const updateDhcpBindingEndpoint = require('./updateDhcpBindingEndpoing');
-const updateDhcpEndpoint = require('./updateDhcpEndpoint');
+import { createDhcpBindingEndpoint } from './createDhcpBindingEndpoint';
+import { deleteDhcpBindingsEndpoint } from './deleteDhcpBindingEndpoint';
+import { deleteDhcpEndpoint } from './deleteDhcpEndpoint';
+import { getAllDhcpBindingEndpoint } from './getAllDhcpBindingsEndpoint';
+import { getDhcpBindingEndpoint } from './getDhcpBinidngEndpoint';
+import { getDhcpEndpoint } from './getDhcpEndpoint';
+import { updateDhcpBindingEndpoint } from './updateDhcpBindingEndpoing';
+import { updateDhcpEndpoint } from './updateDhcpEndpoint';
 
 export const dhcpEndpoints = {
   updateDhcp: updateDhcpEndpoint,

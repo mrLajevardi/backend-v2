@@ -1,5 +1,5 @@
-const UvDeskWrapper = require('../../uvdeskWrapper');
-const uvDeskConfig = require('../../uvdeskConfig.json');
+import { UvDeskWrapper } from '../../uvdeskWrapper';
+import { uvDeskConfig } from '../../uvdeskConfig.ts';
 
 export async function createTicket(
   message,

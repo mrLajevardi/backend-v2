@@ -1,7 +1,5 @@
-const https = require('https');
-const Wrapper = require('../wrapper');
-const { baseUrl } = require('../wrapper');
-const ticketEndpoints = require('./endpoints/tickets/ticketEndpoints');
+import { Wrapper } from '../wrapper';
+import { ticketEndpoints } from './endpoints/tickets/ticketEndpoints';
 /**
  ** this wrapper directly send request to vcloud server
  */
