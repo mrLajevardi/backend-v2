@@ -11,9 +11,8 @@ import { ServiceItemsModule } from '../base/service/service-items/service-items.
 import { ConfigsModule } from '../base/service/configs/configs.module';
 import { OrganizationModule } from '../base/organization/organization.module';
 import { UserModule } from '../base/user/user/user.module';
-import { VdcController } from './vdc/vdc.controller';
-import { VdcController } from './vdc.controller';
-import { VdcAdminController } from './vdc-admin.controller';
+import { VdcController } from './controller/vdc.controller';
+import { VdcAdminController } from './controller/vdc-admin.controller';
 
 @Module({
   imports: [

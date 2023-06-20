@@ -16,6 +16,22 @@ import { EdgeService } from '../service/edge.service';
 import { NetworkService } from '../service/network.service';
 import { OrgService } from '../service/org.service';
 import { VdcService } from '../service/vdc.service';
+import { CreateServiceService } from 'src/application/base/service/service-instances/service/create-service/create-service.service';
+import { ServiceTypesService } from 'src/application/base/service/service-types/service-types.service';
+import { DiscountsService } from 'src/application/base/service/discounts/discounts.service';
+import { ServiceChecksService } from 'src/application/base/service/service-instances/service/service-checks/service-checks.service';
+import { QualityPlansService } from 'src/application/base/service/quality-plans/quality-plans.service';
+import { ItemTypesService } from 'src/application/base/service/item-types/item-types.service';
+import { ServiceItemsSumService } from 'src/application/base/service/service-items-sum/service-items-sum.service';
+import { InvoicesService } from 'src/application/base/invoice/invoices/service/invoices.service';
+import { InvoiceItemsService } from 'src/application/base/invoice/invoice-items/invoice-items.service';
+import { InvoiceDiscountsService } from 'src/application/base/invoice/invoice-discounts/invoice-discounts.service';
+import { PlansService } from 'src/application/base/plans/plans.service';
+import { InvoicesChecksService } from 'src/application/base/invoice/invoices/service/invoices-checks.service';
+import { CostCalculationService } from 'src/application/base/invoice/invoices/service/cost-calculation.service';
+import { InvoicePlansService } from 'src/application/base/invoice/invoice-plans/invoice-plans.service';
+import { InvoicePropertiesService } from 'src/application/base/invoice/invoice-properties/invoice-properties.service';
+import { VgpuService } from 'src/application/vgpu/vgpu.service';
 
 describe('VdcController', () => {
   let controller: VdcController;
@@ -44,7 +60,22 @@ describe('VdcController', () => {
         TaskManagerService,
         OrgService,
         NetworkService,
-        
+        CreateServiceService,
+        ServiceTypesService,
+        DiscountsService,
+        ServiceChecksService,
+        QualityPlansService,
+        ItemTypesService,
+        ServiceItemsSumService,
+        InvoicesService,
+        InvoiceItemsService,
+        InvoiceDiscountsService,
+        InvoicesChecksService,
+        PlansService,
+        CostCalculationService,
+        InvoicePlansService,
+        InvoicePropertiesService,
+        VgpuService
       ],
       controllers: [VdcController],
     }).compile();
