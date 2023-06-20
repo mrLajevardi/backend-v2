@@ -195,7 +195,7 @@ export class VdcService {
         and: [{ PropertyKey: 'networkQuota' }, { ServiceTypeID: 'vdc' }],
       },
     });
-    const vdcInfo = await mainWrapper.admin.vdc.createVdc(
+    const vdcInfo: any = await mainWrapper.admin.vdc.createVdc(
       {
         ProviderVdcReference: vcdConfig.admin.vdc.ProviderVdcReference,
         VdcStorageProfileParams: vcdConfig.admin.vdc.VdcStorageProfileParams,

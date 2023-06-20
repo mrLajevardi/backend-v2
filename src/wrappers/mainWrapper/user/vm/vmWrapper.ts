@@ -1,5 +1,5 @@
 import { userAcquireVappTicket } from './acquireVappTicket';
-import { userCreateTemplate } from './createTemplate';
+import { createTemplate } from './createTemplate';
 import { userCreateVm } from './createVm';
 import { userDeletevApp } from './deleteVm';
 import { userDeployvApp } from './deployVapp';
@@ -49,7 +49,7 @@ export const vmWrapper = {
   undeployVm: userUndeployvApp,
   updateVm: userUpdateVm,
   installVmTools: userInstallVmTools,
-  createTemplate: userCreateTemplate,
+  createTemplate: createTemplate,
   createSnapShot: userCreateSnapShot,
   removeSnapShot: userRemoveSnapShot,
   revertSnapShot: userRevertSnapShot,

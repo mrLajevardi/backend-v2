@@ -33,7 +33,7 @@ export async function checkCatalog(authToken) {
  * @param {String} containerId
  * @return {Promise}
  */
-async function userCreateTemplate(
+async function createTemplate(
   authToken,
   description,
   name,
@@ -64,4 +64,4 @@ async function userCreateTemplate(
   });
 }
 
-module.exports = userCreateTemplate;
+module.exports = createTemplate;

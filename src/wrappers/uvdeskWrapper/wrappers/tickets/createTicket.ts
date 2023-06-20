@@ -1,5 +1,5 @@
 import { UvDeskWrapper } from '../../uvdeskWrapper';
-import { uvDeskConfig } from '../../uvdeskConfig.ts';
+import uvDeskConfig from '../../uvdeskConfig';
 
 export async function createTicket(
   message,
