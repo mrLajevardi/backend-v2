@@ -1,5 +1,6 @@
-import { xml2js } from 'xml2js';
+import xml2js from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+
 const builder = new xml2js.Builder();
 import { vcloudQuery } from '../vdc/vcloudQuery';
 /**
