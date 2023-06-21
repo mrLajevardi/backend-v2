@@ -15,9 +15,9 @@ export class VdcAdminController {
 
     constructor(
         private readonly serviceInstancesService : ServiceInstancesService,
-        private readonly tasksService: TasksService,
+        // private readonly tasksService: TasksService,
         private readonly sessionService: SessionsService,
-        private readonly taskManagerService: TaskManagerService,
+        // private readonly taskManagerService: TaskManagerService,
         private readonly servicePropertiesService : ServicePropertiesService
     ){}
     /**
@@ -42,25 +42,25 @@ export class VdcAdminController {
             return Promise.reject(error);
         }
 
-        const task = await this.tasksService.create({
-            userId: userId,
-            serviceInstanceId: vdcInstanceId,
-            operation: 'deleteVdcService',
-            details: null,
-            startTime: new Date(),
-            endTime: null,
-            status: 'running',
-        });
+        // const task = await this.tasksService.create({
+        //     userId: userId,
+        //     serviceInstanceId: vdcInstanceId,
+        //     operation: 'deleteVdcService',
+        //     details: null,
+        //     startTime: new Date(),
+        //     endTime: null,
+        //     status: 'running',
+        // });
 
-        await this.taskManagerService.addTask({
-            serviceInstanceId: vdcInstanceId,
-            customTaskId: task['TaskID'],
-            vcloudTask: null,
-            target: 'task',
-            nextTask: 'deleteVdc',
-            taskType: 'adminTask',
-            requestOptions: options,
-        });
+        // await this.taskManagerService.addTask({
+        //     serviceInstanceId: vdcInstanceId,
+        //     customTaskId: task['TaskID'],
+        //     vcloudTask: null,
+        //     target: 'task',
+        //     nextTask: 'deleteVdc',
+        //     taskType: 'adminTask',
+        //     requestOptions: options,
+        // });
 
         // await logger.info('vdc', 'deleteVdc', { _object: vdcInstanceId }, options.locals);
         // return Promise.resolve({
@@ -172,31 +172,31 @@ export class VdcAdminController {
   //          error.code = 'COMPLETED_VDC_SERVICE';
             return Promise.reject(error);
         }
-        const task = await this.tasksService.create({
-            userId: options.locals.userId,
-            serviceInstanceId: vdcInstanceId,
-            operation: 'createDataCenter',
-            details: null,
-            startTime: new Date(),
-            endTime: null,
-            status: 'running',
-        });
+        // const task = await this.tasksService.create({
+        //     userId: options.locals.userId,
+        //     serviceInstanceId: vdcInstanceId,
+        //     operation: 'createDataCenter',
+        //     details: null,
+        //     startTime: new Date(),
+        //     endTime: null,
+        //     status: 'running',
+        // });
         await this.serviceInstancesService.updateAll({
             id: vdcInstanceId,
         }, {
             status: 1,
         });
-        await this.taskManagerService.addTask({
-            serviceInstanceId: vdcInstanceId,
-            customTaskId: task['TaskID'],
-            vcloudTask: null,
-            nextTask: 'createOrg',
-            target: 'object',
-            requestOptions: options.locals,
-        });
-        return Promise.resolve({
-            taskId: task['TaskID'],
-        });
+        // await this.taskManagerService.addTask({
+        //     serviceInstanceId: vdcInstanceId,
+        //     customTaskId: task['TaskID'],
+        //     vcloudTask: null,
+        //     nextTask: 'createOrg',
+        //     target: 'object',
+        //     requestOptions: options.locals,
+        // });
+        // return Promise.resolve({
+        //     taskId: task['TaskID'],
+        // });
     }
 
 }

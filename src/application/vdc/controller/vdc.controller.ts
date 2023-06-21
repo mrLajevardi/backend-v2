@@ -11,11 +11,9 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 @Controller('vdc')
 export class VdcController {
     constructor(
-        private readonly tasksService: TasksService,
+       // private readonly tasksService: TasksService,
         private readonly sessionService: SessionsService,
-        private readonly taskManagerService: TaskManagerService,
         private readonly servicePropertiesService : ServicePropertiesService,
-        private readonly createServiceSvc : CreateServiceService,
     ){}
 
 async attachNamedDisk (
@@ -72,37 +70,37 @@ async attachNamedDisk (
     });
   };
   
-async createVdc(Services, data, options) {
-    const createdService = await this.createServiceSvc.createBillingService(data, options,  'vdc');
-    const serviceInstanceId = createdService.serviceInstanceId;
-    options.locals = {
-      ...options.locals,
-      serviceInstanceId,
-    };
-    // await logger.info('vdc', 'createBillingService', { _object: serviceInstanceId }, options.locals);
-    const task = await this.tasksService.create({
-      userId: options.locals.userId,
-      serviceInstanceId: serviceInstanceId,
-      operation: 'createDataCenter',
-      details: null,
-      startTime: new Date(),
-      endTime: null,
-      status: 'running',
-    });
-    await this.taskManagerService.addTask({
-      serviceInstanceId,
-      customTaskId: task['TaskID'],
-      vcloudTask: null,
-      nextTask: 'createOrg',
-      requestOptions: options.locals,
-      target: 'object',
-    });
-    console.log(task);
-    return Promise.resolve({
-      id: serviceInstanceId,
-      taskId: task['TaskID'],
-    });
-  };
+// async createVdc(Services, data, options) {
+//     const createdService = await this.createServiceSvc.createBillingService(data, options,  'vdc');
+//     const serviceInstanceId = createdService.serviceInstanceId;
+//     options.locals = {
+//       ...options.locals,
+//       serviceInstanceId,
+//     };
+//     // await logger.info('vdc', 'createBillingService', { _object: serviceInstanceId }, options.locals);
+//     const task = await this.tasksService.create({
+//       userId: options.locals.userId,
+//       serviceInstanceId: serviceInstanceId,
+//       operation: 'createDataCenter',
+//       details: null,
+//       startTime: new Date(),
+//       endTime: null,
+//       status: 'running',
+//     });
+//     await this.taskManagerService.addTask({
+//       serviceInstanceId,
+//       customTaskId: task['TaskID'],
+//       vcloudTask: null,
+//       nextTask: 'createOrg',
+//       requestOptions: options.locals,
+//       target: 'object',
+//     });
+//     console.log(task);
+//     return Promise.resolve({
+//       id: serviceInstanceId,
+//       taskId: task['TaskID'],
+//     });
+//   };
   
 async dettachNamedDisk(
     options,
