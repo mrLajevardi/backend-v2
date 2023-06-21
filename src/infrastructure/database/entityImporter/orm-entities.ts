@@ -42,8 +42,13 @@ import { DebugLog } from '../entities/DebugLog';
 import { InfoLog } from '../entities/InfoLog';
 import { ErrorLog } from '../entities/ErrorLog';
 import { Sysdiagrams } from '../entities/Sysdiagrams';
+import { QualityPlans } from '../entities/views/quality-plans';
+import { ServiceItemsSum } from '../entities/views/service-items-sum';
 
 export const dbEntities = [
+  //Views
+  QualityPlans,
+  ServiceItemsSum,
   // Logs Schema
   DebugLog,
   InfoLog,

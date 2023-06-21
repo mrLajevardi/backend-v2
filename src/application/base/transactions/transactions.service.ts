@@ -44,16 +44,20 @@ export class TransactionsService {
     await this.repository.save(createdItem);
   }
 
-  // Moved from createService 
-  async createTransaction(value : string , invoiceId : number, description : string , userId : string ) {
-    let dto : CreateTransactionDto; 
-    dto.userId = userId; 
-    dto.dateTime = new Date(); 
-    dto.value = invoiceId; 
-    dto.description = description; 
+  // Moved from createService
+  async createTransaction(
+    value: string,
+    invoiceId: number,
+    description: string,
+    userId: string,
+  ) {
+    let dto: CreateTransactionDto;
+    dto.userId = userId;
+    dto.dateTime = new Date();
+    dto.value = invoiceId;
+    dto.description = description;
     await this.create(dto);
   }
-
 
   // Update an Item using updateDTO
   async update(id: string, dto: UpdateTransactionDto) {
