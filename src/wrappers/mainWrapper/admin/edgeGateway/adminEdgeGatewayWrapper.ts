@@ -1,7 +1,7 @@
-const createEdgeGateway = require('./createEdgeGateway');
-const getAvailableIpAddresses = require('./getAvailableIpAddresses');
-const getEdgeCluster = require('./getEdgeCluster');
-const getExternalNetworks = require('./getExternalNetworks');
+import { createEdgeGateway } from './createEdgeGateway';
+import { getAvailableIpAddresses } from './getAvailableIpAddresses';
+import { getEdgeCluster } from './getEdgeCluster';
+import { getExternalNetworks } from './getExternalNetworks';
 
 export const adminEdgeGatewayWrapper = {
   createEdgeGateway,

@@ -1,10 +1,10 @@
-const createVdc = require('./createVdc');
-const updateVdc = require('./updateVdc');
-const updateVdcStorageProfile = require('./updateVdcStorageProfile');
-const deleteVdc = require('./deleteVdc');
-const enableVdc = require('./enableVdc');
-const disableVdc = require('./disableVdc');
-const updateNetworkProfile = require('./updateNetworkProfile');
+import { createVdc } from './createVdc';
+import { updateVdc } from './updateVdc';
+import { updateVdcStorageProfile } from './updateVdcStorageProfile';
+import { deleteVdc } from './deleteVdc';
+import { enableVdc } from './enableVdc';
+import { disableVdc } from './disableVdc';
+import { updateNetworkProfile } from './updateNetworkProfile';
 
 export const adminVdcWrapper = {
   createVdc: createVdc,

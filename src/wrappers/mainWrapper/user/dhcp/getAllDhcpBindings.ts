@@ -1,4 +1,4 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 /**
  * gets a dhcp binding
  * @param {String} authToken

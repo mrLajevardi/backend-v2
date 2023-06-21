@@ -7,5 +7,5 @@ export interface iTask {
   target: string;
   nextTask: string;
   taskType?: string;
-  requestOptions: {};
+  requestOptions: any;
 }

@@ -1,8 +1,8 @@
-const deleteFirewallEndpoint = require('./deleteFirewallEndpoint');
-const getFirewallEndpoint = require('./getFirewallEndpoint');
-const getFirewallListEndpoint = require('./getFirewallListEndpint');
-const updateFirewallEndpoint = require('./updateFirewallEndpoint');
-const updateFirewallListEndpoint = require('./updateFirewallListEndpoint');
+import { deleteFirewallEndpoint } from './deleteFirewallEndpoint';
+import { getFirewallEndpoint } from './getFirewallEndpoint';
+import { getFirewallListEndpoint } from './getFirewallListEndpint';
+import { updateFirewallEndpoint } from './updateFirewallEndpoint';
+import { updateFirewallListEndpoint } from './updateFirewallListEndpoint';
 
 export const firewallEndpoints = {
   updateFirewallList: updateFirewallListEndpoint,

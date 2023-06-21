@@ -1,4 +1,4 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 /**
  * @param {String} authToken
  * @param {String} ipSetId

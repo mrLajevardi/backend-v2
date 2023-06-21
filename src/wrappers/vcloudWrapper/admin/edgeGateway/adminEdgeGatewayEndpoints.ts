@@ -1,7 +1,7 @@
-const createEdgeGatewayEndpoint = require('./createEdgeGatewayEndpoint');
-const getAvailableIpAddressesEndpoint = require('./getAvailableIpAddressesEndpoint');
-const getExternalNetworksEndpoint = require('./getExternalNetworks');
-const getNsxtEdgeClustersEndpoint = require('./getNsxtEdgeClustersEndpoint');
+import { createEdgeGatewayEndpoint } from './createEdgeGatewayEndpoint';
+import { getAvailableIpAddressesEndpoint } from './getAvailableIpAddressesEndpoint';
+import { getExternalNetworksEndpoint } from './getExternalNetworks';
+import { getNsxtEdgeClustersEndpoint } from './getNsxtEdgeClustersEndpoint';
 
 export const adminEdgeGatewayEndpoints = {
   createEdgeGateway: createEdgeGatewayEndpoint,

@@ -27,6 +27,7 @@ import { ServiceItemsService } from 'src/application/base/service/service-items/
 import { InvoiceItemsService } from 'src/application/base/invoice/invoice-items/invoice-items.service';
 import { InvoiceDiscountsService } from 'src/application/base/invoice/invoice-discounts/invoice-discounts.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
+import { importScript } from 'src/infrastructure/helpers/import-script.helper';
 
 @Injectable()
 export class CreateServiceService {
@@ -81,15 +82,15 @@ export class CreateServiceService {
   }
 
   //checks if any of service params is not sent by client
-  runScript(
+  async runScript(
     path: string,
     services: any,
     serviceInstanceId: string,
     data: any,
     itemTypes: any,
     options: any,
-  ): any {
-    const script: any = require(path);
+  ): Promise<any> {
+    const script: any = await importScript(path);
     console.log(script);
     return new script(services, serviceInstanceId, data, itemTypes, options);
   }

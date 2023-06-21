@@ -1,5 +1,5 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const getEdgeCluster = require('../edgeGateway/getEdgeCluster');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { getEdgeCluster } from '../edgeGateway/getEdgeCluster';
 /**
  * @param {String} vdcId
  * @param {String} session

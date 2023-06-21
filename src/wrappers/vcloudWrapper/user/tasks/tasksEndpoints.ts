@@ -1,6 +1,6 @@
-const cancelTaskEndpoint = require('./cancelTaskEndpoint');
-const getTaskEndpoint = require('./getTaskEndpoint');
-const getTaskListEndpoint = require('./getTaskListEndPoint');
+import { cancelTaskEndpoint } from './cancelTaskEndpoint';
+import { getTaskEndpoint } from './getTaskEndpoint';
+import { getTaskListEndpoint } from './getTaskListEndPoint';
 export const tasksEndpoints = {
   getTask: getTaskEndpoint,
   getTaskList: getTaskListEndpoint,

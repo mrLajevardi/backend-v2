@@ -1,8 +1,8 @@
-const userCreateApplicationPortProfile = require('./createApplicationPortProfile');
-const userDeleteApplicationPortProfile = require('./deleteApplicationPortProfiles');
-const userGetApplicationPortProfiles = require('./getApplicationPortProfiles');
-const userGetSingleApplicationPortProfile = require('./getSingleApplicationPortProfile');
-const userUpdateApplicationPortProfile = require('./updateApplicationPortProfile');
+import { userCreateApplicationPortProfile } from './createApplicationPortProfile';
+import { userDeleteApplicationPortProfile } from './deleteApplicationPortProfiles';
+import { userGetApplicationPortProfiles } from './getApplicationPortProfiles';
+import { userGetSingleApplicationPortProfile } from './getSingleApplicationPortProfile';
+import { userUpdateApplicationPortProfile } from './updateApplicationPortProfile';
 
 export const applicationPortProfilesWrapper = {
   getApplicationPortProfile: userGetSingleApplicationPortProfile,

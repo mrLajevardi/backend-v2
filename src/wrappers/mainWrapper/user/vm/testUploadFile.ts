@@ -52,11 +52,10 @@
 //   console.log(err);
 // });
 
-const userGetMediaItem = require('./getMediaItem');
-const userPartialUpload = require('./partialUpload');
-const uploadFile = require('./uploadFile');
-const fs = require('fs');
-const { pipeline } = require('stream');
+import { userGetMediaItem } from './getMediaItem';
+import { userPartialUpload } from './partialUpload';
+import { uploadFile } from './uploadFile';
+import * as fs from 'fs';
 
 export async function test(authToken, catalogId, data, filePath) {
   const file = await uploadFile(authToken, catalogId, data);
@@ -122,8 +121,8 @@ test(
     imageType: 'iso',
   },
   'C:/Users/Administrator/Downloads/alpine-standard-3.17.1-x86_64.iso',
-)
-  .then((data) => {})
-  .catch((err) => {
-    // console.log(err);
-  });
+);
+// .then((data) => {}) //??
+// .catch((err) => {
+//   // console.log(err);
+// });

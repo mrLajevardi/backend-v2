@@ -1,4 +1,4 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 /**
  * @param {Object} config
  * @param {String} config.orgId org id stored in server

@@ -1,4 +1,4 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 import { vcdConfig } from '../../vcdConfig';
 /**
  * @param {String} name

@@ -1,8 +1,7 @@
-const xml2js = require('xml2js');
-const getVdcComputePolicy = require('../vdc/getVdcComputePolicy');
-const vcloudQuery = require('../vdc/vcloudQuery');
+import { xml2js } from 'xml2js';
+import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 const builder = new xml2js.Builder();
 /**
  *

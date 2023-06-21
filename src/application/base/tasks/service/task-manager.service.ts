@@ -15,7 +15,7 @@ import { EdgeService } from 'src/application/vdc/service/edge.service';
 import { OrgService } from 'src/application/vdc/service/org.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
-import { userVcloudQuery } from 'src/wrappers/mainWrapper/user/vdc/vcloudQuery';
+import { vcloudQuery } from 'src/wrappers/mainWrapper/user/vdc/vcloudQuery';
 import { iTask } from '../interface/task.interface';
 
 @Injectable()
@@ -698,7 +698,7 @@ export class TaskManagerService {
       sortAsc: 'name',
       filter: `name==${catalogName}`,
     };
-    const catalogsList = await userVcloudQuery(authToken, queryOptions);
+    const catalogsList = await vcloudQuery(authToken, queryOptions);
     let catalogId = null;
     const catalogRecord = catalogsList?.data?.record;
     if (catalogRecord && catalogRecord[0]?.name == catalogName) {

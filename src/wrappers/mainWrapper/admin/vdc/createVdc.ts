@@ -1,5 +1,5 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const vCloudConfig = require('../../vcdConfig');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { vcdConfig } from '../../vcdConfig';
 
 /**
  * @param {Object} config config for creating vdc
@@ -18,7 +18,7 @@ const vCloudConfig = require('../../vcdConfig');
  * @return {Promise}
  */
 export async function createVdc(config, orgId) {
-  const vdcConfig = vCloudConfig.admin.vdc;
+  const vdcConfig = vcdConfig.admin.vdc;
   orgId = orgId.split(':').slice(-1);
   const cores = config.cores;
   const vCpuInMhz = config.vCpuInMhz;

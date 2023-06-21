@@ -1,27 +1,24 @@
-const lodash = require('lodash');
-const { default: axios } = require('axios');
-const { isNil } = require('lodash');
-const https = require('https');
-const networkEndpoints = require('./user/edgeGateway/network/networkEndpoints');
-const tasksEndpoints = require('./user/tasks/tasksEndpoints');
-const natEndpoints = require('./user/edgeGateway/nat/natEndPoints');
-const firewallEndpoints = require('./user/edgeGateway/firewall/firewallEndpoints');
-const ipSetsEndpoints = require('./user/edgeGateway/ipSets/ipSetsEndpoints');
-const edgeGatewayEndpoints = require('./user/edgeGateway/edgeGatewayEndpoints');
-const vdcEndpoints = require('./user/vdc/vdcEndpoints');
-const applicationPortProfilesEndpoints = require(`./user/edgeGateway/applicationPortProfiles/applicationPortProfilesEndpoints`);
-const adminEdgeGatewayEndpoints = require('./admin/edgeGateway/adminEdgeGatewayEndpoints');
-const adminOrgEndpoints = require('./admin/org/adminOrgEndpoints');
-const adminVdcEndpoints = require('./admin/vdc/adminVdcEndpoints');
-const userEndpoints = require('./admin/user/userEndpoints');
-const vmEndpoints = require('./user/vm/vmEndpoints');
-const dhcpEndpoints = require('./user/edgeGateway/dhcp/dhcpEndpoints');
-const Wrapper = require('../wrapper');
-const { baseUrl } = require('../wrapper');
+import * as https from 'https';
+import { networkEndpoints } from './user/edgeGateway/network/networkEndpoints';
+import { tasksEndpoints } from './user/tasks/tasksEndpoints';
+import { natEndpoints } from './user/edgeGateway/nat/natEndPoints';
+import { firewallEndpoints } from './user/edgeGateway/firewall/firewallEndpoints';
+import { ipSetsEndpoints } from './user/edgeGateway/ipSets/ipSetsEndpoints';
+import { edgeGatewayEndpoints } from './user/edgeGateway/edgeGatewayEndpoints';
+import { vdcEndpoints } from './user/vdc/vdcEndpoints';
+import { applicationPortProfilesEndpoints } from './user/edgeGateway/applicationPortProfiles/applicationPortProfilesEndpoints';
+import { adminEdgeGatewayEndpoints } from './admin/edgeGateway/adminEdgeGatewayEndpoints';
+import { adminOrgEndpoints } from './admin/org/adminOrgEndpoints';
+import { adminVdcEndpoints } from './admin/vdc/adminVdcEndpoints';
+import { userEndpoints } from './admin/user/userEndpoints';
+import { vmEndpoints } from './user/vm/vmEndpoints';
+import { dhcpEndpoints } from './user/edgeGateway/dhcp/dhcpEndpoints';
+import { Wrapper } from '../wrapper';
+// import { baseUrl } from '../wrapper';
 /**
  ** this wrapper directly send request to vcloud server
  */
-class VcloudWrapper extends Wrapper {
+export class VcloudWrapper extends Wrapper {
   /**
    * initialize endpoints object
    */
@@ -53,5 +50,3 @@ class VcloudWrapper extends Wrapper {
     super(httpsAgent, endPoints, baseUrl);
   }
 }
-
-module.exports = VcloudWrapper;

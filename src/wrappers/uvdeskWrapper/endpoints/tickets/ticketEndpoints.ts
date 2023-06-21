@@ -1,8 +1,8 @@
-const createTicketEndpoint = require('./createTicketEndpoint');
-const getListOfTicketsEndpoint = require('./getListOfTicketsEndpoint');
-const getTicketEndpoint = require('./getTicketEndpoint');
-const replyTicketEndpoint = require('./replyTicketEndpoint');
-const updateTicketEndpoint = require('./updateTicketEndpoint');
+import { createTicketEndpoint } from './createTicketEndpoint';
+import { getListOfTicketsEndpoint } from './getListOfTicketsEndpoint';
+import { getTicketEndpoint } from './getTicketEndpoint';
+import { replyTicketEndpoint } from './replyTicketEndpoint';
+import { updateTicketEndpoint } from './updateTicketEndpoint';
 
 export const ticketEndpoints = {
   createTicket: createTicketEndpoint,

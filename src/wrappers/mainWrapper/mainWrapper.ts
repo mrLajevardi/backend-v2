@@ -1,17 +1,17 @@
-const adminEdgeGatewayWrapper = require('./admin/edgeGateway/adminEdgeGatewayWrapper');
-const adminOrgWrapper = require('./admin/org/adminOrgWrapper');
-const adminUserWrapper = require('./admin/user/adminUserWrapper');
-const adminVdcWrapper = require('./admin/vdc/adminVdcWrapper');
-const applicationPortProfilesWrapper = require('./user/applicationPortProfile/applicationPortProfileWrapper');
-const dhcpWrapper = require('./user/dhcp/dhcpWrapper');
-const edgeGatewayWrapper = require('./user/edgeGateway/edgeGatewayWrapper');
-const firewallWrapper = require('./user/firewall/firewallWrapper');
-const ipSetsWrapper = require('./user/ipSets/ipSetsWrapper');
-const natWrapper = require('./user/nat/natWrapper');
-const networkWrapper = require('./user/network/networkWrapper');
-const tasksWrapper = require('./user/tasks/tasksWrapper');
-const vdcWrapper = require('./user/vdc/vdcWrapper');
-const vmWrapper = require('./user/vm/vmWrapper');
+import { adminEdgeGatewayWrapper } from './admin/edgeGateway/adminEdgeGatewayWrapper';
+import { adminOrgWrapper } from './admin/org/adminOrgWrapper';
+import { adminUserWrapper } from './admin/user/adminUserWrapper';
+import { adminVdcWrapper } from './admin/vdc/adminVdcWrapper';
+import { applicationPortProfilesWrapper } from './user/applicationPortProfile/applicationPortProfileWrapper';
+import { dhcpWrapper } from './user/dhcp/dhcpWrapper';
+import { edgeGatewayWrapper } from './user/edgeGateway/edgeGatewayWrapper';
+import { firewallWrapper } from './user/firewall/firewallWrapper';
+import { ipSetsWrapper } from './user/ipSets/ipSetsWrapper';
+import { natWrapper } from './user/nat/natWrapper';
+import { networkWrapper } from './user/network/networkWrapper';
+import { tasksWrapper } from './user/tasks/tasksWrapper';
+import { vdcWrapper } from './user/vdc/vdcWrapper';
+import { vmWrapper } from './user/vm/vmWrapper';
 
 export const mainWrapper = {
   admin: {

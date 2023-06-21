@@ -1,16 +1,16 @@
-const userGetHardwareInfo = require('./getHardwareInfo');
-const userGetVdcComputePolicy = require('./getVdcComputePolicy');
-const userVcloudQuery = require('./vcloudQuery');
-const userCreateNamedDisk = require('./createNamedDisk');
-const userGetNamedDisk = require('./getNamedDisk');
-const userRemoveNamedDisk = require('./removeNamedDisk');
-const userUpdateNamedDisk = require('./updateNamedDisk');
-const userAttachNamedDisk = require('./attachNamedDisk');
-const userDettachNamedDisk = require('./dettachNamedDisk');
-const userGetVmAttachedNamedDisk = require('./getVmAttachedNamedDisk');
+import { userGetHardwareInfo } from './getHardwareInfo';
+import { userGetVdcComputePolicy } from './getVdcComputePolicy';
+import { vcloudQuery } from './vcloudQuery';
+import { userCreateNamedDisk } from './createNamedDisk';
+import { userGetNamedDisk } from './getNamedDisk';
+import { userRemoveNamedDisk } from './removeNamedDisk';
+import { userUpdateNamedDisk } from './updateNamedDisk';
+import { userAttachNamedDisk } from './attachNamedDisk';
+import { userDettachNamedDisk } from './dettachNamedDisk';
+import { userGetVmAttachedNamedDisk } from './getVmAttachedNamedDisk';
 
 export const vdcWrapper = {
-  vcloudQuery: userVcloudQuery,
+  vcloudQuery: vcloudQuery,
   getVdcComputePolicy: userGetVdcComputePolicy,
   getHardwareInfo: userGetHardwareInfo,
   createNamedDisk: userCreateNamedDisk,

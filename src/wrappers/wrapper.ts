@@ -1,8 +1,9 @@
 import { WrapperErrorException } from 'src/infrastructure/exceptions/wrapper-error.exception';
 
-const lodash = require('lodash');
-const { default: axios } = require('axios');
-const { isNil } = require('lodash');
+import * as lodash from 'lodash';
+import axios from 'axios';
+import { isNil } from 'lodash';
+
 //const HttpExceptions = require('../exceptions/httpExceptions');
 export class Wrapper {
   static baseUrl = '';
@@ -67,4 +68,3 @@ export class Wrapper {
   }
 }
 
-module.exports = Wrapper;

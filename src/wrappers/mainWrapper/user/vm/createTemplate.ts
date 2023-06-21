@@ -1,7 +1,7 @@
-const { isNil } = require('lodash');
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const createOrgCatalog = require('../../admin/org/createOrgCatalog');
-const userVcloudQuery = require('../vdc/vcloudQuery');
+import { isNil } from 'lodash';
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { createOrgCatalog } from '../../admin/org/createOrgCatalog';
+import { vcloudQuery } from '../vdc/vcloudQuery';
 /**
  * checks if user-catalog exists
  * @param {String} authToken
@@ -16,7 +16,7 @@ export async function checkCatalog(authToken) {
     sortAsc: 'name',
     filter: `name==${catalogName}`,
   };
-  const catalogsList = await userVcloudQuery(authToken, queryOptions);
+  const catalogsList = await vcloudQuery(authToken, queryOptions);
   let catalogId = null;
   const catalogRecord = catalogsList?.data?.record;
   if (!isNil(catalogRecord) && catalogRecord[0]?.name === catalogName) {
@@ -33,7 +33,7 @@ export async function checkCatalog(authToken) {
  * @param {String} containerId
  * @return {Promise}
  */
-async function userCreateTemplate(
+export async function createTemplate(
   authToken,
   description,
   name,
@@ -64,4 +64,4 @@ async function userCreateTemplate(
   });
 }
 
-module.exports = userCreateTemplate;
+module.exports = createTemplate;

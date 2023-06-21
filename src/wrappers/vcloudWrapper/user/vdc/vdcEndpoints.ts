@@ -1,12 +1,12 @@
-const getHardwareInfoEndpoint = require('./getHardwareInfoEndpoint');
-const getVdcComputePolicyEndpoint = require('./getVdcComputePolicyEndpoint');
-const vcloudQueryEndpoint = require('./vcloudQueryEndpoint');
-const createNamedDisk = require('./createNamedDisk');
-const removeNamedDisk = require('./removeNamedDisk');
-const updateNamedDisk = require('./updateNamedDisk');
-const attachNamedDisk = require('./attachNamedDisk');
-const dettachNamedDisk = require('./dettachNamedDisk');
-const vmAttachedNamedDisk = require('./getVmAttachedNamedDisk');
+import { getHardwareInfoEndpoint } from './getHardwareInfoEndpoint';
+import { getVdcComputePolicyEndpoint } from './getVdcComputePolicyEndpoint';
+import { vcloudQueryEndpoint } from './vcloudQueryEndpoint';
+import { createNamedDisk } from './createNamedDisk';
+import { removeNamedDisk } from './removeNamedDisk';
+import { updateNamedDisk } from './updateNamedDisk';
+import { attachNamedDisk } from './attachNamedDisk';
+import { dettachNamedDisk } from './dettachNamedDisk';
+import { vmAttachedNamedDisk } from './getVmAttachedNamedDisk';
 
 export const vdcEndpoints = {
   getHardwareInfo: getHardwareInfoEndpoint,

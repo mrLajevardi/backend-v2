@@ -1,5 +1,5 @@
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
-const getEdgeGateway = require('../edgeGateway/getEdgeGateway');
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { getEdgeGateway } from '../edgeGateway/getEdgeGateway';
 
 /**
  * @param {Object} authToken

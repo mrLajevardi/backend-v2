@@ -1,7 +1,8 @@
-const xml2js = require('xml2js');
-const VcloudWrapper = require('../../../vcloudWrapper/vcloudWrapper');
+import xml2js from 'xml2js';
+import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+
 const builder = new xml2js.Builder();
-const vcloudQuery = require('../vdc/vcloudQuery');
+import { vcloudQuery } from '../vdc/vcloudQuery';
 /**
  *
  * @param {String} authToken
