@@ -1,5 +1,4 @@
-import { xml2js } from 'xml2js';
-const builder = new xml2js.Builder();
+import xml2js from 'xml2js';
 import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
@@ -139,6 +138,7 @@ export async function userCreateVm(authToken, vdcId, config) {
       },
     },
   };
+  const builder = new xml2js.Builder();
   const xml = builder.buildObject(request);
   const createdVm = await new VcloudWrapper().posts('user.vm.createVm', {
     headers: { Authorization: `Bearer ${authToken}` },

@@ -1,6 +1,5 @@
-import { xml2js } from 'xml2js';
+import xml2js from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
-const builder = new xml2js.Builder();
 /**
  *
  * @param {String} authToken
@@ -22,6 +21,8 @@ export async function userCreateSnapShot(
       },
     },
   };
+  const builder = new xml2js.Builder();
+
   const xmlRequest = builder.buildObject(request);
   const options = {
     urlParams: { vmId: vAppId },

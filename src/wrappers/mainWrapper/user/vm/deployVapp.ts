@@ -1,6 +1,5 @@
-import { xml2js } from 'xml2js';
+import xml2js from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
-const builder = new xml2js.Builder();
 /**
  * powerOn vm and force recustomization
  * @param {String} authToken
@@ -16,6 +15,7 @@ export async function userDeployvApp(authToken, vAppId) {
       },
     },
   };
+  const builder = new xml2js.Builder();
   const xmlRequest = builder.buildObject(request);
   const action = await new VcloudWrapper().posts('user.vm.deployVm', {
     urlParams: { vmId: vAppId },

@@ -1,6 +1,5 @@
-import { xml2js } from 'xml2js';
+import xml2js from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
-const builder = new xml2js.Builder();
 /**
  * insert or eject a media from vm
  * @param {String} authToken
@@ -37,6 +36,7 @@ export async function userInsertOrEjectVappMedia(
     };
     action = 'insertMedia';
   }
+  const builder = new xml2js.Builder();
   const xmlRequest = builder.buildObject(request);
   const response = await new VcloudWrapper().posts('user.vm.insertOrEjectVm', {
     urlParams: {

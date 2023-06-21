@@ -1,8 +1,7 @@
-import { xml2js } from 'xml2js';
+import xml2js from 'xml2js';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
-const builder = new xml2js.Builder();
 /**
  *
  * @param {String} authToken
@@ -102,6 +101,8 @@ export async function instantiateVmFromTemplateAdmin(
       },
     },
   };
+  const builder = new xml2js.Builder();
+
   const xmlRequest = builder.buildObject(request);
   const options = {
     body: xmlRequest,

@@ -1,5 +1,4 @@
-import { xml2js } from 'xml2js';
-const builder = new xml2js.Builder();
+import xml2js from 'xml2js';
 import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
@@ -123,6 +122,8 @@ export async function userUpdateVm(authToken, vdcId, config, vAppId) {
       },
     },
   };
+  const builder = new xml2js.Builder();
+
   const xml = builder.buildObject(request);
   const options = {
     urlParams: { vmId: vAppId },

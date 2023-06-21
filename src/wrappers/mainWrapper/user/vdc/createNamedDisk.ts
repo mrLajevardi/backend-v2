@@ -1,7 +1,6 @@
 import xml2js from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 
-const builder = new xml2js.Builder();
 import { vcloudQuery } from '../vdc/vcloudQuery';
 /**
  *
@@ -49,6 +48,7 @@ export async function userCreateNamedDisk(
       },
     },
   };
+  const builder = new xml2js.Builder();
   const xmlRequest = builder.buildObject(request);
   const options = {
     headers: { Authorization: `Bearer ${authToken}` },

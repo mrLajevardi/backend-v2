@@ -1,5 +1,5 @@
-const UvDeskWrapper = require('../../uvdeskWrapper');
-const uvDeskConfig = require('../../uvdeskConfig.json');
+import { UvDeskWrapper } from '../../uvdeskWrapper';
+import uvDeskConfig from '../../uvdeskConfig';
 
 export async function getTicket(ticketId) {
   const ticket = await new UvDeskWrapper().posts('ticket.getTicket', {

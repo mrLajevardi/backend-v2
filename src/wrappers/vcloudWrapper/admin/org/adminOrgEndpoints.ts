@@ -1,7 +1,7 @@
-const createOrgCatalogEndpoint = require('./createOrgCatalogEndpoint');
-const deleteOrgCatalogEndpoint = require('./deleteOrgCatalogEndpoint');
-const createOrgEndpoint = require('./createOrgEndpoint');
-const getOrgEndpoint = require('./getOrgEndpoint');
+import { createOrgCatalogEndpoint } from './createOrgCatalogEndpoint';
+import { deleteOrgCatalogEndpoint } from './deleteOrgCatalogEndpoint';
+import { createOrgEndpoint } from './createOrgEndpoint';
+import { getOrgEndpoint } from './getOrgEndpoint';
 
 export const adminOrgEndpoints = {
   createOrg: createOrgEndpoint,

@@ -1,10 +1,10 @@
-const createVdcEndpoint = require('./createVdcEndpoint');
-const updateVdcEndpoint = require('./updateVdcEndpoint');
-const deleteVdcEndpoint = require('./deleteVdcEndpoint');
-const enableVdcEndpoint = require('./enableVdcEndpoint');
-const updateVdcStorageProfileEndpoint = require('./updateVdcStorageProfileEndpoint');
-const disableVdcEndpoint = require('./disableVdcEndpoint');
-const updateNetworkProfileEndpoint = require('./updateNetworkProfileEndpoint');
+import { createVdcEndpoint } from './createVdcEndpoint';
+import { deleteVdcEndpoint } from './deleteVdcEndpoint';
+import { disableVdcEndpoint } from './disableVdcEndpoint';
+import { enableVdcEndpoint } from './enableVdcEndpoint';
+import { updateNetworkProfileEndpoint } from './updateNetworkProfileEndpoint';
+import { updateVdcEndpoint } from './updateVdcEndpoint';
+import { updateVdcStorageProfileEndpoint } from './updateVdcStorageProfileEndpoint';
 
 export const adminVdcEndpoints = {
   createVdc: createVdcEndpoint,
