@@ -106,7 +106,6 @@ export class TaskManagerService {
 
   /**
    *
-   * @param {Object} app
    * @param {String} status
    * @param {String} customTaskId
    * @param {String} details
@@ -123,7 +122,6 @@ export class TaskManagerService {
   }
   /**
    * run tasks
-   * @param {Object} app
    * @param {String} taskName
    * @param {String} serviceInstanceId
    * @param {String} customTaskId
