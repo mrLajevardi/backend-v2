@@ -22,7 +22,7 @@ export class TasksService {
 
   // Find One Item by its ID
   async findById(id: string): Promise<Tasks> {
-    const serviceType = await this.repository.findOne({ 
+    const serviceType = await this.repository.findOne({
       where: {
         taskId: id,
       },

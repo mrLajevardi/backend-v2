@@ -67,7 +67,6 @@ export class ServicePropertiesService {
     await this.repository.delete(options);
   }
 
-
   async getAllServiceProperties(serviceId) {
     const ServiceProperties = await this.find({
       where: {
@@ -80,7 +79,4 @@ export class ServicePropertiesService {
     }
     return Promise.resolve(props);
   }
-
-  
-
 }

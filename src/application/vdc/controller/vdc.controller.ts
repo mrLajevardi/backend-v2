@@ -10,25 +10,26 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 
 @Controller('vdc')
 export class VdcController {
-    constructor(
-       // private readonly tasksService: TasksService,
-        private readonly sessionService: SessionsService,
-        private readonly servicePropertiesService : ServicePropertiesService,
-    ){}
+  constructor(
+    // private readonly tasksService: TasksService,
+    private readonly sessionService: SessionsService,
+    private readonly servicePropertiesService: ServicePropertiesService,
+  ) {}
 
-async attachNamedDisk (
-    options,
-    vdcInstanceId,
-    nameDiskID,
-    vmID,
-  )  {
+  async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
-    const session = await this.sessionService.checkUserSession(
-        userId,
-        props['orgId'],
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
     );
-    const namedDisk = await mainWrapper.user.vdc.attachNamedDisk(session, nameDiskID, vmID);
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const namedDisk = await mainWrapper.user.vdc.attachNamedDisk(
+      session,
+      nameDiskID,
+      vmID,
+    );
     // await logger.info(
     //   'services',
     //   'attachNamedDisk',
@@ -40,17 +41,26 @@ async attachNamedDisk (
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
-  };
-  
+  }
+
   async createNamedDisk(options, vdcInstanceId, data) {
     const userId = options.accessToken.userId;
     const { busType } = data;
     if (busType != 20) {
-      return Promise.reject(new BadRequestException);
+      return Promise.reject(new BadRequestException());
     }
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
-    const session = await this.sessionService.checkUserSession(userId, props['orgId']);
-    const namedDisk = await mainWrapper.user.vdc.createNamedDisk(session, props['vdcId'], data);
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const namedDisk = await mainWrapper.user.vdc.createNamedDisk(
+      session,
+      props['vdcId'],
+      data,
+    );
     const taskId = await mainWrapper.user.vdc.vcloudQuery(session, {
       page: 1,
       pageSize: 10,
@@ -68,53 +78,54 @@ async attachNamedDisk (
     return Promise.resolve({
       taskId: taskId.data.record[0].href.split('task/')[1],
     });
-  };
-  
-// async createVdc(Services, data, options) {
-//     const createdService = await this.createServiceSvc.createBillingService(data, options,  'vdc');
-//     const serviceInstanceId = createdService.serviceInstanceId;
-//     options.locals = {
-//       ...options.locals,
-//       serviceInstanceId,
-//     };
-//     // await logger.info('vdc', 'createBillingService', { _object: serviceInstanceId }, options.locals);
-//     const task = await this.tasksService.create({
-//       userId: options.locals.userId,
-//       serviceInstanceId: serviceInstanceId,
-//       operation: 'createDataCenter',
-//       details: null,
-//       startTime: new Date(),
-//       endTime: null,
-//       status: 'running',
-//     });
-//     await this.taskManagerService.addTask({
-//       serviceInstanceId,
-//       customTaskId: task['TaskID'],
-//       vcloudTask: null,
-//       nextTask: 'createOrg',
-//       requestOptions: options.locals,
-//       target: 'object',
-//     });
-//     console.log(task);
-//     return Promise.resolve({
-//       id: serviceInstanceId,
-//       taskId: task['TaskID'],
-//     });
-//   };
-  
-async dettachNamedDisk(
-    options,
-    vdcInstanceId,
-    nameDiskID,
-    vmID,
-  ) {
+  }
+
+  // async createVdc(Services, data, options) {
+  //     const createdService = await this.createServiceSvc.createBillingService(data, options,  'vdc');
+  //     const serviceInstanceId = createdService.serviceInstanceId;
+  //     options.locals = {
+  //       ...options.locals,
+  //       serviceInstanceId,
+  //     };
+  //     // await logger.info('vdc', 'createBillingService', { _object: serviceInstanceId }, options.locals);
+  //     const task = await this.tasksService.create({
+  //       userId: options.locals.userId,
+  //       serviceInstanceId: serviceInstanceId,
+  //       operation: 'createDataCenter',
+  //       details: null,
+  //       startTime: new Date(),
+  //       endTime: null,
+  //       status: 'running',
+  //     });
+  //     await this.taskManagerService.addTask({
+  //       serviceInstanceId,
+  //       customTaskId: task['TaskID'],
+  //       vcloudTask: null,
+  //       nextTask: 'createOrg',
+  //       requestOptions: options.locals,
+  //       target: 'object',
+  //     });
+  //     console.log(task);
+  //     return Promise.resolve({
+  //       id: serviceInstanceId,
+  //       taskId: task['TaskID'],
+  //     });
+  //   };
+
+  async dettachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
     const session = await this.sessionService.checkUserSession(
-        userId,
+      userId,
       props['orgId'],
     );
-    const namedDisk = await mainWrapper.user.vdc.dettachNamedDisk(session, nameDiskID, vmID);
+    const namedDisk = await mainWrapper.user.vdc.dettachNamedDisk(
+      session,
+      nameDiskID,
+      vmID,
+    );
     // await logger.info(
     //   'services',
     //   'dettachNamedDisk',
@@ -126,13 +137,15 @@ async dettachNamedDisk(
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
-  };
-  
+  }
+
   async getNamedDisk(options, vdcInstanceId) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
     const session = await this.sessionService.checkUserSession(
-        userId,
+      userId,
       props['orgId'],
     );
     const recordList = await mainWrapper.user.vdc.getNamedDisk(
@@ -165,8 +178,8 @@ async dettachNamedDisk(
       });
     });
     return Promise.resolve(recordListForFront);
-  };
-  
+  }
+
   /**
    * @param {Object} app
    * @param {Object} options
@@ -175,8 +188,13 @@ async dettachNamedDisk(
    */
   async getVdc(options, vdcInstanceId) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
-    const session = await this.sessionService.checkUserSession(userId, props['orgId']);
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
     const vdcData = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'orgVdc',
       format: 'records',
@@ -189,42 +207,40 @@ async dettachNamedDisk(
       records: vdcData.data.record,
     });
   }
-  
-  
-  
-  async getVmAttachedNamedDisk (
-    options,
-    vdcInstanceId,
-    nameDiskID,
-  ) {
+
+  async getVmAttachedNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
     const session = await this.sessionService.checkUserSession(
-        userId,
+      userId,
       props['orgId'],
     );
     const vmData = await mainWrapper.user.vdc.getVmAttachedNamedDisk(
       session,
       nameDiskID,
     );
-  
+
     if (vmData.data) {
-      return vmData.data.vmReference[0].href.split(
-        'vApp/',
-      )[1];
+      return vmData.data.vmReference[0].href.split('vApp/')[1];
     }
     return Promise.resolve();
-  };
-  
-  
-  async removeNamedDisk (options, vdcInstanceId, nameDiskID) {
+  }
+
+  async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
     const session = await this.sessionService.checkUserSession(
-        userId,
+      userId,
       props['orgId'],
     );
-    const namedDisk = await mainWrapper.user.vdc.removeNamedDisk(session, nameDiskID);
+    const namedDisk = await mainWrapper.user.vdc.removeNamedDisk(
+      session,
+      nameDiskID,
+    );
     // await logger.info(
     //   'services',
     //   'removeNamedDisk',
@@ -236,23 +252,19 @@ async dettachNamedDisk(
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
-  };
-  
-  
-  async updateNamedDisk (
-    options,
-    vdcInstanceId,
-    nameDiskID,
-    data,
-  ) {
+  }
+
+  async updateNamedDisk(options, vdcInstanceId, nameDiskID, data) {
     const userId = options.accessToken.userId;
     const { busType } = data;
     if (busType != 20) {
       return Promise.reject(new BadRequestException());
     }
-    const props = await this.servicePropertiesService.getAllServiceProperties(vdcInstanceId);
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
     const session = await this.sessionService.checkUserSession(
-        userId,
+      userId,
       props['orgId'],
     );
     const namedDisk = await mainWrapper.user.vdc.updateNamedDisk(
@@ -272,6 +284,5 @@ async dettachNamedDisk(
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
-  };
-  
+  }
 }

@@ -44,7 +44,6 @@ describe('VdcAdminController', () => {
         TaskManagerService,
         OrgService,
         NetworkService,
-        
       ],
       controllers: [VdcAdminController],
     }).compile();

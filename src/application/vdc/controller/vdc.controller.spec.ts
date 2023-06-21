@@ -75,7 +75,7 @@ describe('VdcController', () => {
         CostCalculationService,
         InvoicePlansService,
         InvoicePropertiesService,
-        VgpuService
+        VgpuService,
       ],
       controllers: [VdcController],
     }).compile();

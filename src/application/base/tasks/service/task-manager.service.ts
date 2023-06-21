@@ -98,9 +98,8 @@ export class TaskManagerService {
     });
   }
 
-
-  // adds a task to task queue 
-  async addTask(task : iTask){
+  // adds a task to task queue
+  async addTask(task: iTask) {
     await this.taskQueue.add(task);
   }
 
