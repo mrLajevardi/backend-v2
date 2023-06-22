@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
-import { CreateServiceService } from 'src/application/base/service/service-instances/service/create-service/create-service.service';
-import { ServiceInstancesService } from 'src/application/base/service/service-instances/service/service-instances.service';
-import { ServicePropertiesService } from 'src/application/base/service/service-properties/service-properties.service';
+import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
+import { CreateServiceService } from 'src/application/base/service/services/create-service.service';
+import { ServiceService } from 'src/application/base/service/services/service.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
@@ -13,12 +13,12 @@ export class VdcController {
   constructor(
     // private readonly tasksService: TasksService,
     private readonly sessionService: SessionsService,
-    private readonly servicePropertiesService: ServicePropertiesService,
+    private readonly serviceService: ServiceService,
   ) {}
 
   async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -49,7 +49,7 @@ export class VdcController {
     if (busType != 20) {
       return Promise.reject(new BadRequestException());
     }
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -114,7 +114,7 @@ export class VdcController {
 
   async dettachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -141,7 +141,7 @@ export class VdcController {
 
   async getNamedDisk(options, vdcInstanceId) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -188,7 +188,7 @@ export class VdcController {
    */
   async getVdc(options, vdcInstanceId) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -210,7 +210,7 @@ export class VdcController {
 
   async getVmAttachedNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -230,7 +230,7 @@ export class VdcController {
 
   async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.accessToken.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -260,7 +260,7 @@ export class VdcController {
     if (busType != 20) {
       return Promise.reject(new BadRequestException());
     }
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(

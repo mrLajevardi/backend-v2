@@ -5,26 +5,22 @@ import { EdgeService } from './service/edge.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TasksModule } from '../base/tasks/tasks.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
-import { ServiceInstancesModule } from '../base/service/service-instances/service-instances.module';
-import { ServicePropertiesModule } from '../base/service/service-properties/service-properties.module';
-import { ServiceItemsModule } from '../base/service/service-items/service-items.module';
-import { ConfigsModule } from '../base/service/configs/configs.module';
 import { OrganizationModule } from '../base/organization/organization.module';
-import { UserModule } from '../base/user/user/user.module';
+import { UserModule } from '../base/user/user.module';
 import { VdcController } from './controller/vdc.controller';
 import { VdcAdminController } from './controller/vdc-admin.controller';
+import { CrudModule } from '../base/crud/crud.module';
+import { ServiceModule } from '../base/service/service.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    CrudModule,
     //TasksModule,
     SessionsModule,
-    ServiceInstancesModule,
-    ServicePropertiesModule,
-    ServiceItemsModule,
-    ConfigsModule,
     OrganizationModule,
     UserModule,
+    ServiceModule,
   ],
   providers: [VdcService, OrgService, EdgeService],
   controllers: [VdcController, VdcAdminController],

@@ -3,13 +3,14 @@ import { Reflector } from '@nestjs/core';
 import { PolicyHandler } from '../interfaces/policy-handler.interface';
 import { CHECK_POLICIES_KEY } from '../decorators/check-policies.decorator';
 import { AbilityFactory } from '../ability.factory';
-import { UserService } from '../../../user/user/user.service';
+import { UserService } from '../../../user/user.service';
 import { PureAbility } from '@casl/ability';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 
 @Injectable()
 export class PoliciesGuard implements CanActivate {
   constructor(
-    private userService: UserService,
+    private userTable: UserTableService,
     private reflector: Reflector,
     private caslAbilityFactory: AbilityFactory,
   ) {}
@@ -22,7 +23,7 @@ export class PoliciesGuard implements CanActivate {
       ) || [];
 
     const { user } = context.switchToHttp().getRequest();
-    const realUser = await this.userService.findById(user.userId);
+    const realUser = await this.userTable.findById(user.userId);
 
     const ability = await this.caslAbilityFactory.createForUser(realUser);
 
