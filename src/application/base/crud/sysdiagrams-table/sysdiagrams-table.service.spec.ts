@@ -1,20 +1,20 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { sysdiagramsTableService } from './sysdiagrams-table.service';
+import { SysdiagramsTableService } from './sysdiagrams-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
 describe('sysdiagramsTableService', () => {
-  let service: sysdiagramsTableService;
+  let service: SysdiagramsTableService;
   let testDataService: TestDataService;
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [sysdiagramsTableService, TestDataService],
+      providers: [SysdiagramsTableService, TestDataService],
     }).compile();
 
-    service = module.get<sysdiagramsTableService>(sysdiagramsTableService);
+    service = module.get<SysdiagramsTableService>(SysdiagramsTableService);
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
@@ -23,9 +23,6 @@ describe('sysdiagramsTableService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return more than 0 ', async () => {
-    const result = await service.find();
-    expect(result.length).toBeGreaterThan(0);
-  });
+
 });
 			

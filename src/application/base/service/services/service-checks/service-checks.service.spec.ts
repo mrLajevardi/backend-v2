@@ -1,11 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceChecksService } from './service-checks.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { ServiceTypesService } from '../../../service-types/service-types.service';
 import { DiscountsService } from '../discounts.service';
-import { ServiceInstancesService } from '../payg.service';
 import { TransactionsService } from '../../../transactions/transactions.service';
 import { UserService } from '../../../user/user.service';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { ServiceTypesTableService } from 'src/application/base/crud/service-types-table/service-types-table.service';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { DiscountsTableService } from 'src/application/base/crud/discounts-table/discounts-table.service';
+import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
 
 describe('ServiceChecksService', () => {
   let service: ServiceChecksService;
@@ -15,11 +18,15 @@ describe('ServiceChecksService', () => {
       imports: [TestDatabaseModule],
       providers: [
         ServiceChecksService,
-        ServiceTypesService,
-        ServiceInstancesService,
+        ServiceTypesTableService,
+        ServiceInstancesTableService,
         DiscountsService,
         TransactionsService,
         UserService,
+        UserTableService,
+        DiscountsTableService,
+        TransactionsTableService,
+        
       ],
     }).compile();
 

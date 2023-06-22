@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Groups } from 'src/infrastructure/database/test-entities/Groups';
+import { Groups } from 'src/infrastructure/database/entities/Groups';
 import { CreateGroupsDto } from './dto/create-groups.dto';
 import { UpdateGroupsDto } from './dto/update-groups.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

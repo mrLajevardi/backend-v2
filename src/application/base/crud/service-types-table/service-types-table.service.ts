@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceTypes } from 'src/infrastructure/database/test-entities/ServiceTypes';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 import { CreateServiceTypesDto } from './dto/create-service-types.dto';
 import { UpdateServiceTypesDto } from './dto/update-service-types.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

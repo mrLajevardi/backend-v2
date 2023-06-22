@@ -1,7 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { isNil } from 'lodash';
-import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { PaymentRequiredException } from 'src/infrastructure/exceptions/payment-required.exception';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
@@ -10,7 +8,6 @@ import { UserTableService } from '../../crud/user-table/user-table.service';
 @Injectable()
 export class PayAsYouGoService {
     constructor(
-        @InjectRepository(ServiceInstances)
         private readonly transactionsTable: TransactionsTableService,
         private readonly userTable: UserTableService,
         private readonly serviceInstanceTable: ServiceInstancesTableService

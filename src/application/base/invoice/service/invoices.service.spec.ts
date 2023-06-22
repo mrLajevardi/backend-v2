@@ -3,16 +3,20 @@ import { InvoicesService } from './invoices.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { CostCalculationService } from './cost-calculation.service';
 import { InvoicesChecksService } from './invoices-checks.service';
-import { PlansService } from 'src/application/base/plans/plans.service';
-import { ItemTypesService } from 'src/application/base/service/item-types/item-types.service';
-import { ServiceTypesService } from 'src/application/base/service/service-types/service-types.service';
-import { InvoiceItemsService } from '../../invoice-items/invoice-items.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { InvoicePlansService } from '../../invoice-plans/invoice-plans.service';
-import { InvoicePropertiesService } from '../../invoice-properties/invoice-properties.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { ConfigsService } from 'src/application/base/service/configs/configs.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
+import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
+import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
+import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
+import { InvoicePropertiesTableService } from '../../crud/invoice-properties-table/invoice-properties-table.service';
+import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
+import { PlansTableService } from '../../crud/plans-table/plans-table.service';
+import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
+import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
+import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
 
 describe('InvoicesService', () => {
   let service: InvoicesService;
@@ -24,16 +28,19 @@ describe('InvoicesService', () => {
         InvoicesService,
         CostCalculationService,
         InvoicesChecksService,
-        PlansService,
-        ItemTypesService,
-        ServiceTypesService,
-        InvoiceItemsService,
-        TransactionsService,
-        InvoicePlansService,
-        InvoicePropertiesService,
+        PlansTableService,
+        ItemTypesTableService,
+        ServiceTypesTableService,
+        InvoiceItemsTableService,
+        TransactionsTableService,
+        InvoicePlansTableService,
+        InvoicePropertiesTableService,
         VgpuService,
-        ConfigsService,
+        ConfigsTableService,
         SessionsService,
+        InvoicesTableService,
+        PlansQueryService,
+        SessionsTableService
       ],
       exports: [InvoicesService, CostCalculationService, InvoicesChecksService],
     }).compile();

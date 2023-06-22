@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RoleMapping } from 'src/infrastructure/database/test-entities/RoleMapping';
+import { RoleMapping } from 'src/infrastructure/database/entities/RoleMapping';
 import { CreateRoleMappingDto } from './dto/create-role-mapping.dto';
 import { UpdateRoleMappingDto } from './dto/update-role-mapping.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

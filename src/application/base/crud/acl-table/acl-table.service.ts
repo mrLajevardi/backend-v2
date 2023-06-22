@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Acl } from 'src/infrastructure/database/test-entities/ACL';
+import { Acl } from 'src/infrastructure/database/entities/ACL';
 import { CreateACLDto } from './dto/create-acls.dto';
 import { UpdateACLDto } from './dto/update-acls.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

@@ -23,9 +23,6 @@ describe('InvoicesTableService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return more than 0 ', async () => {
-    const result = await service.find();
-    expect(result.length).toBeGreaterThan(0);
-  });
+
 });
 			

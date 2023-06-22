@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InfoLog } from 'src/infrastructure/database/test-entities/InfoLog';
+import { InfoLog } from 'src/infrastructure/database/entities/InfoLog';
 import { CreateInfoLogDto } from './dto/create-info-log.dto';
 import { UpdateInfoLogDto } from './dto/update-info-log.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

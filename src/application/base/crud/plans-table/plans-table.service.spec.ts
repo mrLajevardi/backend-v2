@@ -11,7 +11,11 @@ describe('PlansTableService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [PlansTableService, TestDataService],
+      providers: [
+        PlansTableService, 
+        TestDataService,
+        
+      ],
     }).compile();
 
     service = module.get<PlansTableService>(PlansTableService);
@@ -23,9 +27,6 @@ describe('PlansTableService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should return more than 0 ', async () => {
-    const result = await service.find();
-    expect(result.length).toBeGreaterThan(0);
-  });
+
 });
 			

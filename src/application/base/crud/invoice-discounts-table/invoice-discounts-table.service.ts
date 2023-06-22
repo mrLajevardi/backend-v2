@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InvoiceDiscounts } from 'src/infrastructure/database/test-entities/InvoiceDiscounts';
+import { InvoiceDiscounts } from 'src/infrastructure/database/entities/InvoiceDiscounts';
 import { CreateInvoiceDiscountsDto } from './dto/create-invoice-discounts.dto';
 import { UpdateInvoiceDiscountsDto } from './dto/update-invoice-discounts.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

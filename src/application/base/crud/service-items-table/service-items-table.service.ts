@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceItems } from 'src/infrastructure/database/test-entities/ServiceItems';
+import { ServiceItems } from 'src/infrastructure/database/entities/ServiceItems';
 import { CreateServiceItemsDto } from './dto/create-service-items.dto';
 import { UpdateServiceItemsDto } from './dto/update-service-items.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

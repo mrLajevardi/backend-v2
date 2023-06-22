@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AccessToken } from 'src/infrastructure/database/test-entities/AccessToken';
+import { AccessToken } from 'src/infrastructure/database/entities/AccessToken';
 import { CreateAccessTokenDto } from './dto/create-access-token.dto';
 import { UpdateAccessTokenDto } from './dto/update-access-token.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

@@ -20,7 +20,8 @@ import { ServiceModule } from '../base/service/service.module';
     SessionsModule,
     OrganizationModule,
     UserModule,
-    ServiceModule
+    ServiceModule,
+    
   ],
   providers: [VdcService, OrgService, EdgeService],
   controllers: [VdcController, VdcAdminController],

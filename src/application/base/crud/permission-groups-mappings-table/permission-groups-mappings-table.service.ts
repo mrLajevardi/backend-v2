@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PermissionGroupsMappings } from 'src/infrastructure/database/test-entities/PermissionGroupsMappings';
+import { PermissionGroupsMappings } from 'src/infrastructure/database/entities/PermissionGroupsMappings';
 import { CreatePermissionGroupsMappingsDto } from './dto/create-permission-groups-mappings.dto';
 import { UpdatePermissionGroupsMappingsDto } from './dto/update-permission-groups-mappings.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

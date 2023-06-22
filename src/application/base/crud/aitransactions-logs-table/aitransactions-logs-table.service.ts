@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AiTransactionsLogs } from 'src/infrastructure/database/test-entities/AITransactionsLogs';
+import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AITransactionsLogs';
 import { CreateAITransactionsLogsDto } from './dto/create-aitransactions-logs.dto';
 import { UpdateAITransactionsLogsDto } from './dto/update-aitransactions-logs.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

@@ -4,6 +4,7 @@ import { UserService } from '../../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
+import { UserTableService } from '../../crud/user-table/user-table.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -12,7 +13,12 @@ describe('AuthService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [AuthService, UserService, JwtService],
+      providers: [
+        AuthService, 
+        UserService, 
+        JwtService,
+        UserTableService
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);

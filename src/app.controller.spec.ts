@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
 import { TestDatabaseModule } from './infrastructure/database/test-database.module';
 import { TestDataService } from './infrastructure/database/test-data.service';
+import { UserTableService } from './application/base/crud/user-table/user-table.service';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -21,6 +22,7 @@ describe('AppController', () => {
       controllers: [AppController],
       providers: [
         UserService,
+        UserTableService,
         AppService,
         AuthService,
         {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ItemTypes } from 'src/infrastructure/database/test-entities/ItemTypes';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { CreateItemTypesDto } from './dto/create-item-types.dto';
 import { UpdateItemTypesDto } from './dto/update-item-types.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ErrorLog } from 'src/infrastructure/database/test-entities/ErrorLog';
+import { ErrorLog } from 'src/infrastructure/database/entities/ErrorLog';
 import { CreateErrorLogDto } from './dto/create-error-log.dto';
 import { UpdateErrorLogDto } from './dto/update-error-log.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

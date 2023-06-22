@@ -1,7 +1,7 @@
 
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Permissions } from 'src/infrastructure/database/test-entities/Permissions';
+import { Permissions } from 'src/infrastructure/database/entities/Permissions';
 import { CreatePermissionsDto } from './dto/create-permissions.dto';
 import { UpdatePermissionsDto } from './dto/update-permissions.dto';
 import { FindManyOptions, FindOneOptions, Repository, FindOptionsWhere } from 'typeorm';

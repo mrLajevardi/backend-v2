@@ -1,10 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskManagerService } from './task-manager.service';
 import { SessionsService } from '../../sessions/sessions.service';
-import { ServiceInstancesService } from '../../service/services/payg.service';
-import { ServicePropertiesService } from '../../service/services/service-properties.service';
-import { ServiceItemsService } from '../../service/services/service-items.service';
-import { ConfigsService } from '../../service/configs/configs.service';
 import { OrganizationService } from '../../organization/organization.service';
 import { UserService } from '../../user/user.service';
 import { EdgeService } from 'src/application/vdc/service/edge.service';
@@ -15,6 +11,15 @@ import { BullModule } from '@nestjs/bull';
 import { TasksService } from './tasks.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TransactionsService } from '../../transactions/transactions.service';
+import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
+import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
+import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
+import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
+import { UserTableService } from '../../crud/user-table/user-table.service';
+import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -32,16 +37,22 @@ describe('TaskManagerService', () => {
         TasksService,
         TaskManagerService,
         SessionsService,
-        ServiceInstancesService,
-        ServicePropertiesService,
-        ServiceItemsService,
-        ConfigsService,
+        ServiceInstancesTableService,
+        ServicePropertiesTableService,
+        ServiceItemsTableService,
+        ConfigsTableService,
         OrganizationService,
         UserService,
         EdgeService,
         OrgService,
         NetworkService,
         VdcService,
+        TransactionsTableService,
+        TasksTableService,
+        OrganizationTableService,
+        UserTableService,
+        SessionsTableService
+  
       ],
     }).compile();
 
