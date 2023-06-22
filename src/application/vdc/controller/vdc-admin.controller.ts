@@ -1,22 +1,19 @@
 import { Controller } from '@nestjs/common';
 import { isEmpty } from 'lodash';
-import { ServiceInstancesService } from 'src/application/base/service/service-instances/service/service-instances.service';
-import { ServicePropertiesService } from 'src/application/base/service/service-properties/service-properties.service';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { ServiceService } from 'src/application/base/service/services/service.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
-import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
-import { TasksService } from 'src/application/base/tasks/service/tasks.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
-import { NotFoundException } from 'src/infrastructure/exceptions/not-found.exception';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 
 @Controller('vdc-admin')
 export class VdcAdminController {
   constructor(
-    private readonly serviceInstancesService: ServiceInstancesService,
+    private readonly serviceInstancesTableService: ServiceInstancesTableService,
     // private readonly tasksService: TasksService,
     private readonly sessionService: SessionsService,
     // private readonly taskManagerService: TaskManagerService,
-    private readonly servicePropertiesService: ServicePropertiesService,
+    private readonly serviceService: ServiceService,
   ) {}
   /**
    * delete vdc by admin
@@ -27,7 +24,7 @@ export class VdcAdminController {
    */
   async adminDeleteVdc(options, vdcInstanceId) {
     const userId = options.accessToken.userId;
-    const serviceInstance = await this.serviceInstancesService.findOne({
+    const serviceInstance = await this.serviceInstancesTableService.findOne({
       where: {
         ID: vdcInstanceId,
       },
@@ -74,14 +71,14 @@ export class VdcAdminController {
    * @return {Promise}
    */
   async adminGetVdcInfo(options, vdcInstanceId) {
-    const service = await this.serviceInstancesService.findOne({
+    const service = await this.serviceInstancesTableService.findOne({
       where: {
         ID: vdcInstanceId,
       },
     });
     console.log(service);
     const userId = service.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
+    const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -128,7 +125,7 @@ export class VdcAdminController {
       limit = pageSize;
     }
 
-    const vdcServices = await this.serviceInstancesService.find({
+    const vdcServices = await this.serviceInstancesTableService.find({
       relations: ['Users', 'ServiceItems'],
       where: {
         and: [{ IsDeleted: false }, { ServiceTypeID: 'vdc' }, parsedFilter],
@@ -139,7 +136,7 @@ export class VdcAdminController {
 
     parsedFilter['IsDeleted'] = false;
     parsedFilter['ServiceTypeID'] = 'vdc';
-    const countAll = await this.serviceInstancesService.count(parsedFilter);
+    const countAll = await this.serviceInstancesTableService.count(parsedFilter);
 
     return Promise.resolve({ vdcServices, countAll });
   }
@@ -151,7 +148,7 @@ export class VdcAdminController {
    * @return {Promise}
    */
   async adminRepairVdc(options, vdcInstanceId) {
-    const service = await this.serviceInstancesService.findOne({
+    const service = await this.serviceInstancesTableService.findOne({
       where: {
         ID: vdcInstanceId,
       },
@@ -175,7 +172,7 @@ export class VdcAdminController {
     //     endTime: null,
     //     status: 'running',
     // });
-    await this.serviceInstancesService.updateAll(
+    await this.serviceInstancesTableService.updateAll(
       {
         id: vdcInstanceId,
       },

@@ -1,34 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
-import { UserService } from '../base/user/user/user.service';
-import { ServicePropertiesService } from '../base/service/service-properties/service-properties.service';
 import { isEmpty } from 'class-validator';
-import { ServiceInstancesService } from '../base/service/service-instances/service/service-instances.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { InvalidUseRequestPerDayException } from 'src/infrastructure/exceptions/invalid-use-request-per-day.exception';
 import { InvalidUseRequestPerMonthException } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
-import { AiTransactionsLogsService } from '../base/log/ai-transactions-logs/ai-transactions-logs.service';
-import { SettingService } from '../base/security/setting/setting.service';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import {
   addMonths,
   dayDiff,
   monthDiff,
 } from 'src/infrastructure/helpers/date-time.helper';
-import { ConfigsService } from '../base/service/configs/configs.service';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
 import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
 import jwt from 'jsonwebtoken';
+import { UserTableService } from '../base/crud/user-table/user-table.service';
+import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
+import { SettingTableService } from '../base/crud/setting-table/setting-table.service';
+import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-table.service';
+import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
+import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
+import { ServiceInstancesStoredProcedureService } from '../base/crud/service-instances-table/service-instances-stored-procedure.service';
 
 @Injectable()
 export class AiService {
   constructor(
-    private readonly userService: UserService,
-    private readonly servicePropertiesService: ServicePropertiesService,
-    private readonly serviceInstancesService: ServiceInstancesService,
-    private readonly aiTransactionLogsService: AiTransactionsLogsService,
-    private readonly settingService: SettingService,
-    private readonly configsService: ConfigsService,
+    private readonly userTable: UserTableService,
+    private readonly servicePropertiesTable: ServicePropertiesTableService,
+    private readonly serviceInstancesTable: ServiceInstancesTableService,
+    private readonly aiTransactionLogsTable: AITransactionsLogsTableService,
+    private readonly settingTable: SettingTableService,
+    private readonly configsTable: ConfigsTableService,
+    private readonly serviceInstancesSP: ServiceInstancesStoredProcedureService
   ) {}
 
   async verifyToken(token: string) {
@@ -51,7 +53,7 @@ export class AiService {
     }
 
     const userId = verified['userId'];
-    const user = await this.userService.findById(userId);
+    const user = await this.userTable.findById(userId);
 
     const expireDate = new Date(verified['expireDate']);
     const currentDate = new Date();
@@ -59,7 +61,7 @@ export class AiService {
       throw new InvalidTokenException();
     }
 
-    const serviceProperties = await this.servicePropertiesService.findOne({
+    const serviceProperties = await this.servicePropertiesTable.findOne({
       where: {
         and: [
           { Value: { like: '%' + token + '%' } },
@@ -72,7 +74,7 @@ export class AiService {
       throw new InvalidTokenException();
     }
 
-    const serviceInstance = await this.serviceInstancesService.findOne({
+    const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
         ID: serviceProperties.serviceInstanceId,
       },
@@ -119,7 +121,7 @@ export class AiService {
 
   async usedPerDay(serviceInstanceId: string) {
     const todayDate = new Date().toISOString().slice(0, 10);
-    return await this.aiTransactionLogsService.count({
+    return await this.aiTransactionLogsTable.count({
       where: {
         and: [
           { ServiceInstanceID: serviceInstanceId },
@@ -140,7 +142,7 @@ export class AiService {
       .toISOString()
       .slice(0, 10);
 
-    return await this.aiTransactionLogsService.count({
+    return await this.aiTransactionLogsTable.count({
       where: {
         and: [
           { ServiceInstanceID: serviceInstanceId },
@@ -152,7 +154,7 @@ export class AiService {
   }
 
   async allRequestused(serviceInstanceID) {
-    return await this.aiTransactionLogsService.count({
+    return await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceID,
       },
@@ -172,7 +174,7 @@ export class AiService {
   }
 
   async createDemoToken(userId, token) {
-    return await this.settingService.create({
+    return await this.settingTable.create({
       userId: userId,
       key: 'aradAi.tokenDemo',
       value: token,
@@ -182,7 +184,7 @@ export class AiService {
   }
 
   async getAradAIDashboard(userId: number, serviceInstanceId: string) {
-    const serviceProperties = await this.servicePropertiesService.findOne({
+    const serviceProperties = await this.servicePropertiesTable.findOne({
       where: { ServiceInstanceID: serviceInstanceId },
     });
 
@@ -201,7 +203,7 @@ export class AiService {
     if (!verified) {
       throw new InvalidTokenException();
     }
-    const user = await this.userService.findById(userId);
+    const user = await this.userTable.findById(userId);
     const usePerDay = await this.usedPerDay(serviceInstanceId);
     const usePerMonth = await this.usedPerMonth(
       serviceInstanceId,
@@ -209,7 +211,7 @@ export class AiService {
     );
     const remainingDays = await dayDiff(verified.expireDate);
     const numberOfServiceCalled =
-      this.serviceInstancesService.spCountAradAiUsedEachService(
+      this.serviceInstancesSP.spCountAradAiUsedEachService(
         serviceProperties.serviceInstanceId,
       );
     const allRequestuse = await this.allRequestused(
@@ -232,7 +234,7 @@ export class AiService {
   }
 
   async getAiServiceInfo(userId, serviceId, qualityPlanCode, duration) {
-    const aiServiceConfigs = await this.configsService.find({
+    const aiServiceConfigs = await this.configsTable.find({
       where: {
         and: [
           { PropertyKey: { like: '%' + qualityPlanCode + '%' } },

@@ -1,18 +1,17 @@
 import { Module } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
-import { SessionsController } from './sessions.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { UserModule } from '../user/user/user.module';
-import { OrganizationModule } from '../organization/organization.module';
+import { CrudModule } from '../crud/crud.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    CrudModule
     //  UserModule,
     //  OrganizationModule
   ],
   providers: [SessionsService],
-  controllers: [SessionsController],
+  controllers: [],
   exports: [SessionsService],
 })
 export class SessionsModule {}

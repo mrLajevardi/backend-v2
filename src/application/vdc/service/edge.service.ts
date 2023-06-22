@@ -2,22 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { OrganizationService } from '../../base/organization/organization.service';
-import { ConfigsService } from '../../base/service/configs/configs.service';
-import { ServiceInstancesService } from '../../base/service/service-instances/service/service-instances.service';
-import { ServiceItemsService } from '../../base/service/service-items/service-items.service';
-import { ServicePropertiesService } from '../../base/service/service-properties/service-properties.service';
-import { UserService } from '../../base/user/user/user.service';
+import { UserService } from '../../base/user/user.service';
 import { isNil } from 'lodash';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
+import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
 
 @Injectable()
 export class EdgeService {
   constructor(
     private readonly sessionService: SessionsService,
-    private readonly serviceInstanceService: ServiceInstancesService,
-    private readonly servicePropertiesService: ServicePropertiesService,
-    private readonly organizationService: OrganizationService,
+    private readonly serviceInstanceTable: ServiceInstancesTableService,
+    private readonly servicePropertiesTable: ServicePropertiesTableService,
+    private readonly organizationTable: OrganizationTableService,
   ) {}
   /**
    * @param {String} vdcId
@@ -33,24 +32,24 @@ export class EdgeService {
     const sessionToken = await this.sessionService.checkAdminSession(userId);
     const edgeName = vdcName + '_edge';
 
-    const service = await this.serviceInstanceService.findOne({
+    const service = await this.serviceInstanceTable.findOne({
       where: {
         ID: ServiceInstanceID,
       },
     });
     const checkEdge = await this.checkEdgeExistence(userId, edgeName);
     if (service.status == 2 && !checkEdge) {
-      const edgeNameProps = this.servicePropertiesService.findOne({
+      const edgeNameProps = this.servicePropertiesTable.findOne({
         where: {
           and: [{ ServiceInstanceID }, { PropertyKey: 'edgeName' }],
         },
       });
       if (edgeNameProps && !isNil(ServiceInstanceID)) {
-        await this.servicePropertiesService.deleteAll({
+        await this.servicePropertiesTable.deleteAll({
           serviceInstanceId: ServiceInstanceID,
           propertyKey: 'edgeName',
         });
-        await this.servicePropertiesService.deleteAll({
+        await this.servicePropertiesTable.deleteAll({
           serviceInstanceId: ServiceInstanceID,
           propertyKey: 'edgeIpRange',
         });
@@ -68,13 +67,13 @@ export class EdgeService {
         name: edgeName,
         vdcId,
       });
-    await this.servicePropertiesService.create({
+    await this.servicePropertiesTable.create({
       serviceInstanceId: ServiceInstanceID,
       propertyKey: 'edgeName',
       value: edgeGateway.name,
     });
     for (const ipRange of edgeGateway.ipRange) {
-      await this.servicePropertiesService.create({
+      await this.servicePropertiesTable.create({
         serviceInstanceId: ServiceInstanceID,
         propertyKey: 'edgeIpRange',
         value: `${ipRange.startAddress}-${ipRange.endAddress}`,
@@ -89,7 +88,7 @@ export class EdgeService {
    * @return {Promise}
    */
   async checkEdgeExistence(userId, edgeName) {
-    const org = await this.organizationService.findOne({
+    const org = await this.organizationTable.findOne({
       where: { userId },
     });
     const orgId = org.id;

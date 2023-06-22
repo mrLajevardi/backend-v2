@@ -1,50 +1,12 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Sessions } from 'src/infrastructure/database/entities/Sessions';
-import { CreateSessionsDto } from 'src/application/base/sessions/dto/create-sessions.dto';
-import { UpdateSessionsDto } from 'src/application/base/sessions/dto/update-sessions.dto';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import { plainToClass } from 'class-transformer';
-import { UserService } from '../user/user/user.service';
-import { OrganizationService } from '../organization/organization.service';
+import { SessionsTableService } from '../crud/sessions-table/sessions-table.service';
 
 @Injectable()
 export class SessionsService {
   constructor(
-    @InjectRepository(Sessions)
-    private readonly repository: Repository<Sessions>, //  private readonly userService: UserService, //  private readonly organizationService: OrganizationService,
+    private readonly sessionTable: SessionsTableService,
   ) {}
 
-  // Find One Item by its ID
-  async findById(id: number): Promise<Sessions> {
-    const serviceType = await this.repository.findOne({ where: { id: id } });
-    return serviceType;
-  }
-
-  // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<Sessions[]> {
-    const result = await this.repository.find(options);
-    return result;
-  }
-
-  // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
-    const result = await this.repository.count(options);
-    return result;
-  }
-
-  // Find one item
-  async findOne(options?: FindOneOptions): Promise<Sessions> {
-    const result = await this.repository.findOne(options);
-    return result;
-  }
-
-  // Create an Item using createDTO
-  async create(dto: CreateSessionsDto) {
-    const newItem = plainToClass(Sessions, dto);
-    const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
-  }
 
   async createAdminSession(userId) {
     throw new InternalServerErrorException('MUST BE IMPLEMENTED');
@@ -54,7 +16,7 @@ export class SessionsService {
     //     .providerSession(
     //         vcdAuth.username, vcdAuth.password, this.sysOrgName,
     //     );
-    await this.create({
+    await this.sessionTable.create({
       isAdmin: true,
       orgId: null, // DOUBLE CHECK THIS PART , this part changed after MOVE
       sessionId: sessionData.sessionId,
@@ -76,7 +38,7 @@ export class SessionsService {
     //
     // const sessionData = await mainWrapper.admin.user.createSession()
     //     .userSession(filteredUsername, user.vdcPassword, org.name);
-    this.create({
+    this.sessionTable.create({
       isAdmin: false,
       orgId,
       sessionId: sessionData.sessionId,
@@ -88,29 +50,12 @@ export class SessionsService {
     return Promise.resolve(sessionData);
   }
 
-  // Update an Item using updateDTO
-  async update(id: number, dto: UpdateSessionsDto) {
-    const item = await this.findById(id);
-    const updateItem: Partial<Sessions> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
-  }
-
-  // delete an Item
-  async delete(id: number) {
-    await this.repository.delete(id);
-  }
-
-  // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
-  }
-
   /**
    * checks admin session
    * @return {Promise}
    */
   async checkAdminSession(userId: string) {
-    const session = await this.findOne({
+    const session = await this.sessionTable.findOne({
       where: {
         and: [{ isAdmin: true }, { active: true }],
       },
@@ -122,7 +67,7 @@ export class SessionsService {
       if (sessionExpire > currentDate) {
         return Promise.resolve(session.token);
       } else {
-        await this.update(session.id, {
+        await this.sessionTable.update(session.id, {
           active: false,
         });
         //const adminSession = new AdminSession(this.userId, t);
@@ -135,12 +80,13 @@ export class SessionsService {
       return Promise.resolve(createdSession.token);
     }
   }
+
   /**
    * @param {String} orgId
    * @return {Promise}
    */
   async checkUserSession(orgId, userId) {
-    const session = await this.findOne({
+    const session = await this.sessionTable.findOne({
       where: {
         and: [{ orgId }, { active: true }],
       },
@@ -152,7 +98,7 @@ export class SessionsService {
       if (sessionExpire > currentDate) {
         return Promise.resolve(session.token);
       } else {
-        await this.update(session.id, {
+        await this.sessionTable.update(session.id, {
           active: false,
         });
         const createdSession = await this.createUserSession(orgId, userId);

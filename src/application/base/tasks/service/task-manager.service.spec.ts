@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskManagerService } from './task-manager.service';
 import { SessionsService } from '../../sessions/sessions.service';
-import { ServiceInstancesService } from '../../service/service-instances/service/service-instances.service';
-import { ServicePropertiesService } from '../../service/service-properties/service-properties.service';
-import { ServiceItemsService } from '../../service/service-items/service-items.service';
+import { ServiceInstancesService } from '../../service/services/payg.service';
+import { ServicePropertiesService } from '../../service/services/service-properties.service';
+import { ServiceItemsService } from '../../service/services/service-items.service';
 import { ConfigsService } from '../../service/configs/configs.service';
 import { OrganizationService } from '../../organization/organization.service';
-import { UserService } from '../../user/user/user.service';
+import { UserService } from '../../user/user.service';
 import { EdgeService } from 'src/application/vdc/service/edge.service';
 import { OrgService } from 'src/application/vdc/service/org.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';
