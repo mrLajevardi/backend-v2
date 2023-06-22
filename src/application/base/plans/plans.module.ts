@@ -7,5 +7,6 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   imports: [DatabaseModule],
   providers: [PlansService],
   controllers: [PlansController],
+  exports: [PlansService],
 })
 export class PlansModule {}

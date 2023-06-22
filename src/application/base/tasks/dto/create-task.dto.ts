@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateTaskDto {
   @IsString()
   @ApiProperty()
-  taskId: string;
+  taskId?: string;
 
   @IsNumber()
   @ApiProperty()
@@ -37,17 +37,17 @@ export class CreateTaskDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  arguments: string | null;
+  arguments?: string | null;
 
   @IsNumber()
   @IsOptional()
   @ApiProperty({ required: false })
-  stepCounts: number | null;
+  stepCounts?: number | null;
 
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  currrentStep: string | null;
+  currrentStep?: string | null;
 
   @IsNumber()
   @ApiProperty()

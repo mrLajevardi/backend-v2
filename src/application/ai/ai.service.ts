@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
-import { UserService } from '../base/user/user.service';
-import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
+import { UserService } from '../base/user/user/user.service';
+import { ServicePropertiesService } from '../base/service/service-properties/service-properties.service';
 import { isEmpty } from 'class-validator';
-import { ServiceInstancesService } from '../base/service-instances/service-instances.service';
+import { ServiceInstancesService } from '../base/service/service-instances/service/service-instances.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { InvalidUseRequestPerDayException } from 'src/infrastructure/exceptions/invalid-use-request-per-day.exception';
 import { InvalidUseRequestPerMonthException } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
-import { AiTransactionsLogsService } from '../base/ai-transactions-logs/ai-transactions-logs.service';
-import { SettingService } from '../base/setting/setting.service';
+import { AiTransactionsLogsService } from '../base/log/ai-transactions-logs/ai-transactions-logs.service';
+import { SettingService } from '../base/security/setting/setting.service';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import {
   addMonths,
   dayDiff,
   monthDiff,
 } from 'src/infrastructure/helpers/date-time.helper';
-import { ConfigsService } from '../base/configs/configs.service';
+import { ConfigsService } from '../base/service/configs/configs.service';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
 import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
 import jwt from 'jsonwebtoken';
@@ -37,7 +37,7 @@ export class AiService {
   }
 
   async checkAIToken(token: string): Promise<boolean> {
-    return false; 
+    return false;
     const verified = await this.verifyToken(token)
       .then((res) => {
         return res;

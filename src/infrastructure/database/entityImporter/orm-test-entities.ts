@@ -42,8 +42,13 @@ import { DebugLog } from '../test-entities/DebugLog';
 import { InfoLog } from '../test-entities/InfoLog';
 import { ErrorLog } from '../test-entities/ErrorLog';
 import { Sysdiagrams } from '../test-entities/Sysdiagrams';
+import { QualityPlans } from '../test-entities/views/quality-plans';
+import { ServiceItemsSum } from '../test-entities/views/service-items-sum';
 
 export const dbTestEntities = [
+  //Views
+  QualityPlans,
+  ServiceItemsSum,
   // Logs Schema
   DebugLog,
   InfoLog,
