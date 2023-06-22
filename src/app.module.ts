@@ -47,6 +47,7 @@ import { AbilityModule } from './application/base/security/ability/ability.modul
 import { BullModule, BullQueueEvents } from '@nestjs/bull';
 import { VdcModule } from './application/vdc/vdc.module';
 import { NetworkService } from './application/vdc/service/network.service';
+import { CrudModule } from './application/base/crud/crud.module';
 
 @Module({
   imports: [
@@ -102,6 +103,7 @@ import { NetworkService } from './application/vdc/service/network.service';
     VastModule,
     AbilityModule,
     VdcModule,
+    CrudModule,
   ],
   controllers: [AppController],
   providers: [
