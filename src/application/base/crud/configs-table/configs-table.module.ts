@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { ConfigsTableService } from './configs-table.service';
 //import { ConfigsTableController } from './configs-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [ConfigsTableService],
 })
 export class ConfigsTableModule {}
-
-			

@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { UserTableService } from './user-table.service';
 //import { UserTableController } from './user-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [UserTableService],
 })
 export class UserTableModule {}
-
-			

@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { ServiceInstancesTableService } from './service-instances-table.service';
 //import { ServiceInstancesTableController } from './service-instances-table.controller';
@@ -7,10 +6,14 @@ import { ServiceInstancesStoredProcedureService } from './service-instances-stor
 
 @Module({
   imports: [DatabaseModule],
-  providers: [ServiceInstancesTableService, ServiceInstancesStoredProcedureService],
+  providers: [
+    ServiceInstancesTableService,
+    ServiceInstancesStoredProcedureService,
+  ],
   //controllers: [ServiceInstancesTableController],
-  exports: [ServiceInstancesTableService, ServiceInstancesStoredProcedureService],
+  exports: [
+    ServiceInstancesTableService,
+    ServiceInstancesStoredProcedureService,
+  ],
 })
 export class ServiceInstancesTableModule {}
-
-			

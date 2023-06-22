@@ -6,12 +6,11 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class ServiceInstancesStoredProcedureService {
+  constructor(
+    @InjectRepository(ServiceInstances)
+    private readonly repository: Repository<ServiceInstances>,
+  ) {}
 
-    constructor(
-        @InjectRepository(ServiceInstances)
-        private readonly repository: Repository<ServiceInstances>,
-        ) {}
-        
   // Exec Sp_CountAradAIUsedEachService
   async spCountAradAiUsedEachService(instanceId: string): Promise<number> {
     const query =
@@ -25,5 +24,4 @@ export class ServiceInstancesStoredProcedureService {
       throw new DatabaseErrorException('sp_count problem', err);
     }
   }
-
 }

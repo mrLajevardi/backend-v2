@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionMappingsTableService } from './permission-mappings-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -14,7 +13,9 @@ describe('PermissionMappingsTableService', () => {
       providers: [PermissionMappingsTableService, TestDataService],
     }).compile();
 
-    service = module.get<PermissionMappingsTableService>(PermissionMappingsTableService);
+    service = module.get<PermissionMappingsTableService>(
+      PermissionMappingsTableService,
+    );
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
@@ -22,7 +23,4 @@ describe('PermissionMappingsTableService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-
 });
-			

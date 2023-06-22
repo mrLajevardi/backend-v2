@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemSettingsTableService } from './system-settings-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -14,7 +13,9 @@ describe('SystemSettingsTableService', () => {
       providers: [SystemSettingsTableService, TestDataService],
     }).compile();
 
-    service = module.get<SystemSettingsTableService>(SystemSettingsTableService);
+    service = module.get<SystemSettingsTableService>(
+      SystemSettingsTableService,
+    );
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
@@ -22,7 +23,4 @@ describe('SystemSettingsTableService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-
 });
-			

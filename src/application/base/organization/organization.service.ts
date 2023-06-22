@@ -14,8 +14,6 @@ export class OrganizationService {
     private readonly userTable: UserTableService,
   ) {}
 
-
-
   async initOrg(userId) {
     const sessionToken = await this.sessionService.checkAdminSession(userId);
     const user = await this.userTable.findById(userId);

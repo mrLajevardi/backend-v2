@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { InvoicesTableService } from './invoices-table.service';
 //import { InvoicesTableController } from './invoices-table.controller';
@@ -12,5 +11,3 @@ import { InvoicesQueryService } from './invoices-query.service';
   exports: [InvoicesTableService],
 })
 export class InvoicesTableModule {}
-
-			

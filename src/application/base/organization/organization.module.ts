@@ -6,7 +6,7 @@ import { UserModule } from '../user/user.module';
 import { CrudModule } from '../crud/crud.module';
 
 @Module({
-  imports: [DatabaseModule, SessionsModule, UserModule,CrudModule],
+  imports: [DatabaseModule, SessionsModule, UserModule, CrudModule],
   providers: [OrganizationService],
   controllers: [],
   exports: [OrganizationService],

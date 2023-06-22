@@ -40,7 +40,7 @@ describe('InvoicesService', () => {
         SessionsService,
         InvoicesTableService,
         PlansQueryService,
-        SessionsTableService
+        SessionsTableService,
       ],
       exports: [InvoicesService, CostCalculationService, InvoicesChecksService],
     }).compile();

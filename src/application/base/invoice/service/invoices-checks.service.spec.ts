@@ -32,8 +32,6 @@ describe('InvoicesChecksService', () => {
         DiscountsTableService,
         TransactionsTableService,
         UserTableService,
-        
-
       ],
     }).compile();
 

@@ -3,10 +3,7 @@ import { DiscountsTableService } from '../../crud/discounts-table/discounts-tabl
 
 @Injectable()
 export class DiscountsService {
-  constructor(
-    private readonly discountsTable: DiscountsTableService,
-  ) {}
-
+  constructor(private readonly discountsTable: DiscountsTableService) {}
 
   // Moved from createService.js
   async findBuiltInDiscount(duration) {

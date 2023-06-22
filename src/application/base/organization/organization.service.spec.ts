@@ -14,12 +14,12 @@ describe('OrganizationService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       providers: [
-        OrganizationService, 
-        SessionsService, 
+        OrganizationService,
+        SessionsService,
         UserService,
         OrganizationTableService,
         SessionsTableService,
-        UserTableService
+        UserTableService,
       ],
     }).compile();
 

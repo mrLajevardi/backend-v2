@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { DebugLogTableService } from './debug-log-table.service';
 //import { DebugLogTableController } from './debug-log-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [DebugLogTableService],
 })
 export class DebugLogTableModule {}
-
-			

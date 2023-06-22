@@ -26,7 +26,6 @@ describe('ServiceChecksService', () => {
         UserTableService,
         DiscountsTableService,
         TransactionsTableService,
-        
       ],
     }).compile();
 

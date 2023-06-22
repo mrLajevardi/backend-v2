@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { PermissionMappingsTableService } from './permission-mappings-table.service';
 //import { PermissionMappingsTableController } from './permission-mappings-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [PermissionMappingsTableService],
 })
 export class PermissionMappingsTableModule {}
-
-			

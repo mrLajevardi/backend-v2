@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicePropertiesTableService } from './invoice-properties-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -14,7 +13,9 @@ describe('InvoicePropertiesTableService', () => {
       providers: [InvoicePropertiesTableService, TestDataService],
     }).compile();
 
-    service = module.get<InvoicePropertiesTableService>(InvoicePropertiesTableService);
+    service = module.get<InvoicePropertiesTableService>(
+      InvoicePropertiesTableService,
+    );
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
@@ -22,7 +23,4 @@ describe('InvoicePropertiesTableService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-
 });
-			

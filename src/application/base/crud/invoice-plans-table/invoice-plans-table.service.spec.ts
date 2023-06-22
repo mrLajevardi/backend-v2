@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicePlansTableService } from './invoice-plans-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -22,7 +21,4 @@ describe('InvoicePlansTableService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-
 });
-			

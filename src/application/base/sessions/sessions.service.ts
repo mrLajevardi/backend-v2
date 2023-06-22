@@ -3,10 +3,7 @@ import { SessionsTableService } from '../crud/sessions-table/sessions-table.serv
 
 @Injectable()
 export class SessionsService {
-  constructor(
-    private readonly sessionTable: SessionsTableService,
-  ) {}
-
+  constructor(private readonly sessionTable: SessionsTableService) {}
 
   async createAdminSession(userId) {
     throw new InternalServerErrorException('MUST BE IMPLEMENTED');

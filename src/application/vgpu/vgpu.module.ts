@@ -6,7 +6,7 @@ import { SessionsModule } from '../base/sessions/sessions.module';
 import { CrudModule } from '../base/crud/crud.module';
 
 @Module({
-  imports: [DatabaseModule, VgpuModule, SessionsModule,CrudModule],
+  imports: [DatabaseModule, VgpuModule, SessionsModule, CrudModule],
   providers: [VgpuService],
   controllers: [VgpuController],
   exports: [VgpuService],

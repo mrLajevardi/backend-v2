@@ -37,7 +37,7 @@ export class TaskManagerService {
     private readonly orgService: OrgService,
     private readonly networkService: NetworkService,
     private readonly vdcService: VdcService,
-    private readonly taskTable: TasksTableService
+    private readonly taskTable: TasksTableService,
   ) {
     this.taskQueue.process(async (job, done) => {
       const taskType = job.data?.taskType || 'task';

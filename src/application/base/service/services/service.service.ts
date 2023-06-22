@@ -5,13 +5,12 @@ import { ServicePropertiesTableService } from '../../crud/service-properties-tab
 
 @Injectable()
 export class ServiceService {
-    constructor(
-        private readonly serviceItemsTable: ServiceItemsTableService,
-        private readonly servicePropertiesTable: ServicePropertiesTableService
+  constructor(
+    private readonly serviceItemsTable: ServiceItemsTableService,
+    private readonly servicePropertiesTable: ServicePropertiesTableService,
+  ) {}
 
-      ) {}
-    
-      // Create Service Items
+  // Create Service Items
   async createServiceItems(serviceInstanceID, items, data) {
     for (const item of Object.keys(items)) {
       let dto: CreateServiceItemsDto;
@@ -36,5 +35,4 @@ export class ServiceService {
     }
     return Promise.resolve(props);
   }
-  
 }

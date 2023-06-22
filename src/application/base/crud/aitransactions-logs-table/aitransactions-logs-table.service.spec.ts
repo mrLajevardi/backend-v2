@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { AITransactionsLogsTableService } from './aitransactions-logs-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -14,7 +13,9 @@ describe('AITransactionsLogsTableService', () => {
       providers: [AITransactionsLogsTableService, TestDataService],
     }).compile();
 
-    service = module.get<AITransactionsLogsTableService>(AITransactionsLogsTableService);
+    service = module.get<AITransactionsLogsTableService>(
+      AITransactionsLogsTableService,
+    );
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
@@ -22,7 +23,4 @@ describe('AITransactionsLogsTableService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-
 });
-			

@@ -34,6 +34,4 @@ export class CreateItemTypesDto {
   @IsInt()
   @ApiProperty({ required: false })
   minPerRequest: number | null;
-
-
 }

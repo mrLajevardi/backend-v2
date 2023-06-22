@@ -51,8 +51,7 @@ describe('TaskManagerService', () => {
         TasksTableService,
         OrganizationTableService,
         UserTableService,
-        SessionsTableService
-  
+        SessionsTableService,
       ],
     }).compile();
 

@@ -35,5 +35,4 @@ export class UpdateItemTypesDto {
   @IsInt()
   @ApiProperty({ required: false })
   minPerRequest?: number | null;
-
 }

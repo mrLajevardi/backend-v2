@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { InfoLogTableService } from './info-log-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -22,7 +21,4 @@ describe('InfoLogTableService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-
 });
-			

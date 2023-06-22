@@ -46,8 +46,6 @@ describe('EdgeService', () => {
         UserTableService,
         TransactionsTableService,
         SessionsTableService,
-        
-
       ],
     }).compile();
 

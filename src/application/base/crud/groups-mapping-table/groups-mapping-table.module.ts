@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { GroupsMappingTableService } from './groups-mapping-table.service';
 //import { GroupsMappingTableController } from './groups-mapping-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [GroupsMappingTableService],
 })
 export class GroupsMappingTableModule {}
-
-			

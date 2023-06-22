@@ -136,7 +136,9 @@ export class VdcAdminController {
 
     parsedFilter['IsDeleted'] = false;
     parsedFilter['ServiceTypeID'] = 'vdc';
-    const countAll = await this.serviceInstancesTableService.count(parsedFilter);
+    const countAll = await this.serviceInstancesTableService.count(
+      parsedFilter,
+    );
 
     return Promise.resolve({ vdcServices, countAll });
   }

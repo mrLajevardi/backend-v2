@@ -7,15 +7,13 @@ import { CrudModule } from '../base/crud/crud.module';
 import { InvoicesModule } from '../base/invoice/invoices.module';
 import { ServiceModule } from '../base/service/service.module';
 
-
-
 @Module({
   imports: [
     DatabaseModule,
     UserModule,
     CrudModule,
     InvoicesModule,
-    ServiceModule
+    ServiceModule,
   ],
   controllers: [AiController],
   providers: [AiService],

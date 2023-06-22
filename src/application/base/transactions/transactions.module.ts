@@ -4,7 +4,7 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CrudModule } from '../crud/crud.module';
 
 @Module({
-  imports: [DatabaseModule,CrudModule],
+  imports: [DatabaseModule, CrudModule],
   providers: [TransactionsService],
   controllers: [],
   exports: [TransactionsService],

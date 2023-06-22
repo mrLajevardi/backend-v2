@@ -45,7 +45,6 @@ export class InvoicesService {
     private readonly vgpuService: VgpuService,
   ) {}
 
-
   // Create invoice items
   async createInvoiceItems(invoiceID: number, items, data) {
     for (const item of Object.keys(items)) {
@@ -77,19 +76,18 @@ export class InvoicesService {
       }
     }
   }
-  
-    // Create multiple invoice plans
-    async createInvoicePlans(dto: CreateInvoicePluralDto) {
-      for (const plan of dto.plans) {
-        await this.invoicePlansTable.create({
-          invoiceId: dto.invoiceId,
-          planCode: plan.planCode,
-          ratio: plan.ratio,
-          amount: plan.amount,
-        });
-      }
-    }
 
+  // Create multiple invoice plans
+  async createInvoicePlans(dto: CreateInvoicePluralDto) {
+    for (const plan of dto.plans) {
+      await this.invoicePlansTable.create({
+        invoiceId: dto.invoiceId,
+        planCode: plan.planCode,
+        ratio: plan.ratio,
+        amount: plan.amount,
+      });
+    }
+  }
 
   async createInvoice(
     userId,
@@ -110,12 +108,12 @@ export class InvoicesService {
       voided: false,
       //qualityPlan: qualityPlanId ??????
     });
-    const invoice = await this.invoicesTable.findOne({ where: { ServiceInstanceID } });
+    const invoice = await this.invoicesTable.findOne({
+      where: { ServiceInstanceID },
+    });
     return Promise.resolve(invoice.id);
   }
 
-
-    
   async createServiceInvoice(data, options, serviceId) {
     const userId = options.accessToken.userId;
     const unlimitedService = 0;
@@ -185,11 +183,7 @@ export class InvoicesService {
     dto.planRatio = plansRatioForItems;
     const invoiceId = await this.invoicesTable.create(dto);
 
-    await this.createInvoiceItems(
-      invoiceId,
-      itemTypes,
-      data.items,
-    );
+    await this.createInvoiceItems(invoiceId, itemTypes, data.items);
     await this.transactionTable.create({
       userId: userId,
       dateTime: new Date(),
@@ -205,11 +199,7 @@ export class InvoicesService {
       plans: approvedPlans,
       invoiceId: invoiceId,
     });
-    await this.createInvoiceProperties(
-      data,
-      invoiceId,
-      data.ServiceTypeID,
-    );
+    await this.createInvoiceProperties(data, invoiceId, data.ServiceTypeID);
     return Promise.resolve({ invoiceId: invoiceId });
   }
 
@@ -324,7 +314,4 @@ export class InvoicesService {
     }
     return Promise.resolve({ invoiceId: null });
   }
-
-
-
 }

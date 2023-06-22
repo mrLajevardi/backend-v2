@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { SystemSettingsTableService } from './system-settings-table.service';
 //import { SystemSettingsTableController } from './system-settings-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [SystemSettingsTableService],
 })
 export class SystemSettingsTableModule {}
-
-			

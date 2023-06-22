@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { RoleMappingTableService } from './role-mapping-table.service';
 //import { RoleMappingTableController } from './role-mapping-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [RoleMappingTableService],
 })
 export class RoleMappingTableModule {}
-
-			

@@ -41,7 +41,7 @@ describe('PayAsYouGoService', () => {
         OrganizationService,
         TransactionsService,
         SessionsTableService,
-        OrganizationTableService
+        OrganizationTableService,
       ],
     }).compile();
 

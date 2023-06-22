@@ -36,14 +36,14 @@ export class AiController {
     private readonly service: AiService,
     private readonly aiTransactionLogsTable: AITransactionsLogsTableService,
     private readonly aiTransactionLogsSP: AitransactionsLogsStoredProcedureService,
-    private readonly settingsTable : SettingTableService,
+    private readonly settingsTable: SettingTableService,
     private readonly plansTable: PlansTableService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly createServiceSvc: CreateServiceService,
     private readonly payAsYouGoService: PayAsYouGoService,
-    private readonly configsTable: ConfigsTableService
+    private readonly configsTable: ConfigsTableService,
   ) {}
 
   @ApiOperation({ summary: 'Check a Validation Token' })

@@ -25,7 +25,7 @@ import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.s
 export class InvoicesController {
   constructor(
     private readonly service: InvoicesService,
-    private readonly invoicesTable: InvoicesTableService
+    private readonly invoicesTable: InvoicesTableService,
   ) {}
 
   // Find an item by id

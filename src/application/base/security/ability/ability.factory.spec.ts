@@ -69,7 +69,7 @@ describe('AbilityFactory', () => {
         PlansQueryService,
         SessionsTableService,
         DiscountsTableService,
-        OrganizationTableService
+        OrganizationTableService,
       ],
     }).compile();
 

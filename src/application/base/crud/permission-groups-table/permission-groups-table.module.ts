@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { PermissionGroupsTableService } from './permission-groups-table.service';
 //import { PermissionGroupsTableController } from './permission-groups-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [PermissionGroupsTableService],
 })
 export class PermissionGroupsTableModule {}
-
-			

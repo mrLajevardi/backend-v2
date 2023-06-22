@@ -15,12 +15,7 @@ describe('AuthController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       controllers: [AuthController],
-      providers: [
-        AuthService, 
-        UserService, 
-        JwtService,
-        UserTableService
-      ],
+      providers: [AuthService, UserService, JwtService, UserTableService],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);

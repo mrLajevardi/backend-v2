@@ -30,7 +30,7 @@ export class AiService {
     private readonly aiTransactionLogsTable: AITransactionsLogsTableService,
     private readonly settingTable: SettingTableService,
     private readonly configsTable: ConfigsTableService,
-    private readonly serviceInstancesSP: ServiceInstancesStoredProcedureService
+    private readonly serviceInstancesSP: ServiceInstancesStoredProcedureService,
   ) {}
 
   async verifyToken(token: string) {

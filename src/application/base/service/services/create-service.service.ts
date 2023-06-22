@@ -226,11 +226,7 @@ export class CreateServiceService {
         itemTypes,
         data,
       );
-      await this.invoiceService.createInvoiceItems(
-        invoiceId,
-        itemTypes,
-        data,
-      );
+      await this.invoiceService.createInvoiceItems(invoiceId, itemTypes, data);
     }
 
     if (!isEmpty(discount)) {

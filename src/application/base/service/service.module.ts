@@ -19,7 +19,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
     SessionsModule,
     UserModule,
     InvoicesModule,
-    TransactionsModule
+    TransactionsModule,
   ],
   providers: [
     ServiceService,
@@ -36,6 +36,6 @@ import { TransactionsModule } from '../transactions/transactions.module';
     ExtendServiceService,
     DiscountsService,
     ServiceChecksService,
-  ]
+  ],
 })
 export class ServiceModule {}

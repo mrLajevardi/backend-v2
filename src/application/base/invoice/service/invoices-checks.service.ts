@@ -8,7 +8,7 @@ export class InvoicesChecksService {
   constructor(
     private readonly plansTable: PlansTableService,
     private readonly plansQuery: PlansQueryService,
-    ) {}
+  ) {}
 
   async checkPlanCondition(data, serviceId, duration) {
     const plansList = await this.plansTable.find();

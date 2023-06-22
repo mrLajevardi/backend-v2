@@ -26,16 +26,16 @@ import { ServiceItemsTableService } from '../../crud/service-items-table/service
 
 @Injectable()
 export class ExtendServiceService {
-    constructor(
-      private readonly serviceInstancesTable: ServiceInstancesTableService,
-      private readonly itemTypesTable: ItemTypesTableService,
-      private readonly serviceTypeTable: ServiceTypesTableService,
-      private readonly servicePropertiesTable: ServicePropertiesTableService,
-      private readonly plansTable: PlansTableService,
-      private readonly configsTable: ConfigsTableService,
-      private readonly serviceItemsTable: ServiceItemsTableService,
-      private readonly sessionService: SessionsService,
-    ) {}
+  constructor(
+    private readonly serviceInstancesTable: ServiceInstancesTableService,
+    private readonly itemTypesTable: ItemTypesTableService,
+    private readonly serviceTypeTable: ServiceTypesTableService,
+    private readonly servicePropertiesTable: ServicePropertiesTableService,
+    private readonly plansTable: PlansTableService,
+    private readonly configsTable: ConfigsTableService,
+    private readonly serviceItemsTable: ServiceItemsTableService,
+    private readonly sessionService: SessionsService,
+  ) {}
 
   async getAiServiceInfo(
     userId,

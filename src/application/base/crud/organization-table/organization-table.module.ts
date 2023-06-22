@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { OrganizationTableService } from './organization-table.service';
 //import { OrganizationTableController } from './organization-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [OrganizationTableService],
 })
 export class OrganizationTableModule {}
-
-			

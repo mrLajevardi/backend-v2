@@ -6,7 +6,7 @@ import { CrudModule } from '../crud/crud.module';
 @Module({
   imports: [
     DatabaseModule,
-    CrudModule
+    CrudModule,
     //  UserModule,
     //  OrganizationModule
   ],

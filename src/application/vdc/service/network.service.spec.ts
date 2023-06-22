@@ -26,9 +26,7 @@ describe('NetworkService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule, 
-      ],
+      imports: [TestDatabaseModule],
       providers: [
         VdcService,
         OrganizationService,
@@ -49,8 +47,7 @@ describe('NetworkService', () => {
         UserTableService,
         TransactionsTableService,
         SessionsTableService,
-        NetworkService
-        
+        NetworkService,
       ],
     }).compile();
 

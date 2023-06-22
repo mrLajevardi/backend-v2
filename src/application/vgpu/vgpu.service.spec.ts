@@ -23,7 +23,7 @@ describe('VgpuService', () => {
         ConfigsTableService,
         UserTableService,
         SessionsTableService,
-        OrganizationTableService
+        OrganizationTableService,
       ],
     }).compile();
 

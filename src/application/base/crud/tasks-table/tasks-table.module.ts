@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { TasksTableService } from './tasks-table.service';
 //import { TasksTableController } from './tasks-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [TasksTableService],
 })
 export class TasksTableModule {}
-
-			

@@ -61,7 +61,7 @@ describe('VdcAdminController', () => {
         InvoicesTableService,
         PlansQueryService,
         TransactionsTableService,
-        TasksTableService
+        TasksTableService,
       ],
       controllers: [VdcAdminController],
     }).compile();

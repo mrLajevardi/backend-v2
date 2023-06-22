@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { ACLTableService } from './acl-table.service';
 //import { ACLTableController } from './acl-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [ACLTableService],
 })
 export class ACLTableModule {}
-
-			

@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { TransactionsTableService } from './transactions-table.service';
 //import { TransactionsTableController } from './transactions-table.controller';
@@ -11,5 +10,3 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
   exports: [TransactionsTableService],
 })
 export class TransactionsTableModule {}
-
-			

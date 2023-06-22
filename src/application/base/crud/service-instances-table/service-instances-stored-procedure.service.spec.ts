@@ -11,7 +11,9 @@ describe('ServiceInstancesStoredProcedureService', () => {
       providers: [ServiceInstancesStoredProcedureService],
     }).compile();
 
-    service = module.get<ServiceInstancesStoredProcedureService>(ServiceInstancesStoredProcedureService);
+    service = module.get<ServiceInstancesStoredProcedureService>(
+      ServiceInstancesStoredProcedureService,
+    );
   });
 
   it('should be defined', () => {

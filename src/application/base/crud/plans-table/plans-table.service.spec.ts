@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { PlansTableService } from './plans-table.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -11,11 +10,7 @@ describe('PlansTableService', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        PlansTableService, 
-        TestDataService,
-        
-      ],
+      providers: [PlansTableService, TestDataService],
     }).compile();
 
     service = module.get<PlansTableService>(PlansTableService);
@@ -26,7 +21,4 @@ describe('PlansTableService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-
 });
-			

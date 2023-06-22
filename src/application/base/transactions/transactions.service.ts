@@ -4,10 +4,7 @@ import { TransactionsTableService } from '../crud/transactions-table/transaction
 
 @Injectable()
 export class TransactionsService {
-  constructor(
-    private readonly transactionTable: TransactionsTableService,
-  ) {}
-
+  constructor(private readonly transactionTable: TransactionsTableService) {}
 
   // Moved from createService
   async createTransaction(
@@ -23,5 +20,4 @@ export class TransactionsService {
     dto.description = description;
     await this.transactionTable.create(dto);
   }
-
 }

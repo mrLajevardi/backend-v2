@@ -21,7 +21,7 @@ import { OrganizationModule } from '../organization/organization.module';
     VdcModule,
     CrudModule,
     SessionsModule,
-    OrganizationModule
+    OrganizationModule,
   ],
   providers: [
     TasksService,

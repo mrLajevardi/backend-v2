@@ -6,24 +6,21 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class AitransactionsLogsStoredProcedureService {
-	constructor(
-        @InjectRepository(AiTransactionsLogs)
-        private readonly repository: Repository<AiTransactionsLogs>,
-        ) {}
+  constructor(
+    @InjectRepository(AiTransactionsLogs)
+    private readonly repository: Repository<AiTransactionsLogs>,
+  ) {}
 
-        
-    async getChartAIUsed(
-        startDate: string,
-        endDate: string,
-        serviceInstanceId: string,
-      ) {
-        const query = `EXEC Sp_ChartAIUsed '${startDate}', '${endDate}', '${serviceInstanceId}'`;
-    
-        // Execute the query using the appropriate database connector or ORM method
-        const result = await this.repository.query(query);
-    
-        return result;
-      }
+  async getChartAIUsed(
+    startDate: string,
+    endDate: string,
+    serviceInstanceId: string,
+  ) {
+    const query = `EXEC Sp_ChartAIUsed '${startDate}', '${endDate}', '${serviceInstanceId}'`;
 
-      
+    // Execute the query using the appropriate database connector or ORM method
+    const result = await this.repository.query(query);
+
+    return result;
+  }
 }

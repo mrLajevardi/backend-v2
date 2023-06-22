@@ -8,8 +8,8 @@ import { OrganizationTableService } from 'src/application/base/crud/organization
 export class OrgService {
   constructor(
     private readonly organizationTable: OrganizationTableService,
-    private readonly organizationService: OrganizationService
-    ) {}
+    private readonly organizationService: OrganizationService,
+  ) {}
 
   async checkOrg(userId) {
     let org: any;

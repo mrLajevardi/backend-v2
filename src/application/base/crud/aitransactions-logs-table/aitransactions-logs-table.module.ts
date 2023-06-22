@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { AITransactionsLogsTableService } from './aitransactions-logs-table.service';
 //import { AITransactionsLogsTableController } from './aitransactions-logs-table.controller';
@@ -7,17 +6,15 @@ import { AitransactionsLogsStoredProcedureService } from './aitransactions-logs-
 import { CrudModule } from '../crud.module';
 
 @Module({
-  imports: [
-    DatabaseModule
-  ],
+  imports: [DatabaseModule],
   providers: [
-    AITransactionsLogsTableService, 
-    AitransactionsLogsStoredProcedureService],
+    AITransactionsLogsTableService,
+    AitransactionsLogsStoredProcedureService,
+  ],
   //controllers: [AITransactionsLogsTableController],
-  exports: [AITransactionsLogsTableService,
-  AitransactionsLogsStoredProcedureService
+  exports: [
+    AITransactionsLogsTableService,
+    AitransactionsLogsStoredProcedureService,
   ],
 })
 export class AITransactionsLogsTableModule {}
-
-			

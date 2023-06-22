@@ -26,12 +26,14 @@ describe('TasksService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule,
+      imports: [
+        TestDatabaseModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),
       ],
-      providers: [TasksService,
+      providers: [
+        TasksService,
         TransactionsService,
         TasksService,
         TaskManagerService,
@@ -50,8 +52,7 @@ describe('TasksService', () => {
         TasksTableService,
         OrganizationTableService,
         UserTableService,
-        SessionsTableService
-      
+        SessionsTableService,
       ],
     }).compile();
 

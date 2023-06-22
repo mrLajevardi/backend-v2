@@ -46,8 +46,7 @@ describe('OrgService', () => {
         UserTableService,
         TransactionsTableService,
         SessionsTableService,
-        OrgService
-        
+        OrgService,
       ],
     }).compile();
 

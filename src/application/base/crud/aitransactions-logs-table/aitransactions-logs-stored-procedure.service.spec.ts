@@ -7,11 +7,13 @@ describe('AitransactionsLogsStoredProcedureService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports:  [TestDatabaseModule],
+      imports: [TestDatabaseModule],
       providers: [AitransactionsLogsStoredProcedureService],
     }).compile();
 
-    service = module.get<AitransactionsLogsStoredProcedureService>(AitransactionsLogsStoredProcedureService);
+    service = module.get<AitransactionsLogsStoredProcedureService>(
+      AitransactionsLogsStoredProcedureService,
+    );
   });
 
   it('should be defined', () => {

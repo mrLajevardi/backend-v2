@@ -11,11 +11,7 @@ import { UserTableService } from '../crud/user-table/user-table.service';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private readonly userTable : UserTableService,
-  ) {}
-
-
+  constructor(private readonly userTable: UserTableService) {}
 
   // find user by phone number
   async findByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
@@ -36,8 +32,6 @@ export class UserService {
   async comparePassword(hashed: string, plain: string): Promise<boolean> {
     return await bcrypt.compare(plain, hashed);
   }
-
-
 
   async checkUserCredit(costs, userId, options, serviceType) {
     try {

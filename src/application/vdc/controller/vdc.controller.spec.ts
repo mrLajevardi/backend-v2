@@ -91,7 +91,7 @@ describe('VdcController', () => {
         SessionsTableService,
         TransactionsTableService,
         TasksTableService,
-                VdcService,
+        VdcService,
         OrganizationService,
         UserService,
         TransactionsService,
@@ -112,7 +112,7 @@ describe('VdcController', () => {
         DiscountsTableService,
         ServiceService,
         InvoicesTableService,
-        PlansQueryService
+        PlansQueryService,
       ],
       controllers: [VdcController],
     }).compile();

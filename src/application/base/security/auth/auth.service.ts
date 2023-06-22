@@ -31,10 +31,7 @@ export class AuthService {
     }
 
     // checking the availablity of the user and
-    const isValid = await this.userService.comparePassword(
-      user.password,
-      pass,
-    );
+    const isValid = await this.userService.comparePassword(user.password, pass);
     if (user && isValid) {
       // eslint-disable-next-line
       const { password, ...result } = user;

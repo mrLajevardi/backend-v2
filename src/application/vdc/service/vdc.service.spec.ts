@@ -45,7 +45,6 @@ describe('VdcService', () => {
         UserTableService,
         TransactionsTableService,
         SessionsTableService,
-        
       ],
     }).compile();
 

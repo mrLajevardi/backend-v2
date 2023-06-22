@@ -12,17 +12,14 @@ describe('SessionsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule,
-
-      ],
+      imports: [TestDatabaseModule],
       providers: [
-        SessionsService, 
-        UserService, 
-        OrganizationService,        
+        SessionsService,
+        UserService,
+        OrganizationService,
         SessionsTableService,
         UserTableService,
-        OrganizationTableService
+        OrganizationTableService,
       ],
     }).compile();
 

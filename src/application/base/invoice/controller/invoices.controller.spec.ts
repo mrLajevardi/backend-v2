@@ -40,7 +40,7 @@ describe('InvoicesController', () => {
         SessionsService,
         SessionsTableService,
         InvoicesTableService,
-        PlansQueryService
+        PlansQueryService,
       ],
       controllers: [InvoicesController],
     }).compile();

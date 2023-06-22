@@ -77,7 +77,7 @@ describe('AiService', () => {
         ServiceService,
         PlansQueryService,
         UserTableService,
-        SessionsTableService
+        SessionsTableService,
       ],
     }).compile();
 

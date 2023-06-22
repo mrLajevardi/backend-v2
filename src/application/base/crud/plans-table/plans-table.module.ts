@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { PlansTableService } from './plans-table.service';
 //import { PlansTableController } from './plans-table.controller';
@@ -12,5 +11,3 @@ import { PlansQueryService } from './plans-query.service';
   exports: [PlansTableService, PlansQueryService],
 })
 export class PlansTableModule {}
-
-			

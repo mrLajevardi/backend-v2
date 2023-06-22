@@ -73,8 +73,7 @@ describe('CreateServiceService', () => {
         InvoiceItemsTableService,
         InvoicePlansTableService,
         InvoicePropertiesTableService,
-        PlansQueryService
-
+        PlansQueryService,
       ],
     }).compile();
 
