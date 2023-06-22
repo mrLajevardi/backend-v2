@@ -1,0 +1,35 @@
+[
+    {
+      "id": 5671,
+      "serviceTypeId": "vdc",
+      "rawAmount": 270000,
+      "planAmount": 0,
+      "planRatio": 1,
+      "finalAmount": 256500,
+      "description": "description",
+      "dateTime": 1679831273430,
+      "payed": true,
+      "voided": false,
+      "endDateTime": 1679706473430,
+      "type": 0,
+      "name": "test",
+      "userId": 597
+    },
+    {
+      "id": 5919,
+      "serviceTypeId": "aradAi",
+      "rawAmount": 0,
+      "planAmount": 0,
+      "planRatio": 1,
+      "finalAmount": 0,
+      "description": "description",
+      "dateTime": 1679832052680,
+      "payed": true,
+      "voided": false,
+      "endDateTime": 1679828852680,
+      "type": 0,
+      "name": "majid",
+      "userId":597
+    }
+  ]
+  

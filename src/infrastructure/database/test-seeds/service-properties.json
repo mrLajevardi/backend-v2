@@ -1,0 +1,67 @@
+[
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "id",
+    "value": "111111"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "template_id",
+    "value": "6331"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "client_id",
+    "value": "me"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "image",
+    "value": "runpod/stable-diffusion:web-automatic-2.1.16"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "env",
+    "value": "{\n \"JUPYTER_DIR\": \"/\",\n  \"-p 3000:3000\": \"1\"\n}"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "args_str",
+    "value": ""
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "onstart",
+    "value": "touch ~/.no_auto_tmux; /start.sh;"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "runtype",
+    "value": "jupyter_direc ssh_direc ssh_proxy"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "use_jupyter_lab",
+    "value": "true"
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "jupyter_dir",
+    "value": ""
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "python_utf8",
+    "value": ""
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "lang_utf8",
+    "value": ""
+  },
+  {
+    "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+    "propertyKey": "disk",
+    "value": "59.71"
+  }
+]

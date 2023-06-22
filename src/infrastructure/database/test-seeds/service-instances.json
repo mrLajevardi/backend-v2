@@ -1,0 +1,37 @@
+[
+    {
+      "id": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
+      "userId": 551,
+      "status": 3,
+      "createDate": 1679832302007,
+      "lastUpdateDate": 1679832302007,
+      "expireDate": 1679829863953,
+      "deletedDate": 1679844298787,
+      "isDeleted": true,
+      "index": 3,
+      "warningSent": 0,
+      "isDisabled": 0,
+      "name": "ss",
+      "planRatio": null,
+      "lastPayg": null,
+      "nextPayg": null
+    },
+    {
+      "id": "D1E47C43-3900-4F2F-B709-ACDE93F2D280",
+      "userId": 551,
+      "status": 3,
+      "createDate": 1679764128513,
+      "lastUpdateDate": 1679764128513,
+      "expireDate": 1679706473430,
+      "deletedDate": 1679871780527,
+      "isDeleted": true,
+      "index": 1,
+      "warningSent": 0,
+      "isDisabled": 0,
+      "name": "test",
+      "planRatio": null,
+      "lastPayg": null,
+      "nextPayg": null
+    }
+  ]
+  

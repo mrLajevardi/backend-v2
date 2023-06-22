@@ -1,0 +1,52 @@
+[
+    {
+      "model": "Invoices",
+      "accessType": "create",
+      "principalType": "userId",
+      "principalId": "597",
+      "property": "",
+      "permission": "can"
+    },
+    {
+      "model": "Invoices",
+      "accessType": "create",
+      "principalType": "userId",
+      "principalId": "589",
+      "property": "",
+      "permission": "cannot"
+    },
+    {
+      "model": "ServiceInstances",
+      "accessType": "create",
+      "principalType": "userId",
+      "principalId": "597",
+      "property": "",
+      "permission": "can"
+    },
+    {
+      "model": "ServiceInstances",
+      "accessType": "create",
+      "principalType": "userId",
+      "principalId": "518",
+      "property": "",
+      "permission": "cannot"
+    },
+    {
+      "model": "Invoices",
+      "accessType": "create",
+      "principalType": "userId",
+      "principalId": "597",
+      "property": "",
+      "permission": "can"
+    },
+    {
+      "model": "Invoices",
+      "accessType": "create",
+      "principalType": "userId",
+      "principalId": "518",
+      "property": "",
+      "permission": "cannot"
+    }
+
+  ]
+  
