@@ -1,11 +1,13 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../../user/user/user.service';
+import { UserService } from '../../user/user.service';
 import { JwtService } from '@nestjs/jwt';
+import { UserTableService } from '../../crud/user-table/user-table.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UserService,
+    private userTable: UserTableService,
+    private userService: UserService,
     private jwtService: JwtService,
   ) {}
 
@@ -20,7 +22,7 @@ export class AuthService {
       throw new UnauthorizedException('No password provided');
     }
 
-    const user = await this.usersService.findOne({
+    const user = await this.userTable.findOne({
       where: { username: username },
     });
 
@@ -29,10 +31,7 @@ export class AuthService {
     }
 
     // checking the availablity of the user and
-    const isValid = await this.usersService.comparePassword(
-      user.password,
-      pass,
-    );
+    const isValid = await this.userService.comparePassword(user.password, pass);
     if (user && isValid) {
       // eslint-disable-next-line
       const { password, ...result } = user;

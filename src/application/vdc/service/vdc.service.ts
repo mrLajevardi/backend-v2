@@ -1,26 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
-import { ServiceInstancesService } from '../../base/service/service-instances/service/service-instances.service';
-import { ServicePropertiesService } from '../../base/service/service-properties/service-properties.service';
-import { ServiceItemsService } from '../../base/service/service-items/service-items.service';
-import { ConfigsService } from '../../base/service/configs/configs.service';
-import { OrganizationService } from '../../base/organization/organization.service';
-import { UserService } from '../../base/user/user/user.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { ServicePropertiesTableModule } from 'src/application/base/crud/service-properties-table/service-properties-table.module';
+import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
+import { ServiceItemsTableService } from 'src/application/base/crud/service-items-table/service-items-table.service';
+import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
+import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 
 @Injectable()
 export class VdcService {
   constructor(
     // private readonly taskService: TasksService,
     private readonly sessionService: SessionsService,
-    private readonly serviceInstanceService: ServiceInstancesService,
-    private readonly servicePropertiesService: ServicePropertiesService,
-    private readonly serviceItemsService: ServiceItemsService,
-    private readonly configService: ConfigsService,
-    private readonly organizationService: OrganizationService,
-    private readonly userService: UserService,
+    private readonly serviceInstanceTable: ServiceInstancesTableService,
+    private readonly servicePropertiesTable: ServicePropertiesTableService,
+    private readonly serviceItemsTable: ServiceItemsTableService,
+    private readonly configTable: ConfigsTableService,
+    private readonly organizationTable: OrganizationTableService,
+    private readonly userTable: UserTableService,
   ) {}
 
   async createVdc(
@@ -32,7 +33,7 @@ export class VdcService {
     serviceInstanceId,
   ) {
     const sessionToken = await this.sessionService.checkAdminSession(userId);
-    const service = await this.serviceInstanceService.findOne({
+    const service = await this.serviceInstanceTable.findOne({
       where: {
         ID: serviceInstanceId,
       },
@@ -52,7 +53,7 @@ export class VdcService {
           __vcloudTask: null,
         });
       }
-      const vdcNameProperty = await this.servicePropertiesService.findOne({
+      const vdcNameProperty = await this.servicePropertiesTable.findOne({
         where: {
           and: [
             { serviceInstanceId: serviceInstanceId },
@@ -73,12 +74,12 @@ export class VdcService {
     }
     // creates a new vdc name
     const vdcName = orgName + '_vdc_' + service.index;
-    await this.servicePropertiesService.create({
+    await this.servicePropertiesTable.create({
       serviceInstanceId: serviceInstanceId,
       propertyKey: 'name',
       value: vdcName,
     });
-    await this.servicePropertiesService.create({
+    await this.servicePropertiesTable.create({
       serviceInstanceId: serviceInstanceId,
       propertyKey: 'orgId',
       value: orgId,
@@ -107,7 +108,7 @@ export class VdcService {
     );
     if (checkVdc) {
       // vdc has been created in cloud
-      const vdcIdProperty = await this.servicePropertiesService.findOne({
+      const vdcIdProperty = await this.servicePropertiesTable.findOne({
         where: {
           and: [
             { serviceInstanceId: serviceInstanceId },
@@ -148,7 +149,7 @@ export class VdcService {
    * @return {Promise}
    */
   async checkVdcExistence(userId, orgId, serviceInstanceId) {
-    const vdcNameProperty = await this.servicePropertiesService.findOne({
+    const vdcNameProperty = await this.servicePropertiesTable.findOne({
       where: {
         and: [
           { serviceInstanceId: serviceInstanceId },
@@ -185,12 +186,12 @@ export class VdcService {
     orgId,
     serviceInstanceId,
   ) {
-    const cpuSpeed = await this.configService.findOne({
+    const cpuSpeed = await this.configTable.findOne({
       where: {
         and: [{ PropertyKey: 'vCpuSpeed' }, { ServiceTypeID: 'vdc' }],
       },
     });
-    const networkQuota = await this.configService.findOne({
+    const networkQuota = await this.configTable.findOne({
       where: {
         and: [{ PropertyKey: 'networkQuota' }, { ServiceTypeID: 'vdc' }],
       },
@@ -215,7 +216,7 @@ export class VdcService {
     );
     const props = [{ key: 'vdcId', value: vdcInfo.id }];
     props.forEach(async (prop) => {
-      await this.servicePropertiesService.create({
+      await this.servicePropertiesTable.create({
         serviceInstanceId: serviceInstanceId,
         propertyKey: prop.key,
         value: prop.value,

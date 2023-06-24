@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AbilityFactory } from './ability.factory';
-import { AclService } from 'src/application/base/security/acl/acl.service';
-import { AclModule } from 'src/application/base/security/acl/acl.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Acl } from 'src/infrastructure/database/entities/Acl';
+import { CrudModule } from '../../crud/crud.module';
 
 @Module({
-  imports: [AclModule, TypeOrmModule.forFeature([Acl])],
-  providers: [AbilityFactory, AclService],
+  imports: [TypeOrmModule.forFeature([Acl]), CrudModule],
+  providers: [AbilityFactory],
   exports: [AbilityFactory],
 })
 export class AbilityModule {}

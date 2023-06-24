@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
-import { TransactionsController } from './transactions.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { CrudModule } from '../crud/crud.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, CrudModule],
   providers: [TransactionsService],
-  controllers: [TransactionsController],
+  controllers: [],
   exports: [TransactionsService],
 })
 export class TransactionsModule {}

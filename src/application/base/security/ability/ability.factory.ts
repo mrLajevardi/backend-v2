@@ -1,7 +1,7 @@
 import { createMongoAbility, Subject, AbilityBuilder } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
-import { AclService } from '../acl/acl.service';
+import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 
 export enum Action {
@@ -17,7 +17,7 @@ export const ability = createMongoAbility<[Action, Subject]>();
 
 @Injectable()
 export class AbilityFactory {
-  constructor(private readonly aclService: AclService) {}
+  constructor(private readonly aclTable: ACLTableService) {}
 
   // converts the string name of the entity class
   // to the class itself. because casl needs the class itself.
@@ -34,7 +34,7 @@ export class AbilityFactory {
   async createForUser(user: User) {
     const builder = new AbilityBuilder(createMongoAbility);
 
-    const acls = await this.aclService.find({
+    const acls = await this.aclTable.find({
       where: [
         { principalType: '' },
         { principalType: 'User', principalId: user ? user.id : '' },

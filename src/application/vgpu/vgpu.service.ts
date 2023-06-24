@@ -1,13 +1,14 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigsService } from '../base/service/configs/configs.service';
-import { ServiceChecksService } from '../base/service/service-instances/service/service-checks/service-checks.service';
+import { ServiceChecksService } from '../base/service/services/service-checks/service-checks.service';
 import { UnavailableResource } from 'src/infrastructure/exceptions/unavailable-resource.exception';
 import { SessionsService } from '../base/sessions/sessions.service';
+import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
+import { SessionsTableService } from '../base/crud/sessions-table/sessions-table.service';
 
 @Injectable()
 export class VgpuService {
   constructor(
-    private readonly configsService: ConfigsService,
+    private readonly configsTable: ConfigsTableService,
     private readonly sessionService: SessionsService,
   ) {}
 
@@ -37,7 +38,7 @@ export class VgpuService {
 
   async chackAvalibleToPowerOnVgpu(userId) {
     const props = {};
-    const VgpuConfigs = await this.configsService.find({
+    const VgpuConfigs = await this.configsTable.find({
       where: {
         PropertyKey: { like: '%config.vgpu.%' },
       },
@@ -59,7 +60,7 @@ export class VgpuService {
       return value.status === 'POWERED_ON';
     });
 
-    const availablePowerOnService = await this.configsService.findOne({
+    const availablePowerOnService = await this.configsTable.findOne({
       where: {
         PropertyKey: 'config.vgpu.availablePowerOnVgpu',
       },

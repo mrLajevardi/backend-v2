@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionsService } from './transactions.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { TransactionsTableService } from '../crud/transactions-table/transactions-table.service';
 
 describe('TransactionsService', () => {
   let service: TransactionsService;
@@ -8,7 +9,7 @@ describe('TransactionsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [TransactionsService],
+      providers: [TransactionsService, TransactionsTableService],
     }).compile();
 
     service = module.get<TransactionsService>(TransactionsService);
