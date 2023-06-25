@@ -33,26 +33,7 @@ describe('TasksService', () => {
         }),
       ],
       providers: [
-        TasksService,
-        TransactionsService,
-        TasksService,
-        TaskManagerService,
-        SessionsService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        ServiceItemsTableService,
-        ConfigsTableService,
-        OrganizationService,
-        UserService,
-        EdgeService,
-        OrgService,
-        NetworkService,
-        VdcService,
-        TransactionsTableService,
-        TasksTableService,
-        OrganizationTableService,
-        UserTableService,
-        SessionsTableService,
+
       ],
     }).compile();
 

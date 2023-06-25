@@ -16,10 +16,7 @@ describe('UserController', () => {
       imports: [TestDatabaseModule],
       controllers: [UserController],
       providers: [
-        UserService,
-        AbilityFactory,
-        ACLTableService,
-        UserTableService,
+
       ],
     }).compile();
 

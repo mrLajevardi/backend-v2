@@ -12,7 +12,7 @@ describe('UserService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [UserTableService, UserService],
+      providers: [],
     }).compile();
 
     table = module.get<UserTableService>(UserTableService);

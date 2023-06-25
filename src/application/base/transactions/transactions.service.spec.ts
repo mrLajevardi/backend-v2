@@ -9,7 +9,7 @@ describe('TransactionsService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [TransactionsService, TransactionsTableService],
+      providers: [],
     }).compile();
 
     service = module.get<TransactionsService>(TransactionsService);
