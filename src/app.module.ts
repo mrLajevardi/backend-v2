@@ -19,6 +19,7 @@ import { NetworkService } from './application/vdc/service/network.service';
 import { CrudModule } from './application/base/crud/crud.module';
 import { SessionsModule } from './application/base/sessions/sessions.module';
 import { OrganizationModule } from './application/base/organization/organization.module';
+import { VgpuModule } from './application/vgpu/vgpu.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { OrganizationModule } from './application/base/organization/organization
     //core
     AuthModule,
     AiModule,
+    VgpuModule,
     VastModule,
     AbilityModule,
     VdcModule,
