@@ -67,7 +67,7 @@ export class VgpuController {
   @ApiResponse({ status: 200, description: "Returns VGPU URL" })
   @Get("/vGpu/:ServiceInstanceId/vgpuUrl")
   async getVgpuUrl(
-    @Param("ServiceInstanceId") ServiceInstanceId: number
+    @Param("ServiceInstanceId") ServiceInstanceId: string
   ): Promise<any> {
     const externalPort = await this.servicePropertiesTable.findOne({
       where: {
@@ -109,7 +109,7 @@ export class VgpuController {
   })
   @Get("/vGpu/:ServiceInstanceId/vgpuDeploy")
   async vgpuDeploy(
-    @Param("ServiceInstanceId") ServiceInstanceId: number,
+    @Param("ServiceInstanceId") ServiceInstanceId: string,
     @Request() options
   ): Promise<any> {
     const userId = options.user.id;
@@ -198,7 +198,7 @@ export class VgpuController {
   })
   @Get("/vGpu/:ServiceInstanceId/vgpuUnDeploy")
   async vgpuUnDeploy(
-    @Param("ServiceInstanceId") ServiceInstanceId: number,
+    @Param("ServiceInstanceId") ServiceInstanceId: string,
     @Request() options
   ): Promise<any> {
     const userId = options.user.id;
