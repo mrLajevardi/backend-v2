@@ -19,20 +19,7 @@ describe('InvoicesChecksService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        InvoicesChecksService,
-        PlansTableService,
-        ServiceChecksService,
-        ServiceTypesTableService,
-        DiscountsService,
-        ServiceInstancesTableService,
-        TransactionsService,
-        UserService,
-        PlansQueryService,
-        DiscountsTableService,
-        TransactionsTableService,
-        UserTableService,
-      ],
+      providers: [],
     }).compile();
 
     service = module.get<InvoicesChecksService>(InvoicesChecksService);

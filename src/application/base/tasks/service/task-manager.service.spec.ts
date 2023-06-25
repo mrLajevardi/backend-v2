@@ -32,27 +32,7 @@ describe('TaskManagerService', () => {
           name: 'tasks',
         }),
       ],
-      providers: [
-        TransactionsService,
-        TasksService,
-        TaskManagerService,
-        SessionsService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        ServiceItemsTableService,
-        ConfigsTableService,
-        OrganizationService,
-        UserService,
-        EdgeService,
-        OrgService,
-        NetworkService,
-        VdcService,
-        TransactionsTableService,
-        TasksTableService,
-        OrganizationTableService,
-        UserTableService,
-        SessionsTableService,
-      ],
+      providers: [],
     }).compile();
 
     service = module.get<TaskManagerService>(TaskManagerService);

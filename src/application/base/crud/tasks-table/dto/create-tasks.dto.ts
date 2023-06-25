@@ -51,5 +51,5 @@ export class CreateTasksDto {
 
   @IsNumber()
   @ApiProperty()
-  serviceInstanceId: number;
+  serviceInstanceId: string;
 }

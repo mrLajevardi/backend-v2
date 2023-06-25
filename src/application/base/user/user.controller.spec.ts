@@ -15,12 +15,7 @@ describe('UserController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
       controllers: [UserController],
-      providers: [
-        UserService,
-        AbilityFactory,
-        ACLTableService,
-        UserTableService,
-      ],
+      providers: [],
     }).compile();
 
     controller = module.get<UserController>(UserController);

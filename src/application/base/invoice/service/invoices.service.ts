@@ -41,8 +41,7 @@ export class InvoicesService {
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly transactionTable: TransactionsTableService,
     private readonly invoicePlansTable: InvoicePlansTableService,
-    private readonly invoicePropertiesTable: InvoicePropertiesTableService,
-    private readonly vgpuService: VgpuService,
+    private readonly invoicePropertiesTable: InvoicePropertiesTableService, // private readonly vgpuService: VgpuService,
   ) {}
 
   // Create invoice items
@@ -164,11 +163,12 @@ export class InvoicesService {
       plans,
       itemTypes,
     );
-    let duration = data.duration;
-    if (data.ServiceTypeID == 'vgpu') {
-      await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
-      duration = 36;
-    }
+    const duration = data.duration;
+    // CIRCULAR depencency
+    // if (data.ServiceTypeID == 'vgpu') {
+    //   await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
+    //   duration = 36;
+    // }
     // create service Invoice
     let dto: CreateInvoicesDto;
     dto.userId = userId;

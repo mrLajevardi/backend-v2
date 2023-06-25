@@ -41,36 +41,7 @@ describe('AbilityFactory', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        ACLTableService,
-        AbilityFactory,
-        UserTableService,
-        UserService,
-        InvoicesService,
-        TestDataService,
-        PlansTableService,
-        ItemTypesTableService,
-        ServiceTypesTableService,
-        InvoicesChecksService,
-        CostCalculationService,
-        InvoiceItemsTableService,
-        TransactionsService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        VgpuService,
-        ServiceChecksService,
-        ConfigsTableService,
-        SessionsService,
-        DiscountsService,
-        ServiceInstancesTableService,
-        OrganizationService,
-        InvoicesTableService,
-        TransactionsTableService,
-        PlansQueryService,
-        SessionsTableService,
-        DiscountsTableService,
-        OrganizationTableService,
-      ],
+      providers: [AbilityFactory],
     }).compile();
 
     abilityFactory = module.get<AbilityFactory>(AbilityFactory);

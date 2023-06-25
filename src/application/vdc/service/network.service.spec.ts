@@ -27,28 +27,7 @@ describe('NetworkService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        VdcService,
-        OrganizationService,
-        OrganizationService,
-        UserService,
-        TransactionsService,
-        EdgeService,
-        ExtendServiceService,
-        ItemTypesTableService,
-        PlansTableService,
-        ServiceTypesTableService,
-        ConfigsTableService,
-        ServiceItemsTableService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        SessionsService,
-        OrganizationTableService,
-        UserTableService,
-        TransactionsTableService,
-        SessionsTableService,
-        NetworkService,
-      ],
+      providers: [],
     }).compile();
 
     service = module.get<NetworkService>(NetworkService);
