@@ -16,7 +16,7 @@
     "pm2:reload": "pm2 reload arad-v2", 
     "pm2:stop": "pm2 reload arad-v2", 
     "lint:dev": "eslint \"{src,apps,libs,test}/**/*.ts\"  --fix --rulesdir eslint-rules/",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" -f ./node_modules/eslint-junit/index.js",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" -f ./node_modules/eslint-junit/index.js --rulesdir eslint-rules/",
     "test:dev": "jest",
     "test": "jest --ci --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
