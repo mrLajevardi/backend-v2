@@ -37,9 +37,7 @@ describe('VdcAdminController', () => {
           name: 'tasks',
         }),
       ],
-      providers: [
-
-      ],
+      providers: [],
       controllers: [VdcAdminController],
     }).compile();
 

@@ -32,15 +32,13 @@ describe('VgpuService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule,
+      imports: [
+        TestDatabaseModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),
       ],
-      providers: [
-
-        
-      ],
+      providers: [],
     }).compile();
 
     service = module.get<VgpuService>(VgpuService);

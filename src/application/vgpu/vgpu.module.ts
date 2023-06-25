@@ -9,11 +9,11 @@ import { TasksModule } from '../base/tasks/tasks.module';
 
 @Module({
   imports: [
-    CrudModule, 
-    DatabaseModule, 
-    SessionsModule, 
+    CrudModule,
+    DatabaseModule,
+    SessionsModule,
     ServiceModule,
-    TasksModule
+    TasksModule,
   ],
   providers: [VgpuService],
   controllers: [VgpuController],

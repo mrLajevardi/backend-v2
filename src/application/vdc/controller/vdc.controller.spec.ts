@@ -54,9 +54,7 @@ describe('VdcController', () => {
           name: 'tasks',
         }),
       ],
-      providers: [
-
-      ],
+      providers: [],
       controllers: [VdcController],
     }).compile();
 

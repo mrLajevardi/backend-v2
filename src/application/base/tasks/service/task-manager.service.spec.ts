@@ -32,9 +32,7 @@ describe('TaskManagerService', () => {
           name: 'tasks',
         }),
       ],
-      providers: [
-
-      ],
+      providers: [],
     }).compile();
 
     service = module.get<TaskManagerService>(TaskManagerService);

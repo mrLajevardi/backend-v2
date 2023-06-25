@@ -157,7 +157,7 @@ export class VgpuService {
       const action = await mainWrapper.user.vm.deployVm(session, vmId);
       const servieproperties = await this.servicePropertiesTable.findOne({
         where: {
-          ServiceInstanceID: serviceId, 
+          ServiceInstanceID: serviceId,
           PropertyKey: 'plan',
         },
       });
@@ -170,8 +170,8 @@ export class VgpuService {
       };
       const planCost = await this.itemTypesTable.find({
         where: {
-           Code: { like: gpuPlans[servieproperties.value] + 'Cost%' } ,
-           ServiceTypeID: 'vgpu' ,
+          Code: { like: gpuPlans[servieproperties.value] + 'Cost%' },
+          ServiceTypeID: 'vgpu',
         },
       });
       const costPerHour = planCost[0].fee;

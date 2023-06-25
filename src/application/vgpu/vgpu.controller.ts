@@ -1,22 +1,34 @@
-import { Controller, Get, Param, Query, Request, UseFilters } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { ConfigsTableService } from "../base/crud/configs-table/configs-table.service";
-import { ItemTypesTableService } from "../base/crud/item-types-table/item-types-table.service";
-import { ServicePropertiesTableService } from "../base/crud/service-properties-table/service-properties-table.service";
-import { SessionsService } from "../base/sessions/sessions.service";
-import { TaskManagerService } from "../base/tasks/service/task-manager.service";
-import { isEmpty, isNil } from "lodash";
-import aradVgpuConfig from "src/infrastructure/config/aradVgpuConfig";
-import { ForbiddenException } from "src/infrastructure/exceptions/forbidden.exception";
-import { VgpuService } from "./vgpu.service";
-import { TasksTableService } from "../base/crud/tasks-table/tasks-table.service";
-import { ServiceInstancesTableService } from "../base/crud/service-instances-table/service-instances-table.service";
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { HttpExceptionFilter } from "src/infrastructure/filters/http-exception.filter";
-import { ServiceTypesTableService } from "../base/crud/service-types-table/service-types-table.service";
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  Request,
+  UseFilters,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
+import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-table.service';
+import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
+import { SessionsService } from '../base/sessions/sessions.service';
+import { TaskManagerService } from '../base/tasks/service/task-manager.service';
+import { isEmpty, isNil } from 'lodash';
+import aradVgpuConfig from 'src/infrastructure/config/aradVgpuConfig';
+import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
+import { VgpuService } from './vgpu.service';
+import { TasksTableService } from '../base/crud/tasks-table/tasks-table.service';
+import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.filter';
+import { ServiceTypesTableService } from '../base/crud/service-types-table/service-types-table.service';
 
-@ApiTags("vgpu")
-@Controller("vgpu")
+@ApiTags('vgpu')
+@Controller('vgpu')
 @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VgpuController {
@@ -30,60 +42,60 @@ export class VgpuController {
     private readonly taskManagerService: TaskManagerService,
     private readonly tasksTable: TasksTableService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly serviceTypeTable: ServiceTypesTableService
+    private readonly serviceTypeTable: ServiceTypesTableService,
   ) {}
 
-  @ApiOperation({ summary: "Get VGPU Item Type" })
+  @ApiOperation({ summary: 'Get VGPU Item Type' })
   @ApiResponse({
     status: 200,
-    description: "Returns VGPU plans",
-    type: "array",
+    description: 'Returns VGPU plans',
+    type: 'array',
   })
-  @Get("/vgpuPlans")
-  async getvgpuPlans(@Query("filter") filter: string): Promise<any> {
+  @Get('/vgpuPlans')
+  async getvgpuPlans(@Query('filter') filter: string): Promise<any> {
     let parsedFilter = {};
     if (!isEmpty(filter)) {
-        console.log(filter)
+      console.log(filter);
       parsedFilter = JSON.parse(filter).where;
     }
-    let where = parsedFilter; 
-    where['propertyKey'] =  { like: "QualityPlans.%" };
-    where['serviceType'] = this.serviceTypeTable.findById("vgpu");
+    const where = parsedFilter;
+    where['propertyKey'] = { like: 'QualityPlans.%' };
+    where['serviceType'] = this.serviceTypeTable.findById('vgpu');
     const vgpuPlans = await this.configsTable.find({
       where: where,
     });
 
     const planCost = await this.itemTypesTable.find({
       where: {
-          code: { like: "%Cost%" } ,
-          serviceType: this.serviceTypeTable.findById("vgpu") ,
-          parsedFilter,
+        code: { like: '%Cost%' },
+        serviceType: this.serviceTypeTable.findById('vgpu'),
+        parsedFilter,
       },
     });
     return Promise.resolve({ vgpuPlans, planCost });
   }
 
-  @ApiOperation({ summary: "Check and get Jupyter API" })
-  @ApiResponse({ status: 200, description: "Returns VGPU URL" })
-  @Get("/vGpu/:ServiceInstanceId/vgpuUrl")
+  @ApiOperation({ summary: 'Check and get Jupyter API' })
+  @ApiResponse({ status: 200, description: 'Returns VGPU URL' })
+  @Get('/vGpu/:ServiceInstanceId/vgpuUrl')
   async getVgpuUrl(
-    @Param("ServiceInstanceId") ServiceInstanceId: string
+    @Param('ServiceInstanceId') ServiceInstanceId: string,
   ): Promise<any> {
     const externalPort = await this.servicePropertiesTable.findOne({
       where: {
-          serviceInstanceId: ServiceInstanceId,
-          propertyKey: "VgpuExternalPort",
+        serviceInstanceId: ServiceInstanceId,
+        propertyKey: 'VgpuExternalPort',
       },
     });
     // TODO if external port is empty return error
     const props = {};
     const VgpuConfigs = await this.configsTable.find({
       where: {
-        propertyKey: { like: "%config.vgpu.%" },
+        propertyKey: { like: '%config.vgpu.%' },
       },
     });
     for (const prop of VgpuConfigs) {
-      const key = prop.propertyKey.split(".").slice(-1)[0];
+      const key = prop.propertyKey.split('.').slice(-1)[0];
       const item = prop.value;
       props[key] = item;
     }
@@ -92,31 +104,31 @@ export class VgpuController {
       secret: aradVgpuConfig.JWT_SECRET_KEY,
     });
     return Promise.resolve(
-      "http://" +
-        props["externalAddresses"] +
-        ":" +
+      'http://' +
+        props['externalAddresses'] +
+        ':' +
         externalPort.value +
-        "/lab?token=" +
-        token
+        '/lab?token=' +
+        token,
     );
   }
 
-  @ApiOperation({ summary: "Deploy VGPU" })
+  @ApiOperation({ summary: 'Deploy VGPU' })
   @ApiResponse({
     status: 200,
-    description: "Returns deployment data",
-    type: "object",
+    description: 'Returns deployment data',
+    type: 'object',
   })
-  @Get("/vGpu/:ServiceInstanceId/vgpuDeploy")
+  @Get('/vGpu/:ServiceInstanceId/vgpuDeploy')
   async vgpuDeploy(
-    @Param("ServiceInstanceId") ServiceInstanceId: string,
-    @Request() options
+    @Param('ServiceInstanceId') ServiceInstanceId: string,
+    @Request() options,
   ): Promise<any> {
     const userId = options.user.id;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
         id: ServiceInstanceId,
-        userId: userId
+        userId: userId,
       },
     });
     if (isNil(serviceInstance)) {
@@ -127,61 +139,61 @@ export class VgpuController {
     const task = await this.tasksTable.create({
       userId: userId,
       serviceInstanceId: ServiceInstanceId,
-      operation: "deployVgpuVm",
+      operation: 'deployVgpuVm',
       details: null,
       startTime: new Date(),
       endTime: null,
-      status: "running",
+      status: 'running',
     });
     await this.taskManagerService.addTask({
       serviceInstanceId: ServiceInstanceId,
-      customTaskId: task["TaskID"],
+      customTaskId: task['TaskID'],
       vcloudTask: null,
-      target: "task",
-      nextTask: "deployVgpuVm",
-      taskType: "adminTask",
+      target: 'task',
+      nextTask: 'deployVgpuVm',
+      taskType: 'adminTask',
       requestOptions: options,
       // target: 'object',
     });
     return Promise.resolve({
       id: ServiceInstanceId,
-      taskId: task["TaskID"],
+      taskId: task['TaskID'],
     });
   }
 
-  @ApiOperation({ summary: "Check VGPU deployment status" })
+  @ApiOperation({ summary: 'Check VGPU deployment status' })
   @ApiResponse({
     status: 200,
-    description: "Returns deployment status data",
-    type: "object",
+    description: 'Returns deployment status data',
+    type: 'object',
   })
-  @Get("/vGpu/:ServiceInstanceId/vgpuStatusDeploy")
+  @Get('/vGpu/:ServiceInstanceId/vgpuStatusDeploy')
   async vgpuStatusDeploy(
-    @Param("ServiceInstanceId") ServiceInstanceId: string,
-    @Request() options
+    @Param('ServiceInstanceId') ServiceInstanceId: string,
+    @Request() options,
   ): Promise<any> {
     const userId = options.user.id;
-    const vmName = ServiceInstanceId + "VM";
+    const vmName = ServiceInstanceId + 'VM';
     const VgpuConfigs = await this.configsTable.find({
       where: {
-        propertyKey: { like: "%config.vgpu.%" },
+        propertyKey: { like: '%config.vgpu.%' },
       },
     });
     const props = {};
     for (const prop of VgpuConfigs) {
-      const key = prop.propertyKey.split(".").slice(-1)[0];
+      const key = prop.propertyKey.split('.').slice(-1)[0];
       const item = prop.value;
       props[key] = item;
     }
 
-    const vdcIdVgpu = props["vdcId"].split(":").slice(-1);
-    const session = await this.sessionService.checkAdminSession(props["orgId"]);
+    const vdcIdVgpu = props['vdcId'].split(':').slice(-1);
+    const session = await this.sessionService.checkAdminSession(props['orgId']);
     const vmInfo = await this.service.getVmsInfo(
       session,
       vdcIdVgpu,
-      props["orgId"],
-      props["orgName"],
-      `name==${vmName}`
+      props['orgId'],
+      props['orgName'],
+      `name==${vmName}`,
     );
 
     const isDeployed = vmInfo[0].isDeployed;
@@ -190,22 +202,22 @@ export class VgpuController {
     });
   }
 
-  @ApiOperation({ summary: "Undeploy VGPU" })
+  @ApiOperation({ summary: 'Undeploy VGPU' })
   @ApiResponse({
     status: 200,
-    description: "Returns undeployment data",
-    type: "object",
+    description: 'Returns undeployment data',
+    type: 'object',
   })
-  @Get("/vGpu/:ServiceInstanceId/vgpuUnDeploy")
+  @Get('/vGpu/:ServiceInstanceId/vgpuUnDeploy')
   async vgpuUnDeploy(
-    @Param("ServiceInstanceId") ServiceInstanceId: string,
-    @Request() options
+    @Param('ServiceInstanceId') ServiceInstanceId: string,
+    @Request() options,
   ): Promise<any> {
     const userId = options.user.id;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
-        ID: ServiceInstanceId , 
-        userId: userId ,
+        ID: ServiceInstanceId,
+        userId: userId,
       },
     });
     if (isNil(serviceInstance)) {
@@ -214,25 +226,25 @@ export class VgpuController {
     const task = await this.tasksTable.create({
       userId: userId,
       serviceInstanceId: ServiceInstanceId,
-      operation: "unDeployVgpuVm",
+      operation: 'unDeployVgpuVm',
       details: null,
       startTime: new Date(),
       endTime: null,
-      status: "running",
+      status: 'running',
     });
     await this.taskManagerService.addTask({
       serviceInstanceId: ServiceInstanceId,
-      customTaskId: task["TaskID"],
+      customTaskId: task['TaskID'],
       vcloudTask: null,
-      target: "task",
-      nextTask: "unDeployVgpuVm",
-      taskType: "adminTask",
+      target: 'task',
+      nextTask: 'unDeployVgpuVm',
+      taskType: 'adminTask',
       requestOptions: options,
       //  target: 'object',  //// WHY DUPLICATED??
     });
     return Promise.resolve({
       id: ServiceInstanceId,
-      taskId: task["TaskID"],
+      taskId: task['TaskID'],
     });
   }
 }

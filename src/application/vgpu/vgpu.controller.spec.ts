@@ -34,12 +34,8 @@ describe('VgpuController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      controllers: [
-        VgpuController,
-
-      ],
-      providers: [
-      ]
+      controllers: [VgpuController],
+      providers: [],
     }).compile();
 
     controller = module.get<VgpuController>(VgpuController);

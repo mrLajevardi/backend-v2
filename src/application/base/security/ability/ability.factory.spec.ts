@@ -41,10 +41,7 @@ describe('AbilityFactory', () => {
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        AbilityFactory,
-
-      ],
+      providers: [AbilityFactory],
     }).compile();
 
     abilityFactory = module.get<AbilityFactory>(AbilityFactory);

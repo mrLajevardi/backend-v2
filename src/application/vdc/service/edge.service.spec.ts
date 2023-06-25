@@ -26,9 +26,7 @@ describe('EdgeService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-
-      ],
+      providers: [],
     }).compile();
 
     service = module.get<EdgeService>(EdgeService);
