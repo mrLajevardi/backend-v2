@@ -1,4 +1,4 @@
-pm2 stop arad-v2
+npm run pm2:stop
 del /q /s "C:\arad-v2"
 FOR /D %%p IN ("C:\arad-v2\*") DO rmdir "%%p" /s /q
 xcopy /s .\ C:\arad-v2 /Y
