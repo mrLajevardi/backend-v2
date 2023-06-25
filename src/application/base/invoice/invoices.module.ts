@@ -8,7 +8,11 @@ import { CrudModule } from '../crud/crud.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 
 @Module({
-  imports: [DatabaseModule, CrudModule, VgpuModule],
+  imports: [
+    DatabaseModule,
+    CrudModule,
+    // VgpuModule
+  ],
   providers: [InvoicesService, InvoicesChecksService, CostCalculationService],
   controllers: [InvoicesController],
   exports: [InvoicesService],

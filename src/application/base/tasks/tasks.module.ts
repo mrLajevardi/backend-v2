@@ -18,7 +18,7 @@ import { OrganizationModule } from '../organization/organization.module';
     BullModule.registerQueue({
       name: 'tasks',
     }),
-    VdcModule,
+    // VdcModule,
     CrudModule,
     SessionsModule,
     OrganizationModule,
