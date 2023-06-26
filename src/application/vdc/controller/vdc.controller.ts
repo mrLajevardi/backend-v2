@@ -6,6 +6,7 @@ import { SessionsService } from 'src/application/base/sessions/sessions.service'
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 
 @Controller('vdc')
@@ -14,6 +15,7 @@ export class VdcController {
     // private readonly tasksService: TasksService,
     private readonly sessionService: SessionsService,
     private readonly serviceService: ServiceService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
@@ -30,14 +32,14 @@ export class VdcController {
       nameDiskID,
       vmID,
     );
-    // await logger.info(
-    //   'services',
-    //   'attachNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
+    await this.loggerService.info(
+      'services',
+      'attachNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
@@ -67,14 +69,14 @@ export class VdcController {
       filter: 'object==' + namedDisk.__vcloudTask,
       type: 'task',
     });
-    // await logger.info(
-    //   'services',
-    //   'createNamedDisk',
-    //   {
-    //     _object: taskId.data.record[0].href.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
+    await this.loggerService.info(
+      'services',
+      'createNamedDisk',
+      {
+        _object: taskId.data.record[0].href.split('task/')[1],
+      },
+      { ...options.locals },
+    );
     return Promise.resolve({
       taskId: taskId.data.record[0].href.split('task/')[1],
     });
@@ -126,14 +128,14 @@ export class VdcController {
       nameDiskID,
       vmID,
     );
-    // await logger.info(
-    //   'services',
-    //   'dettachNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
+    await this.loggerService.info(
+      'services',
+      'dettachNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
@@ -241,14 +243,14 @@ export class VdcController {
       session,
       nameDiskID,
     );
-    // await logger.info(
-    //   'services',
-    //   'removeNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
+    await this.loggerService.info(
+      'services',
+      'removeNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
@@ -273,14 +275,14 @@ export class VdcController {
       nameDiskID,
       data,
     );
-    // await logger.info(
-    //   'services',
-    //   'updateNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
+    await this.loggerService.info(
+      'services',
+      'updateNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });

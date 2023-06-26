@@ -11,11 +11,13 @@ import { VdcController } from './controller/vdc.controller';
 import { VdcAdminController } from './controller/vdc-admin.controller';
 import { CrudModule } from '../base/crud/crud.module';
 import { ServiceModule } from '../base/service/service.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 @Module({
   imports: [
     DatabaseModule,
     CrudModule,
+    LoggerModule,
     //TasksModule,
     SessionsModule,
     OrganizationModule,

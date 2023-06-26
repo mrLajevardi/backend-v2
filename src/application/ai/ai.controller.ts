@@ -28,6 +28,7 @@ import { ServiceInstancesTableService } from '../base/crud/service-instances-tab
 import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Controller('ai')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -44,6 +45,7 @@ export class AiController {
     private readonly createServiceSvc: CreateServiceService,
     private readonly payAsYouGoService: PayAsYouGoService,
     private readonly configsTable: ConfigsTableService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   @ApiOperation({ summary: 'Check a Validation Token' })
@@ -119,14 +121,14 @@ export class AiController {
     );
 
     throw new InternalServerErrorException('Not Implemented');
-    // await logger.info(
-    //     'aradAI',
-    //     'createService',
-    //     {
-    //       _object: createdService.serviceInstanceId,
-    //     },
-    //     {...options.locals},
-    // );
+    await this.loggerService.info(
+      'aradAI',
+      'createService',
+      {
+        _object: createdService.serviceInstanceId,
+      },
+      { ...options.locals },
+    );
   }
 
   @Get('/createOrGetDemoToken')

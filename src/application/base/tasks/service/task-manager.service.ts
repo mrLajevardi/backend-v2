@@ -19,6 +19,7 @@ import { ServicePropertiesTableService } from '../../crud/service-properties-tab
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Injectable()
 export class TaskManagerService {
@@ -38,6 +39,7 @@ export class TaskManagerService {
     private readonly networkService: NetworkService,
     private readonly vdcService: VdcService,
     private readonly taskTable: TasksTableService,
+    private readonly loggerService: LoggerService,
   ) {
     this.taskQueue.process(async (job, done) => {
       const taskType = job.data?.taskType || 'task';
@@ -176,11 +178,11 @@ export class TaskManagerService {
           customTaskId,
           'vdc ~ has been failed',
         );
-        // await logger.error({
-        //     stackTrace: err?.stack,
-        //     message: err?.message,
-        //     userId: requestOptions?.userId || null,
-        // });
+        await this.loggerService.error({
+          stackTrace: err?.stack,
+          message: err?.message,
+          userId: requestOptions['userId'] || null,
+        });
       } catch (err) {
         console.log(err);
       }
@@ -254,14 +256,14 @@ export class TaskManagerService {
           endTime: new Date(),
         },
       );
-      // await logger.info(
-      //     'vdc',
-      //     'disableVdc',
-      //     {
-      //         _object: serviceInstanceId,
-      //     },
-      //     { ...requestOptions },
-      // );
+      await this.loggerService.info(
+        'vdc',
+        'disableVdc',
+        {
+          _object: serviceInstanceId,
+        },
+        { ...requestOptions },
+      );
     }
   }
 
@@ -306,13 +308,16 @@ export class TaskManagerService {
     } else {
       props['vdcId'] = checkVdcId.value;
     }
-    // await logger.info(
-    //     'vdc', 'createVdc', {
-    //     vdcName: props['name'],
-    //     vdcId: props['vdcId'],
-    //     _object: props['vdcId'],
-    // }, requestOptions,
-    // );
+    await this.loggerService.info(
+      'vdc',
+      'createVdc',
+      {
+        vdcName: props['name'],
+        vdcId: props['vdcId'],
+        _object: props['vdcId'],
+      },
+      requestOptions,
+    );
     const ip = await this.serviceItemsTable.findOne({
       where: {
         and: [{ serviceInstanceid: serviceInstanceId }, { itemTypeCode: 'ip' }],
@@ -362,14 +367,14 @@ export class TaskManagerService {
       props['edgeName'],
     );
 
-    // await logger.info(
-    //     'network',
-    //     'createNetwork',
-    //     {
-    //         _object: network.__vcloudTask.split('task/')[1],
-    //     },
-    //     { ...requestOptions },
-    // );
+    await this.loggerService.info(
+      'network',
+      'createNetwork',
+      {
+        _object: network.__vcloudTask.split('task/')[1],
+      },
+      { ...requestOptions },
+    );
   }
 
   async createOrgTask(serviceInstanceId, customTaskId, requestOptions) {
@@ -379,11 +384,14 @@ export class TaskManagerService {
     const userId = service.userId;
     const org = await this.orgService.checkOrg(userId);
     if (org.isNew) {
-      // await logger.info(
-      //     'vdc', 'createOrg', {
-      //     _object: org.id,
-      // }, requestOptions,
-      // );
+      await this.loggerService.info(
+        'vdc',
+        'createOrg',
+        {
+          _object: org.id,
+        },
+        requestOptions,
+      );
     }
     const vcloudTask = org.__vcloudTask;
     this.taskQueue.add({
@@ -527,11 +535,11 @@ export class TaskManagerService {
   //         computerName,
   //     );
 
-  //     // await logger.info(
-  //     //   'vgpu', 'createCustomizeScript', {
-  //     //     serviceInstanceId,
-  //     //   }, requestOptions,
-  //     // );
+  // await this.loggerService.info(
+  //   'vgpu', 'createCustomizeScript', {
+  //     serviceInstanceId,
+  //   }, requestOptions,
+  // );
   //     const vcloudTask = createVgpuScript.__vcloudTask;
   //     this.taskQueue.add({
   //         serviceInstanceId,
@@ -569,11 +577,11 @@ export class TaskManagerService {
   //     const createSnat = await createVgpuSnat(
   //         serviceInstanceId, userId, props['orgId'], props['edgeName'], props['externalAddresses'], internalAddresses, 'SNAT',
   //     );
-  //     // await logger.info(
-  //     //   'vgpu', 'createSnat', {
-  //     //     vgpuSnatName: serviceInstanceId + 'SNAT',
-  //     //   }, requestOptions,
-  //     // );
+  // await this.loggerService.info(
+  //   'vgpu', 'createSnat', {
+  //     vgpuSnatName: serviceInstanceId + 'SNAT',
+  //   }, requestOptions,
+  // );
   //     const vcloudTask = createSnat.__vcloudTask;
 
   //     this.taskQueue.add({
@@ -629,7 +637,7 @@ export class TaskManagerService {
   //         computerName,
   //         props['vdcComputePolicy'],
   //     );
-  //     await logger.info(
+  //     await this.loggerService.info(
   //         'vgpu', 'createVm', {
   //         serviceInstanceId,
   //     }, requestOptions,
@@ -1192,13 +1200,16 @@ export class TaskManagerService {
       session,
     );
     const { __vcloudTask: vcloudTask } = networkProfile;
-    // await logger.info(
-    //     'vdc', 'updateNetworkProfile', {
-    //     vdcName: props['name'],
-    //     vdcId: props['vdcId'],
-    //     _object: props['vdcId'],
-    // }, requestOptions,
-    // );
+    await this.loggerService.info(
+      'vdc',
+      'updateNetworkProfile',
+      {
+        vdcName: props['name'],
+        vdcId: props['vdcId'],
+        _object: props['vdcId'],
+      },
+      requestOptions,
+    );
     this.taskQueue.add({
       serviceInstanceId,
       customTaskId,
