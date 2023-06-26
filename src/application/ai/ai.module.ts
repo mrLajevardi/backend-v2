@@ -6,6 +6,7 @@ import { UserModule } from '../base/user/user.module';
 import { CrudModule } from '../base/crud/crud.module';
 import { InvoicesModule } from '../base/invoice/invoices.module';
 import { ServiceModule } from '../base/service/service.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ServiceModule } from '../base/service/service.module';
     CrudModule,
     InvoicesModule,
     ServiceModule,
+    LoggerModule
   ],
   controllers: [AiController],
   providers: [AiService],

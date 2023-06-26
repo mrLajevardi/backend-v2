@@ -8,10 +8,14 @@ import { CreateUserDto } from '../crud/user-table/dto/create-user.dto';
 import { UpdateUserDto } from '../crud/user-table/dto/update-user.dto';
 import { plainToClass } from 'class-transformer';
 import { UserTableService } from '../crud/user-table/user-table.service';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userTable: UserTableService) {}
+  constructor(
+    private readonly userTable: UserTableService,
+    private readonly loggerService: LoggerService, 
+    ) {}
 
   // find user by phone number
   async findByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
@@ -41,28 +45,24 @@ export class UserService {
       if (userCredit >= costs) {
         const updatedCredit = userCredit - costs;
         // Implement
-        /** Should be implemented  */
-        throw new InternalServerErrorException(
-          'complete the code and remove comments ',
-        );
-        // const updateResult = await this.repository.updateAll({id: userId}, {credit: updatedCredit});
-        //MUST BE IMPLEMENTED
+
+        const updateResult = await this.userTable.updateAll({id: userId}, {credit: updatedCredit});
 
         // ******
 
         if (options && serviceType && updatedCredit) {
           //only for lint
         }
-        // await logger.info(
-        //     'services',
-        //     'buyService',
-        //     {
-        //       costs,
-        //       serviceType,
-        //       _object: userId,
-        //     },
-        //     {...options.locals},
-        // );
+        await this.loggerService.info(
+            'services',
+            'buyService',
+            {
+              costs,
+              serviceType,
+              _object: userId,
+            },
+            {...options.locals},
+        );
         // if (updateResult.count < 1) {
         //   return Promise.reject(new Error('not updated'));
         // }

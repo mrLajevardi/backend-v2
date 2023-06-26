@@ -53,6 +53,10 @@ import { QualityPlansService } from 'src/application/base/crud/quality-plans/qua
 import { ServiceItemsSumService } from 'src/application/base/crud/service-items-sum/service-items-sum.service';
 import { CreateServiceService } from 'src/application/base/service/services/create-service.service';
 import { ExtendServiceService } from 'src/application/base/service/services/extend-service.service';
+import { LoggerService } from '../logger/logger.service';
+import { ErrorLogTableService } from 'src/application/base/crud/error-log-table/error-log-table.service';
+import { InfoLogTableService } from 'src/application/base/crud/info-log-table/info-log-table.service';
+import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/debug-log-table.service';
 
 @Module({
   imports: [
@@ -113,6 +117,10 @@ import { ExtendServiceService } from 'src/application/base/service/services/exte
     ServiceItemsSumService,
     InvoiceDiscountsTableService,
     ExtendServiceService,
+    LoggerService,
+    ErrorLogTableService,
+    InfoLogTableService,
+    DebugLogTableService
   ],
   exports: [
     TypeOrmModule,
@@ -162,6 +170,10 @@ import { ExtendServiceService } from 'src/application/base/service/services/exte
     ServiceItemsSumService,
     InvoiceDiscountsTableService,
     ExtendServiceService,
+    LoggerService,
+    ErrorLogTableService,
+    InfoLogTableService,
+    DebugLogTableService
   ],
 })
 export class TestDatabaseModule {}

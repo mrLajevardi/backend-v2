@@ -1,0 +1,478 @@
+{
+    "vdc":{  
+        "typeId": 1,
+        "actions": {
+            "createBillingService":{
+                "actionId": 1,
+                "description": "سرویس دیتاسنتر مجازی با موفقیت در سیستم ثبت شد",
+                "object": null
+            }, 
+            "createOrg": {
+                "actionId": 2,
+                "description": "سازمان با موفقیت ساخته شد",
+                "object": null
+            },
+            "createVdc": {
+                "actionId": 3,
+                "description": "دیتاسنتر مجازی  [${vdcName}] با شناسه  [${vdcId}]با موفقیت ایجاد شد ",
+                "object": null
+            },
+            "createEdge": {
+                "actionId": 4,
+                "description": "لبه شبکه با موفقیت ساخته شد",
+                "object": null
+            },
+            "deleteVdc":{
+                "actionId": 5,
+                "description": "درخواست حذف سرویس vdc ارسال شد",
+                "object": null
+            },
+            "adminUpdateServiceSettings":{
+                "actionId": 6,
+                "description": "تنظیمات سرویس   [${serviceTypeId}]توسط ادمین  [${username}]به [${settings}] ویرایش یافت",
+                "object": null
+            },
+            "disableVdc":{
+                "actionId": 7,
+                "description": "سرویس vdc غیر فعال شد",
+                "object": null
+            },
+            "updateNetworkProfile": {
+                "actionId": 8,
+                "description": "درخواست ویرایش پروفایل شبکه ارسال شد",
+                "object": null
+            }
+        } 
+    },
+    "user":{
+        "typeId": 2,
+        "actions": {
+            "login":{
+                "actionId": 1,
+                "description": "کاربر [${username}] وارد سیستم شد",
+                "object": null
+            },
+            "register": {
+                "actionId": 2,
+                "description": " کاربر  [${username}]ثبت نام کرد",
+                "object": null
+            },
+            "emailVerification": {
+                "actionId": 3,
+                "description": "لینک تایید ایمیل برای کاربر   [${username}]ارسال شد",
+                "object": null
+            },
+            "logout":{
+                "actionId": 4,
+                "description": "کاربر [${username}] از سیستم خارج شد",
+                "object": null
+            },
+            "adminUpdateUser":{
+                "actionId": 5,
+                "description": "اطلاعات [${data}] کاربر [${username}] توسط ادمین ویرایش شد",
+                "object": null
+            },
+            "adminUpdateUserCredit":{
+                "actionId": 6,
+                "description": "اعتبار کاربر[${username}]توسط  ادمین  به میزان [${credit}] افزایش یافت",
+                "object": null
+            },
+            "adminDeleteUser":{
+                "actionId": 7,
+                "description": "کاربر [${username}]j توسط ادمین حذف شد",
+                "object": null
+            },
+            "forgotPasswordLink":{
+                "actionId": 8,
+                "description": "لینک تغییر پسورد به کاربر [${username}]ارسال شد",
+                "object": null
+            },
+            "resetPassword":{
+                "actionId": 9,
+                "description": "رمز عبور کاربر [${username}]با موفقیت تغییر یافت",
+                "object": null
+            },
+            "verifyEmail":{
+                "actionId": 10,
+                "description": "ایمیل کاربر [${username}]تایید شد",
+                "object": null
+            },
+            "updateUserGroups":{
+                "actionId": 11,
+                "description": "گروه های کاربر [${username}] ویرایش یافت",
+                "object": null
+            },
+            "adminDisableUser":{
+                "actionId": 12,
+                "description": "کاربر [${username}] غیر فعال شد",
+                "object": null
+            },
+            "adminEnableUser":{
+                "actionId": 13,
+                "description": "کاربر [${username}] فعال شد",
+                "object": null
+            }
+            
+        } 
+    },
+    "edgeGateway.applicationPortProfile":{
+        "typeId": 3,
+        "actions":{
+            "actionId": 1,
+            "description": "موفقیت آمیز بود applictionPortProfile ساخت",
+            "object": "edgeGateway.applicationPortProfile.create"
+        }
+    },
+    "nat":{
+        "typeId": 4,
+        "actions": {
+            "createNat":{
+                "actionId": 1,
+                "description": "درخواست ساخت [${natName}]Nat rule توسط کاربر[${username}] ارسال شد",
+                "object": null
+            },
+            "deleteNat":{
+                "actionId": 2,
+                "description": "درخواست حذفNat rule  توسط کاربر[${username}] ارسال شد",
+                "object": null
+            },
+            "updateNat":{
+                "actionId": 3,
+                "description": "درخواست بروزرسانیNat rule  توسط کاربر[${username}] ارسال شد",
+                "object": null
+            }
+        }
+    },
+    "dhcp":{
+        "typeId": 5,
+        "actions": {
+            "createDhcpBinding":{
+                "actionId": 1,
+                "description": "درخواست ساخت dhcp binding توسط کاربر ارسال شد",
+                "object": null
+            },
+            "updateDhcpBinding":{
+                "actionId": 2,
+                "description": "درخواست ویرایش dhcp binding توسط کاربر ارسال شد",
+                "object": null
+            },
+            "deleteDhcpBinding":{
+                "actionId": 3,
+                "description": "درخواست حذف dhcp binding توسط کاربر ارسال شد",
+                "object": null
+            },
+            "updateDhcp":{
+                "actionId": 4,
+                "description": "درخواست فعال سازی dhcp ارسال شد",
+                "object": null
+            },
+            "deleteDhcp":{
+                "actionId": 5,
+                "description": "درخواست فعال سازی dhcp ارسال شد",
+                "object": null
+            } 
+        }
+    },
+    "network":{
+        "typeId": 6,
+        "actions": {
+            "createNetwork":{
+                "actionId": 1,
+                "description": "درخواست ساخت network ارسال شد",
+                "object": null
+            },
+            "deleteNetwork":{
+                "actionId": 2,
+                "description": "درخواست حذف network ارسال شد",
+                "object": null
+            },
+            "updateNetwork":{
+                "actionId": 3,
+                "description": "درخواست ویرایش network ارسال شد",
+                "object": null
+            },
+            "updateDhcpForwarder":{
+                "actionId": 4,
+                "description": "درخواست ویرایش dhcp forwarder ارسال شد",
+                "object": null
+            }
+        }
+    },
+    "firewall":{
+        "typeId": 7,
+        "actions": {
+            "updateFirewallList":{
+                "actionId": 1,
+                "description": "لیست فایروال ها ویرایش شد",
+                "object": null
+            },
+            "updateFirewall":{
+                "actionId": 2,
+                "description": "تنظیمات فایروال ویرایش شد",
+                "object": null
+            }
+        }
+    },
+    "applicationPortProfiles":{
+        "typeId": 8,
+        "actions": {
+            "createApplicationPortProfiles":{
+                "actionId": 1,
+                "description": "درخواست ساخت application port profile ارسال شد",
+                "object": null
+            },
+            "updateApplicationPortProfiles":{
+                "actionId": 2,
+                "description": "درخواست ویرایش application port profile ارسال شد",
+                "object": null
+            },
+            "deleteApplicationPortProfiles":{
+                "actionId": 3,
+                "description": "درخواست حذف application port profile ارسال شد",
+                "object": null
+            }
+            
+        }
+    },
+    "ipSets":{
+        "typeId": 9,
+        "actions": {
+            "createIpSets":{
+                "actionId": 1,
+                "description":"درخواست ساخت ipSets ارسال شد",
+                "object": null
+            },
+            "updateIpSets":{
+                "actionId": 2,
+                "description":"درخواست ویرایش ipSets ارسال شد",
+                "object": null
+            },
+            "deleteIpSets":{
+                "actionId": 3,
+                "description":"درخواست حذف ipSets ارسال شد",
+                "object": null
+            }
+        }
+    },
+    "dnsForwarder":{
+        "typeId": 10,
+        "actions": {
+            "updateDnsForwarder":{
+                "actionId": 1,
+                "description":"درخواست ویرایش dns forwarder ارسال شد",
+                "object": null
+            }
+        }
+    },
+    "vm":{
+        "typeId": 11,
+        "actions": {
+            "createTemplate":{
+                "actionId": 1,
+                "description":"درخواست ساخت template ارسال شد",
+                "object": null
+            },
+            "createVmFromTemplate":{
+                "actionId": 2,
+                "description":"درخواست ساخت ماشین مجازی به صورت fromTemplate  ارسال شد",
+                "object": null
+            },
+            "createVm":{
+                "actionId": 3,
+                "description":"درخواست ساخت ماشین مجازی ارسال شد",
+                "object": null
+            },
+            "createSnapshot":{
+                "actionId": 4,
+                "description":" درخواست ساخت snapshot ارسال شد",
+                "object": null
+            },
+            "deleteVm":{
+                "actionId": 5,
+                "description":"درخواست حذف ماشین مجازی ارسال شد",
+                "object": null
+            },
+            "ejectMedia":{
+                "actionId": 6,
+                "description":"درخواست eject media ارسال شد",
+                "object": null
+            },
+            "insertMedia":{
+                "actionId": 7,
+                "description":"درخواست insert media ارسال شد",
+                "object": null
+            },
+            "installVmTools":{
+                "actionId": 8,
+                "description":" درخواست نصب vm tools ارسال شد",
+                "object": null
+            },
+            "answer":{
+                "actionId": 9,
+                "description": "پاسخ vm ارسال شد",
+                "object": null
+            },
+            "deleteSnapshot":{
+                "actionId": 10,
+                "description":" درخواست حذف snapshot ارسال شد",
+                "object": null
+            },
+            "updateComputeSection":{
+                "actionId": 11,
+                "description":"درخواست بروزرسانی بخش پردازش ماشین مجازی ارسال شد",
+                "object": null
+            },
+            "updateDiskSection":{
+                "actionId": 12,
+                "description":"درخواست بروزرسانی بخش disk ماشین مجازی ارسال شد",
+                "object": null
+            },
+            "updateGuestSection":{
+                "actionId": 13,
+                "description":"درخواست بروزرسانی بخش guest customization ماشین مجازی ارسال شد",
+                "object": null
+            },
+            "updateGeneralSection":{
+                "actionId": 13,
+                "description":"درخواست بروزرسانی بخش general ماشین مجازی ارسال شد",
+                "object": null
+            },
+            "updateNetworkSection":{
+                "actionId": 14,
+                "description":"درخواست بروزرسانی بخش network ماشین مجازی ارسال شد",
+                "object": null
+            },
+            "deleteMedia":{
+                "actionId": 15,
+                "description":"مدیا حذف شد",
+                "object": null
+            },
+            "deleteTemplate":{
+                "actionId": 16,
+                "description":"قالب ماشین مجازی حذف شد",
+                "object": null
+            },
+            "updateTemplate":{
+                "actionId": 17,
+                "description":"قالب ماشین مجازی آپدیت شد",
+                "object": null
+            },
+            "updateMedia":{
+                "actionId": 18,
+                "description":"مدیاآپدیت شد",
+                "object": null
+            }
+            
+        }
+    },
+    "services":{
+        "typeId": 12,
+        "actions": {
+            "updateServicesItemTypes":{
+                "actionId": 1,
+                "description":"اطلاعات [${itemId}] توسط ادمین به [${data}] تغییر یافت",
+                "object": null
+            },
+            "attachNamedDisk":{
+                "actionId": 2,
+                "description":"درخواست اتصال namedDisk ارسال شد",
+                "object": null
+            },
+            "createNamedDisk":{
+                "actionId": 3,
+                "description":"درخواست ساخت namedDisk ارسال شد",
+                "object": null
+            },
+            "dettachNamedDisk":{
+                "actionId": 4,
+                "description":"درخواست انفصال namedDisk ارسال شد",
+                "object": null
+            },
+            "removeNamedDisk":{
+                "actionId": 5,
+                "description":"درخواست حذف namedDisk ارسال شد",
+                "object": null
+            },
+            "updateNamedDisk":{
+                "actionId": 6,
+                "description":"درخواست بروزرسانی namedDisk ارسال شد",
+                "object": null
+            },
+            "buyService":{
+                "actionId": 7,
+                "description":"میزان [${costs}] از اعتبار کاربر به دلیل خرید سرویس [${serviceType}] کسر شد",
+                "object": null
+            },
+            "disableService":{
+                "actionId": 8,
+                "description":"سرویس [${serviceType}] توسط ادمین غیر فعال شد",
+                "object": null
+            },
+            "enableService":{
+                "actionId": 9,
+                "description":"سرویس [${serviceType}] توسط ادمین فعال شد",
+                "object": null
+            }               
+        }
+    },
+    "aradAI":{
+        "typeId": 13,
+        "actions": {
+            "createService":{
+                "actionId": 1,
+                "description":"سرویس aradAI با موفقیت ثبت شد",
+                "object": null
+            },
+            "deleteAradAi":{
+                "actionId": 2,
+                "description": "درخواست حذف سرویس AradAi ارسال شد",
+                "object": null
+            }
+        }
+    },
+    "groups":{
+        "typeId": 14,
+        "actions": {
+            "createGroup":{
+                "actionId": 1,
+                "description":"گروه [${groupName}] ساخته شد",
+                "object": null
+            },
+            "deleteGroup":{
+                "actionId": 2,
+                "description":"گروه حذف شد",
+                "object": null
+            },
+            "updateGroup":{
+                "actionId": 3,
+                "description":"گروه [${groupName}] ویرایش شد",
+                "object": null
+            }       
+        }
+    },
+    "vgpu":{  
+        "typeId": 16,
+        "actions": {
+            "createVm":{
+                "actionId": 1,
+                "description": "ماشین مجازی با موفقیت در سیستم ثبت شد",
+                "object": null
+            },
+            "deleteVgpu":{
+                "actionId": 2,
+                "description": "درخواست حذف سرویس Vgpu ارسال شد",
+                "object": null
+            },
+            "createDnat":{
+                "actionId": 3,
+                "description": "dnat با موفقیت در سیستم ثبت شد",
+                "object": null
+            },
+            "createSnat":{
+                "actionId": 4,
+                "description": "snat با موفقیت در سیستم ثبت شد",
+                "object": null
+            }
+        }
+    }
+}
