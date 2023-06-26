@@ -120,7 +120,7 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     LoggerService,
     ErrorLogTableService,
     InfoLogTableService,
-    DebugLogTableService
+    DebugLogTableService,
   ],
   exports: [
     TypeOrmModule,
@@ -173,7 +173,7 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     LoggerService,
     ErrorLogTableService,
     InfoLogTableService,
-    DebugLogTableService
+    DebugLogTableService,
   ],
 })
 export class TestDatabaseModule {}

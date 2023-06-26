@@ -122,12 +122,12 @@ export class AiController {
 
     throw new InternalServerErrorException('Not Implemented');
     await this.loggerService.info(
-        'aradAI',
-        'createService',
-        {
-          _object: createdService.serviceInstanceId,
-        },
-        {...options.locals},
+      'aradAI',
+      'createService',
+      {
+        _object: createdService.serviceInstanceId,
+      },
+      { ...options.locals },
     );
   }
 

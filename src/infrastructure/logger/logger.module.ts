@@ -10,9 +10,9 @@ import { InfoLogTableModule } from 'src/application/base/crud/info-log-table/inf
     DatabaseModule,
     ErrorLogTableModule,
     DebugLogTableModule,
-    InfoLogTableModule
+    InfoLogTableModule,
   ],
   providers: [LoggerService],
-  exports: [LoggerService]
+  exports: [LoggerService],
 })
 export class LoggerModule {}

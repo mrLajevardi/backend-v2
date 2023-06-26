@@ -15,7 +15,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
     CrudModule,
     InvoicesModule,
     ServiceModule,
-    LoggerModule
+    LoggerModule,
   ],
   controllers: [AiController],
   providers: [AiService],

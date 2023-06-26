@@ -1,16 +1,16 @@
-import { Injectable } from "@nestjs/common";
-import { ErrorLogTableService } from "src/application/base/crud/error-log-table/error-log-table.service";
-import * as fs from "fs";
-import { InfoLogTableService } from "src/application/base/crud/info-log-table/info-log-table.service";
-import { DebugLogTableService } from "src/application/base/crud/debug-log-table/debug-log-table.service";
-import { isEmpty } from "lodash";
+import { Injectable } from '@nestjs/common';
+import { ErrorLogTableService } from 'src/application/base/crud/error-log-table/error-log-table.service';
+import * as fs from 'fs';
+import { InfoLogTableService } from 'src/application/base/crud/info-log-table/info-log-table.service';
+import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/debug-log-table.service';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class LoggerService {
   constructor(
     private readonly errorLogTable: ErrorLogTableService,
     private readonly infoLogTable: InfoLogTableService,
-    private readonly debugLogTable: DebugLogTableService
+    private readonly debugLogTable: DebugLogTableService,
   ) {}
 
   async error(info) {
@@ -24,8 +24,8 @@ export class LoggerService {
   }
 
   async info(type, action, options, requestOptions) {
-    const path = "src/infrastructure/logger/loggerObjects.json";
-    const jsonData = fs.readFileSync(path, "utf8");
+    const path = 'src/infrastructure/logger/loggerObjects.json';
+    const jsonData = fs.readFileSync(path, 'utf8');
     const loggerObjects = JSON.parse(jsonData);
 
     const typeInfo = loggerObjects[type];
@@ -74,7 +74,7 @@ export class LoggerService {
         request: JSON.stringify(requestBody),
         response: JSON.stringify(body),
         method: req.method,
-        ip: req.headers["x-forwarded-for"] || req.socket.remoteAddress,
+        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
       })
       .then((log) => {
         console.log(log);
@@ -86,7 +86,7 @@ export class LoggerService {
 
   replacer(template, obj) {
     const keys = Object.keys(obj);
-    const func = Function(...keys, "return `" + template + "`;");
+    const func = Function(...keys, 'return `' + template + '`;');
     return func(...keys.map((k) => obj[k]));
   }
 }

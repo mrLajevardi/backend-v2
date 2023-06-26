@@ -14,8 +14,8 @@ import { LoggerService } from 'src/infrastructure/logger/logger.service';
 export class UserService {
   constructor(
     private readonly userTable: UserTableService,
-    private readonly loggerService: LoggerService, 
-    ) {}
+    private readonly loggerService: LoggerService,
+  ) {}
 
   // find user by phone number
   async findByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
@@ -46,7 +46,10 @@ export class UserService {
         const updatedCredit = userCredit - costs;
         // Implement
 
-        const updateResult = await this.userTable.updateAll({id: userId}, {credit: updatedCredit});
+        const updateResult = await this.userTable.updateAll(
+          { id: userId },
+          { credit: updatedCredit },
+        );
 
         // ******
 
@@ -54,14 +57,14 @@ export class UserService {
           //only for lint
         }
         await this.loggerService.info(
-            'services',
-            'buyService',
-            {
-              costs,
-              serviceType,
-              _object: userId,
-            },
-            {...options.locals},
+          'services',
+          'buyService',
+          {
+            costs,
+            serviceType,
+            _object: userId,
+          },
+          { ...options.locals },
         );
         // if (updateResult.count < 1) {
         //   return Promise.reject(new Error('not updated'));

@@ -15,7 +15,7 @@ export class VdcController {
     // private readonly tasksService: TasksService,
     private readonly sessionService: SessionsService,
     private readonly serviceService: ServiceService,
-    private readonly loggerService: LoggerService
+    private readonly loggerService: LoggerService,
   ) {}
 
   async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
