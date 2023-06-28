@@ -23,6 +23,9 @@ export class Transactions {
   @Column('int', { name: 'InvoiceID', nullable: true })
   invoiceId: number | null;
 
+  @Column('int', { name: 'UserID' })
+  userId: string;
+
   @Column('nchar', { name: 'Description', nullable: true, length: 10 })
   description: string | null;
 
@@ -41,7 +44,7 @@ export class Transactions {
   isApproved: boolean;
 
   @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
-  serviceInstanceId: string | null;
+  serviceInstanceId: string;
 
   @ManyToOne(() => User, (user) => user.transactions, {
     onDelete: 'CASCADE',

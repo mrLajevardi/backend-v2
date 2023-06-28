@@ -19,9 +19,10 @@ export class PayAsYouGoService {
     }
     const service = await this.serviceInstanceTable.findOne({
       where: {
-        ID: serviceInstanceId,
+        id: serviceInstanceId,
       },
     });
+
     if (!service) {
       return Promise.reject(new ForbiddenException());
     }

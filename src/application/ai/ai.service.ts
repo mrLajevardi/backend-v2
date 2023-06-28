@@ -20,6 +20,8 @@ import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs
 import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ServiceInstancesStoredProcedureService } from '../base/crud/service-instances-table/service-instances-stored-procedure.service';
+import { ILike } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AiService {
@@ -31,11 +33,12 @@ export class AiService {
     private readonly settingTable: SettingTableService,
     private readonly configsTable: ConfigsTableService,
     private readonly serviceInstancesSP: ServiceInstancesStoredProcedureService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async verifyToken(token: string) {
     const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
-    return jwt.verify(token, JWT_SECRET_KEY);
+    return this.jwtService.verify(token, { secret: JWT_SECRET_KEY });
   }
 
   async checkAIToken(token: string): Promise<boolean> {
@@ -123,11 +126,11 @@ export class AiService {
     const todayDate = new Date().toISOString().slice(0, 10);
     return await this.aiTransactionLogsTable.count({
       where: {
-        and: [
-          { ServiceInstanceID: serviceInstanceId },
-          { DateTime: { gte: todayDate + 'T00:00:00' } },
-          { DateTime: { lte: todayDate + 'T23:11:59' } },
-        ],
+        serviceInstanceId: serviceInstanceId,
+        // dateTime: {
+        //   MoreThanOrEqual: `${todayDate}T00:00:00`,
+        //   LessThanOrEqual: `${todayDate}T23:11:59`,
+        // },
       },
     });
   }
@@ -141,14 +144,11 @@ export class AiService {
     const endDay = addMonths(createdDate, difference + 1)
       .toISOString()
       .slice(0, 10);
-
-    return await this.aiTransactionLogsTable.count({
+    return await this.aiTransactionLogsTable.find({
       where: {
-        and: [
-          { ServiceInstanceID: serviceInstanceId },
-          { DateTime: { gte: fromDay + 'T00:00:00' } },
-          { DateTime: { lte: endDay + 'T23:11:59' } },
-        ],
+        serviceInstanceId: serviceInstanceId,
+      //   // DateTime: { gte: fromDay + 'T00:00:00',
+      //   // DateTime: { lte: endDay + 'T23:11:59' },
       },
     });
   }
@@ -185,9 +185,8 @@ export class AiService {
 
   async getAradAIDashboard(userId: number, serviceInstanceId: string) {
     const serviceProperties = await this.servicePropertiesTable.findOne({
-      where: { ServiceInstanceID: serviceInstanceId },
+      where: { serviceInstanceId: serviceInstanceId },
     });
-
     if (isEmpty(serviceProperties)) {
       throw new InvalidServiceInstanceIdException();
     }
@@ -236,10 +235,8 @@ export class AiService {
   async getAiServiceInfo(userId, serviceId, qualityPlanCode, duration) {
     const aiServiceConfigs = await this.configsTable.find({
       where: {
-        and: [
-          { PropertyKey: { like: '%' + qualityPlanCode + '%' } },
-          { ServiceTypeID: serviceId },
-        ],
+        propertyKey: ILike(`%${qualityPlanCode}%`),
+        // serviceType: serviceId,
       },
     });
     const ServiceAiInfo = {

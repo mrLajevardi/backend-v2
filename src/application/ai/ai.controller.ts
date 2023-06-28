@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Injectable,
   InternalServerErrorException,
   Param,
   Post,
@@ -17,7 +18,7 @@ import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { CreateServiceService } from '../base/service/services/create-service.service';
 import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
-import jwt from 'jsonwebtoken';
+import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-table.service';
 import { SettingTableService } from '../base/crud/setting-table/setting-table.service';
@@ -28,9 +29,11 @@ import { ServiceInstancesTableService } from '../base/crud/service-instances-tab
 import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
+import { ILike, Not } from 'typeorm';
 
 @Controller('ai')
 @ApiBearerAuth() // Requires authentication with a JWT token
+@Injectable()
 export class AiController {
   constructor(
     private readonly service: AiService,
@@ -44,6 +47,7 @@ export class AiController {
     private readonly createServiceSvc: CreateServiceService,
     private readonly payAsYouGoService: PayAsYouGoService,
     private readonly configsTable: ConfigsTableService,
+    private jwtService: JwtService,
   ) {}
 
   @ApiOperation({ summary: 'Check a Validation Token' })
@@ -66,7 +70,8 @@ export class AiController {
   ) {
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ Value: options.token }, { PropertyKey: { like: '%aradAi%' } }],
+        value: options.token,
+        propertyKey: ILike(`%aradAi%`),
       },
     });
 
@@ -76,14 +81,14 @@ export class AiController {
     }
 
     const itemTypes = await this.itemTypesTable.findOne({
-      where: { Code: data.methodName },
+      where: { code: data.description },
     });
 
     if (isEmpty(itemTypes)) {
       const err = new InvalidItemTypesException();
       return Promise.reject(err);
     }
-    const verified = await this.service.verifyToken(options.token);
+    const verified = await this.service.verifyToken(data.token);
     if (!verified) {
       throw new InvalidTokenException();
     }
@@ -98,7 +103,7 @@ export class AiController {
     return await this.aiTransactionLogsTable.create({
       dateTime: new Date(),
       itemType: itemType,
-      serviceInstance: serviceProperties.serviceInstance,
+      serviceInstanceId: serviceProperties.serviceInstanceId,
       description: data.methodName,
       request: data.request,
       body: data.body,
@@ -107,45 +112,28 @@ export class AiController {
       methodName: data.methodName,
       method: data.method,
       codeStatus: data.codeStatus,
+      token: data.token,
     });
-  }
-
-  @Post('/aradAi')
-  async createAradAi(@Body() data: any, @Request() options: any) {
-    const createdService = await this.createServiceSvc.createBillingService(
-      data,
-      options,
-      'aradAi',
-    );
-
-    throw new InternalServerErrorException('Not Implemented');
-    // await logger.info(
-    //     'aradAI',
-    //     'createService',
-    //     {
-    //       _object: createdService.serviceInstanceId,
-    //     },
-    //     {...options.locals},
-    // );
   }
 
   @Get('/createOrGetDemoToken')
   async createOrGetDemoToken(@Request() options: any) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const getDemoToken = await this.settingsTable.findOne({
       where: {
-        and: [{ UserId: userId }, { Key: 'AradAi.tokenDemo' }],
+        userId: userId,
+        key: 'AradAi.tokenDemo',
       },
     });
 
     if (isEmpty(getDemoToken)) {
       const ServiceAiInfo = await this.service.getAiServiceInfo(
         userId,
-        'AradAi',
+        'aradAi',
         'demo',
         12,
       );
-      const token = jwt.sign(ServiceAiInfo, aradAIConfig.JWT_SECRET_KEY);
+      const token = this.jwtService.sign(ServiceAiInfo); //, aradAIConfig.JWT_SECRET_KEY);
 
       await this.service.createDemoToken(userId, token);
       const serviceID = await this.createServiceSvc.createServiceInstance(
@@ -169,7 +157,7 @@ export class AiController {
     @Request() options: any,
   ) {
     return await this.service.getAradAIDashboard(
-      options.userId,
+      options.user.id,
       serviceInstanceId,
     );
   }
@@ -200,9 +188,8 @@ export class AiController {
 
     // TODO service should be just to current user
     const aiTransactionsLogs = await this.aiTransactionLogsTable.find({
-      relations: ['ItemTypes'],
       where: {
-        serviceInstanceId,
+        serviceInstanceId: serviceInstanceId,
         ...parsedFilter,
       },
       take: limit,
@@ -210,7 +197,7 @@ export class AiController {
     });
     const countAll = await this.aiTransactionLogsTable.count({
       where: {
-        ServiceInstanceID: serviceInstanceId,
+        serviceInstanceId: serviceInstanceId,
         ...parsedFilter,
       },
     });
@@ -219,75 +206,6 @@ export class AiController {
       aiTransactionsLogs: aiTransactionsLogs,
       countAll,
     });
-  }
-
-  @Get('/aradAiType')
-  async getAradAiType(
-    @Query('filter') filter: string,
-    @Request() options: any,
-  ) {
-    let parsedFilter = {};
-    if (!isEmpty(filter)) {
-      parsedFilter = JSON.parse(filter).where;
-    }
-    const items = await this.itemTypesTable.find({
-      where: {
-        and: [
-          { ServiceTypeID: 'aradAi' },
-          { Code: { nlike: '%ARADAIItem%' } },
-          parsedFilter,
-        ],
-      },
-    });
-
-    const aradAiItem = await this.itemTypesTable.findOne({
-      where: {
-        and: [{ Code: 'ARADAIItem' }],
-      },
-    });
-
-    const baseAddress = await this.configsTable.find({
-      where: {
-        PropertyKey: { like: '%config.aradai.baseAddress%' },
-      },
-    });
-
-    const aradAiItems = items.map((item) => {
-      return {
-        ID: item.id,
-        ServiceTypeID: item.serviceType.id,
-        Title: item.title,
-        Unit: item.unit,
-        Fee: item.fee,
-        Code: item.code,
-        MaxAvailable: item.maxAvailable,
-        MaxPerRequest: item.maxPerRequest,
-        MinPerRequest: item.minPerRequest,
-        AddressDemo: baseAddress[0].value.replace('?', item.id.toString()),
-      };
-    });
-    const plans = await this.plansTable.find({
-      where: {
-        and: [
-          { ServiceTypeID: 'aradAi' },
-          { Code: { like: '%ai%' } },
-          { Code: { nlike: '%Demo%' } },
-        ],
-      },
-    });
-    const costs = [];
-    const fee = aradAiItem.fee;
-    plans.forEach((element) => {
-      costs.push({
-        name: element.code + 'CostPerRequest',
-        Value: fee + fee * element.additionRatio,
-      });
-      costs.push({
-        name: element.code + 'CostPerMonth',
-        Value: element.additionAmount,
-      });
-    });
-    return Promise.resolve({ aradAiItems, costs });
   }
 
   @Get('/aradAiDashoardChart/:serviceInstanceId/:startDate/:endDate')
@@ -306,7 +224,8 @@ export class AiController {
   }
 
   @Get('/aiPlans')
-  async getAiPlans(@Request() options: any, @Query('filter') filter: string) {
+  async getAiPlans(@Request() options: any, filter: string) {
+    // TODO Filter
     let parsedFilter;
     if (!isEmpty(filter)) {
       parsedFilter = JSON.parse(filter);
@@ -314,27 +233,28 @@ export class AiController {
 
     const aradAiItem = await this.itemTypesTable.findOne({
       where: {
-        and: [{ Code: 'ARADAIItem' }],
+        code: 'ARADAIItem',
       },
     });
     const fee = aradAiItem.fee;
 
     const baseAddress = await this.configsTable.find({
       where: {
-        PropertyKey: { like: '%config.aradai.baseAddress%' },
+        propertyKey: ILike(`%config.aradai.baseAddress%`),
       },
     });
 
     const items = await this.itemTypesTable.find({
       where: {
-        and: [{ ServiceTypeID: 'aradAi' }, { Code: { nlike: '%ARADAIItem%' } }],
+        serviceTypeId: 'aradAi',
+        code: Not(ILike(`%ARADAIItem%`)),
       },
     });
 
     const aradAiItems = items.map((item) => {
       return {
         ID: item.id,
-        ServiceTypeID: item.serviceType.id,
+        ServiceTypeID: item.serviceTypeId,
         Title: item.title,
         Unit: item.unit,
         Fee: item.fee,
@@ -348,15 +268,10 @@ export class AiController {
 
     const plans = await this.plansTable.find({
       where: {
-        and: [
-          { ServiceTypeID: 'aradAi' },
-          { Code: { like: '%ai%' } },
-          { Code: { nlike: '%Demo%' } },
-          parsedFilter,
-        ],
+        code: ILike(`%ai%`) && Not(ILike('%Demo%')),
+        condition: ILike(`%aradAi%`),
       },
     });
-
     const planItems = plans.map((element) => {
       return {
         Code: element.code,

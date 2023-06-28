@@ -64,7 +64,7 @@ export class CreateServiceService {
     }
     const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
       where: {
-        UserID: userId,
+        userId: userId,
       },
       order: { Index: -1 },
     });
@@ -104,7 +104,7 @@ export class CreateServiceService {
   async createBillingService(data, options, serviceId) {
     let totalCosts = null;
     const unlimitedService = 0;
-    const userId = options.accessToken.userId;
+    const userId = options.user.id;
     const checkParams = this.serviceChecksService.checkServiceParams(data, [
       'qualityPlanCode',
       'duration',
