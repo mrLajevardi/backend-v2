@@ -26,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.filter';
 import { ServiceTypesTableService } from '../base/crud/service-types-table/service-types-table.service';
+import { Raw } from 'typeorm';
 
 @ApiTags('vgpu')
 @Controller('vgpu')
@@ -58,18 +59,20 @@ export class VgpuController {
       console.log(filter);
       parsedFilter = JSON.parse(filter).where;
     }
-    const where = parsedFilter;
-    where['propertyKey'] = { like: 'QualityPlans.%' };
-    where['serviceType'] = this.serviceTypeTable.findById('vgpu');
+
     const vgpuPlans = await this.configsTable.find({
-      where: where,
+      where : {
+        propertyKey: Raw((alias) => `${alias} LIKE 'QualityPlans.%'`),
+        serviceType: await this.serviceTypeTable.findById('vgpu'),
+        ...parsedFilter,
+      }
     });
 
     const planCost = await this.itemTypesTable.find({
       where: {
-        code: { like: '%Cost%' },
-        serviceType: this.serviceTypeTable.findById('vgpu'),
-        parsedFilter,
+        code: Raw((alias) => `${alias} LIKE '%Cost%'`),
+        serviceType: await this.serviceTypeTable.findById('vgpu'),
+        ...parsedFilter,
       },
     });
     return Promise.resolve({ vgpuPlans, planCost });
