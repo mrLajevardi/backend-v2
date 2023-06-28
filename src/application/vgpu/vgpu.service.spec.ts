@@ -27,6 +27,8 @@ import { ServiceService } from '../base/service/services/service.service';
 import { NetworkService } from '../vdc/service/network.service';
 import { VdcService } from '../vdc/service/vdc.service';
 
+/// test instance 28697f62-a319-4e22-af49-075c34a14bb2
+
 describe('VgpuService', () => {
   let service: VgpuService;
 

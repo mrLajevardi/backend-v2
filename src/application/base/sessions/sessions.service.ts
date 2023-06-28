@@ -1,18 +1,25 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SessionsTableService } from '../crud/sessions-table/sessions-table.service';
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { UserTableService } from '../crud/user-table/user-table.service';
+import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
+import { readFileSync } from 'fs';
+import { vcdAuthConfig } from 'src/wrappers/mainWrapper/vcdAuthConfig';
 
 @Injectable()
 export class SessionsService {
-  constructor(private readonly sessionTable: SessionsTableService) {}
+  constructor(
+    private readonly sessionTable: SessionsTableService,
+    private readonly userTable: UserTableService,
+    private readonly organizationTable: OrganizationTableService
+    ) {}
 
   async createAdminSession(userId) {
-    throw new InternalServerErrorException('MUST BE IMPLEMENTED');
     //This part is because of preventing errors and should be deleted
-    const sessionData = { sessionId: '1', token: '' };
-    // const sessionData = await mainWrapper.admin.user.createSession()
-    //     .providerSession(
-    //         vcdAuth.username, vcdAuth.password, this.sysOrgName,
-    //     );
+    const session = await mainWrapper.admin.user.createSession();
+    const sessionData = await session.providerSession(vcdAuthConfig.username, 
+      vcdAuthConfig.password, vcdAuthConfig.org);
+
     await this.sessionTable.create({
       isAdmin: true,
       orgId: null, // DOUBLE CHECK THIS PART , this part changed after MOVE
@@ -26,15 +33,14 @@ export class SessionsService {
   }
 
   async createUserSession(orgId, userId) {
-    // const user = await this.userService.findById(userId);
-    // const org = await this.organizationService.findById(orgId);
-    //const filteredUsername = user.username.replace('@', '_').replace('.', '_');
-    throw new InternalServerErrorException('MUST BE IMPLEMENTED');
+    const user = await this.userTable.findById(userId);
+    const org = await this.organizationTable.findById(orgId);
+    const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     //This part is because of preventing errors and should be deleted
-    const sessionData = { sessionId: '1', token: '' };
     //
-    // const sessionData = await mainWrapper.admin.user.createSession()
-    //     .userSession(filteredUsername, user.vdcPassword, org.name);
+    const session = await mainWrapper.admin.user.createSession();
+    const sessionData = await session.
+        userSession(filteredUsername, user.vdcPassword, org.name);
     this.sessionTable.create({
       isAdmin: false,
       orgId,
@@ -54,7 +60,8 @@ export class SessionsService {
   async checkAdminSession(userId: string) {
     const session = await this.sessionTable.findOne({
       where: {
-        and: [{ isAdmin: true }, { active: true }],
+        isAdmin: true, 
+        active: true,
       },
     });
     if (session) {
@@ -85,7 +92,8 @@ export class SessionsService {
   async checkUserSession(orgId, userId) {
     const session = await this.sessionTable.findOne({
       where: {
-        and: [{ orgId }, { active: true }],
+        orgId: orgId, 
+        active: true,
       },
     });
     if (session) {
