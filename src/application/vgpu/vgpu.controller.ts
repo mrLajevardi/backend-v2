@@ -27,6 +27,7 @@ import {
 import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.filter';
 import { ServiceTypesTableService } from '../base/crud/service-types-table/service-types-table.service';
 import { Raw } from 'typeorm';
+import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 
 @ApiTags('vgpu')
 @Controller('vgpu')
@@ -91,10 +92,13 @@ export class VgpuController {
       },
     });
     // TODO if external port is empty return error
+    if (! externalPort){
+      throw new BadRequestException("No external port exists");
+    }
     const props = {};
     const VgpuConfigs = await this.configsTable.find({
       where: {
-        propertyKey: { like: '%config.vgpu.%' },
+        propertyKey:  Raw((alias) => `${alias} LIKE '%config.vgpu.%'`),
       },
     });
     for (const prop of VgpuConfigs) {
@@ -103,8 +107,12 @@ export class VgpuController {
       props[key] = item;
     }
 
-    const token = this.jwtService.sign(ServiceInstanceId.toString(), {
+    const payload = {
+      serviceInstanceId: ServiceInstanceId
+    }
+    const token = this.jwtService.sign(payload, {
       secret: aradVgpuConfig.JWT_SECRET_KEY,
+      expiresIn: 3600,
     });
     return Promise.resolve(
       'http://' +
@@ -179,7 +187,7 @@ export class VgpuController {
     const vmName = ServiceInstanceId + 'VM';
     const VgpuConfigs = await this.configsTable.find({
       where: {
-        propertyKey: { like: '%config.vgpu.%' },
+        propertyKey: Raw((alias) => `${alias} LIKE '%config.vgpu.%'`),
       },
     });
     const props = {};
