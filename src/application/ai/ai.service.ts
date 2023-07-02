@@ -3,7 +3,6 @@ import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-tok
 import { isEmpty } from 'class-validator';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { InvalidUseRequestPerDayException } from 'src/infrastructure/exceptions/invalid-use-request-per-day.exception';
-import { InvalidUseRequestPerMonthException } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import {
   addMonths,
@@ -12,7 +11,6 @@ import {
 } from 'src/infrastructure/helpers/date-time.helper';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
 import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
-import jwt from 'jsonwebtoken';
 import { UserTableService } from '../base/crud/user-table/user-table.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { SettingTableService } from '../base/crud/setting-table/setting-table.service';
@@ -22,6 +20,7 @@ import { ServicePropertiesTableService } from '../base/crud/service-properties-t
 import { ServiceInstancesStoredProcedureService } from '../base/crud/service-instances-table/service-instances-stored-procedure.service';
 import { ILike } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { toInteger } from 'lodash';
 
 @Injectable()
 export class AiService {
@@ -42,13 +41,12 @@ export class AiService {
   }
 
   async checkAIToken(token: string): Promise<boolean> {
-    return false;
     const verified = await this.verifyToken(token)
       .then((res) => {
         return res;
       })
       .catch((err) => {
-        throw new InvalidTokenException(err);
+        return err;
       });
 
     if (!verified) {
@@ -66,10 +64,8 @@ export class AiService {
 
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { Value: { like: '%' + token + '%' } },
-          { PropertyKey: { like: '%aradAi%' } },
-        ],
+        propertyKey: ILike(`%aradAi%`),
+        value: ILike(`%${token}%`),
       },
     });
 
@@ -79,14 +75,13 @@ export class AiService {
 
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
-        ID: serviceProperties.serviceInstanceId,
+        id: serviceProperties.serviceInstanceId,
       },
     });
-
     if (
       isEmpty(verified['costPerRequest']) ||
       isEmpty(verified['createdDate']) ||
-      (verified['qualityPlanCode'] != 'demo' &&
+      (verified['qualityPlanCode'] != 'aiDemo' &&
         (serviceInstance.isDisabled || serviceInstance.isDeleted))
     ) {
       throw new InvalidTokenException();
@@ -96,27 +91,19 @@ export class AiService {
     if (constPerRequest > user.credit) {
       throw new NotEnoughCreditException();
     }
-    if (verified['qualityPlanCode'] == 'demo') {
+    if (verified['qualityPlanCode'] == 'aiDemo') {
       // Muximum use per day
       const usePerDay = await this.usedPerDay(
         serviceProperties.serviceInstanceId,
       );
-      if (
-        verified['maxRequestPerDay'] != 'unlimited' &&
-        verified['maxRequestPerDay'] < usePerDay
-      ) {
+
+      const maxRequestPerDay = await this.configsTable.findOne({
+        where: {
+          propertyKey: ILike(`%QualityPlans.demo.maxRequestPerDay%`),
+        },
+      });
+      if (toInteger(maxRequestPerDay.value) < usePerDay) {
         throw new InvalidUseRequestPerDayException();
-      }
-      // Muximum use pre month
-      const usePerMonth = await this.usedPerMonth(
-        serviceProperties.serviceInstanceId,
-        verified['createdDate'],
-      );
-      if (
-        verified['maxRequestPerMonth'] != 'unlimited' &&
-        verified['maxRequestPerMonth'] < usePerMonth
-      ) {
-        throw new InvalidUseRequestPerMonthException();
       }
     }
     return true;
@@ -147,8 +134,10 @@ export class AiService {
     return await this.aiTransactionLogsTable.find({
       where: {
         serviceInstanceId: serviceInstanceId,
-      //   // DateTime: { gte: fromDay + 'T00:00:00',
-      //   // DateTime: { lte: endDay + 'T23:11:59' },
+        // dateTime: {
+        //   MoreThanOrEqual: new Date(`${fromDay}T00:00:00`),
+        //   LessThanOrEqual: new Date(`${todayDate}T23:11:59`),
+        // },
       },
     });
   }

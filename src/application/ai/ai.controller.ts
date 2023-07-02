@@ -30,6 +30,7 @@ import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.servic
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
 import { ILike, Not } from 'typeorm';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Controller('ai')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -47,11 +48,15 @@ export class AiController {
     private readonly createServiceSvc: CreateServiceService,
     private readonly payAsYouGoService: PayAsYouGoService,
     private readonly configsTable: ConfigsTableService,
-    private jwtService: JwtService,
+    private readonly jwtService: JwtService,
+    private readonly loggerService: LoggerService,
   ) {}
-
+  async sign(payload: object) {
+    const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
+    return this.jwtService.sign(payload, { secret: JWT_SECRET_KEY });
+  }
   @ApiOperation({ summary: 'Check a Validation Token' })
-  @Get('CheckToken')
+  @Get('CheckToken/:token')
   async checkAradAiToken(
     @Param('token') token: string,
     @Query() options: object,
@@ -61,9 +66,6 @@ export class AiController {
   }
 
   @Post('/aiTransactionsLogs')
-  //IMPORTANT
-  // In main source code the Token was part of data
-  // But now it is part of options, Or may be something else
   async createAITransactionsLogs(
     @Body() data: CreateAITransactionsLogsDto,
     @Request() options: any,
@@ -127,14 +129,13 @@ export class AiController {
     });
 
     if (isEmpty(getDemoToken)) {
-      const ServiceAiInfo = await this.service.getAiServiceInfo(
+      const serviceAiInfo = await this.service.getAiServiceInfo(
         userId,
         'aradAi',
         'demo',
         12,
       );
-      const token = this.jwtService.sign(ServiceAiInfo); //, aradAIConfig.JWT_SECRET_KEY);
-
+      const token = await this.sign(serviceAiInfo);
       await this.service.createDemoToken(userId, token);
       const serviceID = await this.createServiceSvc.createServiceInstance(
         userId,
@@ -146,9 +147,13 @@ export class AiController {
         propertyKey: 'aradAiDemo.token',
         value: token,
       });
-      return Promise.resolve(token);
+      return Promise.resolve({
+        demoToken: token,
+      });
     }
-    return Promise.resolve(getDemoToken.value);
+    return Promise.resolve({
+      demoToken: getDemoToken.value,
+    });
   }
 
   @Get('/aradAiDashoard/:serviceInstanceId')
@@ -165,18 +170,17 @@ export class AiController {
   @Get('/aiTransactionsLogs/:serviceInstanceId')
   async getAITransactionsLogs(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Query('filter') filter: string,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
     @Request() options: any,
   ) {
-    let parsedFilter = {};
+    // let parsedFilter = {};
     let skip = 0;
     let limit = 10;
 
-    if (!isEmpty(filter)) {
-      parsedFilter = JSON.parse(filter).where;
-    }
+    // if (!isEmpty(filter)) {
+    //   parsedFilter = JSON.parse(filter).where;
+    // }
 
     if (!isEmpty(page)) {
       skip = pageSize * (page - 1);
@@ -190,7 +194,7 @@ export class AiController {
     const aiTransactionsLogs = await this.aiTransactionLogsTable.find({
       where: {
         serviceInstanceId: serviceInstanceId,
-        ...parsedFilter,
+        // ...parsedFilter,
       },
       take: limit,
       skip,
@@ -198,7 +202,7 @@ export class AiController {
     const countAll = await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceId,
-        ...parsedFilter,
+        // ...parsedFilter,
       },
     });
 

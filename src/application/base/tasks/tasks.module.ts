@@ -11,6 +11,7 @@ import { VdcService } from 'src/application/vdc/service/vdc.service';
 import { CrudModule } from '../crud/crud.module';
 import { SessionsModule } from '../sessions/sessions.module';
 import { OrganizationModule } from '../organization/organization.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { OrganizationModule } from '../organization/organization.module';
     BullModule.registerQueue({
       name: 'tasks',
     }),
+    LoggerModule,
     // VdcModule,
     CrudModule,
     SessionsModule,

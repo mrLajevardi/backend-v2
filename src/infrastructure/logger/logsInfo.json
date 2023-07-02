@@ -1,0 +1,41 @@
+{
+    "actions":{
+        "security":{
+            "id": 1,
+            "sub":{
+                "create": 1,
+                "update": 2,
+                "get": 3,
+                "delete": 4,
+                "verifyEmail": 5,
+                "login": {
+                    "id": 6,
+                    "message": "user logged in"
+                }
+            }
+        },
+        "org":{
+            "id": 2,
+            "sub":{
+                "create": 1,
+                "update": 2,
+                "get": 3,
+                "delete": 4,
+                "orgUserCreated": 5
+            }
+        },
+        "vdc":{
+            "id": 3,
+            "sub":{
+                "create": 1,
+                "update": 2,
+                "get": 3,
+                "delete": 4,
+                "payment": {
+                    "id": 5,
+                    "message": "user has paid {credit} for vdc"
+                }
+            }
+        }
+    }
+}
