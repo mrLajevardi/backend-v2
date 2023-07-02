@@ -22,4 +22,3 @@ export const vdcWrapper = {
   getVmAttachedNamedDisk: userGetVmAttachedNamedDisk,
 };
 
-module.exports = vdcWrapper;

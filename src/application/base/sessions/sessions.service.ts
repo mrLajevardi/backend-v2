@@ -3,7 +3,6 @@ import { SessionsTableService } from '../crud/sessions-table/sessions-table.serv
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { UserTableService } from '../crud/user-table/user-table.service';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
-import { readFileSync } from 'fs';
 import { vcdAuthConfig } from 'src/wrappers/mainWrapper/vcdAuthConfig';
 
 @Injectable()
@@ -15,9 +14,9 @@ export class SessionsService {
     ) {}
 
   async createAdminSession(userId) {
-    //This part is because of preventing errors and should be deleted
-    const session = await mainWrapper.admin.user.createSession();
-    const sessionData = await session.providerSession(vcdAuthConfig.username, 
+
+    const adminUser = mainWrapper.admin.user;
+    const sessionData = await adminUser.providerSession(vcdAuthConfig.username, 
       vcdAuthConfig.password, vcdAuthConfig.org);
 
     await this.sessionTable.create({
@@ -38,8 +37,7 @@ export class SessionsService {
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     //This part is because of preventing errors and should be deleted
     //
-    const session = await mainWrapper.admin.user.createSession();
-    const sessionData = await session.
+    const sessionData = await mainWrapper.admin.user.
         userSession(filteredUsername, user.vdcPassword, org.name);
     this.sessionTable.create({
       isAdmin: false,

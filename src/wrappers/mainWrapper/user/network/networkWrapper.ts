@@ -12,4 +12,3 @@ export const networkWrapper = {
   getIPUsageNetwrok: getIPUsageNetwrok,
 };
 
-module.exports = networkWrapper;

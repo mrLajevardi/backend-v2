@@ -18,4 +18,3 @@ export const dhcpWrapper = {
   getDhcpBinding: userGetDhcpBinding,
 };
 
-module.exports = dhcpWrapper;

@@ -1,6 +1,6 @@
 import { adminEdgeGatewayWrapper } from './admin/edgeGateway/adminEdgeGatewayWrapper';
 import { adminOrgWrapper } from './admin/org/adminOrgWrapper';
-import { adminUserWrapper } from './admin/user/adminUserWrapper';
+import { AdminUserWrapper } from './admin/user/adminUserWrapper';
 import { adminVdcWrapper } from './admin/vdc/adminVdcWrapper';
 import { applicationPortProfilesWrapper } from './user/applicationPortProfile/applicationPortProfileWrapper';
 import { dhcpWrapper } from './user/dhcp/dhcpWrapper';
@@ -17,7 +17,7 @@ export const mainWrapper = {
   admin: {
     edgeGateway: adminEdgeGatewayWrapper,
     org: adminOrgWrapper,
-    user: adminUserWrapper,
+    user: new AdminUserWrapper(),
     vdc: adminVdcWrapper,
   },
   user: {
@@ -34,4 +34,3 @@ export const mainWrapper = {
   },
 };
 
-module.exports = mainWrapper;

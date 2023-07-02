@@ -6,4 +6,3 @@ export const tasksWrapper = {
   cancelTask: cancelTask,
 };
 
-module.exports = tasksWrapper;

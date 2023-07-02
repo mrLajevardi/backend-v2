@@ -12,4 +12,3 @@ export const ipSetsWrapper = {
   deleteIPSet: userDeleteIPSet,
 };
 
-module.exports = ipSetsWrapper;

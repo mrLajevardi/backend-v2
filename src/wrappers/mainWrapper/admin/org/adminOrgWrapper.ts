@@ -10,4 +10,3 @@ export const adminOrgWrapper = {
   deleteCatalog: deleteCatalog,
 };
 
-module.exports = adminOrgWrapper;

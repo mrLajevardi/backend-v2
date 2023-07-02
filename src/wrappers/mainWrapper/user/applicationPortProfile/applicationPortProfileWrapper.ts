@@ -12,4 +12,3 @@ export const applicationPortProfilesWrapper = {
   getApplicationPortProfileList: userGetApplicationPortProfiles,
 };
 
-module.exports = applicationPortProfilesWrapper;

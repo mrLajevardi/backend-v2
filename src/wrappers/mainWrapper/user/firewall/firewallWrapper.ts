@@ -12,4 +12,3 @@ export const firewallWrapper = {
   deleteFirewall: userDeleteFirewall,
 };
 
-module.exports = firewallWrapper;

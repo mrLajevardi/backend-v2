@@ -16,4 +16,3 @@ export const adminVdcWrapper = {
   updateNetworkProfile: updateNetworkProfile,
 };
 
-module.exports = adminVdcWrapper;

@@ -70,4 +70,3 @@ export const vmWrapper = {
   updateMedia: userUpdateMedia,
 };
 
-module.exports = vmWrapper;

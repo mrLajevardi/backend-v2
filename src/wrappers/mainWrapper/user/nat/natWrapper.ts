@@ -12,4 +12,3 @@ export const natWrapper = {
   updateNatRule: userUpdateNatRule,
 };
 
-module.exports = natWrapper;
