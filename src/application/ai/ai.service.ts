@@ -142,7 +142,7 @@ export class AiService {
     });
   }
 
-  async allRequestused(serviceInstanceID) {
+  async allRequestused(serviceInstanceID: string): Promise<number> {
     return await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceID,
@@ -150,7 +150,7 @@ export class AiService {
     });
   }
 
-  sumAllServiceUsed(eachServiceUsed) {
+  sumAllServiceUsed = (eachServiceUsed: any[]): number => {
     let numberOfAllServiceUsed = 0;
     eachServiceUsed.forEach((service) => {
       for (const key in service) {
@@ -160,9 +160,9 @@ export class AiService {
       }
     });
     return numberOfAllServiceUsed;
-  }
+  };
 
-  async createDemoToken(userId, token) {
+  async createDemoToken(userId: number, token: string): Promise<any> {
     return await this.settingTable.create({
       userId: userId,
       key: 'aradAi.tokenDemo',
@@ -172,7 +172,10 @@ export class AiService {
     });
   }
 
-  async getAradAIDashboard(userId: number, serviceInstanceId: string) {
+  async getAradAIDashboard(
+    userId: number,
+    serviceInstanceId: string,
+  ): Promise<any> {
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: { serviceInstanceId: serviceInstanceId },
     });
@@ -221,20 +224,27 @@ export class AiService {
     };
   }
 
-  async getAiServiceInfo(userId, serviceId, qualityPlanCode, duration) {
+  async getAiServiceInfo(
+    userId: number,
+    serviceId: string,
+    qualityPlanCode: string,
+    duration: number,
+  ) {
     const aiServiceConfigs = await this.configsTable.find({
       where: {
         propertyKey: ILike(`%${qualityPlanCode}%`),
         // serviceType: serviceId,
       },
     });
-    const ServiceAiInfo = {
+
+    const serviceAiInfo = {
       qualityPlanCode,
       createdDate: new Date().toISOString(),
       userId,
       duration,
       expireDate: addMonths(new Date(), duration),
     };
+
     if (isEmpty(aiServiceConfigs)) {
       throw new InvalidAradAIConfigException();
     }
@@ -242,8 +252,8 @@ export class AiService {
     aiServiceConfigs.forEach((element) => {
       const key = element.propertyKey.split('.').slice(-1)[0];
       const item = element.value;
-      ServiceAiInfo[key] = item;
+      serviceAiInfo[key] = item;
     });
-    return ServiceAiInfo;
+    return serviceAiInfo;
   }
 }
