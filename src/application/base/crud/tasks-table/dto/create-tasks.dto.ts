@@ -2,10 +2,6 @@ import { IsString, IsOptional, IsDate, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateTasksDto {
-  @IsString()
-  @ApiProperty()
-  taskId?: string;
-
   @IsNumber()
   @ApiProperty()
   userId: number;
