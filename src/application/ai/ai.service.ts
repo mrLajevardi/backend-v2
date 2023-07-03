@@ -18,7 +18,7 @@ import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs
 import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ServiceInstancesStoredProcedureService } from '../base/crud/service-instances-table/service-instances-stored-procedure.service';
-import { ILike } from 'typeorm';
+import { Between, ILike } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { toInteger } from 'lodash';
 
@@ -114,10 +114,10 @@ export class AiService {
     return await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceId,
-        // dateTime: {
-        //   MoreThanOrEqual: `${todayDate}T00:00:00`,
-        //   LessThanOrEqual: `${todayDate}T23:11:59`,
-        // },
+        dateTime: Between(
+          new Date(`${todayDate}T00:00:00`),
+          new Date(`${todayDate}T23:11:59`),
+        ),
       },
     });
   }
@@ -134,10 +134,10 @@ export class AiService {
     return await this.aiTransactionLogsTable.find({
       where: {
         serviceInstanceId: serviceInstanceId,
-        // dateTime: {
-        //   MoreThanOrEqual: new Date(`${fromDay}T00:00:00`),
-        //   LessThanOrEqual: new Date(`${todayDate}T23:11:59`),
-        // },
+        dateTime: Between(
+          new Date(`${fromDay}T00:00:00`),
+          new Date(`${endDay}T23:11:59`),
+        ),
       },
     });
   }
@@ -149,18 +149,6 @@ export class AiService {
       },
     });
   }
-
-  sumAllServiceUsed = (eachServiceUsed: any[]): number => {
-    let numberOfAllServiceUsed = 0;
-    eachServiceUsed.forEach((service) => {
-      for (const key in service) {
-        if (key == 'used') {
-          numberOfAllServiceUsed += service[key];
-        }
-      }
-    });
-    return numberOfAllServiceUsed;
-  };
 
   async createDemoToken(userId: number, token: string): Promise<any> {
     return await this.settingTable.create({

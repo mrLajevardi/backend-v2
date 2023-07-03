@@ -33,7 +33,6 @@ import { ILike, Not } from 'typeorm';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Controller('ai')
-@ApiBearerAuth() // Requires authentication with a JWT token
 @Injectable()
 export class AiController {
   constructor(
@@ -51,7 +50,7 @@ export class AiController {
     private readonly jwtService: JwtService,
     private readonly loggerService: LoggerService,
   ) {}
-  async sign(payload: object) {
+  async sign(payload: object): Promise<string> {
     const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
     return this.jwtService.sign(payload, { secret: JWT_SECRET_KEY });
   }
@@ -68,11 +67,11 @@ export class AiController {
   @Post('/aiTransactionsLogs')
   async createAITransactionsLogs(
     @Body() data: CreateAITransactionsLogsDto,
-    @Request() options: any,
+    // @Request() options: any,
   ) {
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: {
-        value: options.token,
+        value: ILike(`%${data.token}%`),
         propertyKey: ILike(`%aradAi%`),
       },
     });
@@ -118,8 +117,11 @@ export class AiController {
     });
   }
 
+  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/createOrGetDemoToken')
-  async createOrGetDemoToken(@Request() options: any) {
+  async createOrGetDemoToken(
+    @Request() options: any,
+  ): Promise<GetDemoTokenDto> {
     const userId = options.user.userId;
     const getDemoToken = await this.settingsTable.findOne({
       where: {
@@ -156,24 +158,26 @@ export class AiController {
     });
   }
 
+  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aradAiDashoard/:serviceInstanceId')
   async getAradAiaDshboard(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options: any,
-  ) {
+  ): Promise<GetAradAiDashoardDto> {
     return await this.service.getAradAIDashboard(
       options.user.id,
       serviceInstanceId,
     );
   }
 
+  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aiTransactionsLogs/:serviceInstanceId')
   async getAITransactionsLogs(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
     @Request() options: any,
-  ) {
+  ): Promise<GetAiTransactionsLogsDto> {
     // let parsedFilter = {};
     let skip = 0;
     let limit = 10;
@@ -212,13 +216,14 @@ export class AiController {
     });
   }
 
+  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aradAiDashoardChart/:serviceInstanceId/:startDate/:endDate')
   async getDashboardChart(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('startDate') startDate: string,
     @Param('endDate') endDate: string,
     @Request() options: any,
-  ) {
+  ): Promise<GetAradAiDashoardChartDto> {
     const result = await this.aiTransactionLogsSP.getChartAIUsed(
       startDate,
       endDate,
@@ -227,8 +232,12 @@ export class AiController {
     return result;
   }
 
+  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aiPlans')
-  async getAiPlans(@Request() options: any, filter: string) {
+  async getAiPlans(
+    @Request() options: any,
+    filter: string,
+  ): Promise<GetPlanItemsDto[]> {
     // TODO Filter
     let parsedFilter;
     if (!isEmpty(filter)) {
