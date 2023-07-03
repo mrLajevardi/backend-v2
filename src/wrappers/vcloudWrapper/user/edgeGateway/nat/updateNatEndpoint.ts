@@ -19,5 +19,3 @@ export function updateNatEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateNatEndpoint;

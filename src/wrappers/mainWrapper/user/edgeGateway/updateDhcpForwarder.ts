@@ -39,4 +39,3 @@ export async function updateDhcpForwarder(
     __vcloudTask: dhcpForwarder.headers['location'],
   });
 }
-module.exports = updateDhcpForwarder;

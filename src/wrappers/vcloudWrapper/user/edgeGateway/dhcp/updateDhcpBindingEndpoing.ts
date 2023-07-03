@@ -19,4 +19,3 @@ export function updateDhcpBindingEndpoint(options?: any) {
   };
 }
 
-module.exports = updateDhcpBindingEndpoint;

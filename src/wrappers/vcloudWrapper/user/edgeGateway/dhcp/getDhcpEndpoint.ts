@@ -19,4 +19,3 @@ export function getDhcpEndpoint(options?: any) {
   };
 }
 
-module.exports = getDhcpEndpoint;

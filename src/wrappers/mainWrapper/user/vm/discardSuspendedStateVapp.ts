@@ -14,4 +14,3 @@ export async function userDiscardSuspendedStatevApp(authToken, vAppId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userDiscardSuspendedStatevApp;

@@ -16,4 +16,3 @@ export function createProviderSessionEndpoint(options?: any) {
   };
 }
 
-module.exports = createProviderSessionEndpoint;

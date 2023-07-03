@@ -12,4 +12,3 @@ export const ticketEndpoints = {
   getTicket: getTicketEndpoint,
 };
 
-module.exports = ticketEndpoints;

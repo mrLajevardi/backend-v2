@@ -19,5 +19,3 @@ export function updateMediaEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateMediaEndpoint;

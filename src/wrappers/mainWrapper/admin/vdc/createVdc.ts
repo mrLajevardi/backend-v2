@@ -82,4 +82,3 @@ export async function createVdc(config, orgId) {
   });
 }
 
-module.exports = createVdc;

@@ -17,4 +17,3 @@ export class UvDeskWrapper extends Wrapper {
   }
 }
 
-module.exports = UvDeskWrapper;

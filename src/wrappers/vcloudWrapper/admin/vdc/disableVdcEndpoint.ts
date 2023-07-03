@@ -20,4 +20,3 @@ export function disableVdcEndpoint(options?: any) {
   };
 }
 
-module.exports = disableVdcEndpoint;

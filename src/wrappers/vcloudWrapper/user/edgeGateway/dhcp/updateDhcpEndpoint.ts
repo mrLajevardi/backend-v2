@@ -18,4 +18,3 @@ export function updateDhcpEndpoint(options?: any) {
   };
 }
 
-module.exports = updateDhcpEndpoint;

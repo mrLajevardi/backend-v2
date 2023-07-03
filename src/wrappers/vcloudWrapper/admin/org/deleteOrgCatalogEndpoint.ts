@@ -20,4 +20,3 @@ export function deleteOrgCatalogEndpoint(options?: any) {
   };
 }
 
-module.exports = deleteOrgCatalogEndpoint;

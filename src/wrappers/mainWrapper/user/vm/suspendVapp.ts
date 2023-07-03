@@ -15,4 +15,3 @@ export async function userSuspendVapp(authToken, vAppId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userSuspendVapp;

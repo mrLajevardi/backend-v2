@@ -37,5 +37,3 @@ export async function userGetSingleFirewall(authToken, ruleId, edgeName) {
   }
   return Promise.resolve(firewall.data);
 }
-
-module.exports = userGetSingleFirewall;

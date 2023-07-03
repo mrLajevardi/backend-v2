@@ -19,4 +19,3 @@ export function enableVdcEndpoint(options?: any) {
   };
 }
 
-module.exports = enableVdcEndpoint;

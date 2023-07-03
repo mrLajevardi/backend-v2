@@ -18,5 +18,3 @@ export function undeployVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = undeployVmEndpoint;

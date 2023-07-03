@@ -14,4 +14,3 @@ export async function userInstallVmTools(authToken, vmId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userInstallVmTools;

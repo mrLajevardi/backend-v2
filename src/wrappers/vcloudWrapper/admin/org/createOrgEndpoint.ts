@@ -17,4 +17,3 @@ export function createOrgEndpoint(options?: any) {
   };
 }
 
-module.exports = createOrgEndpoint;

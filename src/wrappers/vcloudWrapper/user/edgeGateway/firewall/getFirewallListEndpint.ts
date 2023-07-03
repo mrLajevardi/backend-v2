@@ -19,4 +19,3 @@ export function getFirewallListEndpoint(options?: any) {
   };
 }
 
-module.exports = getFirewallListEndpoint;

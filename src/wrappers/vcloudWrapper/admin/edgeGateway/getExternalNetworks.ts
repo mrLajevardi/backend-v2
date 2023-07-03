@@ -18,4 +18,3 @@ export function getExternalNetworksEndpoint(options?: any) {
   };
 }
 
-module.exports = getExternalNetworksEndpoint;

@@ -122,4 +122,3 @@ export const createEdgeGateway = () => {
     createEdge,
   };
 };
-module.exports = createEdgeGateway;

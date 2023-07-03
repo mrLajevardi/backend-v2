@@ -19,4 +19,3 @@ export function deleteTemplateEndpoint(options?: any) {
   };
 }
 
-module.exports = deleteTemplateEndpoint;

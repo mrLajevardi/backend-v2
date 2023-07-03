@@ -19,4 +19,3 @@ export function createVmEndpoint(options?: any) {
   };
 }
 
-module.exports = createVmEndpoint;

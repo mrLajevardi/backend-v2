@@ -15,9 +15,11 @@ export class SessionsService {
 
   async createAdminSession(userId) {
 
-    const adminUser = mainWrapper.admin.user;
-    const sessionData = await adminUser.providerSession(vcdAuthConfig.username, 
-      vcdAuthConfig.password, vcdAuthConfig.org);
+    const session = await mainWrapper.admin.user.createSession;
+    console.log(session); 
+    const sessionData = await  session.providerSession(
+      vcdAuthConfig.username, vcdAuthConfig.password, vcdAuthConfig.org,
+    );
 
     await this.sessionTable.create({
       isAdmin: true,
@@ -37,8 +39,10 @@ export class SessionsService {
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     //This part is because of preventing errors and should be deleted
     //
-    const sessionData = await mainWrapper.admin.user.
-        userSession(filteredUsername, user.vdcPassword, org.name);
+    const session = mainWrapper.admin.user.createSession;
+    const sessionData = await session.userSession(filteredUsername, user.vdcPassword, org.name);
+    // const sessionData = await mainWrapper.admin.user.
+    //     userSession(filteredUsername, user.vdcPassword, org.name);
     this.sessionTable.create({
       isAdmin: false,
       orgId,

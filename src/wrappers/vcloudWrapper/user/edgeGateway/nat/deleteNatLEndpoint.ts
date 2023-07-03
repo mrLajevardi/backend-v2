@@ -20,4 +20,3 @@ export function deleteNatEndpoint(options?: any) {
   };
 }
 
-module.exports = deleteNatEndpoint;

@@ -14,4 +14,3 @@ export function uploadFile(authToken, catalogId, data) {
   return response;
 }
 
-module.exports = uploadFile;

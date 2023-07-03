@@ -19,5 +19,3 @@ export function getNetworkIPUsageListEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getNetworkIPUsageListEndpoint;

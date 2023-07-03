@@ -11,5 +11,3 @@ export const natEndpoints = {
   updateNat: updateNatEndpoint,
   createNat: createNatEndpoint,
 };
-
-module.exports = natEndpoints;

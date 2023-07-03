@@ -137,4 +137,3 @@ export async function userUpdateVm(authToken, vdcId, config, vAppId) {
   return Promise.resolve(createdVm.data);
 }
 
-module.exports = userUpdateVm;

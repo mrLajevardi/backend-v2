@@ -19,4 +19,3 @@ export function deleteMediaEndpoint(options?: any) {
   };
 }
 
-module.exports = deleteMediaEndpoint;

@@ -25,4 +25,3 @@ export async function createTicket(
   return ticket.data;
 }
 
-module.exports = createTicket;

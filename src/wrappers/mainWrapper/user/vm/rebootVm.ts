@@ -15,4 +15,3 @@ export async function userRebootVm(authToken, vmId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userRebootVm;

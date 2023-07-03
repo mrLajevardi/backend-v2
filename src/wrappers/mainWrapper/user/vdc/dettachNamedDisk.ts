@@ -28,4 +28,3 @@ export async function userDettachNamedDisk(authToken, nameDiskID, vmID) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userDettachNamedDisk;

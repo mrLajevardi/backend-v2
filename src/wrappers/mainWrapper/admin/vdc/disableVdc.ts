@@ -15,4 +15,3 @@ export async function disableVdc(session, vdcId) {
 
   return await new VcloudWrapper().posts('admin.vdc.disableVdc', options);
 }
-module.exports = disableVdc;

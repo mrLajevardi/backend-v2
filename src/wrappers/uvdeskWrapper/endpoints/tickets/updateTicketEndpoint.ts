@@ -15,4 +15,3 @@ export function updateTicketEndpoint(options?: any) {
   };
 }
 
-module.exports = updateTicketEndpoint;

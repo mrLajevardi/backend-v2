@@ -19,4 +19,3 @@ export function updateFirewallEndpoint(options?: any) {
   };
 }
 
-module.exports = updateFirewallEndpoint;

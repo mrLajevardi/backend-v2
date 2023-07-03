@@ -19,5 +19,3 @@ export function updateGuestCustomizationEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateGuestCustomizationEndpoint;

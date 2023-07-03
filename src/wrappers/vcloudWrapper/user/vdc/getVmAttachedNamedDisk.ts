@@ -18,5 +18,3 @@ export function vmAttachedNamedDisk(options?: any) {
     },
   };
 }
-
-module.exports = vmAttachedNamedDisk;

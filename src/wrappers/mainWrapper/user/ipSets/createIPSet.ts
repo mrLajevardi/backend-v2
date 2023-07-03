@@ -46,5 +46,3 @@ export async function userCreateIPSet(
     __vcloudTask: response.headers['location'],
   });
 }
-
-module.exports = userCreateIPSet;

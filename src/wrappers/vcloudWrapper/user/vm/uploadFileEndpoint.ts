@@ -19,5 +19,3 @@ export function uploadFileEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = uploadFileEndpoint;

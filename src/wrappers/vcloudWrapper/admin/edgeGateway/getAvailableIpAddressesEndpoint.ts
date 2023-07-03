@@ -19,4 +19,3 @@ export function getAvailableIpAddressesEndpoint(options?: any) {
   };
 }
 
-module.exports = getAvailableIpAddressesEndpoint;

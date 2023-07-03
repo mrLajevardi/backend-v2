@@ -16,4 +16,3 @@ export const adminVdcEndpoints = {
   updateNetworkProfile: updateNetworkProfileEndpoint,
 };
 
-module.exports = adminVdcEndpoints;

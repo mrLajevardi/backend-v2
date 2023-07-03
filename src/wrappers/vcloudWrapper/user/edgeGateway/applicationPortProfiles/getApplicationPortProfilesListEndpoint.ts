@@ -18,4 +18,3 @@ export function getApplicationPortProfilesListEndpoint(options?: any) {
   };
 }
 
-module.exports = getApplicationPortProfilesListEndpoint;

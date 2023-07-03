@@ -39,4 +39,3 @@ export async function userUpdateGuestCustomization(authToken, vmId, config) {
   });
 }
 
-module.exports = userUpdateGuestCustomization;

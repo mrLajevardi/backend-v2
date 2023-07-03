@@ -19,4 +19,3 @@ export function createTemplateEndpoint(options?: any) {
   };
 }
 
-module.exports = createTemplateEndpoint;

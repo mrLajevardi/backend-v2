@@ -17,4 +17,3 @@ export function updateFirewallListEndpoint(options?: any) {
   };
 }
 
-module.exports = updateFirewallListEndpoint;

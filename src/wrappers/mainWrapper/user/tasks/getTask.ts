@@ -6,5 +6,3 @@ export const userGetTask = (authToken, taskId) => {
   });
   return task;
 };
-
-module.exports = userGetTask;

@@ -18,5 +18,3 @@ export function getDnsForwarderEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getDnsForwarderEndpoint;

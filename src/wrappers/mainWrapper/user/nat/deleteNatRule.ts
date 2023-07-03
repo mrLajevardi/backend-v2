@@ -28,4 +28,3 @@ export async function userDeleteNatRule(authToken, ruleId, edgeName) {
     __vcloudTask: deletedNat.headers['location'],
   });
 }
-module.exports = userDeleteNatRule;

@@ -53,4 +53,3 @@ export async function userUpdateVmGeneralSection(
   });
 }
 
-module.exports = userUpdateVmGeneralSection;

@@ -18,4 +18,3 @@ export function getVmTemplatesEndpoint(options?: any) {
   };
 }
 
-module.exports = getVmTemplatesEndpoint;

@@ -18,4 +18,3 @@ export function createEdgeGatewayEndpoint(options?: any) {
   };
 }
 
-module.exports = createEdgeGatewayEndpoint;

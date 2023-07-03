@@ -17,5 +17,3 @@ export function deleteIpSetsEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deleteIpSetsEndpoint;

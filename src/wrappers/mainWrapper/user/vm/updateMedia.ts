@@ -16,4 +16,3 @@ export async function userUpdateMedia(authToken, mediaId, name) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userUpdateMedia;

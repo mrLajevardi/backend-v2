@@ -29,4 +29,3 @@ export async function getIPUsageNetwrok(
   );
   return Promise.resolve(networks.data);
 }
-module.exports = getIPUsageNetwrok;

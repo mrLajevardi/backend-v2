@@ -18,5 +18,3 @@ export function removeNamedDisk(options?: any) {
     },
   };
 }
-
-module.exports = removeNamedDisk;

@@ -27,4 +27,3 @@ export async function replyTicket(
   return ticket.data;
 }
 
-module.exports = replyTicket;

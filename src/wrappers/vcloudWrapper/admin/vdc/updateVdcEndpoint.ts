@@ -20,4 +20,3 @@ export function updateVdcEndpoint(options?: any) {
   };
 }
 
-module.exports = updateVdcEndpoint;

@@ -46,4 +46,3 @@ export async function userUpdateVmComputeSection(
   });
 }
 
-module.exports = userUpdateVmComputeSection;

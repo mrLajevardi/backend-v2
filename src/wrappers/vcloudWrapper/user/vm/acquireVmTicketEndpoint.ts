@@ -17,5 +17,3 @@ export function acquireVmTicketEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = acquireVmTicketEndpoint;

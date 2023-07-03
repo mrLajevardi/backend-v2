@@ -117,5 +117,3 @@ export async function instantiateVmFromTemplateAdmin(
     __vcloudTask: createdVm.headers['location'],
   });
 }
-
-module.exports = instantiateVmFromTemplateAdmin;

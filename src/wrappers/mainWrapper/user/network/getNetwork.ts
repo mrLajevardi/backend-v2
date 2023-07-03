@@ -29,4 +29,3 @@ export async function userGetNetwork(
   );
   return Promise.resolve(networks.data);
 }
-module.exports = userGetNetwork;

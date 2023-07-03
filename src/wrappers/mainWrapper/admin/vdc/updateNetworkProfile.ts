@@ -27,4 +27,3 @@ export async function updateNetworkProfile(vdcId, session) {
     __vcloudTask: networkProfile.headers.location,
   };
 }
-module.exports = updateNetworkProfile;

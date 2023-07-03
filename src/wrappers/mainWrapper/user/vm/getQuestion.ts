@@ -7,5 +7,3 @@ export const userGetQuestion = async (authToken, vmId) => {
   });
   return question.data;
 };
-
-module.exports = userGetQuestion;

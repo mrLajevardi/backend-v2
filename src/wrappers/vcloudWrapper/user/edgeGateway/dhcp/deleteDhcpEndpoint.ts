@@ -18,4 +18,3 @@ export function deleteDhcpEndpoint(options?: any) {
   };
 }
 
-module.exports = deleteDhcpEndpoint;

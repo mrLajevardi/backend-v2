@@ -27,5 +27,3 @@ export async function userGetNatRule(authToken, ruleId, edgeName) {
   const natRule = await new VcloudWrapper().posts('user.nat.getNat', options);
   return Promise.resolve(natRule.data);
 }
-
-module.exports = userGetNatRule;

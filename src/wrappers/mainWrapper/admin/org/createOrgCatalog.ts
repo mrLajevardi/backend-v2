@@ -29,4 +29,3 @@ export async function createOrgCatalog(
   return Promise.resolve();
 }
 
-module.exports = createOrgCatalog;

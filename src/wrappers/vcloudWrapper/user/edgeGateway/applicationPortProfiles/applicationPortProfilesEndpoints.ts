@@ -12,4 +12,3 @@ export const applicationPortProfilesEndpoints = {
   getApplicationPortProfile: getApplicationPortProfileEndpoint,
 };
 
-module.exports = applicationPortProfilesEndpoints;

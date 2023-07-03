@@ -26,4 +26,3 @@ export async function userDeployvApp(authToken, vAppId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userDeployvApp;

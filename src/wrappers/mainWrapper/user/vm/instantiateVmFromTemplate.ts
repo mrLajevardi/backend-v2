@@ -115,5 +115,3 @@ export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
     __vcloudTask: createdVm.headers['location'],
   });
 }
-
-module.exports = userInstantiateVmFromTemplate;

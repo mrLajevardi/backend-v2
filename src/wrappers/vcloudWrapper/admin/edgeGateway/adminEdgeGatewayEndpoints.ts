@@ -10,4 +10,3 @@ export const adminEdgeGatewayEndpoints = {
   getEdgeClusters: getNsxtEdgeClustersEndpoint,
 };
 
-module.exports = adminEdgeGatewayEndpoints;

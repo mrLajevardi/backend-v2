@@ -16,4 +16,3 @@ export async function getOrg(params, authToken) {
   return Promise.resolve(response.data);
 }
 
-module.exports = getOrg;

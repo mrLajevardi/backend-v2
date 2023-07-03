@@ -18,4 +18,3 @@ export function getVmEndpoint(options?: any) {
   };
 }
 
-module.exports = getVmEndpoint;

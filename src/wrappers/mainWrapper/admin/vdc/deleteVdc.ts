@@ -15,4 +15,3 @@ export async function deleteVdc(session, vdcId) {
 
   return await new VcloudWrapper().posts('admin.vdc.deleteVdc', options);
 }
-module.exports = deleteVdc;

@@ -18,5 +18,3 @@ export function getDhcpForwarderEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getDhcpForwarderEndpoint;

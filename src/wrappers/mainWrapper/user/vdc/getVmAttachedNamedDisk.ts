@@ -18,4 +18,3 @@ export async function userGetVmAttachedNamedDisk(authToken, nameDiskID) {
   });
   return action;
 }
-module.exports = userGetVmAttachedNamedDisk;

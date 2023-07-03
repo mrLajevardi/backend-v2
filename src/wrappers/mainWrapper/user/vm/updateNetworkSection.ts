@@ -42,4 +42,3 @@ export async function userUpdateNetworkSection(
   });
 }
 
-module.exports = userUpdateNetworkSection;

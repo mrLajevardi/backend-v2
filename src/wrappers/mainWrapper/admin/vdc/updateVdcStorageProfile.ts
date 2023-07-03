@@ -45,5 +45,3 @@ export async function updateVdcStorageProfile(config, vdcId) {
   );
   return Promise.resolve(updatedVdc.data);
 }
-
-module.exports = updateVdcStorageProfile;

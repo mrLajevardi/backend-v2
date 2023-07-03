@@ -50,4 +50,3 @@ export const userCreateNatRule = async (config, edgeName) => {
     __vcloudTask: nat.headers['location'],
   });
 };
-module.exports = userCreateNatRule;

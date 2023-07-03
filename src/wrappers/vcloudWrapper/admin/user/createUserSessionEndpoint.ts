@@ -16,4 +16,3 @@ export function createUserSessionEndpoint(options?: any) {
   };
 }
 
-module.exports = createUserSessionEndpoint;

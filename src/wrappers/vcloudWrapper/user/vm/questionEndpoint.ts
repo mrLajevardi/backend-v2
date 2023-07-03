@@ -17,5 +17,3 @@ export function questionEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = questionEndpoint;

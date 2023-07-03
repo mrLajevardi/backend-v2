@@ -53,4 +53,3 @@ export async function updateVdc(config, vdcId) {
   };
   await new VcloudWrapper().posts('admin.vdc.updateVdc', options);
 }
-module.exports = updateVdc;

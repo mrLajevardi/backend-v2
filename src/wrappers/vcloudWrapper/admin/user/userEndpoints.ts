@@ -8,4 +8,3 @@ export const userEndpoints = {
   createUser: createUserEndpoint,
 };
 
-module.exports = userEndpoints;

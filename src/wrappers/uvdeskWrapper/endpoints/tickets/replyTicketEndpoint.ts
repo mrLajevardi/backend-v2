@@ -15,4 +15,3 @@ export function replyTicketEndpoint(options?: any) {
   };
 }
 
-module.exports = replyTicketEndpoint;

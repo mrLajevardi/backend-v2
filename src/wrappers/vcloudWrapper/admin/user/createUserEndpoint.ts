@@ -20,4 +20,3 @@ export function createUserEndpoint(options?: any) {
   };
 }
 
-module.exports = createUserEndpoint;

@@ -13,4 +13,3 @@ export async function getTicket(ticketId) {
   return ticket.data;
 }
 
-module.exports = getTicket;

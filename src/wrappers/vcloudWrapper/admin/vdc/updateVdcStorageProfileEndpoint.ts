@@ -20,4 +20,3 @@ export function updateVdcStorageProfileEndpoint(options?: any) {
   };
 }
 
-module.exports = updateVdcStorageProfileEndpoint;
