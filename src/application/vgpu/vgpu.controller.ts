@@ -227,7 +227,7 @@ export class VgpuController {
     const userId = options.user.id;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
-        id : ServiceInstanceId,
+        id: ServiceInstanceId,
         userId: userId,
       },
     });
