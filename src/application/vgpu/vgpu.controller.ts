@@ -62,11 +62,11 @@ export class VgpuController {
     }
 
     const vgpuPlans = await this.configsTable.find({
-      where : {
+      where: {
         propertyKey: Raw((alias) => `${alias} LIKE 'QualityPlans.%'`),
         serviceType: await this.serviceTypeTable.findById('vgpu'),
         ...parsedFilter,
-      }
+      },
     });
 
     const planCost = await this.itemTypesTable.find({
@@ -92,13 +92,13 @@ export class VgpuController {
       },
     });
     // TODO if external port is empty return error
-    if (! externalPort){
-      throw new BadRequestException("No external port exists");
+    if (!externalPort) {
+      throw new BadRequestException('No external port exists');
     }
     const props = {};
     const VgpuConfigs = await this.configsTable.find({
       where: {
-        propertyKey:  Raw((alias) => `${alias} LIKE '%config.vgpu.%'`),
+        propertyKey: Raw((alias) => `${alias} LIKE '%config.vgpu.%'`),
       },
     });
     for (const prop of VgpuConfigs) {
@@ -108,8 +108,8 @@ export class VgpuController {
     }
 
     const payload = {
-      serviceInstanceId: ServiceInstanceId
-    }
+      serviceInstanceId: ServiceInstanceId,
+    };
     const token = this.jwtService.sign(payload, {
       secret: aradVgpuConfig.JWT_SECRET_KEY,
       expiresIn: 3600,

@@ -18,4 +18,3 @@ export function createTemplateEndpoint(options?: any) {
     },
   };
 }
-

@@ -18,4 +18,3 @@ export function updateDhcpBindingEndpoint(options?: any) {
     },
   };
 }
-

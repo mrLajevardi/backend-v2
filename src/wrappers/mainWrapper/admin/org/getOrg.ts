@@ -15,4 +15,3 @@ export async function getOrg(params, authToken) {
   const response = await new VcloudWrapper().posts('admin.org.getOrg', options);
   return Promise.resolve(response.data);
 }
-

@@ -11,4 +11,3 @@ export const edgeGatewayWrapper = {
   updateDhcpForwarder: updateDhcpForwarder,
   getDhcpForwarder: getDhcpForwarder,
 };
-

@@ -18,4 +18,3 @@ export function deleteDhcpBindingsEndpoint(options?: any) {
     },
   };
 }
-

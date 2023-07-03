@@ -19,4 +19,3 @@ export function createUserEndpoint(options?: any) {
     },
   };
 }
-

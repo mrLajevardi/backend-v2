@@ -13,4 +13,3 @@ export function createTicketEndpoint(options?: any) {
     headers: options.headers,
   };
 }
-

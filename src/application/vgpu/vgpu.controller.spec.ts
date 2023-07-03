@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VgpuController } from './vgpu.controller';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
-
 describe('VgpuController', () => {
   let controller: VgpuController;
 

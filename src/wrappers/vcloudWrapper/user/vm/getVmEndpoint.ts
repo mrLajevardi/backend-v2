@@ -17,4 +17,3 @@ export function getVmEndpoint(options?: any) {
     },
   };
 }
-

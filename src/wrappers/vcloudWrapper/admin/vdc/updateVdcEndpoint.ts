@@ -19,4 +19,3 @@ export function updateVdcEndpoint(options?: any) {
     },
   };
 }
-

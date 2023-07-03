@@ -28,4 +28,3 @@ export async function createOrgCatalog(
   await new VcloudWrapper().posts('admin.org.createOrgCatalog', options);
   return Promise.resolve();
 }
-

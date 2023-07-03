@@ -19,4 +19,3 @@ export function getMediaItemEndpoint(options?: any) {
     },
   };
 }
-

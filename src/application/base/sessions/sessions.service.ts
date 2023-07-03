@@ -10,15 +10,16 @@ export class SessionsService {
   constructor(
     private readonly sessionTable: SessionsTableService,
     private readonly userTable: UserTableService,
-    private readonly organizationTable: OrganizationTableService
-    ) {}
+    private readonly organizationTable: OrganizationTableService,
+  ) {}
 
   async createAdminSession(userId) {
-
     const session = await mainWrapper.admin.user.createSession;
-    console.log(session); 
-    const sessionData = await  session.providerSession(
-      vcdAuthConfig.username, vcdAuthConfig.password, vcdAuthConfig.org,
+    console.log(session);
+    const sessionData = await session.providerSession(
+      vcdAuthConfig.username,
+      vcdAuthConfig.password,
+      vcdAuthConfig.org,
     );
 
     await this.sessionTable.create({
@@ -40,7 +41,11 @@ export class SessionsService {
     //This part is because of preventing errors and should be deleted
     //
     const session = mainWrapper.admin.user.createSession;
-    const sessionData = await session.userSession(filteredUsername, user.vdcPassword, org.name);
+    const sessionData = await session.userSession(
+      filteredUsername,
+      user.vdcPassword,
+      org.name,
+    );
     // const sessionData = await mainWrapper.admin.user.
     //     userSession(filteredUsername, user.vdcPassword, org.name);
     this.sessionTable.create({
@@ -62,7 +67,7 @@ export class SessionsService {
   async checkAdminSession(userId: string) {
     const session = await this.sessionTable.findOne({
       where: {
-        isAdmin: true, 
+        isAdmin: true,
         active: true,
       },
     });
@@ -94,7 +99,7 @@ export class SessionsService {
   async checkUserSession(orgId, userId) {
     const session = await this.sessionTable.findOne({
       where: {
-        orgId: orgId, 
+        orgId: orgId,
         active: true,
       },
     });

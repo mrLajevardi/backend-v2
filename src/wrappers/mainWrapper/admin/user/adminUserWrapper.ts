@@ -1,7 +1,6 @@
 import { createSessionWrapper } from './createSession';
 import { createUser } from './createUser';
 
-
 export const adminUserWrapper = {
   createSession: {
     providerSession: createSessionWrapper.providerSession,
@@ -9,4 +8,3 @@ export const adminUserWrapper = {
   },
   createUser: createUser,
 };
-

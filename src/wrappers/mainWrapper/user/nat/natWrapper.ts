@@ -11,4 +11,3 @@ export const natWrapper = {
   getNatRuleList: userGetNatRuleList,
   updateNatRule: userUpdateNatRule,
 };
-

@@ -45,4 +45,3 @@ export async function userUpdateVmComputeSection(
     __vcloudTask: computeSection.headers['location'],
   });
 }
-

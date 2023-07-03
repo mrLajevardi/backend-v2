@@ -18,4 +18,3 @@ export function deleteMediaEndpoint(options?: any) {
     },
   };
 }
-

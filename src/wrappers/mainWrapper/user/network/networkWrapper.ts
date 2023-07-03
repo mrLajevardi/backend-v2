@@ -11,4 +11,3 @@ export const networkWrapper = {
   updateNetwork: userUpdateNetwork,
   getIPUsageNetwrok: getIPUsageNetwrok,
 };
-

@@ -16,4 +16,3 @@ export function getOrgEndpoint(options?: any) {
     },
   };
 }
-

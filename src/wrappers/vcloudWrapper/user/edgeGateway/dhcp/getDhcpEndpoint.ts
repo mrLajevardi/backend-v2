@@ -18,4 +18,3 @@ export function getDhcpEndpoint(options?: any) {
     },
   };
 }
-

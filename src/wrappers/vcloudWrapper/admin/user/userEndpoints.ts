@@ -7,4 +7,3 @@ export const userEndpoints = {
   createUserSession: createUserSessionEndpoint,
   createUser: createUserEndpoint,
 };
-

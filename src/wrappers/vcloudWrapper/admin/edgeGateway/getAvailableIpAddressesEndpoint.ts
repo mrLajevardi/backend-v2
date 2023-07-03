@@ -18,4 +18,3 @@ export function getAvailableIpAddressesEndpoint(options?: any) {
     },
   };
 }
-

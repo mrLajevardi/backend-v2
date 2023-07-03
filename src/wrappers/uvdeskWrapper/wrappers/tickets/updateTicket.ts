@@ -16,4 +16,3 @@ export async function updateTicket(property, value, ticketId) {
   });
   return ticket.data;
 }
-

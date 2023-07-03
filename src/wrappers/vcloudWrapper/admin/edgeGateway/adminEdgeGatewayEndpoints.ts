@@ -9,4 +9,3 @@ export const adminEdgeGatewayEndpoints = {
   getAvailableIpAddresses: getAvailableIpAddressesEndpoint,
   getEdgeClusters: getNsxtEdgeClustersEndpoint,
 };
-

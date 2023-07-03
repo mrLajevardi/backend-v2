@@ -60,4 +60,3 @@ export async function createUser(config) {
   );
   return Promise.resolve(response.data);
 }
-

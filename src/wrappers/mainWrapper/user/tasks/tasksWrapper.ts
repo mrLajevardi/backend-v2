@@ -5,4 +5,3 @@ export const tasksWrapper = {
   getTask: userGetTask,
   cancelTask: cancelTask,
 };
-

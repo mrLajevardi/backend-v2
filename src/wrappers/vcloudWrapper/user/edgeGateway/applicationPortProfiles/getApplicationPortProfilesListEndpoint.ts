@@ -17,4 +17,3 @@ export function getApplicationPortProfilesListEndpoint(options?: any) {
     },
   };
 }
-

@@ -17,4 +17,3 @@ export function discardSuspendVmEndpoint(options?: any) {
     },
   };
 }
-

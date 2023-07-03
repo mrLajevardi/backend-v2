@@ -17,4 +17,3 @@ export function getNsxtEdgeClustersEndpoint(options?: any) {
     },
   };
 }
-

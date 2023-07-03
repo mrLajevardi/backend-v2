@@ -16,4 +16,3 @@ export function createIpSetsEndpoint(options?: any) {
     },
   };
 }
-

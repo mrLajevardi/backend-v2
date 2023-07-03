@@ -11,4 +11,3 @@ export const ticketEndpoints = {
   updateTicket: updateTicketEndpoint,
   getTicket: getTicketEndpoint,
 };
-

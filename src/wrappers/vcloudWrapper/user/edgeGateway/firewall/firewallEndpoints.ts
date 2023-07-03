@@ -11,4 +11,3 @@ export const firewallEndpoints = {
   getFirewall: getFirewallEndpoint,
   deleteFirewall: deleteFirewallEndpoint,
 };
-

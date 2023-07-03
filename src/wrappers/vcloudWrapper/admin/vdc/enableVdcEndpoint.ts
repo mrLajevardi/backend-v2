@@ -18,4 +18,3 @@ export function enableVdcEndpoint(options?: any) {
     },
   };
 }
-

@@ -41,4 +41,3 @@ export async function userUpdateNetworkSection(
     __vcloudTask: networkSection.headers['location'],
   });
 }
-

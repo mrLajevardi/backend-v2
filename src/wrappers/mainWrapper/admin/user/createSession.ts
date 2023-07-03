@@ -8,7 +8,12 @@ export class createSessionWrapper {
    * @param {Boolean} isProvider
    * @return {Promise}
    */
-  static async session(username : string , password : string , orgName : string , isProvider  : boolean = false) : Promise<any>  {
+  static async session(
+    username: string,
+    password: string,
+    orgName: string,
+    isProvider = false,
+  ): Promise<any> {
     // convert username@organization:password to base64
     const basicAuth = Buffer.from(
       `${username}@${orgName}:${password}`,
@@ -42,7 +47,6 @@ export class createSessionWrapper {
     });
   }
 
-
   /**
    * provider session
    * @param {String} username
@@ -50,11 +54,19 @@ export class createSessionWrapper {
    * @param {String} orgName
    * @return {Promise}
    */
-  static async providerSession(username : string , password : string , orgName : string ) : Promise<any> {
-    return await createSessionWrapper.session(username, password, orgName, true);
+  static async providerSession(
+    username: string,
+    password: string,
+    orgName: string,
+  ): Promise<any> {
+    return await createSessionWrapper.session(
+      username,
+      password,
+      orgName,
+      true,
+    );
   }
 
-  
   /**
    * user login
    * @param {String} username
@@ -62,8 +74,11 @@ export class createSessionWrapper {
    * @param {String} orgName
    * @return {Promise}
    */
-  static async userSession(username : string , password : string , orgName : string ) : Promise<any>  {
+  static async userSession(
+    username: string,
+    password: string,
+    orgName: string,
+  ): Promise<any> {
     return await createSessionWrapper.session(username, password, orgName);
   }
-
 }

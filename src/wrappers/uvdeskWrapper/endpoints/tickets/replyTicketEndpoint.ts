@@ -14,4 +14,3 @@ export function replyTicketEndpoint(options?: any) {
     headers: options.headers,
   };
 }
-

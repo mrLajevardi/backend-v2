@@ -18,4 +18,3 @@ export function updateApplicationPortProfilesEndpoint(options?: any) {
     },
   };
 }
-

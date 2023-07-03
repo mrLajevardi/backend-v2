@@ -18,4 +18,3 @@ export function updateFirewallEndpoint(options?: any) {
     },
   };
 }
-

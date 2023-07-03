@@ -17,4 +17,3 @@ export function getExternalNetworksEndpoint(options?: any) {
     },
   };
 }
-

@@ -17,4 +17,3 @@ export const dhcpWrapper = {
   getAllDhcpBindings: userGetAllDhcpBindings,
   getDhcpBinding: userGetDhcpBinding,
 };
-

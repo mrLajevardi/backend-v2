@@ -21,4 +21,3 @@ export async function userUpdateVAppTemplate(
     __vcloudTask: action.headers['location'],
   });
 }
-
