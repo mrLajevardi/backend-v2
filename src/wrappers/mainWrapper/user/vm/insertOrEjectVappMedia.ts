@@ -50,5 +50,3 @@ export async function userInsertOrEjectVappMedia(
     __vcloudTask: response.headers['location'],
   });
 }
-
-module.exports = userInsertOrEjectVappMedia;

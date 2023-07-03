@@ -18,5 +18,3 @@ export function getNetworkListEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getNetworkListEndpoint;

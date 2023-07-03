@@ -15,4 +15,3 @@ export async function userResetvApp(authToken, vAppId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userResetvApp;

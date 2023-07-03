@@ -18,5 +18,3 @@ export function revertVmSnapShot(options?: any) {
     },
   };
 }
-
-module.exports = revertVmSnapShot;

@@ -17,5 +17,3 @@ export function discardSuspendVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = discardSuspendVmEndpoint;

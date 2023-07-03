@@ -18,5 +18,3 @@ export function getDhcpBindingEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getDhcpBindingEndpoint;

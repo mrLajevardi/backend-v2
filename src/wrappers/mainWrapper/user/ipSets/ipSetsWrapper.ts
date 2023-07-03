@@ -11,5 +11,3 @@ export const ipSetsWrapper = {
   updateIPSet: userUpdateIPSet,
   deleteIPSet: userDeleteIPSet,
 };
-
-module.exports = ipSetsWrapper;

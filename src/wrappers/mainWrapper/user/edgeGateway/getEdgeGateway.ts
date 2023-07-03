@@ -19,5 +19,3 @@ export async function getEdgeGateway(authToken, page = 1, pageSize = 25) {
   );
   return Promise.resolve(edgeGateways.data);
 }
-
-module.exports = getEdgeGateway;

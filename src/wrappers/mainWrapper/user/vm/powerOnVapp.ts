@@ -15,4 +15,3 @@ export async function userPowerOnvApp(authToken, vAppId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userPowerOnvApp;

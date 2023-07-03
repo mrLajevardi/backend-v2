@@ -16,5 +16,3 @@ export function createApplicationPortProfilesEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = createApplicationPortProfilesEndpoint;

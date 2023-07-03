@@ -18,5 +18,3 @@ export function updateDhcpForwarderEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateDhcpForwarderEndpoint;

@@ -19,5 +19,3 @@ export function installVmToolsEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = installVmToolsEndpoint;

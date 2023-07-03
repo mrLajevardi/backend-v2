@@ -17,5 +17,3 @@ export function createNetworkEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = createNetworkEndpoint;

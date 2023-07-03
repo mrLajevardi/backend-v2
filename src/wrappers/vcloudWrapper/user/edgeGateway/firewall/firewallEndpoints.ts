@@ -11,5 +11,3 @@ export const firewallEndpoints = {
   getFirewall: getFirewallEndpoint,
   deleteFirewall: deleteFirewallEndpoint,
 };
-
-module.exports = firewallEndpoints;

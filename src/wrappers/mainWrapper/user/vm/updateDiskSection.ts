@@ -254,4 +254,3 @@ async function getHardDiskControllers(authToken, vdcId) {
   });
   return controllers;
 }
-module.exports = userUpdateDiskSection;

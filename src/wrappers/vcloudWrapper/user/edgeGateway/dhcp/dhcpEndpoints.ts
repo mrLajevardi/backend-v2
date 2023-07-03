@@ -17,5 +17,3 @@ export const dhcpEndpoints = {
   getAllDhcpBindings: getAllDhcpBindingEndpoint,
   getDhcpBinding: getDhcpBindingEndpoint,
 };
-
-module.exports = dhcpEndpoints;

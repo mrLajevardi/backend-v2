@@ -18,5 +18,3 @@ export function createOrgCatalogEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = createOrgCatalogEndpoint;

@@ -17,5 +17,3 @@ export function powerOnVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = powerOnVmEndpoint;

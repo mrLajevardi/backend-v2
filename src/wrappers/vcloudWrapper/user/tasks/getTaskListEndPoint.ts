@@ -22,5 +22,3 @@ export function getTaskListEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getTaskListEndpoint;

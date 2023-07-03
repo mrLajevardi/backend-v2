@@ -18,5 +18,3 @@ export function updateVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateVmEndpoint;

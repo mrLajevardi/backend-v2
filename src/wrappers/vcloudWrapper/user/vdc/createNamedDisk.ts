@@ -18,5 +18,3 @@ export function createNamedDisk(options?: any) {
     },
   };
 }
-
-module.exports = createNamedDisk;

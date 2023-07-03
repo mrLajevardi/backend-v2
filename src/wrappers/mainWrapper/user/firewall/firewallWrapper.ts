@@ -11,5 +11,3 @@ export const firewallWrapper = {
   updateSingleFirewall: userUpdateSingleFirewall,
   deleteFirewall: userDeleteFirewall,
 };
-
-module.exports = firewallWrapper;

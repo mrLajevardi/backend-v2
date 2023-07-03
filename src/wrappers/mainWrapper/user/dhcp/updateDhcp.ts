@@ -51,5 +51,3 @@ export async function userUpdateDhcp(
     __vcloudTask: dhcp.headers['location'],
   });
 }
-
-module.exports = userUpdateDhcp;

@@ -18,5 +18,3 @@ export function updateDnsForwarderEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateDnsForwarderEndpoint;

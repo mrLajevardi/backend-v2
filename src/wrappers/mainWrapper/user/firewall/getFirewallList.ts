@@ -26,5 +26,3 @@ export async function userGetFirewallList(authToken, edgeName) {
   );
   return Promise.resolve(firewall.data);
 }
-
-module.exports = userGetFirewallList;

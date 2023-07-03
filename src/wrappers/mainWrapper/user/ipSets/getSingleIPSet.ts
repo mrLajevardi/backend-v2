@@ -12,5 +12,3 @@ export async function userGetSingleIPSet(authToken, ipSetId) {
   });
   return Promise.resolve(ipSet.data);
 }
-
-module.exports = userGetSingleIPSet;

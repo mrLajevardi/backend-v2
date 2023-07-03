@@ -17,5 +17,3 @@ export function deleteNetworkEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deleteNetworkEndpoint;

@@ -17,4 +17,3 @@ export async function userDeletevApp(authToken, vAppId) {
     __vcloudTask: deletedVapp.headers['location'],
   });
 }
-module.exports = userDeletevApp;

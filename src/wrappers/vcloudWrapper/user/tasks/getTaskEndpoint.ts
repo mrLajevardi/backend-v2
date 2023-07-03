@@ -17,5 +17,3 @@ export function getTaskEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getTaskEndpoint;

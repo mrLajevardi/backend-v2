@@ -7,5 +7,3 @@ export const userEndpoints = {
   createUserSession: createUserSessionEndpoint,
   createUser: createUserEndpoint,
 };
-
-module.exports = userEndpoints;

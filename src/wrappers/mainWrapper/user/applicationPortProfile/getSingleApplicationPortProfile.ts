@@ -19,5 +19,3 @@ export async function userGetSingleApplicationPortProfile(
   );
   return Promise.resolve(applicationPortProfile.data);
 }
-
-module.exports = userGetSingleApplicationPortProfile;

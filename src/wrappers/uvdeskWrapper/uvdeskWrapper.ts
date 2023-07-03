@@ -16,5 +16,3 @@ export class UvDeskWrapper extends Wrapper {
     super(httpsAgent, endPoints, baseUrl, 'uvdesk');
   }
 }
-
-module.exports = UvDeskWrapper;

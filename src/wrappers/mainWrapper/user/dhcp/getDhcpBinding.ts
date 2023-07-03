@@ -16,5 +16,3 @@ export async function userGetDhcpBinding(authToken, networkId, bindingId) {
   });
   return Promise.resolve(dhcp.data);
 }
-
-module.exports = userGetDhcpBinding;

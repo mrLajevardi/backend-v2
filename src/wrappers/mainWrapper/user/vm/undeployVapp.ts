@@ -29,4 +29,3 @@ export async function userUndeployvApp(authToken, vAppId, vAppAction) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userUndeployvApp;

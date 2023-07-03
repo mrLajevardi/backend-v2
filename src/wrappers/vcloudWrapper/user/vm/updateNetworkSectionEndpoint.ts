@@ -18,5 +18,3 @@ export function updateNetworkSectionEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateNetworkSectionEndpoint;

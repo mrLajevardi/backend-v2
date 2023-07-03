@@ -47,5 +47,3 @@ export async function userUpdateDhcpBinding(
     __vcloudTask: dhcp.headers['location'],
   });
 }
-
-module.exports = userUpdateDhcpBinding;

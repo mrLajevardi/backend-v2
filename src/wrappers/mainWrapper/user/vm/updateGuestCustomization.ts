@@ -38,5 +38,3 @@ export async function userUpdateGuestCustomization(authToken, vmId, config) {
     __vcloudTask: guestCustomizationSection.headers['location'],
   });
 }
-
-module.exports = userUpdateGuestCustomization;

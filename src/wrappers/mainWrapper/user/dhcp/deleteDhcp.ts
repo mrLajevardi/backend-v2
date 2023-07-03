@@ -16,5 +16,3 @@ export async function userDeleteDhcp(authToken, networkId) {
     __vcloudTask: dhcp.headers['location'],
   });
 }
-
-module.exports = userDeleteDhcp;

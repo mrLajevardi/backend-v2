@@ -12,5 +12,3 @@ export async function userGetMediaItem(authToken, mediaItemId) {
   });
   return mediaItem.data;
 }
-
-module.exports = userGetMediaItem;
