@@ -7,13 +7,13 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint/eslint-plugin',
-    "prettier"
+    "prettier",
   ],
   extends: [
     "eslint:recommended",
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
+    'plugin:prettier/recommended'
   ],
   root: true,
   env: {
@@ -31,6 +31,7 @@ module.exports = {
       {
         "endOfLine": "auto"
       }
-    ]
+    ],
+    "crud-function-name": "error"
   },
 };
