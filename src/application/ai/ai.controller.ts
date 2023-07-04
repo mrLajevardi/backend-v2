@@ -31,7 +31,9 @@ import { ConfigsTableService } from '../base/crud/configs-table/configs-table.se
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
 import { ILike, Not } from 'typeorm';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
+import { Public } from './../../application/base/security/auth/decorators/ispublic.decorator';
 
+@ApiBearerAuth() // Requires authentication with a JWT token
 @Controller('ai')
 @Injectable()
 export class AiController {
@@ -54,8 +56,8 @@ export class AiController {
     const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
     return this.jwtService.sign(payload, { secret: JWT_SECRET_KEY });
   }
-  @ApiOperation({ summary: 'Check a Validation Token' })
   @Get('CheckToken/:token')
+  @Public()
   async checkAradAiToken(
     @Param('token') token: string,
     @Query() options: object,
@@ -65,10 +67,8 @@ export class AiController {
   }
 
   @Post('/aiTransactionsLogs')
-  async createAITransactionsLogs(
-    @Body() data: CreateAITransactionsLogsDto,
-    // @Request() options: any,
-  ) {
+  @Public()
+  async createAITransactionsLogs(@Body() data: CreateAITransactionsLogsDto) {
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: {
         value: ILike(`%${data.token}%`),
@@ -117,7 +117,6 @@ export class AiController {
     });
   }
 
-  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/createOrGetDemoToken')
   async createOrGetDemoToken(
     @Request() options: any,
@@ -158,7 +157,6 @@ export class AiController {
     });
   }
 
-  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aradAiDashoard/:serviceInstanceId')
   async getAradAiaDshboard(
     @Param('serviceInstanceId') serviceInstanceId: string,
@@ -170,21 +168,15 @@ export class AiController {
     );
   }
 
-  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aiTransactionsLogs/:serviceInstanceId')
   async getAITransactionsLogs(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('page') page: number,
-    @Query('pageSize') pageSize: number,
+    @Query('pageSize') pageSize,
     @Request() options: any,
   ): Promise<GetAiTransactionsLogsDto> {
-    // let parsedFilter = {};
     let skip = 0;
     let limit = 10;
-
-    // if (!isEmpty(filter)) {
-    //   parsedFilter = JSON.parse(filter).where;
-    // }
 
     if (!isEmpty(page)) {
       skip = pageSize * (page - 1);
@@ -198,7 +190,6 @@ export class AiController {
     const aiTransactionsLogs = await this.aiTransactionLogsTable.find({
       where: {
         serviceInstanceId: serviceInstanceId,
-        // ...parsedFilter,
       },
       take: limit,
       skip,
@@ -206,7 +197,6 @@ export class AiController {
     const countAll = await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceId,
-        // ...parsedFilter,
       },
     });
 
@@ -216,7 +206,6 @@ export class AiController {
     });
   }
 
-  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aradAiDashoardChart/:serviceInstanceId/:startDate/:endDate')
   async getDashboardChart(
     @Param('serviceInstanceId') serviceInstanceId: string,
@@ -232,18 +221,8 @@ export class AiController {
     return result;
   }
 
-  @ApiBearerAuth() // Requires authentication with a JWT token
   @Get('/aiPlans')
-  async getAiPlans(
-    @Request() options: any,
-    filter: string,
-  ): Promise<GetPlanItemsDto[]> {
-    // TODO Filter
-    let parsedFilter;
-    if (!isEmpty(filter)) {
-      parsedFilter = JSON.parse(filter);
-    }
-
+  async getAiPlans(@Request() options: any): Promise<GetPlanItemsDto[]> {
     const aradAiItem = await this.itemTypesTable.findOne({
       where: {
         code: 'ARADAIItem',
