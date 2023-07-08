@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { SessionsService } from '../sessions/sessions.service';
-import { UserService } from '../user/user.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
