@@ -26,5 +26,3 @@ export async function userGetVdcComputePolicy(
   );
   return Promise.resolve(response.data);
 }
-
-module.exports = userGetVdcComputePolicy;

@@ -16,5 +16,3 @@ export function createIpSetsEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = createIpSetsEndpoint;

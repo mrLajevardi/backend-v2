@@ -17,5 +17,3 @@ export function getEdgeGatewayEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getEdgeGatewayEndpoint;

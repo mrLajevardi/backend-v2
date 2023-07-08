@@ -18,5 +18,3 @@ export function createVdcEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = createVdcEndpoint;

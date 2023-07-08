@@ -29,4 +29,3 @@ export async function getDhcpForwarder(authToken, edgeName) {
   );
   return Promise.resolve(dhcpForwarder.data);
 }
-module.exports = getDhcpForwarder;

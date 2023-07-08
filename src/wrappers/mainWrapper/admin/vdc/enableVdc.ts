@@ -14,4 +14,3 @@ export async function enableVdc(vdcId, session) {
   };
   await new VcloudWrapper().posts('admin.vdc.enableVdc', options);
 }
-module.exports = enableVdc;

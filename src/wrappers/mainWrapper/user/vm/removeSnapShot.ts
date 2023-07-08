@@ -21,4 +21,3 @@ export async function userRemoveSnapShot(authToken, vAppId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userRemoveSnapShot;

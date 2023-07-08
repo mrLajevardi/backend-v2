@@ -12,4 +12,3 @@ export async function deleteCatalog(session, catalogId) {
 
   return await new VcloudWrapper().posts('admin.org.deleteCatalog', options);
 }
-module.exports = deleteCatalog;

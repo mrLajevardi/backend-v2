@@ -17,5 +17,3 @@ export function resetVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = resetVmEndpoint;

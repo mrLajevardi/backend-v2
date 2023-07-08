@@ -18,5 +18,3 @@ export function createVmSnapShot(options?: any) {
     },
   };
 }
-
-module.exports = createVmSnapShot;

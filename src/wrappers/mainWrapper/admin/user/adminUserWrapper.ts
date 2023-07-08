@@ -1,11 +1,10 @@
 import { createSessionWrapper } from './createSession';
 import { createUser } from './createUser';
 
-const sessionWrapper = new createSessionWrapper();
-
 export const adminUserWrapper = {
-  createSession: sessionWrapper.createSession,
+  createSession: {
+    providerSession: createSessionWrapper.providerSession,
+    userSession: createSessionWrapper.userSession,
+  },
   createUser: createUser,
 };
-
-module.exports = adminUserWrapper;

@@ -21,5 +21,3 @@ export async function userDeleteNetwork(authToken, networkId) {
     __vcloudTask: deletedNetwork.headers['location'],
   });
 }
-
-module.exports = userDeleteNetwork;

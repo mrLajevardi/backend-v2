@@ -50,10 +50,10 @@ lint-test-job:   # This job also runs in the test stage.
   only:
     - develop
     - main
+    - merge_requests
   script:
     - npm install 
     - npm run lint
-    - merge_requests
   artifacts:
     when: always
     paths:

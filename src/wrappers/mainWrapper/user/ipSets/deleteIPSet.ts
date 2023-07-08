@@ -17,5 +17,3 @@ export async function userDeleteIPSet(authToken, ipSetId) {
     __vcloudTask: response.headers['location'],
   });
 }
-
-module.exports = userDeleteIPSet;

@@ -23,5 +23,3 @@ export async function getExternalNetworks(authToken, page = 1, pageSize = 25) {
   );
   return Promise.resolve(externalNetworks.data);
 }
-
-module.exports = getExternalNetworks;

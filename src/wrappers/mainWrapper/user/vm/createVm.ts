@@ -149,5 +149,3 @@ export async function userCreateVm(authToken, vdcId, config) {
     __vcloudTask: createdVm.headers['location'],
   });
 }
-
-module.exports = userCreateVm;

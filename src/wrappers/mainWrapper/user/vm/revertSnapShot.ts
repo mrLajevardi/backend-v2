@@ -21,4 +21,3 @@ export async function userRevertSnapShot(authToken, vAppId) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userRevertSnapShot;

@@ -18,5 +18,3 @@ export function getIpSetsListEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getIpSetsListEndpoint;

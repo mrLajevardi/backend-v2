@@ -63,5 +63,3 @@ export async function createTemplate(
     __vcloudTask: template.headers['location'],
   });
 }
-
-module.exports = createTemplate;

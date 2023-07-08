@@ -34,5 +34,3 @@ export async function userGetNatRuleList(
   });
   return Promise.resolve(natRules);
 }
-
-module.exports = userGetNatRuleList;

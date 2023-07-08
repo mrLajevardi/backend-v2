@@ -47,5 +47,3 @@ export async function userUpdateIPSet(
     __vcloudTask: ipSet.headers['location'],
   });
 }
-
-module.exports = userUpdateIPSet;

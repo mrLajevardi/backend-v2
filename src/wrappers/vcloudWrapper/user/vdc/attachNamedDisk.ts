@@ -18,5 +18,3 @@ export function attachNamedDisk(options?: any) {
     },
   };
 }
-
-module.exports = attachNamedDisk;

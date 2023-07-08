@@ -18,5 +18,3 @@ export function updateIpSetsEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateIpSetsEndpoint;

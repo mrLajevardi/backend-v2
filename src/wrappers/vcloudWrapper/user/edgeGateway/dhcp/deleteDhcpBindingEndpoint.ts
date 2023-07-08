@@ -18,5 +18,3 @@ export function deleteDhcpBindingsEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deleteDhcpBindingsEndpoint;

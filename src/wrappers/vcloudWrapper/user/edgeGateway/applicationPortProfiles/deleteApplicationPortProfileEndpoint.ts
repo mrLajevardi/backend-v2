@@ -18,5 +18,3 @@ export function deleteApplicationPortProfilesEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deleteApplicationPortProfilesEndpoint;

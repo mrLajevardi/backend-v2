@@ -14,5 +14,3 @@ export async function userGetApplicationPortProfiles(authToken, params) {
   );
   return applicationPortProfile;
 }
-
-module.exports = userGetApplicationPortProfiles;

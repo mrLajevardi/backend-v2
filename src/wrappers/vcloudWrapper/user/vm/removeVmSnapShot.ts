@@ -18,5 +18,3 @@ export function removeVmSnapShot(options?: any) {
     },
   };
 }
-
-module.exports = removeVmSnapShot;

@@ -38,5 +38,3 @@ export async function userUpdateApplicationPortProfile(
     __vcloudTask: response.headers['location'],
   });
 }
-
-module.exports = userUpdateApplicationPortProfile;
