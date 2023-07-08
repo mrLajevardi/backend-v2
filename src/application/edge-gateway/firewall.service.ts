@@ -4,6 +4,7 @@ import { ServiceService } from '../base/service/services/service.service';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
+import { FirewalListDto } from './dto/firewall-list.dto';
 
 @Injectable()
 export class FirewallService {
@@ -76,7 +77,7 @@ export class FirewallService {
   }
 
   async deleteFirewall(options, vdcInstanceId, ruleId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.id;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -107,7 +108,9 @@ export class FirewallService {
       session,
       props['edgeName'],
     );
-    const filteredFirewall = {
+    let filteredFirewall: FirewalListDto;
+
+    filteredFirewall = {
       systemRules: firewallList.systemRules,
       userDefinedRules: firewallList.userDefinedRules,
       defaultRules: firewallList.defaultRules,

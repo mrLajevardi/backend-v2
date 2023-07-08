@@ -23,6 +23,7 @@ import { VgpuModule } from './application/vgpu/vgpu.module';
 import { ApplicationPortProfileService } from './src/application/edge-gateway/application-port-profile.service';
 import { NatModule } from './application/nat/nat.module';
 import { NetworksModule } from './application/networks/networks.module';
+import { EdgeGatewayController } from './application/edge-gateway.controller';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { NetworksModule } from './application/networks/networks.module';
     NatModule,
     NetworksModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, EdgeGatewayController],
   providers: [
     AppService,
     {

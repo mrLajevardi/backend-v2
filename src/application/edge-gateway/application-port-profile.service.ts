@@ -5,6 +5,7 @@ import { OrganizationTableService } from '../base/crud/organization-table/organi
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isNil } from 'lodash';
+import { ApplicationProfileListDto } from './dto/application-profile-list.dto';
 
 @Injectable()
 export class ApplicationPortProfileService {
@@ -185,7 +186,8 @@ export class ApplicationPortProfileService {
           scope: application.scope,
         };
       });
-    const result = {
+      let result : ApplicationProfileListDto;
+    result = {
       total: applicationPortProfiles.data.resultTotal,
       page: applicationPortProfiles.data.page,
       pageSize: applicationPortProfiles.data.pageSize,
