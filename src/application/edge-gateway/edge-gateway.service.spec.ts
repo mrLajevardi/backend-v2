@@ -15,4 +15,8 @@ describe('EdgeGatewayService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
+  it('should be contain port profile', () => {
+    expect(service.applicationPortProfile).toBeDefined();
+  })
 });
