@@ -3,6 +3,6 @@ import { NetworksService } from './networks.service';
 import { DhcpService } from './dhcp.service';
 
 @Module({
-  providers: [NetworksService, DhcpService]
+  providers: [NetworksService, DhcpService],
 })
 export class NetworksModule {}

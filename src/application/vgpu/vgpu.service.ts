@@ -61,7 +61,7 @@ export class VgpuService {
     const props = {};
     const VgpuConfigs = await this.configsTable.find({
       where: {
-        propertyKey:  Raw((alias) => `${alias} LIKE '%config.vgpu.%'`),
+        propertyKey: Raw((alias) => `${alias} LIKE '%config.vgpu.%'`),
       },
     });
     for (const prop of VgpuConfigs) {
@@ -171,7 +171,10 @@ export class VgpuService {
       };
       const planCost = await this.itemTypesTable.find({
         where: {
-          Code:  Raw((alias) => `${alias} LIKE ${gpuPlans[servieproperties.value] + 'Cost%'}`),
+          Code: Raw(
+            (alias) =>
+              `${alias} LIKE ${gpuPlans[servieproperties.value] + 'Cost%'}`,
+          ),
           serviceTypeId: 'vgpu',
         },
       });

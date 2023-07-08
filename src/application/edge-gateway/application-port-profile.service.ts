@@ -1,10 +1,10 @@
-import { Injectable } from "@nestjs/common";
-import { ServiceService } from "../base/service/services/service.service";
-import { SessionsService } from "../base/sessions/sessions.service";
-import { OrganizationTableService } from "../base/crud/organization-table/organization-table.service";
-import { mainWrapper } from "src/wrappers/mainWrapper/mainWrapper";
-import { LoggerService } from "src/infrastructure/logger/logger.service";
-import { isNil } from "lodash";
+import { Injectable } from '@nestjs/common';
+import { ServiceService } from '../base/service/services/service.service';
+import { SessionsService } from '../base/sessions/sessions.service';
+import { OrganizationTableService } from '../base/crud/organization-table/organization-table.service';
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
+import { isNil } from 'lodash';
 
 @Injectable()
 export class ApplicationPortProfileService {
@@ -12,7 +12,7 @@ export class ApplicationPortProfileService {
     private readonly logger: LoggerService,
     private readonly serviceService: ServiceService,
     private readonly sessionService: SessionsService,
-    private readonly organizationTable: OrganizationTableService
+    private readonly organizationTable: OrganizationTableService,
   ) {}
 
   /**
@@ -25,16 +25,16 @@ export class ApplicationPortProfileService {
   async createApplicationPortProfile(options, vdcInstanceId, data) {
     const userId = options.accessToken.userId;
     const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId
+      vdcInstanceId,
     );
-    const vcloudOrg = await this.organizationTable.findById(props["orgId"]);
+    const vcloudOrg = await this.organizationTable.findById(props['orgId']);
     const session = await this.sessionService.checkUserSession(
       userId,
-      props["orgId"]
+      props['orgId'],
     );
     const config = {
       orgId: vcloudOrg.orgId,
-      vdcId: props["vdcId"],
+      vdcId: props['vdcId'],
       applicationPorts: data.applicationPorts,
       name: data.name,
       description: data.description,
@@ -42,18 +42,18 @@ export class ApplicationPortProfileService {
     const application =
       await mainWrapper.user.applicationPortProfile.createApplicationPortProfile(
         session,
-        config
+        config,
       );
     await this.logger.info(
-      "applicationPortProfiles",
-      "createApplicationPortProfiles",
+      'applicationPortProfiles',
+      'createApplicationPortProfiles',
       {
-        _object: application.__vcloudTask.split("task/")[1],
+        _object: application.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      taskId: application.__vcloudTask.split("task/")[1],
+      taskId: application.__vcloudTask.split('task/')[1],
     });
   }
 
@@ -67,27 +67,27 @@ export class ApplicationPortProfileService {
   async deleteApplicationPortProfile(options, vdcInstanceId, applicationId) {
     const userId = options.accessToken.userId;
     const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId
+      vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props["orgId"]
+      props['orgId'],
     );
     const application =
       await mainWrapper.user.applicationPortProfile.deleteApplicationPortProfile(
         session,
-        applicationId
+        applicationId,
       );
     await this.logger.info(
-      "applicationPortProfiles",
-      "deleteApplicationPortProfiles",
+      'applicationPortProfiles',
+      'deleteApplicationPortProfiles',
       {
-        _object: application.__vcloudTask.split("task/")[1],
+        _object: application.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      taskId: application.__vcloudTask.split("task/")[1],
+      taskId: application.__vcloudTask.split('task/')[1],
     });
   }
 
@@ -101,16 +101,16 @@ export class ApplicationPortProfileService {
   async getApplicationPortProfile(options, vdcInstanceId, applicationId) {
     const userId = options.accessToken.userId;
     const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId
+      vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props["orgId"]
+      props['orgId'],
     );
     let applicationPortProfile =
       await mainWrapper.user.applicationPortProfile.getApplicationPortProfile(
         session,
-        applicationId
+        applicationId,
       );
     const ports = applicationPortProfile.applicationPorts.map((ports) => {
       return {
@@ -143,32 +143,32 @@ export class ApplicationPortProfileService {
     page,
     pageSize,
     filter,
-    search
+    search,
   ) {
     const userId = options.accessToken.userId;
     const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId
+      vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props["orgId"]
+      props['orgId'],
     );
     if (!isNil(filter)) {
-      filter = `((_context==${props["vdcId"]}));` + `(${filter})`;
+      filter = `((_context==${props['vdcId']}));` + `(${filter})`;
     } else {
-      filter = `((_context==${props["vdcId"]}))`;
+      filter = `((_context==${props['vdcId']}))`;
     }
     if (search) {
       filter = filter + `;(name==*${search}*)`;
     }
-    let applicationPortProfiles =
+    const applicationPortProfiles =
       await mainWrapper.user.applicationPortProfile.getApplicationPortProfileList(
         session,
         {
           page,
           pageSize,
           filter,
-        }
+        },
       );
     const filteredApplicationPortProfiles =
       applicationPortProfiles.data.values.map((application) => {
@@ -199,20 +199,20 @@ export class ApplicationPortProfileService {
     options,
     vdcInstanceId,
     data,
-    applicationId
+    applicationId,
   ) {
     const userId = options.accessToken.userId;
     const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId
+      vdcInstanceId,
     );
-    const vcloudOrg = await this.organizationTable.findById(props["orgId"]);
+    const vcloudOrg = await this.organizationTable.findById(props['orgId']);
     const session = await this.sessionService.checkUserSession(
       userId,
-      props["orgId"]
+      props['orgId'],
     );
     const config = {
       orgId: vcloudOrg.orgId,
-      vdcId: props["vdcId"],
+      vdcId: props['vdcId'],
       applicationPorts: data.applicationPorts,
       name: data.name,
       description: data.description,
@@ -221,18 +221,18 @@ export class ApplicationPortProfileService {
       await mainWrapper.user.applicationPortProfile.updateApplicationPortProfile(
         session,
         applicationId,
-        config
+        config,
       );
     await this.logger.info(
-      "applicationPortProfiles",
-      "updateApplicationPortProfiles",
+      'applicationPortProfiles',
+      'updateApplicationPortProfiles',
       {
-        _object: application.__vcloudTask.split("task/")[1],
+        _object: application.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      taskId: application.__vcloudTask.split("task/")[1],
+      taskId: application.__vcloudTask.split('task/')[1],
     });
   }
 }

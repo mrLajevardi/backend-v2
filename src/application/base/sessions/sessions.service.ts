@@ -11,14 +11,17 @@ export class SessionsService {
   constructor(
     private readonly sessionTable: SessionsTableService,
     private readonly userTable: UserTableService,
-    private readonly organizationTable: OrganizationTableService
-    ) {}
+    private readonly organizationTable: OrganizationTableService,
+  ) {}
 
   async createAdminSession(userId) {
     //This part is because of preventing errors and should be deleted
     const session = await mainWrapper.admin.user.createSession();
-    const sessionData = await session.providerSession(vcdAuthConfig.username, 
-      vcdAuthConfig.password, vcdAuthConfig.org);
+    const sessionData = await session.providerSession(
+      vcdAuthConfig.username,
+      vcdAuthConfig.password,
+      vcdAuthConfig.org,
+    );
 
     await this.sessionTable.create({
       isAdmin: true,
@@ -39,8 +42,11 @@ export class SessionsService {
     //This part is because of preventing errors and should be deleted
     //
     const session = await mainWrapper.admin.user.createSession();
-    const sessionData = await session.
-        userSession(filteredUsername, user.vdcPassword, org.name);
+    const sessionData = await session.userSession(
+      filteredUsername,
+      user.vdcPassword,
+      org.name,
+    );
     this.sessionTable.create({
       isAdmin: false,
       orgId,
@@ -60,7 +66,7 @@ export class SessionsService {
   async checkAdminSession(userId: string) {
     const session = await this.sessionTable.findOne({
       where: {
-        isAdmin: true, 
+        isAdmin: true,
         active: true,
       },
     });
@@ -92,7 +98,7 @@ export class SessionsService {
   async checkUserSession(orgId, userId) {
     const session = await this.sessionTable.findOne({
       where: {
-        orgId: orgId, 
+        orgId: orgId,
         active: true,
       },
     });

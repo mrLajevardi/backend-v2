@@ -6,6 +6,10 @@ import { FirewallService } from './firewall.service';
 
 @Module({
   controllers: [EdgeGatewayController],
-  providers: [EdgeGatewayService, ApplicationPortProfileService, FirewallService]
+  providers: [
+    EdgeGatewayService,
+    ApplicationPortProfileService,
+    FirewallService,
+  ],
 })
 export class EdgeGatewayModule {}

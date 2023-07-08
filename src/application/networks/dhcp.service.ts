@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { LoggerService } from "src/infrastructure/logger/logger.service";
-import { ServicePropertiesTableService } from "../base/crud/service-properties-table/service-properties-table.service";
-import { SessionsService } from "../base/sessions/sessions.service";
-import { mainWrapper } from "src/wrappers/mainWrapper/mainWrapper";
+import { Injectable } from '@nestjs/common';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
+import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
+import { SessionsService } from '../base/sessions/sessions.service';
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 
 @Injectable()
 export class DhcpService {
@@ -15,13 +15,13 @@ export class DhcpService {
   async createDhcpBinding(app, options, vdcInstanceId, networkId, data) {
     const serviceOrg = await app.models.ServiceProperties.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.Value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.createDhcpBinding(
       session,
@@ -37,72 +37,72 @@ export class DhcpService {
           hostName: data.dhcpV4BindingConfig.hostName,
         },
         dnsServers: data.dnsServers,
-      }
+      },
     );
     await this.logger.info(
-      "dhcp",
-      "createDhcpBinding",
+      'dhcp',
+      'createDhcpBinding',
       {
-        _object: dhcpBinding.__vcloudTask.split("task/")[1],
+        _object: dhcpBinding.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      taskId: dhcpBinding.__vcloudTask.split("task/")[1],
+      taskId: dhcpBinding.__vcloudTask.split('task/')[1],
     });
   }
 
   async deleteDhcpBinding(app, options, vdcInstanceId, networkId, bindingId) {
     const serviceOrg = await app.models.ServiceProperties.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.Value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.deleteDhcpBinding(
       session,
       networkId,
-      bindingId
+      bindingId,
     );
     await this.logger.info(
-      "dhcp",
-      "deleteDhcpBinding",
+      'dhcp',
+      'deleteDhcpBinding',
       {
-        _object: dhcpBinding.__vcloudTask.split("task/")[1],
+        _object: dhcpBinding.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      __vcloudTask: dhcpBinding["headers"]["location"],
+      __vcloudTask: dhcpBinding['headers']['location'],
     });
   }
 
   async deleteDhcp(app, options, vdcInstanceId, networkId) {
     const serviceOrg = await app.models.ServiceProperties.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.Value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const dhcp = await mainWrapper.user.dhcp.deleteDhcp(session, networkId);
     await this.logger.info(
-      "dhcp",
-      "deleteDhcp",
+      'dhcp',
+      'deleteDhcp',
       {
-        _object: dhcp.__vcloudTask.split("task/")[1],
+        _object: dhcp.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      taskId: dhcp.__vcloudTask.split("task/")[1],
+      taskId: dhcp.__vcloudTask.split('task/')[1],
     });
   }
 
@@ -112,13 +112,13 @@ export class DhcpService {
     nextPage,
     networkId,
     allDhcpBindings,
-    getAll
+    getAll,
   ) {
     const dhcpBindings = await mainWrapper.user.dhcp.getAllDhcpBindings(
       session,
       networkId,
       pageSize,
-      nextPage
+      nextPage,
     );
     const filteredDhcpBindings = dhcpBindings.data.values.map((binding) => {
       return {
@@ -134,16 +134,16 @@ export class DhcpService {
       };
     });
     allDhcpBindings = allDhcpBindings.concat(filteredDhcpBindings);
-    const nextPageLink = dhcpBindings.headers["link"]
-      .split(",")
+    const nextPageLink = dhcpBindings.headers['link']
+      .split(',')
       .filter((link) => link.includes(`rel="nextPage"`));
     if (nextPageLink.length === 0 || getAll === false) {
-      console.log("hell", nextPageLink.length, getAll);
+      console.log('hell', nextPageLink.length, getAll);
       return allDhcpBindings;
     }
-    let nextPageCursor = nextPageLink[0].split("cursor=")[1].split(">")[0];
-    if (nextPageCursor.includes("%")) {
-      nextPageCursor = nextPageCursor.split("%")[0];
+    let nextPageCursor = nextPageLink[0].split('cursor=')[1].split('>')[0];
+    if (nextPageCursor.includes('%')) {
+      nextPageCursor = nextPageCursor.split('%')[0];
     }
     return this.getDhcpBindings(
       session,
@@ -151,7 +151,7 @@ export class DhcpService {
       nextPageCursor,
       networkId,
       allDhcpBindings,
-      getAll
+      getAll,
     );
   }
 
@@ -160,25 +160,25 @@ export class DhcpService {
     vdcInstanceId,
     networkId,
     pageSize,
-    getAll
+    getAll,
   ) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const allDhcpBindings = this.getDhcpBindings(
       session,
       pageSize,
-      "",
+      '',
       networkId,
       [],
-      getAll
+      getAll,
     );
     return Promise.resolve(allDhcpBindings);
   }
@@ -186,18 +186,18 @@ export class DhcpService {
   async getDhcpBinding(app, options, vdcInstanceId, networkId, bindingId) {
     const serviceOrg = await app.models.ServiceProperties.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.Value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.getDhcpBinding(
       session,
       networkId,
-      bindingId
+      bindingId,
     );
     const filteredDhcpBindings = {
       id: dhcpBinding.id,
@@ -216,19 +216,19 @@ export class DhcpService {
   async getDhcp(app, options, vdcInstanceId, networkId) {
     const serviceOrg = await app.models.ServiceProperties.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.Value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const network = await mainWrapper.user.network.getNetwork(
       session,
       1,
       10,
-      `id==${networkId}`
+      `id==${networkId}`,
     );
     console.log(network);
     const targetSubnet = network.values[0].subnets.values[0];
@@ -247,17 +247,17 @@ export class DhcpService {
     vdcInstanceId,
     networkId,
     bindingId,
-    data
+    data,
   ) {
     const serviceOrg = await app.models.ServiceProperties.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.Value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.updateDhcpBinding(
       session,
@@ -277,31 +277,31 @@ export class DhcpService {
           version: data.version,
         },
       },
-      bindingId
+      bindingId,
     );
     await this.logger.info(
-      "dhcp",
-      "updateDhcpBinding",
+      'dhcp',
+      'updateDhcpBinding',
       {
-        _object: dhcpBinding.__vcloudTask.split("task/")[1],
+        _object: dhcpBinding.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      taskId: dhcpBinding.__vcloudTask.split("task/")[1],
+      taskId: dhcpBinding.__vcloudTask.split('task/')[1],
     });
   }
 
   async updateDhcp(app, options, vdcInstanceId, networkId, data) {
     const serviceOrg = await app.models.ServiceProperties.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: "orgId" }],
+        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
       },
     });
     const orgId = serviceOrg.Value;
     const session = await this.sessionService.checkUserSession(
       options.user.id,
-      orgId
+      orgId,
     );
     const dhcp = await mainWrapper.user.dhcp.updateDhcp(
       session,
@@ -310,18 +310,18 @@ export class DhcpService {
       data.dnsServers,
       data.leaseTime,
       networkId,
-      data.mode || "NETWORK"
+      data.mode || 'NETWORK',
     );
     await this.logger.info(
-      "dhcp",
-      "updateDhcp",
+      'dhcp',
+      'updateDhcp',
       {
-        _object: dhcp.__vcloudTask.split("task/")[1],
+        _object: dhcp.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals }
+      { ...options.locals },
     );
     return Promise.resolve({
-      taskId: dhcp.__vcloudTask.split("task/")[1],
+      taskId: dhcp.__vcloudTask.split('task/')[1],
     });
   }
 }

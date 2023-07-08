@@ -2,6 +2,6 @@ import { Module } from '@nestjs/common';
 import { NatService } from './nat.service';
 
 @Module({
-  providers: [NatService]
+  providers: [NatService],
 })
 export class NatModule {}
