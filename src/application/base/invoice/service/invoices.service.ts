@@ -49,6 +49,7 @@ export class InvoicesService {
     private readonly transactionTable: TransactionsTableService,
     private readonly invoicePlansTable: InvoicePlansTableService,
     private readonly invoicePropertiesTable: InvoicePropertiesTableService, // private readonly vgpuService: VgpuService,
+    @Inject(forwardRef(() => VgpuService))
     private readonly vgpuService: VgpuService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly plansTableService: PlansTableService,

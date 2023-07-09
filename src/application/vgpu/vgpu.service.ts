@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { UnavailableResource } from 'src/infrastructure/exceptions/unavailable-resource.exception';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
@@ -29,6 +29,7 @@ export class VgpuService {
     private readonly userTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly invoicePropertiesTable: InvoicePropertiesTableService,
+    @Inject(forwardRef(() => TaskManagerService))
     private readonly taskManagerService: TaskManagerService,
     private readonly tasksTable: TasksTableService,
   ) {}

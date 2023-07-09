@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { VgpuService } from './vgpu.service';
 import { VgpuController } from './vgpu.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -13,7 +13,7 @@ import { TasksModule } from '../base/tasks/tasks.module';
     DatabaseModule,
     SessionsModule,
     ServiceModule,
-    TasksModule,
+    forwardRef(() => TasksModule),
   ],
   providers: [VgpuService],
   controllers: [VgpuController],
