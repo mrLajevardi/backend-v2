@@ -11,7 +11,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
   imports: [
     DatabaseModule,
     CrudModule,
-    // VgpuModule
+    VgpuModule
   ],
   providers: [InvoicesService, InvoicesChecksService, CostCalculationService],
   controllers: [InvoicesController],
