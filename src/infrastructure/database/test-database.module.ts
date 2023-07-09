@@ -41,7 +41,6 @@ import { PlansTableService } from 'src/application/base/crud/plans-table/plans-t
 import { InvoicesChecksService } from 'src/application/base/invoice/service/invoices-checks.service';
 import { DiscountsService } from 'src/application/base/service/services/discounts.service';
 import { ServiceChecksService } from 'src/application/base/service/services/service-checks/service-checks.service';
-import { AbilityFactory } from 'nest-casl/dist/factories/ability.factory';
 import { ACLTableService } from 'src/application/base/crud/acl-table/acl-table.service';
 import { InvoicePlansTableService } from 'src/application/base/crud/invoice-plans-table/invoice-plans-table.service';
 import { InvoicesTableService } from 'src/application/base/crud/invoices-table/invoices-table.service';
@@ -57,6 +56,10 @@ import { LoggerService } from '../logger/logger.service';
 import { ErrorLogTableService } from 'src/application/base/crud/error-log-table/error-log-table.service';
 import { InfoLogTableService } from 'src/application/base/crud/info-log-table/info-log-table.service';
 import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/debug-log-table.service';
+import { ApplicationPortProfileService } from 'src/application/edge-gateway/application-port-profile.service';
+import { EdgeGatewayService } from 'src/application/edge-gateway/edge-gateway.service';
+import { FirewallService } from 'src/application/edge-gateway/firewall.service';
+import { DhcpService } from 'src/application/networks/dhcp.service';
 
 @Module({
   imports: [
@@ -121,6 +124,10 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     ErrorLogTableService,
     InfoLogTableService,
     DebugLogTableService,
+    EdgeGatewayService,
+    FirewallService,
+    ApplicationPortProfileService,
+    DhcpService,
   ],
   exports: [
     TypeOrmModule,
@@ -174,6 +181,10 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     ErrorLogTableService,
     InfoLogTableService,
     DebugLogTableService,
+    EdgeGatewayService,
+    FirewallService,
+    ApplicationPortProfileService,
+    DhcpService,
   ],
 })
 export class TestDatabaseModule {}
