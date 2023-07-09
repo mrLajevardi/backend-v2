@@ -27,40 +27,6 @@ export class ServiceChecksService {
     return false;
   }
 
-  async checkServiceMaxAvailable(
-    unlimitedService,
-    serviceTypeMaxAvailable,
-    serviceId,
-    userId,
-  ) {
-    const isMaxAvailable = await this.checkMaxService(
-      unlimitedService,
-      serviceTypeMaxAvailable,
-      serviceId,
-      userId,
-    );
-    if (!isMaxAvailable) {
-      throw new MaxAvailableServiceException();
-    }
-  }
-
-  // Moved from service checks
-  async checkMaxService(unlimitedMax, serviceMaxAvailable, serviceId, userId) {
-    // checks max service
-    const userServiceCount = await this.serviceInstancesTable.count({
-      where: {
-        and: [{ UserID: userId }, { ServiceTypeID: serviceId }],
-      },
-    });
-    if (
-      serviceMaxAvailable <= userServiceCount &&
-      serviceMaxAvailable !== unlimitedMax
-    ) {
-      return false;
-    }
-    return true;
-  }
-
   // Moved from service checks
   checkNetworkType(networkType) {
     const networkTypes = ['NAT_ROUTED', 'ISOLATED'];
