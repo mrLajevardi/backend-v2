@@ -44,6 +44,7 @@ import { ErrorLog } from '../test-entities/ErrorLog';
 import { Sysdiagrams } from '../test-entities/Sysdiagrams';
 import { QualityPlans } from '../test-entities/views/quality-plans';
 import { ServiceItemsSum } from '../test-entities/views/service-items-sum';
+import { ServicePlans } from '../test-entities/ServicePlans';
 
 export const dbTestEntities = [
   //Views
@@ -93,4 +94,5 @@ export const dbTestEntities = [
   Tasks,
   Tickets,
   Transactions,
+  ServicePlans
 ];
