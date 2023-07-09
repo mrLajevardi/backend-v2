@@ -14,7 +14,6 @@ import { FirewalListDto } from './dto/firewall-list.dto';
 
 @Controller('edge-gateway')
 export class EdgeGatewayController {
-
     constructor(
         private readonly service : EdgeGatewayService
     ){}
