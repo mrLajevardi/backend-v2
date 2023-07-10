@@ -4,7 +4,7 @@ Importing this module in the test files is sufficient for loading the database f
 
 */
 
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { dbTestEntities } from './entityImporter/orm-test-entities';
 import { TestDataService } from './test-data.service';
@@ -60,6 +60,8 @@ import { ApplicationPortProfileService } from 'src/application/edge-gateway/appl
 import { EdgeGatewayService } from 'src/application/edge-gateway/edge-gateway.service';
 import { FirewallService } from 'src/application/edge-gateway/firewall.service';
 import { DhcpService } from 'src/application/networks/dhcp.service';
+import { TasksModule } from 'src/application/base/tasks/tasks.module';
+import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
 
 @Module({
   imports: [
@@ -128,6 +130,7 @@ import { DhcpService } from 'src/application/networks/dhcp.service';
     FirewallService,
     ApplicationPortProfileService,
     DhcpService,
+    ServicePlansTableService,
   ],
   exports: [
     TypeOrmModule,
@@ -185,6 +188,7 @@ import { DhcpService } from 'src/application/networks/dhcp.service';
     FirewallService,
     ApplicationPortProfileService,
     DhcpService,
+    ServicePlansTableService
   ],
 })
 export class TestDatabaseModule {}
