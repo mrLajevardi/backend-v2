@@ -1,2 +1,26 @@
 [
+    {
+        "id": "AradAiDemo",
+        "title": "AradAiDemo",
+        "baseFee": 0,
+        "createInstanceScript": "",
+        "verifyInstance": 0,
+        "maxAvailable": 10,
+        "type": 0,
+        "isPayg": 0,
+        "paygInterval": null, 
+        "paygScript": null
+    },
+    {
+        "id": "aradAi",
+        "title": "AradAi",
+        "baseFee": 0,
+        "createInstanceScript": "",
+        "verifyInstance": 0,
+        "maxAvailable": 1000,
+        "type": 0,
+        "isPayg": 1,
+        "paygInterval": null, 
+        "paygScript": null
+    }
 ]
