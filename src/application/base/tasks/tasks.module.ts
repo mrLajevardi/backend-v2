@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TasksService } from './service/tasks.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { BullModule } from '@nestjs/bull';
@@ -12,6 +12,7 @@ import { CrudModule } from '../crud/crud.module';
 import { SessionsModule } from '../sessions/sessions.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
     }),
     LoggerModule,
     // VdcModule,
+    forwardRef(() => VgpuModule),
     CrudModule,
     SessionsModule,
     OrganizationModule,

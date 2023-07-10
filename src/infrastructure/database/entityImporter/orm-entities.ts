@@ -44,6 +44,7 @@ import { ErrorLog } from '../entities/ErrorLog';
 import { Sysdiagrams } from '../entities/Sysdiagrams';
 import { QualityPlans } from '../entities/views/quality-plans';
 import { ServiceItemsSum } from '../entities/views/service-items-sum';
+import { ServicePlans } from '../entities/ServicePlans';
 
 export const dbEntities = [
   //Views
@@ -80,6 +81,7 @@ export const dbEntities = [
   Sysdiagrams,
   // User Schema
   AiTransactionsLogs,
+  ServicePlans,
   Groups,
   GroupsMapping,
   InvoiceDiscounts,

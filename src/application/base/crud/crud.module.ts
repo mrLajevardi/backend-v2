@@ -38,6 +38,7 @@ import { TransactionsTableModule } from './transactions-table/transactions-table
 import { UserTableModule } from './user-table/user-table.module';
 import { QualityPlansModule } from './quality-plans/quality-plans.module';
 import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.module';
+import { ServicePlansTableModule } from './service-plans-table/service-plans-table.module';
 
 @Module({
   imports: [
@@ -81,6 +82,7 @@ import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.mod
     UserTableModule,
     QualityPlansModule,
     ServiceItemsSumModule,
+    ServicePlansTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -123,6 +125,7 @@ import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.mod
     UserTableModule,
     QualityPlansModule,
     ServiceItemsSumModule,
+    ServicePlansTableModule,
   ],
 })
 export class CrudModule {}

@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class CostCalculationService {
-  totalCosts(serviceType, data, plans, items) {
+  totalCosts(serviceType, data, plans, items, options = {}) {
     const totalCost =
       (this.itemsCost(items, data, serviceType) *
         this.plansRatioForItems(plans, data) +
-        this.plansCost(plans, data)) *
+        this.plansCost(plans, data, options)) *
       this.plansRatioForInvoice(plans, data);
     return totalCost;
   }
@@ -26,7 +26,10 @@ export class CostCalculationService {
     return itemTotalCost;
   }
 
-  plansCost(plans, data) {
+  plansCost(plans, data, options: any = {}) {
+    if (!options?.calculatePlanCost) {
+      return 0;
+    }
     let planTotalCost = 0;
     plans.forEach((element) => {
       data.plans.forEach((el) => {

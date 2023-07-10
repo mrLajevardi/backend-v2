@@ -114,21 +114,21 @@ export class AiController {
 
   @Post('/aradAi')
   async createAradAi(@Body() data: any, @Request() options: any) {
-    const createdService = await this.createServiceSvc.createBillingService(
-      data,
-      options,
-      'aradAi',
-    );
+    // const createdService = await this.createServiceSvc.createBillingService(
+    //   data,
+    //   options,
+    //   'aradAi',
+    // );
 
     throw new InternalServerErrorException('Not Implemented');
-    await this.loggerService.info(
-      'aradAI',
-      'createService',
-      {
-        _object: createdService.serviceInstanceId,
-      },
-      { ...options.locals },
-    );
+    // await this.loggerService.info(
+    //   'aradAI',
+    //   'createService',
+    //   {
+    //     _object: createdService.serviceInstanceId,
+    //   },
+    //   { ...options.locals },
+    // );
   }
 
   @Get('/createOrGetDemoToken')
@@ -155,12 +155,12 @@ export class AiController {
         'aradAiDemo',
         12,
       );
-      await this.servicePropertiesTable.create({
-        serviceInstanceId: serviceID,
-        propertyKey: 'aradAiDemo.token',
-        value: token,
-      });
-      return Promise.resolve(token);
+      // await this.servicePropertiesTable.create({
+      //   serviceInstanceId: serviceID,
+      //   propertyKey: 'aradAiDemo.token',
+      //   value: token,
+      // });
+      // return Promise.resolve(token);
     }
     return Promise.resolve(getDemoToken.value);
   }
