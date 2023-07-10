@@ -7,10 +7,7 @@ import { InfoLogTableModule } from 'src/application/base/crud/info-log-table/inf
 import { CrudModule } from 'src/application/base/crud/crud.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    CrudModule
-  ],
+  imports: [DatabaseModule, CrudModule],
   providers: [LoggerService],
   exports: [LoggerService],
 })

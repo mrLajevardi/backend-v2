@@ -23,11 +23,8 @@ describe('InvoicesService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        TestDatabaseModule
-      ],
+      imports: [TestDatabaseModule],
       providers: [
-        
         InvoicesService,
         CostCalculationService,
         InvoicesChecksService,

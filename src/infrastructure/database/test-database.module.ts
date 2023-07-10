@@ -188,7 +188,7 @@ import { ServicePlansTableService } from 'src/application/base/crud/service-plan
     FirewallService,
     ApplicationPortProfileService,
     DhcpService,
-    ServicePlansTableService
+    ServicePlansTableService,
   ],
 })
 export class TestDatabaseModule {}
