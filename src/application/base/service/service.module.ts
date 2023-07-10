@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ServiceService } from './services/service.service';
 import { PayAsYouGoService } from './services/pay-as-you-go.service';
 import { CrudModule } from '../crud/crud.module';
@@ -18,7 +18,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
     DatabaseModule,
     SessionsModule,
     UserModule,
-    InvoicesModule,
+    forwardRef(() => InvoicesModule),
     TransactionsModule,
   ],
   providers: [
