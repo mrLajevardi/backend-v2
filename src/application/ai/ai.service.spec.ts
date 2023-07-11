@@ -36,7 +36,7 @@ import { PlansQueryService } from '../base/crud/plans-table/plans-query.service'
 import { SessionsTableService } from '../base/crud/sessions-table/sessions-table.service';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
-import {addMonths} from 'src/infrastructure/helpers/date-time.helper';
+import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
 
 describe('AiService', () => {
   let service: AiService;
