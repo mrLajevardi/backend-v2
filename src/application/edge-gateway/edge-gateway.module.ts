@@ -16,7 +16,7 @@ import { CrudModule } from '../base/crud/crud.module';
     LoggerModule,
     ServiceModule,
     SessionsModule,
-    CrudModule
+    CrudModule,
   ],
   controllers: [EdgeGatewayController],
   providers: [
@@ -24,8 +24,6 @@ import { CrudModule } from '../base/crud/crud.module';
     ApplicationPortProfileService,
     FirewallService,
   ],
-  exports: [
-    EdgeGatewayService
-  ]
+  exports: [EdgeGatewayService],
 })
 export class EdgeGatewayModule {}

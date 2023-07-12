@@ -27,7 +27,7 @@ export class CostCalculationService {
   }
 
   plansCost(plans, data, options: any = {}) {
-    if (! options?.calculatePlanCost) {
+    if (!options?.calculatePlanCost) {
       return 0;
     }
     let planTotalCost = 0;

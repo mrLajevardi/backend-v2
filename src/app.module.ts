@@ -57,7 +57,7 @@ import { ServiceModule } from './application/base/service/service.module';
     NatModule,
     NetworksModule,
     LoggerModule,
-    ServiceModule
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [

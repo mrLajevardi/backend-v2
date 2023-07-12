@@ -13,7 +13,7 @@ import { CrudModule } from '../base/crud/crud.module';
     LoggerModule,
     ServiceModule,
     SessionsModule,
-    CrudModule
+    CrudModule,
   ],
   providers: [NetworksService, DhcpService],
 })

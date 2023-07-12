@@ -94,5 +94,5 @@ export const dbTestEntities = [
   Tasks,
   Tickets,
   Transactions,
-  ServicePlans
+  ServicePlans,
 ];

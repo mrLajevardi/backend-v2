@@ -18,7 +18,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
     DatabaseModule,
     SessionsModule,
     UserModule,
-    forwardRef(()=>InvoicesModule),
+    forwardRef(() => InvoicesModule),
     TransactionsModule,
   ],
   providers: [

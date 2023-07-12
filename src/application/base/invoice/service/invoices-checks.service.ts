@@ -10,7 +10,7 @@ export class InvoicesChecksService {
   constructor(
     private readonly plansTable: PlansTableService,
     private readonly plansQuery: PlansQueryService,
-    private readonly serviceInstancesTable: ServiceItemsTableService
+    private readonly serviceInstancesTable: ServiceItemsTableService,
   ) {}
 
   async checkPlanCondition(data, serviceId, duration) {
@@ -59,14 +59,18 @@ export class InvoicesChecksService {
       console.log(convertedItemTypes, itemType.Code);
       if (convertedItemTypes[itemType.Code]) {
         console.log(convertedItemTypes[itemType.Code]);
-        const maxPerRequestRule = parseInt(convertedItemTypes[itemType.Code].quantity) > itemType.MaxPerRequest;
-        const minPerRequestRule = parseInt(convertedItemTypes[itemType.Code].quantity) < itemType.MinPerRequest;
+        const maxPerRequestRule =
+          parseInt(convertedItemTypes[itemType.Code].quantity) >
+          itemType.MaxPerRequest;
+        const minPerRequestRule =
+          parseInt(convertedItemTypes[itemType.Code].quantity) <
+          itemType.MinPerRequest;
         if (maxPerRequestRule || minPerRequestRule) {
-          throw new BadRequestException()
+          throw new BadRequestException();
         }
       }
     }
-  } 
+  }
 
   async checkServiceMaxAvailable(
     unlimitedService,
@@ -101,5 +105,4 @@ export class InvoicesChecksService {
     }
     return true;
   }
-
 }

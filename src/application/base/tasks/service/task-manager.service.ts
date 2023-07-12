@@ -42,7 +42,7 @@ export class TaskManagerService {
     private readonly taskTable: TasksTableService,
     private readonly loggerService: LoggerService,
     @Inject(forwardRef(() => VgpuService))
-    private readonly vgpuService: VgpuService
+    private readonly vgpuService: VgpuService,
   ) {
     this.taskQueue.process(async (job, done) => {
       const taskType = job.data?.taskType || 'task';
@@ -147,7 +147,7 @@ export class TaskManagerService {
       disableVms: this.checkVdcVmsTask,
       updateNetworkProfile: this.updateNetworkProfileTask,
       // createVgpuSnat: this.createVgpuSnatTask,
-       createVgpuDnat: this.createVgpuDnatTask,
+      createVgpuDnat: this.createVgpuDnatTask,
       // createVgpuVm: this.createVgpuVmTask,
       // createVgpuRunScript: this.createVgpuRunScriptTask,
       // deployVgpuVm: this.deployVgpuVmTask,
@@ -443,60 +443,74 @@ export class TaskManagerService {
   }
 
   async createVgpuDnatTask(serviceInstanceId, customTaskId, requestOptions) {
-      let externalPort = 20000;
-      const service = await this.serviceInstancesTable.findById(serviceInstanceId);
-      const userId = service.userId;
-      const props = {};
+    let externalPort = 20000;
+    const service = await this.serviceInstancesTable.findById(
+      serviceInstanceId,
+    );
+    const userId = service.userId;
+    const props = {};
 
-      const VgpuConfigs = await this.configsTable.find({
-          where: {
-              PropertyKey: { like: '%config.vgpu.%' },
-          },
-      });
-      for (const prop of VgpuConfigs) {
-          const key = prop.propertyKey.split('.').slice(-1)[0];
-          const item = prop.value;
-          props[key] = item;
-      }
+    const VgpuConfigs = await this.configsTable.find({
+      where: {
+        PropertyKey: { like: '%config.vgpu.%' },
+      },
+    });
+    for (const prop of VgpuConfigs) {
+      const key = prop.propertyKey.split('.').slice(-1)[0];
+      const item = prop.value;
+      props[key] = item;
+    }
 
-      const internalIP = await this.servicePropertiesTable.findOne({
-          where: {
-              and: [{ serviceInstanceid: serviceInstanceId }, { PropertyKey: 'internalIP' }],
-          },
-      });
+    const internalIP = await this.servicePropertiesTable.findOne({
+      where: {
+        and: [
+          { serviceInstanceid: serviceInstanceId },
+          { PropertyKey: 'internalIP' },
+        ],
+      },
+    });
 
-      const VgpuExternalPort = await this.servicePropertiesTable.findOne({
-          where: {
-              and: [{ PropertyKey: 'VgpuExternalPort' }],
-          },
-          order: {id: -1},
-      });
+    const VgpuExternalPort = await this.servicePropertiesTable.findOne({
+      where: {
+        and: [{ PropertyKey: 'VgpuExternalPort' }],
+      },
+      order: { id: -1 },
+    });
 
-      if (!isEmpty(VgpuExternalPort)) {
-          externalPort = parseInt(VgpuExternalPort.value) + 1;
-      }
+    if (!isEmpty(VgpuExternalPort)) {
+      externalPort = parseInt(VgpuExternalPort.value) + 1;
+    }
 
-      const internalAddresses = internalIP.value;
-      const createDnat = await this.vgpuService.createVgpuDnat(
-          serviceInstanceId, userId, props['orgId'], props['edgeName'], props['externalAddresses'], internalAddresses, 'DNAT', externalPort, props['applicationPortProfileName'], props['applicationPortProfileId'],
-      );
+    const internalAddresses = internalIP.value;
+    const createDnat = await this.vgpuService.createVgpuDnat(
+      serviceInstanceId,
+      userId,
+      props['orgId'],
+      props['edgeName'],
+      props['externalAddresses'],
+      internalAddresses,
+      'DNAT',
+      externalPort,
+      props['applicationPortProfileName'],
+      props['applicationPortProfileId'],
+    );
 
-      // await logger.info(
-      //   'vgpu', 'createDnat', {
-      //     vgpuDnatName: serviceInstanceId + 'DNAT',
-      //   }, requestOptions,
-      // );
-      const vcloudTask = createDnat.__vcloudTask;
+    // await logger.info(
+    //   'vgpu', 'createDnat', {
+    //     vgpuDnatName: serviceInstanceId + 'DNAT',
+    //   }, requestOptions,
+    // );
+    const vcloudTask = createDnat.__vcloudTask;
 
-      this.taskQueue.add({
-          serviceInstanceId,
-          customTaskId,
-          vcloudTask,
-          target: 'task',
-          nextTask: 'createVgpuRunScript',
-          taskType: 'adminTask',
-          requestOptions,
-      });
+    this.taskQueue.add({
+      serviceInstanceId,
+      customTaskId,
+      vcloudTask,
+      target: 'task',
+      nextTask: 'createVgpuRunScript',
+      taskType: 'adminTask',
+      requestOptions,
+    });
   }
 
   // async createVgpuRunScriptTask(serviceInstanceId, customTaskId, requestOptions) {
