@@ -59,7 +59,7 @@ import { ServiceModule } from './application/base/service/service.module';
     LoggerModule,
     ServiceModule,
   ],
-  controllers: [AppController, EdgeGatewayController],
+  controllers: [AppController],
   providers: [
     AppService,
     {
