@@ -20,7 +20,7 @@ import { CrudModule } from './application/base/crud/crud.module';
 import { SessionsModule } from './application/base/sessions/sessions.module';
 import { OrganizationModule } from './application/base/organization/organization.module';
 import { VgpuModule } from './application/vgpu/vgpu.module';
-import { ApplicationPortProfileService } from './application/edge-gateway/application-port-profile.service';
+import { ApplicationPortProfileService } from './application/edge-gateway/service/application-port-profile.service';
 import { NatModule } from './application/nat/nat.module';
 import { NetworksModule } from './application/networks/networks.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
@@ -59,7 +59,7 @@ import { ServiceModule } from './application/base/service/service.module';
     LoggerModule,
     ServiceModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, EdgeGatewayController],
   providers: [
     AppService,
     {

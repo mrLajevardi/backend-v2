@@ -5,6 +5,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { CrudModule } from '../base/crud/crud.module';
+import { NatController } from './nat.controller';
 
 @Module({
   imports: [
@@ -15,5 +16,6 @@ import { CrudModule } from '../base/crud/crud.module';
     CrudModule,
   ],
   providers: [NatService],
+  controllers: [NatController],
 })
 export class NatModule {}

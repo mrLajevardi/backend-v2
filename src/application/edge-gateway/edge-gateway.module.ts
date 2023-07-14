@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { EdgeGatewayController } from './edge-gateway.controller';
-import { EdgeGatewayService } from './edge-gateway.service';
-import { ApplicationPortProfileService } from './application-port-profile.service';
-import { FirewallService } from './firewall.service';
+import { EdgeGatewayController } from './controller/edge-gateway.controller';
+import { EdgeGatewayService } from './service/edge-gateway.service';
+import { ApplicationPortProfileService } from './service/application-port-profile.service';
+import { FirewallService } from './service/firewall.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServiceModule } from '../base/service/service.module';

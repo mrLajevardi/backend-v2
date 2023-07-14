@@ -6,6 +6,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { CrudModule } from '../base/crud/crud.module';
+import { NetworksController } from './networks.controller';
 
 @Module({
   imports: [
@@ -16,5 +17,6 @@ import { CrudModule } from '../base/crud/crud.module';
     CrudModule,
   ],
   providers: [NetworksService, DhcpService],
+  controllers: [NetworksController],
 })
 export class NetworksModule {}
