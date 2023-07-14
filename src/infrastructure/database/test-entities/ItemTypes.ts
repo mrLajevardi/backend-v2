@@ -32,7 +32,7 @@ export class ItemTypes {
 
   @Column('int', { name: 'ServiceTypeID', nullable: true })
   serviceTypeId: string | null;
-  
+
   @Column('varchar', { name: 'Code', length: 255 })
   code: string;
 

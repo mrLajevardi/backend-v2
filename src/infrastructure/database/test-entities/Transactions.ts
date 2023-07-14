@@ -31,7 +31,7 @@ export class Transactions {
 
   @Column('int', { name: 'UserID' })
   userId: string;
-  
+
   @Column('nvarchar', {
     name: 'PaymentToken',
     nullable: true,
