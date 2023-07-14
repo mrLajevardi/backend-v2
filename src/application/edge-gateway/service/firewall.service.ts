@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { ServiceService } from '../base/service/services/service.service';
-import { SessionsService } from '../base/sessions/sessions.service';
+import { ServiceService } from '../../base/service/services/service.service';
+import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
-import { FirewalListDto } from './dto/firewall-list.dto';
+import { FirewalListDto } from '../dto/firewall-list.dto';
 
 @Injectable()
 export class FirewallService {

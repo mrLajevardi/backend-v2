@@ -64,7 +64,7 @@ export class NetworksService {
     });
   }
 
-  async deleteNetwork(app, options, vdcInstanceId, networkId) {
+  async deleteNetwork(options, vdcInstanceId, networkId) {
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -90,7 +90,6 @@ export class NetworksService {
   }
 
   async getNetworks(
-    app,
     options,
     vdcInstanceId,
     page,

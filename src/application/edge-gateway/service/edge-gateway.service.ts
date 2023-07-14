@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { ServiceService } from '../base/service/services/service.service';
-import { SessionsService } from '../base/sessions/sessions.service';
-import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
+import { ServiceService } from '../../base/service/services/service.service';
+import { SessionsService } from '../../base/sessions/sessions.service';
+import { ServicePropertiesTableService } from '../../base/crud/service-properties-table/service-properties-table.service';
 import { ApplicationPortProfileService } from './application-port-profile.service';
 import { FirewallService } from './firewall.service';
 

@@ -1,16 +1,16 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, Request } from '@nestjs/common';
 import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
-import { FirewallDto } from './dto/firewall.dto';
-import { CreateApplicationPortProfileDto } from './dto/create-application-port-profile.dto';
-import { IPSetDto } from './dto/ip-set.dto';
-import { ApplicationProfileListDto } from './dto/application-profile-list.dto';
-import { DnsDto } from './dto/dns.dto';
-import { IpSetsDto } from './dto/ip-sets.dto';
-import { DhcpForwarderDto } from '../networks/dto/dhcp-forwarder.dto';
-import { UpdateFirewallDto } from './dto/update-firewall.dto';
-import { EdgeGatewayService } from './edge-gateway.service';
-import { SingleApplicationPortProfileDto } from './dto/single-application-port-profile.dto';
-import { FirewalListDto } from './dto/firewall-list.dto';
+import { FirewallDto } from '../dto/firewall.dto';
+import { CreateApplicationPortProfileDto } from '../dto/create-application-port-profile.dto';
+import { IPSetDto } from '../dto/ip-set.dto';
+import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
+import { DnsDto } from '../dto/dns.dto';
+import { IpSetsDto } from '../dto/ip-sets.dto';
+import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
+import { UpdateFirewallDto } from '../dto/update-firewall.dto';
+import { EdgeGatewayService } from '../service/edge-gateway.service';
+import { SingleApplicationPortProfileDto } from '../dto/single-application-port-profile.dto';
+import { FirewalListDto } from '../dto/firewall-list.dto';
 
 @Controller('edge-gateway')
 export class EdgeGatewayController {

@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ServiceService } from '../base/service/services/service.service';
-import { SessionsService } from '../base/sessions/sessions.service';
-import { OrganizationTableService } from '../base/crud/organization-table/organization-table.service';
+import { ServiceService } from '../../base/service/services/service.service';
+import { SessionsService } from '../../base/sessions/sessions.service';
+import { OrganizationTableService } from '../../base/crud/organization-table/organization-table.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isNil } from 'lodash';
-import { ApplicationProfileListDto } from './dto/application-profile-list.dto';
+import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
 
 @Injectable()
 export class ApplicationPortProfileService {
