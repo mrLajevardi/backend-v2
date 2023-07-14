@@ -38,6 +38,7 @@ export class ServiceInstancesTableService {
 
   // Find one item
   async findOne(options?: FindOneOptions): Promise<ServiceInstances> {
+    console.log(options);
     const result = await this.repository.findOne(options);
     return result;
   }

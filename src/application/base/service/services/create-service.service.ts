@@ -66,7 +66,7 @@ export class CreateServiceService {
       where: {
         userId: userId,
       },
-      order: { Index: -1 },
+      order: { index: -1 },
     });
 
     const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
