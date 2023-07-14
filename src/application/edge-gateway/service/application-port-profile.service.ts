@@ -186,8 +186,7 @@ export class ApplicationPortProfileService {
           scope: application.scope,
         };
       });
-      let result : ApplicationProfileListDto;
-    result = {
+    const result: ApplicationProfileListDto = {
       total: applicationPortProfiles.data.resultTotal,
       page: applicationPortProfiles.data.page,
       pageSize: applicationPortProfiles.data.pageSize,

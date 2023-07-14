@@ -241,13 +241,7 @@ export class DhcpService {
     });
   }
 
-  async updateDhcpBinding(
-    options,
-    vdcInstanceId,
-    networkId,
-    bindingId,
-    data,
-  ) {
+  async updateDhcpBinding(options, vdcInstanceId, networkId, bindingId, data) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
         and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],

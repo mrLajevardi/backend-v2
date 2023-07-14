@@ -3,7 +3,10 @@ import { IsBoolean, IsNumber, IsString } from 'class-validator';
 import { ApplicationRefDto } from 'src/application/edge-gateway/dto/application-ref.dto';
 
 export class NatRulesListDTO {
-  @ApiProperty({ type: String, example: '4ffc5afd-0e3b-45db-b9c4-ec545fa5b43f' })
+  @ApiProperty({
+    type: String,
+    example: '4ffc5afd-0e3b-45db-b9c4-ec545fa5b43f',
+  })
   @IsString()
   id: string;
 
@@ -19,7 +22,11 @@ export class NatRulesListDTO {
   @IsNumber()
   priority?: number;
 
-  @ApiProperty({ type: String, required: true, example: 'MATCH_EXTERNAL_ADDRESS' })
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'MATCH_EXTERNAL_ADDRESS',
+  })
   @IsString()
   firewallMatch: string;
 

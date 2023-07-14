@@ -133,7 +133,6 @@ import { NetworksService } from 'src/application/networks/networks.service';
     ApplicationPortProfileService,
     DhcpService,
     ServicePlansTableService,
-    
   ],
   exports: [
     TypeOrmModule,

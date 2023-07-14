@@ -15,7 +15,11 @@ export class GetDhcpDto {
   @IsArray()
   dhcpPools: DhcpPoolsDto[];
 
-  @ApiProperty({ type: [String], required: true, example: ['1.1.1.1', '8.8.8.8'] })
+  @ApiProperty({
+    type: [String],
+    required: true,
+    example: ['1.1.1.1', '8.8.8.8'],
+  })
   @IsArray()
   @IsString({ each: true })
   dnsServers: string[];

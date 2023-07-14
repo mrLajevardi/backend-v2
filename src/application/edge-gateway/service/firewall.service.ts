@@ -108,9 +108,7 @@ export class FirewallService {
       session,
       props['edgeName'],
     );
-    let filteredFirewall: FirewalListDto;
-
-    filteredFirewall = {
+    const filteredFirewall: FirewalListDto = {
       systemRules: firewallList.systemRules,
       userDefinedRules: firewallList.userDefinedRules,
       defaultRules: firewallList.defaultRules,

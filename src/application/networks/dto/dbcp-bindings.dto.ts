@@ -3,7 +3,6 @@ import { IsString, IsNumber, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { DhcpV4BindingConfigDto } from './dbvp-v4-bindings.dto';
 
-
 export class DhcpBindingsDataDto {
   @ApiProperty({ type: String, required: true })
   @IsString()

@@ -19,7 +19,11 @@ export class NatDto {
   @IsNumber()
   priority?: number;
 
-  @ApiProperty({ type: String, required: true, example: 'MATCH_EXTERNAL_ADDRESS' })
+  @ApiProperty({
+    type: String,
+    required: true,
+    example: 'MATCH_EXTERNAL_ADDRESS',
+  })
   @IsString()
   firewallMatch: string;
 
