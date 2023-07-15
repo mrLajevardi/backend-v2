@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,6 +19,7 @@ import { InvoicesService } from '../service/invoices.service';
 import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -26,6 +28,7 @@ export class InvoicesController {
   constructor(
     private readonly service: InvoicesService,
     private readonly invoicesTable: InvoicesTableService,
+    private readonly invoiceService: InvoicesService,
   ) {}
 
   // Find an item by id
@@ -51,8 +54,12 @@ export class InvoicesController {
     description: 'The item has been successfully created',
   })
   @Post()
-  async create(@Body() dto: CreateInvoicesDto): Promise<void> {
-    await this.invoicesTable.create(dto);
+  async create(
+    @Body() dto: CreateServiceInvoiceDto,
+    @Request() options: any,
+  ): Promise<any> {
+    return this.invoiceService.createInvoice(dto, options);
+    // await this.invoicesTable.create(dto);
   }
 
   // update an existing item

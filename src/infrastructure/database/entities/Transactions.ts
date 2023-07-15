@@ -37,6 +37,9 @@ export class Transactions {
   })
   paymentToken: string | null;
 
+  @Column('int', { name: 'UserID' })
+  userId: number;
+
   @Column('bit', { name: 'isApproved', default: () => "'0'" })
   isApproved: boolean;
 

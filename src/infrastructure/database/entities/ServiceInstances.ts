@@ -67,6 +67,9 @@ export class ServiceInstances {
   @Column('datetime', { name: 'NextPAYG', nullable: true })
   nextPayg: Date | null;
 
+  @Column('varchar', { name: 'ServiceTypeID', length: 50 })
+  serviceTypeId: string;
+
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.serviceInstance,

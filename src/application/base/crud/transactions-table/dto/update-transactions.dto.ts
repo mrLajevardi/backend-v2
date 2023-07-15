@@ -44,5 +44,5 @@ export class UpdateTransactionsDto {
 
   @IsString()
   @ApiProperty()
-  userId?: string;
+  userId?: number;
 }

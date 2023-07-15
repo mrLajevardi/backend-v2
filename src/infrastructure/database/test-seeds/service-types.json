@@ -1,2 +1,11 @@
 [
+    {
+        "id" : 1,
+        "title": "test",
+        "baseFee": 1,
+        "maxAvailable": 100,
+        "createInstanceScript": "",
+        "verifyInstance": true,
+        "isPayg": false
+    }
 ]
