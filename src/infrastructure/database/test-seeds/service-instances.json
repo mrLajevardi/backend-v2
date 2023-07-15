@@ -14,7 +14,8 @@
       "name": "ss",
       "planRatio": null,
       "lastPayg": null,
-      "nextPayg": null
+      "nextPayg": null,
+      "serviceTypeId": 1 
     },
     {
       "id": "D1E47C43-3900-4F2F-B709-ACDE93F2D280",
@@ -31,7 +32,8 @@
       "name": "test",
       "planRatio": null,
       "lastPayg": null,
-      "nextPayg": null
+      "nextPayg": null,
+      "serviceTypeId": 1
     }
   ]
   

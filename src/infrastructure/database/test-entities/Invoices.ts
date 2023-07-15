@@ -51,10 +51,15 @@ export class Invoices {
   @Column('nvarchar', { name: 'Name', nullable: true, length: 50 })
   name: string | null;
 
+  @Column('int', { name: 'UserID' })
+  userId: number;
+  
+
   @ManyToOne(() => User, (user) => user.invoices, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
+
   @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
   user: User;
 

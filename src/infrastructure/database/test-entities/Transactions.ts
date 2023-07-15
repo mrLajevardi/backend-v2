@@ -40,6 +40,10 @@ export class Transactions {
   @Column('boolean', { name: 'isApproved', default: () => "'0'" })
   isApproved: boolean;
 
+  @Column('int', { name: 'UserID'})
+  userId: number;
+  
+
   @Column('text', { name: 'ServiceInstanceID', nullable: true })
   serviceInstanceId: string | null;
 

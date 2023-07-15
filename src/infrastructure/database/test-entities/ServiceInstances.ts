@@ -45,6 +45,9 @@ export class ServiceInstances {
   @Column('integer', { name: 'Index', nullable: true })
   index: number | null;
 
+  @Column('varchar', { name: 'ServiceTypeID', length: 50 })
+  serviceTypeId: string;
+  
   @Column('integer', {
     name: 'WarningSent',
     nullable: true,
