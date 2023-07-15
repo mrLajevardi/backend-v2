@@ -41,7 +41,7 @@ export class ItemTypes {
 
   @Column('varchar', { name: 'ServiceTypeID', length: 50 })
   serviceTypeId: string;
-  
+
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.itemType,

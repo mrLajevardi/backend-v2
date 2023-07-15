@@ -53,13 +53,11 @@ export class Invoices {
 
   @Column('int', { name: 'UserID' })
   userId: number;
-  
 
   @ManyToOne(() => User, (user) => user.invoices, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-
   @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
   user: User;
 

@@ -128,7 +128,7 @@ export class TestDataService {
     filename: string,
     repository: Repository<T>,
   ): Promise<void> {
-    console.log("seeding table ",filename);
+    console.log('seeding table ', filename);
     const path = 'src/infrastructure/database/test-seeds/' + filename;
     const jsonData = fs.readFileSync(path, 'utf8');
     const items = JSON.parse(jsonData);
