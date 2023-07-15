@@ -24,7 +24,7 @@ export function addMonths(input: Date, months: number): Date {
   date.setDate(
     Math.min(
       new Date(input).getDate(),
-      this.getDaysInMonth(date.getFullYear(), date.getMonth() + 1),
+      getDaysInMonth(date.getFullYear(), date.getMonth() + 1),
     ),
   );
   return date;

@@ -3,14 +3,14 @@ import { InvalidQualityPlanException } from 'src/infrastructure/exceptions/inval
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
-import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 
 @Injectable()
 export class InvoicesChecksService {
   constructor(
     private readonly plansTable: PlansTableService,
     private readonly plansQuery: PlansQueryService,
-    private readonly serviceInstancesTable: ServiceItemsTableService,
+    private readonly serviceInstancesTable: ServiceInstancesTableService,
   ) {}
 
   async checkPlanCondition(data, serviceId, duration) {
@@ -28,17 +28,16 @@ export class InvoicesChecksService {
 
     // replacing condition keys
     matchedPlansList.forEach((el) => {
-      el.Condition = el.Condition.replace('@ServiceTypeID', `'${serviceId}'`);
-      el.Condition = el.Condition.replace('@duration', `${duration}`);
+      el.condition = el.condition.replace('@ServiceTypeID', `'${serviceId}'`);
+      el.condition = el.condition.replace('@duration', `${duration}`);
     });
 
     for (const item of matchedPlansList) {
-      let planValidationSql = `SELECT Code, CASE  WHEN  parameters THEN 'true' ELSE 'false' END as approved  FROM [services].[Plans]`;
+      let planValidationSql = `SELECT * FROM [services].[Plans]`;
       planValidationSql = planValidationSql.replace(
         'parameters',
-        item.Condition,
+        item.condition,
       );
-
       const executedSql = await this.plansQuery.serviceInstanceExe(
         planValidationSql,
       );
@@ -56,7 +55,6 @@ export class InvoicesChecksService {
       convertedItemTypes[item.itemCode] = item;
     }
     for (const itemType of itemTypes) {
-      console.log(convertedItemTypes, itemType.Code);
       if (convertedItemTypes[itemType.Code]) {
         console.log(convertedItemTypes[itemType.Code]);
         const maxPerRequestRule =
@@ -94,7 +92,8 @@ export class InvoicesChecksService {
     // checks max service
     const userServiceCount = await this.serviceInstancesTable.count({
       where: {
-        and: [{ UserID: userId }, { ServiceTypeID: serviceId }],
+        userId,
+        serviceTypeId: serviceId,
       },
     });
     if (

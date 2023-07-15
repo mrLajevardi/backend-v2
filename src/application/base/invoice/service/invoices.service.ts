@@ -35,6 +35,12 @@ import { ServiceInstancesTableService } from '../../crud/service-instances-table
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServicePlansTableService } from '../../crud/service-plans-table/service-plans-table.service';
+import {
+  CreateServiceInvoiceDto,
+  InvoiceItemsDto,
+} from '../dto/create-service-invoice.dto';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { Plans } from 'src/infrastructure/database/test-entities/Plans';
 
 @Injectable()
 export class InvoicesService {
@@ -59,15 +65,25 @@ export class InvoicesService {
   ) {}
 
   // Create invoice items
-  async createInvoiceItems(invoiceID: number, items, data) {
-    for (const item of Object.keys(items)) {
-      let dto: CreateInvoiceItemsDto;
-      const itemTitle = items[item].Code;
-      dto.fee = items[item].Fee;
-      dto.invoiceId = invoiceID;
-      dto.itemId = items[item].ID;
-      dto.quantity = data[itemTitle];
-      await this.invoiceItemsTable.create(dto);
+  async createInvoiceItems(
+    invoiceID: number,
+    items: ItemTypes[],
+    data: InvoiceItemsDto[],
+  ) {
+    for (const item of items) {
+      const itemTitle = item.code;
+      const dto: CreateInvoiceItemsDto = {
+        itemId: item.id,
+        invoiceId: invoiceID,
+        quantity: null,
+        fee: item.fee,
+      };
+      for (const dataItem of data) {
+        if (dataItem.itemCode === itemTitle) {
+          dto.quantity = dataItem.quantity;
+          await this.invoiceItemsTable.create(dto);
+        }
+      }
     }
   }
 
@@ -92,116 +108,24 @@ export class InvoicesService {
   }
 
   // Create multiple invoice plans
-  async createInvoicePlans(dto: CreateInvoicePluralDto) {
-    for (const plan of dto.plans) {
+  async createInvoicePlans(dto) {
+    console.log(dto);
+    const plans: Plans[] = dto.plans;
+    for (const plan of plans) {
       await this.invoicePlansTable.create({
         invoiceId: dto.invoiceId,
-        planCode: plan.planCode,
-        ratio: plan.ratio,
-        amount: plan.amount,
+        planCode: plan.code,
+        ratio: plan.additionRatio,
+        amount: plan.additionAmount,
       });
     }
   }
 
-  // async createServiceInvoice(data, options, serviceId) {
-  //   const userId = options.accessToken.userId;
-  //   const unlimitedService = 0;
-  //   const plans = await this.plansTable.find({});
-  //   let itemTypes = null;
-  //   itemTypes = await this.itemTypesTable.find({
-  //     where: { ServiceTypeID: serviceId },
-  //   });
-  //   // get service type info
-  //   const serviceType = await this.serviceTypesTable.findOne({
-  //     where: { ID: serviceId },
-  //   });
-  //   //check validity of serviceId
-  //   if (isEmpty(serviceType)) {
-  //     throw new InvalidServiceIdException();
-  //   }
-
-  //   throw new InternalServerErrorException('Must be resolved');
-  //   // check Availablity of creating new Service
-  //   // await this.serviceChecksService.checkServiceMaxAvailable(
-  //   //   unlimitedService,
-  //   //   serviceType.maxAvailable,
-  //   //   serviceId,
-  //   //   userId,
-  //   // );
-  //   // checking plans condition
-  //   const approvedPlans = await this.invoiceChecksService.checkPlanCondition(
-  //     data.plans,
-  //     serviceId,
-  //     data.duration * 30,
-  //   );
-  //   // calculate costs
-  //   const itemCost = this.costCalculationService.itemsCost(
-  //     itemTypes,
-  //     data,
-  //     serviceType,
-  //   );
-  //   const plansCost = this.costCalculationService.plansCost(plans, data);
-  //   const plansRatioForInvoice =
-  //     this.costCalculationService.plansRatioForInvoice(plans, data);
-  //   const plansRatioForItems = this.costCalculationService.plansRatioForItems(
-  //     plans,
-  //     data,
-  //   );
-  //   const totalCosts = this.costCalculationService.totalCosts(
-  //     serviceType,
-  //     data,
-  //     plans,
-  //     itemTypes,
-  //   );
-  //   const duration = data.duration;
-  //   // CIRCULAR depencency
-  //   // if (data.ServiceTypeID == 'vgpu') {
-  //   //   await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
-  //   //   duration = 36;
-  //   // }
-  //   // create service Invoice
-  //   let dto: CreateInvoicesDto;
-  //   dto.userId = userId;
-  //   dto.rawAmount = itemCost;
-  //   dto.finalAmount = totalCosts;
-  //   dto.type = 0;
-  //   dto.endDateTime = addMonths(new Date(), duration);
-  //   dto.dateTime = new Date();
-  //   dto.serviceTypeId = data.serviceTypeID;
-  //   dto.name = data.name;
-  //   dto.planAmount = plansCost;
-  //   dto.planRatio = plansRatioForItems;
-  //   const invoiceId = await this.invoicesTable.create(dto);
-
-  //   await this.createInvoiceItems(invoiceId, itemTypes, data.items);
-  //   await this.transactionTable.create({
-  //     userId: userId,
-  //     dateTime: new Date(),
-  //     paymentType: 0,
-  //     paymentToken: '-',
-  //     isApproved: false,
-  //     value: totalCosts,
-  //     invoiceId: invoiceId,
-  //     description: serviceType.title,
-  //     serviceInstanceId: serviceId,
-  //   });
-  //   await this.createInvoicePlans({
-  //     plans: approvedPlans,
-  //     invoiceId: invoiceId,
-  //   });
-  //   await this.createInvoiceProperties(data, invoiceId, data.ServiceTypeID);
-  //   return Promise.resolve({ invoiceId: invoiceId });
-  // }
-  async createInvoice(
-    data,
-    options,
-    serviceId,
-    type = 0,
-    serviceInstanceId = null,
-  ) {
+  async createInvoice(data: CreateServiceInvoiceDto, options) {
+    const { serviceTypeId: serviceId, type, serviceInstanceId } = data;
     // types : 1: extend, 2: increaseResource, 0: create service
     const types = [0, 2, 1];
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const serviceInstanceIdNotExists =
       (type === 2 || type === 1) && !serviceInstanceId;
     let calculatePlanCost = true;
@@ -218,8 +142,8 @@ export class InvoicesService {
         throw new BadRequestException();
       }
       // overWrite name and serviceType with existing service's name and serviceTypeID
-      data.Name = service.name;
-      data.ServiceTypeID = service.serviceType;
+      data.name = service.name;
+      data.serviceTypeId = service.serviceType.id;
     }
     // overwrite probable given plans with service instance's plans
     if (type === 2) {
@@ -251,13 +175,12 @@ export class InvoicesService {
     }
     const unlimitedService = 0;
     const plans = await this.plansTableService.find();
-    let itemTypes = null;
-    itemTypes = await this.itemTypesTable.find({
-      where: { ServiceTypeID: serviceId },
+    const itemTypes = await this.itemTypesTable.find({
+      where: { serviceTypeId: serviceId },
     });
     // get service type info
     const serviceType = await this.serviceTypesTable.findOne({
-      where: { ID: serviceId },
+      where: { id: serviceId },
     });
     // check validity of serviceId
     if (isEmpty(serviceType)) {
@@ -308,7 +231,7 @@ export class InvoicesService {
       { calculatePlanCost },
     );
     let duration = data.duration;
-    if (data.ServiceTypeID == 'vgpu') {
+    if (data.serviceTypeId == 'vgpu') {
       await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
       duration = 36;
     }
@@ -319,7 +242,7 @@ export class InvoicesService {
       type,
       endDateTime: addMonths(new Date(), duration),
       dateTime: new Date(),
-      serviceTypeId: data.serviceTypeID,
+      serviceTypeId: data.serviceTypeId,
       name: data.name,
       planAmount: plansCost,
       planRatio: plansRatioForItems,
@@ -331,8 +254,9 @@ export class InvoicesService {
 
     const invoiceId = await this.invoicesTable.create(dto);
     await this.createInvoiceItems(invoiceId, itemTypes, data.items);
+    console.log(userId);
     await this.transactionTable.create({
-      userId: userId,
+      userId,
       dateTime: new Date(),
       paymentType: 0,
       paymentToken: '-',
@@ -340,14 +264,15 @@ export class InvoicesService {
       value: totalCosts,
       invoiceId: invoiceId,
       description: serviceType.title,
-      serviceInstanceId: serviceId,
+      serviceInstanceId: serviceInstanceId,
     });
+    console.log('------');
     await this.createInvoicePlans({
       plans: approvedPlans,
       invoiceId: invoiceId,
     });
-    await this.createInvoiceProperties(data, invoiceId, data.ServiceTypeID);
-    return Promise.resolve({ invoiceId: invoiceId });
+    await this.createInvoiceProperties(data, invoiceId, data.serviceTypeId);
+    return { invoiceId: invoiceId };
   }
   async getExpiredInvoice(userId, serviceInstanceId) {
     return await this.invoicesTable.findOne({
@@ -405,12 +330,14 @@ export class InvoicesService {
         ServiceInstanceID: serviceInstanceId,
       },
     });
-    const formattedServiceItems = serviceItems.map((item) => {
-      return {
-        itemCode: item.itemTypeCode,
-        quantity: item.quantity,
-      };
-    });
+    const formattedServiceItems: InvoiceItemsDto[] = serviceItems.map(
+      (item) => {
+        return {
+          itemCode: item.itemTypeCode,
+          quantity: item.quantity,
+        };
+      },
+    );
     const servicePlans = await this.servicePlansTableService.find({
       where: {
         ServiceInstanceID: serviceInstanceId,
@@ -457,7 +384,6 @@ export class InvoicesService {
     });
     let targetPeriod = 0;
     const prevPlans = servicePlans.map((servicePlan) => {
-      console.log(servicePlan.planCode);
       if (servicePeriods[servicePlan.planCode]) {
         targetPeriod = servicePeriods[servicePlan.planCode];
       }
