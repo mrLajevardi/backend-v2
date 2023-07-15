@@ -25,6 +25,7 @@ import { NatModule } from './application/nat/nat.module';
 import { NetworksModule } from './application/networks/networks.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ServiceModule } from './application/base/service/service.module';
+import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { ServiceModule } from './application/base/service/service.module';
     CrudModule,
     NatModule,
     NetworksModule,
+    EdgeGatewayModule,
     LoggerModule,
     ServiceModule,
   ],
