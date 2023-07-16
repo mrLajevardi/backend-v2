@@ -26,6 +26,7 @@ import { NetworksModule } from './application/networks/networks.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ServiceModule } from './application/base/service/service.module';
 import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
+import { NotificationModule } from './application/base/notification/notification.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.modul
     EdgeGatewayModule,
     LoggerModule,
     ServiceModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [

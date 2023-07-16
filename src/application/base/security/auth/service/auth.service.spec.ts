@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { UserTableService } from '../../crud/user-table/user-table.service';
+import { UserTableService } from '../../../crud/user-table/user-table.service';
 
 describe('AuthService', () => {
   let service: AuthService;

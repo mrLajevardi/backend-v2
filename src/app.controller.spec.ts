@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { AuthService } from './application/base/security/auth/auth.service';
+import { AuthService } from './application/base/security/auth/service/auth.service';
 import { UserService } from './application/base/user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './application/base/security/auth/dto/login.dto';

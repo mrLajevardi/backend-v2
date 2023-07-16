@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { UserService } from '../../user/user.service';
+import { AuthService } from '../service/auth.service';
+import { UserService } from '../../../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { UserTableService } from '../../crud/user-table/user-table.service';
-import { LoginDto } from './dto/login.dto';
+import { UserTableService } from '../../../crud/user-table/user-table.service';
+import { LoginDto } from '../dto/login.dto';
 
 describe('AuthController', () => {
   let controller: AuthController;
