@@ -13,5 +13,3 @@ export const networkEndpoints = {
   getNetwork: getNetworkEndpoint,
   getNetworkIPUsageList: getNetworkIPUsageListEndpoint,
 };
-
-module.exports = networkEndpoints;

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { UnavailableResource } from 'src/infrastructure/exceptions/unavailable-resource.exception';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
@@ -15,6 +15,7 @@ import { InvoiceItemsTableService } from '../base/crud/invoice-items-table/invoi
 import { InvoicePropertiesTableService } from '../base/crud/invoice-properties-table/invoice-properties-table.service';
 import { TaskManagerService } from '../base/tasks/service/task-manager.service';
 import { TasksTableService } from '../base/crud/tasks-table/tasks-table.service';
+import { Raw } from 'typeorm';
 
 @Injectable()
 export class VgpuService {
@@ -28,6 +29,7 @@ export class VgpuService {
     private readonly userTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly invoicePropertiesTable: InvoicePropertiesTableService,
+    @Inject(forwardRef(() => TaskManagerService))
     private readonly taskManagerService: TaskManagerService,
     private readonly tasksTable: TasksTableService,
   ) {}
@@ -60,7 +62,7 @@ export class VgpuService {
     const props = {};
     const VgpuConfigs = await this.configsTable.find({
       where: {
-        PropertyKey: { like: '%config.vgpu.%' },
+        propertyKey: Raw((alias) => `${alias} LIKE '%config.vgpu.%'`),
       },
     });
     for (const prop of VgpuConfigs) {
@@ -170,8 +172,11 @@ export class VgpuService {
       };
       const planCost = await this.itemTypesTable.find({
         where: {
-          Code: { like: gpuPlans[servieproperties.value] + 'Cost%' },
-          ServiceTypeID: 'vgpu',
+          Code: Raw(
+            (alias) =>
+              `${alias} LIKE ${gpuPlans[servieproperties.value] + 'Cost%'}`,
+          ),
+          serviceTypeId: 'vgpu',
         },
       });
       const costPerHour = planCost[0].fee;

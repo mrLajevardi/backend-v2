@@ -38,4 +38,3 @@ export async function userGetIPSetsList(
   );
   return Promise.resolve(response.data);
 }
-module.exports = userGetIPSetsList;

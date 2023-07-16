@@ -1,10 +1,17 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
 
 @Index('PK__tasks__7C6949D195E39C4E', ['taskId'], { unique: true })
 @Entity('Tasks', { schema: 'user' })
 export class Tasks {
-  @Column('uniqueidentifier', { primary: true, name: 'TaskID' })
+  @PrimaryGeneratedColumn('uuid', { name: 'TaskID' })
   taskId: string;
 
   @Column('int', { name: 'UserID' })
@@ -31,8 +38,8 @@ export class Tasks {
   @Column('int', { name: 'StepCounts', nullable: true })
   stepCounts: number | null;
 
-  @Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })
-  currrentStep: string | null;
+  //@Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })
+  //currrentStep: string | null;
 
   @ManyToOne(
     () => ServiceInstances,

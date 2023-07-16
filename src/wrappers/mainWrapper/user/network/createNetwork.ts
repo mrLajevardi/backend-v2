@@ -73,5 +73,3 @@ export async function userCreateNetwork(config, edgeName = null) {
     __vcloudTask: createdNetwork.headers['location'],
   });
 }
-
-module.exports = userCreateNetwork;

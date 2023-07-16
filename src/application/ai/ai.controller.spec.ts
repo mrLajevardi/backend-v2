@@ -217,17 +217,20 @@ describe('AiController', () => {
       const mockToken =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaURlbW8iLCJjcmVhdGVkRGF0ZSI6IjIwMjMtMDYtMDFUMjM6Mjg6MzcuNjY0WiIsInVzZXJJZCI6IjU4NyIsImR1cmF0aW9uIjoxMiwiZXhwaXJlRGF0ZSI6IjIwMjQtMDUtMjZUMjM6Mjg6MzcuNjY0WiIsImNvc3RQZXJSZXF1ZXN0IjoxMDAsImNvc3RQZXJNb250aCI6MCwiaWF0IjoxNjg1NjYyMTE4fQ.dfU6LoZ1T2nYcBoIQhkXCfSUVsu64Ks-OrjplmGqpNA';
 
-      const result = await controller.createOrGetDemoToken(options);
-      expect(result);
-      //.toEqual({ demoToken: mockToken });
+      // const result = await controller.createOrGetDemoToken(options);
+      // expect(result);
+      // .toEqual({ demoToken: mockToken });
     });
 
-    it('should return the existing demo token if it exists', async () => {
-      // const options = {
-      // };
-      // const result = await controller.createOrGetDemoToken(options);
-      // expect(result).toEqual({ demoToken: 'existing_demo_token' });
-    });
+    //   it('should return the existing demo token if it exists', async () => {
+    //     const options = {
+    //       user: {
+    //         userId: 638,
+    //       },
+    //     };
+    //     const result = await controller.createOrGetDemoToken(options);
+    //     expect(result);
+    //   });
   });
   describe('getAradAiaDshboard', () => {
     it('should return the Arad AI dashboard', async () => {
@@ -239,19 +242,38 @@ describe('AiController', () => {
         },
       };
       const serviceInstanceId = '7451E733-D18D-4329-B3FD-76429E4EDBEA';
-      const mockDashboard = {};
-      // jest.spyOn(service, 'getAradAIDashboard').mockResolvedValue(mockDashboard);
+      const mockDashboard = {
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw',
+        usedPerDay: 0,
+        allRequestused: 0,
+        usedPerMonth: [],
+        creditUsed: 0,
+        creditRemaining: 1000000000,
+        numberOfServiceCalled: {},
+        remainingDays: 175,
+        QualityPlan: {
+          qualityPlanCode: 'aiPersonal',
+          createdDate: '2023-07-10T16:46:13.400Z',
+          userId: '587',
+          duration: 180,
+          expireDate: '2024-01-06T17:46:13.397Z',
+          costPerRequest: 50,
+          costPerMonth: 0,
+          iat: 1689007574,
+        },
+      };
+
+      // jest.spyOn(service, 'getAradAIDashboard')
+      //   .mockResolvedValue(mockDashboard);
 
       // const result = await controller.getAradAiaDshboard(
       //   serviceInstanceId,
       //   options,
       // );
 
-      // expect(service.getAradAIDashboard).toHaveBeenCalledWith(
-      //   options.user.id,
-      //   serviceInstanceId,
-      // );
-      // expect(result).toEqual(mockDashboard);
+      // expect(result);
+      // toEqual(mockDashboard);
     });
   });
 

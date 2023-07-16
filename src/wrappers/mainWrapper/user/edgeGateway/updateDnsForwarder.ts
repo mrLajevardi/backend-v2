@@ -41,4 +41,3 @@ export async function updateDnsForwarder(config, edgeName) {
     __vcloudTask: dnsForwarder.headers['location'],
   });
 }
-module.exports = updateDnsForwarder;

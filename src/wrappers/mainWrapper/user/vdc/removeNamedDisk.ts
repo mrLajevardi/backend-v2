@@ -20,4 +20,3 @@ export async function userRemoveNamedDisk(authToken, nameDiskID) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userRemoveNamedDisk;

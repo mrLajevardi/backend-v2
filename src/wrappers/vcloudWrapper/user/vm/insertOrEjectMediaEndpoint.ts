@@ -18,5 +18,3 @@ export function insertOrEjectEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = insertOrEjectEndpoint;

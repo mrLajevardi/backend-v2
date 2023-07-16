@@ -32,5 +32,3 @@ export async function userUpdateFirewallList(authToken, config, edgeName) {
     __vcloudTask: firewall.headers['location'],
   });
 }
-
-module.exports = userUpdateFirewallList;

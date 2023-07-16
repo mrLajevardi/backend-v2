@@ -19,5 +19,3 @@ export function deleteVdcEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deleteVdcEndpoint;

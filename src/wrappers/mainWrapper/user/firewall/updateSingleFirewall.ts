@@ -38,5 +38,3 @@ export async function userUpdateSingleFirewall(
     __vcloudTask: firewall.headers['location'],
   });
 }
-
-module.exports = userUpdateSingleFirewall;

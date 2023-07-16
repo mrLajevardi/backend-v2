@@ -18,5 +18,3 @@ export function dettachNamedDisk(options?: any) {
     },
   };
 }
-
-module.exports = dettachNamedDisk;

@@ -32,4 +32,3 @@ export async function userDeleteFirewall(authToken, ruleId, edgeName) {
     __vcloudTask: firewall.headers['location'],
   });
 }
-module.exports = userDeleteFirewall;

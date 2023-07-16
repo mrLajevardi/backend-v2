@@ -18,5 +18,3 @@ export function deleteVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deleteVmEndpoint;

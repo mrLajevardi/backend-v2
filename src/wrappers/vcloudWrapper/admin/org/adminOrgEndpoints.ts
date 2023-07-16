@@ -9,5 +9,3 @@ export const adminOrgEndpoints = {
   getOrg: getOrgEndpoint,
   deleteCatalog: deleteOrgCatalogEndpoint,
 };
-
-module.exports = adminOrgEndpoints;

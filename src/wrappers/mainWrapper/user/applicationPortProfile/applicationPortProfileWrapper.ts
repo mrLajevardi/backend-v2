@@ -11,5 +11,3 @@ export const applicationPortProfilesWrapper = {
   deleteApplicationPortProfile: userDeleteApplicationPortProfile,
   getApplicationPortProfileList: userGetApplicationPortProfiles,
 };
-
-module.exports = applicationPortProfilesWrapper;

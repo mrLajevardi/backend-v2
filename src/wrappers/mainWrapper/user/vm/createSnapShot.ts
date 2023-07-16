@@ -38,4 +38,3 @@ export async function userCreateSnapShot(
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userCreateSnapShot;

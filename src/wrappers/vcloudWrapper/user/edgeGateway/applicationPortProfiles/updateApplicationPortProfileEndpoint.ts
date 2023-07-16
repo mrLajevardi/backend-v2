@@ -18,5 +18,3 @@ export function updateApplicationPortProfilesEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateApplicationPortProfilesEndpoint;

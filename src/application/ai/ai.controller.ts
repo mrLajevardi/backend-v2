@@ -16,7 +16,7 @@ import { isEmpty } from 'lodash';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
-import { CreateServiceService } from '../base/service/services/create-service.service';
+import { ExtendServiceService } from '../base/service/services/extend-service.service';
 import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
 import { JwtService } from '@nestjs/jwt';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -46,7 +46,7 @@ export class AiController {
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly createServiceSvc: CreateServiceService,
+    private readonly createServiceSvc: ExtendServiceService,
     private readonly payAsYouGoService: PayAsYouGoService,
     private readonly configsTable: ConfigsTableService,
     private readonly jwtService: JwtService,
@@ -172,13 +172,13 @@ export class AiController {
   async getAITransactionsLogs(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('page') page: number,
-    @Query('pageSize') pageSize,
+    @Query('pageSize') pageSize: number,
     @Request() options: any,
   ): Promise<GetAiTransactionsLogsDto> {
     let skip = 0;
     let limit = 10;
 
-    if (!isEmpty(page)) {
+    if (!isEmpty(page) && !isEmpty(pageSize)) {
       skip = pageSize * (page - 1);
     }
 

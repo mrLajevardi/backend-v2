@@ -4,9 +4,8 @@ import { getEdgeCluster } from './getEdgeCluster';
 import { getExternalNetworks } from './getExternalNetworks';
 
 export const adminEdgeGatewayWrapper = {
-  createEdgeGateway,
+  createEdgeGateway: createEdgeGateway,
   getAvailableIpAddresses: getAvailableIpAddresses,
   getExternalNetworks: getExternalNetworks,
   getEdgeClusters: getEdgeCluster,
 };
-module.exports = adminEdgeGatewayWrapper;

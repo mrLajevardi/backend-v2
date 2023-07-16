@@ -65,4 +65,3 @@ export async function userCreateNamedDisk(
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userCreateNamedDisk;

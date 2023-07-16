@@ -128,7 +128,6 @@ export class TestDataService {
     filename: string,
     repository: Repository<T>,
   ): Promise<void> {
-    // console.log("seeding table ",filename);
     const path = 'src/infrastructure/database/test-seeds/' + filename;
     const jsonData = fs.readFileSync(path, 'utf8');
     const items = JSON.parse(jsonData);
@@ -140,6 +139,8 @@ export class TestDataService {
   }
 
   async seedTestData(): Promise<void> {
+    await this.seedTable('user.json', this.userRepository);
+
     await this.seedTable('groups.json', this.groupsRepository);
     await this.seedTable('groups-mapping.json', this.groupsMappingRepository);
     await this.seedTable('invoices.json', this.invoicesRepository);
@@ -177,7 +178,6 @@ export class TestDataService {
     );
     await this.seedTable('plans.json', this.plansRepository);
     await this.seedTable('tickets.json', this.ticketsRepository);
-    await this.seedTable('user.json', this.userRepository);
     await this.seedTable('role.json', this.roleRepository);
     await this.seedTable('service-items.json', this.serviceItemsRepository);
     await this.seedTable('role-mapping.json', this.roleMappingRepository);

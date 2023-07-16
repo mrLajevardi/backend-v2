@@ -17,5 +17,3 @@ export function getVdcComputePolicyEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getVdcComputePolicyEndpoint;

@@ -118,6 +118,30 @@
       "orgName": "majid",
       "acceptTermsOfService": true,
       "phoneVerified": true
+    },
+    {
+      "id": 638,
+      "realm": "",
+      "username": "U-09024945662",
+      "password": "$2a$10$0/eWpa1SeN13o/A5XmJRDOQ/h75oOwlqTYhki7nFqm.7gLw8fQ5Ri",
+      "email": "waeli2.icsf@gmail.com",
+      "emailVerified": true,
+      "active": true,
+      "name": "Fatima2",
+      "family": "Waeli2",
+      "verificationToken": true,
+      "deleted": false,
+      "createDate": "2023-05-12T15:10:17.000Z",
+      "updateDate": "2023-05-12T15:10:17.000Z",
+      "code": "          ",
+      "emailToken": "",
+      "credit": 0,
+      "vdcPassword": "",
+      "hasVdc": false,
+      "phoneNumber": "",
+      "orgName": "majid",
+      "acceptTermsOfService": true,
+      "phoneVerified": true
     }
   ]
   

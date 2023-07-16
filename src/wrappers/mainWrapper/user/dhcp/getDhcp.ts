@@ -14,5 +14,3 @@ export async function userGetDhcp(authToken, networkId) {
   });
   return Promise.resolve(dhcp.data);
 }
-
-module.exports = userGetDhcp;

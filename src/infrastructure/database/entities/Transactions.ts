@@ -23,9 +23,6 @@ export class Transactions {
   @Column('int', { name: 'InvoiceID', nullable: true })
   invoiceId: number | null;
 
-  @Column('int', { name: 'UserID' })
-  userId: string;
-
   @Column('nchar', { name: 'Description', nullable: true, length: 10 })
   description: string | null;
 
@@ -39,6 +36,9 @@ export class Transactions {
     default: () => "''",
   })
   paymentToken: string | null;
+
+  @Column('int', { name: 'UserID' })
+  userId: number;
 
   @Column('bit', { name: 'isApproved', default: () => "'0'" })
   isApproved: boolean;

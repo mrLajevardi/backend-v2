@@ -6,5 +6,3 @@ export const tasksEndpoints = {
   getTaskList: getTaskListEndpoint,
   cancelTask: cancelTaskEndpoint,
 };
-
-module.exports = tasksEndpoints;

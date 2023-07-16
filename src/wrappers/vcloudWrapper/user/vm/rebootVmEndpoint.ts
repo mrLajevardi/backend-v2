@@ -17,5 +17,3 @@ export function rebootVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = rebootVmEndpoint;

@@ -66,7 +66,7 @@ export class CreateInvoicesDto {
   @ApiProperty()
   userId: number;
 
-  @IsInt()
+  @IsString()
   @ApiProperty()
-  serviceInstanceId: number;
+  serviceInstanceId: string;
 }

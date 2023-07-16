@@ -13,5 +13,3 @@ export function userAcquireVappTicket(authToken, vAppId) {
   });
   return ticket;
 }
-
-module.exports = userAcquireVappTicket;

@@ -11,5 +11,3 @@ export const ipSetsEndpoints = {
   getIpSets: getIpSetsEndpoint,
   deleteIpSets: deleteIpSetsEndpoint,
 };
-
-module.exports = ipSetsEndpoints;

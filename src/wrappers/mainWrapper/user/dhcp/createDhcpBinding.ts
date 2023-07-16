@@ -36,5 +36,3 @@ export async function userCreateDhcpBinding(authToken, networkId, config) {
     __vcloudTask: dhcp.headers['location'],
   });
 }
-
-module.exports = userCreateDhcpBinding;

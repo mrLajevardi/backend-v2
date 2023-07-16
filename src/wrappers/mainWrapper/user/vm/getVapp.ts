@@ -12,5 +12,3 @@ export function userGetVApp(authToken, vAppId) {
   });
   return vApp;
 }
-
-module.exports = userGetVApp;

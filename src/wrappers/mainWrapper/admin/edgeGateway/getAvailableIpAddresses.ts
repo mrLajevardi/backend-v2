@@ -22,4 +22,3 @@ export async function getAvailableIpAddresses(externalNetworkId, authToken) {
     availableIpAddressesList.data.values[0]?.ipRanges?.values,
   );
 }
-module.exports = getAvailableIpAddresses;

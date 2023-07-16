@@ -60,4 +60,3 @@ export async function userUpdateNamedDisk(
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userUpdateNamedDisk;

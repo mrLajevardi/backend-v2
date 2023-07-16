@@ -1,26 +1,31 @@
 [
     {
-        "id": "AradAiDemo",
+        "id" : 1,
+        "title": "test",
+        "baseFee": 1,
+        "maxAvailable": 100,
+        "createInstanceScript": "",
+        "verifyInstance": true,
+        "isPayg": false
+    },
+    {
+        "id": 2,
         "title": "AradAiDemo",
         "baseFee": 0,
         "createInstanceScript": "",
         "verifyInstance": 0,
         "maxAvailable": 10,
         "type": 0,
-        "isPayg": 0,
-        "paygInterval": null, 
-        "paygScript": null
+        "isPayg": 0
     },
     {
-        "id": "aradAi",
+        "id": 3,
         "title": "AradAi",
         "baseFee": 0,
         "createInstanceScript": "",
         "verifyInstance": 0,
         "maxAvailable": 1000,
         "type": 0,
-        "isPayg": 1,
-        "paygInterval": null, 
-        "paygScript": null
+        "isPayg": 1
     }
 ]

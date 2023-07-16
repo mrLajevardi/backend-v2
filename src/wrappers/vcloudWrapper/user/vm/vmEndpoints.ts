@@ -63,5 +63,3 @@ export const vmEndpoints = {
   updateVAppTemplate: updateVAppTemplateEndpoint,
   updateMedia: updateMediaEndpoint,
 };
-
-module.exports = vmEndpoints;

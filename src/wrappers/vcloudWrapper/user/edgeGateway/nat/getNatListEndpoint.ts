@@ -19,5 +19,3 @@ export function getNatListEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getNatListEndpoint;

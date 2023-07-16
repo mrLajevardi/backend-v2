@@ -18,5 +18,3 @@ export function deleteFirewallEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deleteFirewallEndpoint;

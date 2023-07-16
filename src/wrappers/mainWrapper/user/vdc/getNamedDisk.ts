@@ -20,4 +20,3 @@ export async function userGetNamedDisk(authToken, vdcId) {
 
   return query.data.record;
 }
-module.exports = userGetNamedDisk;

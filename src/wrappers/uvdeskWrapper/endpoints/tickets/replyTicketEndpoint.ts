@@ -14,5 +14,3 @@ export function replyTicketEndpoint(options?: any) {
     headers: options.headers,
   };
 }
-
-module.exports = replyTicketEndpoint;

@@ -10,5 +10,3 @@ export async function getListOfTickets(params) {
   });
   return ticket.data;
 }
-
-module.exports = getListOfTickets;

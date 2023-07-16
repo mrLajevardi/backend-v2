@@ -39,8 +39,8 @@ export class ItemTypes {
   @Column('int', { name: 'MinPerRequest', nullable: true })
   minPerRequest: number | null;
 
-  @Column('int', { name: 'ServiceTypeID', nullable: true })
-  serviceTypeId: string | null;
+  @Column('varchar', { name: 'ServiceTypeID', length: 50 })
+  serviceTypeId: string;
 
   @OneToMany(
     () => AiTransactionsLogs,

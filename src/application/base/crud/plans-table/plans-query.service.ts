@@ -13,5 +13,6 @@ export class PlansQueryService {
   // Moved from Invoice->checkPlanCondition
   async serviceInstanceExe(sql: string): Promise<any> {
     const result = await this.repository.query(sql);
+    return result;
   }
 }

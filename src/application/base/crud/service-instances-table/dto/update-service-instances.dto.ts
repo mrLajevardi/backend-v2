@@ -78,9 +78,4 @@ export class UpdateServiceInstancesDto {
   @IsDate()
   @ApiProperty()
   nextPayg?: Date;
-
-  @IsOptional()
-  @IsNumber()
-  @ApiProperty()
-  serviceTypeId?: number;
 }

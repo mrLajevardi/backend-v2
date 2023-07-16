@@ -33,4 +33,3 @@ export async function getDnsForwarder(authToken, edgeName) {
   );
   return Promise.resolve(dns.data);
 }
-module.exports = getDnsForwarder;

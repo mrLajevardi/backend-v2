@@ -1,7 +1,6 @@
 /*
 This module is responsible for proper loading of test database 
 Importing this module in the test files is sufficient for loading the database for test purposes. 
-
 */
 
 import { Module } from '@nestjs/common';
@@ -41,7 +40,6 @@ import { PlansTableService } from 'src/application/base/crud/plans-table/plans-t
 import { InvoicesChecksService } from 'src/application/base/invoice/service/invoices-checks.service';
 import { DiscountsService } from 'src/application/base/service/services/discounts.service';
 import { ServiceChecksService } from 'src/application/base/service/services/service-checks/service-checks.service';
-import { AbilityFactory } from 'nest-casl/dist/factories/ability.factory';
 import { ACLTableService } from 'src/application/base/crud/acl-table/acl-table.service';
 import { InvoicePlansTableService } from 'src/application/base/crud/invoice-plans-table/invoice-plans-table.service';
 import { InvoicesTableService } from 'src/application/base/crud/invoices-table/invoices-table.service';
@@ -57,6 +55,13 @@ import { LoggerService } from '../logger/logger.service';
 import { ErrorLogTableService } from 'src/application/base/crud/error-log-table/error-log-table.service';
 import { InfoLogTableService } from 'src/application/base/crud/info-log-table/info-log-table.service';
 import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/debug-log-table.service';
+import { ApplicationPortProfileService } from 'src/application/edge-gateway/service/application-port-profile.service';
+import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-gateway.service';
+import { FirewallService } from 'src/application/edge-gateway/service/firewall.service';
+import { DhcpService } from 'src/application/networks/dhcp.service';
+import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
+import { NatService } from 'src/application/nat/nat.service';
+import { NetworksService } from 'src/application/networks/networks.service';
 
 @Module({
   imports: [
@@ -97,6 +102,8 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     EdgeService,
     OrgService,
     NetworkService,
+    NetworksService,
+    NatService,
     VdcService,
     ServiceTypesTableService,
     TransactionsService,
@@ -121,6 +128,11 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     ErrorLogTableService,
     InfoLogTableService,
     DebugLogTableService,
+    EdgeGatewayService,
+    FirewallService,
+    ApplicationPortProfileService,
+    DhcpService,
+    ServicePlansTableService,
   ],
   exports: [
     TypeOrmModule,
@@ -150,6 +162,8 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     EdgeService,
     OrgService,
     NetworkService,
+    NetworksService,
+    NatService,
     VdcService,
     ServiceTypesTableService,
     TransactionsService,
@@ -174,6 +188,11 @@ import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/
     ErrorLogTableService,
     InfoLogTableService,
     DebugLogTableService,
+    EdgeGatewayService,
+    FirewallService,
+    ApplicationPortProfileService,
+    DhcpService,
+    ServicePlansTableService,
   ],
 })
 export class TestDatabaseModule {}

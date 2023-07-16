@@ -17,4 +17,3 @@ export async function userDeleteMedia(authToken, mediaId) {
     __vcloudTask: deletedMedia.headers['location'],
   });
 }
-module.exports = userDeleteMedia;

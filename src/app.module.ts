@@ -20,6 +20,11 @@ import { CrudModule } from './application/base/crud/crud.module';
 import { SessionsModule } from './application/base/sessions/sessions.module';
 import { OrganizationModule } from './application/base/organization/organization.module';
 import { VgpuModule } from './application/vgpu/vgpu.module';
+import { ApplicationPortProfileService } from './application/edge-gateway/service/application-port-profile.service';
+import { NatModule } from './application/nat/nat.module';
+import { NetworksModule } from './application/networks/networks.module';
+import { LoggerModule } from './infrastructure/logger/logger.module';
+import { ServiceModule } from './application/base/service/service.module';
 
 @Module({
   imports: [
@@ -49,6 +54,10 @@ import { VgpuModule } from './application/vgpu/vgpu.module';
     AbilityModule,
     VdcModule,
     CrudModule,
+    NatModule,
+    NetworksModule,
+    LoggerModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [
@@ -58,6 +67,7 @@ import { VgpuModule } from './application/vgpu/vgpu.module';
       useClass: JwtAuthGuard,
     },
     NetworkService,
+    ApplicationPortProfileService,
   ],
   exports: [],
 })
