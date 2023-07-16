@@ -30,6 +30,9 @@ export class ItemTypes {
   @Column('integer', { name: 'MaxAvailable' })
   maxAvailable: number;
 
+  @Column('int', { name: 'ServiceTypeID', nullable: true })
+  serviceTypeId: string | null;
+
   @Column('varchar', { name: 'Code', length: 255 })
   code: string;
 
