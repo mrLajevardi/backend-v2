@@ -13,6 +13,7 @@ import { InvoicesModule } from '../invoice/invoices.module';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { ServiceController } from './controller/service.controller';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
     UserModule,
     forwardRef(() => InvoicesModule),
     TasksModule,
-    VgpuModule,
+    forwardRef(() => VgpuModule),
     TransactionsModule,
   ],
   providers: [
@@ -33,6 +34,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
     DiscountsService,
     ServiceChecksService,
   ],
+  controllers: [ServiceController],
   exports: [
     ServiceService,
     PayAsYouGoService,

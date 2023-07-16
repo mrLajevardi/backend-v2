@@ -68,12 +68,12 @@ export class CreateServiceService {
   ) {}
 
   async createService(options, dto: CreateServiceDto) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const { invoiceId } = dto;
     // find user invoice
     const invoice = await this.InvoiceTableService.findOne({
       where: {
-        invoiceId,
+        id: invoiceId,
         userId,
       },
     });
@@ -153,23 +153,24 @@ export class CreateServiceService {
       );
       if (invoice.serviceTypeId === 'vdc') {
         task = await this.tasksTableService.create({
-          userId: options.locals.userId,
-          serviceInstanceId: serviceInstanceId,
+          userId: userId,
+          serviceInstanceId,
           operation: 'createDataCenter',
           details: null,
           startTime: new Date(),
           endTime: null,
           status: 'running',
         });
+        console.log(taskId);
         await this.taskManagerService.addTask({
           serviceInstanceId,
-          customTaskId: task.TaskID,
+          customTaskId: task.taskId,
           vcloudTask: null,
           nextTask: 'createOrg',
           requestOptions: options.locals,
           target: 'object',
         });
-        taskId = task.TaskID;
+        taskId = task.taskId;
       }
       if (invoice.serviceTypeId === 'vgpu') {
         taskId = await this.vgpuService.createVgpu(
@@ -197,7 +198,7 @@ export class CreateServiceService {
             status: 3,
           },
         );
-        taskId = task.TaskID;
+        taskId = task.taskId;
       }
       // update user invoice
       this.InvoiceTableService.updateAll(

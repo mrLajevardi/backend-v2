@@ -1,22 +1,24 @@
-import { Entity, Column } from 'typeorm';
-import { ServiceTypes } from '../ServiceTypes';
-@Entity()
+import { Entity, Column, PrimaryColumn, ViewEntity, ViewColumn } from 'typeorm';
+@ViewEntity({
+  schema: 'user',
+  name: 'InvoiceItemList',
+})
 export class InvoiceItemList {
-  @Column({ type: 'int', name: 'ItemID' })
+  @ViewColumn({ name: 'ItemID' })
   itemId: number;
 
-  @Column({ type: 'int', name: 'Quantity' })
+  @ViewColumn({ name: 'Quantity' })
   quantity: number;
 
-  @Column({ type: 'int', name: 'Fee' })
+  @ViewColumn({ name: 'Fee' })
   fee: number;
 
-  @Column({ type: 'varchar', name: 'Code' })
+  @ViewColumn({ name: 'Code' })
   code: string;
 
-  @Column({ type: 'int', name: 'InvoiceID' })
+  @ViewColumn({ name: 'InvoiceID' })
   invoiceId: string;
 
-  @Column({ type: 'int', name: 'UserID' })
+  @ViewColumn({ name: 'UserID' })
   userId: number;
 }

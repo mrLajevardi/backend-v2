@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   Entity,
   Index,
@@ -14,6 +15,7 @@ import { ServiceItems } from './ServiceItems';
 import { ServiceProperties } from './ServiceProperties';
 import { Tasks } from './Tasks';
 import { Tickets } from './Tickets';
+import { randomUUID } from 'crypto';
 
 @Index('PK_ServiceInstances', ['id'], { unique: true })
 @Entity('ServiceInstances', { schema: 'user' })
@@ -103,4 +105,9 @@ export class ServiceInstances {
 
   @OneToMany(() => Tickets, (tickets) => tickets.serviceInstance)
   tickets: Tickets[];
+
+  @BeforeInsert()
+  setId() {
+    this.id = randomUUID();
+  }
 }

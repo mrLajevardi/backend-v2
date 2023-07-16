@@ -45,6 +45,7 @@ export class ExtendServiceService {
     private readonly invoicesTableService: InvoicesTableService,
     private readonly invoiceItemListService: InvoiceItemListService,
     private readonly invoicePlanTableService: InvoicePlansTableService,
+    private readonly serviceSum: ServiceItemsSumService,
   ) {}
 
   async getAiServiceInfo(
@@ -100,15 +101,15 @@ export class ExtendServiceService {
   // create service items
   async createServiceItems(serviceInstanceID, items, data) {
     for (const item of Object.keys(items)) {
-      const itemTitle = items[item].Code;
+      const itemTitle = items[item].code;
       // TODO just items of current user should be added
       const itemQuantity = data[itemTitle] || 0;
-      const itemTypeId = items[item].ID;
+      const itemTypeId = items[item].id;
       await this.serviceItemsTable.create({
         serviceInstanceId: serviceInstanceID,
         itemTypeId: itemTypeId,
         quantity: itemQuantity,
-        itemTypeCode: items[item].Code,
+        itemTypeCode: items[item].code,
       });
     }
   }
@@ -117,13 +118,11 @@ export class ExtendServiceService {
   async createServiceInstance(userId, serviceTypeID, expireDate, name = null) {
     const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
       where: {
-        UserID: userId,
+        userId,
       },
-      order: { Index: -1 },
+      order: { index: -1 },
     });
-    const index = lastServiceInstanceId
-      ? lastServiceInstanceId[0].Index + 1
-      : 0;
+    const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
     const serviceType = await this.serviceTypeTable.findById(serviceTypeID);
     const serivce = await this.serviceInstancesTable.create({
       userId: userId,
@@ -139,13 +138,11 @@ export class ExtendServiceService {
   }
 
   //enable Vdc On Vcloud
-  async enableVdcOnVcloud(serviceInstanceID, userId) {
+  async enableVdcOnVcloud(serviceInstanceId, userId) {
     const vdc = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { ServiceInstanceID: serviceInstanceID },
-          { PropertyKey: 'vdcId' },
-        ],
+        serviceInstanceId,
+        propertykey: 'vdcId',
       },
     });
 
@@ -182,8 +179,8 @@ export class ExtendServiceService {
     transaction: Transactions,
     name,
   ) {
-    let token = null;
-    const userId = options.accessToken.userId;
+    const token = null;
+    const userId = options.user.userId;
 
     const serviceType = await this.serviceTypeTable.findOne({
       where: { id: serviceId },
@@ -200,9 +197,8 @@ export class ExtendServiceService {
       name,
     );
     const itemTypes = await this.itemTypesTable.find({
-      where: { ServiceTypeID: serviceId },
+      where: { serviceTypeId: serviceId },
     });
-
     const invoiceItemList = await this.invoiceItemListService.find({
       where: {
         invoiceId: transaction.invoiceId,
@@ -215,6 +211,7 @@ export class ExtendServiceService {
     });
 
     await this.createServiceItems(serviceInstanceId, itemTypes, itemTypeData);
+    console.log('working');
     if (serviceId == 'aradAi') {
       // find user invoice
       const invoice = await this.invoicesTableService.findOne({
@@ -223,6 +220,7 @@ export class ExtendServiceService {
           userId,
         },
       });
+      console.log(invoice);
       const invoicePlan = await this.invoicePlanTableService.findOne({
         where: {
           planCode: { like: '%ai%' },

@@ -128,6 +128,7 @@ import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.mod
     QualityPlansModule,
     ServiceItemsSumModule,
     ServicePlansTableModule,
+    InvoiceItemListModule,
   ],
 })
 export class CrudModule {}

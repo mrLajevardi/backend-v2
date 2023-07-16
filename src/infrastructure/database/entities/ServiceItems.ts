@@ -11,7 +11,7 @@ import { ItemTypes } from './ItemTypes';
 
 @Index('PK_ServiceResources', ['id'], { unique: true })
 @Entity('ServiceItems', { schema: 'user' })
-export class ServiceItems {
+export class  ServiceItems {
   @Column('float', { name: 'Quantity', precision: 53 })
   quantity: number;
 
@@ -20,6 +20,12 @@ export class ServiceItems {
 
   @Column('varchar', { name: 'ItemTypeCode', nullable: true, length: 50 })
   itemTypeCode: string | null;
+
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+
+  @Column('int', { name: 'ItemTypeID' })
+  itemTypeId: number;
 
   @ManyToOne(
     () => ServiceInstances,

@@ -12,7 +12,7 @@ import { TasksModule } from '../base/tasks/tasks.module';
     CrudModule,
     DatabaseModule,
     SessionsModule,
-    ServiceModule,
+    forwardRef(() => ServiceModule),
     forwardRef(() => TasksModule),
   ],
   providers: [VgpuService],

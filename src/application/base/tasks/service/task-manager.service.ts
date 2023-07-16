@@ -381,6 +381,7 @@ export class TaskManagerService {
   }
 
   async createOrgTask(serviceInstanceId, customTaskId, requestOptions) {
+    console.log(this.servicePropertiesTable, '😆');
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
