@@ -8,10 +8,7 @@ import { AuthService } from './auth.service';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-
-  constructor(
-    private readonly authService : AuthService,
-  ){}
+  constructor(private readonly authService: AuthService) {}
 
   // constructor(private authService: AuthService) {}
   // @ApiOperation({ summary: 'User login' })
@@ -41,6 +38,4 @@ export class AuthController {
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
-
-  
 }

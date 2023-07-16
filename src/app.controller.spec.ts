@@ -49,6 +49,4 @@ describe('AppController', () => {
       expect(controller.getHello()).toBe('Hello World!');
     });
   });
-
-  
 });
