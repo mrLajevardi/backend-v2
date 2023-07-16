@@ -150,11 +150,11 @@ export class AiController {
       const token = jwt.sign(ServiceAiInfo, aradAIConfig.JWT_SECRET_KEY);
 
       await this.service.createDemoToken(userId, token);
-      const serviceID = await this.createServiceSvc.createServiceInstance(
-        userId,
-        'aradAiDemo',
-        12,
-      );
+      // const serviceID = await this.createServiceSvc.createServiceInstance(
+      //   userId,
+      //   'aradAiDemo',
+      //   12,
+      // );
       // await this.servicePropertiesTable.create({
       //   serviceInstanceId: serviceID,
       //   propertyKey: 'aradAiDemo.token',

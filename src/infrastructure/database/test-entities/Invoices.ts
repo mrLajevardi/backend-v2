@@ -51,6 +51,12 @@ export class Invoices {
   @Column('nvarchar', { name: 'Name', nullable: true, length: 50 })
   name: string | null;
 
+  @Column('int', { name: 'UserID' })
+  userId: number;
+
+  @Column('text', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+
   @ManyToOne(() => User, (user) => user.invoices, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

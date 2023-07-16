@@ -60,5 +60,5 @@ export class UpdateInvoicesDto {
 
   @IsInt()
   @ApiProperty()
-  serviceInstanceId?: number;
+  serviceInstanceId?: string;
 }

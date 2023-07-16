@@ -44,12 +44,14 @@ import { ErrorLog } from '../entities/ErrorLog';
 import { Sysdiagrams } from '../entities/Sysdiagrams';
 import { QualityPlans } from '../entities/views/quality-plans';
 import { ServiceItemsSum } from '../entities/views/service-items-sum';
+import { InvoiceItemList } from '../entities/views/invoice-item-list';
 import { ServicePlans } from '../entities/ServicePlans';
 
 export const dbEntities = [
   //Views
   QualityPlans,
   ServiceItemsSum,
+  InvoiceItemList,
   // Logs Schema
   DebugLog,
   InfoLog,

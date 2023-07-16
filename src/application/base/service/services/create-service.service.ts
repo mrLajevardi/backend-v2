@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
 import { ServiceChecksService } from './service-checks/service-checks.service';
@@ -32,6 +36,11 @@ import { UserTableService } from '../../crud/user-table/user-table.service';
 import { QualityPlansService } from '../../crud/quality-plans/quality-plans.service';
 import { DiscountsService } from './discounts.service';
 import { ServiceService } from './service.service';
+import { ExtendServiceService } from './extend-service.service';
+import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
+import { TaskManagerService } from '../../tasks/service/task-manager.service';
+import { VgpuService } from 'src/application/vgpu/vgpu.service';
+import { CreateServiceDto } from '../dto/create-service.dto';
 
 @Injectable()
 export class CreateServiceService {
@@ -49,199 +58,183 @@ export class CreateServiceService {
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly invoiceDiscountsTable: InvoiceDiscountsTableService,
     private readonly transactionService: TransactionsService,
+    private readonly transactionTableService: TransactionsTableService,
     private readonly serviceService: ServiceService,
+    private readonly InvoiceTableService: InvoicesTableService,
+    private readonly extendService: ExtendServiceService,
+    private readonly tasksTableService: TasksTableService,
+    private readonly taskManagerService: TaskManagerService,
+    private readonly vgpuService: VgpuService,
   ) {}
 
-  //create service instance
-  async createServiceInstance(
-    userId: number,
-    serviceTypeID: string,
-    duration: number,
-  ) {
-    //   let expireDate = null;
-    //   if (!isEmpty(duration)) {
-    //     expireDate = addMonths(new Date(), duration);
-    //   }
-    //   const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
-    //     where: {
-    //       UserID: userId,
-    //     },
-    //     order: { Index: -1 },
-    //   });
-    //   const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
-    //   const serviceType = await this.serviceTypeTable.findById(serviceTypeID);
-    //   const dto: CreateServiceInstancesDto = {
-    //     id: 1,
-    //     userId: userId,
-    //     serviceType: serviceType,
-    //     status: 1,
-    //     createDate: new Date(),
-    //     lastUpdateDate: new Date(),
-    //     expireDate: expireDate,
-    //     index: index,
-    //   };
-    //   const service = await this.serviceInstancesTable.create(dto);
-    //   return service.id;
-    // }
-    // //checks if any of service params is not sent by client
-    // async runScript(
-    //   path: string,
-    //   services: any,
-    //   serviceInstanceId: string,
-    //   data: any,
-    //   itemTypes: any,
-    //   options: any,
-    // ): Promise<any> {
-    //   const script: any = await importScript(path);
-    //   console.log(script);
-    //   return new script(services, serviceInstanceId, data, itemTypes, options);
-    // }
-    // // create billing service
-    // // moved from services/creteservice.js
-    // async createBillingService(data, options, serviceId) {
-    //   let totalCosts = null;
-    //   const unlimitedService = 0;
-    //   const userId = options.accessToken.userId;
-    //   const checkParams = this.serviceChecksService.checkServiceParams(data, [
-    //     'qualityPlanCode',
-    //     'duration',
-    //   ]);
-    //   if (checkParams) {
-    //     throw new InvalidServiceParamsException();
-    //   }
-    //   const serviceType = await this.serviceTypeTable.findOne({
-    //     where: { ID: serviceId },
-    //   });
-    //   //check validity of serviceId
-    //   if (isEmpty(serviceType)) {
-    //     throw new InvalidServiceIdException();
-    //   }
-    //   const isMaxAvailable = await this.serviceChecksService.checkMaxService(
-    //     unlimitedService,
-    //     serviceType.maxAvailable,
-    //     serviceId,
-    //     userId,
-    //   );
-    //   if (!isMaxAvailable) {
-    //     throw new MaxAvailableServiceException();
-    //   }
-    //   let discount = await this.discountsTable.findOne({
-    //     where: {
-    //       and: [{ ServiceTypeID: serviceId }, { Code: data.disocuntCode }],
-    //     },
-    //   });
-    //   if (isEmpty(discount)) {
-    //     throw new InvalidDiscountIdException();
-    //   }
-    //   const discountId = discount.id;
-    //   if (discount.isBuiltIn || isEmpty(discountId)) {
-    //     discount = null;
-    //   }
-    //   const qualityPlan = await this.qualityPlansService.findOne({
-    //     where: { ServiceTypeID: serviceId, Code: data.qualityPlanCode },
-    //   });
-    //   // checks if qualityPlan id is correct
-    //   if (isEmpty(qualityPlan)) {
-    //     throw new InvalidQualityPlanException();
-    //   }
-    //   const builtInDiscount = await this.discountsService.findBuiltInDiscount(
-    //     data.duration,
-    //   );
-    //   const costs = new Costs();
-    //   let itemTypes = null;
-    //   const token = null;
-    //   throw new InternalServerErrorException('Must be resolved');
-    //   if (serviceId == 'aradAi') {
-    //     const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
-    //     // Should  be resolved
-    //     // we should not acccess aiservice here
-    //     // const serviceAiInfo = await this.aiService.getAiServiceInfo(userId, serviceId, qualityPlan.Code, data.duration);
-    //     // const jwt = require('jsonwebtoken');
-    //     //  token =  jwt.sign(serviceAiInfo, JWT_SECRET_KEY);
-    //     //  totalCosts = costs.totalCostsAi(parseInt(serviceAiInfo['costPerMonth']), discount, qualityPlan, builtInDiscount, data.duration);
-    //   } else {
-    //     itemTypes = await this.itemTypesTable.find({
-    //       where: { ServiceTypeID: serviceId },
-    //     });
-    //     const serviceItemsSum = await this.serviceItemsSumService.find({});
-    //     const checkItems = await this.serviceChecksService.checkServiceItems(
-    //       data,
-    //       itemTypes,
-    //       serviceItemsSum,
-    //     );
-    //     if (checkItems) {
-    //       throw new InvalidServiceParamsException();
-    //       // const error = new HttpExceptions().invalidServiceParams(checkItems)
-    //     }
-    //     totalCosts = costs.totalCosts(
-    //       data,
-    //       discount,
-    //       qualityPlan,
-    //       itemTypes,
-    //       data.duration,
-    //       builtInDiscount,
-    //     );
-    //   }
-    //   const checkCredit = await this.userService.checkUserCredit(
-    //     totalCosts.finalAmount,
-    //     userId,
-    //     options,
-    //     serviceType.id,
-    //   );
-    //   if (!checkCredit) {
-    //     throw new NotEnoughCreditException();
-    //   }
-    //   const serviceInstanceId = await this.createServiceInstance(
-    //     userId,
-    //     serviceId,
-    //     data.duration,
-    //   );
-    //   const invoiceId = await this.invoiceService.createInvoice(
-    //     userId,
-    //     serviceInstanceId,
-    //     totalCosts,
-    //     qualityPlan.ID,
-    //     true,
-    //   );
-    //   if (serviceId == 'aradAi') {
-    //     await this.servicePropertiesTable.create({
-    //       serviceInstanceId: serviceInstanceId,
-    //       propertyKey: serviceId + '.token',
-    //       value: token,
-    //     });
-    //   } else {
-    //     await this.serviceService.createServiceItems(
-    //       serviceInstanceId,
-    //       itemTypes,
-    //       data,
-    //     );
-    //     await this.invoiceService.createInvoiceItems(invoiceId, itemTypes, data);
-    //   }
-    //   if (!isEmpty(discount)) {
-    //     await this.invoiceDiscountsTable.create({
-    //       invoiceId: invoiceId,
-    //       discountId: discount.id,
-    //     });
-    //   }
-    //   if (!isEmpty(builtInDiscount)) {
-    //     await this.invoiceDiscountsTable.create({
-    //       invoiceId: invoiceId,
-    //       discountId: builtInDiscount.id,
-    //     });
-    //   }
-    //   await this.transactionService.createTransaction(
-    //     totalCosts.finalAmount,
-    //     invoiceId,
-    //     serviceType.title,
-    //     userId,
-    //   );
-    //   if (serviceId == 'aradAi') {
-    //     return token;
-    //   }
-    //   return Promise.resolve({
-    //     scriptPath: serviceType.createInstanceScript,
-    //     serviceInstanceId,
-    //     itemTypes,
-    //   });
+  async createService(options, dto: CreateServiceDto) {
+    const userId = options.accessToken.userId;
+    const { invoiceId } = dto;
+    // find user invoice
+    const invoice = await this.InvoiceTableService.findOne({
+      where: {
+        invoiceId,
+        userId,
+      },
+    });
+    if (invoice === null) {
+      throw new ForbiddenException();
+    }
+    // find user transaction
+    const transaction = await this.transactionTableService.findOne({
+      where: {
+        invoiceId,
+        userId,
+      },
+    });
+    if (transaction === null) {
+      throw new ForbiddenException();
+    }
+    let serviceInstanceId = null;
+    let task = null;
+    let taskId = null;
+    if (invoice.payed) {
+      return Promise.resolve({
+        id: serviceInstanceId,
+        taskId: taskId,
+        token: null,
+      });
+    }
+    // invoice is not paid
+    const checkCredit = await this.userService.checkUserCredit(
+      transaction.value,
+      userId,
+      options,
+      invoice.serviceTypeId,
+    );
+    if (!checkCredit) {
+      throw new NotEnoughCreditException();
+    }
+    // extend last user service instance
+    if (checkCredit && !transaction.isApproved && invoice.type === 1) {
+      const extendedService =
+        await this.extendService.extendServiceInstanceAndToken(
+          options,
+          invoice,
+        );
+      serviceInstanceId = extendedService.serviceInstanceId;
+      await this.extendService.approveTransactionAndInvoice(
+        invoice,
+        transaction,
+      );
+    }
+
+    // creating new service instance
+    if (checkCredit && !transaction.isApproved && invoice.type === 0) {
+      // make user service instance
+      const createdService =
+        await this.extendService.createServiceInstanceAndToken(
+          options,
+          invoice.endDateTime,
+          invoice.serviceTypeId,
+          transaction,
+          invoice.name,
+        );
+      serviceInstanceId = createdService.serviceInstanceId;
+      options.locals = {
+        ...options.locals,
+        serviceInstanceId,
+      };
+      // approve user transaction
+      await this.transactionTableService.updateAll(
+        {
+          userId: userId,
+          invoiceId,
+        },
+        {
+          isApproved: true,
+          serviceInstanceId,
+        },
+      );
+      if (invoice.serviceTypeId === 'vdc') {
+        task = await this.tasksTableService.create({
+          userId: options.locals.userId,
+          serviceInstanceId: serviceInstanceId,
+          operation: 'createDataCenter',
+          details: null,
+          startTime: new Date(),
+          endTime: null,
+          status: 'running',
+        });
+        await this.taskManagerService.addTask({
+          serviceInstanceId,
+          customTaskId: task.TaskID,
+          vcloudTask: null,
+          nextTask: 'createOrg',
+          requestOptions: options.locals,
+          target: 'object',
+        });
+        taskId = task.TaskID;
+      }
+      if (invoice.serviceTypeId === 'vgpu') {
+        taskId = await this.vgpuService.createVgpu(
+          options.locals.userId,
+          invoiceId,
+          serviceInstanceId,
+          options,
+        );
+      }
+      if (invoice.serviceTypeId == 'aradAi') {
+        task = await this.tasksTableService.create({
+          userId: options.locals.userId,
+          serviceInstanceId: serviceInstanceId,
+          operation: 'aradAi',
+          details: null,
+          startTime: new Date(),
+          endTime: new Date(),
+          status: 'success',
+        });
+        await this.serviceInstancesTable.updateAll(
+          {
+            id: serviceInstanceId,
+          },
+          {
+            status: 3,
+          },
+        );
+        taskId = task.TaskID;
+      }
+      // update user invoice
+      this.InvoiceTableService.updateAll(
+        {
+          userId: userId,
+          id: transaction.invoiceId,
+        },
+        {
+          payed: true,
+          serviceInstanceId: serviceInstanceId,
+        },
+      );
+    } else if (checkCredit && !transaction.isApproved && invoice.type === 2) {
+      // const service = await increaseServiceResources(app, options, invoice);
+      // serviceInstanceId = service.ID;
+      // const args = {
+      //   invoiceId: invoice.ID,
+      // };
+      // const stringifiedArgs = JSON.stringify(args);
+      // if (service.ServiceTypeID == 'vdc') {
+      //   const task = await taskManager.createFlow(
+      //     'increaseVdcResources',
+      //     service.ID,
+      //     stringifiedArgs,
+      //   );
+      //   taskId = task.TaskID;
+      // }
+      // await createExtendService.approveTransactionAndInvoice(
+      //   app,
+      //   invoice,
+      //   transaction,
+      // );
+    }
+    return Promise.resolve({
+      id: serviceInstanceId,
+      taskId: taskId,
+      token: null,
+    });
   }
 }
