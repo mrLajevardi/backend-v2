@@ -29,9 +29,6 @@ export class Transactions {
   @Column('integer', { name: 'PaymentType', default: () => "'0'" })
   paymentType: number;
 
-  @Column('int', { name: 'UserID' })
-  userId: string;
-
   @Column('nvarchar', {
     name: 'PaymentToken',
     nullable: true,
