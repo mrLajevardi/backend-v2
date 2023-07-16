@@ -49,7 +49,9 @@ export class CreateServiceInvoiceDto {
   @ApiProperty()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    type: [InvoiceItemsDto],
+  })
   @IsArray()
   items: InvoiceItemsDto[];
 
