@@ -9,21 +9,20 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
-import configurations from '../config/configurations';
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule.forRoot({ load: [configurations] })], // Import ConfigModule to use the ConfigService
+      imports: [ConfigModule.forRoot()], // Import ConfigModule to use the ConfigService
       inject: [ConfigService],
       useFactory: (configService: ConfigService) =>
         ({
-          type: configService.get<string>('database.type'),
-          host: configService.get<string>('database.host'),
-          port: configService.get<number>('database.port'),
-          username: configService.get<string>('database.username'),
-          password: configService.get<string>('database.password'),
-          database: configService.get<string>('database.database'),
+          type: process.env.DB_TYPE,
+          host: process.env.DB_HOST,
+          port: Number(process.env.DB_PORT),
+          username: process.env.DB_USERNAME,
+          password: process.env.DB_PASSWORD,
+          database: process.env.DB_NAME,
           entities: dbEntities,
           uuidExtension: true,
           extra: {

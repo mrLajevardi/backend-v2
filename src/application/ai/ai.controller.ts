@@ -16,7 +16,6 @@ import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions
 import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { CreateServiceService } from '../base/service/services/create-service.service';
-import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
 import jwt from 'jsonwebtoken';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-table.service';
@@ -147,7 +146,7 @@ export class AiController {
         'demo',
         12,
       );
-      const token = jwt.sign(ServiceAiInfo, aradAIConfig.JWT_SECRET_KEY);
+      const token = jwt.sign(ServiceAiInfo, process.env.ARAD_AI_JWT_SECRET_KEY);
 
       await this.service.createDemoToken(userId, token);
       const serviceID = await this.createServiceSvc.createServiceInstance(

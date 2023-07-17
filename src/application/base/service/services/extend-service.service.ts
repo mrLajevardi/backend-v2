@@ -4,7 +4,6 @@ import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/inva
 
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { InvalidServiceIdException } from 'src/infrastructure/exceptions/invalid-service-id.exception';
-import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
 import jwt from 'jsonwebtoken';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
@@ -233,7 +232,7 @@ export class ExtendServiceService {
         invoice.EndDateTime,
         invoice.DateTime,
       );
-      token = jwt.sign(ServiceAiInfo, aradAIConfig.JWT_SECRET_KEY);
+      token = jwt.sign(ServiceAiInfo, process.env.ARAD_AI_JWT_SECRET_KEY);
 
       await app.models.ServiceProperties.create({
         ServiceInstanceID: serviceInstanceId,
