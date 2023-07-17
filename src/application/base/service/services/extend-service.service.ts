@@ -35,7 +35,7 @@ export class ExtendServiceService {
     private readonly configsTable: ConfigsTableService,
     private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly sessionService: SessionsService,
-  ) { }
+  ) {}
 
   async getAiServiceInfo(
     userId,

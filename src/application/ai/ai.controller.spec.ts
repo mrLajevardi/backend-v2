@@ -41,7 +41,7 @@ import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-table/dto/create-aitransactions-logs.dto';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
-import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
+// import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 describe('AiController', () => {
   let controller: AiController;
@@ -129,6 +129,16 @@ describe('AiController', () => {
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+    expect(service).toBeDefined();
+    expect(user).toBeDefined();
+    expect(config).toBeDefined();
+    expect(settingTable).toBeDefined();
+    expect(serviceTypes).toBeDefined();
+    expect(serviceInstanceTable).toBeDefined();
+    expect(servicePropertiesTable).toBeDefined();
+    expect(itemType).toBeDefined();
+    expect(aITransactionsLogs).toBeDefined();
+    expect(plan).toBeDefined();
     expect(testDataService).toBeDefined();
   });
 
@@ -136,9 +146,9 @@ describe('AiController', () => {
     it('should call checkAIToken and return a CheckTokenDto', async () => {
       const token =
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw';
-      const options = {};
+      // const options = {};
       const mockCheckAIToken = true;
-      const result = await controller.checkAradAiToken(token, options);
+      const result = await controller.checkAradAiToken(token);
       expect(result).toEqual({ tokenValidity: mockCheckAIToken });
     });
   });
@@ -209,14 +219,13 @@ describe('AiController', () => {
 
   describe('createOrGetDemoToken', () => {
     it('should create a demo token and return it if it does not exist', async () => {
-      const options = {
-        user: {
-          userId: 587,
-        },
-      };
-      const mockToken =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaURlbW8iLCJjcmVhdGVkRGF0ZSI6IjIwMjMtMDYtMDFUMjM6Mjg6MzcuNjY0WiIsInVzZXJJZCI6IjU4NyIsImR1cmF0aW9uIjoxMiwiZXhwaXJlRGF0ZSI6IjIwMjQtMDUtMjZUMjM6Mjg6MzcuNjY0WiIsImNvc3RQZXJSZXF1ZXN0IjoxMDAsImNvc3RQZXJNb250aCI6MCwiaWF0IjoxNjg1NjYyMTE4fQ.dfU6LoZ1T2nYcBoIQhkXCfSUVsu64Ks-OrjplmGqpNA';
-
+      // const options = {
+      //   user: {
+      //     userId: 587,
+      //   },
+      // };
+      // const mockToken =
+      //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaURlbW8iLCJjcmVhdGVkRGF0ZSI6IjIwMjMtMDYtMDFUMjM6Mjg6MzcuNjY0WiIsInVzZXJJZCI6IjU4NyIsImR1cmF0aW9uIjoxMiwiZXhwaXJlRGF0ZSI6IjIwMjQtMDUtMjZUMjM6Mjg6MzcuNjY0WiIsImNvc3RQZXJSZXF1ZXN0IjoxMDAsImNvc3RQZXJNb250aCI6MCwiaWF0IjoxNjg1NjYyMTE4fQ.dfU6LoZ1T2nYcBoIQhkXCfSUVsu64Ks-OrjplmGqpNA';
       // const result = await controller.createOrGetDemoToken(options);
       // expect(result);
       // .toEqual({ demoToken: mockToken });
@@ -233,58 +242,54 @@ describe('AiController', () => {
     //   });
   });
   describe('getAradAiaDshboard', () => {
-    it('should return the Arad AI dashboard', async () => {
-      // TODO Procedure sp_count
-
-      const options = {
-        user: {
-          id: 587,
-        },
-      };
-      const serviceInstanceId = '7451E733-D18D-4329-B3FD-76429E4EDBEA';
-      const mockDashboard = {
-        token:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw',
-        usedPerDay: 0,
-        allRequestused: 0,
-        usedPerMonth: [],
-        creditUsed: 0,
-        creditRemaining: 1000000000,
-        numberOfServiceCalled: {},
-        remainingDays: 175,
-        QualityPlan: {
-          qualityPlanCode: 'aiPersonal',
-          createdDate: '2023-07-10T16:46:13.400Z',
-          userId: '587',
-          duration: 180,
-          expireDate: '2024-01-06T17:46:13.397Z',
-          costPerRequest: 50,
-          costPerMonth: 0,
-          iat: 1689007574,
-        },
-      };
-
-      // jest.spyOn(service, 'getAradAIDashboard')
-      //   .mockResolvedValue(mockDashboard);
-
-      // const result = await controller.getAradAiaDshboard(
-      //   serviceInstanceId,
-      //   options,
-      // );
-
-      // expect(result);
-      // toEqual(mockDashboard);
-    });
+    // it('should return the Arad AI dashboard', async () => {
+    // TODO Procedure sp_count
+    // const options = {
+    //   user: {
+    //     id: 587,
+    //   },
+    // };
+    // const serviceInstanceId = '7451E733-D18D-4329-B3FD-76429E4EDBEA';
+    // const mockDashboard = {
+    //   token:
+    //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw',
+    //   usedPerDay: 0,
+    //   allRequestused: 0,
+    //   usedPerMonth: [],
+    //   creditUsed: 0,
+    //   creditRemaining: 1000000000,
+    //   numberOfServiceCalled: {},
+    //   remainingDays: 175,
+    //   QualityPlan: {
+    //     qualityPlanCode: 'aiPersonal',
+    //     createdDate: '2023-07-10T16:46:13.400Z',
+    //     userId: '587',
+    //     duration: 180,
+    //     expireDate: '2024-01-06T17:46:13.397Z',
+    //     costPerRequest: 50,
+    //     costPerMonth: 0,
+    //     iat: 1689007574,
+    //   },
+    // };
+    // jest.spyOn(service, 'getAradAIDashboard')
+    //   .mockResolvedValue(mockDashboard);
+    // const result = await controller.getAradAiaDshboard(
+    //   serviceInstanceId,
+    //   options,
+    // );
+    // expect(result);
+    // toEqual(mockDashboard);
+    // });
   });
 
   describe('getAITransactionsLogs', () => {
     it('should return the AI transactions logs', async () => {
       // Arrange
-      const options = {
-        user: {
-          id: 587,
-        },
-      };
+      // const options = {
+      //   user: {
+      //     id: 587,
+      //   },
+      // };
       const serviceInstanceId = '7451E733-D18D-4329-B3FD-76429E4EDBEA';
       const page = 1;
       const pageSize = 20;
@@ -293,7 +298,6 @@ describe('AiController', () => {
         serviceInstanceId,
         page,
         pageSize,
-        options,
       );
 
       expect(result.aiTransactionsLogs).toEqual([]);
@@ -304,24 +308,21 @@ describe('AiController', () => {
   describe('getDashboardChart', () => {
     it('should return the dashboard chart', async () => {
       // TODO create procedure
-
-      const options = {
-        user: {
-          id: 637,
-        },
-      };
-      const serviceInstanceId = '5578AF82-7B09-4AC4-B0B1-1068498159r4';
-      const startDate = '2023-07-10';
-      const endDate = '2023-07-11';
-      const mockChart = {};
-
+      // const options = {
+      //   user: {
+      //     id: 637,
+      //   },
+      // };
+      // const serviceInstanceId = '5578AF82-7B09-4AC4-B0B1-1068498159r4';
+      // const startDate = '2023-07-10';
+      // const endDate = '2023-07-11';
+      // const mockChart = {};
       // const result = await controller.getDashboardChart(
       //   serviceInstanceId,
       //   startDate,
       //   endDate,
       //   options,
       // );
-
       // // Assert
       // expect(result).toEqual(mockChart);
     });
@@ -329,11 +330,11 @@ describe('AiController', () => {
   describe('getAiPlans', () => {
     it('should return the AI plans', async () => {
       // Arrange
-      const options = {
-        user: {
-          id: 597,
-        },
-      };
+      // const options = {
+      //   user: {
+      //     id: 597,
+      //   },
+      // };
       // const result = await controller.getAiPlans(options);
       // expect(result).toEqual([
       //   {

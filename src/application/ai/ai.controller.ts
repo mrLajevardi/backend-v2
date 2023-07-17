@@ -3,13 +3,11 @@ import {
   Controller,
   Get,
   Injectable,
-  InternalServerErrorException,
   Param,
   Post,
   Query,
   Request,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-table/dto/create-aitransactions-logs.dto';
 import { isEmpty } from 'lodash';
@@ -60,7 +58,7 @@ export class AiController {
   @Public()
   async checkAradAiToken(
     @Param('token') token: string,
-    @Query() options: object,
+    // @Query() options: object,
   ): Promise<CheckTokenDto> {
     const result = await this.service.checkAIToken(token);
     return { tokenValidity: result };
@@ -173,7 +171,7 @@ export class AiController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
-    @Request() options: any,
+    // @Request() options: any,
   ): Promise<GetAiTransactionsLogsDto> {
     let skip = 0;
     let limit = 10;
@@ -211,7 +209,7 @@ export class AiController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('startDate') startDate: string,
     @Param('endDate') endDate: string,
-    @Request() options: any,
+    // @Request() options: any,
   ): Promise<GetAradAiDashoardChartDto> {
     const result = await this.aiTransactionLogsSP.getChartAIUsed(
       startDate,
@@ -222,7 +220,7 @@ export class AiController {
   }
 
   @Get('/aiPlans')
-  async getAiPlans(@Request() options: any): Promise<GetPlanItemsDto[]> {
+  async getAiPlans(): Promise<GetPlanItemsDto[]> {
     const aradAiItem = await this.itemTypesTable.findOne({
       where: {
         code: 'ARADAIItem',
