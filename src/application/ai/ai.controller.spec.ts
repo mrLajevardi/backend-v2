@@ -64,7 +64,7 @@ describe('AiController', () => {
         ConfigModule.forRoot({
           isGlobal: true,
         }),
-        TestDatabaseModule
+        TestDatabaseModule,
       ],
       providers: [
         AiService,
