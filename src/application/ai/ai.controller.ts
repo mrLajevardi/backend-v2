@@ -29,6 +29,8 @@ import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransac
 import { ILike, Not } from 'typeorm';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { Public } from './../../application/base/security/auth/decorators/ispublic.decorator';
+import { ExtendServiceService } from '../base/service/services/extend-service.service';
+import { JwtService } from '@nestjs/jwt';
 
 @ApiBearerAuth() // Requires authentication with a JWT token
 @Controller('ai')
@@ -50,7 +52,7 @@ export class AiController {
     private readonly loggerService: LoggerService,
   ) {}
   async sign(payload: object): Promise<string> {
-    const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
+    const JWT_SECRET_KEY = process.env.ARAD_AI_JWT_SECRET_KEY;
     return this.jwtService.sign(payload, { secret: JWT_SECRET_KEY });
   }
   @Get('CheckToken/:token')
