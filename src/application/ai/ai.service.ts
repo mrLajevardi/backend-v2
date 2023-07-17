@@ -11,7 +11,6 @@ import {
   monthDiff,
 } from 'src/infrastructure/helpers/date-time.helper';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
-import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
 import jwt from 'jsonwebtoken';
 import { UserTableService } from '../base/crud/user-table/user-table.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
@@ -34,7 +33,7 @@ export class AiService {
   ) {}
 
   async verifyToken(token: string) {
-    const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
+    const JWT_SECRET_KEY = process.env.ARAD_AI_JWT_SECRET_KEY;
     return jwt.verify(token, JWT_SECRET_KEY);
   }
 

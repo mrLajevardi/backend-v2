@@ -54,5 +54,4 @@ describe('AuthController', () => {
       expect(response).toBe(null);
     });
   });
-
 });

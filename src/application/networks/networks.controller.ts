@@ -25,7 +25,7 @@ import { GetNetworkListDto } from './dto/get-network-list.dto';
 import { GetNetworksDto } from './dto/get-networks.dto';
 import { UpdateDhcpDto } from '../edge-gateway/dto/update-dbcp.dto';
 
-@ApiTags("Networks")
+@ApiTags('Networks')
 @Controller('networks')
 export class NetworksController {
   constructor(private readonly service: NetworksService) {}

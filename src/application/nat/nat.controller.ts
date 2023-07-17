@@ -13,7 +13,7 @@ import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { NatDto } from './dto/nat.dto';
 import { NatService } from './nat.service';
 
-@ApiTags("Nat")
+@ApiTags('Nat')
 @Controller('nat')
 export class NatController {
   constructor(private readonly service: NatService) {}

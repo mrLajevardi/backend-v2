@@ -13,7 +13,6 @@ import { ServicePropertiesTableService } from '../base/crud/service-properties-t
 import { SessionsService } from '../base/sessions/sessions.service';
 import { TaskManagerService } from '../base/tasks/service/task-manager.service';
 import { isEmpty, isNil } from 'lodash';
-import aradVgpuConfig from 'src/infrastructure/config/aradVgpuConfig';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { VgpuService } from './vgpu.service';
 import { TasksTableService } from '../base/crud/tasks-table/tasks-table.service';
@@ -111,7 +110,7 @@ export class VgpuController {
       serviceInstanceId: ServiceInstanceId,
     };
     const token = this.jwtService.sign(payload, {
-      secret: aradVgpuConfig.JWT_SECRET_KEY,
+      secret: process.env.ARAD_VGPU_JWT_SECRET_KEY,
       expiresIn: 3600,
     });
     return Promise.resolve(
