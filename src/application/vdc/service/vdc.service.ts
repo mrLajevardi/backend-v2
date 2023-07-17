@@ -33,9 +33,10 @@ export class VdcService {
     serviceInstanceId,
   ) {
     const sessionToken = await this.sessionService.checkAdminSession(userId);
+    console.log(userId, '🍟');
     const service = await this.serviceInstanceTable.findOne({
       where: {
-        ID: serviceInstanceId,
+        id: serviceInstanceId,
       },
     });
     const vdcExist = await this.checkVdcExistence(
@@ -55,10 +56,8 @@ export class VdcService {
       }
       const vdcNameProperty = await this.servicePropertiesTable.findOne({
         where: {
-          and: [
-            { serviceInstanceId: serviceInstanceId },
-            { PropertyKey: 'name' },
-          ],
+          serviceInstanceId,
+          propertyKey: 'name',
         },
       });
       // uses current vdc name
@@ -74,6 +73,7 @@ export class VdcService {
     }
     // creates a new vdc name
     const vdcName = orgName + '_vdc_' + service.index;
+    console.log(vdcName, '🍔');
     await this.servicePropertiesTable.create({
       serviceInstanceId: serviceInstanceId,
       propertyKey: 'name',
@@ -82,7 +82,7 @@ export class VdcService {
     await this.servicePropertiesTable.create({
       serviceInstanceId: serviceInstanceId,
       propertyKey: 'orgId',
-      value: orgId,
+      value: orgId.toString(),
     });
     return this.initVdc(
       data,
@@ -110,10 +110,8 @@ export class VdcService {
       // vdc has been created in cloud
       const vdcIdProperty = await this.servicePropertiesTable.findOne({
         where: {
-          and: [
-            { serviceInstanceId: serviceInstanceId },
-            { PropertyKey: 'vdcId' },
-          ],
+          serviceInstanceId,
+          propertyKey: 'vdcId',
         },
       });
       const vdcId = checkVdc.href.split('/').slice(-1)[0];
@@ -141,24 +139,15 @@ export class VdcService {
     };
   }
 
-  /**
-   * @param {Object} app
-   * @param {String} userId
-   * @param {String} orgId
-   * @param {String} serviceInstanceId
-   * @return {Promise}
-   */
   async checkVdcExistence(userId, orgId, serviceInstanceId) {
     const vdcNameProperty = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { serviceInstanceId: serviceInstanceId },
-          { PropertyKey: 'name' },
-        ],
+        serviceInstanceId,
+        propertyKey: 'name',
       },
     });
     const vdcName = vdcNameProperty?.value;
-    const session = await this.sessionService.checkUserSession(userId, orgId);
+    const session = await this.sessionService.checkUserSession(orgId, userId);
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'orgVdc',
       filter: `name==${vdcName}`,
@@ -188,12 +177,14 @@ export class VdcService {
   ) {
     const cpuSpeed = await this.configTable.findOne({
       where: {
-        and: [{ PropertyKey: 'vCpuSpeed' }, { ServiceTypeID: 'vdc' }],
+        propertyKey: 'vCpuSpeed',
+        serviceTypeId: 'vdc',
       },
     });
     const networkQuota = await this.configTable.findOne({
       where: {
-        and: [{ PropertyKey: 'networkQuota' }, { ServiceTypeID: 'vdc' }],
+        propertyKey: 'networkQuota',
+        serviceTypeId: 'vdc',
       },
     });
     const vdcInfo: any = await mainWrapper.admin.vdc.createVdc(

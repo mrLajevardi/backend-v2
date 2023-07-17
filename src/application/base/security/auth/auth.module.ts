@@ -17,7 +17,7 @@ import { UserTableModule } from '../../crud/user-table/user-table.module';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '28800' },
+      signOptions: { expiresIn: 28800 },
     }),
   ],
   controllers: [AuthController],

@@ -21,8 +21,10 @@ import { ConfigsTableService } from '../../crud/configs-table/configs-table.serv
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
+import { Processor, Process } from '@nestjs/bull';
+import { Job } from 'bull';
 
-@Injectable()
+@Processor('tasks')
 export class TaskManagerService {
   constructor(
     @InjectQueue('tasks')
@@ -43,69 +45,67 @@ export class TaskManagerService {
     private readonly loggerService: LoggerService,
     @Inject(forwardRef(() => VgpuService))
     private readonly vgpuService: VgpuService,
-  ) {
-    this.taskQueue.process(async (job, done) => {
-      const taskType = job.data?.taskType || 'task';
-      if (job.data.vcloudTask === null) {
-        console.log(job.data.requestOptions);
-        this.taskRunner(
-          job.data.nextTask,
-          job.data.serviceInstanceId,
-          job.data.customTaskId,
-          job.data?.requestOptions || null,
-        );
-        return done();
-      }
-      const session = await this.sessionService.checkAdminSession(null);
-      let filter = `object==${job.data.vcloudTask}`;
-      if (job.data.target === 'task') {
-        filter = `href==${job.data.vcloudTask}`;
-      }
-      const task = await mainWrapper.user.vdc.vcloudQuery(session, {
-        type: taskType,
-        page: 1,
-        pageSize: 30,
-        sortDesc: 'startDate',
-        filter,
-      });
-      if (
-        task.data.record[0].status === 'running' ||
-        task.data.record[0].status === 'queued'
-      ) {
-        const timeout = setTimeout(() => {
-          this.taskQueue.add(job.data);
-          clearTimeout(timeout);
-        }, 1500);
-        return done();
-      } else if (task.data.record[0].status === 'error') {
-        this.saveTaskStatus(
-          'error',
-          job.data.customTaskId,
-          'vdc creation has been failed',
-        );
-        await this.serviceInstancesTable.updateAll(
-          {
-            // MOVE: where is this parameter from?
-            //id: this.serviceInstanceId,
-          },
-          {
-            status: 3,
-          },
-        );
-        return done();
-      } else {
-        console.log(job.data.requestOptions);
-        this.taskRunner(
-          job.data.nextTask,
-          job.data.serviceInstanceId,
-          job.data.customTaskId,
-          job.data?.requestOptions || null,
-        );
-        return done();
-      }
-    });
-  }
+  ) {}
 
+  @Process()
+  async processTask(job: Job, done) {
+    const taskType = job.data?.taskType || 'task';
+    if (job.data.vcloudTask === null) {
+      this.taskRunner(
+        job.data.nextTask,
+        job.data.serviceInstanceId,
+        job.data.customTaskId,
+        job.data?.requestOptions || null,
+      );
+      return done();
+    }
+    const session = await this.sessionService.checkAdminSession(null);
+    let filter = `object==${job.data.vcloudTask}`;
+    if (job.data.target === 'task') {
+      filter = `href==${job.data.vcloudTask}`;
+    }
+    const task = await mainWrapper.user.vdc.vcloudQuery(session, {
+      type: taskType,
+      page: 1,
+      pageSize: 30,
+      sortDesc: 'startDate',
+      filter,
+    });
+    if (
+      task.data.record[0].status === 'running' ||
+      task.data.record[0].status === 'queued'
+    ) {
+      const timeout = setTimeout(() => {
+        this.taskQueue.add(job.data);
+        clearTimeout(timeout);
+      }, 1500);
+      return done();
+    } else if (task.data.record[0].status === 'error') {
+      this.saveTaskStatus(
+        'error',
+        job.data.customTaskId,
+        'vdc creation has been failed',
+      );
+      await this.serviceInstancesTable.updateAll(
+        {
+          // MOVE: where is this parameter from?
+          //id: this.serviceInstanceId,
+        },
+        {
+          status: 3,
+        },
+      );
+      return done();
+    } else {
+      this.taskRunner(
+        job.data.nextTask,
+        job.data.serviceInstanceId,
+        job.data.customTaskId,
+        job.data?.requestOptions || null,
+      );
+      return done();
+    }
+  }
   // adds a task to task queue
   async addTask(task: iTask) {
     await this.taskQueue.add(task);
@@ -127,41 +127,34 @@ export class TaskManagerService {
       },
     );
   }
-  /**
-   * run tasks
-   * @param {String} taskName
-   * @param {String} serviceInstanceId
-   * @param {String} customTaskId
-   * @param {Object} requestOptions
-   * @return {Function}
-   */
+
   taskRunner(taskName, serviceInstanceId, customTaskId, requestOptions = {}) {
-    const tasks = {
-      createEdge: this.createEdgeTask,
-      createOrg: this.createOrgTask,
-      createVdc: this.createVdcTask,
-      finishVdcTask: this.finishVdcTask,
-      createNetwork: this.createNetworkTask,
-      deleteVdc: this.deleteVdcTask,
-      finishDeleteService: this.finishDeleteServiceTask,
-      disableVms: this.checkVdcVmsTask,
-      updateNetworkProfile: this.updateNetworkProfileTask,
-      // createVgpuSnat: this.createVgpuSnatTask,
-      createVgpuDnat: this.createVgpuDnatTask,
-      // createVgpuVm: this.createVgpuVmTask,
-      // createVgpuRunScript: this.createVgpuRunScriptTask,
-      // deployVgpuVm: this.deployVgpuVmTask,
-      finishVgpu: this.finishVgpuTask,
-      turnOffVgpuVms: this.turnOffVgpuVmsTask,
-      finishTurnOffVgpu: this.finishTurnOffVgpuTask,
-      // deleteVgpu: this.deleteVgpuTask,
-      // unDeployVgpuVm: this.unDeployVgpuVmTask,
-      // deleteVgpuSnat: this.deleteVgpuSnatTask,
-      // deleteVgpuDnat: this.deleteVgpuDnatTask,
-      finishTurnOffGpuByUser: this.finishTurnOffGpuByUserTask,
-      deleteCatalogOrg: this.deleteCatalogOrgTask,
-    };
-    return tasks[taskName](
+    // const tasks = {
+    //   createEdge: this.createEdgeTask,
+    //   createOrg: this.createOrgTask,
+    //   createVdc: this.createVdcTask,
+    //   finishVdcTask: this.finishVdcTask,
+    //   createNetwork: this.createNetworkTask,
+    //   deleteVdc: this.deleteVdcTask,
+    //   finishDeleteService: this.finishDeleteServiceTask,
+    //   disableVms: this.checkVdcVmsTask,
+    //   updateNetworkProfile: this.updateNetworkProfileTask,
+    //   // createVgpuSnat: this.createVgpuSnatTask,
+    //   createVgpuDnat: this.createVgpuDnatTask,
+    //   // createVgpuVm: this.createVgpuVmTask,
+    //   // createVgpuRunScript: this.createVgpuRunScriptTask,
+    //   // deployVgpuVm: this.deployVgpuVmTask,
+    //   finishVgpu: this.finishVgpuTask,
+    //   turnOffVgpuVms: this.turnOffVgpuVmsTask,
+    //   finishTurnOffVgpu: this.finishTurnOffVgpuTask,
+    //   // deleteVgpu: this.deleteVgpuTask,
+    //   // unDeployVgpuVm: this.unDeployVgpuVmTask,
+    //   // deleteVgpuSnat: this.deleteVgpuSnatTask,
+    //   // deleteVgpuDnat: this.deleteVgpuDnatTask,
+    //   finishTurnOffGpuByUser: this.finishTurnOffGpuByUserTask,
+    //   deleteCatalogOrg: this.deleteCatalogOrgTask,
+    // };
+    return this[taskName](
       serviceInstanceId,
       customTaskId,
       requestOptions,
@@ -192,14 +185,14 @@ export class TaskManagerService {
     });
   }
 
-  async checkVdcVmsTask(serviceInstanceId, customTaskId, requestOptions) {
+  async checkVdcVms(serviceInstanceId, customTaskId, requestOptions) {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
     const userId = service.userId;
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
-        serviceInstanceid: serviceInstanceId,
+        serviceInstanceId,
       },
     });
     const props = {};
@@ -207,8 +200,8 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const session = await this.sessionService.checkUserSession(
-      userId,
       props['orgId'],
+      userId,
     );
     const filter = `(isVAppTemplate==false;vdc==${props['vdcId']})`;
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
@@ -270,14 +263,14 @@ export class TaskManagerService {
     }
   }
 
-  async createEdgeTask(serviceInstanceId, customTaskId, requestOptions) {
+  async createEdge(serviceInstanceId, customTaskId, requestOptions) {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
     const userId = service.userId;
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
-        serviceInstanceid: serviceInstanceId,
+        serviceInstanceId,
       },
     });
     const props = {};
@@ -285,8 +278,8 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const session = await this.sessionService.checkUserSession(
-      userId,
       props['orgId'],
+      userId,
     );
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'orgVdc',
@@ -294,10 +287,8 @@ export class TaskManagerService {
     });
     const checkVdcId = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { serviceInstanceid: serviceInstanceId },
-          { PropertyKey: 'vdcId' },
-        ],
+        serviceInstanceId,
+        propertyKey: 'vdcId',
       },
     });
     if (!checkVdcId) {
@@ -323,7 +314,8 @@ export class TaskManagerService {
     );
     const ip = await this.serviceItemsTable.findOne({
       where: {
-        and: [{ serviceInstanceid: serviceInstanceId }, { itemTypeCode: 'ip' }],
+        serviceInstanceId,
+        itemTypeCode: 'ip',
       },
     });
     const org = await this.organizationTable.findOne({
@@ -337,6 +329,7 @@ export class TaskManagerService {
       org.orgId,
       userId,
     );
+    console.log('end of createEdge');
     const vcloudTask = createdEdge.__vcloudTask;
     this.taskQueue.add({
       serviceInstanceId,
@@ -348,14 +341,14 @@ export class TaskManagerService {
     });
   }
 
-  async createNetworkTask(serviceInstanceId, customTaskId, requestOptions) {
+  async createNetwork(serviceInstanceId, customTaskId, requestOptions) {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
     const userId = service.userId;
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
-        serviceInstanceid: serviceInstanceId,
+        serviceInstanceId,
       },
     });
     const props = {};
@@ -363,11 +356,11 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const network = await this.networkService.createNetwork(
-      userId,
       '192.168.1.1',
       props['vdcId'],
       props['orgId'],
       props['edgeName'],
+      userId,
     );
 
     await this.loggerService.info(
@@ -380,22 +373,21 @@ export class TaskManagerService {
     );
   }
 
-  async createOrgTask(serviceInstanceId, customTaskId, requestOptions) {
-    console.log(this.servicePropertiesTable, '😆');
+  async createOrg(serviceInstanceId, customTaskId, requestOptions) {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
     const userId = service.userId;
     const org = await this.orgService.checkOrg(userId);
     if (org.isNew) {
-      await this.loggerService.info(
-        'vdc',
-        'createOrg',
-        {
-          _object: org.id,
-        },
-        requestOptions,
-      );
+      // await this.loggerService.info(
+      //   'vdc',
+      //   'createOrg',
+      //   {
+      //     _object: org.id,
+      //   },
+      //   requestOptions,
+      // );
     }
     const vcloudTask = org.__vcloudTask;
     this.taskQueue.add({
@@ -406,16 +398,18 @@ export class TaskManagerService {
       nextTask: 'createVdc',
       requestOptions,
     });
+    console.log('end of createOrg');
   }
 
-  async createVdcTask(serviceInstanceId, customTaskId, requestOptions) {
+  async createVdc(serviceInstanceId, customTaskId, requestOptions) {
+    console.log('😙', serviceInstanceId, customTaskId, requestOptions);
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
     const userId = service.userId;
     const ServiceItems = await this.serviceItemsTable.find({
       where: {
-        serviceInstanceid: serviceInstanceId,
+        serviceInstanceId,
       },
     });
     const data = {};
@@ -443,7 +437,7 @@ export class TaskManagerService {
     });
   }
 
-  async createVgpuDnatTask(serviceInstanceId, customTaskId, requestOptions) {
+  async createVgpuDnat(serviceInstanceId, customTaskId, requestOptions) {
     let externalPort = 20000;
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
@@ -464,10 +458,8 @@ export class TaskManagerService {
 
     const internalIP = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { serviceInstanceid: serviceInstanceId },
-          { PropertyKey: 'internalIP' },
-        ],
+        serviceInstanceId,
+        propertyKey: 'internalIP',
       },
     });
 
@@ -672,7 +664,7 @@ export class TaskManagerService {
   //     });
   // }
 
-  async deleteCatalogOrgTask(serviceInstanceId, customTaskId, requestOptions) {
+  async deleteCatalogOrg(serviceInstanceId, customTaskId, requestOptions) {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
@@ -692,8 +684,8 @@ export class TaskManagerService {
     if (!isEmpty(query.data.record[0])) {
       const orgId = query.data.record[0].org.split('/').slice(-1)[0];
       const userSession = await this.sessionService.checkUserSession(
-        userId,
         orgId,
+        userId,
       );
       const catalogId = await this.checkCatalog(userSession);
       const totalVdcs = query.data.total;
@@ -736,7 +728,7 @@ export class TaskManagerService {
     return Promise.resolve(catalogId);
   }
 
-  async deleteVdcTask(serviceInstanceId, customTaskId, requestOptions) {
+  async deleteVdc(serviceInstanceId, customTaskId, requestOptions) {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
@@ -920,11 +912,7 @@ export class TaskManagerService {
   //     });
   // }
 
-  async finishDeleteServiceTask(
-    serviceInstanceId,
-    customTaskId,
-    requestOptions,
-  ) {
+  async finishDeleteService(serviceInstanceId, customTaskId, requestOptions) {
     const currentDate = new Date(new Date().getTime() + 1000 * 60);
     await this.serviceInstancesTable.updateAll(
       {
@@ -1040,7 +1028,7 @@ export class TaskManagerService {
     const externalPort = await this.servicePropertiesTable.findOne({
       where: {
         and: [
-          { serviceInstanceid: serviceInstanceId },
+          { serviceInstanceId: serviceInstanceId },
           { PropertyKey: 'VgpuExternalPort' },
         ],
       },
@@ -1192,18 +1180,14 @@ export class TaskManagerService {
   //     });
   // }
 
-  async updateNetworkProfileTask(
-    serviceInstanceId,
-    customTaskId,
-    requestOptions,
-  ) {
+  async updateNetworkProfile(serviceInstanceId, customTaskId, requestOptions) {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
     const userId = service.userId;
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
-        serviceInstanceid: serviceInstanceId,
+        serviceInstanceId,
       },
     });
     const props = {};

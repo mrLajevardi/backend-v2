@@ -35,7 +35,9 @@ export class SessionsService {
   }
 
   async createUserSession(orgId, userId) {
+    console.log(userId, '🌭');
     const user = await this.userTable.findById(userId);
+    console.log(user, '🧂');
     const org = await this.organizationTable.findById(orgId);
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     //This part is because of preventing errors and should be deleted
