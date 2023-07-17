@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AITransactionsLogs';
+import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
 import { CreateAITransactionsLogsDto } from './dto/create-aitransactions-logs.dto';
 import { UpdateAITransactionsLogsDto } from './dto/update-aitransactions-logs.dto';
 import {

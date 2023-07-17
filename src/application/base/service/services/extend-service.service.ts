@@ -106,13 +106,11 @@ export class ExtendServiceService {
   async createServiceInstance(userId, serviceTypeID, expireDate, name = null) {
     const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
       where: {
-        UserID: userId,
+        userId,
       },
-      order: { Index: -1 },
+      order: { index: -1 },
     });
-    const index = lastServiceInstanceId
-      ? lastServiceInstanceId[0].Index + 1
-      : 0;
+    const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
     const serviceType = await this.serviceTypeTable.findById(serviceTypeID);
     const serivce = await this.serviceInstancesTable.create({
       userId: userId,

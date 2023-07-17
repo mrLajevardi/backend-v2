@@ -62,6 +62,7 @@ import { DhcpService } from 'src/application/networks/dhcp.service';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
 import { NatService } from 'src/application/nat/nat.service';
 import { NetworksService } from 'src/application/networks/networks.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
