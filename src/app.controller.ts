@@ -21,16 +21,6 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Public()
-  @ApiOperation({ summary: 'User login' })
-  @ApiResponse({ status: 200, description: 'Returns the JWT token' })
-  @ApiBody({ type: LoginDto })
-  @UseGuards(LocalAuthGuard)
-  @Post('auth/login')
-  async login(@Request() req) {
-    return this.authService.login(req.user);
-  }
-
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({ status: 200, description: 'Returns the user profile' })
   @ApiBearerAuth() // Requires authentication with a JWT token

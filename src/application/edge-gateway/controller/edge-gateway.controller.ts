@@ -9,7 +9,7 @@ import {
   Query,
   Request,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { FirewallDto } from '../dto/firewall.dto';
 import { CreateApplicationPortProfileDto } from '../dto/create-application-port-profile.dto';
 import { IPSetDto } from '../dto/ip-set.dto';
@@ -22,6 +22,7 @@ import { EdgeGatewayService } from '../service/edge-gateway.service';
 import { SingleApplicationPortProfileDto } from '../dto/single-application-port-profile.dto';
 import { FirewalListDto } from '../dto/firewall-list.dto';
 
+@ApiTags('Edge Gateway')
 @Controller('edge-gateway')
 export class EdgeGatewayController {
   constructor(private readonly service: EdgeGatewayService) {}
