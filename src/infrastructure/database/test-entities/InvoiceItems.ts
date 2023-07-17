@@ -20,6 +20,9 @@ export class InvoiceItems {
   @Column('float', { name: 'Fee', precision: 53 })
   fee: number;
 
+  @Column('int', { name: 'ItemID' })
+  itemId: number;
+
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 

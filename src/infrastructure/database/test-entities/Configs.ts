@@ -19,6 +19,9 @@ export class Configs {
   @Column('varchar', { name: 'Value', length: 100 })
   value: string;
 
+  @Column('varchar', { name: 'ServiceTypeID'})
+  serviceTypeId: string;
+
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.configs, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
