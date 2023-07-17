@@ -41,6 +41,7 @@ import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-table/dto/create-aitransactions-logs.dto';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
+import { ConfigModule } from '@nestjs/config';
 // import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 describe('AiController', () => {
@@ -59,7 +60,12 @@ describe('AiController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        TestDatabaseModule
+      ],
       providers: [
         AiService,
         UserService,

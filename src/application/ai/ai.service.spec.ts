@@ -36,6 +36,7 @@ import { PlansQueryService } from '../base/crud/plans-table/plans-query.service'
 import { SessionsTableService } from '../base/crud/sessions-table/sessions-table.service';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
+import { ConfigModule } from '@nestjs/config';
 // import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
 
 describe('AiService', () => {
@@ -52,7 +53,12 @@ describe('AiService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [
+        TestDatabaseModule,
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+      ],
       providers: [
         AiService,
         UserService,
