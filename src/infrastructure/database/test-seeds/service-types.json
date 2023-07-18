@@ -7,5 +7,14 @@
         "createInstanceScript": "",
         "verifyInstance": true,
         "isPayg": false
+    },
+    {
+        "id" : "aradAi",
+        "title": "test",
+        "baseFee": 1,
+        "maxAvailable": 100,
+        "createInstanceScript": "",
+        "verifyInstance": true,
+        "isPayg": false
     }
 ]

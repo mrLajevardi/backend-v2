@@ -2,6 +2,7 @@
     {
       "id": 5671,
       "serviceTypeId": "vdc",
+      "serviceInstanceId": "D1E47C43-3900-4F2F-B709-ACDE93F2D280",
       "rawAmount": 270000,
       "planAmount": 0,
       "planRatio": 1,
@@ -18,6 +19,7 @@
     {
       "id": 5919,
       "serviceTypeId": "aradAi",
+      "serviceInstanceId": "D1E47C43-3900-4F2F-B709-ACDE93F2D280",
       "rawAmount": 0,
       "planAmount": 0,
       "planRatio": 1,

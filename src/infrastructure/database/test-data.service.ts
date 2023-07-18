@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -132,16 +132,27 @@ export class TestDataService {
     const path = 'src/infrastructure/database/test-seeds/' + filename;
     const jsonData = fs.readFileSync(path, 'utf8');
     const items = JSON.parse(jsonData);
-    for (const item of items) {
-      const entity = item as T;
-      // console.log("inserting ... ", entity);
-      await repository.save(entity);
+    try {
+      for (const item of items) {
+        const entity = item as T;
+        // console.log("inserting ... ", entity);
+        await repository.save(entity);
+      }
+    }catch(error){
+      console.log(error);
+      throw(new InternalServerErrorException())
     }
   }
 
   async seedTestData(): Promise<void> {
     await this.seedTable('user.json', this.userRepository);
+    await this.seedTable('service-types.json', this.serviceTypesRepository);
 
+    await this.seedTable(
+      'service-instances.json',
+      this.serviceInstancesRepository,
+    );
+    
     await this.seedTable('groups.json', this.groupsRepository);
     await this.seedTable('groups-mapping.json', this.groupsMappingRepository);
     await this.seedTable('invoices.json', this.invoicesRepository);
@@ -165,12 +176,8 @@ export class TestDataService {
       this.permissionMappingsRepository,
     );
     await this.seedTable('configs.json', this.configsRepository);
-    await this.seedTable('service-types.json', this.serviceTypesRepository);
     await this.seedTable('scope.json', this.scopeRepository);
-    await this.seedTable(
-      'service-instances.json',
-      this.serviceInstancesRepository,
-    );
+
     await this.seedTable('setting.json', this.settingRepository);
     await this.seedTable('discounts.json', this.discountsRepository);
     await this.seedTable(

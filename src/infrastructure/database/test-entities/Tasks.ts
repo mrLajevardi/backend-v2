@@ -35,6 +35,9 @@ export class Tasks {
   @Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })
   currrentStep: string | null;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+  
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.tasks,
