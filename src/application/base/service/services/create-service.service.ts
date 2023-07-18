@@ -12,7 +12,6 @@ import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-
 import { InvalidDiscountIdException } from 'src/infrastructure/exceptions/invalid-discount-id.exception';
 import { InvalidQualityPlanException } from 'src/infrastructure/exceptions/invalid-quality-plan.exception';
 import Costs from '../classes/costs';
-import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
 
 import { AiService } from 'src/application/ai/ai.service';
 import { ServiceItemsSumService } from 'src/application/base/crud/service-items-sum/service-items-sum.service';

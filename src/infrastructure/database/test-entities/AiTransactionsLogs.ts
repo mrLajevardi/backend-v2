@@ -21,6 +21,9 @@ export class AiTransactionsLogs {
   @Column('nchar', { name: 'Description', nullable: true, length: 50 })
   description: string | null;
 
+  @Column('text', { name: 'ServiceInstanceID', nullable: false })
+  serviceInstanceId: string | null;
+
   @Column('nvarchar', { name: 'Request' })
   request: string;
 

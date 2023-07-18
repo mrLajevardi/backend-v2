@@ -1,10 +1,9 @@
 /*
 This module is responsible for proper loading of test database 
 Importing this module in the test files is sufficient for loading the database for test purposes. 
-
 */
 
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { dbTestEntities } from './entityImporter/orm-test-entities';
 import { TestDataService } from './test-data.service';
@@ -56,11 +55,10 @@ import { LoggerService } from '../logger/logger.service';
 import { ErrorLogTableService } from 'src/application/base/crud/error-log-table/error-log-table.service';
 import { InfoLogTableService } from 'src/application/base/crud/info-log-table/info-log-table.service';
 import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/debug-log-table.service';
-import { ApplicationPortProfileService } from 'src/application/edge-gateway/application-port-profile.service';
-import { EdgeGatewayService } from 'src/application/edge-gateway/edge-gateway.service';
-import { FirewallService } from 'src/application/edge-gateway/firewall.service';
+import { ApplicationPortProfileService } from 'src/application/edge-gateway/service/application-port-profile.service';
+import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-gateway.service';
+import { FirewallService } from 'src/application/edge-gateway/service/firewall.service';
 import { DhcpService } from 'src/application/networks/dhcp.service';
-import { TasksModule } from 'src/application/base/tasks/tasks.module';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
 import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-list/invoice-item-list.service';
 
@@ -103,6 +101,8 @@ import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-l
     EdgeService,
     OrgService,
     NetworkService,
+    NetworksService,
+    NatService,
     VdcService,
     ServiceTypesTableService,
     TransactionsService,
@@ -162,6 +162,8 @@ import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-l
     EdgeService,
     OrgService,
     NetworkService,
+    NetworksService,
+    NatService,
     VdcService,
     ServiceTypesTableService,
     TransactionsService,

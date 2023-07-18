@@ -26,6 +26,9 @@ export class InvoiceItems {
   @PrimaryGeneratedColumn({ type: 'integer' })
   id: number;
 
+  @Column('int', { name: 'ItemID' })
+  itemId: number;
+
   @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.invoiceItems, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

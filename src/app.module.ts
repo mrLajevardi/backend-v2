@@ -7,7 +7,6 @@ import { UserModule } from './application/base/user/user.module';
 import { VastModule } from './application/vast/vast.module';
 import { AuthModule } from './application/base/security/auth/auth.module';
 import { DatabaseModule } from './infrastructure/database/database.module';
-import configurations from './infrastructure/config/configurations';
 import { ConfigModule } from '@nestjs/config';
 import { AiModule } from './application/ai/ai.module';
 import { TasksModule } from './application/base/tasks/tasks.module';
@@ -20,16 +19,17 @@ import { CrudModule } from './application/base/crud/crud.module';
 import { SessionsModule } from './application/base/sessions/sessions.module';
 import { OrganizationModule } from './application/base/organization/organization.module';
 import { VgpuModule } from './application/vgpu/vgpu.module';
-import { ApplicationPortProfileService } from './application/edge-gateway/application-port-profile.service';
+import { ApplicationPortProfileService } from './application/edge-gateway/service/application-port-profile.service';
 import { NatModule } from './application/nat/nat.module';
 import { NetworksModule } from './application/networks/networks.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ServiceModule } from './application/base/service/service.module';
+import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [configurations],
+      isGlobal: true,
     }),
     BullModule.forRoot({
       redis: {
@@ -56,6 +56,7 @@ import { ServiceModule } from './application/base/service/service.module';
     CrudModule,
     NatModule,
     NetworksModule,
+    EdgeGatewayModule,
     LoggerModule,
     ServiceModule,
   ],

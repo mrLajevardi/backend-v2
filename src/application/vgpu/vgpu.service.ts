@@ -8,7 +8,6 @@ import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.servic
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-table.service';
 import { JwtService } from '@nestjs/jwt';
-import aradVgpuConfig from 'src/infrastructure/config/aradVgpuConfig';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { UserTableService } from '../base/crud/user-table/user-table.service';
 import { InvoiceItemsTableService } from '../base/crud/invoice-items-table/invoice-items-table.service';
@@ -302,7 +301,7 @@ export class VgpuService {
     const vmId = query.data.record[0].href.split('/').slice(-1);
 
     const token = this.jwtService.sign(serviceId, {
-      secret: aradVgpuConfig.JWT_SECRET_KEY,
+      secret: process.env.ARAD_VGPU_JWT_SECRET_KEY,
     });
     const script = `#!/bin/sh
 echo "

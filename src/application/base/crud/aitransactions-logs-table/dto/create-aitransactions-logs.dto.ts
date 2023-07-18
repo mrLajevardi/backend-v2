@@ -1,14 +1,14 @@
 import {
-  IsDate,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  IsDateString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Optional } from '@nestjs/common';
+// import { Optional } from '@nestjs/common';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
-import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+// import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 
 export class CreateAITransactionsLogsDto {
   @IsOptional()
@@ -23,9 +23,6 @@ export class CreateAITransactionsLogsDto {
 
   @IsOptional()
   itemType: ItemTypes;
-
-  @IsOptional()
-  serviceInstance: ServiceInstances;
 
   @IsNotEmpty()
   @IsString()
@@ -58,7 +55,15 @@ export class CreateAITransactionsLogsDto {
   ip: string;
 
   @IsOptional()
-  @IsDate()
+  @IsDateString()
   @ApiProperty()
   dateTime?: Date;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty()
+  token: string;
+
+  @IsOptional()
+  serviceInstanceId: string;
 }
