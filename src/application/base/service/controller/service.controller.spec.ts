@@ -1,38 +1,21 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Request,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { CreateServiceDto } from '../dto/create-service.dto';
-import { CreateServiceService } from '../services/create-service.service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ServiceController } from './service.controller';
+import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
-@ApiTags('Services')
-@Controller('services')
-@ApiBearerAuth() // Requires authentication with a JWT token
-export class InvoicesController {
-  constructor(private readonly createServiceService: CreateServiceService) {}
+describe('ServiceController', () => {
+  let controller: ServiceController;
 
-  @ApiOperation({ summary: 'Create a new item' })
-  @ApiResponse({
-    status: 200,
-    description: 'The item has been successfully created',
-  })
-  @Post()
-  async create(
-    @Body() dto: CreateServiceDto,
-    @Request() options: any,
-  ): Promise<any> {
-    return this.createServiceService.createService(options, dto);
-  }
-}
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [TestDatabaseModule],
+      providers: [],
+      controllers: [ServiceController],
+    }).compile();
+
+    controller = module.get<ServiceController>(ServiceController);
+  });
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined();
+  });
+});
