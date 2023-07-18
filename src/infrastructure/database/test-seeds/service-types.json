@@ -1,6 +1,6 @@
 [
     {
-        "id" : 1,
+        "id" : "vdc",
         "title": "test",
         "baseFee": 1,
         "maxAvailable": 100,

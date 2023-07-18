@@ -62,6 +62,7 @@ import { FirewallService } from 'src/application/edge-gateway/firewall.service';
 import { DhcpService } from 'src/application/networks/dhcp.service';
 import { TasksModule } from 'src/application/base/tasks/tasks.module';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
+import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-list/invoice-item-list.service';
 
 @Module({
   imports: [
@@ -131,6 +132,7 @@ import { ServicePlansTableService } from 'src/application/base/crud/service-plan
     ApplicationPortProfileService,
     DhcpService,
     ServicePlansTableService,
+    InvoiceItemListService,
   ],
   exports: [
     TypeOrmModule,
@@ -189,6 +191,7 @@ import { ServicePlansTableService } from 'src/application/base/crud/service-plan
     ApplicationPortProfileService,
     DhcpService,
     ServicePlansTableService,
+    InvoiceItemListService,
   ],
 })
 export class TestDatabaseModule {}
