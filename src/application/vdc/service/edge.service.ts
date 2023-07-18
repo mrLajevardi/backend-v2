@@ -28,29 +28,30 @@ export class EdgeService {
    * @param {String} userId
    * @return {Promise}
    */
-  async createEdge(vdcId, ip, vdcName, ServiceInstanceID, orgId, userId) {
+  async createEdge(vdcId, ip, vdcName, serviceInstanceId, orgId, userId) {
     const sessionToken = await this.sessionService.checkAdminSession(userId);
     const edgeName = vdcName + '_edge';
 
     const service = await this.serviceInstanceTable.findOne({
       where: {
-        ID: ServiceInstanceID,
+        id: serviceInstanceId,
       },
     });
     const checkEdge = await this.checkEdgeExistence(userId, edgeName);
     if (service.status == 2 && !checkEdge) {
       const edgeNameProps = this.servicePropertiesTable.findOne({
         where: {
-          and: [{ ServiceInstanceID }, { PropertyKey: 'edgeName' }],
+          serviceInstanceId,
+          propertyKey: 'edgeName',
         },
       });
-      if (edgeNameProps && !isNil(ServiceInstanceID)) {
+      if (edgeNameProps && !isNil(serviceInstanceId)) {
         await this.servicePropertiesTable.deleteAll({
-          serviceInstanceId: ServiceInstanceID,
+          serviceInstanceId,
           propertyKey: 'edgeName',
         });
         await this.servicePropertiesTable.deleteAll({
-          serviceInstanceId: ServiceInstanceID,
+          serviceInstanceId,
           propertyKey: 'edgeIpRange',
         });
       }
@@ -67,14 +68,15 @@ export class EdgeService {
         name: edgeName,
         vdcId,
       });
+    console.log('🥞');
     await this.servicePropertiesTable.create({
-      serviceInstanceId: ServiceInstanceID,
+      serviceInstanceId: serviceInstanceId,
       propertyKey: 'edgeName',
       value: edgeGateway.name,
     });
     for (const ipRange of edgeGateway.ipRange) {
       await this.servicePropertiesTable.create({
-        serviceInstanceId: ServiceInstanceID,
+        serviceInstanceId,
         propertyKey: 'edgeIpRange',
         value: `${ipRange.startAddress}-${ipRange.endAddress}`,
       });
@@ -92,7 +94,7 @@ export class EdgeService {
       where: { userId },
     });
     const orgId = org.id;
-    const session = await this.sessionService.checkUserSession(userId, orgId);
+    const session = await this.sessionService.checkUserSession(orgId, userId);
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'edgeGateway',
       filter: `name==${edgeName}`,

@@ -1,6 +1,6 @@
 [
     {
-        "id" : 1,
+        "id" : "vdc",
         "title": "test",
         "baseFee": 1,
         "maxAvailable": 100,
@@ -9,7 +9,16 @@
         "isPayg": false
     },
     {
-        "id": 2,
+        "id" : "aradAi",
+        "title": "test",
+        "baseFee": 1,
+        "maxAvailable": 100,
+        "createInstanceScript": "",
+        "verifyInstance": true,
+        "isPayg": false
+    },
+    {
+        "id": "AradAiDemo",
         "title": "AradAiDemo",
         "baseFee": 0,
         "createInstanceScript": "",
@@ -19,7 +28,7 @@
         "isPayg": 0
     },
     {
-        "id": 3,
+        "id": "AradAi",
         "title": "AradAi",
         "baseFee": 0,
         "createInstanceScript": "",

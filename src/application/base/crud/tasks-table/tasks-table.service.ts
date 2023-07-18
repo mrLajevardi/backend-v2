@@ -48,7 +48,8 @@ export class TasksTableService {
   async create(dto: CreateTasksDto) {
     const newItem = plainToClass(Tasks, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    const task = await this.repository.save(createdItem);
+    return task;
   }
 
   // Update an Item using updateDTO

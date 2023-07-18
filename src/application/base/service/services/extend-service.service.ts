@@ -22,6 +22,12 @@ import { ServiceService } from './service.service';
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { Invoices } from 'src/infrastructure/database/entities/Invoices';
+import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
+import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
+import { InvoiceItemListService } from '../../crud/invoice-item-list/invoice-item-list.service';
+import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
 
 @Injectable()
 export class ExtendServiceService {
@@ -34,6 +40,11 @@ export class ExtendServiceService {
     private readonly configsTable: ConfigsTableService,
     private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly sessionService: SessionsService,
+    private readonly transactionTableService: TransactionsTableService,
+    private readonly invoicesTableService: InvoicesTableService,
+    private readonly invoiceItemListService: InvoiceItemListService,
+    private readonly invoicePlanTableService: InvoicePlansTableService,
+    private readonly serviceSum: ServiceItemsSumService,
   ) {}
 
   async getAiServiceInfo(
@@ -89,15 +100,15 @@ export class ExtendServiceService {
   // create service items
   async createServiceItems(serviceInstanceID, items, data) {
     for (const item of Object.keys(items)) {
-      const itemTitle = items[item].Code;
+      const itemTitle = items[item].code;
       // TODO just items of current user should be added
       const itemQuantity = data[itemTitle] || 0;
-      const itemTypeId = items[item].ID;
+      const itemTypeId = items[item].id;
       await this.serviceItemsTable.create({
         serviceInstanceId: serviceInstanceID,
         itemTypeId: itemTypeId,
         quantity: itemQuantity,
-        itemTypeCode: items[item].Code,
+        itemTypeCode: items[item].code,
       });
     }
   }
@@ -126,13 +137,11 @@ export class ExtendServiceService {
   }
 
   //enable Vdc On Vcloud
-  async enableVdcOnVcloud(serviceInstanceID, userId) {
+  async enableVdcOnVcloud(serviceInstanceId, userId) {
     const vdc = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { ServiceInstanceID: serviceInstanceID },
-          { PropertyKey: 'vdcId' },
-        ],
+        serviceInstanceId,
+        propertykey: 'vdcId',
       },
     });
 
@@ -163,18 +172,17 @@ export class ExtendServiceService {
 
   QualityPlans;
   async createServiceInstanceAndToken(
-    app,
     options,
     expireDate,
     serviceId,
-    transaction,
+    transaction: Transactions,
     name,
   ) {
-    let token = null;
-    const userId = options.accessToken.userId;
+    const token = null;
+    const userId = options.user.userId;
 
-    const serviceType = await app.models.ServiceTypes.findOne({
-      where: { ID: serviceId },
+    const serviceType = await this.serviceTypeTable.findOne({
+      where: { id: serviceId },
     });
     //check validity of serviceId
     if (isEmpty(serviceType)) {
@@ -188,75 +196,75 @@ export class ExtendServiceService {
       name,
     );
     const itemTypes = await this.itemTypesTable.find({
-      where: { ServiceTypeID: serviceId },
+      where: { serviceTypeId: serviceId },
     });
-
-    const invoiceItemList = await app.models.InvoiceItemList.find({
+    const invoiceItemList = await this.invoiceItemListService.find({
       where: {
-        and: [{ InvoiceID: transaction.InvoiceID }, { UserID: userId }],
+        invoiceId: transaction.invoiceId,
+        userId,
       },
     });
     const itemTypeData = {};
     invoiceItemList.forEach((element) => {
-      itemTypeData[element.Code] = element.Quantity;
+      itemTypeData[element.code] = element.quantity;
     });
 
     await this.createServiceItems(serviceInstanceId, itemTypes, itemTypeData);
+    console.log('working');
     if (serviceId == 'aradAi') {
       // find user invoice
-      const invoice = await app.models.Invoices.findOne({
+      const invoice = await this.invoicesTableService.findOne({
         where: {
-          and: [{ UserID: userId }, { ID: transaction.InvoiceID }],
+          id: transaction.invoiceId,
+          userId,
         },
       });
-      const invoicePlan = await app.models.InvoicePlans.findOne({
+      console.log(invoice);
+      const invoicePlan = await this.invoicePlanTableService.findOne({
         where: {
-          and: [
-            { PlanCode: { like: '%ai%' } },
-            { InvoiceID: transaction.InvoiceID },
-          ],
+          planCode: { like: '%ai%' },
+          invoiceId: transaction.invoiceId,
         },
       });
 
-      const duration = Math.round(
-        (invoice.EndDateTime - invoice.DateTime) / 86400000,
-      );
+      const calculatedDuration =
+        (new Date(invoice.endDateTime).getTime() -
+          new Date(invoice.dateTime).getTime()) /
+        86400000;
+      const duration = Math.round(calculatedDuration);
 
       const ServiceAiInfo = await this.getAiServiceInfo(
         userId,
         'aradAi',
-        invoicePlan.PlanCode,
+        invoicePlan.planCode,
         duration,
-        invoice.EndDateTime,
-        invoice.DateTime,
+        invoice.endDateTime,
+        invoice.dateTime,
       );
-      token = jwt.sign(ServiceAiInfo, process.env.ARAD_AI_JWT_SECRET_KEY);
+      const token = jwt.sign(ServiceAiInfo, process.env.ARAD_AI_JWT_SECRET_KEY);
 
-      await app.models.ServiceProperties.create({
-        ServiceInstanceID: serviceInstanceId,
-        PropertyKey: serviceId + '.token',
-        Value: token,
+      await this.servicePropertiesTable.create({
+        serviceInstanceId: serviceInstanceId,
+        propertyKey: serviceId + '.token',
+        value: token,
       });
       return Promise.resolve({ token, serviceInstanceId });
     }
     return Promise.resolve({
-      scriptPath: serviceType.CreateInstanceScript,
+      scriptPath: serviceType.createInstanceScript,
       serviceInstanceId,
     });
   }
-  async extendServiceInstanceAndToken(app, options, invoice) {
+  async extendServiceInstanceAndToken(options, invoice: Invoices) {
     const token = null;
     const userId = options.accessToken.userId;
-    const serviceInstanceId = invoice.ServiceInstanceID;
-    const serviceInstancesModel = app.models.ServiceInstances;
+    const serviceInstanceId = invoice.serviceInstance.id;
 
-    const oldSerivce = await serviceInstancesModel.findOne({
+    const oldSerivce = await this.serviceInstancesTable.findOne({
       where: {
-        and: [
-          { UserID: userId },
-          { ServiceInstanceID: serviceInstanceId },
-          { IsDeleted: false },
-        ],
+        userId,
+        serviceInstanceId,
+        isDeleted: false,
       },
     });
     if (!oldSerivce) {
@@ -266,15 +274,42 @@ export class ExtendServiceService {
     await this.updateServiceInstanceExpireDate(
       userId,
       serviceInstanceId,
-      invoice.EndDateTime,
+      invoice.endDateTime,
     );
     // }
-    if (invoice.ServiceTypeID == 'vdc') {
+    if (invoice.serviceTypeId == 'vdc') {
       await this.enableVdcOnVcloud(serviceInstanceId, userId);
     }
 
     return Promise.resolve({
       serviceInstanceId,
     });
+  }
+  async approveTransactionAndInvoice(
+    invoice: Invoices,
+    transaction: Transactions,
+  ) {
+    const { serviceInstanceId, userId: userId, id: invoiceId } = invoice;
+    // approve user transaction
+    await this.transactionTableService.updateAll(
+      {
+        userId: userId,
+        invoiceId: invoiceId,
+      },
+      {
+        isApproved: true,
+        serviceInstanceId,
+      },
+    );
+    // update user invoice
+    this.invoicesTableService.updateAll(
+      {
+        userId: userId,
+        id: transaction.invoiceId,
+      },
+      {
+        payed: true,
+      },
+    );
   }
 }

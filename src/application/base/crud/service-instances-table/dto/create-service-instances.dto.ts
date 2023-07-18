@@ -10,11 +10,6 @@ import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes'
 
 export class CreateServiceInstancesDto {
   @ApiProperty()
-  @IsOptional()
-  id?: string;
-
-  @IsNumber()
-  @ApiProperty()
   userId: number;
 
   @IsNumber()

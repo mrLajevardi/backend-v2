@@ -11,6 +11,9 @@ import { ServiceChecksService } from './services/service-checks/service-checks.s
 import { UserModule } from '../user/user.module';
 import { InvoicesModule } from '../invoice/invoices.module';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { TasksModule } from '../tasks/tasks.module';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { ServiceController } from './controller/service.controller';
 
 @Module({
   imports: [
@@ -19,6 +22,8 @@ import { TransactionsModule } from '../transactions/transactions.module';
     SessionsModule,
     UserModule,
     forwardRef(() => InvoicesModule),
+    TasksModule,
+    forwardRef(() => VgpuModule),
     TransactionsModule,
   ],
   providers: [
@@ -29,6 +34,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
     DiscountsService,
     ServiceChecksService,
   ],
+  controllers: [ServiceController],
   exports: [
     ServiceService,
     PayAsYouGoService,

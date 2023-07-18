@@ -22,7 +22,7 @@ export class CreateAITransactionsLogsDto {
   request: string;
 
   @IsOptional()
-  itemType: ItemTypes;
+  itemTypeId?: number;
 
   @IsNotEmpty()
   @IsString()

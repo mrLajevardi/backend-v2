@@ -45,11 +45,13 @@ import { Sysdiagrams } from '../test-entities/Sysdiagrams';
 import { QualityPlans } from '../test-entities/views/quality-plans';
 import { ServiceItemsSum } from '../test-entities/views/service-items-sum';
 import { ServicePlans } from '../test-entities/ServicePlans';
+import { InvoiceItemList } from '../test-entities/views/invoice-item-list';
 
 export const dbTestEntities = [
   //Views
   QualityPlans,
   ServiceItemsSum,
+  InvoiceItemList,
   // Logs Schema
   DebugLog,
   InfoLog,

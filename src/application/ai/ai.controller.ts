@@ -99,10 +99,11 @@ export class AiController {
       constPerRequest,
     );
 
+    console.log(itemTypes.id);
     const itemType = await this.itemTypesTable.findById(itemTypes.id);
-    return await this.aiTransactionLogsTable.create({
+    const itemData = {
       dateTime: new Date(),
-      itemType: itemType,
+      itemTypeId: itemTypes.id,
       serviceInstanceId: serviceProperties.serviceInstanceId,
       description: data.methodName,
       request: data.request,
@@ -113,7 +114,8 @@ export class AiController {
       method: data.method,
       codeStatus: data.codeStatus,
       token: data.token,
-    });
+    };
+    return await this.aiTransactionLogsTable.create(itemData);
   }
 
   @Get('/createOrGetDemoToken')
@@ -137,19 +139,17 @@ export class AiController {
       );
       const token = await this.sign(serviceAiInfo);
       await this.service.createDemoToken(userId, token);
-      const serviceID = await this.createServiceSvc.createServiceInstance(
-        userId,
-        'aradAiDemo',
-        12,
-      );
-      await this.servicePropertiesTable.create({
-        serviceInstanceId: serviceID,
-        propertyKey: 'aradAiDemo.token',
-        value: token,
-      });
-      return Promise.resolve({
-        demoToken: token,
-      });
+      // const serviceID = await this.createServiceSvc.createServiceInstance(
+      //   userId,
+      //   'aradAiDemo',
+      //   12,
+      // );
+      // await this.servicePropertiesTable.create({
+      //   serviceInstanceId: serviceID,
+      //   propertyKey: 'aradAiDemo.token',
+      //   value: token,
+      // });
+      // return Promise.resolve(token);
     }
     return Promise.resolve({
       demoToken: getDemoToken.value,

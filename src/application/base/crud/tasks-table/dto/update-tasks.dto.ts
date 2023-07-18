@@ -51,5 +51,5 @@ export class UpdateTasksDto {
 
   @IsNumber()
   @ApiProperty()
-  serviceInstanceId?: number;
+  serviceInstanceId?: string;
 }
