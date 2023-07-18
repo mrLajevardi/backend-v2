@@ -61,6 +61,8 @@ import { FirewallService } from 'src/application/edge-gateway/service/firewall.s
 import { DhcpService } from 'src/application/networks/dhcp.service';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
 import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-list/invoice-item-list.service';
+import { NetworksService } from 'src/application/networks/networks.service';
+import { NatService } from 'src/application/nat/nat.service';
 
 @Module({
   imports: [
