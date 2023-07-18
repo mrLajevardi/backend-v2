@@ -7,7 +7,8 @@ export class SmsService {
   constructor() {}
 
   async sendSMS(phoneNumber, otp) {
-    const url = `https://api.kavenegar.com/v1/${otpConfig.apiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${otp}&template=AradOTP`;
+    const otpApiKey = process.env.OTP_API_KEY;
+    const url = `https://api.kavenegar.com/v1/${otpApiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${otp}&template=AradOTP`;
     let smsStatus;
     await axios
       .get(url)

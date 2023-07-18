@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
+import { SmsService } from 'src/application/base/notification/sms.service';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,7 @@ export class AuthService {
     private userTable: UserTableService,
     private userService: UserService,
     private jwtService: JwtService,
+    private smsService: SmsService,
   ) {}
 
   // Validate user performs using Local.strategy
@@ -75,9 +77,8 @@ export class AuthService {
       if (! userExist) {
         return Promise.reject(new ForbiddenException());
       }
-      const smsService = new SmsService();
       const otpGenerated = otpGenerator(data.phoneNumber);
-      await smsService.sendSMS(data.phoneNumber, otpGenerated.otp);
+      await this.smsService.sendSMS(data.phoneNumber, otpGenerated.otp);
       hash = otpGenerated.hash;
       return Promise.resolve({userExist, hash});
     }
