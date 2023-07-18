@@ -5,7 +5,6 @@ import { Entity, Column, PrimaryColumn, ViewEntity, ViewColumn } from 'typeorm';
 })
 export class InvoiceItemList {
   @PrimaryColumn()
-
   itemId: number;
 
   @Column({ name: 'Quantity' })

@@ -138,9 +138,9 @@ export class TestDataService {
         // console.log("inserting ... ", entity);
         await repository.save(entity);
       }
-    }catch(error){
+    } catch (error) {
       console.log(error);
-      throw(new InternalServerErrorException())
+      throw new InternalServerErrorException();
     }
   }
 
@@ -152,7 +152,7 @@ export class TestDataService {
       'service-instances.json',
       this.serviceInstancesRepository,
     );
-    
+
     await this.seedTable('groups.json', this.groupsRepository);
     await this.seedTable('groups-mapping.json', this.groupsMappingRepository);
     await this.seedTable('invoices.json', this.invoicesRepository);

@@ -1,4 +1,11 @@
-import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
 import { randomUUID } from 'crypto';
 
@@ -37,7 +44,7 @@ export class Tasks {
 
   @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
   serviceInstanceId: string;
-  
+
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.tasks,
