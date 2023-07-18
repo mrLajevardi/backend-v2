@@ -1,10 +1,11 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserService } from '../../../user/user.service';
-import { JwtService } from '@nestjs/jwt';
-import { UserTableService } from '../../../crud/user-table/user-table.service';
-import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
-import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { SmsService } from 'src/application/base/notification/sms.service';
+import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { UserService } from "../../../user/user.service";
+import { JwtService } from "@nestjs/jwt";
+import { UserTableService } from "../../../crud/user-table/user-table.service";
+import { InvalidPhoneNumberException } from "src/infrastructure/exceptions/invalid-phone-number.exception";
+import { ForbiddenException } from "src/infrastructure/exceptions/forbidden.exception";
+import { SmsService } from "src/application/base/notification/sms.service";
+import { OtpService } from "./otp.service";
 
 @Injectable()
 export class AuthService {
@@ -13,17 +14,18 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private smsService: SmsService,
+    private otpService: OtpService
   ) {}
 
   // Validate user performs using Local.strategy
   async validateUser(username: string, pass: string): Promise<any> {
-    console.log('validate user');
+    console.log("validate user");
     if (!username) {
-      throw new UnauthorizedException('No username provided');
+      throw new UnauthorizedException("No username provided");
     }
 
     if (!pass) {
-      throw new UnauthorizedException('No password provided');
+      throw new UnauthorizedException("No password provided");
     }
 
     const user = await this.userTable.findOne({
@@ -31,7 +33,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Wrong username or password');
+      throw new UnauthorizedException("Wrong username or password");
     }
 
     // checking the availablity of the user and
@@ -67,28 +69,36 @@ export class AuthService {
     if (!data.phoneNumber) {
       return Promise.reject(new InvalidPhoneNumberException());
     }
-    const phoneRegex = new RegExp('^(\\+98|0)?9\\d{9}$');
+    const phoneRegex = new RegExp("^(\\+98|0)?9\\d{9}$");
     if (!phoneRegex.test(data.phoneNumber)) {
       return Promise.reject(new InvalidPhoneNumberException());
     }
     let hash = null;
-    const userExist = user ? true: false;
+    const userExist = user ? true : false;
     if (data.loginByOtp) {
-      if (! userExist) {
+      if (!userExist) {
         return Promise.reject(new ForbiddenException());
       }
-      const otpGenerated = otpGenerator(data.phoneNumber);
+      const otpGenerated = this.otpService.otpGenerator(data.phoneNumber);
       await this.smsService.sendSMS(data.phoneNumber, otpGenerated.otp);
       hash = otpGenerated.hash;
-      return Promise.resolve({userExist, hash});
+      return Promise.resolve({ userExist, hash });
     }
-    if (data.isOauth || ! userExist) {
+    if (data.isOauth || !userExist) {
       const smsService = new SmsService();
-      const otpGenerated = otpGenerator(data.phoneNumber);
+      const otpGenerated = this.otpService.otpGenerator(data.phoneNumber);
       await smsService.sendSMS(data.phoneNumber, otpGenerated.otp);
       hash = otpGenerated.hash;
     }
-    return Promise.resolve({userExist, hash});
+    return Promise.resolve({ userExist, hash });
+  }
+
+  module.exports.checkToken = function checkToken(app, options) {
+    return Promise.resolve(true);
   };
+
+
+  
+
 
 }
