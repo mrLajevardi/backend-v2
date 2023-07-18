@@ -139,7 +139,7 @@ export class TestDataService {
       }
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException();
+      throw error;
     }
   }
 

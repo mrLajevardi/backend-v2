@@ -37,8 +37,8 @@ export class AiService {
 
   async verifyToken(token: string) {
     const JWT_SECRET_KEY = process.env.ARAD_AI_JWT_SECRET_KEY;
-    console.log(token, JWT_SECRET_KEY);
-    console.log(this.jwtService.verify(token, { secret: JWT_SECRET_KEY }));
+    // console.log(token, JWT_SECRET_KEY);
+    // console.log(this.jwtService.verify(token, { secret: JWT_SECRET_KEY }));
     return this.jwtService.verify(token, { secret: JWT_SECRET_KEY });
   }
 
@@ -80,7 +80,8 @@ export class AiService {
         id: serviceProperties.serviceInstanceId,
       },
     });
-    console.log(serviceInstance);
+    //console.log(serviceInstance);
+    //console.log(verified,serviceInstance);
     if (
       isEmpty(verified['costPerRequest']) ||
       isEmpty(verified['createdDate']) ||

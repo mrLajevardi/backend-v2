@@ -172,8 +172,8 @@ describe('AiController', () => {
         ip: '172.22.20.16',
         method: 'POST',
         codeStatus: 200,
-        itemType: null,
-        serviceInstanceId: null,
+        itemTypeId: 81,
+        serviceInstanceId: '5578AF82-7B09-4AC4-B0B1-1068498159r4',
       };
       const result = await controller.createAITransactionsLogs(data);
       expect(result);
@@ -193,8 +193,8 @@ describe('AiController', () => {
         ip: '172.22.20.16',
         method: 'POST',
         codeStatus: 200,
-        itemType: null,
-        serviceInstanceId: null,
+        itemTypeId: 81,
+        serviceInstanceId: '5578AF82-7B09-4AC4-B0B1-1068498159r4',
       };
 
       await expect(controller.createAITransactionsLogs(data)).rejects.toThrow(
@@ -214,8 +214,8 @@ describe('AiController', () => {
         ip: '172.22.20.16',
         method: 'POST',
         codeStatus: 200,
-        itemType: null,
-        serviceInstanceId: null,
+        itemTypeId: 81,
+        serviceInstanceId: '5578AF82-7B09-4AC4-B0B1-1068498159r4',
       };
       await expect(controller.createAITransactionsLogs(data)).rejects.toThrow(
         new InvalidItemTypesException(),

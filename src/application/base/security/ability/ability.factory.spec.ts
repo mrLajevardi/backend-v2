@@ -81,7 +81,7 @@ describe('AbilityFactory', () => {
         accessType: 'read',
         principalType: '',
         principalId: '',
-        property: 'issueId',
+        property: 'id',
         permission: 'cannot',
       });
 
@@ -123,7 +123,7 @@ describe('AbilityFactory', () => {
     it('should return false', async () => {
       const user1 = await userTable.findById(1);
       const ability = await abilityFactory.createForUser(user1);
-      const result = ability.can(Action.Read, 'User', 'issueId');
+      const result = ability.can(Action.Read, 'User', 'id');
       expect(result).toBeFalsy();
     });
 

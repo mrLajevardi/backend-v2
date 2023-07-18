@@ -241,7 +241,7 @@ export class ExtendServiceService {
         invoice.endDateTime,
         invoice.dateTime,
       );
-      const token = jwt.sign(ServiceAiInfo, aradAIConfig.JWT_SECRET_KEY);
+      const token = jwt.sign(ServiceAiInfo, process.env.ARAD_AI_JWT_SECRET_KEY);
 
       await this.servicePropertiesTable.create({
         serviceInstanceId: serviceInstanceId,

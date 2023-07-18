@@ -10,6 +10,12 @@
       "propertyKey": "vast.remoteApiKey",
       "value": "d7362f4f40da8a2c8c2f626a9354703ed9e8e488def748658cc572ecf7ac1efc",
       "serviceTypeId": "vdc"
+    },
+    {
+      "id": 103,
+      "propertyKey": "QualityPlans.demo.maxRequestPerDay",
+      "value": "1",
+      "serviceTypeId": "AradAiDemo"
     }
   ]
   

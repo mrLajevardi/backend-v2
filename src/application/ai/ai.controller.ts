@@ -99,10 +99,11 @@ export class AiController {
       constPerRequest,
     );
 
+    console.log(itemTypes.id);
     const itemType = await this.itemTypesTable.findById(itemTypes.id);
-    return await this.aiTransactionLogsTable.create({
+    const itemData = {
       dateTime: new Date(),
-      itemType: itemType,
+      itemTypeId: itemTypes.id,
       serviceInstanceId: serviceProperties.serviceInstanceId,
       description: data.methodName,
       request: data.request,
@@ -113,7 +114,8 @@ export class AiController {
       method: data.method,
       codeStatus: data.codeStatus,
       token: data.token,
-    });
+    };
+    return await this.aiTransactionLogsTable.create(itemData);
   }
 
   @Get('/createOrGetDemoToken')

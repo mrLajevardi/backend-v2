@@ -158,6 +158,7 @@ describe('AiService', () => {
   describe('checkAIToken', () => {
     it('should return true for valid token', async () => {
       const setting = await settingTable.findOne({ where: { userId: 587 } });
+      console.log('Setting', setting);
       const token = setting.value;
       const result = await service.checkAIToken(token);
       expect(result).toBe(true);

@@ -18,7 +18,7 @@
         "isPayg": false
     },
     {
-        "id": 2,
+        "id": "AradAiDemo",
         "title": "AradAiDemo",
         "baseFee": 0,
         "createInstanceScript": "",
@@ -28,7 +28,7 @@
         "isPayg": 0
     },
     {
-        "id": 3,
+        "id": "AradAi",
         "title": "AradAi",
         "baseFee": 0,
         "createInstanceScript": "",
