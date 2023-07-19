@@ -35,6 +35,6 @@ export function generatePassword(
     wishlist = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$/}{[]+)(&;?<>*',
 ) {
   return Array.from(crypto.randomFillSync(new Uint32Array(length)))
-      .map((x) => wishlist[x % wishlist.length])
+      .map((x) => wishlist[(x as number) % wishlist.length])
       .join('');
 };

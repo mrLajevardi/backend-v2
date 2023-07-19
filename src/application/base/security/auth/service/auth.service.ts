@@ -6,6 +6,7 @@ import { InvalidPhoneNumberException } from "src/infrastructure/exceptions/inval
 import { ForbiddenException } from "src/infrastructure/exceptions/forbidden.exception";
 import { SmsService } from "src/application/base/notification/sms.service";
 import { OtpService } from "./otp.service";
+import { NotificationService } from "src/application/base/notification/notification.service";
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,7 @@ export class AuthService {
     private userTable: UserTableService,
     private userService: UserService,
     private jwtService: JwtService,
-    private smsService: SmsService,
+    private notificationService: NotificationService,
     private otpService: OtpService
   ) {}
 
@@ -80,7 +81,7 @@ export class AuthService {
         return Promise.reject(new ForbiddenException());
       }
       const otpGenerated = this.otpService.otpGenerator(data.phoneNumber);
-      await this.smsService.sendSMS(data.phoneNumber, otpGenerated.otp);
+      await this.notificationService.sms.sendSMS(data.phoneNumber, otpGenerated.otp);
       hash = otpGenerated.hash;
       return Promise.resolve({ userExist, hash });
     }
@@ -97,11 +98,6 @@ export class AuthService {
     return Promise.resolve(true);
   };
 
-  
-
-
-
-  
 
 
 }

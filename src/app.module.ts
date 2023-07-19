@@ -27,7 +27,7 @@ import { ServiceModule } from './application/base/service/service.module';
 import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
 import { NotificationModule } from './application/base/notification/notification.module';
 import { OtpService } from './application/base/security/auth/service/otp.service';
-import { UserModule } from './application/base/security/user/user.module';
+import { TicketModule } from './application/base/ticket/ticket.module';
 
 @Module({
   imports: [
@@ -63,6 +63,7 @@ import { UserModule } from './application/base/security/user/user.module';
     LoggerModule,
     ServiceModule,
     NotificationModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [
