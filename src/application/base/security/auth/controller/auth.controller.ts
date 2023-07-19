@@ -4,6 +4,7 @@ import { Public } from '../decorators/ispublic.decorator';
 import { LoginDto } from '../dto/login.dto';
 import { LocalAuthGuard } from '../guard/local-auth.guard';
 import { AuthService } from '../service/auth.service';
+import { OtpLoginDto } from '../dto/otp-login.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -36,6 +37,16 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
+    return this.authService.login(req.user);
+  }
+
+  @Public()
+  @ApiOperation({ summary: 'OTP login' })
+  @ApiResponse({ status: 200, description: 'Returns the JWT token' })
+  @ApiBody({ type: OtpLoginDto })
+  @UseGuards(LocalAuthGuard)
+  @Post('otplogin')
+  async otpLogin(@Request() req) {
     return this.authService.login(req.user);
   }
 }
