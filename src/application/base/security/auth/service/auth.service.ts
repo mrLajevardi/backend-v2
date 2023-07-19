@@ -93,9 +93,12 @@ export class AuthService {
     return Promise.resolve({ userExist, hash });
   }
 
-  module.exports.checkToken = function checkToken(app, options) {
+  checkToken(options) {
     return Promise.resolve(true);
   };
+
+  
+
 
 
   

@@ -35,6 +35,7 @@ export class Transactions {
     length: 255,
     default: () => "''",
   })
+  
   paymentToken: string | null;
 
   @Column('int', { name: 'UserID' })

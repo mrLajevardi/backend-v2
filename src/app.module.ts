@@ -27,6 +27,7 @@ import { ServiceModule } from './application/base/service/service.module';
 import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
 import { NotificationModule } from './application/base/notification/notification.module';
 import { OtpService } from './application/base/security/auth/service/otp.service';
+import { UserModule } from './application/base/security/user/user.module';
 
 @Module({
   imports: [

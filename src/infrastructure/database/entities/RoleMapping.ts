@@ -21,10 +21,15 @@ export class RoleMapping {
   @Column('nvarchar', { name: 'principalId', nullable: true, length: 255 })
   principalId: string | null;
 
+  @Column('string', { name: 'RoleID' })
+  roleId: string;
+
   @ManyToOne(() => Role, (role) => role.roleMappings, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
+
+
   @JoinColumn([{ name: 'roleId', referencedColumnName: 'id' }])
   role: Role;
 }
