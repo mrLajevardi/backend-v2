@@ -200,8 +200,8 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const session = await this.sessionService.checkUserSession(
-      props['orgId'],
       userId,
+      props['orgId'],
     );
     const filter = `(isVAppTemplate==false;vdc==${props['vdcId']})`;
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
@@ -278,8 +278,8 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const session = await this.sessionService.checkUserSession(
-      props['orgId'],
       userId,
+      props['orgId'],
     );
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'orgVdc',
@@ -684,8 +684,8 @@ export class TaskManagerService {
     if (!isEmpty(query.data.record[0])) {
       const orgId = query.data.record[0].org.split('/').slice(-1)[0];
       const userSession = await this.sessionService.checkUserSession(
-        orgId,
         userId,
+        orgId,
       );
       const catalogId = await this.checkCatalog(userSession);
       const totalVdcs = query.data.total;
