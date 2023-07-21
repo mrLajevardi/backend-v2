@@ -7,11 +7,11 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { CrudModule } from '../../crud/crud.module';
 import { UserTableModule } from '../../crud/user-table/user-table.module';
-import { LoginService } from './service/login.service';
-import { OauthService } from './service/oauth.service';
 import { NotificationModule } from '../../notification/notification.module';
 import { OtpService } from './service/otp.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { OtpStrategy } from './strategy/otp.strategy';
+import { GoogleStrategy } from './strategy/google.strategy';
 
 @Module({
   imports: [
@@ -27,7 +27,14 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, LoginService, OauthService, OtpService],
+  providers: [
+    AuthService, 
+    LocalStrategy, 
+    JwtStrategy, 
+    OtpStrategy, 
+    GoogleStrategy,
+    OtpService
+  ],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }

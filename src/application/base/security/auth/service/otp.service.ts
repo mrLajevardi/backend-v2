@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import * as otpGen from "otp-generator";
-import { otpTool } from "otp-without-db";
+import * as otpTool from "otp-without-db";
 
 @Injectable()
 export class OtpService {
@@ -11,6 +11,7 @@ export class OtpService {
       specialChars: false,
     });
     const key = process.env.OTP_SECRET_KEY;
+    console.log("creating otp from", phoneNumber, otp, key);
     const hash = otpTool.createNewOTP(phoneNumber, otp, key);
     return { otp, hash };
   }
