@@ -9,7 +9,12 @@ import {
   Req,
   Put,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
 import { NatDto } from './dto/nat.dto';
 import { NatService } from './nat.service';
 
