@@ -94,7 +94,7 @@ export class EdgeService {
       where: { userId },
     });
     const orgId = org.id;
-    const session = await this.sessionService.checkUserSession(orgId, userId);
+    const session = await this.sessionService.checkUserSession(userId, orgId);
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'edgeGateway',
       filter: `name==${edgeName}`,

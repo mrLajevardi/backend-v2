@@ -98,7 +98,7 @@ export class SessionsService {
    * @param {String} orgId
    * @return {Promise}
    */
-  async checkUserSession(orgId, userId) {
+  async checkUserSession(userId, orgId) {
     const session = await this.sessionTable.findOne({
       where: {
         orgId: orgId,

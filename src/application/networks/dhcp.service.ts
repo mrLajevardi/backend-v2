@@ -15,12 +15,13 @@ export class DhcpService {
   async createDhcpBinding(options, vdcInstanceId, networkId, data) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.createDhcpBinding(
@@ -55,12 +56,13 @@ export class DhcpService {
   async deleteDhcpBinding(options, vdcInstanceId, networkId, bindingId) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.deleteDhcpBinding(
@@ -77,19 +79,20 @@ export class DhcpService {
       { ...options.locals },
     );
     return Promise.resolve({
-      __vcloudTask: dhcpBinding['headers']['location'],
+      taskId: dhcpBinding.__vcloudTask.split('task/')[1],
     });
   }
 
   async deleteDhcp(options, vdcInstanceId, networkId) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const dhcp = await mainWrapper.user.dhcp.deleteDhcp(session, networkId);
@@ -164,12 +167,13 @@ export class DhcpService {
   ) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const allDhcpBindings = this.getDhcpBindings(
@@ -186,12 +190,13 @@ export class DhcpService {
   async getDhcpBinding(options, vdcInstanceId, networkId, bindingId) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.getDhcpBinding(
@@ -216,12 +221,13 @@ export class DhcpService {
   async getDhcp(options, vdcInstanceId, networkId) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const network = await mainWrapper.user.network.getNetwork(
@@ -244,12 +250,13 @@ export class DhcpService {
   async updateDhcpBinding(options, vdcInstanceId, networkId, bindingId, data) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const dhcpBinding = await mainWrapper.user.dhcp.updateDhcpBinding(
@@ -288,12 +295,13 @@ export class DhcpService {
   async updateDhcp(options, vdcInstanceId, networkId, data) {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const orgId = serviceOrg.value;
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       orgId,
     );
     const dhcp = await mainWrapper.user.dhcp.updateDhcp(

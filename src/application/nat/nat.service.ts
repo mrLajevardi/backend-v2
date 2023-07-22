@@ -25,7 +25,7 @@ export class NatService {
       serviceInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     const config = {
@@ -48,17 +48,17 @@ export class NatService {
       config,
       props['edgeName'],
     );
-    await this.logger.info(
-      'nat',
-      'createNat',
-      {
-        username: options.locals.username,
-        natName: data.name,
-        // task id
-        _object: nat.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
+    // await this.logger.info(
+    //   'nat',
+    //   'createNat',
+    //   {
+    //     username: options.locals.username,
+    //     natName: data.name,
+    //     // task id
+    //     _object: nat.__vcloudTask.split('task/')[1],
+    //   },
+    //   { ...options.locals },
+    // );
     return Promise.resolve({
       taskId: nat.__vcloudTask.split('task/')[1],
     });
@@ -69,7 +69,7 @@ export class NatService {
       serviceInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     const nat = await mainWrapper.user.nat.deleteNatRule(
@@ -77,16 +77,16 @@ export class NatService {
       ruleId,
       props['edgeName'],
     );
-    await this.logger.info(
-      'nat',
-      'deleteNat',
-      {
-        username: options.locals.username,
-        // task id
-        _object: nat.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
+    // await this.logger.info(
+    //   'nat',
+    //   'deleteNat',
+    //   {
+    //     username: options.locals.username,
+    //     // task id
+    //     _object: nat.__vcloudTask.split('task/')[1],
+    //   },
+    //   { ...options.locals },
+    // );
     return Promise.resolve({
       taskId: nat.__vcloudTask.split('task/')[1],
     });
@@ -97,7 +97,7 @@ export class NatService {
       serviceInstanceId,
     );
     const session = await await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     let natRule = await mainWrapper.user.nat.getNatRule(
@@ -128,7 +128,7 @@ export class NatService {
       serviceInstanceId,
     );
     const session = await await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     const allNatsList = await this.getAllNats(
@@ -209,7 +209,7 @@ export class NatService {
       serviceInstanceId,
     );
     const session = await await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     const config = {
@@ -233,16 +233,16 @@ export class NatService {
       config,
       props['edgeName'],
     );
-    await this.logger.info(
-      'nat',
-      'updateNat',
-      {
-        username: options.locals.username,
-        // task id
-        _object: nat.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
+    // await this.logger.info(
+    //   'nat',
+    //   'updateNat',
+    //   {
+    //     username: options.locals.username,
+    //     // task id
+    //     _object: nat.__vcloudTask.split('task/')[1],
+    //   },
+    //   { ...options.locals },
+    // );
     return Promise.resolve({
       taskId: nat.__vcloudTask.split('task/')[1],
     });
