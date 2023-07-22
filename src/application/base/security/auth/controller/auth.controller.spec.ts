@@ -39,7 +39,6 @@ describe('AuthController', () => {
       jest
         .spyOn(authService, 'login')
         .mockResolvedValueOnce({ access_token: 'testtoken' });
-
       const response = await controller.login(loginDto);
       expect(response.access_token).toBeDefined();
     });
@@ -53,5 +52,6 @@ describe('AuthController', () => {
       const response = await controller.login(loginDto);
       expect(response).toBe(null);
     });
+
   });
 });

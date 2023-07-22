@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Request, Get, Req, Res } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Get, Req, Res, Body } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../decorators/ispublic.decorator';
 import { LoginDto } from '../dto/login.dto';
@@ -8,30 +8,18 @@ import { OtpLoginDto } from '../dto/otp-login.dto';
 import { OtpAuthGuard } from '../guard/otp-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleAuthGuard } from '../guard/google-auth.guard';
+import { GithubLoginDto } from '../dto/github-login.dto';
+import { LinkedInAuthGuard } from '../guard/linked-in-auth.guard';
+import { LinkedInLoginDto } from '../dto/linked-in-login.dto';
+import { GithubAuthGuard } from '../guard/github-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
-  // constructor(private authService: AuthService) {}
-  // @ApiOperation({ summary: 'User login' })
-  // @ApiResponse({ status: 200, description: 'Returns the JWT token' })
-  // @UseGuards(LocalAuthGuard)
-  // @Public()
-  // @Post('login')
-  // async login(@Body() dto : LoginDto) {
-  //   return this.authService.login(dto);
-  // }
-  // @ApiBearerAuth('token')
-  // @ApiOperation({ summary: 'Get user profile' })
-  // @ApiResponse({ status: 200, description: 'Returns the user profile' })
-  // @ApiBearerAuth() // Requires authentication with a JWT token
-  // @UseGuards(JwtAuthGuard)
-  // @Get('profile')
-  // getProfile(@Request() req) {
-  //   return req.user;
-  // }
+  
+  constructor(
+    private readonly authService: AuthService
+    ) {}
 
   @Public()
   @ApiOperation({ summary: 'User login' })
@@ -54,20 +42,40 @@ export class AuthController {
   }
 
   @Public()
-  @Get('google')
-  @UseGuards(GoogleAuthGuard)
-  async googleLogin() {
-    // Initiates the Google OAuth2 login flow
+  @Post('github')
+  @ApiBody({ type: GithubLoginDto })
+  @UseGuards(GithubAuthGuard)
+  async githubLogin() {
   }
 
   @Public()
-  @Get('google/callback')
-  @UseGuards(GoogleAuthGuard)
-  async googleLoginCallback(@Req() req, @Res() res) {
-    const user = req.user;
-    return user;
+  @Post('linkedin')
+  @ApiBody({ type: LinkedInLoginDto })
+  @UseGuards(LinkedInAuthGuard)
+  async linkedInLogin() {
   }
 
-  
+
+  @Public()
+  @Post('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleLogin() {
+  }
+
+  @Post('/loginAsUser')
+  @ApiOperation({ summary: 'login admin as a user' })
+  @ApiBody({ type: Object })
+  @ApiResponse({ status: 200, description: 'Logged in successfully', type: Object })
+  async loginAsUser(
+    @Body() data: any,
+    @Request() options
+    ): Promise<any> {
+    // Your logic to handle login admin as a user goes here
+    // Replace this comment with your actual implementation
+    // For example:
+    const userCredentials = await this.authService.loginAsUser(options,data);
+    return userCredentials;
+  }
+
 
 }

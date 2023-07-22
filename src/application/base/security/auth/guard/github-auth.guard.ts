@@ -3,14 +3,14 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class GoogleAuthGuard extends AuthGuard('custom') {
+export class GithubAuthGuard extends AuthGuard('custom') {
   constructor(private reflector: Reflector) {
     super();
   }
 
   canActivate(context: ExecutionContext) {
-    console.log('can activate in google auth guard');
+    console.log('can activate in github auth guard');
     return super.canActivate(context);
   }
-
+  
 }

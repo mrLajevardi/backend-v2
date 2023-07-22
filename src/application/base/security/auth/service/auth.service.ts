@@ -15,7 +15,7 @@ export class AuthService {
     private userService: UserService,
     private jwtService: JwtService,
     private notificationService: NotificationService,
-    private otpService: OtpService
+    public readonly otp: OtpService,
   ) {}
 
   // Validate user performs using Local.strategy
@@ -80,24 +80,27 @@ export class AuthService {
       if (!userExist) {
         return Promise.reject(new ForbiddenException());
       }
-      const otpGenerated = this.otpService.otpGenerator(data.phoneNumber);
+      const otpGenerated = this.otp.otpGenerator(data.phoneNumber);
       await this.notificationService.sms.sendSMS(data.phoneNumber, otpGenerated.otp);
       hash = otpGenerated.hash;
       return Promise.resolve({ userExist, hash });
     }
     if (data.isOauth || !userExist) {
       const smsService = new SmsService();
-      const otpGenerated = this.otpService.otpGenerator(data.phoneNumber);
+      const otpGenerated = this.otp.otpGenerator(data.phoneNumber);
       await smsService.sendSMS(data.phoneNumber, otpGenerated.otp);
       hash = otpGenerated.hash;
     }
     return Promise.resolve({ userExist, hash });
   }
 
-  checkToken(options) {
-    return Promise.resolve(true);
+  async loginAsUser(options, data) {
+    const user = await this.userTable.findById(data.userId);
+    if (! user) {
+      return Promise.reject(new ForbiddenException());
+    }
+    return this.login(user);
   };
-
 
 
 }

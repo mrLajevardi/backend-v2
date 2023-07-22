@@ -10,7 +10,7 @@ import { AuthService } from '../service/auth.service';
 import { OauthService } from '../service/oauth.service';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy) {
+export class GithubStrategy extends PassportStrategy(Strategy) {
   constructor(
     private readonly oauthService: OauthService,
   ) {
@@ -24,11 +24,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
       throw new ForbiddenException();
     }
 
-    if (!req.body.token) {
-      throw new ForbiddenException("no token provided");
+    if (!req.body.code) {
+      throw new ForbiddenException("no code provided");
     }
 
-    return this.oauthService.verifyGoogleOauth(req.body.token);
+    return this.oauthService.verifyGithubOauth(req.body.code);
 
   }
 }

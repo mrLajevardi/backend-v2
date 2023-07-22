@@ -28,6 +28,7 @@ import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.modul
 import { NotificationModule } from './application/base/notification/notification.module';
 import { OtpService } from './application/base/security/auth/service/otp.service';
 import { TicketModule } from './application/base/ticket/ticket.module';
+import { OauthService } from './application/base/security/auth/service/oauth.service';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { TicketModule } from './application/base/ticket/ticket.module';
     NetworkService,
     ApplicationPortProfileService,
     OtpService,
+    OauthService,
   ],
   exports: [],
 })

@@ -20,6 +20,10 @@ export class Tickets {
   @Column('int', { name: 'TicketID' })
   ticketId: number;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
+  serviceInstanceId: string | null;
+
+  
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.tickets,

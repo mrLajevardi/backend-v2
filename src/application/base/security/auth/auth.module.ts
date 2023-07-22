@@ -12,6 +12,9 @@ import { OtpService } from './service/otp.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { OtpStrategy } from './strategy/otp.strategy';
 import { GoogleStrategy } from './strategy/google.strategy';
+import { LinkedInStrategy } from './strategy/linked-in.strategy';
+import { GithubStrategy } from './strategy/github.strategy';
+import { OauthService } from './service/oauth.service';
 
 @Module({
   imports: [
@@ -29,10 +32,13 @@ import { GoogleStrategy } from './strategy/google.strategy';
   controllers: [AuthController],
   providers: [
     AuthService, 
+    OauthService,
     LocalStrategy, 
     JwtStrategy, 
     OtpStrategy, 
     GoogleStrategy,
+    LinkedInStrategy,
+    GithubStrategy,
     OtpService
   ],
   exports: [AuthService],
