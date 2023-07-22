@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApplicationRefDto } from 'src/application/edge-gateway/dto/application-ref.dto';
 
 export class NatDto {
@@ -10,10 +10,6 @@ export class NatDto {
   @ApiProperty({ type: Boolean, required: true })
   @IsBoolean()
   enabled: boolean;
-
-  @ApiProperty({ type: Boolean, required: false })
-  @IsBoolean()
-  logging?: boolean;
 
   @ApiProperty({ type: Number, required: false, example: 2 })
   @IsNumber()
@@ -35,9 +31,10 @@ export class NatDto {
   @IsString()
   externalIP: string;
 
-  @ApiProperty({ type: String, default: '', example: '22' })
-  @IsString()
-  externalPort?: string;
+  @ApiProperty({ type: Number, default: '', example: '22' })
+  @IsNumber()
+  @IsOptional()
+  externalPort?: number;
 
   @ApiProperty({ type: String, required: true, example: '192.168.1.1' })
   @IsString()
@@ -48,6 +45,7 @@ export class NatDto {
 
   @ApiProperty({ type: String })
   @IsString()
+  @IsOptional()
   description?: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })

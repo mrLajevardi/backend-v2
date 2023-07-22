@@ -9,18 +9,18 @@ import {
   Req,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { NatDto } from './dto/nat.dto';
 import { NatService } from './nat.service';
 
 @ApiTags('Nat')
 @Controller('nat')
+@ApiBearerAuth()
 export class NatController {
   constructor(private readonly service: NatService) {}
 
   @Post('/:serviceInstanceId')
   @ApiOperation({ summary: 'creates a nat for user' })
-  @ApiParam({ name: 'data', description: ' data ' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   async createNatRule(
     @Request() options,
@@ -36,7 +36,7 @@ export class NatController {
   @ApiParam({ name: 'ruleId', description: 'rule id' })
   async deleteNatRule(
     @Request() options,
-    @Param('vdcInstanceId') serviceInstanceId: string,
+    @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('ruleId') ruleId: string,
   ): Promise<any> {
     return await this.service.deleteNatRule(options, serviceInstanceId, ruleId);
