@@ -2,7 +2,7 @@ import { Tasks } from 'src/infrastructure/database/entities/Tasks';
 
 export interface iTask {
   serviceInstanceId: string;
-  customTaskId: number;
+  customTaskId: string;
   vcloudTask: Tasks;
   target: string;
   nextTask: string;
