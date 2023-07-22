@@ -76,7 +76,7 @@ export class EdgeGatewayService {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
         serviceInstanceId: vdcInstanceId,
-        propertyKey: 'orgId'
+        propertyKey: 'orgId',
       },
     });
     const edge = await this.servicePropertiesTable.findOne({
@@ -115,7 +115,7 @@ export class EdgeGatewayService {
     const serviceEdgeIpRanges = await this.servicePropertiesTable.find({
       where: {
         serviceInstanceId: vdcInstanceId,
-        propertyKey: 'edgeIpRange'
+        propertyKey: 'edgeIpRange',
       },
     });
     const ipAddresses = serviceEdgeIpRanges.map((ip) => {
@@ -202,7 +202,7 @@ export class EdgeGatewayService {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
         serviceInstanceId: vdcInstanceId,
-        propertyKey: 'orgId'
+        propertyKey: 'orgId',
       },
     });
     const edge = await this.servicePropertiesTable.findOne({
@@ -240,7 +240,7 @@ export class EdgeGatewayService {
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
         serviceInstanceId: vdcInstanceId,
-        propertyKey: 'orgId'
+        propertyKey: 'orgId',
       },
     });
     const edge = await this.servicePropertiesTable.findOne({
