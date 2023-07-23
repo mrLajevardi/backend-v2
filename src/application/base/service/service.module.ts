@@ -14,6 +14,7 @@ import { TransactionsModule } from '../transactions/transactions.module';
 import { TasksModule } from '../tasks/tasks.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { ServiceController } from './controller/service.controller';
+import { DeleteServiceService } from './services/delete-service.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ServiceController } from './controller/service.controller';
     ExtendServiceService,
     DiscountsService,
     ServiceChecksService,
+    DeleteServiceService,
   ],
   controllers: [ServiceController],
   exports: [

@@ -676,23 +676,22 @@ export class TaskManagerService {
     // const vdcName = props?.name;
     const user = await this.userTable.findById(userId);
     const vdcName = user?.username + '_org_vdc_' + service.index;
-
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'adminOrgVdc',
       filter: `name==*${vdcName}*`,
     });
     if (!isEmpty(query.data.record[0])) {
-      const orgId = query.data.record[0].org.split('/').slice(-1)[0];
-      const userSession = await this.sessionService.checkUserSession(
-        userId,
-        orgId,
-      );
-      const catalogId = await this.checkCatalog(userSession);
+      const org = query.data.record[0].org.split('/').slice(-1)[0];
+      const orgId = `urn:vcloud:org:${org}`;
+      const orgName = query.data.record[0].orgName;
+      console.log(userId, orgId);
+      const adminSession = await this.sessionService.checkAdminSession('');
+      const catalogId = await this.checkCatalog(adminSession, orgId, orgName);
       const totalVdcs = query.data.total;
       // Delete Catalog, If last vdc in org
       if (totalVdcs < 2 && catalogId != null) {
         const deleteCatalog = await this.orgService.deleteCatalogOrg(
-          userSession,
+          adminSession,
           catalogId,
         );
         vcloudTask = deleteCatalog.__vcloudTask;
@@ -710,7 +709,7 @@ export class TaskManagerService {
     });
   }
 
-  async checkCatalog(authToken) {
+  async checkCatalog(authToken, orgId, orgName) {
     const catalogName = 'user-catalog';
     const queryOptions = {
       type: 'catalog',
@@ -719,7 +718,12 @@ export class TaskManagerService {
       sortAsc: 'name',
       filter: `name==${catalogName}`,
     };
-    const catalogsList = await vcloudQuery(authToken, queryOptions);
+    const header = {
+      'X-vCloud-Authorization': orgName,
+      'X-VMWARE-VCLOUD-AUTH-CONTEXT': orgName,
+      'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgId,
+    };
+    const catalogsList = await vcloudQuery(authToken, queryOptions, header);
     let catalogId = null;
     const catalogRecord = catalogsList?.data?.record;
     if (catalogRecord && catalogRecord[0]?.name == catalogName) {
@@ -736,6 +740,7 @@ export class TaskManagerService {
     const userId = service.userId;
     const user = await this.userTable.findById(userId);
     const vdcName = user?.username + '_org_vdc_' + service.index;
+
     const session = await this.sessionService.checkAdminSession(
       userId.toString(),
     );
@@ -747,6 +752,7 @@ export class TaskManagerService {
       const orgId = query.data.record[0].org.split('/').slice(-1)[0];
       let vdcId = query.data.record[0].href.split('/').slice(-1)[0];
       vdcId = `urn:vcloud:vdc:${vdcId}`;
+      console.log('vdc:', vdcId);
       const deletedVdc = await this.vdcService.deleteVdc(
         userId,
         orgId,
