@@ -53,10 +53,6 @@ export class UserService {
         return await bcrypt.hash(string, 10);
     }
 
-    // compare two passwordes
-    async comparePassword(hashed: string, plain: string): Promise<boolean> {
-        return await bcrypt.compare(plain, hashed);
-    }
 
     async checkUserCredit(costs, userId, options, serviceType) {
         try {
@@ -178,7 +174,7 @@ export class UserService {
         options,
         data,
     ) {
-        const userId = options.user.id;
+        const userId = options.user.userId;
         const user = await this.userTable.findById(userId);
         const settings = await this.systemSettingsTable.find({
             where: {
@@ -258,7 +254,7 @@ export class UserService {
     };
 
     async getSingleUserInfo(options) {
-        const user = await this.userTable.findById(options.accessToken.userId);
+        const user = await this.userTable.findById(options.user.userId);
         return Promise.resolve({
             name: user.name,
             family: user.family,
@@ -267,8 +263,8 @@ export class UserService {
     };
 
     async getUserCredit(options) {
-        const user = await this.userTable.findById(options.accessToken.userId);
-        //console.log(getActiveRemoteMethods(Users));
+        console.log(options.user.userId)
+        const user = await this.userTable.findById(options.user.userId);
         return Promise.resolve(user.credit);
     };
 
@@ -286,9 +282,8 @@ export class UserService {
     }
 
     async postUserCredit(options, credit) {
-        console.log(options);
-        const user = await this.userTable.findById(options.accessToken.userId);
-        await this.userTable.updateAll({ id: options.accessToken.userId }, {
+        const user = await this.userTable.findById(options.user.userId);
+        await this.userTable.updateAll({ id: options.user.userId }, {
             credit: user.credit + credit,
         });
         return;
@@ -330,7 +325,7 @@ export class UserService {
         options,
         authority = null,
     ) {
-        const userId = options.user.id;
+        const userId = options.user.userId;
         const user = await this.userTable.findById(userId);
         // find user transaction
         const transaction = await this.transactionsTable.findOne({

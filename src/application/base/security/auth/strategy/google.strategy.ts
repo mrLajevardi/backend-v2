@@ -1,16 +1,14 @@
-import { Strategy } from 'passport-custom';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
-import { NotificationService } from 'src/application/base/notification/notification.service';
-import { OtpService } from '../service/otp.service';
-import { AuthService } from '../service/auth.service';
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-strategy';
+import { Request } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
 import { OauthService } from '../service/oauth.service';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy) {
+export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
   constructor(
     private readonly oauthService: OauthService,
   ) {
@@ -19,16 +17,21 @@ export class GoogleStrategy extends PassportStrategy(Strategy) {
 
   // The validation that will be checked before
   // any endpoint protected with jwt-auth guard
-  async validate(req): Promise<any> {
-    if (!req || !req.body ) {
-      throw new ForbiddenException();
+  async authenticate(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, options?: any): Promise<void> {
+    console.log("im in google auth");
+    try {
+      if (!req || !req.body) {
+        this.error(new ForbiddenException());
+      }
+
+      if (!req.body.token) {
+        this.error(new ForbiddenException("no token provided"));
+      }
+
+      this.success(this.oauthService.verifyGoogleOauth(req.body.token));
+    } catch (error) {
+      console.log("found error")
+      this.error(error);
     }
-
-    if (!req.body.token) {
-      throw new ForbiddenException("no token provided");
-    }
-
-    return this.oauthService.verifyGoogleOauth(req.body.token);
-
   }
 }

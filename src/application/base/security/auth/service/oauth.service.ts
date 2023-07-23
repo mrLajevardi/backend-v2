@@ -6,6 +6,7 @@ import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.e
 import jwt from 'jsonwebtoken'
 import { DisabledUserException } from 'src/infrastructure/exceptions/disabled-user.exception';
 import { AuthService } from './auth.service';
+import { throws } from 'assert';
 
 
 @Injectable()
@@ -16,7 +17,7 @@ export class OauthService {
         private readonly authService: AuthService,
     ) { }
 
-    async googleOauth(token) {
+    async googleOauth(token)  {
         let email;
         let error;
         let verified = false;
@@ -33,8 +34,7 @@ export class OauthService {
             email = checkEmail.data.email;
             verified = true;
         } catch (err) {
-            console.log(err);
-            error = new BadRequestException()
+            error = new BadRequestException("bad request", err);
         }
         return {
             error,
@@ -140,12 +140,12 @@ export class OauthService {
         };
     }
 
-    async verifyGoogleOauth(token) {
+    async verifyGoogleOauth(token : string ) {
         const check = await this.googleOauth(token);
         const { email, verified, error } = check;
         console.log(email, '😉');
         if (error) {
-            return Promise.reject(error);
+            return error; 
         }
         const user = await this.userTable.findOne({
             where: {

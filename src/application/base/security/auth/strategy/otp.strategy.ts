@@ -1,76 +1,98 @@
-import { Strategy } from 'passport-custom';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { NotificationService } from 'src/application/base/notification/notification.service';
 import { OtpService } from '../service/otp.service';
 import { AuthService } from '../service/auth.service';
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-strategy';
+import { Request } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
+import { SmsErrorException } from 'src/infrastructure/exceptions/sms-error-exception';
 
 @Injectable()
-export class OtpStrategy extends PassportStrategy(Strategy) {
+export class OtpStrategy extends PassportStrategy(Strategy, "otp") {
   constructor(
     private readonly authService: AuthService,
     private readonly userTable: UserTableService,
     private readonly notificationService: NotificationService,
     private readonly otpService: OtpService,
+    private readonly logger: LoggerService,
   ) {
     super();
   }
 
-  // The validation that will be checked before
-  // any endpoint protected with jwt-auth guard
-  async validate(req): Promise<any> {
-    if (!req || !req.body ) {
-      throw new ForbiddenException();
-    }
+  async authenticate(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, options?: any): Promise<void> {
 
-    if (!req.body.phoneNumber) {
-      throw new InvalidPhoneNumberException();
-    }
-
-    const phoneNumber = req.body.phoneNumber;
-    const user = await this.userTable.findOne({
-      where: {
-        phoneNumber: phoneNumber,
-      },
-    });
-
-    const userExist = user ? true : false;
-
-
-    if (!req.body.otp) {
-
-      const phoneRegex = new RegExp('^(\\+98|0)?9\\d{9}$');
-      if (!phoneRegex.test(phoneNumber)) {
-        return Promise.reject(new InvalidPhoneNumberException());
+    try {
+      if (!req || !req.body) {
+        this.error(new ForbiddenException());
+        return;
       }
 
-      let hash = null;
-      
-      if (!userExist) {
-        return Promise.reject(new ForbiddenException());
+      console.log('otp validator');
+      if (!req.body.phoneNumber) {
+        this.error(new InvalidPhoneNumberException());
+        return;
       }
-      const otpGenerated = this.otpService.otpGenerator(phoneNumber);
-      hash = otpGenerated.hash;
-      console.log(otpGenerated);
-      await this.notificationService.sms.sendSMS(phoneNumber, otpGenerated.otp);
+      const phoneNumber = req.body.phoneNumber;
+      const user = await this.userTable.findOne({
+        where: {
+          phoneNumber: phoneNumber,
+        },
+      });
 
-      return Promise.resolve({ userExist, hash });
-    }
+      const userExist = user ? true : false;
 
-    if (!req.body.hash) {
-      throw new ForbiddenException('no hash provided');
-    }
+      console.log('user exists', userExist);
+      if (!req.body.otp) {
 
-    const otp = req.body.otp;
-    const hash = req.body.hash;
+        const phoneRegex = new RegExp('^(\\+98|0)?9\\d{9}$');
+        if (!phoneRegex.test(phoneNumber)) {
+          this.error(new InvalidPhoneNumberException());
+          return;
+        }
 
-    if (this.otpService.otpVerifier(phoneNumber,otp,hash)){
-      return this.authService.login(user);
-    }else{
-      throw new ForbiddenException();
+        let hash = null;
+
+        if (!userExist) {
+          this.error(new ForbiddenException());
+          return;
+        }
+        const otpGenerated = this.otpService.otpGenerator(phoneNumber);
+        hash = otpGenerated.hash;
+        console.log(otpGenerated);
+        try {
+          await this.notificationService.sms.sendSMS(phoneNumber, otpGenerated.otp);
+        } catch (error) {
+          this.error(error);
+        }
+        return;
+      }
+
+      if (!req.body.hash) {
+        this.error(new ForbiddenException('no hash provided'));
+      }
+
+      const otp = req.body.otp;
+      const hash = req.body.hash;
+
+      console.log('validating ', otp, hash);
+      if (this.otpService.otpVerifier(phoneNumber, otp, hash)) {
+        const token = this.authService.login(user);
+        this.success(token);
+        return;
+      } else {
+        this.error(new ForbiddenException());
+      }
+
+    } catch (error) {
+      this.error(error);
     }
   }
+
+
 }

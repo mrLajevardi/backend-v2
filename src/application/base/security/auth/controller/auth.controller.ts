@@ -5,13 +5,12 @@ import { LoginDto } from '../dto/login.dto';
 import { LocalAuthGuard } from '../guard/local-auth.guard';
 import { AuthService } from '../service/auth.service';
 import { OtpLoginDto } from '../dto/otp-login.dto';
-import { OtpAuthGuard } from '../guard/otp-auth.guard';
-import { AuthGuard } from '@nestjs/passport';
 import { GoogleAuthGuard } from '../guard/google-auth.guard';
 import { GithubLoginDto } from '../dto/github-login.dto';
 import { LinkedInAuthGuard } from '../guard/linked-in-auth.guard';
 import { LinkedInLoginDto } from '../dto/linked-in-login.dto';
 import { GithubAuthGuard } from '../guard/github-auth.guard';
+import { OtpAuthGuard } from '../guard/otp-auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')

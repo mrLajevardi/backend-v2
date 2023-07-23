@@ -15,10 +15,11 @@ import { GoogleStrategy } from './strategy/google.strategy';
 import { LinkedInStrategy } from './strategy/linked-in.strategy';
 import { GithubStrategy } from './strategy/github.strategy';
 import { OauthService } from './service/oauth.service';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
-    UserModule,
+    PassportModule,
     CrudModule,
     UserTableModule,
     NotificationModule,
@@ -33,13 +34,13 @@ import { OauthService } from './service/oauth.service';
   providers: [
     AuthService, 
     OauthService,
+    OtpService,
     LocalStrategy, 
     JwtStrategy, 
     OtpStrategy, 
     GoogleStrategy,
     LinkedInStrategy,
     GithubStrategy,
-    OtpService
   ],
   exports: [AuthService],
 })

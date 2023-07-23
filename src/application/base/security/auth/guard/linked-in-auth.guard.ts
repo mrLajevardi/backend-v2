@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
-export class LinkedInAuthGuard extends AuthGuard('custom') {
+export class LinkedInAuthGuard extends AuthGuard('linkedIn') {
   constructor(private reflector: Reflector) {
     super();
   }

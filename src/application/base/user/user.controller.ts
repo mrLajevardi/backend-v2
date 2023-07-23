@@ -26,6 +26,7 @@ import { ResendEmailDto } from './dto/resend-email.dto';
 import { NotificationService } from '../notification/notification.service';
 import { ResetForgottenPasswordDto } from './dto/reset-forgotten-password.dto';
 import { ResetPasswordByPhoneDto } from './dto/reset-password-by-phone.dto';
+import { PostUserCreditDto } from './dto/post-user-credit.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -65,18 +66,19 @@ export class UserController {
   @ApiOkResponse({ description: 'The user\'s credit', type: Number })
   async getUserCredit(@Request() options): Promise<number> {
     const userCredit = await this.userService.getUserCredit(options);
+    console.log(options.user.userId);
     return userCredit;
   }
 
   @Post('/credit')
   @ApiOperation({ summary: 'update user credit' })
-  @ApiBody({ type: Number })
+  @ApiBody({ type: PostUserCreditDto })
   @ApiCreatedResponse({ description: 'User credit updated successfully' })
   async updateUserCredit(
-    @Body() credit: number,
+    @Body() body: PostUserCreditDto,
     @Request() options
     ): Promise<void> {
-    await this.userService.postUserCredit(options,credit);
+    await this.userService.postUserCredit(options,body.credit);
   }
 
   @Get('/info')

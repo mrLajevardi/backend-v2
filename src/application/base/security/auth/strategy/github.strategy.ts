@@ -1,34 +1,38 @@
-import { Strategy } from 'passport-custom';
-import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
-import { NotificationService } from 'src/application/base/notification/notification.service';
-import { OtpService } from '../service/otp.service';
-import { AuthService } from '../service/auth.service';
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-strategy';
+import { Request } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
 import { OauthService } from '../service/oauth.service';
 
+
 @Injectable()
-export class GithubStrategy extends PassportStrategy(Strategy) {
+export class GithubStrategy extends PassportStrategy(Strategy, "github") {
   constructor(
     private readonly oauthService: OauthService,
   ) {
     super();
   }
 
+
+
   // The validation that will be checked before
   // any endpoint protected with jwt-auth guard
-  async validate(req): Promise<any> {
-    if (!req || !req.body ) {
-      throw new ForbiddenException();
+  async authenticate(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, options?: any): Promise<void> {
+    try {
+      if (!req || !req.body) {
+        this.error(new ForbiddenException());
+      }
+
+      if (!req.body.code) {
+        this.error(new ForbiddenException("Github: no code provided"));
+      }
+
+      this.success(this.oauthService.verifyGithubOauth(req.body.code));
+    } catch (error) {
+      this.error(error);
     }
-
-    if (!req.body.code) {
-      throw new ForbiddenException("no code provided");
-    }
-
-    return this.oauthService.verifyGithubOauth(req.body.code);
-
   }
 }

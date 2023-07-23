@@ -7,12 +7,14 @@ import { ForbiddenException } from "src/infrastructure/exceptions/forbidden.exce
 import { SmsService } from "src/application/base/notification/sms.service";
 import { OtpService } from "./otp.service";
 import { NotificationService } from "src/application/base/notification/notification.service";
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class AuthService {
   constructor(
     private userTable: UserTableService,
-    private userService: UserService,
+   // private userService: UserService,
     private jwtService: JwtService,
     private notificationService: NotificationService,
     public readonly otp: OtpService,
@@ -38,7 +40,7 @@ export class AuthService {
     }
 
     // checking the availablity of the user and
-    const isValid = await this.userService.comparePassword(user.password, pass);
+    const isValid = await this.comparePassword(user.password, pass);
     if (user && isValid) {
       // eslint-disable-next-line
       const { password, ...result } = user;
@@ -49,6 +51,13 @@ export class AuthService {
     return null;
   }
 
+  
+    // compare two passwordes
+    async comparePassword(hashed: string, plain: string): Promise<boolean> {
+      return await bcrypt.compare(plain, hashed);
+  }
+
+
   // This function will be called in AuthController.login after
   // the success of local strategy
   // it will return the JWT token
@@ -58,40 +67,6 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
     };
-  }
-
-  async checkPhoneNumber(options, data) {
-    let check;
-    const user = await this.userTable.findOne({
-      where: {
-        phoneNumber: data.phoneNumber,
-      },
-    });
-    if (!data.phoneNumber) {
-      return Promise.reject(new InvalidPhoneNumberException());
-    }
-    const phoneRegex = new RegExp("^(\\+98|0)?9\\d{9}$");
-    if (!phoneRegex.test(data.phoneNumber)) {
-      return Promise.reject(new InvalidPhoneNumberException());
-    }
-    let hash = null;
-    const userExist = user ? true : false;
-    if (data.loginByOtp) {
-      if (!userExist) {
-        return Promise.reject(new ForbiddenException());
-      }
-      const otpGenerated = this.otp.otpGenerator(data.phoneNumber);
-      await this.notificationService.sms.sendSMS(data.phoneNumber, otpGenerated.otp);
-      hash = otpGenerated.hash;
-      return Promise.resolve({ userExist, hash });
-    }
-    if (data.isOauth || !userExist) {
-      const smsService = new SmsService();
-      const otpGenerated = this.otp.otpGenerator(data.phoneNumber);
-      await smsService.sendSMS(data.phoneNumber, otpGenerated.otp);
-      hash = otpGenerated.hash;
-    }
-    return Promise.resolve({ userExist, hash });
   }
 
   async loginAsUser(options, data) {
