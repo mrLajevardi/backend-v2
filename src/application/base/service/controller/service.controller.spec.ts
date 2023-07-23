@@ -10,10 +10,7 @@ describe('ServiceController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        DeleteServiceService,
-        CreateServiceService
-      ],
+      providers: [DeleteServiceService, CreateServiceService],
       controllers: [ServiceController],
     }).compile();
 

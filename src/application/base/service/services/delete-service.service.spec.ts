@@ -41,9 +41,7 @@ describe('DeleteServiceService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
-      providers: [
-        DeleteServiceService
-      ],
+      providers: [DeleteServiceService],
     }).compile();
 
     service = module.get<DeleteServiceService>(DeleteServiceService);
