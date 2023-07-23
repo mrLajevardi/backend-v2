@@ -24,7 +24,7 @@ export class ApplicationPortProfileService {
    * @return {Promise}
    */
   async createApplicationPortProfile(options, vdcInstanceId, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -66,7 +66,7 @@ export class ApplicationPortProfileService {
    * @return {Promise}
    */
   async deleteApplicationPortProfile(options, vdcInstanceId, applicationId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -100,7 +100,7 @@ export class ApplicationPortProfileService {
    * @return {Promise}
    */
   async getApplicationPortProfile(options, vdcInstanceId, applicationId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -146,7 +146,7 @@ export class ApplicationPortProfileService {
     filter,
     search,
   ) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -202,7 +202,7 @@ export class ApplicationPortProfileService {
     data,
     applicationId,
   ) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );

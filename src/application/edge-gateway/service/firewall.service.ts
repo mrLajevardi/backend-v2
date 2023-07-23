@@ -14,7 +14,7 @@ export class FirewallService {
     private readonly sessionService: SessionsService,
   ) {}
   async addToFirewallList(options, vdcInstanceId, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -96,7 +96,7 @@ export class FirewallService {
   }
 
   async getFirewallList(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -135,7 +135,7 @@ export class FirewallService {
   }
 
   async getSingleFirewall(options, vdcInstanceId, ruleId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -162,7 +162,7 @@ export class FirewallService {
   }
 
   async updateFirewallList(options, vdcInstanceId, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -208,7 +208,7 @@ export class FirewallService {
   }
 
   async updateSingleFirewall(options, vdcInstanceId, ruleId, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
