@@ -13,6 +13,4 @@ export class OtpAuthGuard extends AuthGuard('otp') {
     console.log('can activate in otp auth guard');
     return super.canActivate(context);
   }
-  
 }
-

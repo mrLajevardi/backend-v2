@@ -12,5 +12,4 @@ export class LinkedInAuthGuard extends AuthGuard('linkedIn') {
     console.log('can activate in linked in  auth guard');
     return super.canActivate(context);
   }
-  
 }

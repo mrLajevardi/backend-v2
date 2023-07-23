@@ -45,6 +45,5 @@ describe('AuthService', () => {
       const result = await service.comparePassword(hash1, 'abc123');
       expect(result).toBeTruthy();
     });
-
   });
 });

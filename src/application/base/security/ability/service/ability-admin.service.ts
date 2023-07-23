@@ -4,11 +4,8 @@ import { UserTableService } from 'src/application/base/crud/user-table/user-tabl
 
 @Injectable()
 export class AbilityAdminService {
-
-    constructor(
-        private readonly aclTable : ACLTableService,
-        private readonly userTable : UserTableService
-    ){}
-
-     
+  constructor(
+    private readonly aclTable: ACLTableService,
+    private readonly userTable: UserTableService,
+  ) {}
 }

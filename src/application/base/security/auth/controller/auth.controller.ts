@@ -1,4 +1,13 @@
-import { Controller, Post, UseGuards, Request, Get, Req, Res, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Get,
+  Req,
+  Res,
+  Body,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../decorators/ispublic.decorator';
 import { LoginDto } from '../dto/login.dto';
@@ -16,10 +25,7 @@ import { LoginAsUserDto } from '../dto/login-as-user.dto';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  
-  constructor(
-    private readonly authService: AuthService
-    ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @ApiOperation({ summary: 'User login' })
@@ -46,34 +52,35 @@ export class AuthController {
   @Post('github')
   @ApiBody({ type: GithubLoginDto })
   @UseGuards(GithubAuthGuard)
-  async githubLogin() {
+  async githubLogin(@Request() req) {
+    return req.user;
   }
 
   @Public()
   @Post('linkedin')
   @ApiBody({ type: LinkedInLoginDto })
   @UseGuards(LinkedInAuthGuard)
-  async linkedInLogin() {
+  async linkedInLogin(@Request() req) {
+    return req.user;
   }
-
 
   @Public()
   @Post('google')
   @UseGuards(GoogleAuthGuard)
-  async googleLogin() {
+  async googleLogin(@Request() req) {
+    return req.user;
   }
 
   @Post('/loginAsUser')
   @ApiOperation({ summary: 'login admin as a user' })
   @ApiBody({ type: LoginAsUserDto })
-  @ApiResponse({ status: 200, description: 'Logged in successfully', type: LoginAsUserDto })
-  async loginAsUser(
-    @Body() data: any,
-    @Request() options
-    ): Promise<any> {
-    const userCredentials = await this.authService.loginAsUser(options,data);
+  @ApiResponse({
+    status: 200,
+    description: 'Logged in successfully',
+    type: LoginAsUserDto,
+  })
+  async loginAsUser(@Body() data: any, @Request() options): Promise<any> {
+    const userCredentials = await this.authService.loginAsUser(options, data);
     return userCredentials;
   }
-
-
 }

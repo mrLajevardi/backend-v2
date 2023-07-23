@@ -5,7 +5,12 @@ import { EmailContentService } from './email-content.service';
 import { NotificationService } from './notification.service';
 
 @Module({
-  providers: [SmsService, EmailService, EmailContentService, NotificationService],
-  exports:[NotificationService]
+  providers: [
+    SmsService,
+    EmailService,
+    EmailContentService,
+    NotificationService,
+  ],
+  exports: [NotificationService],
 })
 export class NotificationModule {}

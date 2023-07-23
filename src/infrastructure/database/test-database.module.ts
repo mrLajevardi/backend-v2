@@ -160,7 +160,7 @@ import { TicketsTableService } from 'src/application/base/crud/tickets-table/tic
     ZarinpalService,
     TicketService,
     AccessTokenTableService,
-    TicketsTableService
+    TicketsTableService,
   ],
   exports: [
     TypeOrmModule,

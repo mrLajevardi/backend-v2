@@ -60,7 +60,5 @@ describe('UserService', () => {
       const hash2 = await service.getPasswordHash('abc123');
       expect(hash1).not.toBe(hash2);
     });
-
-
   });
 });

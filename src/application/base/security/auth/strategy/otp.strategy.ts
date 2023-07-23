@@ -14,7 +14,7 @@ import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { SmsErrorException } from 'src/infrastructure/exceptions/sms-error-exception';
 
 @Injectable()
-export class OtpStrategy extends PassportStrategy(Strategy, "otp") {
+export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
   constructor(
     private readonly authService: AuthService,
     private readonly userTable: UserTableService,
@@ -25,8 +25,10 @@ export class OtpStrategy extends PassportStrategy(Strategy, "otp") {
     super();
   }
 
-  async authenticate(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, options?: any): Promise<void> {
-
+  async authenticate(
+    req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
+    options?: any,
+  ): Promise<void> {
     try {
       if (!req || !req.body) {
         this.error(new ForbiddenException());
@@ -49,7 +51,6 @@ export class OtpStrategy extends PassportStrategy(Strategy, "otp") {
 
       console.log('user exists', userExist);
       if (!req.body.otp) {
-
         const phoneRegex = new RegExp('^(\\+98|0)?9\\d{9}$');
         if (!phoneRegex.test(phoneNumber)) {
           this.error(new InvalidPhoneNumberException());
@@ -66,7 +67,10 @@ export class OtpStrategy extends PassportStrategy(Strategy, "otp") {
         hash = otpGenerated.hash;
         console.log(otpGenerated);
         try {
-          await this.notificationService.sms.sendSMS(phoneNumber, otpGenerated.otp);
+          await this.notificationService.sms.sendSMS(
+            phoneNumber,
+            otpGenerated.otp,
+          );
         } catch (error) {
           this.error(error);
         }
@@ -88,11 +92,8 @@ export class OtpStrategy extends PassportStrategy(Strategy, "otp") {
       } else {
         this.error(new ForbiddenException());
       }
-
     } catch (error) {
       this.error(error);
     }
   }
-
-
 }

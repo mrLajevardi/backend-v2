@@ -12,5 +12,4 @@ export class GoogleAuthGuard extends AuthGuard('google') {
     console.log('can activate in google auth guard');
     return super.canActivate(context);
   }
-
 }

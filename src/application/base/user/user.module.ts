@@ -12,12 +12,12 @@ import { UserAdminService } from './user-admin.service';
 
 @Module({
   imports: [
-    DatabaseModule, 
-    CrudModule, 
-    LoggerModule, 
-    PaymentModule, 
+    DatabaseModule,
+    CrudModule,
+    LoggerModule,
+    PaymentModule,
     NotificationModule,
-    AuthModule
+    AuthModule,
   ],
   providers: [UserService, UserAdminService],
   controllers: [UserController],

@@ -23,7 +23,6 @@ export class Tickets {
   @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
   serviceInstanceId: string | null;
 
-  
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.tickets,

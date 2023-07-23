@@ -4,7 +4,6 @@ import { PaymentService } from './payment.service';
 
 @Module({
   providers: [ZarinpalService, PaymentService],
-  exports: [PaymentService]
-  
+  exports: [PaymentService],
 })
 export class PaymentModule {}

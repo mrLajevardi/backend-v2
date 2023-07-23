@@ -21,8 +21,6 @@ export class RoleMapping {
   @Column('nvarchar', { name: 'principalId', nullable: true, length: 255 })
   principalId: string | null;
 
-
-  
   @ManyToOne(() => Role, (role) => role.roleMappings, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

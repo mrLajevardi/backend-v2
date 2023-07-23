@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 
 export class CreateTicketsDto {
@@ -21,5 +28,4 @@ export class CreateTicketsDto {
   @ApiProperty({ type: Number })
   @IsString()
   serviceInstanceId?: string;
-
 }

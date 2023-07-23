@@ -1,11 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import axios from "axios";
-import { SmsErrorException } from "src/infrastructure/exceptions/sms-error-exception";
+import { Injectable } from '@nestjs/common';
+import axios from 'axios';
+import { SmsErrorException } from 'src/infrastructure/exceptions/sms-error-exception';
 
 @Injectable()
 export class SmsService {
-  constructor() {}
-
   async sendSMS(phoneNumber, otp) {
     const otpApiKey = process.env.OTP_API_KEY;
     const url = `https://api.kavenegar.com/v1/${otpApiKey}/verify/lookup.json?receptor=${phoneNumber}&token=${otp}&template=AradOTP`;
@@ -14,7 +12,7 @@ export class SmsService {
       .get(url)
       .then((res) => {
         if (res.data.return.status == 200) {
-          smsStatus = "sent";
+          smsStatus = 'sent';
         }
       })
       .catch((err) => {

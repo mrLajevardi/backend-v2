@@ -12,5 +12,4 @@ export class GithubAuthGuard extends AuthGuard('github') {
     console.log('can activate in github auth guard');
     return super.canActivate(context);
   }
-  
 }

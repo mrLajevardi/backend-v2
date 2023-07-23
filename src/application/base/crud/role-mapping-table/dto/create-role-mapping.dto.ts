@@ -18,6 +18,4 @@ export class CreateRoleMappingDto {
   @IsString()
   @ApiProperty()
   roleId: string;
-
-
 }
