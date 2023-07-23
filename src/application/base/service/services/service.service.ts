@@ -26,7 +26,7 @@ export class ServiceService {
   async getAllServiceProperties(serviceId) {
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
-        ServiceInstanceID: serviceId,
+        serviceInstanceId: serviceId,
       },
     });
     const props = {};

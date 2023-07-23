@@ -54,6 +54,9 @@ export class Invoices {
   @Column('int', { name: 'UserID' })
   userId: number;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+
   @ManyToOne(() => User, (user) => user.invoices, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

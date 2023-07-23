@@ -13,7 +13,7 @@ export class UpdateServiceItemsDto {
 
   @IsNumber()
   @ApiProperty()
-  serviceInstanceId?: number;
+  serviceInstanceId?: string;
 
   @IsNumber()
   @ApiProperty()

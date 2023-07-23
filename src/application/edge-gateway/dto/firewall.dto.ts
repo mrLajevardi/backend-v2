@@ -14,6 +14,7 @@ export class FirewallDto {
   @ApiProperty({ example: '9615c4c7-2354-48fc-9639-cc76875ad466' })
   @IsNotEmpty()
   @IsString()
+  @IsOptional()
   id: string;
 
   @ApiProperty({ example: 'test' })

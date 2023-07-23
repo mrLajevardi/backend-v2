@@ -46,7 +46,7 @@ export class VcloudWrapper extends Wrapper {
         user: userEndpoints,
       },
     };
-    const baseUrl = 'https://172.20.34.34:444';
+    const baseUrl = 'https://labvpc.aradcloud.com';
     super(httpsAgent, endPoints, baseUrl);
   }
 }

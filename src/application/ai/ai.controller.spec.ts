@@ -37,13 +37,35 @@ import { ServiceService } from '../base/service/services/service.service';
 import { InvoicesTableService } from '../base/crud/invoices-table/invoices-table.service';
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
 import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.service';
+import { TestDataService } from 'src/infrastructure/database/test-data.service';
+import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-table/dto/create-aitransactions-logs.dto';
+import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
+import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
+import { ConfigModule } from '@nestjs/config';
+// import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 describe('AiController', () => {
   let controller: AiController;
+  let service: AiService;
+  let settingTable: SettingTableService;
+  let testDataService: TestDataService;
+  let serviceInstanceTable: ServiceInstancesTableService;
+  let servicePropertiesTable: ServicePropertiesTableService;
+  let serviceTypes: ServiceTypesTableService;
+  let aITransactionsLogs: AITransactionsLogsTableService;
+  let itemType: ItemTypesTableService;
+  let user: UserService;
+  let config: ConfigsTableService;
+  let plan: PlansTableService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
+        TestDatabaseModule,
+      ],
       providers: [
         AiService,
         UserService,
@@ -89,9 +111,261 @@ describe('AiController', () => {
     }).compile();
 
     controller = module.get<AiController>(AiController);
+    service = module.get<AiService>(AiService);
+    user = module.get<UserService>(UserService);
+    config = module.get<ConfigsTableService>(ConfigsTableService);
+    settingTable = module.get<SettingTableService>(SettingTableService);
+    serviceTypes = module.get<ServiceTypesTableService>(
+      ServiceTypesTableService,
+    );
+    serviceInstanceTable = module.get<ServiceInstancesTableService>(
+      ServiceInstancesTableService,
+    );
+    servicePropertiesTable = module.get<ServicePropertiesTableService>(
+      ServicePropertiesTableService,
+    );
+    itemType = module.get<ItemTypesTableService>(ItemTypesTableService);
+    aITransactionsLogs = module.get<AITransactionsLogsTableService>(
+      AITransactionsLogsTableService,
+    );
+    plan = module.get<PlansTableService>(PlansTableService);
+    testDataService = module.get<TestDataService>(TestDataService);
+    await testDataService.seedTestData();
   });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
+    expect(service).toBeDefined();
+    expect(user).toBeDefined();
+    expect(config).toBeDefined();
+    expect(settingTable).toBeDefined();
+    expect(serviceTypes).toBeDefined();
+    expect(serviceInstanceTable).toBeDefined();
+    expect(servicePropertiesTable).toBeDefined();
+    expect(itemType).toBeDefined();
+    expect(aITransactionsLogs).toBeDefined();
+    expect(plan).toBeDefined();
+    expect(testDataService).toBeDefined();
+  });
+
+  describe('checkAradAiToken', () => {
+    it('should call checkAIToken and return a CheckTokenDto', async () => {
+      const token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw';
+      // const options = {};
+      const mockCheckAIToken = true;
+      const result = await controller.checkAradAiToken(token);
+      expect(result).toEqual({ tokenValidity: mockCheckAIToken });
+    });
+  });
+
+  describe('createAITransactionsLogs', () => {
+    it('should create a new AITransactionsLogs and return it', async () => {
+      const data: CreateAITransactionsLogsDto = {
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw',
+        description: 'translate',
+        methodName: 'translate',
+        request: 'http://172.20.51.101:8000/translate/',
+        body: '{"text": "hello this is a test", "lang": "fa"}',
+        response: '{"translatedText":"سلام این یک آزمایش است"}',
+        ip: '172.22.20.16',
+        method: 'POST',
+        codeStatus: 200,
+        itemTypeId: 81,
+        serviceInstanceId: '5578AF82-7B09-4AC4-B0B1-1068498159r4',
+      };
+      const result = await controller.createAITransactionsLogs(data);
+      expect(result);
+      // .toEqual({ //undefind ??
+      // });
+    });
+
+    it('should throw an InvalidServiceInstanceIdException if service properties is empty', async () => {
+      const data: CreateAITransactionsLogsDto = {
+        token:
+          'eyJhbGhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZELTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw',
+        description: 'translate',
+        methodName: 'translate',
+        request: 'http://172.20.51.101:8000/translate/',
+        body: '{"text": "hello this is a test", "lang": "fa"}',
+        response: '{"translatedText":"سلام این یک آزمایش است"}',
+        ip: '172.22.20.16',
+        method: 'POST',
+        codeStatus: 200,
+        itemTypeId: 81,
+        serviceInstanceId: '5578AF82-7B09-4AC4-B0B1-1068498159r4',
+      };
+
+      await expect(controller.createAITransactionsLogs(data)).rejects.toThrow(
+        new InvalidServiceInstanceIdException(),
+      );
+    });
+
+    it('should throw an InvalidItemTypesException if item types is empty', async () => {
+      const data: CreateAITransactionsLogsDto = {
+        token:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw',
+        description: 'Dranslate',
+        methodName: 'Dranslate',
+        request: 'http://172.20.51.101:8000/translate/',
+        body: '{"text": "hello this is a test", "lang": "fa"}',
+        response: '{"translatedText":"سلام این یک آزمایش است"}',
+        ip: '172.22.20.16',
+        method: 'POST',
+        codeStatus: 200,
+        itemTypeId: 81,
+        serviceInstanceId: '5578AF82-7B09-4AC4-B0B1-1068498159r4',
+      };
+      await expect(controller.createAITransactionsLogs(data)).rejects.toThrow(
+        new InvalidItemTypesException(),
+      );
+    });
+  });
+
+  describe('createOrGetDemoToken', () => {
+    it('should create a demo token and return it if it does not exist', async () => {
+      // const options = {
+      //   user: {
+      //     userId: 587,
+      //   },
+      // };
+      // const mockToken =
+      //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaURlbW8iLCJjcmVhdGVkRGF0ZSI6IjIwMjMtMDYtMDFUMjM6Mjg6MzcuNjY0WiIsInVzZXJJZCI6IjU4NyIsImR1cmF0aW9uIjoxMiwiZXhwaXJlRGF0ZSI6IjIwMjQtMDUtMjZUMjM6Mjg6MzcuNjY0WiIsImNvc3RQZXJSZXF1ZXN0IjoxMDAsImNvc3RQZXJNb250aCI6MCwiaWF0IjoxNjg1NjYyMTE4fQ.dfU6LoZ1T2nYcBoIQhkXCfSUVsu64Ks-OrjplmGqpNA';
+      // const result = await controller.createOrGetDemoToken(options);
+      // expect(result);
+      // .toEqual({ demoToken: mockToken });
+    });
+
+    //   it('should return the existing demo token if it exists', async () => {
+    //     const options = {
+    //       user: {
+    //         userId: 638,
+    //       },
+    //     };
+    //     const result = await controller.createOrGetDemoToken(options);
+    //     expect(result);
+    //   });
+  });
+  describe('getAradAiaDshboard', () => {
+    // it('should return the Arad AI dashboard', async () => {
+    // TODO Procedure sp_count
+    // const options = {
+    //   user: {
+    //     id: 587,
+    //   },
+    // };
+    // const serviceInstanceId = '7451E733-D18D-4329-B3FD-76429E4EDBEA';
+    // const mockDashboard = {
+    //   token:
+    //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw',
+    //   usedPerDay: 0,
+    //   allRequestused: 0,
+    //   usedPerMonth: [],
+    //   creditUsed: 0,
+    //   creditRemaining: 1000000000,
+    //   numberOfServiceCalled: {},
+    //   remainingDays: 175,
+    //   QualityPlan: {
+    //     qualityPlanCode: 'aiPersonal',
+    //     createdDate: '2023-07-10T16:46:13.400Z',
+    //     userId: '587',
+    //     duration: 180,
+    //     expireDate: '2024-01-06T17:46:13.397Z',
+    //     costPerRequest: 50,
+    //     costPerMonth: 0,
+    //     iat: 1689007574,
+    //   },
+    // };
+    // jest.spyOn(service, 'getAradAIDashboard')
+    //   .mockResolvedValue(mockDashboard);
+    // const result = await controller.getAradAiaDshboard(
+    //   serviceInstanceId,
+    //   options,
+    // );
+    // expect(result);
+    // toEqual(mockDashboard);
+    // });
+  });
+
+  describe('getAITransactionsLogs', () => {
+    it('should return the AI transactions logs', async () => {
+      // Arrange
+      // const options = {
+      //   user: {
+      //     id: 587,
+      //   },
+      // };
+      const serviceInstanceId = '7451E733-D18D-4329-B3FD-76429E4EDBEA';
+      const page = 1;
+      const pageSize = 20;
+
+      const result = await controller.getAITransactionsLogs(
+        serviceInstanceId,
+        page,
+        pageSize,
+      );
+
+      expect(result.aiTransactionsLogs).toEqual([]);
+      expect(result.countAll).toEqual(0);
+    });
+  });
+
+  describe('getDashboardChart', () => {
+    it('should return the dashboard chart', async () => {
+      // TODO create procedure
+      // const options = {
+      //   user: {
+      //     id: 637,
+      //   },
+      // };
+      // const serviceInstanceId = '5578AF82-7B09-4AC4-B0B1-1068498159r4';
+      // const startDate = '2023-07-10';
+      // const endDate = '2023-07-11';
+      // const mockChart = {};
+      // const result = await controller.getDashboardChart(
+      //   serviceInstanceId,
+      //   startDate,
+      //   endDate,
+      //   options,
+      // );
+      // // Assert
+      // expect(result).toEqual(mockChart);
+    });
+  });
+  describe('getAiPlans', () => {
+    it('should return the AI plans', async () => {
+      // Arrange
+      // const options = {
+      //   user: {
+      //     id: 597,
+      //   },
+      // };
+      // const result = await controller.getAiPlans(options);
+      // expect(result).toEqual([
+      //   {
+      //     Code: 'aiPersonal',
+      //     AdditionRatio: 0,
+      //     Description: 'Description',
+      //     Condition: '@ServiceTypeID="aradAi"',
+      //     AdditionAmount: 0,
+      //     CostPerRequest: 300,
+      //     Items: [
+      //       {
+      //         ID: 81,
+      //         ServiceTypeID: 'aradAi',
+      //         Title: 'ترجمه',
+      //         Unit: 'token',
+      //         Fee: 500,
+      //         Code: 'translate',
+      //         MaxAvailable: 10,
+      //         MaxPerRequest: 10,
+      //         MinPerRequest: null,
+      //         AddressDemo: 'http://localhost:8080/api/v1/demo/?itemId=2',
+      //       },
+      //     ],
+      //   },
+      // ]);
+    });
   });
 });

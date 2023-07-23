@@ -32,6 +32,9 @@ export class Sessions {
   @Column('boolean', { name: 'isAdmin', nullable: true })
   isAdmin: boolean | null;
 
+  @Column('int', { name: 'orgId' })
+  orgId: number;
+
   @ManyToOne(() => Organization, (organization) => organization.sessions, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

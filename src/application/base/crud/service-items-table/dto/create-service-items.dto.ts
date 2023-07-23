@@ -11,9 +11,9 @@ export class CreateServiceItemsDto {
   @ApiProperty()
   itemTypeCode?: string;
 
-  @IsNumber()
+  @IsString()
   @ApiProperty()
-  serviceInstanceId: number;
+  serviceInstanceId: string;
 
   @IsNumber()
   @ApiProperty()

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { NetworksService } from './networks.service';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -26,6 +27,7 @@ import { GetNetworksDto } from './dto/get-networks.dto';
 import { UpdateDhcpDto } from '../edge-gateway/dto/update-dbcp.dto';
 
 @ApiTags('Networks')
+@ApiBearerAuth()
 @Controller('networks')
 export class NetworksController {
   constructor(private readonly service: NetworksService) {}

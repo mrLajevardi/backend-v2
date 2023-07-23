@@ -9,12 +9,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 
 export class CreateServiceInstancesDto {
-  @IsNumber()
-  @ApiProperty()
-  @IsOptional()
-  id?: number;
-
-  @IsNumber()
   @ApiProperty()
   userId: number;
 
