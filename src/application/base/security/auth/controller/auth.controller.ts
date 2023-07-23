@@ -11,6 +11,7 @@ import { LinkedInAuthGuard } from '../guard/linked-in-auth.guard';
 import { LinkedInLoginDto } from '../dto/linked-in-login.dto';
 import { GithubAuthGuard } from '../guard/github-auth.guard';
 import { OtpAuthGuard } from '../guard/otp-auth.guard';
+import { LoginAsUserDto } from '../dto/login-as-user.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -27,6 +28,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
+    console.log(req);
     return this.authService.login(req.user);
   }
 
@@ -63,15 +65,12 @@ export class AuthController {
 
   @Post('/loginAsUser')
   @ApiOperation({ summary: 'login admin as a user' })
-  @ApiBody({ type: Object })
-  @ApiResponse({ status: 200, description: 'Logged in successfully', type: Object })
+  @ApiBody({ type: LoginAsUserDto })
+  @ApiResponse({ status: 200, description: 'Logged in successfully', type: LoginAsUserDto })
   async loginAsUser(
     @Body() data: any,
     @Request() options
     ): Promise<any> {
-    // Your logic to handle login admin as a user goes here
-    // Replace this comment with your actual implementation
-    // For example:
     const userCredentials = await this.authService.loginAsUser(options,data);
     return userCredentials;
   }

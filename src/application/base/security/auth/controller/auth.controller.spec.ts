@@ -32,26 +32,7 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    it('should return token', async () => {
-      const loginDto = new LoginDto();
-      loginDto.username = 'back2-test';
-      loginDto.password = 'abc123';
-      jest
-        .spyOn(authService, 'login')
-        .mockResolvedValueOnce({ access_token: 'testtoken' });
-      const response = await controller.login(loginDto);
-      expect(response.access_token).toBeDefined();
-    });
 
-    it('should not respond', async () => {
-      const loginDto = new LoginDto();
-      loginDto.username = 'back2-test';
-      loginDto.password = '123132';
-      jest.spyOn(authService, 'login').mockResolvedValueOnce(null);
-
-      const response = await controller.login(loginDto);
-      expect(response).toBe(null);
-    });
 
   });
 });

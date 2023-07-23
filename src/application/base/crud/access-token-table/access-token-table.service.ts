@@ -8,6 +8,7 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteOptions,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -70,7 +71,7 @@ export class AccessTokenTableService {
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(options?: FindOptionsWhere<AccessToken>) {
+    await this.repository.delete(options);
   }
 }

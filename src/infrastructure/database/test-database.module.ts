@@ -62,6 +62,20 @@ import { DhcpService } from 'src/application/networks/dhcp.service';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
 import { NatService } from 'src/application/nat/nat.service';
 import { NetworksService } from 'src/application/networks/networks.service';
+import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
+import { SystemSettingsTableService } from 'src/application/base/crud/system-settings-table/system-settings-table.service';
+import { PaymentService } from 'src/application/payment/payment.service';
+import { NotificationService } from 'src/application/base/notification/notification.service';
+import { AuthService } from 'src/application/base/security/auth/service/auth.service';
+import { OtpService } from 'src/application/base/security/auth/service/otp.service';
+import { OauthService } from 'src/application/base/security/auth/service/oauth.service';
+import { EmailService } from 'src/application/base/notification/email.service';
+import { SmsService } from 'src/application/base/notification/sms.service';
+import { EmailContentService } from 'src/application/base/notification/email-content.service';
+import { ZarinpalService } from 'src/application/payment/zarinpal.service';
+import { TicketService } from 'src/application/base/ticket/ticket.service';
+import { AccessTokenTableService } from 'src/application/base/crud/access-token-table/access-token-table.service';
+import { TicketsTableService } from 'src/application/base/crud/tickets-table/tickets-table.service';
 
 @Module({
   imports: [
@@ -133,6 +147,20 @@ import { NetworksService } from 'src/application/networks/networks.service';
     ApplicationPortProfileService,
     DhcpService,
     ServicePlansTableService,
+    RoleMappingTableService,
+    SystemSettingsTableService,
+    PaymentService,
+    NotificationService,
+    AuthService,
+    OtpService,
+    OauthService,
+    EmailService,
+    SmsService,
+    EmailContentService,
+    ZarinpalService,
+    TicketService,
+    AccessTokenTableService,
+    TicketsTableService
   ],
   exports: [
     TypeOrmModule,
@@ -193,6 +221,20 @@ import { NetworksService } from 'src/application/networks/networks.service';
     ApplicationPortProfileService,
     DhcpService,
     ServicePlansTableService,
+    RoleMappingTableService,
+    SystemSettingsTableService,
+    PaymentService,
+    NotificationService,
+    AuthService,
+    OtpService,
+    OauthService,
+    EmailService,
+    SmsService,
+    EmailContentService,
+    ZarinpalService,
+    TicketService,
+    AccessTokenTableService,
+    TicketsTableService,
   ],
 })
 export class TestDatabaseModule {}

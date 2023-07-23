@@ -1,9 +1,10 @@
 import { Body, Controller, Param, Get, Post, Request } from '@nestjs/common';
-import { ApiBody, ApiCreatedResponse, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { ApiBody, ApiCreatedResponse, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { ReplyTicketDto } from './dto/reply-ticket.dto';
 
+@ApiTags('Tickets')
 @Controller('ticket')
 export class TicketController {
 

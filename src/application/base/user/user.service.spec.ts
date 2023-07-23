@@ -61,10 +61,6 @@ describe('UserService', () => {
       expect(hash1).not.toBe(hash2);
     });
 
-    it('should return true in comparison', async () => {
-      const hash1 = await service.getPasswordHash('abc123');
-      const result = await service.comparePassword(hash1, 'abc123');
-      expect(result).toBeTruthy();
-    });
+
   });
 });

@@ -62,7 +62,7 @@ export class AuthService {
   // the success of local strategy
   // it will return the JWT token
   async login(user: any) {
-    // console.log("auth service login", dto)
+     console.log("auth service login", user)
     const payload = { username: user.username, sub: user.id };
     return {
       access_token: this.jwtService.sign(payload),

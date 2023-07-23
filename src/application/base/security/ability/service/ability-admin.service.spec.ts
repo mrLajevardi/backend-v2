@@ -1,19 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthService } from './oauth.service';
+import { AbilityAdminService } from './ability-admin.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
-describe('OauthService', () => {
-  let service: OauthService;
+describe('AbilityAdminService', () => {
+  let service: AbilityAdminService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports:[
-        TestDatabaseModule,
-      ],
-      providers: [OauthService],
+      imports: [TestDatabaseModule],
+      providers: [AbilityAdminService],
     }).compile();
 
-    service = module.get<OauthService>(OauthService);
+    service = module.get<AbilityAdminService>(AbilityAdminService);
   });
 
   it('should be defined', () => {
