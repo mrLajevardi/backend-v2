@@ -162,6 +162,7 @@ import { NatService } from 'src/application/nat/nat.service';
     TicketService,
     AccessTokenTableService,
     TicketsTableService,
+    InvoiceItemListService
   ],
   exports: [
     TypeOrmModule,
@@ -236,6 +237,7 @@ import { NatService } from 'src/application/nat/nat.service';
     TicketService,
     AccessTokenTableService,
     TicketsTableService,
+    InvoiceItemListService
   ],
 })
 export class TestDatabaseModule {}
