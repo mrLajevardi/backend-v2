@@ -60,7 +60,6 @@ import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-ga
 import { FirewallService } from 'src/application/edge-gateway/service/firewall.service';
 import { DhcpService } from 'src/application/networks/dhcp.service';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
-import { NatService } from 'src/application/nat/nat.service';
 import { NetworksService } from 'src/application/networks/networks.service';
 import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
 import { SystemSettingsTableService } from 'src/application/base/crud/system-settings-table/system-settings-table.service';
@@ -76,6 +75,7 @@ import { ZarinpalService } from 'src/application/payment/zarinpal.service';
 import { TicketService } from 'src/application/base/ticket/ticket.service';
 import { AccessTokenTableService } from 'src/application/base/crud/access-token-table/access-token-table.service';
 import { TicketsTableService } from 'src/application/base/crud/tickets-table/tickets-table.service';
+import { NatService } from 'src/application/nat/nat.service';
 
 @Module({
   imports: [
