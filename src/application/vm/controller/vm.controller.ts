@@ -6,6 +6,7 @@ import {
   Query,
   Request,
   UseFilters,
+  Body
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { isEmpty, isNil } from 'lodash';
@@ -13,6 +14,7 @@ import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exce
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -20,6 +22,7 @@ import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.f
 import { Raw } from 'typeorm';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { VmService } from '../service/vm.service';
+import { CreateTemplateDto } from '../dto/create-template.dto';
 
 @ApiTags('VM')
 @Controller('VM')
@@ -28,18 +31,38 @@ import { VmService } from '../service/vm.service';
 export class VmController {
   constructor(private readonly vmService: VmService) {}
 
+  @Post('/:serviceInstanceId/:vmId/acquireVMTicket')
   @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'vmId', description: 'vm id' })
   @ApiResponse({
-    status: 204,
+    status: 201,
     description: 'acquire vm tickets',
     type: 'object',
   })
-  @Post('/acquireVMTicket')
   async acquireVMTicket(
-    @Query('vAppId') vAppId: string,
-    @Query('serviceInstanceId') serviceInstanceId: string,
+    @Param('vmId') vmId: string,
+    @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.acquireVMTicket(options, serviceInstanceId, vAppId);
+    return this.vmService.acquireVMTicket(options, serviceInstanceId, vmId);
+  }
+
+  @Post('/:serviceInstanceId/:containerId/createTemplate')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'containerId', description: 'container id of a vm' })
+  @ApiResponse({
+    status: 201,
+    description: 'create template from vm',
+    type: 'object',
+  })
+  async createTemplate(
+    @Param('containerId') containerId: string,
+    @Param('serviceInstanceId') serviceInstanceId: string,
+    @Request() options,
+    @Body() data: CreateTemplateDto,
+  ): Promise<any> {
+    return this.vmService.createTemplate(options, serviceInstanceId, containerId, data);
   }
 }

@@ -12,6 +12,7 @@ import { createOrgCatalog } from 'src/wrappers/mainWrapper/admin/org/createOrgCa
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { userPartialUpload } from 'src/wrappers/mainWrapper/user/vm/partialUpload';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
+import { CreateTemplateDto } from '../dto/create-template.dto';
 
 @Injectable()
 export class VmService {
@@ -40,7 +41,7 @@ export class VmService {
     });
   }
 
-  async createTemplate(options, serviceInstanceId, containerId, data) {
+  async createTemplate(options, serviceInstanceId: string, containerId: string, data: CreateTemplateDto) {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTableService.findOne({
       where: {
