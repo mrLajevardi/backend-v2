@@ -25,6 +25,7 @@ import { NetworksModule } from './application/networks/networks.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ServiceModule } from './application/base/service/service.module';
 import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
+import { VmModule } from './application/vm/vm.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.modul
     EdgeGatewayModule,
     LoggerModule,
     ServiceModule,
+    VmModule,
   ],
   controllers: [AppController],
   providers: [
