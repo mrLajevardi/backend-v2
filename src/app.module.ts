@@ -25,6 +25,10 @@ import { NetworksModule } from './application/networks/networks.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ServiceModule } from './application/base/service/service.module';
 import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
+import { NotificationModule } from './application/base/notification/notification.module';
+import { OtpService } from './application/base/security/auth/service/otp.service';
+import { TicketModule } from './application/base/ticket/ticket.module';
+import { OauthService } from './application/base/security/auth/service/oauth.service';
 
 @Module({
   imports: [
@@ -59,6 +63,8 @@ import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.modul
     EdgeGatewayModule,
     LoggerModule,
     ServiceModule,
+    NotificationModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [
@@ -69,6 +75,8 @@ import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.modul
     },
     NetworkService,
     ApplicationPortProfileService,
+    OtpService,
+    OauthService,
   ],
   exports: [],
 })

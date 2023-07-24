@@ -3,10 +3,14 @@ import { AbilityFactory } from './ability.factory';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Acl } from 'src/infrastructure/database/entities/Acl';
 import { CrudModule } from '../../crud/crud.module';
+import { AbilityAdminService } from './service/ability-admin.service';
+import { AbilityController } from './controller/ability.controller';
+import { AbilityAdminController } from './controller/ability-admin.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Acl]), CrudModule],
-  providers: [AbilityFactory],
+  providers: [AbilityFactory, AbilityAdminService],
   exports: [AbilityFactory],
+  controllers: [AbilityController, AbilityAdminController],
 })
 export class AbilityModule {}

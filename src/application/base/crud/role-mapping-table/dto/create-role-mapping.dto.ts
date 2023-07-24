@@ -15,7 +15,7 @@ export class CreateRoleMappingDto {
   @ApiProperty()
   principalId: string;
 
-  @IsNumber()
+  @IsString()
   @ApiProperty()
-  roleId: number;
+  roleId: string;
 }

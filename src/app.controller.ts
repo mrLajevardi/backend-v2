@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LocalAuthGuard } from './application/base/security/auth/guard/local-auth.guard';
 import { Public } from './application/base/security/auth/decorators/ispublic.decorator';
 import { ApiOperation } from '@nestjs/swagger';
-import { AuthService } from './application/base/security/auth/auth.service';
+import { AuthService } from './application/base/security/auth/service/auth.service';
 import { LoginDto } from './application/base/security/auth/dto/login.dto';
 import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
 
