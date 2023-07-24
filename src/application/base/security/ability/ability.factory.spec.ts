@@ -5,31 +5,8 @@ import { TestDatabaseModule } from 'src/infrastructure/database/test-database.mo
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvoicesService } from '../../invoice/service/invoices.service';
 import { User } from 'src/infrastructure/database/test-entities/User';
-import { InvoicesChecksService } from 'src/application/base/invoice/service/invoices-checks.service';
-import { CostCalculationService } from 'src/application/base/invoice/service/cost-calculation.service';
-import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { ServiceChecksService } from '../../service/services/service-checks/service-checks.service';
-import { SessionsService } from 'src/application/base/sessions/sessions.service';
-import { DiscountsService } from 'src/application/base/service/services/discounts.service';
-import { OrganizationService } from 'src/application/base/organization/organization.service';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
-import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
-import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
-import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
-import { InvoicePropertiesTableService } from '../../crud/invoice-properties-table/invoice-properties-table.service';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { PlansTableService } from '../../crud/plans-table/plans-table.service';
-import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
-import { UserService } from '../../user/user.service';
-import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
-import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
-import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
-import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
@@ -97,7 +74,7 @@ describe('AbilityFactory', () => {
 
     afterAll(() => {
       userTable.deleteAll();
-      aclTable.deleteAll();
+      aclTable.deleteAll({});
     });
 
     it('should return 2 for users.getAll', async () => {
@@ -181,7 +158,7 @@ describe('AbilityFactory', () => {
 
     afterAll(async () => {
       await userTable.deleteAll();
-      await aclTable.deleteAll();
+      await aclTable.deleteAll({});
     });
 
     it('should return 2 for users.getAll', async () => {
@@ -247,7 +224,7 @@ describe('AbilityFactory', () => {
 
     afterAll(async () => {
       await userTable.deleteAll();
-      await aclTable.deleteAll();
+      await aclTable.deleteAll({});
     });
 
     // user 1 access to invoice of user 1

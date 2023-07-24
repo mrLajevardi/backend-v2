@@ -1,4 +1,4 @@
-import { createMongoAbility, Subject, AbilityBuilder } from '@casl/ability';
+import { createMongoAbility, AbilityBuilder } from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
@@ -12,8 +12,9 @@ export enum Action {
   Delete = 'delete',
 }
 
-export type Subjects = (typeof dbEntities)[number] | 'all';
-export const ability = createMongoAbility<[Action, Subject]>();
+export type AbilitySubjects = (typeof dbEntities)[number] | 'all';
+
+export const ability = createMongoAbility<[Action, AbilitySubjects]>();
 
 @Injectable()
 export class AbilityFactory {
