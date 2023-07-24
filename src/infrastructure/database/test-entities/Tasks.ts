@@ -1,5 +1,13 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+import { randomUUID } from 'crypto';
 
 @Index('PK__tasks__7C6949D195E39C4E', ['taskId'], { unique: true })
 @Entity()
@@ -34,6 +42,9 @@ export class Tasks {
   @Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })
   currrentStep: string | null;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.tasks,
@@ -41,4 +52,9 @@ export class Tasks {
   )
   @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
+
+  @BeforeInsert()
+  setId() {
+    this.taskId = randomUUID();
+  }
 }

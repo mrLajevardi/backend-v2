@@ -1,4 +1,5 @@
 import {
+  BeforeInsert,
   Column,
   Entity,
   Index,
@@ -7,11 +8,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+import { randomUUID } from 'crypto';
 
 @Index('PK__tasks__7C6949D195E39C4E', ['taskId'], { unique: true })
 @Entity('Tasks', { schema: 'user' })
 export class Tasks {
-  @PrimaryGeneratedColumn('uuid', { name: 'TaskID' })
+  @Column('uniqueidentifier', { name: 'TaskID', primary: true })
   taskId: string;
 
   @Column('int', { name: 'UserID' })
@@ -38,6 +40,9 @@ export class Tasks {
   @Column('int', { name: 'StepCounts', nullable: true })
   stepCounts: number | null;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+
   //@Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })
   //currrentStep: string | null;
 
@@ -48,4 +53,8 @@ export class Tasks {
   )
   @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
+  @BeforeInsert()
+  setId() {
+    this.taskId = randomUUID();
+  }
 }

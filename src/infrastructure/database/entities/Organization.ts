@@ -34,6 +34,9 @@ export class Organization {
   @Column('char', { name: 'status', nullable: true, length: 1 })
   status: string | null;
 
+  @Column('int', { name: 'userId' })
+  userId: number;
+
   @ManyToOne(() => User, (user) => user.organizations, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

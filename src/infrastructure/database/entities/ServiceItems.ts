@@ -21,6 +21,12 @@ export class ServiceItems {
   @Column('varchar', { name: 'ItemTypeCode', nullable: true, length: 50 })
   itemTypeCode: string | null;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+
+  @Column('int', { name: 'ItemTypeID' })
+  itemTypeId: number;
+
   @ManyToOne(
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.serviceItems,

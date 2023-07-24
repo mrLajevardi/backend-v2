@@ -60,6 +60,7 @@ import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-ga
 import { FirewallService } from 'src/application/edge-gateway/service/firewall.service';
 import { DhcpService } from 'src/application/networks/dhcp.service';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
+import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-list/invoice-item-list.service';
 import { NetworksService } from 'src/application/networks/networks.service';
 import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
 import { SystemSettingsTableService } from 'src/application/base/crud/system-settings-table/system-settings-table.service';

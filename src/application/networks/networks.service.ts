@@ -10,6 +10,7 @@ import { ServiceChecksService } from '../base/service/services/service-checks/se
 import validator from 'validator';
 import { DhcpService } from './dhcp.service';
 import { InvalidIpParamException } from 'src/infrastructure/exceptions/invalid-ip-param.exceptionts';
+import { NetworkDto } from './dto/network.dto';
 
 @Injectable()
 export class NetworksService {
@@ -22,15 +23,16 @@ export class NetworksService {
     readonly dhcp: DhcpService,
   ) {}
 
-  async createNetwork(data, options, vdcInstanceId) {
+  async createNetwork(data: NetworkDto, options, vdcInstanceId) {
     await this.checkNetworkParams(data);
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
+    console.log(props);
     const network = await mainWrapper.user.network.createNetwork(
       {
         name: data.name,
@@ -51,14 +53,15 @@ export class NetworksService {
       },
       props['edgeName'],
     );
-    await this.logger.info(
-      'network',
-      'createNetwork',
-      {
-        _object: network.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
+    console.log('dfdfsdxxxx');
+    // await this.logger.info(
+    //   'network',
+    //   'createNetwork',
+    //   {
+    //     _object: network.__vcloudTask.split('task/')[1],
+    //   },
+    //   { ...options.locals },
+    // );
     return Promise.resolve({
       taskId: network.__vcloudTask.split('task/')[1],
     });
@@ -69,7 +72,7 @@ export class NetworksService {
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     const network = await mainWrapper.user.network.deleteNetwork(
@@ -101,7 +104,7 @@ export class NetworksService {
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     if (filter !== '') {
@@ -141,8 +144,9 @@ export class NetworksService {
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
+    console.log(props);
     const session = await this.sessionService.checkUserSession(
-      options.user.id,
+      options.user.userId,
       props['orgId'],
     );
     const network = await mainWrapper.user.network.updateNetwork(
@@ -180,29 +184,15 @@ export class NetworksService {
   }
 
   async checkNetworkParams(data) {
-    const serviceProperties = [
-      'name',
-      'dnsServer1',
-      'dnsServer2',
-      'dnsSuffix',
-      'gateway',
-      'prefixLength',
-      'networkType',
-    ];
-    const checkParams = this.serviceChecksService.checkServiceParams(
-      data,
-      serviceProperties,
-    );
-    if (checkParams) {
-      const error = new InvalidServiceParamsException();
-      return Promise.reject(error);
-    }
     if (!this.serviceChecksService.checkNetworkType(data.networkType)) {
       const error = new InvalidServiceParamsException();
+      console.log('1');
+
       return Promise.reject(error);
     }
     const ipParams = ['gateway', 'dnsServer1', 'dnsServer2'];
     for (const ipParam of ipParams) {
+      console.log(data, '🍳');
       if (!validator.isIP(data[ipParam]) && data[ipParam].length !== 0) {
         const err = new InvalidIpParamException();
         return Promise.reject(err);

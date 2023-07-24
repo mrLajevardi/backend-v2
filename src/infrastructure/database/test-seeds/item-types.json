@@ -1,1 +1,13 @@
-[]
+[
+    {
+        "id": 81, 
+        "title": "ترجمه",
+        "unit": "token",
+        "fee": 500,
+        "maxAvailable": 10,
+        "code": "translate",
+        "maxPerRequest": 10,
+        "minPerRequest": null,
+        "serviceTypeId": "vdc"
+    }
+]

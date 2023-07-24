@@ -15,6 +15,9 @@ export class AiTransactionsLogs {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   id: string;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  serviceInstanceId: string;
+
   @Column('datetime', { name: 'DateTime' })
   dateTime: Date;
 

@@ -1,0 +1,3 @@
+class GetDemoTokenDto {
+  demoToken: string;
+}

@@ -97,22 +97,4 @@ export class ServiceChecksService {
     }
     return null;
   }
-
-  // Moved from service checks
-  checkServiceParams(data, keys) {
-    let status = 0;
-    const errorDetail = {
-      codes: {},
-    };
-    for (const key of keys) {
-      if (isEmpty(data[key])) {
-        errorDetail.codes[key] = [new InvalidServiceParamsException()];
-        status = 1;
-      }
-    }
-    if (status) {
-      return errorDetail;
-    }
-    return null;
-  }
 }

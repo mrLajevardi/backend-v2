@@ -62,7 +62,7 @@ export class Wrapper {
       console.log(endpoint);
       return Promise.resolve(request);
     } catch (err) {
-      console.log(err);
+      console.dir(err);
       return Promise.reject(new WrapperErrorException(err));
     }
   }

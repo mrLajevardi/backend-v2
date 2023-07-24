@@ -20,7 +20,7 @@ export class EdgeGatewayService {
   ) {}
 
   async createIPSet(options, vdcInstanceId, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -49,7 +49,7 @@ export class EdgeGatewayService {
   }
 
   async deleteIPSet(options, vdcInstanceId, ipSetId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -72,18 +72,17 @@ export class EdgeGatewayService {
   }
 
   async getDhcpForwarder(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const edge = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { ServiceInstanceID: vdcInstanceId },
-          { PropertyKey: 'edgeName' },
-        ],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'edgeName',
       },
     });
     const edgeName = edge.value;
@@ -97,7 +96,7 @@ export class EdgeGatewayService {
   }
 
   async getDnsForwarder(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -115,10 +114,8 @@ export class EdgeGatewayService {
   async getExternalIPs(options, vdcInstanceId) {
     const serviceEdgeIpRanges = await this.servicePropertiesTable.find({
       where: {
-        and: [
-          { ServiceInstanceID: vdcInstanceId },
-          { PropertyKey: 'edgeIpRange' },
-        ],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'edgeIpRange',
       },
     });
     const ipAddresses = serviceEdgeIpRanges.map((ip) => {
@@ -135,7 +132,7 @@ export class EdgeGatewayService {
     filter = '',
     search,
   ) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -179,7 +176,7 @@ export class EdgeGatewayService {
   }
 
   async getSingleIPSet(options, vdcInstanceId, ipSetId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -201,18 +198,17 @@ export class EdgeGatewayService {
   }
 
   async updateDhcpForwarder(options, data, vdcInstanceId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const edge = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { ServiceInstanceID: vdcInstanceId },
-          { PropertyKey: 'edgeName' },
-        ],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'edgeName',
       },
     });
     const edgeName = edge.value;
@@ -240,18 +236,17 @@ export class EdgeGatewayService {
   }
 
   async updateDnsForwarder(options, data, vdcInstanceId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
-        and: [{ ServiceInstanceID: vdcInstanceId }, { PropertyKey: 'orgId' }],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'orgId',
       },
     });
     const edge = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { ServiceInstanceID: vdcInstanceId },
-          { PropertyKey: 'edgeName' },
-        ],
+        serviceInstanceId: vdcInstanceId,
+        propertyKey: 'edgeName',
       },
     });
     const edgeName = edge.value;
@@ -282,7 +277,7 @@ export class EdgeGatewayService {
   }
 
   async updateIPSet(options, vdcInstanceId, ipSetId, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );

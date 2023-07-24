@@ -4,6 +4,7 @@ import { PaymentRequiredException } from 'src/infrastructure/exceptions/payment-
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
+import { Severity } from '@sentry/node';
 
 @Injectable()
 export class PayAsYouGoService {
@@ -19,14 +20,16 @@ export class PayAsYouGoService {
     }
     const service = await this.serviceInstanceTable.findOne({
       where: {
-        ID: serviceInstanceId,
+        id: serviceInstanceId,
       },
     });
+
     if (!service) {
       return Promise.reject(new ForbiddenException());
     }
+
     const { userId: userId } = service;
-    await this.transactionsTable.create({
+    const itmeData = {
       userId: userId.toString(),
       dateTime: new Date(),
       value: -cost,
@@ -36,8 +39,13 @@ export class PayAsYouGoService {
       serviceInstanceId: serviceInstanceId,
       paymentType: 2, // payAsYouGo payment method
       paymentToken: null,
-    });
+    };
+    console.log(itmeData);
+    // await this.transactionsTable.create(itmeData);
+    console.log(service);
+
     const { credit } = await this.userTable.findById(userId);
+    console.log(credit);
     if (credit < cost) {
       return Promise.reject(new PaymentRequiredException());
     }
