@@ -1,4 +1,4 @@
-import { AbilityFactory, Action } from './ability.factory';
+import { AbilityFactory } from './ability.factory';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
@@ -14,6 +14,7 @@ import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
+import { Action } from './enum/action.enum';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
@@ -91,7 +92,7 @@ describe('AbilityFactory', () => {
 
     it('should return 2 for acl.getAll', async () => {
       const acls = await aclTable.find();
-      console.log(acls);
+      // console.log(acls);
       expect(acls.length).toBe(3);
     });
 
@@ -175,7 +176,7 @@ describe('AbilityFactory', () => {
 
     it('should return 3 for acl.getAll', async () => {
       const acls = await aclTable.find();
-      console.log(acls);
+      // console.log(acls);
       expect(acls.length).toBe(3);
     });
 
@@ -355,5 +356,10 @@ describe('AbilityFactory', () => {
         expect(ability.can(Action.Read, inv2)).toBeFalsy();
       });
     });
+
+
   });
+
+
+  
 });

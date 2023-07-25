@@ -3,16 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
+import { PredefinedRoles } from './enum/predefined-enum.type';
+import { Action } from './enum/action.enum';
 
-export enum Action {
-  Manage = 'manage',
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
-}
 
-export type AbilitySubjects = (typeof dbEntities)[number] | 'all';
+export type AbilitySubjects = (typeof dbEntities)[number] | 
+  PredefinedRoles.AdminRole | PredefinedRoles.SuperAdminRole | PredefinedRoles.UserRole |
+ 'all';
 
 export const ability = createMongoAbility<[Action, AbilitySubjects]>();
 
@@ -45,7 +42,7 @@ export class AbilityFactory {
     for (const acl of acls) {
       let propertyCondition = '';
       try {
-        console.log(acl.property);
+        // console.log(acl.property);
         eval('propertyCondition=' + acl.property);
         //console.log("parsed query: ", propertyCondition);
       } catch (error) {
@@ -54,7 +51,7 @@ export class AbilityFactory {
         console.log('Error parsing query, treat as simple field list ');
       }
       if (acl.permission == 'can') {
-        console.log(propertyCondition);
+        // console.log(propertyCondition);
         builder.can(acl.accessType, acl.model, propertyCondition);
       } else {
         builder.cannot(acl.accessType, acl.model, propertyCondition);

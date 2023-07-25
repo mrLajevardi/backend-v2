@@ -8,7 +8,7 @@ import {
   Res,
   Body,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from '../decorators/ispublic.decorator';
 import { LoginDto } from '../dto/login.dto';
 import { LocalAuthGuard } from '../guard/local-auth.guard';
@@ -25,6 +25,7 @@ import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
+@ApiBearerAuth() // Requires authentication with a JWT token
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

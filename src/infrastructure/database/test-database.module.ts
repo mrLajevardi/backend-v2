@@ -80,6 +80,7 @@ import { NatService } from 'src/application/nat/nat.service';
 import { SecurityToolsService } from 'src/application/base/security/security-tools/security-tools.service';
 import { UserAdminService } from 'src/application/base/user/service/user-admin.service';
 import { LoginService } from 'src/application/base/security/auth/service/login.service';
+import { AbilityAdminService } from 'src/application/base/security/ability/service/ability-admin.service';
 
 @Module({
   imports: [
@@ -169,6 +170,7 @@ import { LoginService } from 'src/application/base/security/auth/service/login.s
     SecurityToolsService,
     UserAdminService,
     LoginService,
+    AbilityAdminService,
   ],
   exports: [
     TypeOrmModule,
@@ -247,6 +249,7 @@ import { LoginService } from 'src/application/base/security/auth/service/login.s
     SecurityToolsService,
     UserAdminService,
     LoginService,
+    AbilityAdminService
   ],
 })
 export class TestDatabaseModule {}
