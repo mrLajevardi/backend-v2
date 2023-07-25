@@ -18,15 +18,19 @@ import {
   ApiOkResponse,
   ApiParam,
 } from '@nestjs/swagger';
-import { UserTableService } from '../crud/user-table/user-table.service';
-import { CreditIncrementDto } from './dto/credit-increment.dto';
-import { UserService } from './user.service';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResendEmailDto } from './dto/resend-email.dto';
-import { NotificationService } from '../notification/notification.service';
-import { ResetForgottenPasswordDto } from './dto/reset-forgotten-password.dto';
-import { ResetPasswordByPhoneDto } from './dto/reset-password-by-phone.dto';
-import { PostUserCreditDto } from './dto/post-user-credit.dto';
+import { UserTableService } from '../../crud/user-table/user-table.service';
+import { CreditIncrementDto } from '../dto/credit-increment.dto';
+import { UserService } from '../service/user.service';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { ResendEmailDto } from '../dto/resend-email.dto';
+import { NotificationService } from '../../notification/notification.service';
+import { ResetForgottenPasswordDto } from '../dto/reset-forgotten-password.dto';
+import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
+import { PostUserCreditDto } from '../dto/post-user-credit.dto';
+import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
+import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
+import { UserAdminService } from '../service/user-admin.service';
+import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -35,8 +39,36 @@ export class UserController {
   constructor(
     private readonly userTableService: UserTableService,
     private readonly userService: UserService,
+    private readonly userAdminService: UserAdminService,
     private readonly notificationService: NotificationService,
   ) {}
+
+
+
+
+
+  @Put()
+  @ApiOperation({ summary: 'update user data' })
+  @ApiBody({ type: UpdateUserDto })
+  async updateUser(
+    @Request() options, 
+    @Body() updateUserDto: UpdateUserDto) {
+      const userId = options.user.userId;
+      return await this.userService.updateUser(userId,updateUserDto);
+  }
+
+  @Put('changePassword')
+  @ApiOperation({ summary: 'change password ' })
+  @ApiBody({ type: ChangePasswordDto })
+  async changePassword(
+    @Request() options, 
+    @Body() dto: ChangePasswordDto) {
+      console.log('change pass');
+      console.log(options.user);
+      const userId = options.user.userId;
+      return await this.userService.changePassword(userId,dto.password);
+  }
+
 
   @Post('/credit/increment')
   @ApiOperation({ summary: 'increases user credit' })

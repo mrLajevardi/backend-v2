@@ -21,6 +21,7 @@ import { LinkedInLoginDto } from '../dto/linked-in-login.dto';
 import { GithubAuthGuard } from '../guard/github-auth.guard';
 import { OtpAuthGuard } from '../guard/otp-auth.guard';
 import { LoginAsUserDto } from '../dto/login-as-user.dto';
+import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -35,7 +36,7 @@ export class AuthController {
   @Post('login')
   async login(@Request() req) {
     console.log(req);
-    return this.authService.login(req.user);
+    return this.authService.login.getLoginToken(req.user);
   }
 
   @Public()
@@ -80,7 +81,25 @@ export class AuthController {
     type: LoginAsUserDto,
   })
   async loginAsUser(@Body() data: any, @Request() options): Promise<any> {
-    const userCredentials = await this.authService.loginAsUser(options, data);
+    const userCredentials = await this.authService.login.getLoginAsUserToken(options, data);
     return userCredentials;
   }
+
+  @Public()
+  @Post('registerByOauth')
+  @ApiOperation({ summary: 'user credit' })
+  @ApiBody({ type: RegisterByOauthDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Success',
+    type: RegisterByOauthDto,
+  })
+  async registerByOauth
+  (
+    @Body() data: RegisterByOauthDto,
+    @Request() options
+  ): Promise<any> {
+    return this.authService.oath.registerByOauth(options,data);
+  }
+  
 }

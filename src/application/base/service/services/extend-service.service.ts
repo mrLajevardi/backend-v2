@@ -15,7 +15,7 @@ import { ServicePropertiesTableService } from '../../crud/service-properties-tab
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { InvoicesService } from '../../invoice/service/invoices.service';
 import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { DiscountsService } from './discounts.service';
 import { ServiceChecksService } from './service-checks/service-checks.service';
 import { ServiceService } from './service.service';

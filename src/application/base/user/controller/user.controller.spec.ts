@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { AbilityFactory } from '../security/ability/ability.factory';
+import { UserService } from '../service/user.service';
+import { AbilityFactory } from '../../security/ability/ability.factory';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { ACLTableService } from '../crud/acl-table/acl-table.service';
-import { UserTableService } from '../crud/user-table/user-table.service';
+import { ACLTableService } from '../../crud/acl-table/acl-table.service';
+import { UserTableService } from '../../crud/user-table/user-table.service';
 
 describe('UserController', () => {
   let controller: UserController;

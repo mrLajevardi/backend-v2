@@ -23,7 +23,7 @@ import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { PlansQueryService } from '../../crud/plans-table/plans-query.service';

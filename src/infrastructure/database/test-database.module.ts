@@ -25,7 +25,7 @@ import { PayAsYouGoService } from 'src/application/base/service/services/pay-as-
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
-import { UserService } from 'src/application/base/user/user.service';
+import { UserService } from 'src/application/base/user/service/user.service';
 import { EdgeService } from 'src/application/vdc/service/edge.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';
 import { OrgService } from 'src/application/vdc/service/org.service';
@@ -67,7 +67,7 @@ import { SystemSettingsTableService } from 'src/application/base/crud/system-set
 import { PaymentService } from 'src/application/payment/payment.service';
 import { NotificationService } from 'src/application/base/notification/notification.service';
 import { AuthService } from 'src/application/base/security/auth/service/auth.service';
-import { OtpService } from 'src/application/base/security/auth/service/otp.service';
+import { OtpService } from 'src/application/base/security/security-tools/otp.service';
 import { OauthService } from 'src/application/base/security/auth/service/oauth.service';
 import { EmailService } from 'src/application/base/notification/email.service';
 import { SmsService } from 'src/application/base/notification/sms.service';
@@ -77,6 +77,9 @@ import { TicketService } from 'src/application/base/ticket/ticket.service';
 import { AccessTokenTableService } from 'src/application/base/crud/access-token-table/access-token-table.service';
 import { TicketsTableService } from 'src/application/base/crud/tickets-table/tickets-table.service';
 import { NatService } from 'src/application/nat/nat.service';
+import { SecurityToolsService } from 'src/application/base/security/security-tools/security-tools.service';
+import { UserAdminService } from 'src/application/base/user/service/user-admin.service';
+import { LoginService } from 'src/application/base/security/auth/service/login.service';
 
 @Module({
   imports: [
@@ -163,6 +166,9 @@ import { NatService } from 'src/application/nat/nat.service';
     AccessTokenTableService,
     TicketsTableService,
     InvoiceItemListService,
+    SecurityToolsService,
+    UserAdminService,
+    LoginService
   ],
   exports: [
     TypeOrmModule,
@@ -238,6 +244,9 @@ import { NatService } from 'src/application/nat/nat.service';
     AccessTokenTableService,
     TicketsTableService,
     InvoiceItemListService,
+    SecurityToolsService,
+    UserAdminService,
+    LoginService
   ],
 })
 export class TestDatabaseModule {}

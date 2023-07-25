@@ -15,7 +15,7 @@ import Costs from '../classes/costs';
 
 import { AiService } from 'src/application/ai/ai.service';
 import { ServiceItemsSumService } from 'src/application/base/crud/service-items-sum/service-items-sum.service';
-import { UserService } from 'src/application/base/user/user.service';
+import { UserService } from 'src/application/base/user/service/user.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { InvoicesService } from 'src/application/base/invoice/service/invoices.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
