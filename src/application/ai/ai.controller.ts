@@ -16,7 +16,12 @@ import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { CreateServiceService } from '../base/service/services/create-service.service';
 import jwt from 'jsonwebtoken';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-table.service';
 import { SettingTableService } from '../base/crud/setting-table/setting-table.service';
 import { PlansTableService } from '../base/crud/plans-table/plans-table.service';
@@ -32,6 +37,7 @@ import { Public } from './../../application/base/security/auth/decorators/ispubl
 import { ExtendServiceService } from '../base/service/services/extend-service.service';
 import { JwtService } from '@nestjs/jwt';
 
+@ApiTags('AI')
 @ApiBearerAuth() // Requires authentication with a JWT token
 @Controller('ai')
 @Injectable()
@@ -55,6 +61,13 @@ export class AiController {
     const JWT_SECRET_KEY = process.env.ARAD_AI_JWT_SECRET_KEY;
     return this.jwtService.sign(payload, { secret: JWT_SECRET_KEY });
   }
+
+  @ApiOperation({ summary: 'Check AI Token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a token Validity as boolean',
+    type: 'object',
+  })
   @Get('CheckToken/:token')
   @Public()
   async checkAradAiToken(
@@ -65,6 +78,7 @@ export class AiController {
     return { tokenValidity: result };
   }
 
+  @ApiOperation({ summary: 'create AI transactions logs' })
   @Post('/aiTransactionsLogs')
   @Public()
   async createAITransactionsLogs(@Body() data: CreateAITransactionsLogsDto) {
@@ -118,6 +132,12 @@ export class AiController {
     return await this.aiTransactionLogsTable.create(itemData);
   }
 
+  @ApiOperation({ summary: 'Get Ai demo token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns demo token',
+    type: 'object',
+  })
   @Get('/createOrGetDemoToken')
   async createOrGetDemoToken(
     @Request() options: any,
@@ -149,13 +169,19 @@ export class AiController {
       //   propertyKey: 'aradAiDemo.token',
       //   value: token,
       // });
-      // return Promise.resolve(token);
+      // return Promise.resolve({demoToken: token});
     }
     return Promise.resolve({
       demoToken: getDemoToken.value,
     });
   }
 
+  @ApiOperation({ summary: 'Get AI Dashoard' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns details of AI service',
+    type: 'object',
+  })
   @Get('/aradAiDashoard/:serviceInstanceId')
   async getAradAiaDshboard(
     @Param('serviceInstanceId') serviceInstanceId: string,
@@ -167,16 +193,22 @@ export class AiController {
     );
   }
 
+  @ApiOperation({ summary: 'Get AI transactions logs' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of transactions logs',
+    type: 'array',
+  })
   @Get('/aiTransactionsLogs/:serviceInstanceId')
   async getAITransactionsLogs(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
-    // @Request() options: any,
+    @Request() options,
   ): Promise<GetAiTransactionsLogsDto> {
     let skip = 0;
     let limit = 10;
-
+    const userId = options.user.userId;
     if (!isEmpty(page) && !isEmpty(pageSize)) {
       skip = pageSize * (page - 1);
     }
@@ -186,13 +218,30 @@ export class AiController {
     }
 
     // TODO service should be just to current user
-    const aiTransactionsLogs = await this.aiTransactionLogsTable.find({
+    const transactionsLogs = await this.aiTransactionLogsTable.find({
       where: {
         serviceInstanceId: serviceInstanceId,
       },
       take: limit,
       skip,
     });
+
+    const aiTransactionsLogs = transactionsLogs.map((log) => {
+      return {
+        ID: log.id,
+        ServiceInstanceID: log.serviceInstanceId,
+        Method: log.method,
+        CodeStatus: log.codeStatus,
+        MethodName: log.methodName,
+        IP: log.ip,
+        Description: log.description,
+        DateTime: log.dateTime,
+        Request: log.request,
+        Body: log.body,
+        Response: log.response,
+      };
+    });
+
     const countAll = await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceId,
@@ -200,11 +249,17 @@ export class AiController {
     });
 
     return Promise.resolve({
-      aiTransactionsLogs: aiTransactionsLogs,
+      aiTransactionsLogs,
       countAll,
     });
   }
 
+  @ApiOperation({ summary: 'Get AI dashoard chart' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of Useing service daily',
+    type: 'array',
+  })
   @Get('/aradAiDashoardChart/:serviceInstanceId/:startDate/:endDate')
   async getDashboardChart(
     @Param('serviceInstanceId') serviceInstanceId: string,
@@ -220,6 +275,12 @@ export class AiController {
     return result;
   }
 
+  @ApiOperation({ summary: 'Get AI plans' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns ai plans',
+    type: 'array',
+  })
   @Get('/aiPlans')
   async getAiPlans(): Promise<GetPlanItemsDto[]> {
     const aradAiItem = await this.itemTypesTable.findOne({

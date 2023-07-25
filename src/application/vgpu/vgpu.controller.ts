@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Param,
-  Query,
   Request,
   UseFilters,
 } from '@nestjs/common';
@@ -12,7 +11,7 @@ import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { TaskManagerService } from '../base/tasks/service/task-manager.service';
-import { isEmpty, isNil } from 'lodash';
+import { isNil } from 'lodash';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { VgpuService } from './vgpu.service';
 import { TasksTableService } from '../base/crud/tasks-table/tasks-table.service';
@@ -53,18 +52,11 @@ export class VgpuController {
     type: 'array',
   })
   @Get('/vgpuPlans')
-  async getvgpuPlans(@Query('filter') filter: string): Promise<any> {
-    let parsedFilter = {};
-    if (!isEmpty(filter)) {
-      console.log(filter);
-      parsedFilter = JSON.parse(filter).where;
-    }
-
+  async getvgpuPlans(): Promise<any> {
     const vgpuPlans = await this.configsTable.find({
       where: {
         propertyKey: Raw((alias) => `${alias} LIKE 'QualityPlans.%'`),
         serviceType: await this.serviceTypeTable.findById('vgpu'),
-        ...parsedFilter,
       },
     });
 
@@ -72,14 +64,17 @@ export class VgpuController {
       where: {
         code: Raw((alias) => `${alias} LIKE '%Cost%'`),
         serviceType: await this.serviceTypeTable.findById('vgpu'),
-        ...parsedFilter,
       },
     });
     return Promise.resolve({ vgpuPlans, planCost });
   }
 
   @ApiOperation({ summary: 'Check and get Jupyter API' })
-  @ApiResponse({ status: 200, description: 'Returns VGPU URL' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns VGPU URL',
+    type: 'object',
+  })
   @Get('/vGpu/:ServiceInstanceId/vgpuUrl')
   async getVgpuUrl(
     @Param('ServiceInstanceId') ServiceInstanceId: string,
@@ -113,14 +108,9 @@ export class VgpuController {
       secret: process.env.ARAD_VGPU_JWT_SECRET_KEY,
       expiresIn: 3600,
     });
-    return Promise.resolve(
-      'http://' +
-        props['externalAddresses'] +
-        ':' +
-        externalPort.value +
-        '/lab?token=' +
-        token,
-    );
+    return Promise.resolve({
+      vgpuUrl: `http://${props['externalAddresses']}':'${externalPort.value}/lab?token=${token}`,
+    });
   }
 
   @ApiOperation({ summary: 'Deploy VGPU' })
@@ -134,7 +124,7 @@ export class VgpuController {
     @Param('ServiceInstanceId') ServiceInstanceId: string,
     @Request() options,
   ): Promise<any> {
-    const userId = options.user.id;
+    const userId = options.user.userId;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
         id: ServiceInstanceId,
@@ -159,11 +149,10 @@ export class VgpuController {
       serviceInstanceId: ServiceInstanceId,
       customTaskId: task['TaskID'],
       vcloudTask: null,
-      target: 'task',
       nextTask: 'deployVgpuVm',
       taskType: 'adminTask',
       requestOptions: options,
-      // target: 'object',
+      target: 'object',
     });
     return Promise.resolve({
       id: ServiceInstanceId,
@@ -182,7 +171,7 @@ export class VgpuController {
     @Param('ServiceInstanceId') ServiceInstanceId: string,
     @Request() options,
   ): Promise<any> {
-    const userId = options.user.id;
+    const userId = options.user.userId;
     const vmName = ServiceInstanceId + 'VM';
     const VgpuConfigs = await this.configsTable.find({
       where: {
@@ -197,7 +186,7 @@ export class VgpuController {
     }
 
     const vdcIdVgpu = props['vdcId'].split(':').slice(-1);
-    const session = await this.sessionService.checkAdminSession(props['orgId']);
+    const session = await this.sessionService.checkAdminSession(userId);
     const vmInfo = await this.service.getVmsInfo(
       session,
       vdcIdVgpu,
@@ -223,7 +212,8 @@ export class VgpuController {
     @Param('ServiceInstanceId') ServiceInstanceId: string,
     @Request() options,
   ): Promise<any> {
-    const userId = options.user.id;
+    const userId = options.user.userId;
+
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
         id: ServiceInstanceId,
@@ -246,11 +236,10 @@ export class VgpuController {
       serviceInstanceId: ServiceInstanceId,
       customTaskId: task['TaskID'],
       vcloudTask: null,
-      target: 'task',
       nextTask: 'unDeployVgpuVm',
       taskType: 'adminTask',
       requestOptions: options,
-      //  target: 'object',  //// WHY DUPLICATED??
+      target: 'object',
     });
     return Promise.resolve({
       id: ServiceInstanceId,
