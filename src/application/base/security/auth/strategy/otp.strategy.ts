@@ -3,7 +3,7 @@ import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exce
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { NotificationService } from 'src/application/base/notification/notification.service';
-import { OtpService } from '../service/otp.service';
+import { OtpService } from '../../security-tools/otp.service';
 import { AuthService } from '../service/auth.service';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-strategy';
@@ -12,6 +12,9 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { SmsErrorException } from 'src/infrastructure/exceptions/sms-error-exception';
+import { generatePassword } from 'src/infrastructure/helpers/helpers';
+import { User } from 'src/infrastructure/database/entities/User';
+import { UserService } from 'src/application/base/user/service/user.service';
 
 @Injectable()
 export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
@@ -20,7 +23,7 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
     private readonly userTable: UserTableService,
     private readonly notificationService: NotificationService,
     private readonly otpService: OtpService,
-    private readonly logger: LoggerService,
+    private readonly userService: UserService,
   ) {
     super();
   }
@@ -59,10 +62,6 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
 
         let hash = null;
 
-        if (!userExist) {
-          this.error(new ForbiddenException());
-          return;
-        }
         const otpGenerated = this.otpService.otpGenerator(phoneNumber);
         hash = otpGenerated.hash;
         console.log(otpGenerated);
@@ -86,7 +85,13 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
 
       console.log('validating ', otp, hash);
       if (this.otpService.otpVerifier(phoneNumber, otp, hash)) {
-        const token = this.authService.login(user);
+        let theUser: User;
+        if (!userExist) {
+          theUser = await this.userService.createUserByPhoneNumber(phoneNumber);
+        } else {
+          theUser = user;
+        }
+        const token = this.authService.login.getLoginToken(theUser);
         this.success(token);
         return;
       } else {

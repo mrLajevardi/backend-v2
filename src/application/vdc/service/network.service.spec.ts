@@ -18,7 +18,7 @@ import { TransactionsTableService } from 'src/application/base/crud/transactions
 import { OrganizationService } from 'src/application/base/organization/organization.service';
 import { ExtendServiceService } from 'src/application/base/service/services/extend-service.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { UserService } from 'src/application/base/user/user.service';
+import { UserService } from 'src/application/base/user/service/user.service';
 import { EdgeService } from './edge.service';
 
 describe('NetworkService', () => {

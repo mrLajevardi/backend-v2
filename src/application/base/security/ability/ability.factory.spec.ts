@@ -7,6 +7,13 @@ import { InvoicesService } from '../../invoice/service/invoices.service';
 import { User } from 'src/infrastructure/database/test-entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
+import { UserService } from '../../user/service/user.service';
+import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
+import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
+import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
+import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
+import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;

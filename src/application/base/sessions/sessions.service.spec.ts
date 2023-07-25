@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SessionsService } from './sessions.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { UserService } from '../user/user.service';
+import { UserService } from '../user/service/user.service';
 import { OrganizationService } from '../organization/organization.service';
 import { SessionsTableService } from '../crud/sessions-table/sessions-table.service';
 import { UserTableService } from '../crud/user-table/user-table.service';

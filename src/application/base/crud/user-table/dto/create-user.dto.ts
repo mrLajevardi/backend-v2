@@ -52,7 +52,7 @@ export class CreateUserDto {
   @IsBoolean()
   @IsOptional()
   @ApiProperty({ required: false })
-  verificationToken: boolean | null;
+  verificationToken?: boolean | null;
 
   @IsBoolean()
   @IsOptional()
@@ -62,12 +62,12 @@ export class CreateUserDto {
   @IsDate()
   @IsOptional()
   @ApiProperty({ required: false })
-  createDate: Date | null;
+  createDate?: Date | null;
 
   @IsDate()
   @IsOptional()
   @ApiProperty({ required: false })
-  updateDate: Date | null;
+  updateDate?: Date | null;
 
   @IsString()
   @IsOptional()
@@ -102,7 +102,7 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  orgName: string | null;
+  orgName?: string | null;
 
   @IsBoolean()
   @IsOptional()

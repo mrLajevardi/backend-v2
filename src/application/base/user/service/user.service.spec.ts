@@ -2,7 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { UserTableService } from '../crud/user-table/user-table.service';
+import { UserTableService } from '../../crud/user-table/user-table.service';
+import { encryptPassword } from 'src/infrastructure/helpers/helpers';
 
 describe('UserService', () => {
   let table: UserTableService;
@@ -56,8 +57,8 @@ describe('UserService', () => {
 
   describe('hashing', () => {
     it('should be return non equal hashes', async () => {
-      const hash1 = await service.getPasswordHash('abc123');
-      const hash2 = await service.getPasswordHash('abc123');
+      const hash1 = await encryptPassword('abc123');
+      const hash2 = await encryptPassword('abc123');
       expect(hash1).not.toBe(hash2);
     });
   });

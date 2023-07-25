@@ -13,7 +13,7 @@ import { ServiceTypesTableService } from '../../crud/service-types-table/service
 import { OrganizationService } from '../../organization/organization.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { ExtendServiceService } from './extend-service.service';
 import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';

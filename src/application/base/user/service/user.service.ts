@@ -7,27 +7,32 @@ import {
 import { User } from 'src/infrastructure/database/entities/User';
 import * as bcrypt from 'bcrypt';
 import { BadRequestError } from 'passport-headerapikey';
-import { UserTableService } from '../crud/user-table/user-table.service';
+import { UserTableService } from '../../crud/user-table/user-table.service';
 import { ZarinpalConfigDto } from 'src/application/payment/dto/zarinpal-config.dto';
 import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invalid-phone-token.exception';
 import { InvalidUsernameException } from 'src/infrastructure/exceptions/invalid-username.exception';
 import { UnprocessableEntity } from 'src/infrastructure/exceptions/unprocessable-entity.exception';
 import { UserAlreadyExist } from 'src/infrastructure/exceptions/user-already-exist.exception';
-import { generatePassword } from 'src/infrastructure/helpers/helpers';
-import { RoleMappingTableService } from '../crud/role-mapping-table/role-mapping-table.service';
-import { SystemSettingsTableService } from '../crud/system-settings-table/system-settings-table.service';
-import { CreateTransactionsDto } from '../crud/transactions-table/dto/create-transactions.dto';
-import { TransactionsTableService } from '../crud/transactions-table/transactions-table.service';
+import { RoleMappingTableService } from '../../crud/role-mapping-table/role-mapping-table.service';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
+import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import jwt from 'jsonwebtoken';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isEmpty } from 'lodash';
 import { PaymentService } from 'src/application/payment/payment.service';
-import { NotificationService } from '../notification/notification.service';
+import { NotificationService } from '../../notification/notification.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
-import { AuthService } from '../security/auth/service/auth.service';
+import { AuthService } from '../../security/auth/service/auth.service';
 import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
 import * as util from 'util';
 import { JwtService } from '@nestjs/jwt';
+import {
+  encryptPassword,
+  generatePassword,
+} from 'src/infrastructure/helpers/helpers';
+import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
+import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -39,7 +44,7 @@ export class UserService {
     private readonly logger: LoggerService,
     private readonly paymentService: PaymentService,
     private readonly notificationService: NotificationService,
-    private readonly authService: AuthService,
+    private readonly securityTools: SecurityToolsService,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -50,12 +55,16 @@ export class UserService {
     });
   }
 
-  // convery string to password hash
-  async getPasswordHash(string: string): Promise<string> {
-    if (!string) {
-      throw new BadRequestError('bad parameters');
+  async changePassword(userId: number, newPassword: string) {
+    if (!newPassword) {
+      return Promise.reject(new BadRequestException());
     }
-    return await bcrypt.hash(string, 10);
+    const hashedPassword = await encryptPassword(newPassword);
+    console.log(userId, hashedPassword);
+    await this.userTable.updateAll(
+      { id: userId },
+      { password: hashedPassword },
+    );
   }
 
   async checkUserCredit(costs, userId, options, serviceType) {
@@ -99,35 +108,13 @@ export class UserService {
     }
   }
 
-  async beforeCreateUser(context, remoteMethodOutput, next) {
-    const phone = jwt.decode(context.args.data.pjwt);
-    context.args.data.username = `U-${phone}`;
-    context.args.data.vdcPassword = generatePassword();
-    context.args.data.name = 'کاربر';
-    context.args.data.family = 'گرامی';
-    context.args.data.phoneNumber = phone;
-
-    const user = await this.userTable.findOne({
-      where: {
-        phoneNumber: phone,
-      },
-    });
-
-    if (user) {
-      return Promise.reject(new UserAlreadyExist());
-    }
-    const pjwtVerified = await jwt.verify(
-      context.args.data.pjwt,
-      process.env.OTP_SECRET_KEY,
-    );
-    if (!pjwtVerified) {
-      return Promise.reject(new InvalidPhoneTokenException());
-    }
-
-    context.args.data.active = true;
-    context.args.data.phoneVerified = true;
-    const filteredContext = {
-      ...context.args.data,
+  async createUserByPhoneNumber(phoneNumber: string) {
+    const theUser = await this.userTable.create({
+      phoneNumber: phoneNumber,
+      username: `U-${phoneNumber}`,
+      vdcPassword: generatePassword(),
+      name: 'کاربر',
+      family: 'گرامی',
       code: null,
       realm: null,
       hasVdc: false,
@@ -136,35 +123,31 @@ export class UserService {
       emailVerified: false,
       deleted: false,
       email: null,
-    };
+      password: null,
+      active: false,
+      phoneVerified: true,
+      acceptTermsOfService: true,
+    });
 
-    if (Object.keys(context.args.data).includes('id')) {
-      delete context.args.data.id;
-    }
-    context.args.data = filteredContext;
-  }
-
-  async afterCreateUser(context, remoteMethodOutput, next) {
     await this.logger.info(
       'user',
       'register',
       {
-        username: remoteMethodOutput.username,
-        _object: remoteMethodOutput.id,
+        username: theUser.username,
+        _object: theUser.id,
       },
       {
-        ...context.res.locals,
-        userId: remoteMethodOutput.id,
+        userId: theUser.id,
       },
     );
-    if (remoteMethodOutput) {
-      // add role user
-      await this.roleMappingsTable.create({
-        roleId: 'user',
-        principalType: 'USER',
-        principalId: remoteMethodOutput.id,
-      });
-    }
+
+    await this.roleMappingsTable.create({
+      roleId: 'user',
+      principalType: 'USER',
+      principalId: theUser.id.toString(),
+    });
+
+    return theUser;
   }
 
   async creditIncrement(options, data) {
@@ -291,7 +274,7 @@ export class UserService {
     return;
   }
 
-  async beforeUpdateUser(context, remoteMethodOutput, next) {
+  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
     const forbiddenFields = [
       'active',
       'emailVerified',
@@ -306,19 +289,16 @@ export class UserService {
       'credit',
       'email',
     ];
-    for (const key of Object.keys(context.args.data)) {
+    for (const key of Object.keys(updateUserDto)) {
       if (forbiddenFields.includes(key)) {
-        delete context.args.data[key];
+        delete updateUserDto[key];
       }
     }
-    if (Object.keys(context.args.data).length === 0) {
-      return next(new BadRequestException());
+    if (Object.keys(updateUserDto).length === 0) {
+      return new BadRequestException();
     }
-    next();
-  }
 
-  async afterUpdateUser(ctx, output, next) {
-    return;
+    return this.userTable.update(userId, updateUserDto);
   }
 
   async verifyCreditIncrement(options, authority = null) {
@@ -429,7 +409,7 @@ export class UserService {
     });
     await this.userTable.updateAll(
       { id: user.id },
-      { password: await this.getPasswordHash(data.password) },
+      { password: await encryptPassword(data.password) },
     );
     await this.logger.info(
       'user',
@@ -460,7 +440,9 @@ export class UserService {
     }
     let hash = null;
     if (user) {
-      const otpGenerated = this.authService.otp.otpGenerator(data.phoneNumber);
+      const otpGenerated = this.securityTools.otp.otpGenerator(
+        data.phoneNumber,
+      );
       await this.notificationService.sms.sendSMS(
         data.phoneNumber,
         otpGenerated.otp,

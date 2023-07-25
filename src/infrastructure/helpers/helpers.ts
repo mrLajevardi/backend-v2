@@ -1,5 +1,6 @@
 import { getIPRange } from 'get-ip-range';
 import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
 
 export function isEmpty(value) {
   if (value === null || value === undefined) {
@@ -29,6 +30,21 @@ export function isValidIpRange(range, cidr) {
 
 export function hasDuplicates(array) {
   return new Set(array).size !== array.length;
+}
+
+// compare two passwordes
+export async function comparePassword(
+  hashed: string,
+  plain: string,
+): Promise<boolean> {
+  return await bcrypt.compare(plain, hashed);
+}
+
+// encrypt password
+export async function encryptPassword(plain: string): Promise<string> {
+  const saltRounds = 10; // Number of salt rounds, you can adjust as per your requirements
+  const hashedPassword = await bcrypt.hash(plain, saltRounds);
+  return hashedPassword;
 }
 
 export function generatePassword(

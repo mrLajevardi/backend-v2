@@ -46,7 +46,7 @@ export class UserTableService {
   async create(dto: CreateUserDto) {
     const newItem = plainToClass(User, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO

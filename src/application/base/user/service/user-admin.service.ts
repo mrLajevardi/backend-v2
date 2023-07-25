@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { UserTableService } from '../crud/user-table/user-table.service';
+import { UserTableService } from '../../crud/user-table/user-table.service';
 import { isEmpty, isNil } from 'lodash';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { AccessTokenTableService } from '../crud/access-token-table/access-token-table.service';
-import { NotificationService } from '../notification/notification.service';
-import { TransactionsTableService } from '../crud/transactions-table/transactions-table.service';
+import { AccessTokenTableService } from '../../crud/access-token-table/access-token-table.service';
+import { NotificationService } from '../../notification/notification.service';
+import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import jwt from 'jsonwebtoken';
+import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
+import { encryptPassword } from 'src/infrastructure/helpers/helpers';
 
 @Injectable()
 export class UserAdminService {
@@ -17,6 +19,11 @@ export class UserAdminService {
     private readonly notificationService: NotificationService,
     private readonly transactionsTable: TransactionsTableService,
   ) {}
+
+  async createUser(createUserDto: CreateUserDto) {
+    createUserDto.password = await encryptPassword(createUserDto.password);
+    return await this.userTable.create(createUserDto);
+  }
 
   async deleteUsers(options, userId) {
     const user = await this.userTable.findById(userId);
