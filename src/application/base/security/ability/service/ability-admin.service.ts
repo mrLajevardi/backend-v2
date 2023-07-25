@@ -19,127 +19,121 @@ export class AbilityAdminService {
   ) {}
 
   getAvailableModules() {
-    return [
-
-    ]
+    return [];
   }
 
-  async getAllPredefinedRoles(userId: number){
-    let returnResult : PredefinedRoleDto[] = [];
+  async getAllPredefinedRoles(userId: number) {
+    const returnResult: PredefinedRoleDto[] = [];
     const predefinedRoles = Object.values(PredefinedRoles);
     const result = await this.aclTable.find({
       where: {
         model: In(predefinedRoles),
         principalType: 'User',
-        principalId: userId.toString()
+        principalId: userId.toString(),
       },
-    })
-    result.forEach(item => {
+    });
+    result.forEach((item) => {
       // console.log(item);
-      const dtoItem : PredefinedRoleDto = {
-        action : stringToEnum(item.accessType,Action),
+      const dtoItem: PredefinedRoleDto = {
+        action: stringToEnum(item.accessType, Action),
         permission: item.permission,
         model: stringToEnum(item.model, PredefinedRoles),
-      }
+      };
       returnResult.push(dtoItem);
     });
-    return returnResult; 
+    return returnResult;
   }
 
-  async assignPredefinedRole( userId: number , role: PredefinedRoles ){
-    if (!role || !userId){
+  async assignPredefinedRole(userId: number, role: PredefinedRoles) {
+    if (!role || !userId) {
       throw new BadRequestException();
     }
 
     await this.aclTable.deleteAll({
       model: role,
       principalType: 'User',
-      principalId: userId.toString()
-    })
+      principalId: userId.toString(),
+    });
 
     await this.aclTable.create({
       model: role,
       principalType: 'User',
       principalId: userId.toString(),
       accessType: Action.Manage,
-      permission: 'can'
-    })
+      permission: 'can',
+    });
   }
 
-  async deletePredefinedRole( userId: number, role: PredefinedRoles ){
-    if (!role || !userId){
+  async deletePredefinedRole(userId: number, role: PredefinedRoles) {
+    if (!role || !userId) {
       throw new BadRequestException();
     }
 
     await this.aclTable.deleteAll({
       model: role,
       principalType: 'User',
-      principalId: userId.toString()
-    })
+      principalId: userId.toString(),
+    });
   }
 
-  async denyPredefinedRole( userId: number, role: PredefinedRoles ){
-    if (!role || !userId){
+  async denyPredefinedRole(userId: number, role: PredefinedRoles) {
+    if (!role || !userId) {
       throw new BadRequestException();
     }
 
     await this.aclTable.deleteAll({
       model: role,
       principalType: 'User',
-      principalId: userId.toString()
-    })
+      principalId: userId.toString(),
+    });
 
     await this.aclTable.create({
       model: role,
       principalType: 'User',
       principalId: userId.toString(),
       accessType: Action.Manage,
-      permission: 'cannot'
-    })
+      permission: 'cannot',
+    });
   }
 
-  async permitAccessToUser( accessType : Action , on : string , to : number ) {
+  async permitAccessToUser(accessType: Action, on: string, to: number) {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
       principalType: 'User',
       principalId: to.toString(),
-    })
+    });
     await this.aclTable.create({
       model: on,
       accessType: accessType,
       principalType: 'User',
       principalId: to.toString(),
-      permission: 'can'
-    })
+      permission: 'can',
+    });
   }
 
-  async denyAccessFromUser( accessType : Action, on : string , from : number  ) {
+  async denyAccessFromUser(accessType: Action, on: string, from: number) {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
       principalType: 'User',
       principalId: from.toString(),
-    })
+    });
     await this.aclTable.create({
       model: on,
       accessType: accessType,
       principalType: 'User',
       principalId: from.toString(),
-      permission: 'cannot'
-    })
+      permission: 'cannot',
+    });
   }
 
-  async deleteAccessForUser( accessType : Action, on : string , userId : number ){
+  async deleteAccessForUser(accessType: Action, on: string, userId: number) {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
       principalType: 'User',
       principalId: userId.toString(),
-    })
+    });
   }
-
-
-  
-
 }

@@ -6,10 +6,12 @@ import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entit
 import { PredefinedRoles } from './enum/predefined-enum.type';
 import { Action } from './enum/action.enum';
 
-
-export type AbilitySubjects = (typeof dbEntities)[number] | 
-  PredefinedRoles.AdminRole | PredefinedRoles.SuperAdminRole | PredefinedRoles.UserRole |
- 'all';
+export type AbilitySubjects =
+  | (typeof dbEntities)[number]
+  | PredefinedRoles.AdminRole
+  | PredefinedRoles.SuperAdminRole
+  | PredefinedRoles.UserRole
+  | 'all';
 
 export const ability = createMongoAbility<[Action, AbilitySubjects]>();
 

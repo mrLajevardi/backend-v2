@@ -17,7 +17,6 @@ describe('AbilityAdminService', () => {
   let userTable: UserTableService;
   let abilityFactory: AbilityFactory;
 
-
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [TestDatabaseModule],
@@ -36,15 +35,13 @@ describe('AbilityAdminService', () => {
     expect(service).toBeDefined();
   });
 
-
   describe('add and remove permission', () => {
-
     it('should return true', async () => {
       const user = await userTable.findById(597);
       // console.log(user);
       await service.permitAccessToUser(Action.Create, 'Invoice', user.id);
       const factory = await abilityFactory.createForUser(user);
-      const can = factory.can(Action.Create, "Invoice");
+      const can = factory.can(Action.Create, 'Invoice');
       expect(can).toBe(true);
     });
 
@@ -53,7 +50,7 @@ describe('AbilityAdminService', () => {
       // console.log(user);
       await service.permitAccessToUser(Action.Create, 'Invoices', user.id);
       const factory = await abilityFactory.createForUser(user);
-      const invoice = new Invoices()
+      const invoice = new Invoices();
       const can = factory.can(Action.Create, invoice);
       expect(can).toBe(true);
     });
@@ -63,15 +60,12 @@ describe('AbilityAdminService', () => {
       // console.log(user);
       await service.permitAccessToUser(Action.Create, 'InvoiceItems', user.id);
       const factory = await abilityFactory.createForUser(user);
-      const can = factory.cannot(Action.Create, "InvoiceItems");
+      const can = factory.cannot(Action.Create, 'InvoiceItems');
       expect(can).toBe(false);
     });
-
-  })
-
+  });
 
   describe('using predefined roles ', () => {
-
     beforeAll(async () => {
       const user = new User();
       user.id = 1001;
@@ -96,25 +90,28 @@ describe('AbilityAdminService', () => {
       await service.assignPredefinedRole(1001, PredefinedRoles.AdminRole);
       await service.assignPredefinedRole(1001, PredefinedRoles.UserRole);
       await service.assignPredefinedRole(1002, PredefinedRoles.SuperAdminRole);
-
-    })
+    });
 
     it('should permit user 1 to admin ', async () => {
       const user = await userTable.findById(1001);
       const user2 = await userTable.findById(1002);
-      const access = (await abilityFactory.createForUser(user)).
-                    can(Action.Manage, PredefinedRoles.AdminRole);
-      const access2 = (await abilityFactory.createForUser(user2)).
-                    can(Action.Manage, PredefinedRoles.AdminRole);
+      const access = (await abilityFactory.createForUser(user)).can(
+        Action.Manage,
+        PredefinedRoles.AdminRole,
+      );
+      const access2 = (await abilityFactory.createForUser(user2)).can(
+        Action.Manage,
+        PredefinedRoles.AdminRole,
+      );
       expect(access).toBeTruthy();
       expect(access2).toBeFalsy();
-    })
+    });
 
     it('should return Manage Action', () => {
-      const manage = 'manage'; 
-      const enumVal = stringToEnum(manage,Action);
+      const manage = 'manage';
+      const enumVal = stringToEnum(manage, Action);
       expect(enumVal).toBe(Action.Manage);
-    })
+    });
 
     it('should return 2 roles for user 1001 and 1 for 1002', async () => {
       const rules1 = await service.getAllPredefinedRoles(1001);
@@ -127,6 +124,6 @@ describe('AbilityAdminService', () => {
       expect(rules1[0].model).toBe(PredefinedRoles.AdminRole);
       expect(rules2[0].action).toBe(Action.Manage);
       expect(rules2[0].permission).toBe('can');
-    })
-  })
+    });
+  });
 });

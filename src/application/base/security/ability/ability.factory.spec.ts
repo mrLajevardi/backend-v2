@@ -356,10 +356,5 @@ describe('AbilityFactory', () => {
         expect(ability.can(Action.Read, inv2)).toBeFalsy();
       });
     });
-
-
   });
-
-
-  
 });

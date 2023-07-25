@@ -249,7 +249,7 @@ import { AbilityAdminService } from 'src/application/base/security/ability/servi
     SecurityToolsService,
     UserAdminService,
     LoginService,
-    AbilityAdminService
+    AbilityAdminService,
   ],
 })
 export class TestDatabaseModule {}

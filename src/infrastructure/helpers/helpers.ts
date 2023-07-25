@@ -56,8 +56,10 @@ export function generatePassword(
     .join('');
 }
 
-
-export function  stringToEnum<T>(str: string, enumObj: T): T[keyof T] | undefined {
+export function stringToEnum<T>(
+  str: string,
+  enumObj: T,
+): T[keyof T] | undefined {
   const enumValues = Object.values(enumObj) as unknown as T[keyof T][];
   const enumKey = enumValues.find((value) => value === str);
   return enumKey;
