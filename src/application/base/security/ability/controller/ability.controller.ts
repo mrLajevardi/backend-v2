@@ -10,7 +10,6 @@ import {
 import {
   ApiTags,
   ApiResponse,
-  ApiBadRequestResponse,
   ApiOperation,
   ApiBearerAuth,
   ApiProperty,
