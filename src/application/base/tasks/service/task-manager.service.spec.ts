@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskManagerService } from './task-manager.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { OrganizationService } from '../../organization/organization.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { EdgeService } from 'src/application/vdc/service/edge.service';
 import { OrgService } from 'src/application/vdc/service/org.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';

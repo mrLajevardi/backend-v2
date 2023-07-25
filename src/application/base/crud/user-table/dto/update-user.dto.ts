@@ -9,10 +9,6 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateUserDto {
-  @IsNumber()
-  @ApiProperty()
-  id?: number;
-
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })

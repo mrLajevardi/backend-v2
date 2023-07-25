@@ -12,7 +12,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   // The validation that will be checked before
   // any endpoint protected with jwt-auth guard
   async validate(username: string, password: string): Promise<any> {
-    const user = await this.authService.validateUser(username, password);
+    const user = await this.authService.login.validateUser(username, password);
     if (!user) {
       throw new UnauthorizedException();
     }

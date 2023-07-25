@@ -4,7 +4,7 @@ import { ServiceChecksService } from 'src/application/base/service/services/serv
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { DiscountsService } from '../../service/services/discounts.service';
 import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';

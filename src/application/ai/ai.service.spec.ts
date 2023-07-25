@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiService } from './ai.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { UserService } from '../base/user/user.service';
+import { UserService } from '../base/user/service/user.service';
 import { DiscountsService } from '../base/service/services/discounts.service';
 import { TransactionsService } from '../base/transactions/transactions.service';
 import { CreateServiceService } from '../base/service/services/create-service.service';

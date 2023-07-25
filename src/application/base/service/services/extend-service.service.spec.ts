@@ -3,7 +3,7 @@ import { ExtendServiceService } from './extend-service.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { SessionsService } from '../../sessions/sessions.service';
 import { OrganizationService } from '../../organization/organization.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';

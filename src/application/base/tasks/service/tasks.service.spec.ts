@@ -17,7 +17,7 @@ import { UserTableService } from '../../crud/user-table/user-table.service';
 import { OrganizationService } from '../../organization/organization.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { TaskManagerService } from './task-manager.service';
 import { BullModule } from '@nestjs/bull';
 
