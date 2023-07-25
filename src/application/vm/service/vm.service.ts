@@ -299,7 +299,7 @@ export class VmService {
     });
   }
 
-  async ejectMedia(app, options, serviceInstanceId, vAppId, cb) {
+  async ejectMedia(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
@@ -1157,7 +1157,7 @@ export class VmService {
     type,
     sortDesc,
     sortAsc,
-    foramt,
+    format,
     fields,
     offset,
     link,
@@ -1175,7 +1175,7 @@ export class VmService {
       page,
       pageSize,
       type,
-      foramt,
+      format,
       link,
       sortAsc,
       sortDesc,
@@ -1223,7 +1223,7 @@ export class VmService {
     });
   }
 
-  async resetVm(options, serviceInstanceId, vAppId, cb) {
+  async resetVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
@@ -1238,7 +1238,7 @@ export class VmService {
     });
   }
 
-  async revertVmSnapShot(app, options, serviceInstanceId, vAppId) {
+  async revertVmSnapShot(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
@@ -1269,7 +1269,6 @@ export class VmService {
   }
 
   async transferFile(
-    app,
     options,
     serviceInstanceId,
     transferId,
@@ -1297,7 +1296,7 @@ export class VmService {
     );
   }
 
-  async undeployVm(options, serviceInstanceId, vAppId, data, cb) {
+  async undeployVm(options, serviceInstanceId, vAppId, data) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
@@ -1316,7 +1315,7 @@ export class VmService {
     });
   }
 
-  async updateVmComputeSection(options, data, serviceInstanceId, vmId) {
+  async updateVmComputeSection(options, serviceInstanceId, vmId, data) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
@@ -1364,7 +1363,7 @@ export class VmService {
     });
   }
 
-  async updateDiskSection(app, options, data, serviceInstanceId, vmId) {
+  async updateDiskSection(options, data, serviceInstanceId, vmId) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
@@ -1373,16 +1372,17 @@ export class VmService {
       userId,
       props.orgId,
     );
-    const storageItemType = await app.models.ItemTypes.findOne({
+    const storageItemType = await this.itemTypesTableService.findOne({
       where: {
-        and: [{ ServiceTypeID: 'vm' }, { Code: 'storage' }],
+        serviceTypeId: 'vm',
+        code: 'storage'
       },
     });
     let storageSum = 0;
     data.forEach((disk) => {
       storageSum += parseInt(disk.sizeMb);
     });
-    if (storageSum > parseInt(storageItemType.MaxPerRequest)) {
+    if (storageSum > storageItemType.maxPerRequest) {
       throw new BadRequestException();
     }
     const vm = await mainWrapper.user.vm.updateVmDiskSection(
@@ -1431,7 +1431,7 @@ export class VmService {
     });
   }
 
-  async updateMedia(app, options, data, serviceInstanceId, mediaId) {
+  async updateMedia(options, data, serviceInstanceId, mediaId) {
     if (!data?.name) {
       throw new BadRequestException();
     }
@@ -1461,7 +1461,7 @@ export class VmService {
     });
   }
 
-  async updateVAppTemplate(app, options, data, serviceInstanceId, templateId) {
+  async updateVAppTemplate(options, data, serviceInstanceId, templateId) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
