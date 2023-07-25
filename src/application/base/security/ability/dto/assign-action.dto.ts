@@ -7,7 +7,4 @@ export class AssignActionDto {
 
   @ApiProperty()
   on: string;
-
-  @ApiProperty()
-  userId: number;
 }

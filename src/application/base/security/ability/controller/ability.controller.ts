@@ -60,39 +60,42 @@ export class AbilityController {
     await this.abilityAdminService.denyPredefinedRole(userId, dto.role);
   }
 
-  @Post('/users/:toId/access/:accessType/:on')
+  @Post('/:userId/permit')
   @ApiOperation({ summary: 'permit an access type to a model for a user ' })
   async permitAccessToUser(
-    @Param('AssignActionDto') dto: AssignActionDto,
+    @Param('userId') userId: number,
+    @Param('access') dto: AssignActionDto,
   ): Promise<void> {
     await this.abilityAdminService.permitAccessToUser(
       dto.action,
       dto.on,
-      dto.userId,
+      userId,
     );
   }
 
-  @Post('/users/:fromId/access/:accessType/:on/revoke')
+  @Post('/:userId/revoke')
   @ApiOperation({ summary: 'deny an access type from a model for a user ' })
   async denyAccessFromUser(
-    @Param('AssignActionDto') dto: AssignActionDto,
+    @Param('userId') userId: number,
+    @Param('access') dto: AssignActionDto,
   ): Promise<void> {
     await this.abilityAdminService.denyAccessFromUser(
       dto.action,
       dto.on,
-      dto.userId,
+      userId,
     );
   }
 
-  @Delete('/:userId/access/:accessType/:on')
+  @Delete('/:userId/access')
   @ApiOperation({ summary: 'delete an access type from a model for a user ' })
   async deleteAccessForUser(
-    @Param('AssignActionDto') dto: AssignActionDto,
+    @Param('userId') userId: number,
+    @Param('access') dto: AssignActionDto,
   ): Promise<void> {
     await this.abilityAdminService.deleteAccessForUser(
       dto.action,
       dto.on,
-      dto.userId,
+      userId,
     );
   }
 }
