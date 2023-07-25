@@ -43,32 +43,23 @@ export class UserController {
     private readonly notificationService: NotificationService,
   ) {}
 
-
-
-
-
   @Put()
   @ApiOperation({ summary: 'update user data' })
   @ApiBody({ type: UpdateUserDto })
-  async updateUser(
-    @Request() options, 
-    @Body() updateUserDto: UpdateUserDto) {
-      const userId = options.user.userId;
-      return await this.userService.updateUser(userId,updateUserDto);
+  async updateUser(@Request() options, @Body() updateUserDto: UpdateUserDto) {
+    const userId = options.user.userId;
+    return await this.userService.updateUser(userId, updateUserDto);
   }
 
   @Put('changePassword')
   @ApiOperation({ summary: 'change password ' })
   @ApiBody({ type: ChangePasswordDto })
-  async changePassword(
-    @Request() options, 
-    @Body() dto: ChangePasswordDto) {
-      console.log('change pass');
-      console.log(options.user);
-      const userId = options.user.userId;
-      return await this.userService.changePassword(userId,dto.password);
+  async changePassword(@Request() options, @Body() dto: ChangePasswordDto) {
+    console.log('change pass');
+    console.log(options.user);
+    const userId = options.user.userId;
+    return await this.userService.changePassword(userId, dto.password);
   }
-
 
   @Post('/credit/increment')
   @ApiOperation({ summary: 'increases user credit' })

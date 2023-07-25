@@ -81,7 +81,10 @@ export class AuthController {
     type: LoginAsUserDto,
   })
   async loginAsUser(@Body() data: any, @Request() options): Promise<any> {
-    const userCredentials = await this.authService.login.getLoginAsUserToken(options, data);
+    const userCredentials = await this.authService.login.getLoginAsUserToken(
+      options,
+      data,
+    );
     return userCredentials;
   }
 
@@ -94,12 +97,10 @@ export class AuthController {
     description: 'Success',
     type: RegisterByOauthDto,
   })
-  async registerByOauth
-  (
+  async registerByOauth(
     @Body() data: RegisterByOauthDto,
-    @Request() options
+    @Request() options,
   ): Promise<any> {
-    return this.authService.oath.registerByOauth(options,data);
+    return this.authService.oath.registerByOauth(options, data);
   }
-  
 }

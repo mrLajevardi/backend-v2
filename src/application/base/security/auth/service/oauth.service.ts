@@ -16,8 +16,8 @@ export class OauthService {
   constructor(
     private readonly userTable: UserTableService,
     private readonly roleMappingTable: RoleMappingTableService,
-    private readonly loginService: LoginService
-  ) { }
+    private readonly loginService: LoginService,
+  ) {}
 
   async googleOauth(token) {
     let email;
@@ -249,15 +249,13 @@ export class OauthService {
     return this.loginService.getLoginToken(user);
   }
 
-  
+  async registerByOauth(options, data: RegisterByOauthDto) {
+    const decodedPhone: DecodedPhone = jwt.decode(data.pjwt) as DecodedPhone;
 
-  async registerByOauth(
-    options,
-    data : RegisterByOauthDto,
-  ) {
-    const decodedPhone : DecodedPhone = jwt.decode(data.pjwt) as DecodedPhone;
-
-    const pjwtVerified = await jwt.verify(data.pjwt, process.env.OTP_SECRET_KEY);
+    const pjwtVerified = await jwt.verify(
+      data.pjwt,
+      process.env.OTP_SECRET_KEY,
+    );
     if (!pjwtVerified) {
       return Promise.reject(new InvalidPhoneTokenException());
     }
@@ -272,7 +270,10 @@ export class OauthService {
     const encodedData = jwt.decode(data.emailToken);
     const email = encodedData['email'];
     try {
-      const emailVerified = jwt.verify(data.emailToken, process.env.JWT_SECRET_KEY);
+      const emailVerified = jwt.verify(
+        data.emailToken,
+        process.env.JWT_SECRET_KEY,
+      );
     } catch (err) {
       return Promise.reject(new BadRequestException());
     }
@@ -286,18 +287,20 @@ export class OauthService {
       return Promise.reject(new BadRequestException());
     }
     if (user) {
-      await this.userTable.updateAll({
-        id: user.id,
-      }, {
-        email,
-      });
+      await this.userTable.updateAll(
+        {
+          id: user.id,
+        },
+        {
+          email,
+        },
+      );
       if (!user.active) {
         return Promise.reject(new ForbiddenException());
       }
 
       return this.loginService.getLoginToken(user);
     }
-
 
     data.username = `U-${decodedPhone.phoneNumber}`;
     const password = generatePassword();
@@ -335,5 +338,5 @@ export class OauthService {
       return Promise.reject(new ForbiddenException());
     }
     return this.loginService.getLoginToken(createdUser);
-  };
+  }
 }

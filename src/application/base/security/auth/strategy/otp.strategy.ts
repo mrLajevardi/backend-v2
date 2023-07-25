@@ -23,7 +23,7 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
     private readonly userTable: UserTableService,
     private readonly notificationService: NotificationService,
     private readonly otpService: OtpService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {
     super();
   }
@@ -85,10 +85,10 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
 
       console.log('validating ', otp, hash);
       if (this.otpService.otpVerifier(phoneNumber, otp, hash)) {
-        let theUser : User;
+        let theUser: User;
         if (!userExist) {
           theUser = await this.userService.createUserByPhoneNumber(phoneNumber);
-        }else{
+        } else {
           theUser = user;
         }
         const token = this.authService.login.getLoginToken(theUser);
@@ -96,7 +96,7 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
         return;
       } else {
         this.error(new ForbiddenException());
-      } 
+      }
     } catch (error) {
       this.error(error);
     }

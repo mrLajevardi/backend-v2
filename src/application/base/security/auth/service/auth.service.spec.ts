@@ -5,7 +5,10 @@ import { JwtService } from '@nestjs/jwt';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
-import { comparePassword, encryptPassword } from 'src/infrastructure/helpers/helpers';
+import {
+  comparePassword,
+  encryptPassword,
+} from 'src/infrastructure/helpers/helpers';
 
 describe('AuthService', () => {
   let service: AuthService;

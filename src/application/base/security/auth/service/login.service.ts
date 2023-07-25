@@ -8,13 +8,11 @@ import { comparePassword } from 'src/infrastructure/helpers/helpers';
 
 @Injectable()
 export class LoginService {
-
   constructor(
     private userTable: UserTableService,
     // private userService: UserService,
     private jwtService: JwtService,
-  ) { }
-
+  ) {}
 
   // Validate user performs using Local.strategy
   async validateUser(username: string, pass: string): Promise<any> {
@@ -46,8 +44,6 @@ export class LoginService {
     }
     return null;
   }
-
-
 
   // This function will be called in AuthController.login after
   // the success of local strategy

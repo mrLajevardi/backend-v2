@@ -20,7 +20,7 @@ export class UserAdminService {
     private readonly transactionsTable: TransactionsTableService,
   ) {}
 
-  async createUser(createUserDto : CreateUserDto){
+  async createUser(createUserDto: CreateUserDto) {
     createUserDto.password = await encryptPassword(createUserDto.password);
     return await this.userTable.create(createUserDto);
   }

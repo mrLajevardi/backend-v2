@@ -1,14 +1,11 @@
-import { Injectable } from "@nestjs/common"
-import { LoginService } from "./login.service"
-import { OauthService } from "./oauth.service"
+import { Injectable } from '@nestjs/common';
+import { LoginService } from './login.service';
+import { OauthService } from './oauth.service';
 
 @Injectable()
 export class AuthService {
-
-  constructor (
+  constructor(
     public readonly oath: OauthService,
-    public readonly login: LoginService
-  ){}
-  
-
+    public readonly login: LoginService,
+  ) {}
 }

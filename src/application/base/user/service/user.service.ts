@@ -27,10 +27,12 @@ import { AuthService } from '../../security/auth/service/auth.service';
 import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
 import * as util from 'util';
 import { JwtService } from '@nestjs/jwt';
-import { encryptPassword, generatePassword } from 'src/infrastructure/helpers/helpers';
+import {
+  encryptPassword,
+  generatePassword,
+} from 'src/infrastructure/helpers/helpers';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
-
 
 @Injectable()
 export class UserService {
@@ -53,15 +55,16 @@ export class UserService {
     });
   }
 
-
-
-  async changePassword(userId: number, newPassword: string){
-    if (! newPassword ) {
+  async changePassword(userId: number, newPassword: string) {
+    if (!newPassword) {
       return Promise.reject(new BadRequestException());
     }
     const hashedPassword = await encryptPassword(newPassword);
-    console.log(userId,hashedPassword);
-    await this.userTable.updateAll({id: userId},{password: hashedPassword});
+    console.log(userId, hashedPassword);
+    await this.userTable.updateAll(
+      { id: userId },
+      { password: hashedPassword },
+    );
   }
 
   async checkUserCredit(costs, userId, options, serviceType) {
@@ -105,13 +108,13 @@ export class UserService {
     }
   }
 
-  async createUserByPhoneNumber(phoneNumber : string ){
+  async createUserByPhoneNumber(phoneNumber: string) {
     const theUser = await this.userTable.create({
       phoneNumber: phoneNumber,
-      username : `U-${phoneNumber}`,
-      vdcPassword : generatePassword(),
-      name : 'کاربر',
-      family : 'گرامی',
+      username: `U-${phoneNumber}`,
+      vdcPassword: generatePassword(),
+      name: 'کاربر',
+      family: 'گرامی',
       code: null,
       realm: null,
       hasVdc: false,
@@ -123,8 +126,8 @@ export class UserService {
       password: null,
       active: false,
       phoneVerified: true,
-      acceptTermsOfService: true 
-    })
+      acceptTermsOfService: true,
+    });
 
     await this.logger.info(
       'user',
@@ -146,7 +149,6 @@ export class UserService {
 
     return theUser;
   }
-
 
   async creditIncrement(options, data) {
     const userId = options.user.userId;
@@ -272,7 +274,7 @@ export class UserService {
     return;
   }
 
-  async updateUser(userId : number , updateUserDto: UpdateUserDto) {
+  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
     const forbiddenFields = [
       'active',
       'emailVerified',
@@ -296,9 +298,8 @@ export class UserService {
       return new BadRequestException();
     }
 
-    return this.userTable.update(userId, updateUserDto)
+    return this.userTable.update(userId, updateUserDto);
   }
-
 
   async verifyCreditIncrement(options, authority = null) {
     const userId = options.user.userId;
@@ -439,7 +440,9 @@ export class UserService {
     }
     let hash = null;
     if (user) {
-      const otpGenerated = this.securityTools.otp.otpGenerator(data.phoneNumber);
+      const otpGenerated = this.securityTools.otp.otpGenerator(
+        data.phoneNumber,
+      );
       await this.notificationService.sms.sendSMS(
         data.phoneNumber,
         otpGenerated.otp,

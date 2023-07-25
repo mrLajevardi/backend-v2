@@ -4,11 +4,8 @@ import { OtpService } from './otp.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-
-  ],
+  imports: [DatabaseModule],
   providers: [SecurityToolsService, OtpService],
-  exports: [SecurityToolsService]
+  exports: [SecurityToolsService],
 })
 export class SecurityToolsModule {}

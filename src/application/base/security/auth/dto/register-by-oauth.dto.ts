@@ -1,39 +1,38 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterByOauthDto {
+  id?: number;
 
-    id?: number;
+  @ApiProperty()
+  emailToken: string;
 
-    @ApiProperty()
-    emailToken: string;
+  @ApiProperty()
+  pjwt: string;
 
-    @ApiProperty()
-    pjwt: string;
+  @ApiProperty()
+  username: string;
 
-    @ApiProperty()
-    username: string;
+  @ApiProperty()
+  password: string;
 
-    @ApiProperty()
-    password: string;
+  @ApiProperty()
+  vdcPassword: string;
 
-    @ApiProperty()
-    vdcPassword: string;
+  @ApiProperty()
+  name: string;
 
-    @ApiProperty()
-    name: string;
+  @ApiProperty()
+  family: string;
 
-    @ApiProperty()
-    family: string;
+  @ApiProperty()
+  phoneNumber: string;
 
-    @ApiProperty()
-    phoneNumber: string;
+  @ApiProperty()
+  active: boolean;
 
-    @ApiProperty()
-    active: boolean;
+  @ApiProperty()
+  phoneVerified: boolean;
 
-    @ApiProperty()
-    phoneVerified: boolean;
-
-    @ApiProperty()
-    acceptTermsOfService: boolean;
+  @ApiProperty()
+  acceptTermsOfService: boolean;
 }

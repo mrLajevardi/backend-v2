@@ -1,27 +1,26 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty } from '@nestjs/swagger';
 
 export class RegisterDto {
+  @ApiProperty()
+  username: string;
 
-    @ApiProperty()
-    username: string;
+  @ApiProperty()
+  password: string;
 
-    @ApiProperty()
-    password: string;
+  vdcPassword: string;
 
-    vdcPassword: string;
+  @ApiProperty()
+  name: string;
 
-    @ApiProperty()
-    name: string;
+  @ApiProperty()
+  family: string;
 
-    @ApiProperty()
-    family: string;
+  @ApiProperty()
+  phoneNumber: string;
 
-    @ApiProperty()
-    phoneNumber: string;
+  active: boolean;
+  phoneVerified: boolean;
 
-    active: boolean;
-    phoneVerified: boolean;
-
-    @ApiProperty()
-    acceptTermsOfService: boolean;
+  @ApiProperty()
+  acceptTermsOfService: boolean;
 }

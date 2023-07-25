@@ -33,11 +33,14 @@ export function hasDuplicates(array) {
 }
 
 // compare two passwordes
-export async function comparePassword(hashed: string, plain: string): Promise<boolean> {
+export async function comparePassword(
+  hashed: string,
+  plain: string,
+): Promise<boolean> {
   return await bcrypt.compare(plain, hashed);
 }
 
-// encrypt password 
+// encrypt password
 export async function encryptPassword(plain: string): Promise<string> {
   const saltRounds = 10; // Number of salt rounds, you can adjust as per your requirements
   const hashedPassword = await bcrypt.hash(plain, saltRounds);

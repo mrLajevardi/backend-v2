@@ -168,7 +168,7 @@ import { LoginService } from 'src/application/base/security/auth/service/login.s
     InvoiceItemListService,
     SecurityToolsService,
     UserAdminService,
-    LoginService
+    LoginService,
   ],
   exports: [
     TypeOrmModule,
@@ -246,7 +246,7 @@ import { LoginService } from 'src/application/base/security/auth/service/login.s
     InvoiceItemListService,
     SecurityToolsService,
     UserAdminService,
-    LoginService
+    LoginService,
   ],
 })
 export class TestDatabaseModule {}
