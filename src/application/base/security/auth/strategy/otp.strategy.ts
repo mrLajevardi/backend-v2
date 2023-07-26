@@ -73,7 +73,7 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
         } catch (error) {
           this.error(error);
         }
-        this.success({ userExist: userExist, hash: hash});
+        this.success({ userExist: userExist, hash: hash });
         return;
       }
 
