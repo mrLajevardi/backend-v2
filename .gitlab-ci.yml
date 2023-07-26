@@ -68,4 +68,4 @@ deploy-job:      # This job runs in the deploy stage.
     - develop
     - main
   script:
-    - cmd.exe /c .\deploy.bat
+    - .\deploy.ps1
