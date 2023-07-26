@@ -20,9 +20,9 @@ export class UserAdminController {
   @Post()
   @ApiOperation({ summary: 'create user : Admin ' })
   @ApiBody({ type: CreateUserDto })
-  async CreateUser(@Body() createUserDto: CreateUserDto, @Res() res ) {
+  async CreateUser(@Body() createUserDto: CreateUserDto, @Res() res) {
     const result = await this.userAdminService.createUser(createUserDto);
-    if (!result){
+    if (!result) {
       throw new CreateErrorException('error creaging user');
     }
     return res.status(200).json({ message: 'User created successfully' });
@@ -31,7 +31,11 @@ export class UserAdminController {
   @Put(':id')
   @ApiOperation({ summary: 'update user data' })
   @ApiBody({ type: UpdateUserDto })
-  async updateUser(@Param('id') userId, @Body() updateUserDto: UpdateUserDto, @Res() res) {
+  async updateUser(
+    @Param('id') userId,
+    @Body() updateUserDto: UpdateUserDto,
+    @Res() res,
+  ) {
     await this.userService.updateUser(userId, updateUserDto);
     return res.status(200).json({ message: 'User updated successfully' });
   }
@@ -39,7 +43,11 @@ export class UserAdminController {
   @Put(':id/changePassword')
   @ApiOperation({ summary: 'change password ' })
   @ApiBody({ type: ChangePasswordDto })
-  async changePassword(@Param('id') userId, @Body() dto: ChangePasswordDto, @Res() res ) {
+  async changePassword(
+    @Param('id') userId,
+    @Body() dto: ChangePasswordDto,
+    @Res() res,
+  ) {
     await this.userService.changePassword(userId, dto.password);
     return res.status(200).json({ message: 'Password changed successfully' });
   }

@@ -7,13 +7,8 @@ import { GroupsTableModule } from '../crud/groups-table/groups-table.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    CrudModule,
-    GroupsTableModule,
-    LoggerModule
-  ],
+  imports: [DatabaseModule, CrudModule, GroupsTableModule, LoggerModule],
   providers: [GroupService],
-  controllers: [GroupController]
+  controllers: [GroupController],
 })
 export class GroupModule {}

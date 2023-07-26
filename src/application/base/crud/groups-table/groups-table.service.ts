@@ -65,12 +65,12 @@ export class GroupsTableService {
   }
 
   // delete an Item
-  async delete(id: number) : Promise<DeleteResult> {
+  async delete(id: number): Promise<DeleteResult> {
     return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<Groups>) : Promise<DeleteResult>  {
+  async deleteAll(where: FindOptionsWhere<Groups>): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

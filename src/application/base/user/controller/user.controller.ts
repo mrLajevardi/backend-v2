@@ -47,7 +47,11 @@ export class UserController {
   @Put()
   @ApiOperation({ summary: 'update user data' })
   @ApiBody({ type: UpdateUserDto })
-  async updateUser(@Request() options, @Body() updateUserDto: UpdateUserDto, @Res() res) {
+  async updateUser(
+    @Request() options,
+    @Body() updateUserDto: UpdateUserDto,
+    @Res() res,
+  ) {
     const userId = options.user.userId;
     await this.userService.updateUser(userId, updateUserDto);
     return res.status(200).json({ message: 'User updated successfully' });
@@ -56,7 +60,11 @@ export class UserController {
   @Put('changePassword')
   @ApiOperation({ summary: 'change password ' })
   @ApiBody({ type: ChangePasswordDto })
-  async changePassword(@Request() options, @Body() dto: ChangePasswordDto, @Res() res ) {
+  async changePassword(
+    @Request() options,
+    @Body() dto: ChangePasswordDto,
+    @Res() res,
+  ) {
     console.log('change pass');
     console.log(options.user);
     const userId = options.user.userId;

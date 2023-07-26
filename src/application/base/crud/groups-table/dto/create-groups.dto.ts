@@ -14,6 +14,4 @@ export class CreateGroupsDto {
   @IsString()
   @ApiProperty()
   color: string;
-
-
 }

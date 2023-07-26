@@ -68,7 +68,7 @@ import { GroupModule } from './application/base/group/group.module';
     NotificationModule,
     TicketModule,
     SecurityToolsModule,
-    GroupModule
+    GroupModule,
   ],
   controllers: [AppController],
   providers: [

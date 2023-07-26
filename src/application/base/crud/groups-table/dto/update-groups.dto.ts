@@ -14,6 +14,4 @@ export class UpdateGroupsDto {
   @IsString()
   @ApiProperty()
   color?: string;
-
-
 }
