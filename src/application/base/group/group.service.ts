@@ -18,35 +18,39 @@ export class GroupService {
             'createGroup',
             {
                 groupName: name,
-                _object: id,
+                _object: id.toString(),
             },
             {
-                userId: userId,
+                userId: userId.toString(),
             },
         );
     };
 
 
-    async logDeleteGroup(id, userId) {
+    async logDeleteGroup(id: number , userId: number ) {
         await this.logger.info(
             'groups',
             'deleteGroup',
             {
-                _object: id,
+                _object: id.toString(),
             },
             {
-                userId: userId,
+                userId: userId.toString(),
             },
         );
     };
 
-    async getGroups(page, pageSize, name, description, color) {
+    async getGroups(
+        page: number, 
+        pageSize: number, 
+        name: string , 
+        description: string, 
+        color: string ) : Promise<any> {
         let skip = 0;
         let limit = 10;
         if (!isEmpty(page)) {
             skip = pageSize * (page - 1);
         }
-
 
         const where: FindOptionsWhere<Groups> = {};
 
@@ -86,10 +90,10 @@ export class GroupService {
             'updateGroup',
             {
                 groupName: name,
-                _object: id,
+                _object: id.toString(),
             },
             {
-                userId: userId
+                userId: userId.toString()
             },
         );
     };

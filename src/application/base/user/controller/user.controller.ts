@@ -7,6 +7,7 @@ import {
   Put,
   Request,
   Delete,
+  Res,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -46,19 +47,21 @@ export class UserController {
   @Put()
   @ApiOperation({ summary: 'update user data' })
   @ApiBody({ type: UpdateUserDto })
-  async updateUser(@Request() options, @Body() updateUserDto: UpdateUserDto) {
+  async updateUser(@Request() options, @Body() updateUserDto: UpdateUserDto, @Res() res) {
     const userId = options.user.userId;
-    return await this.userService.updateUser(userId, updateUserDto);
+    await this.userService.updateUser(userId, updateUserDto);
+    return res.status(200).json({ message: 'User updated successfully' });
   }
 
   @Put('changePassword')
   @ApiOperation({ summary: 'change password ' })
   @ApiBody({ type: ChangePasswordDto })
-  async changePassword(@Request() options, @Body() dto: ChangePasswordDto) {
+  async changePassword(@Request() options, @Body() dto: ChangePasswordDto, @Res() res ) {
     console.log('change pass');
     console.log(options.user);
     const userId = options.user.userId;
-    return await this.userService.changePassword(userId, dto.password);
+    await this.userService.changePassword(userId, dto.password);
+    return res.status(200).json({ message: 'Group created successfully' });
   }
 
   @Post('/credit/increment')

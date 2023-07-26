@@ -15,7 +15,5 @@ export class UpdateGroupsDto {
   @ApiProperty()
   color?: string;
 
-  @IsDate()
-  @ApiProperty()
-  updateDate?: Date;
+
 }

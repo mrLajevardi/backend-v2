@@ -15,14 +15,14 @@ import { ReplyTicketDto } from './dto/reply-ticket.dto';
 export class TicketController {
   constructor(private readonly service: TicketService) {}
 
-  @Post('/ticket/:ticketId/close')
+  @Post('/:ticketId/close')
   @ApiOperation({ summary: 'close a ticket' })
   @ApiParam({ name: 'ticketId', type: 'number' })
   async closeTicket(@Param('ticketId') ticketId: number, @Request() options) {
     await this.service.closeTicket(options, ticketId);
   }
 
-  @Post('/ticket')
+  @Post()
   @ApiOperation({ summary: 'creates a new ticket' })
   @ApiBody({ type: CreateTicketDto })
   @ApiCreatedResponse({
@@ -37,14 +37,14 @@ export class TicketController {
     return ticketId;
   }
 
-  @Get('/tickets')
+  @Get()
   @ApiOperation({ summary: 'get a list of tickets' })
   async getAllTickets(@Request() options): Promise<any[]> {
     const tickets = await this.service.getAllTickets(options);
     return tickets;
   }
 
-  @Get('/ticket/:ticketId')
+  @Get(':ticketId')
   @ApiOperation({ summary: 'get a ticket' })
   @ApiParam({ name: 'ticketId', type: 'number' })
   async getTicket(
@@ -55,7 +55,7 @@ export class TicketController {
     return ticket;
   }
 
-  @Post('/ticket/:ticketId/reply')
+  @Post(':ticketId/reply')
   @ApiOperation({ summary: 'reply to ticket' })
   @ApiParam({ name: 'ticketId', type: 'number' })
   @ApiBody({ type: ReplyTicketDto })

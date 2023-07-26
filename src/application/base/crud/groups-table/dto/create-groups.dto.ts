@@ -15,8 +15,5 @@ export class CreateGroupsDto {
   @ApiProperty()
   color: string;
 
-  @IsDate()
-  @ApiProperty()
-  @IsOptional()
-  createDate?: Date;
+
 }
