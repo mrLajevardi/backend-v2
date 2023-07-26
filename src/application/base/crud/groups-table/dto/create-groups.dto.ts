@@ -17,5 +17,6 @@ export class CreateGroupsDto {
 
   @IsDate()
   @ApiProperty()
-  createDate: Date;
+  @IsOptional()
+  createDate?: Date;
 }

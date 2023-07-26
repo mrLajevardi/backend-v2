@@ -30,6 +30,7 @@ import { OtpService } from './application/base/security/security-tools/otp.servi
 import { TicketModule } from './application/base/ticket/ticket.module';
 import { OauthService } from './application/base/security/auth/service/oauth.service';
 import { SecurityToolsModule } from './application/base/security/security-tools/security-tools.module';
+import { GroupModule } from './application/base/group/group.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { SecurityToolsModule } from './application/base/security/security-tools/
     NotificationModule,
     TicketModule,
     SecurityToolsModule,
+    GroupModule
   ],
   controllers: [AppController],
   providers: [

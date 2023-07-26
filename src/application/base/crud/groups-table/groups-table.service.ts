@@ -45,8 +45,10 @@ export class GroupsTableService {
   // Create an Item using createDTO
   async create(dto: CreateGroupsDto) {
     const newItem = plainToClass(Groups, dto);
+    newItem.createDate = new Date();
+    console.log(newItem);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
