@@ -304,6 +304,11 @@ describe('AiController', () => {
         serviceInstanceId,
         page,
         pageSize,
+        {
+          user: {
+            userId: 597,
+          },
+        },
       );
 
       expect(result.aiTransactionsLogs).toEqual([]);
