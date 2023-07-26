@@ -32,6 +32,7 @@ export class LoggerService {
     const actionInfo = typeInfo.actions[action];
     const description = this.replacer(actionInfo.description, options);
     let userId = requestOptions.userId;
+
     if (requestOptions.adminId) {
       userId = requestOptions.adminId;
     }

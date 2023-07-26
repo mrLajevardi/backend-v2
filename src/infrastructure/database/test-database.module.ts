@@ -81,6 +81,8 @@ import { SecurityToolsService } from 'src/application/base/security/security-too
 import { UserAdminService } from 'src/application/base/user/service/user-admin.service';
 import { LoginService } from 'src/application/base/security/auth/service/login.service';
 import { AbilityAdminService } from 'src/application/base/security/ability/service/ability-admin.service';
+import { GroupsTableService } from 'src/application/base/crud/groups-table/groups-table.service';
+import { GroupService } from 'src/application/base/group/group.service';
 
 @Module({
   imports: [
@@ -171,6 +173,8 @@ import { AbilityAdminService } from 'src/application/base/security/ability/servi
     UserAdminService,
     LoginService,
     AbilityAdminService,
+    GroupsTableService,
+    GroupService,
   ],
   exports: [
     TypeOrmModule,
@@ -250,6 +254,8 @@ import { AbilityAdminService } from 'src/application/base/security/ability/servi
     UserAdminService,
     LoginService,
     AbilityAdminService,
+    GroupsTableService,
+    GroupService,
   ],
 })
 export class TestDatabaseModule {}
