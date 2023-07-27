@@ -29,12 +29,16 @@ import { OtpAuthGuard } from '../guard/otp-auth.guard';
 import { LoginAsUserDto } from '../dto/login-as-user.dto';
 import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
 import { GoogleLoginDto } from '../dto/google-login.dto';
+import { userInfo } from 'os';
+import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 
 @ApiTags('Auth')
 @Controller('auth')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService
+  ) { }
 
   @Public()
   @ApiOperation({ summary: 'User login' })
@@ -43,8 +47,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req) {
-    console.log(req);
-    return this.authService.login.getLoginToken(req.user);
+    return this.authService.login.getLoginToken(req.user.id);
   }
 
   @Public()
@@ -89,12 +92,28 @@ export class AuthController {
     description: 'Logged in successfully',
     type: LoginAsUserDto,
   })
-  async loginAsUser(@Body() data: any, @Request() options): Promise<any> {
-    const userCredentials = await this.authService.login.getLoginAsUserToken(
-      options,
-      data,
+  async loginAsUser(
+    @Body() data: LoginAsUserDto,
+    @Request() options): Promise<any> {
+      const currentUserId = options.user.userId;
+    const userCredentials = await this.authService.login.getLoginToken(
+      currentUserId, data.userId 
     );
     return userCredentials;
+  }
+
+  @Post('/revertBackToOriginalUser')
+  @ApiOperation({ summary: 'if you used login as user, you can revert back to original user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Logged in successfully',
+  })
+  async revertBackToOriginalUser(
+    @Request() options): Promise<any> {
+      if (!options.user.originalUser ){
+        throw new ForbiddenException();
+      }
+      return this.authService.login.getLoginToken(options.user.originalUser.userId);
   }
 
   @Public()

@@ -187,7 +187,7 @@ export class OauthService {
     }
     const ttl = process.env.USER_OPTIONS_TTL;
 
-    return this.loginService.getLoginToken(user);
+    return this.loginService.getLoginToken(user.id);
   }
 
   async verifyLinkedinOauth(code) {
@@ -217,7 +217,7 @@ export class OauthService {
       return Promise.reject(new DisabledUserException());
     }
 
-    return this.loginService.getLoginToken(user);
+    return this.loginService.getLoginToken(user.id);
   }
 
   async verifyGithubOauth(code: string) {
@@ -246,7 +246,7 @@ export class OauthService {
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
-    return this.loginService.getLoginToken(user);
+    return this.loginService.getLoginToken(user.id);
   }
 
   async registerByOauth(options, data: RegisterByOauthDto) {
@@ -299,7 +299,7 @@ export class OauthService {
         return Promise.reject(new ForbiddenException());
       }
 
-      return this.loginService.getLoginToken(user);
+      return this.loginService.getLoginToken(user.id);
     }
 
     data.username = `U-${decodedPhone.phoneNumber}`;
@@ -337,6 +337,6 @@ export class OauthService {
     if (!createdUser.active) {
       return Promise.reject(new ForbiddenException());
     }
-    return this.loginService.getLoginToken(createdUser);
+    return this.loginService.getLoginToken(createdUser.id);
   }
 }

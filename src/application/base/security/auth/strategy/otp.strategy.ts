@@ -92,7 +92,7 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
         } else {
           theUser = user;
         }
-        const token = this.authService.login.getLoginToken(theUser);
+        const token = this.authService.login.getLoginToken(theUser.id);
         this.success(token);
         return;
       } else {
