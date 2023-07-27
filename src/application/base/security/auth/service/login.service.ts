@@ -5,6 +5,8 @@ import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exce
 import { NotificationService } from 'src/application/base/notification/notification.service';
 import * as bcrypt from 'bcrypt';
 import { comparePassword } from 'src/infrastructure/helpers/helpers';
+import { User } from 'src/infrastructure/database/entities/User';
+import { isEmpty } from 'lodash';
 
 @Injectable()
 export class LoginService {
@@ -48,19 +50,32 @@ export class LoginService {
   // This function will be called in AuthController.login after
   // the success of local strategy
   // it will return the JWT token
-  async getLoginToken(user: any) {
-    console.log('auth service login', user);
-    const payload = { username: user.username, sub: user.id };
+  async getLoginToken(userId: number, impersonateId?: number) {
+    console.log('getLoginToken', userId, impersonateId);
+    if (!userId) {
+      throw new ForbiddenException('no userId provided');
+    }
+    const user: User = await this.userTable.findById(userId);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    let impersonateAs: User = null;
+    if (impersonateId) {
+      impersonateAs = await this.userTable.findById(impersonateId);
+    }
+    const payload = {
+      username: user.username,
+      sub: user.id,
+      impersonateAs: !isEmpty(impersonateAs)
+        ? {
+            username: impersonateAs.username,
+            userId: impersonateAs.id,
+          }
+        : null,
+    };
+    console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
     };
-  }
-
-  async getLoginAsUserToken(options, data) {
-    const user = await this.userTable.findById(data.userId);
-    if (!user) {
-      return Promise.reject(new ForbiddenException());
-    }
-    return this.getLoginToken(user);
   }
 }
