@@ -6,8 +6,8 @@ import { SmsErrorException } from 'src/infrastructure/exceptions/sms-error-excep
 export class SmsService {
   async sendSMS(phoneNumber: string, otp: string) {
     const otpApiKey = process.env.OTP_API_KEY;
-    const otpSecret = process.env.OTP_API_SECRET;
-    const url = `https://api.kavenegar.com/v1/${otpApiKey}/verify/lookup.json`;
+    const otpSecret = process.env.OTP_SECRET_KEY;
+    const url = `https://api.kavenegar.com/v1/${otpSecret}/verify/lookup.json`;
 
     console.log(url, otp, phoneNumber);
     let smsStatus;
@@ -15,7 +15,7 @@ export class SmsService {
       const res = await axios.get(url, {
         params: {
           receptor: phoneNumber,
-          message: otp,
+          token: otp,
           template: 'AradOTP',
         },
       });
@@ -25,7 +25,7 @@ export class SmsService {
       }
     } catch (err) {
       const error = new SmsErrorException(err.message);
-      return Promise.reject(error);
+      return Promise.reject(err);
     }
     return smsStatus;
   }
