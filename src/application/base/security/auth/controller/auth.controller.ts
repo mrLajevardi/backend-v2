@@ -28,6 +28,7 @@ import { GithubAuthGuard } from '../guard/github-auth.guard';
 import { OtpAuthGuard } from '../guard/otp-auth.guard';
 import { LoginAsUserDto } from '../dto/login-as-user.dto';
 import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
+import { GoogleLoginDto } from '../dto/google-login.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -74,6 +75,7 @@ export class AuthController {
 
   @Public()
   @Post('google')
+  @ApiBody({ type: GoogleLoginDto })
   @UseGuards(GoogleAuthGuard)
   async googleLogin(@Request() req) {
     return req.user;
