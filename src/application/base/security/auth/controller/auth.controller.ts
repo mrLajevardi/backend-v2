@@ -36,9 +36,7 @@ import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exce
 @Controller('auth')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService
-  ) { }
+  constructor(private readonly authService: AuthService) {}
 
   @Public()
   @ApiOperation({ summary: 'User login' })
@@ -94,26 +92,31 @@ export class AuthController {
   })
   async loginAsUser(
     @Body() data: LoginAsUserDto,
-    @Request() options): Promise<any> {
-      const currentUserId = options.user.userId;
+    @Request() options,
+  ): Promise<any> {
+    const currentUserId = options.user.userId;
     const userCredentials = await this.authService.login.getLoginToken(
-      currentUserId, data.userId 
+      currentUserId,
+      data.userId,
     );
     return userCredentials;
   }
 
   @Post('/revertBackToOriginalUser')
-  @ApiOperation({ summary: 'if you used login as user, you can revert back to original user' })
+  @ApiOperation({
+    summary: 'if you used login as user, you can revert back to original user',
+  })
   @ApiResponse({
     status: 200,
     description: 'Logged in successfully',
   })
-  async revertBackToOriginalUser(
-    @Request() options): Promise<any> {
-      if (!options.user.originalUser ){
-        throw new ForbiddenException();
-      }
-      return this.authService.login.getLoginToken(options.user.originalUser.userId);
+  async revertBackToOriginalUser(@Request() options): Promise<any> {
+    if (!options.user.originalUser) {
+      throw new ForbiddenException();
+    }
+    return this.authService.login.getLoginToken(
+      options.user.originalUser.userId,
+    );
   }
 
   @Public()

@@ -17,19 +17,22 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // The validation that will be take place before any
   // endpoint protected using Jwt-auth.guard
   async validate(payload: any) {
-    if (!payload.sub){
-      throw new ForbiddenException('error in jwt')
+    if (!payload.sub) {
+      throw new ForbiddenException('error in jwt');
     }
     let retVal = {};
-    let originalData =  { userId: payload.sub.toString(), username: payload.username };
+    const originalData = {
+      userId: payload.sub.toString(),
+      username: payload.username,
+    };
     const impersonateAs = payload['impersonateAs'] as ImpersonateAs;
-    if (impersonateAs){
-      retVal = { 
-        userId: impersonateAs.userId , 
-        username: impersonateAs.username , 
-        originalUser: originalData
-      }
-    }else{
+    if (impersonateAs) {
+      retVal = {
+        userId: impersonateAs.userId,
+        username: impersonateAs.username,
+        originalUser: originalData,
+      };
+    } else {
       retVal = originalData;
     }
     return retVal;

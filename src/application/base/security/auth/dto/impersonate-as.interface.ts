@@ -1,4 +1,4 @@
 export interface ImpersonateAs {
-    userId : number;
-    username: string;
+  userId: number;
+  username: string;
 }

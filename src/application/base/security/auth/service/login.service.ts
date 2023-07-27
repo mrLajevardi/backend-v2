@@ -50,30 +50,32 @@ export class LoginService {
   // This function will be called in AuthController.login after
   // the success of local strategy
   // it will return the JWT token
-  async getLoginToken(userId: number , impersonateId?: number ) {
+  async getLoginToken(userId: number, impersonateId?: number) {
     console.log('getLoginToken', userId, impersonateId);
-    if(!userId){
+    if (!userId) {
       throw new ForbiddenException('no userId provided');
     }
-    const user : User  = await this.userTable.findById(userId);
-    if (!user){
+    const user: User = await this.userTable.findById(userId);
+    if (!user) {
       throw new ForbiddenException();
     }
-    let impersonateAs : User = null;
-    if (impersonateId){
+    let impersonateAs: User = null;
+    if (impersonateId) {
       impersonateAs = await this.userTable.findById(impersonateId);
     }
-    const payload = { 
-      username: user.username, 
-      sub: user.id , 
-      impersonateAs: !isEmpty(impersonateAs) ? {
-        username: impersonateAs.username,
-        userId: impersonateAs.id
-      } : null };
-console.log(payload)
+    const payload = {
+      username: user.username,
+      sub: user.id,
+      impersonateAs: !isEmpty(impersonateAs)
+        ? {
+            username: impersonateAs.username,
+            userId: impersonateAs.id,
+          }
+        : null,
+    };
+    console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
-
 }
