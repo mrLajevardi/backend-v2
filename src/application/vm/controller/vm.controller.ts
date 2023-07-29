@@ -7,8 +7,9 @@ import {
   Request,
   UseFilters,
   Delete,
+  Put,
   Headers,
-  Body
+  Body,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { isEmpty, isNil } from 'lodash';
@@ -29,11 +30,11 @@ import { CreateTemplateDto } from '../dto/create-template.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
 
 @ApiTags('VM')
-@Controller('VM')
+@Controller('vm')
 @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VmController {
-  constructor(private readonly vmService: VmService) { }
+  constructor(private readonly vmService: VmService) {}
 
   @Post('/:serviceInstanceId/:vmId/acquireVMTicket')
   @ApiOperation({ summary: '' })
@@ -52,7 +53,7 @@ export class VmController {
     return this.vmService.acquireVMTicket(options, serviceInstanceId, vmId);
   }
 
-  @Post('/:serviceInstanceId/:containerId/createTemplate')
+  @Post('/:serviceInstanceId/:containerId/template')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'containerId', description: 'container id of a vm' })
@@ -67,10 +68,15 @@ export class VmController {
     @Request() options,
     @Body() data: CreateTemplateDto,
   ): Promise<any> {
-    return this.vmService.createTemplate(options, serviceInstanceId, containerId, data);
+    return this.vmService.createTemplate(
+      options,
+      serviceInstanceId,
+      containerId,
+      data,
+    );
   }
 
-  @Post('/:serviceInstanceId/createVMFromTemplate')
+  @Post('/:serviceInstanceId/fromTemplate')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
@@ -83,10 +89,14 @@ export class VmController {
     @Request() options,
     @Body() data: CreateVmFromTemplate,
   ): Promise<any> {
-    return this.vmService.createVMFromTemplate(options, data, serviceInstanceId);
+    return this.vmService.createVMFromTemplate(
+      options,
+      data,
+      serviceInstanceId,
+    );
   }
 
-  @Post('/:serviceInstanceId/createVm')
+  @Post('/:serviceInstanceId')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
@@ -102,7 +112,7 @@ export class VmController {
     return this.vmService.createVm(options, data, serviceInstanceId);
   }
 
-  @Post('/:serviceInstanceId/:vmId/createVmSnapShot')
+  @Post('/:serviceInstanceId/:vmId/snapShot')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -117,27 +127,32 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.createVmSnapShot(options, serviceInstanceId, vmId, data);
+    return this.vmService.createVmSnapShot(
+      options,
+      serviceInstanceId,
+      vmId,
+      data,
+    );
   }
 
-  @Delete('/:serviceInstanceId/:vmId/deleteMedia')
+  @Delete('/:serviceInstanceId/media/:mediaId')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
-  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiParam({ name: 'mediaId', description: 'vm id' })
   @ApiResponse({
     status: 201,
     description: 'acquire vm tickets',
     type: 'object',
   })
   async deleteMedia(
-    @Param('vmId') vmId: string,
+    @Param('mediaId') mediaId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.deleteMedia(options, serviceInstanceId, vmId);
+    return this.vmService.deleteMedia(options, serviceInstanceId, mediaId);
   }
 
-  @Delete('/:serviceInstanceId/:vmId/deleteTemplate')
+  @Delete('/:serviceInstanceId/:vmId/template')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -154,7 +169,7 @@ export class VmController {
     return this.vmService.deleteTemplate(options, serviceInstanceId, vmId);
   }
 
-  @Delete('/:serviceInstanceId/:vmId/deleteVm')
+  @Delete('/:serviceInstanceId/:vmId/')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -183,7 +198,6 @@ export class VmController {
   async deployVm(
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
     return this.vmService.deployVm(options, serviceInstanceId, vmId);
@@ -201,7 +215,6 @@ export class VmController {
   async discardSuspendVm(
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
     return this.vmService.discardSuspendVm(options, serviceInstanceId, vmId);
@@ -219,17 +232,16 @@ export class VmController {
   async ejectMedia(
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
     return this.vmService.ejectMedia(options, serviceInstanceId, vmId);
   }
 
-  @Get('/:serviceInstanceId/getAllUserVm')
-  @ApiOperation({ summary: '' })
+  @Get('/:serviceInstanceId')
+  @ApiOperation({ summary: 'get all user vms' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
-  @ApiQuery({ name: 'filter', type: String })
-  @ApiQuery({ name: 'search', type: String })
+  @ApiQuery({ name: 'filter', type: String, required: false })
+  @ApiQuery({ name: 'search', type: String, required: false })
   @ApiResponse({
     status: 201,
     description: 'acquire vm tickets',
@@ -241,10 +253,15 @@ export class VmController {
     @Query('search') search: string,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.getAllUserVm(options, serviceInstanceId, filter, search);
+    return this.vmService.getAllUserVm(
+      options,
+      serviceInstanceId,
+      filter,
+      search,
+    );
   }
 
-  @Get('/:serviceInstanceId/getAllUserVmTemplates')
+  @Get('/:serviceInstanceId/templates')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
@@ -259,7 +276,7 @@ export class VmController {
     return this.vmService.getAllUserVmTemplates(options, serviceInstanceId);
   }
 
-  @Get('/:serviceInstanceId/getCatalogMedias')
+  @Get('/:serviceInstanceId/catalog/mediaFiles')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiQuery({ name: 'page', type: Number })
@@ -275,10 +292,15 @@ export class VmController {
     @Query('pageSize') pageSize: number,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.getCatalogMedias(options, serviceInstanceId, page, pageSize);
+    return this.vmService.getCatalogMedias(
+      options,
+      serviceInstanceId,
+      page,
+      pageSize,
+    );
   }
 
-  @Get('/:serviceInstanceId/getVmDiskSection')
+  @Get('/:serviceInstanceId/:vmId/diskSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -295,7 +317,7 @@ export class VmController {
     return this.vmService.getVmDiskSection(options, serviceInstanceId, vmId);
   }
 
-  @Get('/:serviceInstanceId/:vmId/getVmGeneralSection')
+  @Get('/:serviceInstanceId/:vmId/generalSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -327,7 +349,7 @@ export class VmController {
     return this.vmService.getHardwareInfo(options, serviceInstanceId);
   }
 
-  @Get('/:serviceInstanceId/getMedia')
+  @Get('/:serviceInstanceId/media')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
@@ -342,7 +364,7 @@ export class VmController {
     return this.vmService.getMedia(options, serviceInstanceId);
   }
 
-  @Get('/:serviceInstanceId/getOsInfo')
+  @Get('/:serviceInstanceId/osInfo')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
@@ -357,7 +379,7 @@ export class VmController {
     return this.vmService.getOsInfo(options, serviceInstanceId);
   }
 
-  @Get('/:serviceInstanceId/:vmId/getQuestion')
+  @Get('/:serviceInstanceId/:vmId/question')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -391,10 +413,10 @@ export class VmController {
     return this.vmService.getVmRemovableMedia(options, serviceInstanceId, vmId);
   }
 
-  @Get('/:serviceInstanceId/getSupportedHardDiskAdaptors')
+  @Get('/:serviceInstanceId/supportedHardDiskAdaptors')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
-  @ApiQuery({ name: 'osType' })
+  @ApiQuery({ name: 'osType', required: false })
   @ApiResponse({
     status: 201,
     description: 'acquire vm tickets',
@@ -402,13 +424,17 @@ export class VmController {
   })
   async getSupportedHardDiskAdaptors(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Query('osType') osType: string,
+    @Query('osType') osType: string | undefined,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.getSupportedHardDiskAdaptors(options, serviceInstanceId, osType);
+    return this.vmService.getSupportedHardDiskAdaptors(
+      options,
+      serviceInstanceId,
+      osType || null,
+    );
   }
 
-  @Get('/:serviceInstanceId/:templateId/getVAppTemplate')
+  @Get('/:serviceInstanceId/:templateId/vAppTemplate')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'templateId', description: 'template id' })
@@ -425,7 +451,7 @@ export class VmController {
     return this.vmService.getVAppTemplate(options, serviceInstanceId, templeId);
   }
 
-  @Get('/:serviceInstanceId/:vmId/getVmComputeSection')
+  @Get('/:serviceInstanceId/:vmId/computeSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -442,7 +468,7 @@ export class VmController {
     return this.vmService.getVmComputeSection(options, serviceInstanceId, vmId);
   }
 
-  @Get('/:serviceInstanceId/:vmId/getVmGuestCustomization')
+  @Get('/:serviceInstanceId/:vmId/guestCustomization')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -456,10 +482,14 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.getVmGuestCustomization(options, serviceInstanceId, vmId);
+    return this.vmService.getVmGuestCustomization(
+      options,
+      serviceInstanceId,
+      vmId,
+    );
   }
 
-  @Get('/:serviceInstanceId/:vmId/getVmNetworkSection')
+  @Get('/:serviceInstanceId/:vmId/networkSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -549,15 +579,15 @@ export class VmController {
   @Get('/:serviceInstanceId/query')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
-  @ApiQuery({ name: 'page', type: String })
-  @ApiQuery({ name: 'pageSize', type: String })
-  @ApiQuery({ name: 'type', type: String })
-  @ApiQuery({ name: 'sortDesc', type: String })
-  @ApiQuery({ name: 'sortAsc', type: String })
-  @ApiQuery({ name: 'format', type: String })
-  @ApiQuery({ name: 'fields', type: String })
-  @ApiQuery({ name: 'offset', type: String })
-  @ApiQuery({ name: 'link', type: String })
+  @ApiQuery({ name: 'page', type: String, required: false })
+  @ApiQuery({ name: 'pageSize', type: String, required: false })
+  @ApiQuery({ name: 'type', type: String, required: false })
+  @ApiQuery({ name: 'sortDesc', type: String, required: false })
+  @ApiQuery({ name: 'sortAsc', type: String, required: false })
+  @ApiQuery({ name: 'format', type: String, required: false })
+  @ApiQuery({ name: 'fields', type: String, required: false })
+  @ApiQuery({ name: 'offset', type: String, required: false })
+  @ApiQuery({ name: 'link', type: String, required: false })
   @ApiResponse({
     status: 201,
     description: 'acquire vm tickets',
@@ -578,7 +608,8 @@ export class VmController {
     @Request() options,
   ): Promise<any> {
     return this.vmService.query(
-      options, serviceInstanceId,
+      options,
+      serviceInstanceId,
       page,
       pageSize,
       filter,
@@ -609,7 +640,7 @@ export class VmController {
     return this.vmService.rebootVm(options, serviceInstanceId, vmId);
   }
 
-  @Post('/:serviceInstanceId/:vmId/removeVmSnapShot')
+  @Delete('/:serviceInstanceId/:vmId/snapShot')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -692,7 +723,12 @@ export class VmController {
     @Headers('content-length') contentLength,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.transferFile(options, serviceInstanceId, transferId, contentLength);
+    return this.vmService.transferFile(
+      options,
+      serviceInstanceId,
+      transferId,
+      contentLength,
+    );
   }
 
   @Post('/:serviceInstanceId/:vmId/postAnswer')
@@ -713,7 +749,7 @@ export class VmController {
     return this.vmService.undeployVm(options, serviceInstanceId, vmId, data);
   }
 
-  @Post('/:serviceInstanceId/:vmId/updateVmComputeSection')
+  @Put('/:serviceInstanceId/:vmId/computeSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -728,10 +764,15 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.updateVmComputeSection(options, serviceInstanceId, vmId, data);
+    return this.vmService.updateVmComputeSection(
+      options,
+      serviceInstanceId,
+      vmId,
+      data,
+    );
   }
 
-  @Post('/:serviceInstanceId/:vmId/updateDiskSection')
+  @Put('/:serviceInstanceId/:vmId/diskSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -746,10 +787,15 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.updateDiskSection(options, data, serviceInstanceId, vmId);
+    return this.vmService.updateDiskSection(
+      options,
+      data,
+      serviceInstanceId,
+      vmId,
+    );
   }
 
-  @Post('/:serviceInstanceId/:vmId/updateGuestCustomization')
+  @Put('/:serviceInstanceId/:vmId/guestCustomization')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -764,10 +810,15 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.updateGuestCustomization(options, data, serviceInstanceId, vmId);
+    return this.vmService.updateGuestCustomization(
+      options,
+      data,
+      serviceInstanceId,
+      vmId,
+    );
   }
 
-  @Post('/:serviceInstanceId/:mediaId/updateMedia')
+  @Put('/:serviceInstanceId/media/:mediaId/')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'mediaId', description: 'media id' })
@@ -782,10 +833,16 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.updateMedia(options, data, serviceInstanceId, mediaId);
+    console.log('first');
+    return this.vmService.updateMedia(
+      options,
+      data,
+      serviceInstanceId,
+      mediaId,
+    );
   }
 
-  @Post('/:serviceInstanceId/:templateId/updateVAppTemplate')
+  @Put('/:serviceInstanceId/:templateId/vAppTemplate')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'templateId', description: 'template id' })
@@ -800,10 +857,15 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.updateVAppTemplate(options, data, serviceInstanceId, templateId);
+    return this.vmService.updateVAppTemplate(
+      options,
+      data,
+      serviceInstanceId,
+      templateId,
+    );
   }
 
-  @Post('/:serviceInstanceId/:vmId/updateVmGeneralSection')
+  @Put('/:serviceInstanceId/:vmId/generalSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -818,10 +880,15 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.updateVmGeneralSection(options, data, serviceInstanceId, vmId);
+    return this.vmService.updateVmGeneralSection(
+      options,
+      data,
+      serviceInstanceId,
+      vmId,
+    );
   }
 
-  @Post('/:serviceInstanceId/:vmId/updateVmNetworkSection')
+  @Put('/:serviceInstanceId/:vmId/networkSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
@@ -836,7 +903,12 @@ export class VmController {
     @Body() data: CreateVmFromTemplate,
     @Request() options,
   ): Promise<any> {
-    return this.vmService.updateVmNetworkSection(options, data, serviceInstanceId, vmId);
+    return this.vmService.updateVmNetworkSection(
+      options,
+      data,
+      serviceInstanceId,
+      vmId,
+    );
   }
 
   @Post('/:serviceInstanceId/uploadFileInfo')

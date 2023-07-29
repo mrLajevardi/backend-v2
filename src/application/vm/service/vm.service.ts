@@ -34,14 +34,19 @@ export class VmService {
       userId,
       props.orgId,
     );
-    console.log(vdcInstanceId, vAppId)
+    console.log(vdcInstanceId, vAppId);
     const ticket = await mainWrapper.user.vm.acquireVappTicket(session, vAppId);
     return Promise.resolve({
       ticket: ticket.data.ticket || null,
     });
   }
 
-  async createTemplate(options, serviceInstanceId: string, containerId: string, data: CreateTemplateDto) {
+  async createTemplate(
+    options,
+    serviceInstanceId: string,
+    containerId: string,
+    data: CreateTemplateDto,
+  ) {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTableService.findOne({
       where: {
@@ -1268,12 +1273,7 @@ export class VmService {
     });
   }
 
-  async transferFile(
-    options,
-    serviceInstanceId,
-    transferId,
-    contentLength,
-  ) {
+  async transferFile(options, serviceInstanceId, transferId, contentLength) {
     const userId = options.user.userId;
     const props: any = await this.servicesService.getAllServiceProperties(
       serviceInstanceId,
@@ -1375,7 +1375,7 @@ export class VmService {
     const storageItemType = await this.itemTypesTableService.findOne({
       where: {
         serviceTypeId: 'vm',
-        code: 'storage'
+        code: 'storage',
       },
     });
     let storageSum = 0;
