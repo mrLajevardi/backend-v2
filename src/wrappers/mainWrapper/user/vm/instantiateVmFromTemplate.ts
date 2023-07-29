@@ -1,4 +1,4 @@
-import {Builder} from 'xml2js';
+import { Builder } from 'xml2js';
 import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';

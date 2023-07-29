@@ -63,6 +63,7 @@ import { ServicePlansTableService } from 'src/application/base/crud/service-plan
 import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-list/invoice-item-list.service';
 import { NetworksService } from 'src/application/networks/networks.service';
 import { NatService } from 'src/application/nat/nat.service';
+import { VmService } from 'src/application/vm/service/vm.service';
 
 @Module({
   imports: [
@@ -135,6 +136,7 @@ import { NatService } from 'src/application/nat/nat.service';
     DhcpService,
     ServicePlansTableService,
     InvoiceItemListService,
+    VmService,
   ],
   exports: [
     TypeOrmModule,
@@ -196,6 +198,7 @@ import { NatService } from 'src/application/nat/nat.service';
     DhcpService,
     ServicePlansTableService,
     InvoiceItemListService,
+    VmService,
   ],
 })
 export class TestDatabaseModule {}
