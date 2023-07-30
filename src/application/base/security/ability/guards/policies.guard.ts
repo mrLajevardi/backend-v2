@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { PolicyHandler } from '../interfaces/policy-handler.interface';
 import { CHECK_POLICIES_KEY } from '../decorators/check-policies.decorator';
 import { AbilityFactory } from '../ability.factory';
-import { UserService } from '../../../user/user.service';
+import { UserService } from '../../../user/service/user.service';
 import { PureAbility } from '@casl/ability';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 

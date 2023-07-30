@@ -6,7 +6,7 @@ import { SessionsService } from 'src/application/base/sessions/sessions.service'
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { UserService } from 'src/application/base/user/user.service';
+import { UserService } from 'src/application/base/user/service/user.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { EdgeService } from '../service/edge.service';
 import { NetworkService } from '../service/network.service';

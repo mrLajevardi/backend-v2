@@ -25,7 +25,7 @@ import { PayAsYouGoService } from 'src/application/base/service/services/pay-as-
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
-import { UserService } from 'src/application/base/user/user.service';
+import { UserService } from 'src/application/base/user/service/user.service';
 import { EdgeService } from 'src/application/vdc/service/edge.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';
 import { OrgService } from 'src/application/vdc/service/org.service';
@@ -62,8 +62,28 @@ import { DhcpService } from 'src/application/networks/dhcp.service';
 import { ServicePlansTableService } from 'src/application/base/crud/service-plans-table/service-plans-table.service';
 import { InvoiceItemListService } from 'src/application/base/crud/invoice-item-list/invoice-item-list.service';
 import { NetworksService } from 'src/application/networks/networks.service';
+import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
+import { SystemSettingsTableService } from 'src/application/base/crud/system-settings-table/system-settings-table.service';
+import { PaymentService } from 'src/application/payment/payment.service';
+import { NotificationService } from 'src/application/base/notification/notification.service';
+import { AuthService } from 'src/application/base/security/auth/service/auth.service';
+import { OtpService } from 'src/application/base/security/security-tools/otp.service';
+import { OauthService } from 'src/application/base/security/auth/service/oauth.service';
+import { EmailService } from 'src/application/base/notification/email.service';
+import { SmsService } from 'src/application/base/notification/sms.service';
+import { EmailContentService } from 'src/application/base/notification/email-content.service';
+import { ZarinpalService } from 'src/application/payment/zarinpal.service';
+import { TicketService } from 'src/application/base/ticket/ticket.service';
+import { AccessTokenTableService } from 'src/application/base/crud/access-token-table/access-token-table.service';
+import { TicketsTableService } from 'src/application/base/crud/tickets-table/tickets-table.service';
 import { NatService } from 'src/application/nat/nat.service';
 import { VmService } from 'src/application/vm/service/vm.service';
+import { SecurityToolsService } from 'src/application/base/security/security-tools/security-tools.service';
+import { UserAdminService } from 'src/application/base/user/service/user-admin.service';
+import { LoginService } from 'src/application/base/security/auth/service/login.service';
+import { AbilityAdminService } from 'src/application/base/security/ability/service/ability-admin.service';
+import { GroupsTableService } from 'src/application/base/crud/groups-table/groups-table.service';
+import { GroupService } from 'src/application/base/group/group.service';
 
 @Module({
   imports: [
@@ -135,8 +155,28 @@ import { VmService } from 'src/application/vm/service/vm.service';
     ApplicationPortProfileService,
     DhcpService,
     ServicePlansTableService,
+    RoleMappingTableService,
+    SystemSettingsTableService,
+    PaymentService,
+    NotificationService,
+    AuthService,
+    OtpService,
+    OauthService,
+    EmailService,
+    SmsService,
+    EmailContentService,
+    ZarinpalService,
+    TicketService,
+    AccessTokenTableService,
+    TicketsTableService,
     InvoiceItemListService,
     VmService,
+    SecurityToolsService,
+    UserAdminService,
+    LoginService,
+    AbilityAdminService,
+    GroupsTableService,
+    GroupService,
   ],
   exports: [
     TypeOrmModule,
@@ -197,8 +237,28 @@ import { VmService } from 'src/application/vm/service/vm.service';
     ApplicationPortProfileService,
     DhcpService,
     ServicePlansTableService,
+    RoleMappingTableService,
+    SystemSettingsTableService,
+    PaymentService,
+    NotificationService,
+    AuthService,
+    OtpService,
+    OauthService,
+    EmailService,
+    SmsService,
+    EmailContentService,
+    ZarinpalService,
+    TicketService,
+    AccessTokenTableService,
+    TicketsTableService,
     InvoiceItemListService,
     VmService,
+    SecurityToolsService,
+    UserAdminService,
+    LoginService,
+    AbilityAdminService,
+    GroupsTableService,
+    GroupService,
   ],
 })
 export class TestDatabaseModule {}

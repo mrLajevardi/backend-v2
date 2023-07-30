@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { OrganizationService } from '../../base/organization/organization.service';
-import { UserService } from '../../base/user/user.service';
+import { UserService } from '../../base/user/service/user.service';
 import { isNil } from 'lodash';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';

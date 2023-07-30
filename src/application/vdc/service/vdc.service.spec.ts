@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VdcService } from './vdc.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { OrganizationService } from '../../base/organization/organization.service';
-import { UserService } from '../../base/user/user.service';
+import { UserService } from '../../base/user/service/user.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { TransactionsService } from '../../base/transactions/transactions.service';
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';

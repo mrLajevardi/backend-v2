@@ -83,7 +83,7 @@ export class VgpuService {
 
     const availablePowerOnService = await this.configsTable.findOne({
       where: {
-        PropertyKey: 'config.vgpu.availablePowerOnVgpu',
+        propertyKey: 'config.vgpu.availablePowerOnVgpu',
       },
     });
 

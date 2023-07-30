@@ -3,7 +3,7 @@ import { VdcAdminController } from './vdc-admin.controller';
 import { OrganizationService } from 'src/application/base/organization/organization.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { UserService } from 'src/application/base/user/user.service';
+import { UserService } from 'src/application/base/user/service/user.service';
 import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 import { EdgeService } from '../service/edge.service';
 import { VdcService } from '../service/vdc.service';

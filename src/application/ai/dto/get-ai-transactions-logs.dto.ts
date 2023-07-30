@@ -1,15 +1,15 @@
 interface AiTransactionLogDto {
-  id: string;
-  serviceInstanceId: string;
-  dateTime: Date;
-  description: string;
-  request: string;
-  body: string;
-  response: string;
-  method: string;
-  codeStatus: number;
-  methodName: string;
-  ip: string;
+  ID: string;
+  ServiceInstanceID: string;
+  DateTime: Date;
+  Description: string;
+  Request: string;
+  Body: string;
+  Response: string;
+  Method: string;
+  CodeStatus: number;
+  MethodName: string;
+  IP: string;
 }
 
 interface GetAiTransactionsLogsDto {

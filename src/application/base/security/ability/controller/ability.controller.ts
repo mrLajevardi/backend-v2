@@ -1,0 +1,148 @@
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Delete,
+  Request,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiResponse,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiProperty,
+  ApiBody,
+} from '@nestjs/swagger';
+import { AbilityAdminService } from '../service/ability-admin.service';
+import { PredefinedRoles } from '../enum/predefined-enum.type';
+import { PredefinedRoleDto } from '../dto/predefined-role.dto';
+import { AssignPredefinedRoleDto } from '../dto/assign-predefined-role.dto';
+import { AssignActionDto } from '../dto/assign-action.dto';
+
+@ApiTags('Ability')
+@Controller('ability')
+@ApiBearerAuth() // Requires authentication with a JWT token
+export class AbilityController {
+  constructor(private readonly abilityAdminService: AbilityAdminService) {}
+
+  @Get('/:userId/predefined-roles')
+  @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
+  @ApiOperation({ summary: 'returns all predefined roles for the user' })
+  async getAllPredefinedRoles(
+    @Param('userId') userId: number,
+  ): Promise<PredefinedRoleDto[]> {
+    return this.abilityAdminService.getAllPredefinedRoles(userId);
+  }
+
+  @Get('/predefined-roles')
+  @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
+  @ApiOperation({ summary: 'returns all predefined roles for the user' })
+  async getAllMyPredefinedRoles(
+    @Request() options,
+  ): Promise<PredefinedRoleDto[]> {
+    return this.abilityAdminService.getAllPredefinedRoles(options.user.userId);
+  }
+
+  @Post('/:userId/predefined-roles')
+  @ApiOperation({ summary: 'assign a predefined role to user ' })
+  @ApiProperty({ enum: PredefinedRoles, enumName: 'PredefinedRoles' })
+  @ApiBody({
+    type: AssignPredefinedRoleDto,
+    description:
+      ' role: [admin-role-template,user-role-template,sysadmin-role-template]',
+  })
+  async assignPredefinedRole(
+    @Param('userId') userId: number,
+    @Body() assignPredefinedRoleDto: AssignPredefinedRoleDto,
+  ): Promise<void> {
+    await this.abilityAdminService.assignPredefinedRole(
+      userId,
+      assignPredefinedRoleDto.role,
+    );
+  }
+
+  @Delete('/:userId/predefined-roles')
+  @ApiOperation({ summary: 'delete a predefined role from user ' })
+  @ApiBody({
+    type: AssignPredefinedRoleDto,
+    description:
+      ' role: [admin-role-template,user-role-template,sysadmin-role-template]',
+  })
+  async deletePredefinedRole(
+    @Param('userId') userId: number,
+    @Body() dto: AssignPredefinedRoleDto,
+  ): Promise<void> {
+    console.log(userId, dto);
+    await this.abilityAdminService.deletePredefinedRole(userId, dto.role);
+  }
+
+  @Post('/:userId/predefined-roles/deny')
+  @ApiOperation({ summary: 'deny a predefined role from user ' })
+  @ApiBody({
+    type: AssignPredefinedRoleDto,
+    description:
+      ' role: [admin-role-template,user-role-template,sysadmin-role-template]',
+  })
+  async denyPredefinedRole(
+    @Param('userId') userId: number,
+    @Body() dto: AssignPredefinedRoleDto,
+  ): Promise<void> {
+    await this.abilityAdminService.denyPredefinedRole(userId, dto.role);
+  }
+
+  @Post('/:userId/permit')
+  @ApiOperation({ summary: 'permit an access type to a model for a user ' })
+  @ApiBody({
+    type: AssignActionDto,
+    description:
+      'action : [read,write,manage,update,delete], On: casl Subject name',
+  })
+  async permitAccessToUser(
+    @Param('userId') userId: number,
+    @Body() dto: AssignActionDto,
+  ): Promise<void> {
+    await this.abilityAdminService.permitAccessToUser(
+      dto.action,
+      dto.on,
+      userId,
+    );
+  }
+
+  @Post('/:userId/revoke')
+  @ApiOperation({ summary: 'deny an access type from a model for a user ' })
+  @ApiBody({
+    type: AssignActionDto,
+    description:
+      'action : [read,write,manage,update,delete], On: casl Subject name',
+  })
+  async denyAccessFromUser(
+    @Param('userId') userId: number,
+    @Body() dto: AssignActionDto,
+  ): Promise<void> {
+    await this.abilityAdminService.denyAccessFromUser(
+      dto.action,
+      dto.on,
+      userId,
+    );
+  }
+
+  @Delete('/:userId/access')
+  @ApiOperation({ summary: 'delete an access type from a model for a user ' })
+  @ApiBody({
+    type: AssignActionDto,
+    description:
+      'action : [read,write,manage,update,delete], On: casl Subject name',
+  })
+  async deleteAccessForUser(
+    @Param('userId') userId: number,
+    @Body() dto: AssignActionDto,
+  ): Promise<void> {
+    await this.abilityAdminService.deleteAccessForUser(
+      dto.action,
+      dto.on,
+      userId,
+    );
+  }
+}

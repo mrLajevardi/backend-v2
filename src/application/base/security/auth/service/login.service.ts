@@ -1,0 +1,81 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { UserTableService } from '../../../crud/user-table/user-table.service';
+import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
+import { NotificationService } from 'src/application/base/notification/notification.service';
+import * as bcrypt from 'bcrypt';
+import { comparePassword } from 'src/infrastructure/helpers/helpers';
+import { User } from 'src/infrastructure/database/entities/User';
+import { isEmpty } from 'lodash';
+
+@Injectable()
+export class LoginService {
+  constructor(
+    private userTable: UserTableService,
+    // private userService: UserService,
+    private jwtService: JwtService,
+  ) {}
+
+  // Validate user performs using Local.strategy
+  async validateUser(username: string, pass: string): Promise<any> {
+    console.log('validate user');
+    if (!username) {
+      throw new UnauthorizedException('No username provided');
+    }
+
+    if (!pass) {
+      throw new UnauthorizedException('No password provided');
+    }
+
+    const user = await this.userTable.findOne({
+      where: { username: username },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Wrong username or password');
+    }
+
+    // checking the availablity of the user and
+    const isValid = await comparePassword(user.password, pass);
+    if (user && isValid) {
+      // eslint-disable-next-line
+      const { password, ...result } = user;
+
+      //console.log(result);
+      return result;
+    }
+    return null;
+  }
+
+  // This function will be called in AuthController.login after
+  // the success of local strategy
+  // it will return the JWT token
+  async getLoginToken(userId: number, impersonateId?: number) {
+    console.log('getLoginToken', userId, impersonateId);
+    if (!userId) {
+      throw new ForbiddenException('no userId provided');
+    }
+    const user: User = await this.userTable.findById(userId);
+    if (!user) {
+      throw new ForbiddenException();
+    }
+    let impersonateAs: User = null;
+    if (impersonateId) {
+      impersonateAs = await this.userTable.findById(impersonateId);
+    }
+    const payload = {
+      username: user.username,
+      sub: user.id,
+      impersonateAs: !isEmpty(impersonateAs)
+        ? {
+            username: impersonateAs.username,
+            userId: impersonateAs.id,
+          }
+        : null,
+    };
+    console.log(payload);
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+}

@@ -17,9 +17,6 @@ stages:          # List of stages for jobs, and their order of execution
   - test
   - build
   - deploy
-cache:
-  paths:
-    - node_modules/
 # build-job:       # This job runs in the build stage, which runs first.
 #   stage: build
 #   only:
@@ -68,4 +65,4 @@ deploy-job:      # This job runs in the deploy stage.
     - develop
     - main
   script:
-    - cmd.exe /c .\deploy.bat
+    - .\deploy.ps1

@@ -67,7 +67,7 @@ export class ACLTableService {
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(where: FindOptionsWhere<Acl>) {
+    await this.repository.delete(where);
   }
 }

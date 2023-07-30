@@ -4,7 +4,7 @@ import { TestDatabaseModule } from 'src/infrastructure/database/test-database.mo
 import { ExtendServiceService } from './extend-service.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { OrganizationService } from '../../organization/organization.service';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../../user/service/user.service';
 import { DiscountsService } from './discounts.service';
 import { ServiceChecksService } from './service-checks/service-checks.service';
 import { TransactionsService } from '../../transactions/transactions.service';
