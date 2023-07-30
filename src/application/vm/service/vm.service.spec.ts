@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VmService } from './vm.service';
 import { TestDatabaseModule } from '../../../infrastructure/database/test-database.module';
 
-
 describe('VmService', () => {
   let service: VmService;
 
