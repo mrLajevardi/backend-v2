@@ -32,6 +32,7 @@ import { TicketModule } from './application/base/ticket/ticket.module';
 import { OauthService } from './application/base/security/auth/service/oauth.service';
 import { SecurityToolsModule } from './application/base/security/security-tools/security-tools.module';
 import { GroupModule } from './application/base/group/group.module';
+import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { GroupModule } from './application/base/group/group.module';
     TicketModule,
     SecurityToolsModule,
     GroupModule,
+    TaskManagerModule,
   ],
   controllers: [AppController],
   providers: [
