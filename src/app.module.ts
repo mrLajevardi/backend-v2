@@ -25,6 +25,7 @@ import { NetworksModule } from './application/networks/networks.module';
 import { LoggerModule } from './infrastructure/logger/logger.module';
 import { ServiceModule } from './application/base/service/service.module';
 import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
+import { VmModule } from './application/vm/vm.module';
 import { NotificationModule } from './application/base/notification/notification.module';
 import { OtpService } from './application/base/security/security-tools/otp.service';
 import { TicketModule } from './application/base/ticket/ticket.module';
@@ -65,6 +66,7 @@ import { GroupModule } from './application/base/group/group.module';
     EdgeGatewayModule,
     LoggerModule,
     ServiceModule,
+    VmModule,
     NotificationModule,
     TicketModule,
     SecurityToolsModule,

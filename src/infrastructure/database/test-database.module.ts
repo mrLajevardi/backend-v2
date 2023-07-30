@@ -77,6 +77,7 @@ import { TicketService } from 'src/application/base/ticket/ticket.service';
 import { AccessTokenTableService } from 'src/application/base/crud/access-token-table/access-token-table.service';
 import { TicketsTableService } from 'src/application/base/crud/tickets-table/tickets-table.service';
 import { NatService } from 'src/application/nat/nat.service';
+import { VmService } from 'src/application/vm/service/vm.service';
 import { SecurityToolsService } from 'src/application/base/security/security-tools/security-tools.service';
 import { UserAdminService } from 'src/application/base/user/service/user-admin.service';
 import { LoginService } from 'src/application/base/security/auth/service/login.service';
@@ -169,6 +170,7 @@ import { GroupService } from 'src/application/base/group/group.service';
     AccessTokenTableService,
     TicketsTableService,
     InvoiceItemListService,
+    VmService,
     SecurityToolsService,
     UserAdminService,
     LoginService,
@@ -250,6 +252,7 @@ import { GroupService } from 'src/application/base/group/group.service';
     AccessTokenTableService,
     TicketsTableService,
     InvoiceItemListService,
+    VmService,
     SecurityToolsService,
     UserAdminService,
     LoginService,

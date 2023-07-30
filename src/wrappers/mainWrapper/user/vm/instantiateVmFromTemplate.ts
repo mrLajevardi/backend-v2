@@ -1,4 +1,4 @@
-import xml2js from 'xml2js';
+import { Builder } from 'xml2js';
 import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
@@ -100,7 +100,7 @@ export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
       },
     },
   };
-  const builder = new xml2js.Builder();
+  const builder = new Builder();
   const xmlRequest = builder.buildObject(request);
   const options = {
     body: xmlRequest,

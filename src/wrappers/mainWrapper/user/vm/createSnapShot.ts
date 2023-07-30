@@ -1,4 +1,4 @@
-import xml2js from 'xml2js';
+import xml2js, { Builder } from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 /**
  *
@@ -21,7 +21,7 @@ export async function userCreateSnapShot(
       },
     },
   };
-  const builder = new xml2js.Builder();
+  const builder = new Builder();
 
   const xmlRequest = builder.buildObject(request);
   const options = {
