@@ -108,11 +108,11 @@ export class UserService {
     }
   }
 
-  async createUserByPhoneNumber(phoneNumber: string) {
+  async createUserByPhoneNumber(phoneNumber: string, password: string ) {
     const theUser = await this.userTable.create({
       phoneNumber: phoneNumber,
       username: `U-${phoneNumber}`,
-      vdcPassword: generatePassword(),
+      vdcPassword: password,
       name: 'کاربر',
       family: 'گرامی',
       code: null,
@@ -123,7 +123,7 @@ export class UserService {
       emailVerified: false,
       deleted: false,
       email: null,
-      password: null,
+      password: await encryptPassword(password),
       active: false,
       phoneVerified: true,
       acceptTermsOfService: true,
