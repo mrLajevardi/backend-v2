@@ -6,6 +6,7 @@ import { HttpExceptionFilter } from './infrastructure/filters/http-exception.fil
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   const config = new DocumentBuilder()
     .setTitle('Arad API')
     .setDescription('Arad api swagger test ')
