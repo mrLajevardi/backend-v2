@@ -10,18 +10,15 @@ import { Strategy } from 'passport-strategy';
 import { Request } from 'express';
 import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
-import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { SmsErrorException } from 'src/infrastructure/exceptions/sms-error-exception';
-import { generatePassword } from 'src/infrastructure/helpers/helpers';
-import { User } from 'src/infrastructure/database/entities/User';
 import { UserService } from 'src/application/base/user/service/user.service';
+import { OtpErrorException } from 'src/infrastructure/exceptions/otp-error-exception';
+import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 @Injectable()
 export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
   constructor(
     private readonly authService: AuthService,
     private readonly userTable: UserTableService,
-    private readonly notificationService: NotificationService,
     private readonly otpService: OtpService,
     private readonly userService: UserService,
   ) {
@@ -43,8 +40,9 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
         this.error(new InvalidPhoneNumberException());
         return;
       }
+
       const phoneNumber = req.body.phoneNumber;
-      const user = await this.userTable.findOne({
+      let user = await this.userTable.findOne({
         where: {
           phoneNumber: phoneNumber,
         },
@@ -52,54 +50,55 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
 
       const userExist = user ? true : false;
 
-      console.log('user exists', userExist);
-      if (!req.body.otp) {
-        const phoneRegex = new RegExp('^(\\+98|0)?9\\d{9}$');
-        if (!phoneRegex.test(phoneNumber)) {
-          this.error(new InvalidPhoneNumberException());
-          return;
-        }
-
-        let hash = null;
-
-        const otpGenerated = this.otpService.otpGenerator(phoneNumber);
-        hash = otpGenerated.hash;
-        console.log(otpGenerated);
-        try {
-          await this.notificationService.sms.sendSMS(
-            phoneNumber,
-            otpGenerated.otp,
-          );
-        } catch (error) {
-          this.error(error);
-        }
-        this.success({ userExist: userExist, hash: hash });
-        return;
-      }
-
-      if (!req.body.hash) {
-        this.error(new ForbiddenException('no hash provided'));
-      }
-
-      const otp = req.body.otp;
-      const hash = req.body.hash;
-
-      console.log('validating ', otp, hash);
-      if (this.otpService.otpVerifier(phoneNumber, otp, hash)) {
-        let theUser: User;
-        if (!userExist) {
-          theUser = await this.userService.createUserByPhoneNumber(phoneNumber);
+      if (!userExist) {
+        if (!req.body.addUser || req.body.addUser == false) {
+          this.success({ userExist: userExist });
         } else {
-          theUser = user;
+          const otp = req.body.otp;
+          const hash = req.body.hash;
+          const verify = this.otpService.otpVerifier(phoneNumber, otp, hash);
+          if (!verify) {
+            this.error(new InvalidTokenException());
+          }
+          if (req.body.password) {
+            user = await this.userService.createUserByPhoneNumber(
+              phoneNumber,
+              req.body.password,
+            );
+            const token = this.authService.login.getLoginToken(user.id);
+            this.success(token);
+            return;
+          } else {
+            this.success({
+              userExist: userExist,
+              otpVerify: verify,
+              hash: hash,
+            });
+            return;
+          }
         }
-        const token = this.authService.login.getLoginToken(theUser.id);
-        this.success(token);
         return;
       } else {
-        this.error(new ForbiddenException());
+        if (!req.body.hash || !req.body.otp) {
+          const hash = await this.authService.login.generateOtp(phoneNumber);
+          if (!hash) {
+            this.error(new OtpErrorException());
+          }
+          this.success({ userExist: userExist, hash: hash });
+        } else {
+          if (!req.body.hash) {
+            this.error(new ForbiddenException('no hash provided'));
+            const otp = req.body.otp;
+            const hash = req.body.hash;
+            const token = this.authService.login.getLoginToken(user.id);
+            this.success(token);
+            return;
+          }
+        }
       }
     } catch (error) {
-      this.error(error);
+      console.log(error);
+      console.log('error in otp strategy');
     }
   }
 }

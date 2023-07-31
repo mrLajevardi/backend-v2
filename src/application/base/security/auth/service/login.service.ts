@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt';
 import { comparePassword } from 'src/infrastructure/helpers/helpers';
 import { User } from 'src/infrastructure/database/entities/User';
 import { isEmpty } from 'lodash';
+import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
+import { OtpService } from '../../security-tools/otp.service';
 
 @Injectable()
 export class LoginService {
@@ -14,7 +16,25 @@ export class LoginService {
     private userTable: UserTableService,
     // private userService: UserService,
     private jwtService: JwtService,
+    private otpService: OtpService,
+    private notificationService: NotificationService,
   ) {}
+
+  // generates a phone otp and return the hash
+  async generateOtp(phoneNumber: string): Promise<string | null> {
+    let hash = null;
+
+    const otpGenerated = this.otpService.otpGenerator(phoneNumber);
+    hash = otpGenerated.hash;
+    console.log(otpGenerated);
+    try {
+      await this.notificationService.sms.sendSMS(phoneNumber, otpGenerated.otp);
+    } catch (error) {
+      return null;
+    }
+
+    return hash;
+  }
 
   // Validate user performs using Local.strategy
   async validateUser(username: string, pass: string): Promise<any> {
