@@ -4,6 +4,7 @@ import { Task1Service } from './tasks/task1.service';
 import { Task2Service } from './tasks/task2.service';
 import { BullModule } from '@nestjs/bull';
 import { TaskController } from './task.controller';
+import { ConfigModule } from '@nestjs/config';
 
 function aut() {
   return [Task1Service, Task2Service];
@@ -15,6 +16,10 @@ console.log(inj);
     BullModule.registerQueue({
       name: 'test',
     }),
+
+    ConfigModule.forRoot({
+      load
+    })
   ],
   controllers: [TaskController],
   providers: [
