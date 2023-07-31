@@ -70,7 +70,7 @@ export class GroupsMappingTableService {
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(where?: FindOptionsWhere<GroupsMapping>) {
+    await this.repository.delete(where);
   }
 }

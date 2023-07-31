@@ -84,6 +84,7 @@ import { LoginService } from 'src/application/base/security/auth/service/login.s
 import { AbilityAdminService } from 'src/application/base/security/ability/service/ability-admin.service';
 import { GroupsTableService } from 'src/application/base/crud/groups-table/groups-table.service';
 import { GroupService } from 'src/application/base/group/group.service';
+import { GroupsMappingTableService } from 'src/application/base/crud/groups-mapping-table/groups-mapping-table.service';
 
 @Module({
   imports: [
@@ -177,6 +178,7 @@ import { GroupService } from 'src/application/base/group/group.service';
     AbilityAdminService,
     GroupsTableService,
     GroupService,
+    GroupsMappingTableService,
   ],
   exports: [
     TypeOrmModule,
@@ -259,6 +261,7 @@ import { GroupService } from 'src/application/base/group/group.service';
     AbilityAdminService,
     GroupsTableService,
     GroupService,
+    GroupsMappingTableService,
   ],
 })
 export class TestDatabaseModule {}

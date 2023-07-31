@@ -9,52 +9,43 @@ import { TransactionsTableService } from '../../crud/transactions-table/transact
 import jwt from 'jsonwebtoken';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { encryptPassword } from 'src/infrastructure/helpers/helpers';
-import { User } from 'src/infrastructure/database/entities/User';
+import { GroupsMappingTableService } from '../../crud/groups-mapping-table/groups-mapping-table.service';
+import { Groups } from 'src/infrastructure/database/entities/Groups';
+import { GroupsTableService } from '../../crud/groups-table/groups-table.service';
 
 @Injectable()
 export class UserAdminService {
+  userFilter = [
+    'id',
+    'realm',
+    'username',
+    'email',
+    'name',
+    'family',
+    'deleted',
+    'createDate',
+    'updateDate',
+    'credit',
+    'hasVdc',
+    'phoneNumber',
+    'orgName',
+    'acceptTermsOfService',
+    'phoneVerified',
+  ];
+
   constructor(
     private readonly userTable: UserTableService,
     private readonly logger: LoggerService,
     private readonly accessTokenTable: AccessTokenTableService,
     private readonly notificationService: NotificationService,
     private readonly transactionsTable: TransactionsTableService,
+    private readonly groupMappingTable: GroupsMappingTableService,
+    private readonly groupTable: GroupsTableService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
     createUserDto.password = await encryptPassword(createUserDto.password);
     return await this.userTable.create(createUserDto);
-  }
-
-  async getAllUsers(
-    page: number,
-    limit: number,
-  ): Promise<{ users: User[]; totalPages: number; totalUsers: number }> {
-    const skip = (page - 1) * limit;
-    const [users, totalUsers] = await this.userTable.findAndCount({
-      take: limit,
-      skip,
-      select: [
-        'id',
-        'realm',
-        'username',
-        'email',
-        'name',
-        'family',
-        'deleted',
-        'createDate',
-        'updateDate',
-        'credit',
-        'hasVdc',
-        'phoneNumber',
-        'orgName',
-        'acceptTermsOfService',
-        'phoneVerified',
-      ],
-    });
-    const totalPages = Math.ceil(totalUsers / limit);
-
-    return { users, totalPages, totalUsers };
   }
 
   async deleteUsers(options, userId) {
@@ -73,14 +64,14 @@ export class UserAdminService {
       'adminDeleteUser',
       {
         username: user.username,
-        _object: user.id,
+        _object: user.id.toString(),
       },
       { ...options.locals },
     );
     return;
   }
 
-  async disableUsers(options, userId) {
+  async disableUser(options, userId) {
     const user = await this.userTable.findById(userId);
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
@@ -97,14 +88,14 @@ export class UserAdminService {
       'adminDisableUser',
       {
         username: user.username,
-        _object: user.id,
+        _object: user.id.toString(),
       },
       { ...options.locals },
     );
     return;
   }
 
-  async enableUsers(options, userId) {
+  async enableUser(options, userId) {
     const user = await this.userTable.findById(userId);
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
@@ -120,34 +111,23 @@ export class UserAdminService {
       'adminEnableUser',
       {
         username: user.username,
-        _object: user.id,
+        _object: user.id.toString(),
       },
       { ...options.locals },
     );
     return;
   }
 
-  async getUserInfo(options, userId) {
+  async getUserInfo(userId): Promise<any> {
     const user = await this.userTable.findById(userId);
     if (!user) {
       return Promise.reject(new ForbiddenException());
     }
-    // const userGroups = await app.models.UserGroups.find({
-    //   where: {
-    //     UserID: userId,
-    //   },
-    // });
-    // const userPermissionGroups = await app.models.UserPermissionGroups.find({
-    //   where: {
-    //     UserID: userId,
-    //   },
-    // });
-    // user.groups = userGroups;
-    // user.permissionGroups = userPermissionGroups;
-    return Promise.resolve(user);
+    const { password, vdcPassword, ...retVal } = user;
+    return retVal;
   }
 
-  async getUsers(options, role, page, pageSize, name, username, family) {
+  async getUsers(role, page, pageSize, name, username, family) {
     let skip = 0;
     let limit = 10;
     if (!isEmpty(page)) {
@@ -156,29 +136,28 @@ export class UserAdminService {
     const where = isNil(username || name || family || limit)
       ? {}
       : {
-          and: [
-            { username: username ? { like: `%${username}%` } : undefined },
-            { name: name ? { like: `%${name}%` } : undefined },
-            { family: family ? { like: `%${family}%` } : undefined },
-            { roleId: role },
-          ],
+          username: username ? { like: `%${username}%` } : undefined,
+          name: name ? { like: `%${name}%` } : undefined,
+          family: family ? { like: `%${family}%` } : undefined,
+          roleId: role,
         };
     if (!isEmpty(pageSize)) {
       limit = pageSize;
     }
     console.log(where);
-    // const users = await app.models.UsersRole.find({
-    //   where,
-    //   limit: pageSize,
-    //   skip,
-    // });
-    // const countAll = await app.models.UsersRole.count(where);
-    // return Promise.resolve({
-    //   total: countAll,
-    //   page,
-    //   pageSize,
-    //   record: users,
-    // });
+    const users = await this.userTable.find({
+      where,
+      take: pageSize,
+      skip,
+      select: this.userFilter,
+    });
+    const countAll = await this.userTable.count({ where: where });
+    return Promise.resolve({
+      total: countAll,
+      page,
+      pageSize,
+      record: users,
+    });
   }
 
   async impersonateAsUser(options, data) {
@@ -267,14 +246,90 @@ export class UserAdminService {
       {
         username: user.username,
         credit,
-        _object: user.id,
+        _object: user.id.toString(),
       },
       { ...options.locals },
     );
     return;
   }
 
-  async updateUsers(options, userId, data) {
+  async getUserGroups(userId): Promise<Groups[]> {
+    const user = await this.userTable.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (isNil(user) || isNil(userId)) {
+      return Promise.reject(new ForbiddenException());
+    }
+    const groupsMapping = await this.groupMappingTable.find({
+      where: {
+        userId: userId,
+      },
+      relations: ['group'],
+    });
+    const groups = await Promise.all(
+      groupsMapping.map(async (groupMapping) => {
+        const group = await groupMapping.group;
+        return group;
+      }),
+    );
+
+    return groups;
+  }
+
+  async updateUserGroups(options, userId, data: number[]): Promise<number[]> {
+    const user = await this.userTable.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (isNil(user) || isNil(userId)) {
+      return Promise.reject(new ForbiddenException());
+    }
+    await this.groupMappingTable.deleteAll({
+      userId: userId,
+    });
+    console.log(data);
+    const updatedGroups = [];
+    for (const group of data) {
+      const groupExists = await this.groupTable.findOne({
+        where: {
+          id: group,
+        },
+      });
+
+      if (groupExists) {
+        const groupMappingExists = await this.groupMappingTable.findOne({
+          where: {
+            groupId: group,
+            userId: userId,
+          },
+        });
+
+        if (!groupMappingExists) {
+          await this.groupMappingTable.create({
+            userId: userId,
+            groupId: group,
+            createDate: new Date(),
+          });
+          updatedGroups.push(group);
+        }
+      }
+    }
+    await this.logger.info(
+      'user',
+      'updateUserGroups',
+      {
+        username: user.username,
+        _object: user.id.toString(),
+      },
+      { ...options.locals },
+    );
+    return updatedGroups;
+  }
+
+  async updateUser(options, userId, data) {
     const user = await this.userTable.findOne({
       where: {
         id: userId,
@@ -297,41 +352,43 @@ export class UserAdminService {
         {
           username: user.username,
           data,
-          _object: user.id,
+          _object: user.id.toString(),
         },
         { ...options.locals },
       );
     }
-    // console.log('❤️👌');
-    // await app.models.GroupsMapping.destroyAll({
-    //   UserID: userId,
-    // });
-    // if (data.groups) {
-    //   for (const group of data.groups) {
-    //     const groupExists = await app.models.GroupsMapping.findOne({
-    //       where: {
-    //         and: [
-    //           {GroupID: group},
-    //           {UserID: userId},
-    //         ],
-    //       },
-    //     });
-    //     if (! groupExists) {
-    //       await app.models.GroupsMapping.create({
-    //         UserID: userId,
-    //         GroupID: group,
-    //         CreateDate: new Date().toISOString(),
-    //       });
-    //     }
-    //   }
-    // }
+
+    console.log('❤️👌');
+    await this.groupMappingTable.deleteAll({
+      userId: userId,
+    });
+    if (data.groups) {
+      for (const group of data.groups) {
+        const groupMapExists = await this.groupMappingTable.findOne({
+          where: {
+            GroupID: group,
+            UserID: userId,
+          },
+        });
+        if (!groupMapExists) {
+          const groupExists = await this.groupTable.findOne(group);
+          if (groupExists) {
+            await this.groupMappingTable.create({
+              userId: userId,
+              groupId: group,
+              createDate: new Date(),
+            });
+          }
+        }
+      }
+    }
     console.log('👌');
     await this.logger.info(
       'user',
       'updateUserGroups',
       {
         username: user.username,
-        _object: user.id,
+        _object: user.id.toString(),
       },
       { ...options.locals },
     );
