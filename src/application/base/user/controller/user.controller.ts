@@ -42,7 +42,7 @@ import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-tok
 import { RegisterByOauthDto } from '../../security/auth/dto/register-by-oauth.dto';
 import { AuthService } from '../../security/auth/service/auth.service';
 
-@ApiTags('Users')
+@ApiTags('User')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class UserController {
