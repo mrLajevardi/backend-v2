@@ -1,11 +1,28 @@
-import { Body, Controller, Param, Post, Put, Res } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Res,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { UserAdminService } from '../service/user-admin.service';
 import { UserService } from '../service/user.service';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CreateErrorException } from 'src/infrastructure/exceptions/create-error.exception';
+import { UserPaginationDto } from '../dto/user-pagination.dto';
+import { Public } from '../../security/auth/decorators/ispublic.decorator';
 
 @ApiTags('Users')
 @Controller('users')
@@ -16,6 +33,14 @@ export class UserAdminController {
     private readonly userAdminService: UserAdminService,
     private readonly userService: UserService,
   ) {}
+
+  @Get('all')
+  @ApiOperation({ summary: 'Get all users with pagination : Admin' })
+  async getAllUsers(@Query() userPaginationDto: UserPaginationDto, @Res() res) {
+    const { page, limit } = userPaginationDto;
+    const users = await this.userAdminService.getAllUsers(page, limit);
+    return res.status(200).json(users);
+  }
 
   @Post()
   @ApiOperation({ summary: 'create user : Admin ' })
@@ -29,7 +54,7 @@ export class UserAdminController {
   }
 
   @Put(':id')
-  @ApiOperation({ summary: 'update user data' })
+  @ApiOperation({ summary: 'update user data : Admin' })
   @ApiBody({ type: UpdateUserDto })
   async updateUser(
     @Param('id') userId,
@@ -41,7 +66,7 @@ export class UserAdminController {
   }
 
   @Put(':id/changePassword')
-  @ApiOperation({ summary: 'change password ' })
+  @ApiOperation({ summary: 'change password : Admin ' })
   @ApiBody({ type: ChangePasswordDto })
   async changePassword(
     @Param('id') userId,

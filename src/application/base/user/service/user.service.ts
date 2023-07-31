@@ -49,7 +49,6 @@ export class UserService {
     private readonly jwtService: JwtService,
   ) {}
 
-
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
     console.log(phoneNumber);
     const user = await this.findByPhoneNumber(phoneNumber);
@@ -116,8 +115,8 @@ export class UserService {
     }
   }
 
-  async createUserByPhoneNumber(phoneNumber: string, password: string ) {
-    const createDto : CreateUserDto = {
+  async createUserByPhoneNumber(phoneNumber: string, password: string) {
+    const createDto: CreateUserDto = {
       phoneNumber: phoneNumber,
       username: `U-${phoneNumber}`,
       vdcPassword: password,

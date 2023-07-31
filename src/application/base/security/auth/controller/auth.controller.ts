@@ -49,10 +49,9 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly securityTools: SecurityToolsService,
-    private readonly userService: UserService
-    ) {}
+    private readonly userService: UserService,
+  ) {}
 
-  
   @Public()
   @Get('/sendOtp/:phoneNumber')
   @ApiOperation({ summary: 'generate otp and send it to user' })
@@ -64,30 +63,27 @@ export class AuthController {
   })
   async sendOtp(
     @Param() dto: PhoneNumberDto,
-  ): Promise<{phoneNumber: string, hash: string }> {
-    const hash : string =  await this.authService.login.generateOtp(dto.phoneNumber);
+  ): Promise<{ phoneNumber: string; hash: string }> {
+    const hash: string = await this.authService.login.generateOtp(
+      dto.phoneNumber,
+    );
     return {
-      phoneNumber: dto.phoneNumber, 
-      hash: hash
-    }
+      phoneNumber: dto.phoneNumber,
+      hash: hash,
+    };
   }
 
   @Public()
   @Post('/verifyOtp')
   @ApiOperation({ summary: 'verify Otp password' })
-  async verifyOtp(
-    @Body() dto: VerifyOtpDto,
-  ): Promise<boolean> {
+  async verifyOtp(@Body() dto: VerifyOtpDto): Promise<boolean> {
     return await this.securityTools.otp.otpVerifier(
       dto.phoneNumber,
       dto.otp,
-      dto.hash
-    )
+      dto.hash,
+    );
   }
 
-
-
-  
   @Public()
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'Returns the JWT token' })
@@ -196,17 +192,22 @@ export class AuthController {
   ) {
     // checking if the user exists or not
     const userExist = await this.userService.checkPhoneNumber(dto.phoneNumber);
-    
-    if (userExist){
+
+    if (userExist) {
       throw new UserAlreadyExist();
     }
-    const verify = this.securityTools.otp.otpVerifier(dto.phoneNumber,dto.otp,dto.hash);
-    if (!verify){
+    const verify = this.securityTools.otp.otpVerifier(
+      dto.phoneNumber,
+      dto.otp,
+      dto.hash,
+    );
+    if (!verify) {
       throw new InvalidTokenException();
     }
-    await this.userService.createUserByPhoneNumber(dto.phoneNumber,dto.password);
+    await this.userService.createUserByPhoneNumber(
+      dto.phoneNumber,
+      dto.password,
+    );
     return res.status(200).json({ message: 'User created successfully' });
   }
-  
-
 }

@@ -30,6 +30,12 @@ export class UserTableService {
     return result;
   }
 
+  // Find Items using search criteria
+  async findAndCount(options?: FindManyOptions): Promise<[User[], number]> {
+    const result = await this.repository.findAndCount(options);
+    return result;
+  }
+
   // Count the items
   async count(options?: FindManyOptions): Promise<number> {
     const result = await this.repository.count(options);

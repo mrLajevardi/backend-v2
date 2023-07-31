@@ -17,30 +17,24 @@ export class LoginService {
     // private userService: UserService,
     private jwtService: JwtService,
     private otpService: OtpService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
   ) {}
 
-
-
-  // generates a phone otp and return the hash  
-  async generateOtp(phoneNumber: string): Promise<string| null>{
+  // generates a phone otp and return the hash
+  async generateOtp(phoneNumber: string): Promise<string | null> {
     let hash = null;
 
     const otpGenerated = this.otpService.otpGenerator(phoneNumber);
     hash = otpGenerated.hash;
     console.log(otpGenerated);
     try {
-      await this.notificationService.sms.sendSMS(
-        phoneNumber,
-        otpGenerated.otp,
-      );
+      await this.notificationService.sms.sendSMS(phoneNumber, otpGenerated.otp);
     } catch (error) {
       return null;
     }
 
     return hash;
   }
-
 
   // Validate user performs using Local.strategy
   async validateUser(username: string, pass: string): Promise<any> {

@@ -9,6 +9,7 @@ import { TransactionsTableService } from '../../crud/transactions-table/transact
 import jwt from 'jsonwebtoken';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { encryptPassword } from 'src/infrastructure/helpers/helpers';
+import { User } from 'src/infrastructure/database/entities/User';
 
 @Injectable()
 export class UserAdminService {
@@ -23,6 +24,37 @@ export class UserAdminService {
   async createUser(createUserDto: CreateUserDto) {
     createUserDto.password = await encryptPassword(createUserDto.password);
     return await this.userTable.create(createUserDto);
+  }
+
+  async getAllUsers(
+    page: number,
+    limit: number,
+  ): Promise<{ users: User[]; totalPages: number; totalUsers: number }> {
+    const skip = (page - 1) * limit;
+    const [users, totalUsers] = await this.userTable.findAndCount({
+      take: limit,
+      skip,
+      select: [
+        'id',
+        'realm',
+        'username',
+        'email',
+        'name',
+        'family',
+        'deleted',
+        'createDate',
+        'updateDate',
+        'credit',
+        'hasVdc',
+        'phoneNumber',
+        'orgName',
+        'acceptTermsOfService',
+        'phoneVerified',
+      ],
+    });
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    return { users, totalPages, totalUsers };
   }
 
   async deleteUsers(options, userId) {

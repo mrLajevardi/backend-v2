@@ -48,8 +48,8 @@ import { AuthService } from '../../security/auth/service/auth.service';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly securityTools : SecurityToolsService,
-  ) { }
+    private readonly securityTools: SecurityToolsService,
+  ) {}
 
   @Public()
   @Get('/checkPhoneNumber/:phoneNumber')
@@ -60,16 +60,10 @@ export class UserController {
     description: 'The phone number to check for user existence.',
     example: '09121121212',
   })
-  async checkPhoneNumber(
-    @Param() dto: PhoneNumberDto,
-  ): Promise<boolean> {
+  async checkPhoneNumber(@Param() dto: PhoneNumberDto): Promise<boolean> {
     return await this.userService.checkPhoneNumber(dto.phoneNumber);
   }
 
-
-
-
-  
   @Put()
   @ApiOperation({ summary: 'update user data' })
   @ApiBody({ type: UpdateUserDto })

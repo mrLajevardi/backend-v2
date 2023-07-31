@@ -7,7 +7,7 @@ export class CreateUserWithOtpDto {
   phoneNumber: string;
 
   @ApiProperty()
-  password?: string; 
+  password?: string;
 
   @ApiProperty()
   otp?: string;
