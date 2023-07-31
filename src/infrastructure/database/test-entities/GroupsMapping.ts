@@ -18,6 +18,12 @@ export class GroupsMapping {
   @Column('datetime', { name: 'CreateDate' })
   createDate: Date;
 
+  @Column('int', { name: 'UserID' })
+  userId: number;
+
+  @Column('int', { name: 'GroupID' })
+  groupId: number;
+
   @ManyToOne(() => Groups, (groups) => groups.groupsMappings, {
     onUpdate: 'CASCADE',
   })
