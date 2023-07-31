@@ -8,6 +8,7 @@ import {
   Request,
   Delete,
   Res,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,6 +19,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
@@ -32,18 +34,42 @@ import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { UserAdminService } from '../service/user-admin.service';
 import { ChangePasswordDto } from '../dto/change-password.dto';
+import { Public } from '../../security/auth/decorators/ispublic.decorator';
+import { PhoneNumberDto } from '../../security/auth/dto/phoneNumber.dto';
+import { CreateUserWithOtpDto } from '../../security/auth/dto/create-user-with-otp.dto';
+import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
+import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
+import { RegisterByOauthDto } from '../../security/auth/dto/register-by-oauth.dto';
+import { AuthService } from '../../security/auth/service/auth.service';
 
 @ApiTags('Users')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class UserController {
   constructor(
-    private readonly userTableService: UserTableService,
     private readonly userService: UserService,
-    private readonly userAdminService: UserAdminService,
-    private readonly notificationService: NotificationService,
-  ) {}
+    private readonly securityTools : SecurityToolsService,
+  ) { }
 
+  @Public()
+  @Get('/checkPhoneNumber/:phoneNumber')
+  @ApiOperation({ summary: 'check user existance ' })
+  @ApiParam({
+    name: 'phoneNumber',
+    type: String,
+    description: 'The phone number to check for user existence.',
+    example: '09121121212',
+  })
+  async checkPhoneNumber(
+    @Param() dto: PhoneNumberDto,
+  ): Promise<boolean> {
+    return await this.userService.checkPhoneNumber(dto.phoneNumber);
+  }
+
+
+
+
+  
   @Put()
   @ApiOperation({ summary: 'update user data' })
   @ApiBody({ type: UpdateUserDto })

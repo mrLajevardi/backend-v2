@@ -21,6 +21,7 @@ export class LoginService {
   ) {}
 
 
+
   // generates a phone otp and return the hash  
   async generateOtp(phoneNumber: string): Promise<string| null>{
     let hash = null;
@@ -36,6 +37,8 @@ export class LoginService {
     } catch (error) {
       return null;
     }
+
+    return hash;
   }
 
 

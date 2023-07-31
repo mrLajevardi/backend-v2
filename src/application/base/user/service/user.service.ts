@@ -19,7 +19,7 @@ import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import jwt from 'jsonwebtoken';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { isEmpty } from 'lodash';
+import { create, isEmpty } from 'lodash';
 import { PaymentService } from 'src/application/payment/payment.service';
 import { NotificationService } from '../../notification/notification.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
@@ -33,6 +33,7 @@ import {
 } from 'src/infrastructure/helpers/helpers';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
+import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 
 @Injectable()
 export class UserService {
@@ -47,6 +48,13 @@ export class UserService {
     private readonly securityTools: SecurityToolsService,
     private readonly jwtService: JwtService,
   ) {}
+
+
+  async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
+    console.log(phoneNumber);
+    const user = await this.findByPhoneNumber(phoneNumber);
+    return !isEmpty(user);
+  }
 
   // find user by phone number
   async findByPhoneNumber(phoneNumber: string): Promise<User | undefined> {
@@ -109,7 +117,7 @@ export class UserService {
   }
 
   async createUserByPhoneNumber(phoneNumber: string, password: string ) {
-    const theUser = await this.userTable.create({
+    const createDto : CreateUserDto = {
       phoneNumber: phoneNumber,
       username: `U-${phoneNumber}`,
       vdcPassword: password,
@@ -127,17 +135,19 @@ export class UserService {
       active: false,
       phoneVerified: true,
       acceptTermsOfService: true,
-    });
+    };
+    console.log(createDto);
+    const theUser = await this.userTable.create(createDto);
 
     await this.logger.info(
       'user',
       'register',
       {
         username: theUser.username,
-        _object: theUser.id,
+        _object: theUser.id.toString(),
       },
       {
-        userId: theUser.id,
+        userId: theUser.id.toString(),
       },
     );
 
@@ -225,7 +235,7 @@ export class UserService {
         'forgotPasswordLink',
         {
           username: user.username,
-          _object: user.id,
+          _object: user.id.toString(),
         },
         { ...options.locals },
       );
@@ -335,7 +345,7 @@ export class UserService {
       );
       await this.userTable.updateAll(
         {
-          id: userId,
+          id: userId.toString(),
         },
         {
           credit: user.credit + transaction.value,
