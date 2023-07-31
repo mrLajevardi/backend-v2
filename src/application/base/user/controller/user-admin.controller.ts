@@ -34,9 +34,9 @@ import { User } from 'src/infrastructure/database/entities/User';
 import { PostUserCreditDto } from '../dto/post-user-credit.dto';
 import { UpdateUserGroupsDto } from '../dto/update-user-groups.dto';
 
-@ApiTags('Users-admin')
+@ApiTags('User-admin')
 @Controller('users')
-@Public() // Requires authentication with a JWT token
+@ApiBearerAuth() // Requires authentication with a JWT token
 export class UserAdminController {
   constructor(
     private readonly userAdminService: UserAdminService,
