@@ -28,7 +28,7 @@ import { ServiceModule } from '../service/service.module';
     CrudModule,
     SessionsModule,
     OrganizationModule,
-    forwardRef(() => ServiceModule)
+    forwardRef(() => ServiceModule),
   ],
   providers: [
     TasksService,
