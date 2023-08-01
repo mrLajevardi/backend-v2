@@ -10,6 +10,7 @@ import { ServiceItemsTableService } from 'src/application/base/crud/service-item
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { ServiceService } from 'src/application/base/service/services/service.service';
 
 @Injectable()
 export class VdcService {
@@ -22,6 +23,7 @@ export class VdcService {
     private readonly configTable: ConfigsTableService,
     private readonly organizationTable: OrganizationTableService,
     private readonly userTable: UserTableService,
+    private readonly serviceService: ServiceService,
   ) {}
 
   async createVdc(
@@ -238,6 +240,28 @@ export class VdcService {
     );
     return Promise.resolve({
       __vcloudTask: deleteVdc.headers['location'],
+    });
+  }
+
+  async getVdcCompleteInfo(options: any, vdcInstanceId) {
+    const userId = options.user.userId;
+    const props: any = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props.orgId,
+    );
+    const vdcData = await mainWrapper.user.vdc.vcloudQuery(session, {
+      type: 'orgVdc',
+      format: 'records',
+      page: 1,
+      pageSize: 10,
+      filter: `id==${props.vdcId}`,
+    });
+    return Promise.resolve({
+      instanceId: vdcInstanceId,
+      records: vdcData.data.record,
     });
   }
 }
