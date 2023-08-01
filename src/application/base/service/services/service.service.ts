@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 
 @Injectable()
 export class ServiceService {
   constructor(
     private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
+    private readonly serviceInstancesTableService: ServiceInstancesTableService,
   ) {}
 
   // Create Service Items
@@ -34,5 +36,19 @@ export class ServiceService {
       props[prop.propertyKey] = prop.value;
     }
     return Promise.resolve(props);
+  }
+
+  async getServices(options: any) {
+    const {
+      user: { userId },
+    } = options;
+    const services = await this.serviceInstancesTableService.find({
+      where: {
+        userId,
+        isDeleted: false,
+      },
+      relations: ['serviceItems'],
+    });
+    return services;
   }
 }

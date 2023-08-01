@@ -18,6 +18,7 @@ import {
 import { CreateServiceService } from '../services/create-service.service';
 import { CreateServiceDto } from '../dto/create-service.dto';
 import { DeleteServiceService } from '../services/delete-service.service';
+import { ServiceService } from '../services/service.service';
 
 @ApiTags('Services')
 @Controller('services')
@@ -26,6 +27,7 @@ export class ServiceController {
   constructor(
     private readonly createService: CreateServiceService,
     private readonly deleteService: DeleteServiceService,
+    private readonly serviceService: ServiceService,
   ) {}
 
   // create new item
@@ -56,5 +58,17 @@ export class ServiceController {
     @Request() options: any,
   ): Promise<any> {
     return this.deleteService.deleteService(options, serviceInstanceId);
+  }
+
+  // create new item
+  @ApiOperation({ summary: 'get services of a user' })
+  @ApiResponse({
+    status: 200,
+    description: 'user services have been fetched successfully',
+  })
+  @Get()
+  async getServices(@Request() options: any): Promise<any> {
+    return this.serviceService.getServices(options);
+    // await this.invoicesTable.create(dto);
   }
 }
