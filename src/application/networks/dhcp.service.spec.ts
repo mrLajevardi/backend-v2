@@ -5,8 +5,9 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 describe('DhcpService', () => {
   let service: DhcpService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [DhcpService],
     }).compile();
@@ -14,7 +15,9 @@ describe('DhcpService', () => {
     service = module.get<DhcpService>(DhcpService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -37,8 +37,9 @@ import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         CreateServiceService,
@@ -80,7 +81,9 @@ describe('CreateServiceService', () => {
     service = module.get<CreateServiceService>(CreateServiceService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -8,8 +8,9 @@ import { BullModule } from '@nestjs/bull';
 describe('VgpuService', () => {
   let service: VgpuService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
@@ -22,7 +23,9 @@ describe('VgpuService', () => {
     service = module.get<VgpuService>(VgpuService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

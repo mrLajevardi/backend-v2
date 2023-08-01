@@ -13,8 +13,9 @@ import { TransactionsTableService } from 'src/application/base/crud/transactions
 describe('ServiceChecksService', () => {
   let service: ServiceChecksService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         ServiceChecksService,
@@ -32,7 +33,9 @@ describe('ServiceChecksService', () => {
     service = module.get<ServiceChecksService>(ServiceChecksService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

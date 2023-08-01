@@ -5,7 +5,7 @@ import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
 describe('RoleTableService', () => {
   let service: RoleTableService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -16,10 +16,10 @@ describe('RoleTableService', () => {
     service = module.get<RoleTableService>(RoleTableService);
   });
 
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

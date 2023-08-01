@@ -7,8 +7,9 @@ import { CreateServiceService } from '../services/create-service.service';
 describe('ServiceController', () => {
   let controller: ServiceController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [DeleteServiceService, CreateServiceService],
       controllers: [ServiceController],
@@ -17,7 +18,9 @@ describe('ServiceController', () => {
     controller = module.get<ServiceController>(ServiceController);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

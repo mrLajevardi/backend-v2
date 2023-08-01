@@ -5,7 +5,7 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('QualityPlansService', () => {
   let service: QualityPlansService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -16,12 +16,14 @@ describe('QualityPlansService', () => {
     service = module.get<QualityPlansService>(QualityPlansService);
   });
 
-  afterAll(async () => { await module.close(); });
-  
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

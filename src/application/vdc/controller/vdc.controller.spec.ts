@@ -46,8 +46,9 @@ import { PlansQueryService } from 'src/application/base/crud/plans-table/plans-q
 describe('VdcController', () => {
   let controller: VdcController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
@@ -61,7 +62,9 @@ describe('VdcController', () => {
     controller = module.get<VdcController>(VdcController);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

@@ -5,7 +5,7 @@ import { ServicePlansTableService } from './service-plans-table.service';
 
 describe('ServicePlansTableService', () => {
   let service: ServicePlansTableService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -16,10 +16,10 @@ describe('ServicePlansTableService', () => {
     service = module.get<ServicePlansTableService>(ServicePlansTableService);
   });
 
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

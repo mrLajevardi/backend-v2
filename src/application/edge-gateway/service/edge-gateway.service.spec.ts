@@ -5,15 +5,18 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 describe('EdgeGatewayService', () => {
   let service: EdgeGatewayService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
     }).compile();
 
     service = module.get<EdgeGatewayService>(EdgeGatewayService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

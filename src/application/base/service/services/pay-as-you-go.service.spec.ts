@@ -21,8 +21,9 @@ import { OrganizationTableService } from '../../crud/organization-table/organiza
 describe('PayAsYouGoService', () => {
   let service: PayAsYouGoService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         PayAsYouGoService,
@@ -48,7 +49,9 @@ describe('PayAsYouGoService', () => {
     service = module.get<PayAsYouGoService>(PayAsYouGoService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

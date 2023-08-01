@@ -14,7 +14,9 @@ describe('LoggerService', () => {
     service = module.get<LoggerService>(LoggerService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

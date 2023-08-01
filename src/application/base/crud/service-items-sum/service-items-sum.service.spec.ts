@@ -4,7 +4,7 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('ServiceItemsSumService', () => {
   let service: ServiceItemsSumService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -15,12 +15,14 @@ describe('ServiceItemsSumService', () => {
     service = module.get<ServiceItemsSumService>(ServiceItemsSumService);
   });
 
-  afterAll(async () => { await module.close(); });
-
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

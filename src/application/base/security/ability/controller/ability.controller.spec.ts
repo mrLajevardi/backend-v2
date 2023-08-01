@@ -5,8 +5,9 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 describe('AbilityController', () => {
   let controller: AbilityController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [AbilityController],
     }).compile();
@@ -14,7 +15,9 @@ describe('AbilityController', () => {
     controller = module.get<AbilityController>(AbilityController);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

@@ -4,7 +4,7 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('AitransactionsLogsStoredProcedureService', () => {
   let service: AitransactionsLogsStoredProcedureService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -17,12 +17,14 @@ describe('AitransactionsLogsStoredProcedureService', () => {
     );
   });
 
-  afterAll(async () => { await module.close(); });
-
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

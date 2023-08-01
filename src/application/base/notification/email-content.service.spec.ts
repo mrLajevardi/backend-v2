@@ -4,15 +4,18 @@ import { EmailContentService } from './email-content.service';
 describe('EmailContentService', () => {
   let service: EmailContentService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [EmailContentService],
     }).compile();
 
     service = module.get<EmailContentService>(EmailContentService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

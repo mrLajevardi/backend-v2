@@ -5,8 +5,9 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 describe('ZarinpalService', () => {
   let service: ZarinpalService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [ZarinpalService],
     }).compile();
@@ -14,7 +15,9 @@ describe('ZarinpalService', () => {
     service = module.get<ZarinpalService>(ZarinpalService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -4,8 +4,8 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('AccessTokenTableService', () => {
   let service: AccessTokenTableService;
-  let module : TestingModule; 
-  
+  let module: TestingModule;
+
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [DatabaseModule],
@@ -15,9 +15,9 @@ describe('AccessTokenTableService', () => {
     service = module.get<AccessTokenTableService>(AccessTokenTableService);
   });
 
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

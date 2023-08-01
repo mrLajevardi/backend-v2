@@ -51,8 +51,9 @@ describe('AiService', () => {
   let user: UserService;
   let config: ConfigsTableService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         ConfigModule.forRoot({
@@ -118,7 +119,9 @@ describe('AiService', () => {
     await testDataService.seedTestData();
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

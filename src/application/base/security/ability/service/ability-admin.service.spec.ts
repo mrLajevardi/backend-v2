@@ -16,9 +16,10 @@ describe('AbilityAdminService', () => {
   let testDataService: TestDataService;
   let userTable: UserTableService;
   let abilityFactory: AbilityFactory;
+  let module: TestingModule;
 
   beforeAll(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [AbilityAdminService, AbilityFactory],
     }).compile();

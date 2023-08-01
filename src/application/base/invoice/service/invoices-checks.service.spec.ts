@@ -16,8 +16,9 @@ import { UserTableService } from '../../crud/user-table/user-table.service';
 describe('InvoicesChecksService', () => {
   let service: InvoicesChecksService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
     }).compile();
@@ -25,7 +26,9 @@ describe('InvoicesChecksService', () => {
     service = module.get<InvoicesChecksService>(InvoicesChecksService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

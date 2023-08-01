@@ -24,8 +24,9 @@ import { BullModule } from '@nestjs/bull';
 describe('TasksService', () => {
   let service: TasksService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
@@ -38,7 +39,9 @@ describe('TasksService', () => {
     service = module.get<TasksService>(TasksService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

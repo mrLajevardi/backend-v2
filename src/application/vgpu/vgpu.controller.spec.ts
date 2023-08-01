@@ -5,8 +5,9 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 describe('VgpuController', () => {
   let controller: VgpuController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [VgpuController],
       providers: [],
@@ -15,7 +16,9 @@ describe('VgpuController', () => {
     controller = module.get<VgpuController>(VgpuController);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

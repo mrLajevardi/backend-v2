@@ -38,8 +38,9 @@ import { DeleteServiceService } from './delete-service.service';
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [DeleteServiceService],
     }).compile();
@@ -47,7 +48,9 @@ describe('DeleteServiceService', () => {
     service = module.get<DeleteServiceService>(DeleteServiceService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

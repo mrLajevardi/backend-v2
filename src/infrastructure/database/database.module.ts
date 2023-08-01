@@ -17,25 +17,27 @@ const isTestMode = process.env.NODE_ENV === 'test';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forRoot()], // Import ConfigModule to use the ConfigService
       useFactory: () =>
-        (isTestMode ? {
-          type: process.env.DB_TYPE,
-          host: process.env.DB_HOST,
-          port: Number(process.env.DB_PORT),
-          username: process.env.DB_USERNAME,
-          password: process.env.DB_PASSWORD,
-          database: process.env.DB_NAME,
-          entities: dbEntities,
-          uuidExtension: true,
-          extra: {
-            trustServerCertificate: true,
-          },
-        } as TypeOrmModuleOptions : {
-          type: 'sqlite',
-          database: ':memory:',
-          autoLoadEntities: true,
-          entities: dbTestEntities,
-          synchronize: true,
-        } as TypeOrmModuleOptions )
+        isTestMode
+          ? ({
+              type: process.env.DB_TYPE,
+              host: process.env.DB_HOST,
+              port: Number(process.env.DB_PORT),
+              username: process.env.DB_USERNAME,
+              password: process.env.DB_PASSWORD,
+              database: process.env.DB_NAME,
+              entities: dbEntities,
+              uuidExtension: true,
+              extra: {
+                trustServerCertificate: true,
+              },
+            } as TypeOrmModuleOptions)
+          : ({
+              type: 'sqlite',
+              database: ':memory:',
+              autoLoadEntities: true,
+              entities: dbTestEntities,
+              synchronize: true,
+            } as TypeOrmModuleOptions),
     }),
     TypeOrmModule.forFeature(dbEntities),
   ],
@@ -43,7 +45,6 @@ const isTestMode = process.env.NODE_ENV === 'test';
   exports: [TypeOrmModule],
 })
 export class DatabaseModule implements OnModuleInit {
-
   onModuleInit() {
     if (isTestMode) {
       console.log('Running in unit test mode');

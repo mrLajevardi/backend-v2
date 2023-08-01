@@ -22,9 +22,10 @@ describe('AbilityFactory', () => {
   let testDataService: TestDataService;
   let aclTable: ACLTableService;
   let invoiceService: InvoicesService;
+  let module: TestingModule;
 
   beforeAll(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [AbilityFactory],
     }).compile();

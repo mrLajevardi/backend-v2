@@ -5,8 +5,9 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 describe('UserAdminController', () => {
   let controller: UserAdminController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [UserAdminController],
     }).compile();
@@ -14,7 +15,9 @@ describe('UserAdminController', () => {
     controller = module.get<UserAdminController>(UserAdminController);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

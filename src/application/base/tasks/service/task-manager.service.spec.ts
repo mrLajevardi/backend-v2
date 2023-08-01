@@ -24,8 +24,9 @@ import { SessionsTableService } from '../../crud/sessions-table/sessions-table.s
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
@@ -38,7 +39,9 @@ describe('TaskManagerService', () => {
     service = module.get<TaskManagerService>(TaskManagerService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

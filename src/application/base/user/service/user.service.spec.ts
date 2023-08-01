@@ -10,8 +10,9 @@ describe('UserService', () => {
   let service: UserService;
   let testDataService: TestDataService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
     }).compile();
@@ -22,7 +23,9 @@ describe('UserService', () => {
     await testDataService.seedTestData();
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

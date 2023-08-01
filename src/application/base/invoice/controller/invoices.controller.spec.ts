@@ -21,8 +21,9 @@ import { SessionsTableService } from '../../crud/sessions-table/sessions-table.s
 describe('InvoicesController', () => {
   let controller: InvoicesController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         InvoicesService,
@@ -48,7 +49,9 @@ describe('InvoicesController', () => {
     controller = module.get<InvoicesController>(InvoicesController);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

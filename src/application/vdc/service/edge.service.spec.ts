@@ -23,8 +23,9 @@ import { SessionsTableService } from 'src/application/base/crud/sessions-table/s
 describe('EdgeService', () => {
   let service: EdgeService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
     }).compile();
@@ -32,7 +33,9 @@ describe('EdgeService', () => {
     service = module.get<EdgeService>(EdgeService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

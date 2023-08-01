@@ -10,8 +10,9 @@ import { UserTableService } from '../crud/user-table/user-table.service';
 describe('OrganizationService', () => {
   let service: OrganizationService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         OrganizationService,
@@ -26,7 +27,9 @@ describe('OrganizationService', () => {
     service = module.get<OrganizationService>(OrganizationService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

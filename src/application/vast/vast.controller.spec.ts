@@ -4,9 +4,10 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('VastController', () => {
   let controller: VastController;
-
+  let module : TestingModule;
+  
   beforeAll(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [VastController],
     }).compile();

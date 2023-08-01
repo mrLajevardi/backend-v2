@@ -13,8 +13,9 @@ describe('AuthController', () => {
   let testDataService: TestDataService;
   let authService: AuthService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [AuthController],
       providers: [AuthService, UserService, JwtService, UserTableService],
@@ -27,7 +28,9 @@ describe('AuthController', () => {
     await testDataService.seedTestData();
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

@@ -4,15 +4,18 @@ import { CostCalculationService } from './cost-calculation.service';
 describe('CostCalculationService', () => {
   let service: CostCalculationService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       providers: [CostCalculationService],
     }).compile();
 
     service = module.get<CostCalculationService>(CostCalculationService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

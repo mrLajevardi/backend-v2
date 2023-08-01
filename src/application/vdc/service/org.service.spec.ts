@@ -23,8 +23,9 @@ import { EdgeService } from './edge.service';
 describe('OrgService', () => {
   let service: OrgService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
     }).compile();
@@ -32,7 +33,9 @@ describe('OrgService', () => {
     service = module.get<OrgService>(OrgService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -4,7 +4,7 @@ import { InvoiceItemListService } from './invoice-item-list.service';
 
 describe('InvoiceItemLlist', () => {
   let service: InvoiceItemListService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -15,12 +15,14 @@ describe('InvoiceItemLlist', () => {
     service = module.get<InvoiceItemListService>(InvoiceItemListService);
   });
 
-  afterAll(async () => { await module.close(); });
-
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

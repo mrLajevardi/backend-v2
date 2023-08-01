@@ -10,8 +10,9 @@ import { OrganizationTableService } from '../crud/organization-table/organizatio
 describe('SessionsService', () => {
   let service: SessionsService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         SessionsService,
@@ -26,7 +27,9 @@ describe('SessionsService', () => {
     service = module.get<SessionsService>(SessionsService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

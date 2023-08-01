@@ -22,8 +22,9 @@ import { EdgeService } from './edge.service';
 describe('VdcService', () => {
   let service: VdcService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
     }).compile();
@@ -31,7 +32,9 @@ describe('VdcService', () => {
     service = module.get<VdcService>(VdcService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

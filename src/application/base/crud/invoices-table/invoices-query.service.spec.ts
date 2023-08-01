@@ -3,7 +3,7 @@ import { InvoicesQueryService } from './invoices-query.service';
 
 describe('InvoicesQueryService', () => {
   let service: InvoicesQueryService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -13,12 +13,14 @@ describe('InvoicesQueryService', () => {
     service = module.get<InvoicesQueryService>(InvoicesQueryService);
   });
 
-  afterAll(async () => { await module.close(); });
-
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

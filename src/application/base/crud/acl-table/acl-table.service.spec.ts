@@ -5,7 +5,7 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('ACLTableService', () => {
   let service: ACLTableService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -16,10 +16,10 @@ describe('ACLTableService', () => {
     service = module.get<ACLTableService>(ACLTableService);
   });
 
-  afterAll(async ()=>{
+  afterAll(async () => {
     await module.close();
-  })
-  
+  });
+
   it('should be defined', () => {
     expect(process.env.NODE_ENV).toBe('test');
 

@@ -29,8 +29,9 @@ import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-t
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
@@ -44,7 +45,9 @@ describe('VdcAdminController', () => {
     controller = module.get<VdcAdminController>(VdcAdminController);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

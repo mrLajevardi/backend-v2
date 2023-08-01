@@ -6,8 +6,9 @@ import { DiscountsTableService } from '../../crud/discounts-table/discounts-tabl
 describe('DiscountsService', () => {
   let service: DiscountsService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    module =  Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [DiscountsService, DiscountsTableService],
     }).compile();
@@ -15,7 +16,9 @@ describe('DiscountsService', () => {
     service = module.get<DiscountsService>(DiscountsService);
   });
 
-  afterAll(async () => { await module.close(); });
+  afterAll(async () => {
+    await module.close();
+  });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
