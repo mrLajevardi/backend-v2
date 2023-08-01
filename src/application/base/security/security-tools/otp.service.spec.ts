@@ -6,13 +6,15 @@ describe('OtpService', () => {
   let service: OtpService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [OtpService],
     }).compile();
 
     service = module.get<OtpService>(OtpService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

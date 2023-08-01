@@ -59,7 +59,7 @@ describe('AiController', () => {
   let plan: PlansTableService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
@@ -132,6 +132,8 @@ describe('AiController', () => {
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

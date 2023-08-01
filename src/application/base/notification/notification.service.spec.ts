@@ -6,13 +6,15 @@ describe('NotificationService', () => {
   let service: NotificationService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [NotificationService],
     }).compile();
 
     service = module.get<NotificationService>(NotificationService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

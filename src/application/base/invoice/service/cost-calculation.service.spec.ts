@@ -5,12 +5,14 @@ describe('CostCalculationService', () => {
   let service: CostCalculationService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       providers: [CostCalculationService],
     }).compile();
 
     service = module.get<CostCalculationService>(CostCalculationService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

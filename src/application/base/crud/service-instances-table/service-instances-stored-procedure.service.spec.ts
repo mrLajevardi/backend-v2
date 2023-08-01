@@ -17,6 +17,8 @@ describe('ServiceInstancesStoredProcedureService', () => {
     );
   });
 
+  afterAll(async () => { await module.close(); });
+
   afterAll(async ()=>{
     await module.close();
   })

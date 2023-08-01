@@ -22,7 +22,7 @@ describe('InvoicesService', () => {
   let service: InvoicesService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         InvoicesService,
@@ -47,6 +47,8 @@ describe('InvoicesService', () => {
 
     service = module.get<InvoicesService>(InvoicesService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

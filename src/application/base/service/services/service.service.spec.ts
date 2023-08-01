@@ -24,7 +24,7 @@ describe('ServiceService', () => {
   let service: ServiceService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         ServiceService,
@@ -53,6 +53,8 @@ describe('ServiceService', () => {
 
     service = module.get<ServiceService>(ServiceService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -10,7 +10,7 @@ describe('GroupController', () => {
   let controller: GroupController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [
         DatabaseModule,
         GroupsTableModule,
@@ -24,6 +24,8 @@ describe('GroupController', () => {
 
     controller = module.get<GroupController>(GroupController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

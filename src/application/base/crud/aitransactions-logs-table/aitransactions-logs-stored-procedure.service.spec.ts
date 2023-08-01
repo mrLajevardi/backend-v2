@@ -17,6 +17,8 @@ describe('AitransactionsLogsStoredProcedureService', () => {
     );
   });
 
+  afterAll(async () => { await module.close(); });
+
   afterAll(async ()=>{
     await module.close();
   })

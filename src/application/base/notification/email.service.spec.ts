@@ -5,12 +5,14 @@ describe('EmailService', () => {
   let service: EmailService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       providers: [EmailService],
     }).compile();
 
     service = module.get<EmailService>(EmailService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -6,13 +6,15 @@ describe('NatService', () => {
   let service: NatService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [NatService],
     }).compile();
 
     service = module.get<NatService>(NatService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

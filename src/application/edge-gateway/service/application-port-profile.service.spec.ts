@@ -6,7 +6,7 @@ describe('ApplicationPortProfileService', () => {
   let service: ApplicationPortProfileService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [ApplicationPortProfileService],
     }).compile();
@@ -15,6 +15,8 @@ describe('ApplicationPortProfileService', () => {
       ApplicationPortProfileService,
     );
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

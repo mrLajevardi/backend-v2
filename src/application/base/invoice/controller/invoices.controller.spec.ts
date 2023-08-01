@@ -22,7 +22,7 @@ describe('InvoicesController', () => {
   let controller: InvoicesController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         InvoicesService,
@@ -47,6 +47,8 @@ describe('InvoicesController', () => {
 
     controller = module.get<InvoicesController>(InvoicesController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

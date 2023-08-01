@@ -6,13 +6,15 @@ describe('EdgeGatewayController', () => {
   let controller: EdgeGatewayController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [EdgeGatewayController],
     }).compile();
 
     controller = module.get<EdgeGatewayController>(EdgeGatewayController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

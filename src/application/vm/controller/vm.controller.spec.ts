@@ -5,7 +5,7 @@ describe('VmController', () => {
   let controller: VmController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
       controllers: [VmController],
@@ -13,6 +13,8 @@ describe('VmController', () => {
 
     controller = module.get<VmController>(VmController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

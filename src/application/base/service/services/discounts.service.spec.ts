@@ -7,13 +7,15 @@ describe('DiscountsService', () => {
   let service: DiscountsService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [DiscountsService, DiscountsTableService],
     }).compile();
 
     service = module.get<DiscountsService>(DiscountsService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

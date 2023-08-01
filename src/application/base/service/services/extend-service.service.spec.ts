@@ -29,7 +29,7 @@ describe('ExtendServiceService', () => {
   let service: ExtendServiceService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         ExtendServiceService,
@@ -68,6 +68,8 @@ describe('ExtendServiceService', () => {
 
     service = module.get<ExtendServiceService>(ExtendServiceService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -17,13 +17,15 @@ describe('InvoicesChecksService', () => {
   let service: InvoicesChecksService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
     }).compile();
 
     service = module.get<InvoicesChecksService>(InvoicesChecksService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

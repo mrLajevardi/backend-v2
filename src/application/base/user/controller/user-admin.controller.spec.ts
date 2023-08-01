@@ -6,13 +6,15 @@ describe('UserAdminController', () => {
   let controller: UserAdminController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [UserAdminController],
     }).compile();
 
     controller = module.get<UserAdminController>(UserAdminController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

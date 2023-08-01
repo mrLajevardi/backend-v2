@@ -23,6 +23,8 @@ describe('TestDataService', () => {
     // Initialize other repository variables...
   });
 
+  afterAll(async () => { await module.close(); });
+
   describe('seedTestData', () => {
     // it('should insert contents in the db', async () => {
     //    // testDataService.seedTestData();

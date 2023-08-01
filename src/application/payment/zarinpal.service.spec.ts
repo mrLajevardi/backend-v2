@@ -6,13 +6,15 @@ describe('ZarinpalService', () => {
   let service: ZarinpalService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [ZarinpalService],
     }).compile();
 
     service = module.get<ZarinpalService>(ZarinpalService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

@@ -15,6 +15,8 @@ describe('InvoiceItemLlist', () => {
     service = module.get<InvoiceItemListService>(InvoiceItemListService);
   });
 
+  afterAll(async () => { await module.close(); });
+
   afterAll(async ()=>{
     await module.close();
   })

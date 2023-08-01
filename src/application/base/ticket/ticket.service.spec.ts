@@ -6,13 +6,15 @@ describe('TicketService', () => {
   let service: TicketService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [TicketService],
     }).compile();
 
     service = module.get<TicketService>(TicketService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

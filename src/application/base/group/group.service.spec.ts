@@ -8,7 +8,7 @@ describe('GroupService', () => {
   let service: GroupService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [
         DatabaseModule,
         GroupsTableModule,
@@ -19,6 +19,8 @@ describe('GroupService', () => {
 
     service = module.get<GroupService>(GroupService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

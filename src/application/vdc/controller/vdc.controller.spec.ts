@@ -47,7 +47,7 @@ describe('VdcController', () => {
   let controller: VdcController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
@@ -60,6 +60,8 @@ describe('VdcController', () => {
 
     controller = module.get<VdcController>(VdcController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

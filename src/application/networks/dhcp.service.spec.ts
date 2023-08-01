@@ -6,13 +6,15 @@ describe('DhcpService', () => {
   let service: DhcpService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [DhcpService],
     }).compile();
 
     service = module.get<DhcpService>(DhcpService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

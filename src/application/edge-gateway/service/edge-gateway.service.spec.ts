@@ -6,12 +6,14 @@ describe('EdgeGatewayService', () => {
   let service: EdgeGatewayService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
     }).compile();
 
     service = module.get<EdgeGatewayService>(EdgeGatewayService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

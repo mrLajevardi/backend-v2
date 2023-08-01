@@ -16,7 +16,7 @@ describe('AuthService', () => {
   let userService: UserService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [AuthService, UserService, JwtService, UserTableService],
     }).compile();
@@ -26,6 +26,8 @@ describe('AuthService', () => {
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

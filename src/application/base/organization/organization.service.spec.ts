@@ -11,7 +11,7 @@ describe('OrganizationService', () => {
   let service: OrganizationService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [
         OrganizationService,
@@ -25,6 +25,8 @@ describe('OrganizationService', () => {
 
     service = module.get<OrganizationService>(OrganizationService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

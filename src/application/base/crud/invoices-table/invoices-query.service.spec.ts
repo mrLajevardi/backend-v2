@@ -13,6 +13,8 @@ describe('InvoicesQueryService', () => {
     service = module.get<InvoicesQueryService>(InvoicesQueryService);
   });
 
+  afterAll(async () => { await module.close(); });
+
   afterAll(async ()=>{
     await module.close();
   })

@@ -15,6 +15,8 @@ describe('QualityPlansService', () => {
 
     service = module.get<QualityPlansService>(QualityPlansService);
   });
+
+  afterAll(async () => { await module.close(); });
   
   afterAll(async ()=>{
     await module.close();

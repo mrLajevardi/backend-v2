@@ -12,7 +12,7 @@ describe('UserController', () => {
   let testDataService: TestDataService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [UserController],
       providers: [],
@@ -22,6 +22,8 @@ describe('UserController', () => {
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

@@ -6,13 +6,15 @@ describe('AbilityController', () => {
   let controller: AbilityController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [AbilityController],
     }).compile();
 
     controller = module.get<AbilityController>(AbilityController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();

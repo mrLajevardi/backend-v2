@@ -24,7 +24,7 @@ describe('AbilityFactory', () => {
   let invoiceService: InvoicesService;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [AbilityFactory],
     }).compile();

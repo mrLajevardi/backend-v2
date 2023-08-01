@@ -15,6 +15,8 @@ describe('ServiceItemsSumService', () => {
     service = module.get<ServiceItemsSumService>(ServiceItemsSumService);
   });
 
+  afterAll(async () => { await module.close(); });
+
   afterAll(async ()=>{
     await module.close();
   })

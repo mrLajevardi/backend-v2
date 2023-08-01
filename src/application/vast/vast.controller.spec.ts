@@ -6,7 +6,7 @@ describe('VastController', () => {
   let controller: VastController;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [VastController],
     }).compile();

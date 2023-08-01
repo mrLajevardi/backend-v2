@@ -24,13 +24,15 @@ describe('OrgService', () => {
   let service: OrgService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       providers: [],
     }).compile();
 
     service = module.get<OrgService>(OrgService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

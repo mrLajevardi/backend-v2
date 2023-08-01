@@ -25,7 +25,7 @@ describe('TaskManagerService', () => {
   let service: TaskManagerService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
@@ -37,6 +37,8 @@ describe('TaskManagerService', () => {
 
     service = module.get<TaskManagerService>(TaskManagerService);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(service).toBeDefined();

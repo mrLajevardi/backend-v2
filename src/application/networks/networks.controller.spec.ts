@@ -6,13 +6,15 @@ describe('NetworksController', () => {
   let controller: NetworksController;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module =  Test.createTestingModule({
       imports: [DatabaseModule],
       controllers: [NetworksController],
     }).compile();
 
     controller = module.get<NetworksController>(NetworksController);
   });
+
+  afterAll(async () => { await module.close(); });
 
   it('should be defined', () => {
     expect(controller).toBeDefined();
