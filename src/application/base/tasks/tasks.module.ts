@@ -13,6 +13,8 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { OrganizationModule } from '../organization/organization.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { TasksController } from './controller/tasks.controller';
+import { ServiceModule } from '../service/service.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
     CrudModule,
     SessionsModule,
     OrganizationModule,
+    forwardRef(() => ServiceModule)
   ],
   providers: [
     TasksService,
@@ -35,7 +38,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
     NetworkService,
     VdcService,
   ],
-  controllers: [],
+  controllers: [TasksController],
   exports: [TasksService, TaskManagerService],
 })
 export class TasksModule {}
