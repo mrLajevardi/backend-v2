@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PayAsYouGoService } from './pay-as-you-go.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
@@ -23,7 +23,7 @@ describe('PayAsYouGoService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       providers: [
         PayAsYouGoService,
         TransactionsTableService,

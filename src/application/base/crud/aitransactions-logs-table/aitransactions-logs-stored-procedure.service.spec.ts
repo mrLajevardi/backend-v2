@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AitransactionsLogsStoredProcedureService } from './aitransactions-logs-stored-procedure.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('AitransactionsLogsStoredProcedureService', () => {
   let service: AitransactionsLogsStoredProcedureService;
+  let module : TestingModule; 
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [AitransactionsLogsStoredProcedureService],
     }).compile();
 
@@ -16,6 +17,10 @@ describe('AitransactionsLogsStoredProcedureService', () => {
     );
   });
 
+  afterAll(async ()=>{
+    await module.close();
+  })
+  
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

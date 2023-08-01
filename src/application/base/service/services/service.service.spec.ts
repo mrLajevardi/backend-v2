@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceService } from './service.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
@@ -25,7 +25,7 @@ describe('ServiceService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       providers: [
         ServiceService,
         DiscountsTableService,

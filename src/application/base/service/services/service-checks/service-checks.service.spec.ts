@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceChecksService } from './service-checks.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { DiscountsService } from '../discounts.service';
 import { TransactionsService } from '../../../transactions/transactions.service';
 import { UserService } from '../../../user/service/user.service';
@@ -15,7 +15,7 @@ describe('ServiceChecksService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       providers: [
         ServiceChecksService,
         ServiceTypesTableService,

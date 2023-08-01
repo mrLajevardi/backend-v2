@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from '../service/auth.service';
 import { UserService } from '../../../user/service/user.service';
 import { JwtService } from '@nestjs/jwt';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { LoginDto } from '../dto/login.dto';
@@ -15,7 +15,7 @@ describe('AuthController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       controllers: [AuthController],
       providers: [AuthService, UserService, JwtService, UserTableService],
     }).compile();

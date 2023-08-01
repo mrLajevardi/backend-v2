@@ -7,7 +7,7 @@ import { TaskManagerService } from 'src/application/base/tasks/service/task-mana
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
 import { UserService } from 'src/application/base/user/service/user.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { EdgeService } from '../service/edge.service';
 import { NetworkService } from '../service/network.service';
 import { OrgService } from '../service/org.service';
@@ -49,7 +49,7 @@ describe('VdcController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
+        DatabaseModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),

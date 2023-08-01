@@ -4,7 +4,7 @@ import { OrganizationService } from 'src/application/base/organization/organizat
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
 import { UserService } from 'src/application/base/user/service/user.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { EdgeService } from '../service/edge.service';
 import { VdcService } from '../service/vdc.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
@@ -32,7 +32,7 @@ describe('VdcAdminController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
+        DatabaseModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),

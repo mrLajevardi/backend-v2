@@ -9,7 +9,7 @@ import { NetworkService } from 'src/application/vdc/service/network.service';
 import { VdcService } from 'src/application/vdc/service/vdc.service';
 import { BullModule } from '@nestjs/bull';
 import { TasksService } from './tasks.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -27,7 +27,7 @@ describe('TaskManagerService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
+        DatabaseModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),

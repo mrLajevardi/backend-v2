@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { EdgeService } from 'src/application/vdc/service/edge.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';
 import { OrgService } from 'src/application/vdc/service/org.service';
@@ -27,7 +27,7 @@ describe('TasksService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
+        DatabaseModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),

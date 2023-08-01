@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicesController } from './invoices.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { InvoicesService } from '../service/invoices.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -23,7 +23,7 @@ describe('InvoicesController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       providers: [
         InvoicesService,
         CostCalculationService,

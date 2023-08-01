@@ -1,23 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleTableService } from './role-table.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
 describe('RoleTableService', () => {
   let service: RoleTableService;
-  let testDataService: TestDataService;
+  let module : TestingModule; 
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [RoleTableService, TestDataService],
     }).compile();
 
     service = module.get<RoleTableService>(RoleTableService);
-    testDataService = module.get<TestDataService>(TestDataService);
-    await testDataService.seedTestData();
   });
 
+  afterAll(async ()=>{
+    await module.close();
+  })
+  
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

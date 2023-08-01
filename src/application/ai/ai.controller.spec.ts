@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiController } from './ai.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { AiService } from './ai.service';
 import { UserService } from '../base/user/service/user.service';
 import { DiscountsService } from '../base/service/services/discounts.service';
@@ -64,7 +64,7 @@ describe('AiController', () => {
         ConfigModule.forRoot({
           isGlobal: true,
         }),
-        TestDatabaseModule,
+        DatabaseModule,
       ],
       providers: [
         AiService,

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OtpService } from './otp.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('OtpService', () => {
   let service: OtpService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       providers: [OtpService],
     }).compile();
 

@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VmService } from './vm.service';
-import { TestDatabaseModule } from '../../../infrastructure/database/test-database.module';
+import { DatabaseModule } from '../../../infrastructure/database/database.module';
 
 describe('VmService', () => {
   let service: VmService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       providers: [],
     }).compile();
 

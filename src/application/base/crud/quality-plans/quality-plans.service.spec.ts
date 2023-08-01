@@ -1,20 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QualityPlansService } from './quality-plans.service';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('QualityPlansService', () => {
   let service: QualityPlansService;
+  let module : TestingModule; 
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [QualityPlansService],
     }).compile();
 
     service = module.get<QualityPlansService>(QualityPlansService);
   });
-
+  
+  afterAll(async ()=>{
+    await module.close();
+  })
+  
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

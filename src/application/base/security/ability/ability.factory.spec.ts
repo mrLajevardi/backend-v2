@@ -1,7 +1,7 @@
 import { AbilityFactory } from './ability.factory';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvoicesService } from '../../invoice/service/invoices.service';
 import { User } from 'src/infrastructure/database/test-entities/User';
@@ -25,7 +25,7 @@ describe('AbilityFactory', () => {
 
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+      imports: [DatabaseModule],
       providers: [AbilityFactory],
     }).compile();
 
