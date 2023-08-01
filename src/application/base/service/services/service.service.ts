@@ -3,6 +3,7 @@ import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { map } from 'lodash';
 
 @Injectable()
 export class ServiceService {
@@ -49,6 +50,15 @@ export class ServiceService {
       },
       relations: ['serviceItems'],
     });
-    return services;
+    const extendedServiceList = services.map((service) => {
+      const expired =
+        new Date(service.expireDate).getTime() < new Date().getTime();
+      console.log(expired);
+      return {
+        ...services,
+        expired,
+      };
+    });
+    return extendedServiceList;
   }
 }
