@@ -55,10 +55,10 @@ export class ServiceService {
         new Date(service.expireDate).getTime() < new Date().getTime();
       console.log(expired);
       return {
-        ...services,
+        ...service,
         expired,
       };
     });
-    return extendedServiceList;
+    return services;
   }
 }
