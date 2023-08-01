@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ItemTypes } from './ItemTypes';
 import { ServiceInstances } from './ServiceInstances';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_AITransactionsLogs', ['id'], { unique: true })
 @Entity('AITransactionsLogs', { schema: 'user' })
@@ -15,7 +16,7 @@ export class AiTransactionsLogs {
   @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   id: string;
 
-  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
   serviceInstanceId: string;
 
   @Column('datetime', { name: 'DateTime' })

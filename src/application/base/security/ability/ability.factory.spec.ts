@@ -15,6 +15,10 @@ import { SessionsTableService } from '../../crud/sessions-table/sessions-table.s
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 import { Action } from './enum/action.enum';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Acl } from 'src/infrastructure/database/test-entities/Acl';
+import { CrudModule } from '../../crud/crud.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
@@ -26,7 +30,11 @@ describe('AbilityFactory', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [
+        DatabaseModule,
+        CrudModule,
+        InvoicesModule,
+      ],
       providers: [AbilityFactory],
     }).compile();
 
@@ -53,6 +61,7 @@ describe('AbilityFactory', () => {
       user.id = 2;
       await userTable.create(user);
 
+      await await aclTable.deleteAll({});
       await aclTable.create({
         model: 'Acl',
         accessType: 'read',
@@ -93,7 +102,7 @@ describe('AbilityFactory', () => {
 
     it('should return 2 for acl.getAll', async () => {
       const acls = await aclTable.find();
-      // console.log(acls);
+      console.log(acls.length);
       expect(acls.length).toBe(3);
     });
 

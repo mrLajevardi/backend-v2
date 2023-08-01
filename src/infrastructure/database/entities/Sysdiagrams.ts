@@ -1,3 +1,4 @@
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('PK__sysdiagr__C2B05B61356F80C3', ['diagramId'], { unique: true })
@@ -16,6 +17,6 @@ export class Sysdiagrams {
   @Column('int', { name: 'version', nullable: true })
   version: number | null;
 
-  @Column('varbinary', { name: 'definition', nullable: true })
+  @Column(isTestingEnv ? 'blob': 'varbinary', { name: 'definition', nullable: true })
   definition: Buffer | null;
 }

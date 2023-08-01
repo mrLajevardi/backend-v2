@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './User';
 import { ServiceInstances } from './ServiceInstances';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_Invoices', ['id'], { unique: true })
 @Entity('Invoices', { schema: 'user' })
@@ -36,10 +37,10 @@ export class Invoices {
   @Column('datetime', { name: 'DateTime' })
   dateTime: Date;
 
-  @Column('bit', { name: 'Payed' })
+  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'Payed' })
   payed: boolean;
 
-  @Column('bit', { name: 'Voided' })
+  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'Voided' })
   voided: boolean;
 
   @Column('datetime', { name: 'EndDateTime', default: () => 'getdate()' })
@@ -54,7 +55,7 @@ export class Invoices {
   @Column('int', { name: 'UserID' })
   userId: number;
 
-  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
   serviceInstanceId: string;
 
   @ManyToOne(() => User, (user) => user.invoices, {

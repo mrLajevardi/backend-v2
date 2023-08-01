@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { InvoiceDiscounts } from './InvoiceDiscounts';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_Discounts', ['id'], { unique: true })
 @Entity('Discounts', { schema: 'services' })
@@ -25,7 +26,7 @@ export class Discounts {
   @Column('float', { name: 'Amount', precision: 53 })
   amount: number;
 
-  @Column('bit', { name: 'IsBuiltIn' })
+  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'IsBuiltIn' })
   isBuiltIn: boolean;
 
   @Column('datetime', { name: 'ValidDate', nullable: true })

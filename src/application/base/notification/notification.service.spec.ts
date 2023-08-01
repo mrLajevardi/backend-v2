@@ -1,6 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationService } from './notification.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { SmsService } from './sms.service';
+import { EmailContentService } from './email-content.service';
+import { EmailService } from './email.service';
 
 describe('NotificationService', () => {
   let service: NotificationService;
@@ -9,7 +12,12 @@ describe('NotificationService', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [DatabaseModule],
-      providers: [NotificationService],
+      providers: [
+        EmailContentService,
+        EmailService,
+        SmsService,
+        NotificationService
+      ],
     }).compile();
 
     service = module.get<NotificationService>(NotificationService);

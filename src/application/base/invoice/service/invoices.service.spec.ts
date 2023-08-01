@@ -17,6 +17,9 @@ import { TransactionsTableService } from '../../crud/transactions-table/transact
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
+import { forwardRef } from '@nestjs/common';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { CrudModule } from '../../crud/crud.module';
 
 describe('InvoicesService', () => {
   let service: InvoicesService;
@@ -24,24 +27,11 @@ describe('InvoicesService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [DatabaseModule, CrudModule, forwardRef(() => VgpuModule)],
       providers: [
         InvoicesService,
-        CostCalculationService,
         InvoicesChecksService,
-        PlansTableService,
-        ItemTypesTableService,
-        ServiceTypesTableService,
-        InvoiceItemsTableService,
-        TransactionsTableService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        VgpuService,
-        ConfigsTableService,
-        SessionsService,
-        InvoicesTableService,
-        PlansQueryService,
-        SessionsTableService,
+        CostCalculationService
       ],
       exports: [InvoicesService, CostCalculationService, InvoicesChecksService],
     }).compile();

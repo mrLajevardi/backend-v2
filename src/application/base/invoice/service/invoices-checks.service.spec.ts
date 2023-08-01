@@ -12,6 +12,9 @@ import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
+import { forwardRef } from '@nestjs/common';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { CrudModule } from '../../crud/crud.module';
 
 describe('InvoicesChecksService', () => {
   let service: InvoicesChecksService;
@@ -19,7 +22,7 @@ describe('InvoicesChecksService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [DatabaseModule, VgpuModule,CrudModule, forwardRef(() => VgpuModule)],
       providers: [],
     }).compile();
 

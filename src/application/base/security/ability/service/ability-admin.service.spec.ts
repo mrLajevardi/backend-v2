@@ -10,6 +10,9 @@ import { User } from 'src/infrastructure/database/test-entities/User';
 import { PredefinedRoles } from '../enum/predefined-enum.type';
 import exp from 'constants';
 import { stringToEnum } from 'src/infrastructure/helpers/helpers';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CrudModule } from 'src/application/base/crud/crud.module';
+import { Acl } from 'src/infrastructure/database/test-entities/Acl';
 
 describe('AbilityAdminService', () => {
   let service: AbilityAdminService;
@@ -20,7 +23,7 @@ describe('AbilityAdminService', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [CrudModule],
       providers: [AbilityAdminService, AbilityFactory],
     }).compile();
 

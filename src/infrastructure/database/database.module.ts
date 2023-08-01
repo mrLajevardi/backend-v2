@@ -17,8 +17,8 @@ const isTestMode = process.env.NODE_ENV === 'test';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forRoot()], // Import ConfigModule to use the ConfigService
       useFactory: () =>
-        isTestMode
-          ? ({
+        (!isTestMode
+          ? {
               type: process.env.DB_TYPE,
               host: process.env.DB_HOST,
               port: Number(process.env.DB_PORT),
@@ -30,14 +30,15 @@ const isTestMode = process.env.NODE_ENV === 'test';
               extra: {
                 trustServerCertificate: true,
               },
-            } as TypeOrmModuleOptions)
-          : ({
+            } as TypeOrmModuleOptions
+          : {
               type: 'sqlite',
               database: ':memory:',
               autoLoadEntities: true,
               entities: dbTestEntities,
               synchronize: true,
-            } as TypeOrmModuleOptions),
+            } as TypeOrmModuleOptions
+        )
     }),
     TypeOrmModule.forFeature(dbEntities),
   ],
