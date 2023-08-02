@@ -45,6 +45,7 @@ import { GroupModule } from './application/base/group/group.module';
       },
     }),
     //infrastructure
+    DatabaseModule,
     CrudModule,
     SessionsModule,
     OrganizationModule,
@@ -74,6 +75,12 @@ import { GroupModule } from './application/base/group/group.module';
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    NetworkService,
+    ApplicationPortProfileService,
   ],
   exports: [],
 })
