@@ -4,6 +4,7 @@ import { ServiceItemsTableService } from '../../crud/service-items-table/service
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { map } from 'lodash';
+import { In } from 'typeorm';
 
 @Injectable()
 export class ServiceService {
@@ -47,6 +48,7 @@ export class ServiceService {
       where: {
         userId,
         isDeleted: false,
+        serviceTypeId: In(['vdc', 'vgpu', 'aradAi']),
       },
       relations: ['serviceItems'],
     });
@@ -59,6 +61,6 @@ export class ServiceService {
         expired,
       };
     });
-    return services;
+    return extendedServiceList;
   }
 }

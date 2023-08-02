@@ -262,6 +262,7 @@ import { GroupsMappingTableService } from 'src/application/base/crud/groups-mapp
     GroupsTableService,
     GroupService,
     GroupsMappingTableService,
+    TasksService,
   ],
 })
 export class TestDatabaseModule {}

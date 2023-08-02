@@ -23,8 +23,8 @@ import { DeleteServiceService } from './services/delete-service.service';
     SessionsModule,
     UserModule,
     forwardRef(() => InvoicesModule),
-    TasksModule,
     forwardRef(() => VgpuModule),
+    forwardRef(() => TasksModule),
     TransactionsModule,
   ],
   providers: [
