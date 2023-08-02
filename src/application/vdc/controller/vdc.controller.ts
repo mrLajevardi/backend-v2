@@ -1,4 +1,11 @@
-import { Controller } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
 import { CreateServiceService } from 'src/application/base/service/services/create-service.service';
 import { ServiceService } from 'src/application/base/service/services/service.service';
@@ -6,9 +13,27 @@ import { SessionsService } from 'src/application/base/sessions/sessions.service'
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
+import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.filter';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
-
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  Request,
+  UseFilters,
+  Delete,
+  Put,
+  Headers,
+  Body,
+} from '@nestjs/common';
+import { VdcService } from '../service/vdc.service';
+import { CreateGroupsDto } from 'src/application/base/crud/groups-table/dto/create-groups.dto';
+@ApiBearerAuth()
+@ApiTags('Vpc')
+@UseFilters(new HttpExceptionFilter())
 @Controller('vdc')
 export class VdcController {
   constructor(
@@ -16,275 +41,170 @@ export class VdcController {
     private readonly sessionService: SessionsService,
     private readonly serviceService: ServiceService,
     private readonly loggerService: LoggerService,
+    private readonly vdcService: VdcService,
   ) {}
 
-  async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.attachNamedDisk(
-      session,
-      nameDiskID,
-      vmID,
-    );
-    await this.loggerService.info(
-      'services',
-      'attachNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+  @Post('/:serviceInstanceId/namedDisk/:namedDisk/attach/:vmId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async attachNamedDisk(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+    @Param('vdcInstanceId')
+    namedDiskId: string,
+    @Param('vmId')
+    vmId: string,
+  ) {
+    return this.vdcService.attachNamedDisk(options, vdcInstanceId, namedDiskId, vmId)
   }
 
-  async createNamedDisk(options, vdcInstanceId, data) {
-    const userId = options.accessToken.userId;
-    const { busType } = data;
-    if (busType != 20) {
-      return Promise.reject(new BadRequestException());
-    }
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.createNamedDisk(
-      session,
-      props['vdcId'],
-      data,
-    );
-    const taskId = await mainWrapper.user.vdc.vcloudQuery(session, {
-      page: 1,
-      pageSize: 10,
-      filter: 'object==' + namedDisk.__vcloudTask,
-      type: 'task',
-    });
-    await this.loggerService.info(
-      'services',
-      'createNamedDisk',
-      {
-        _object: taskId.data.record[0].href.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
-      taskId: taskId.data.record[0].href.split('task/')[1],
-    });
+  @Post('/:serviceInstanceId/namedDisk')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async createNamedDisk(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+  ) {
+    return this.vdcService.createNamedDisk(options, vdcInstanceId, namedDiskId)
   }
 
-  // async createVdc(Services, data, options) {
-  //     const createdService = await this.createServiceSvc.createBillingService(data, options,  'vdc');
-  //     const serviceInstanceId = createdService.serviceInstanceId;
-  //     options.locals = {
-  //       ...options.locals,
-  //       serviceInstanceId,
-  //     };
-  //     // await logger.info('vdc', 'createBillingService', { _object: serviceInstanceId }, options.locals);
-  //     const task = await this.tasksService.create({
-  //       userId: options.locals.userId,
-  //       serviceInstanceId: serviceInstanceId,
-  //       operation: 'createDataCenter',
-  //       details: null,
-  //       startTime: new Date(),
-  //       endTime: null,
-  //       status: 'running',
-  //     });
-  //     await this.taskManagerService.addTask({
-  //       serviceInstanceId,
-  //       customTaskId: task['TaskID'],
-  //       vcloudTask: null,
-  //       nextTask: 'createOrg',
-  //       requestOptions: options.locals,
-  //       target: 'object',
-  //     });
-  //     console.log(task);
-  //     return Promise.resolve({
-  //       id: serviceInstanceId,
-  //       taskId: task['TaskID'],
-  //     });
-  //   };
-
-  async dettachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.dettachNamedDisk(
-      session,
-      nameDiskID,
-      vmID,
-    );
-    await this.loggerService.info(
-      'services',
-      'dettachNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+  @Post('/:serviceInstanceId/namedDisk/:namedDisk/detach/:vmId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async detachNamedDisk(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+    @Param('vmId')
+    vmId: string,
+  ) {
+    return this.vdcService.detachNamedDisk(options, vdcInstanceId, namedDiskId, vmId)
   }
 
-  async getNamedDisk(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const recordList = await mainWrapper.user.vdc.getNamedDisk(
-      session,
-      props['vdcId'],
-    );
-    const recordListForFront = [];
-    recordList.forEach((element) => {
-      const id = element.href.split('https://vpc.aradcloud.com/api/disk/')[1];
-      const name = element.name;
-      const sizeMb = element.sizeMb;
-      const description = element.description;
-      const isAttached = element.isAttached;
-      const ownerName = element.ownerName;
-      const status = element.status;
-      const attachedVmCount = element.attachedVmCount;
-      recordListForFront.push({
-        id,
-        name,
-        sizeMb,
-        description,
-        isAttached,
-        ownerName,
-        status,
-        attachedVmCount,
-        busType: element.busType,
-        busSubType: element.busSubType,
-        sharingType: element.sharingType,
-        busTypeDesc: element.busTypeDesc,
-      });
-    });
-    return Promise.resolve(recordListForFront);
+  @Get('/:serviceInstanceId/namedDisk')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async getNamedDisk(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+  ) {
+    return this.vdcService.getNamedDisk(options, vdcInstanceId)
   }
 
-  /**
-   * @param {Object} app
-   * @param {Object} options
-   * @param {String} vdcInstanceId
-   * @return {Promise}
-   */
-  async getVdc(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const vdcData = await mainWrapper.user.vdc.vcloudQuery(session, {
-      type: 'orgVdc',
-      format: 'records',
-      page: 1,
-      pageSize: 10,
-      filter: `id==${props['vdcId']}`,
-    });
-    return Promise.resolve({
-      instanceId: vdcInstanceId,
-      records: vdcData.data.record,
-    });
+  @Get('/:serviceInstanceId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async getVdc(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+  ) {
+    return this.vdcService.getVdc(options, vdcInstanceId)
   }
 
-  async getVmAttachedNamedDisk(options, vdcInstanceId, nameDiskID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const vmData = await mainWrapper.user.vdc.getVmAttachedNamedDisk(
-      session,
-      nameDiskID,
-    );
-
-    if (vmData.data) {
-      return vmData.data.vmReference[0].href.split('vApp/')[1];
-    }
-    return Promise.resolve();
+  @Get('/:serviceInstanceId/namedDisk/:namedDiskId/attachedVm')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async getVmAttachedToNamedDisk(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+  ) {
+    return this.vdcService.getVmAttachedToNamedDisk(options, vdcInstanceId, namedDiskId)
   }
 
-  async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.removeNamedDisk(
-      session,
-      nameDiskID,
-    );
-    await this.loggerService.info(
-      'services',
-      'removeNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+  @Delete('/:serviceInstanceId/namedDisk/:namedDiskId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async removeNamedDisk(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+  ) {
+    return this.vdcService.removeNamedDisk(options, vdcInstanceId, namedDiskId)
   }
-
-  async updateNamedDisk(options, vdcInstanceId, nameDiskID, data) {
-    const userId = options.accessToken.userId;
-    const { busType } = data;
-    if (busType != 20) {
-      return Promise.reject(new BadRequestException());
-    }
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.updateNamedDisk(
-      session,
-      props['vdcId'],
-      nameDiskID,
-      data,
-    );
-    await this.loggerService.info(
-      'services',
-      'updateNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+  
+  @Put('/:serviceInstanceId/namedDisk/:namedDiskId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async updateNamedDisk(
+    @Request()
+    options: any,
+    @Param('vdcInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+    @Body()
+    data: CreateGroupsDto
+  ) {
+    return this.vdcService.updateNamedDisk(options, vdcInstanceId, namedDiskId, data)
   }
+  
+  
 }
