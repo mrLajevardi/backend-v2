@@ -3,7 +3,7 @@ import { VgpuService } from './vgpu.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { BullModule } from '@nestjs/bull';
 import { forwardRef } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { CrudModule } from '../base/crud/crud.module';
 import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
@@ -25,7 +25,7 @@ describe('VgpuService', () => {
         forwardRef(() => ServiceModule),
         forwardRef(() => TasksModule),
       ],
-      providers: [VgpuService],
+      providers: [VgpuService,JwtService],
     }).compile();
 
     service = module.get<VgpuService>(VgpuService);

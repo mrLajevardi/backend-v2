@@ -42,6 +42,12 @@ import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-ta
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../base/crud/crud.module';
+import { InvoicesModule } from '../base/invoice/invoices.module';
+import { ServiceModule } from '../base/service/service.module';
+import { UserModule } from '../base/user/user.module';
 // import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 describe('AiController', () => {
@@ -62,53 +68,16 @@ describe('AiController', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-        }),
         DatabaseModule,
-      ],
-      providers: [
-        AiService,
-        UserService,
-        ServicePropertiesTableService,
-        ServiceInstancesTableService,
-        ServiceTypesTableService,
-        AITransactionsLogsTableService,
-        SettingTableService,
-        ConfigsTableService,
-        DiscountsService,
-        TransactionsService,
-        ItemTypesTableService,
-        CreateServiceService,
-        ServiceChecksService,
-        PlansTableService,
-        QualityPlansService,
-        ServiceItemsTableService,
-        ServiceItemsSumService,
-        InvoicesService,
-        InvoiceItemsTableService,
-        InvoiceDiscountsTableService,
-        InvoicesChecksService,
-        CostCalculationService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        VgpuService,
-        SessionsService,
-        SessionsService,
-        UserTableService,
-        ServiceInstancesStoredProcedureService,
-        UserTableService,
-        DiscountsTableService,
-        TransactionsTableService,
-        ServiceService,
-        PlansQueryService,
-        UserTableService,
-        SessionsTableService,
-        InvoicesTableService,
-        AitransactionsLogsStoredProcedureService,
-        PayAsYouGoService,
+        UserModule,
+        CrudModule,
+        InvoicesModule,
+        ServiceModule,
+        LoggerModule,
+        JwtModule
       ],
       controllers: [AiController],
+      providers: [AiService],
     }).compile();
 
     controller = module.get<AiController>(AiController);
