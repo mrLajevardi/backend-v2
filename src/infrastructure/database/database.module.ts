@@ -8,10 +8,14 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
+import { ConfigModule } from '@nestjs/config';
 const isTestMode = process.env.NODE_ENV === 'test';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     TypeOrmModule.forRootAsync({
       useFactory: () =>
         (!isTestMode
@@ -40,7 +44,12 @@ const isTestMode = process.env.NODE_ENV === 'test';
     TypeOrmModule.forFeature(dbEntities),
   ],
   providers: [TestDataService],
-  exports: [TypeOrmModule],
+  exports: [
+    TypeOrmModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
 })
 export class DatabaseModule implements OnModuleInit {
   onModuleInit() {

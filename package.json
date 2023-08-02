@@ -19,7 +19,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" -f ./node_modules/eslint-junit/index.js --rulesdir eslint-rules/",
     "test:dev": "jest",
     "test:leak": "node  --expose-gc ./node_modules/.bin/jest   --detectLeaks --runInBand --logHeapUsage",
-    "test:leak2": "node --expose-gc ./node_modules/.bin/jest  --runInBand --logHeapUsage",
+    "test:leak2": "node --expose-gc ./node_modules/.bin/jest --detectOpenHandles --runInBand --logHeapUsage",
     "test": "jest --ci --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

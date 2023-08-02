@@ -62,6 +62,9 @@ describe('AiService', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+        }),
         DatabaseModule,
         UserModule,
         CrudModule,
