@@ -48,7 +48,7 @@ export class ServiceService {
       where: {
         userId,
         isDeleted: false,
-        serviceTypeId: In(['vdc', 'vgpu', 'aradAi'])
+        serviceTypeId: In(['vdc', 'vgpu', 'aradAi']),
       },
       relations: ['serviceItems'],
     });
