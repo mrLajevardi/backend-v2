@@ -731,7 +731,7 @@ export class VmController {
     );
   }
 
-  @Post('/:serviceInstanceId/:vmId/postAnswer')
+  @Post('/:serviceInstanceId/:vmId/undeploy')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
