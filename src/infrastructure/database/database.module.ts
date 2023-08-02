@@ -6,7 +6,6 @@ Importing this module in the app.module.ts is sufficient for loading the databse
 
 import { Module, OnModuleInit } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
 const isTestMode = process.env.NODE_ENV === 'test';
@@ -14,7 +13,6 @@ const isTestMode = process.env.NODE_ENV === 'test';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule.forRoot()], // Import ConfigModule to use the ConfigService
       useFactory: () =>
         (!isTestMode
           ? {
