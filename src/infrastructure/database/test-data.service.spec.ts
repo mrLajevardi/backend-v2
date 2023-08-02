@@ -1,20 +1,20 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
 import { Repository } from 'typeorm';
 import { TestDataService } from './test-data.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { TestDatabaseModule } from './test-database.module';
 // Import other test entities...
 
-import { Acl } from './test-entities/Acl';
+import { Acl } from './entities/Acl';
+import { DatabaseModule } from './database.module';
 
 describe('TestDataService', () => {
   let testDataService: TestDataService;
   let aclRepository: Repository<Acl>;
   // Define other repository variables...
-
+  let module : TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [TestDataService],
     }).compile();
 

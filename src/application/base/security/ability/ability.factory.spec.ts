@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvoicesService } from '../../invoice/service/invoices.service';
-import { User } from 'src/infrastructure/database/test-entities/User';
+import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { UserService } from '../../user/service/user.service';
@@ -16,7 +16,7 @@ import { DiscountsTableService } from '../../crud/discounts-table/discounts-tabl
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 import { Action } from './enum/action.enum';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Acl } from 'src/infrastructure/database/test-entities/Acl';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
 import { CrudModule } from '../../crud/crud.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 
@@ -102,7 +102,7 @@ describe('AbilityFactory', () => {
 
     it('should return 2 for acl.getAll', async () => {
       const acls = await aclTable.find();
-      console.log(acls.length);
+      //console.log(acls.length);
       expect(acls.length).toBe(3);
     });
 

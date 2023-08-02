@@ -1,24 +1,24 @@
 import { Entity, Column, PrimaryColumn, ViewEntity, ViewColumn } from 'typeorm';
-@ViewEntity({
+@Entity({
   schema: 'user',
   name: 'InvoiceItemList',
 })
 export class InvoiceItemList {
-  @ViewColumn({ name: 'ItemID' })
+  @PrimaryColumn({ name: 'ItemID' })
   itemId: number;
 
-  @ViewColumn({ name: 'Quantity' })
+  @Column({ name: 'Quantity' })
   quantity: number;
 
-  @ViewColumn({ name: 'Fee' })
+  @Column({ name: 'Fee' })
   fee: number;
 
-  @ViewColumn({ name: 'Code' })
+  @Column({ name: 'Code' })
   code: string;
 
-  @ViewColumn({ name: 'InvoiceID' })
+  @Column({ name: 'InvoiceID' })
   invoiceId: string;
 
-  @ViewColumn({ name: 'UserID' })
+  @Column({ name: 'UserID' })
   userId: number;
 }

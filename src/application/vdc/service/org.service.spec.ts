@@ -19,6 +19,13 @@ import { TransactionsTableService } from 'src/application/base/crud/transactions
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { ExtendServiceService } from 'src/application/base/service/services/extend-service.service';
 import { EdgeService } from './edge.service';
+import { CrudModule } from 'src/application/base/crud/crud.module';
+import { OrganizationModule } from 'src/application/base/organization/organization.module';
+import { ServiceModule } from 'src/application/base/service/service.module';
+import { SessionsModule } from 'src/application/base/sessions/sessions.module';
+import { UserModule } from 'src/application/base/user/user.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { NetworkService } from './network.service';
 
 describe('OrgService', () => {
   let service: OrgService;
@@ -26,8 +33,18 @@ describe('OrgService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [],
+      imports: [
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        //TasksModule,
+        SessionsModule,
+        OrganizationModule,
+        UserModule,
+        ServiceModule,
+      ],
+      providers: [VdcService, OrgService, EdgeService, NetworkService],
+      
     }).compile();
 
     service = module.get<OrgService>(OrgService);

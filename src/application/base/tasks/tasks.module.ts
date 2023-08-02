@@ -36,6 +36,9 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
     VdcService,
   ],
   controllers: [],
-  exports: [TasksService, TaskManagerService],
+  exports: [
+    TasksService, 
+    TaskManagerService
+  ],
 })
 export class TasksModule {}

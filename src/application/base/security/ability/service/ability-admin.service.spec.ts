@@ -4,15 +4,15 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { AbilityFactory, ability } from '../ability.factory';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { Invoices } from 'src/infrastructure/database/test-entities/Invoices';
+import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { Action } from '../enum/action.enum';
-import { User } from 'src/infrastructure/database/test-entities/User';
+import { User } from 'src/infrastructure/database/entities/User';
 import { PredefinedRoles } from '../enum/predefined-enum.type';
 import exp from 'constants';
 import { stringToEnum } from 'src/infrastructure/helpers/helpers';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CrudModule } from 'src/application/base/crud/crud.module';
-import { Acl } from 'src/infrastructure/database/test-entities/Acl';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
 
 describe('AbilityAdminService', () => {
   let service: AbilityAdminService;

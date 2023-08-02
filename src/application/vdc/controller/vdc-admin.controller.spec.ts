@@ -26,6 +26,12 @@ import { ServiceService } from 'src/application/base/service/services/service.se
 import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
 import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
 import { NatModule } from 'src/application/nat/nat.module';
+import { CrudModule } from 'src/application/base/crud/crud.module';
+import { OrganizationModule } from 'src/application/base/organization/organization.module';
+import { ServiceModule } from 'src/application/base/service/service.module';
+import { SessionsModule } from 'src/application/base/sessions/sessions.module';
+import { UserModule } from 'src/application/base/user/user.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
@@ -35,12 +41,16 @@ describe('VdcAdminController', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
-        NatModule,
-        BullModule.registerQueue({
-          name: 'tasks',
-        }),
+        CrudModule,
+        LoggerModule,
+        //TasksModule,
+        SessionsModule,
+        OrganizationModule,
+        UserModule,
+        ServiceModule,
       ],
-      providers: [],
+      providers: [VdcService, OrgService, EdgeService, NetworkService],
+      
       controllers: [VdcAdminController],
     }).compile();
 

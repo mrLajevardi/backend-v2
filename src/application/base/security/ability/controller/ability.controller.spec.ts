@@ -3,7 +3,7 @@ import { AbilityController } from './ability.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CrudModule } from 'src/application/base/crud/crud.module';
-import { Acl } from 'src/infrastructure/database/test-entities/Acl';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
 import { AbilityAdminService } from '../service/ability-admin.service';
 
 describe('AbilityController', () => {

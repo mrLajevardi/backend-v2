@@ -1,6 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAdminController } from './user-admin.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { JwtModule } from '@nestjs/jwt';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { NotificationModule } from '../../notification/notification.module';
+import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
+import { UserAdminService } from '../service/user-admin.service';
+import { UserService } from '../service/user.service';
 
 describe('UserAdminController', () => {
   let controller: UserAdminController;
@@ -8,7 +16,16 @@ describe('UserAdminController', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        PaymentModule,
+        JwtModule,
+        NotificationModule,
+        SecurityToolsModule,
+      ],
+      providers: [UserService, UserAdminService],
       controllers: [UserAdminController],
     }).compile();
 

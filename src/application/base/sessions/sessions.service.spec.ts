@@ -6,6 +6,7 @@ import { OrganizationService } from '../organization/organization.service';
 import { SessionsTableService } from '../crud/sessions-table/sessions-table.service';
 import { UserTableService } from '../crud/user-table/user-table.service';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
+import { CrudModule } from '../crud/crud.module';
 
 describe('SessionsService', () => {
   let service: SessionsService;
@@ -13,14 +14,9 @@ describe('SessionsService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [DatabaseModule, CrudModule],
       providers: [
         SessionsService,
-        UserService,
-        OrganizationService,
-        SessionsTableService,
-        UserTableService,
-        OrganizationTableService,
       ],
     }).compile();
 

@@ -33,6 +33,14 @@ import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice
 import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
 import { InvoicePropertiesTableService } from '../../crud/invoice-properties-table/invoice-properties-table.service';
 import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
+import { forwardRef } from '@nestjs/common';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { CrudModule } from '../../crud/crud.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
+import { SessionsModule } from '../../sessions/sessions.module';
+import { TasksModule } from '../../tasks/tasks.module';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserModule } from '../../user/user.module';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -40,42 +48,21 @@ describe('CreateServiceService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [
+        CrudModule,
+        DatabaseModule,
+        SessionsModule,
+        UserModule,
+        forwardRef(() => InvoicesModule),
+        TasksModule,
+        forwardRef(() => VgpuModule),
+        TransactionsModule,
+      ],
       providers: [
         CreateServiceService,
         ExtendServiceService,
-        DiscountsService,
         ServiceChecksService,
-        SessionsService,
-        UserService,
-        OrganizationService,
-        TransactionsService,
-        QualityPlansService,
-        ServiceItemsSumService,
-        InvoicesService,
-        InvoicesChecksService,
-        CostCalculationService,
-        VgpuService,
-        DiscountsTableService,
-        ServiceInstancesTableService,
-        ItemTypesTableService,
-        ServiceTypesTableService,
-        ServicePropertiesTableService,
-        InvoiceDiscountsTableService,
-        ServiceService,
-        PlansTableService,
-        ConfigsTableService,
-        ServiceItemsTableService,
-        SessionsTableService,
-        UserTableService,
-        OrganizationTableService,
-        TransactionsTableService,
-        InvoicesTableService,
-        InvoiceItemsTableService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        PlansQueryService,
-      ],
+       ],
     }).compile();
 
     service = module.get<CreateServiceService>(CreateServiceService);

@@ -17,6 +17,24 @@ import { UserService } from '../../user/service/user.service';
 import { ExtendServiceService } from './extend-service.service';
 import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
+import { BullModule } from '@nestjs/bull';
+import { forwardRef } from '@nestjs/common';
+import { NetworkService } from 'src/application/vdc/service/network.service';
+import { VdcModule } from 'src/application/vdc/vdc.module';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { SessionsModule } from '../../sessions/sessions.module';
+import { TaskManagerService } from '../../tasks/service/task-manager.service';
+import { TasksService } from '../../tasks/service/tasks.service';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserModule } from '../../user/user.module';
+import { CreateServiceService } from './create-service.service';
+import { DeleteServiceService } from './delete-service.service';
+import { DiscountsService } from './discounts.service';
+import { ServiceChecksService } from './service-checks/service-checks.service';
+import { ServiceService } from './service.service';
 
 describe('PayAsYouGoService', () => {
   let service: PayAsYouGoService;
@@ -24,25 +42,35 @@ describe('PayAsYouGoService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [
+        CrudModule,
+        DatabaseModule,
+        SessionsModule,
+        UserModule,
+        BullModule.registerQueue({
+          name: 'tasks',
+        }),
+        LoggerModule,
+        // VdcModule,
+        forwardRef(() => VgpuModule),
+        CrudModule,
+        SessionsModule,
+        OrganizationModule,
+        TransactionsModule,
+        VdcModule,
+      ],
       providers: [
         PayAsYouGoService,
-        TransactionsTableService,
-        UserTableService,
+        ServiceService,
+        PayAsYouGoService,
+        CreateServiceService,
         ExtendServiceService,
-        ItemTypesTableService,
-        PlansTableService,
-        ServiceTypesTableService,
-        ConfigsTableService,
-        ServiceItemsTableService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        SessionsService,
-        UserService,
-        OrganizationService,
-        TransactionsService,
-        SessionsTableService,
-        OrganizationTableService,
+        DiscountsService,
+        ServiceChecksService,
+        DeleteServiceService,
+        TaskManagerService,
+        TasksService,
+        NetworkService
       ],
     }).compile();
 

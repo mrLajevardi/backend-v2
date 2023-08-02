@@ -4,6 +4,13 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { encryptPassword } from 'src/infrastructure/helpers/helpers';
+import { JwtModule } from '@nestjs/jwt';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { NotificationModule } from '../../notification/notification.module';
+import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
+import { UserAdminService } from './user-admin.service';
 
 describe('UserService', () => {
   let table: UserTableService;
@@ -13,8 +20,16 @@ describe('UserService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [],
+      imports: [
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        PaymentModule,
+        JwtModule,
+        NotificationModule,
+        SecurityToolsModule,
+      ],
+      providers: [UserService, UserAdminService],
     }).compile();
 
     table = module.get<UserTableService>(UserTableService);

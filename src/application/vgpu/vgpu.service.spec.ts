@@ -2,6 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VgpuService } from './vgpu.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { BullModule } from '@nestjs/bull';
+import { forwardRef } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { CrudModule } from '../base/crud/crud.module';
+import { ServiceModule } from '../base/service/service.module';
+import { SessionsModule } from '../base/sessions/sessions.module';
+import { TasksModule } from '../base/tasks/tasks.module';
 
 /// test instance 28697f62-a319-4e22-af49-075c34a14bb2
 
@@ -12,12 +18,14 @@ describe('VgpuService', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
+        CrudModule,
         DatabaseModule,
-        BullModule.registerQueue({
-          name: 'tasks',
-        }),
+        JwtModule,
+        SessionsModule,
+        forwardRef(() => ServiceModule),
+        forwardRef(() => TasksModule),
       ],
-      providers: [],
+      providers: [VgpuService],
     }).compile();
 
     service = module.get<VgpuService>(VgpuService);

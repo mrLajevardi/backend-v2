@@ -20,6 +20,13 @@ import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
+import { CrudModule } from '../../crud/crud.module';
+import { SessionsModule } from '../../sessions/sessions.module';
+import { forwardRef } from '@nestjs/common';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { VdcModule } from 'src/application/vdc/vdc.module';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -32,8 +39,19 @@ describe('TaskManagerService', () => {
         BullModule.registerQueue({
           name: 'tasks',
         }),
+        LoggerModule,
+        // VdcModule,
+        forwardRef(() => VgpuModule),
+        CrudModule,
+        SessionsModule,
+        OrganizationModule,
+        VdcModule,
+        
       ],
-      providers: [],
+      providers: [
+        TaskManagerService,
+        TasksService
+      ],
     }).compile();
 
     service = module.get<TaskManagerService>(TaskManagerService);

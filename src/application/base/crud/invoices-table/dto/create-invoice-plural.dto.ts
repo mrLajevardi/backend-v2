@@ -1,5 +1,5 @@
 import { IsInt } from 'class-validator';
-import { InvoicePlans } from 'src/infrastructure/database/test-entities/InvoicePlans';
+import { InvoicePlans } from 'src/infrastructure/database/entities/InvoicePlans';
 
 export class CreateInvoicePluralDto {
   plans: InvoicePlans[];

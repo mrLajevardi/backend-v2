@@ -20,6 +20,12 @@ import { ExtendServiceService } from 'src/application/base/service/services/exte
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
 import { UserService } from 'src/application/base/user/service/user.service';
 import { EdgeService } from './edge.service';
+import { OrganizationModule } from 'src/application/base/organization/organization.module';
+import { ServiceModule } from 'src/application/base/service/service.module';
+import { SessionsModule } from 'src/application/base/sessions/sessions.module';
+import { UserModule } from 'src/application/base/user/user.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { OrgService } from './org.service';
 
 describe('NetworkService', () => {
   let service: NetworkService;
@@ -27,8 +33,18 @@ describe('NetworkService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [],
+      imports: [
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        //TasksModule,
+        SessionsModule,
+        OrganizationModule,
+        UserModule,
+        ServiceModule,
+      ],
+      providers: [VdcService, OrgService, EdgeService, NetworkService],
+      
     }).compile();
 
     service = module.get<NetworkService>(NetworkService);
