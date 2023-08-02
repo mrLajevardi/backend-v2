@@ -70,7 +70,6 @@ export class VdcController {
   @Post('/:serviceInstanceId/namedDisk')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
-  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
   @ApiResponse({
     status: 201,
     description: 'create a vm from template',
@@ -81,10 +80,10 @@ export class VdcController {
     options: any,
     @Param('vdcInstanceId')
     vdcInstanceId: string,
-    @Param('namedDiskId')
-    namedDiskId: string,
+    @Body()
+    data: CreateGroupsDto
   ) {
-    return this.vdcService.createNamedDisk(options, vdcInstanceId, namedDiskId)
+    return this.vdcService.createNamedDisk(options, vdcInstanceId, data)
   }
 
   @Post('/:serviceInstanceId/namedDisk/:namedDisk/detach/:vmId')
