@@ -28,7 +28,7 @@ stages:          # List of stages for jobs, and their order of execution
 
 unit-test-job:   # This job runs in the test stage.
   stage: test 
-  need: []   # It only starts when the job in the build stage completes successfully.
+  needs: []   # It only starts when the job in the build stage completes successfully.
   only:
     - develop
     - merge_requests
@@ -46,7 +46,7 @@ unit-test-job:   # This job runs in the test stage.
 
 lint-test-job:
   stage: test
-  need: []   # This job also runs in the test stage.
+  needs: []   # This job also runs in the test stage.
   only:
     - develop
     - main
