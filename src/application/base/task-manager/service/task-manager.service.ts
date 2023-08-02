@@ -9,17 +9,14 @@ export class TaskManagerService {
   constructor(
     @InjectQueue('test')
     private taskQueue: Queue,
-    @Inject('TASKS')
-    private readonly tasks: any,
-    private 
+    @Inject('Tasks')
+    private taskManage: Array<any>,
   ) {}
 
   @Process()
   async processTask(job, done) {
-    const t: Array<TaskInterface> = [Task1Service];
+    console.log(this.taskManage);
     console.log('hello');
-    console.log(this.tasks);
-    this.tasks.sayHello();
     done();
   }
 

@@ -1,9 +1,9 @@
 import { Dirent, readdirSync } from 'fs';
-import path, { dirname, join } from 'path';
+import path, { dirname, join, posix, relative, sep } from 'path';
 import { importScript } from 'src/infrastructure/helpers/import-script.helper';
 import { TasksConfigsInterface } from './interface/tasks-configs.interface';
 import { TaskInterface } from './interface/task.interface';
-
+import configs from './tasks/increaseVdcResources/config';
 function getDirectories(source: string): string[] {
   const dir: Dirent[] = readdirSync(source, { withFileTypes: true });
   const directories: string[] = dir
@@ -15,25 +15,23 @@ function getDirectories(source: string): string[] {
     });
   return directories;
 }
-async function initServices(source: string) {
+export async function initServices() {
+  const source = join(__dirname, '/tasks');
   const subDirectories: string[] = getDirectories(source);
   const dependencies = [];
-  const tasksConfigs = {};
   for (const subDirectory of subDirectories) {
-    const configFilePath = join(subDirectory, '/config.ts');
-    const configFile: TasksConfigsInterface = await importScript(
-      configFilePath,
-    );
-
-    const targetTask = {
-      steps: [],
-    };
-    tasksConfigs[configFile.taskName] = targetTask;
-    for (const step of configFile.steps) {
-      targetTask.steps;
+    const configFilePath = join(subDirectory, '/config');
+    const relativeConfigFilePath =
+      './' + relative(__dirname, configFilePath).split(sep).join(posix.sep);
+    console.log(relativeConfigFilePath);
+    const configFile = await import(relativeConfigFilePath);
+    console.log(configFile);
+    const config: TasksConfigsInterface = configFile.default;
+    for (const step of config.steps) {
+      dependencies.push(step);
     }
   }
+  console.log(dependencies, '🍗');
+  return dependencies;
 }
-function taskFactory() {}
-const source = join(__dirname, '/tasks');
-initServices(source);
+// function taskFactory() {}
