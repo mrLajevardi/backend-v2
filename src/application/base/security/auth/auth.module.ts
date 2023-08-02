@@ -31,7 +31,7 @@ import { SecurityToolsModule } from '../security-tools/security-tools.module';
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1800s' },
+      signOptions: { expiresIn: '28800s' },
     }),
   ],
   controllers: [AuthController],
