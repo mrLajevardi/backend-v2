@@ -12,7 +12,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Index('PK_Transactions', ['id'], { unique: true })
 @Entity('Transactions', { schema: 'user' })
 export class Transactions {
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
+  @PrimaryGeneratedColumn({ type: 'integer', name: 'ID' })
   id: string;
 
   @Column('datetime', { name: 'DateTime' })

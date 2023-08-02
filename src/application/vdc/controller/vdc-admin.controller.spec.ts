@@ -25,6 +25,7 @@ import { SessionsTableService } from 'src/application/base/crud/sessions-table/s
 import { ServiceService } from 'src/application/base/service/services/service.service';
 import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
 import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
+import { NatModule } from 'src/application/nat/nat.module';
 
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
@@ -34,6 +35,7 @@ describe('VdcAdminController', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        NatModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),

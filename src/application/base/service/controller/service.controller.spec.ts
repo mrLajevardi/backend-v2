@@ -3,6 +3,7 @@ import { ServiceController } from './service.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { DeleteServiceService } from '../services/delete-service.service';
 import { CreateServiceService } from '../services/create-service.service';
+import { CrudModule } from '../../crud/crud.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -10,7 +11,7 @@ describe('ServiceController', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [DatabaseModule,CrudModule],
       providers: [DeleteServiceService, CreateServiceService],
       controllers: [ServiceController],
     }).compile();

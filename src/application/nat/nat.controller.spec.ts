@@ -1,6 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NatController } from './nat.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { NatService } from './nat.service';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { ServiceModule } from '../base/service/service.module';
+import { CrudModule } from '../base/crud/crud.module';
+import { SessionsModule } from '../base/sessions/sessions.module';
 
 describe('NatController', () => {
   let controller: NatController;
@@ -8,7 +13,14 @@ describe('NatController', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule],
+      imports: [
+        DatabaseModule,
+        LoggerModule,
+        ServiceModule,
+        SessionsModule,
+        CrudModule,
+      ],
+      providers: [NatService],
       controllers: [NatController],
     }).compile();
 

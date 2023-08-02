@@ -9,7 +9,6 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
-import { dbTestEntities } from './entityImporter/orm-test-entities';
 const isTestMode = process.env.NODE_ENV === 'test';
 
 @Module({
@@ -35,7 +34,7 @@ const isTestMode = process.env.NODE_ENV === 'test';
               type: 'sqlite',
               database: ':memory:',
               autoLoadEntities: true,
-              entities: dbTestEntities,
+              entities: dbEntities,
               synchronize: true,
             } as TypeOrmModuleOptions
         )
