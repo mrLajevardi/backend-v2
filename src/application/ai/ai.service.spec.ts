@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiService } from './ai.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { UserService } from '../base/user/service/user.service';
 import { DiscountsService } from '../base/service/services/discounts.service';
 import { TransactionsService } from '../base/transactions/transactions.service';
@@ -37,6 +37,13 @@ import { SessionsTableService } from '../base/crud/sessions-table/sessions-table
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../base/crud/crud.module';
+import { InvoicesModule } from '../base/invoice/invoices.module';
+import { ServiceModule } from '../base/service/service.module';
+import { UserModule } from '../base/user/user.module';
+import { AiController } from './ai.controller';
 // import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
 
 describe('AiService', () => {
@@ -51,50 +58,22 @@ describe('AiService', () => {
   let user: UserService;
   let config: ConfigsTableService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
         ConfigModule.forRoot({
           isGlobal: true,
         }),
+        DatabaseModule,
+        UserModule,
+        CrudModule,
+        InvoicesModule,
+        ServiceModule,
+        LoggerModule,
+        JwtModule,
       ],
-      providers: [
-        AiService,
-        UserService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        ServiceTypesTableService,
-        AITransactionsLogsTableService,
-        SettingTableService,
-        ConfigsTableService,
-        DiscountsService,
-        TransactionsService,
-        ItemTypesTableService,
-        CreateServiceService,
-        ServiceChecksService,
-        PlansTableService,
-        QualityPlansService,
-        ServiceItemsTableService,
-        ServiceItemsSumService,
-        InvoicesService,
-        InvoicesTableService,
-        InvoiceItemsTableService,
-        InvoiceDiscountsTableService,
-        InvoicesChecksService,
-        CostCalculationService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        VgpuService,
-        SessionsService,
-        UserTableService,
-        ServiceInstancesStoredProcedureService,
-        DiscountsTableService,
-        TransactionsTableService,
-        ServiceService,
-        PlansQueryService,
-        SessionsTableService,
-      ],
+      providers: [AiService],
     }).compile();
 
     service = module.get<AiService>(AiService);
@@ -116,6 +95,10 @@ describe('AiService', () => {
     );
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

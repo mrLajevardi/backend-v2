@@ -10,10 +10,7 @@ import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.gu
 
 @Controller()
 export class AppController {
-  constructor(
-    private readonly appService: AppService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly appService: AppService) {}
 
   @Get()
   @Public()

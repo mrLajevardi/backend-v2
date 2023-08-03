@@ -9,6 +9,7 @@ import { GroupsMapping } from './GroupsMapping';
 import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
@@ -28,14 +29,17 @@ export class User {
   @Column('nvarchar', { name: 'email', nullable: true, length: 255 })
   email: string | null;
 
-  @Column('bit', {
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'emailVerified',
     nullable: true,
     default: () => '(0)',
   })
   emailVerified: boolean | null;
 
-  @Column('bit', { name: 'active', default: () => '(1)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'active',
+    default: () => '(1)',
+  })
   active: boolean;
 
   @Column('nvarchar', { name: 'name', length: 255 })
@@ -44,14 +48,18 @@ export class User {
   @Column('nvarchar', { name: 'family', length: 255 })
   family: string;
 
-  @Column('bit', {
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'verificationToken',
     nullable: true,
     default: () => '(0)',
   })
   verificationToken: boolean | null;
 
-  @Column('bit', { name: 'deleted', nullable: true, default: () => '(0)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'deleted',
+    nullable: true,
+    default: () => '(0)',
+  })
   deleted: boolean | null;
 
   @Column('datetime', {
@@ -80,7 +88,10 @@ export class User {
   @Column('nvarchar', { name: 'vdcPassword', nullable: true })
   vdcPassword: string | null;
 
-  @Column('bit', { name: 'hasVdc', nullable: true })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'hasVdc',
+    nullable: true,
+  })
   hasVdc: boolean | null;
 
   @Column('nvarchar', { name: 'phoneNumber', nullable: true, length: 15 })
@@ -89,10 +100,16 @@ export class User {
   @Column('nvarchar', { name: 'orgName', nullable: true, length: 50 })
   orgName: string | null;
 
-  @Column('bit', { name: 'acceptTermsOfService', nullable: true })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'acceptTermsOfService',
+    nullable: true,
+  })
   acceptTermsOfService: boolean | null;
 
-  @Column('bit', { name: 'phoneVerified', default: () => '(0)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'phoneVerified',
+    default: () => '(0)',
+  })
   phoneVerified: boolean;
 
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)

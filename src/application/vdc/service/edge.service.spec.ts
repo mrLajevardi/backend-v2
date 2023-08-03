@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EdgeService } from './edge.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { OrganizationService } from '../../base/organization/organization.service';
 import { TransactionsService } from '../../base/transactions/transactions.service';
 import { UserService } from '../../base/user/service/user.service';
@@ -19,17 +19,38 @@ import { OrganizationTableService } from 'src/application/base/crud/organization
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
 import { SessionsTableService } from 'src/application/base/crud/sessions-table/sessions-table.service';
+import { OrganizationModule } from 'src/application/base/organization/organization.module';
+import { ServiceModule } from 'src/application/base/service/service.module';
+import { SessionsModule } from 'src/application/base/sessions/sessions.module';
+import { UserModule } from 'src/application/base/user/user.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { NetworkService } from './network.service';
+import { OrgService } from './org.service';
 
 describe('EdgeService', () => {
   let service: EdgeService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
-      providers: [],
+    module = await Test.createTestingModule({
+      imports: [
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        //TasksModule,
+        SessionsModule,
+        OrganizationModule,
+        UserModule,
+        ServiceModule,
+      ],
+      providers: [VdcService, OrgService, EdgeService, NetworkService],
     }).compile();
 
     service = module.get<EdgeService>(EdgeService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

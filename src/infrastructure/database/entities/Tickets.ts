@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__Tickets__3214EC2736EDC157', ['id'], { unique: true })
 @Entity('Tickets', { schema: 'user' })
@@ -20,7 +21,10 @@ export class Tickets {
   @Column('int', { name: 'TicketID' })
   ticketId: number;
 
-  @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceID',
+    nullable: true,
+  })
   serviceInstanceId: string | null;
 
   @ManyToOne(

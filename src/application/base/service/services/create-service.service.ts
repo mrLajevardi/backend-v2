@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
@@ -44,26 +45,17 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 @Injectable()
 export class CreateServiceService {
   constructor(
-    private readonly discountsTable: DiscountsTableService,
-    private readonly discountsService: DiscountsService,
     private readonly userService: UserService,
-    private readonly invoiceService: InvoicesService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly serviceChecksService: ServiceChecksService,
-    private readonly qualityPlansService: QualityPlansService,
-    private readonly itemTypesTable: ItemTypesTableService,
-    private readonly serviceItemsSumService: ServiceItemsSumService,
-    private readonly serviceTypeTable: ServiceTypesTableService,
-    private readonly servicePropertiesTable: ServicePropertiesTableService,
-    private readonly invoiceDiscountsTable: InvoiceDiscountsTableService,
-    private readonly transactionService: TransactionsService,
     private readonly transactionTableService: TransactionsTableService,
-    private readonly serviceService: ServiceService,
     private readonly InvoiceTableService: InvoicesTableService,
     private readonly extendService: ExtendServiceService,
     private readonly tasksTableService: TasksTableService,
     private readonly taskManagerService: TaskManagerService,
+    private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly vgpuService: VgpuService,
+    private readonly discountsTable: DiscountsTableService,
+    private readonly itemTypesTable: ItemTypesTableService,
   ) {}
 
   async createService(options, dto: CreateServiceDto) {
@@ -236,5 +228,73 @@ export class CreateServiceService {
       taskId: taskId,
       token: null,
     });
+  }
+  async repairService(options, serviceInstanceId) {
+    const service = await this.serviceInstancesTableService.findOne({
+      where: {
+        id: serviceInstanceId,
+      },
+    });
+    if (service.status === 1 || service.status === 3) {
+      throw new BadRequestException();
+    }
+    const task = await this.tasksTableService.create({
+      userId: options.locals.userId,
+      serviceInstanceId: serviceInstanceId,
+      operation: 'createDataCenter',
+      details: null,
+      startTime: new Date(),
+      endTime: null,
+      status: 'running',
+    });
+    await this.serviceInstancesTableService.updateAll(
+      {
+        id: serviceInstanceId,
+      },
+      {
+        status: 1,
+      },
+    );
+    await this.taskManagerService.addTask({
+      serviceInstanceId,
+      customTaskId: task.taskId,
+      vcloudTask: null,
+      nextTask: 'createOrg',
+      target: 'object',
+      requestOptions: options.locals,
+    });
+    return Promise.resolve({
+      taskId: task.taskId,
+    });
+  }
+
+  async updateServiceInfo(serviceInstanceId, data) {
+    const { name } = data;
+    await this.serviceInstancesTable.updateAll(
+      {
+        id: serviceInstanceId,
+      },
+      {
+        name: name,
+      },
+    );
+  }
+
+  async getDiscounts(filter) {
+    let parsedFilter;
+    if (!isEmpty(filter)) {
+      parsedFilter = JSON.parse(filter);
+    }
+    const discounts = await this.discountsTable.find(parsedFilter);
+    return Promise.resolve(discounts);
+  }
+
+  async getItemTypes(filter) {
+    let parsedFilter;
+    if (!isEmpty(filter)) {
+      parsedFilter = JSON.parse(filter);
+    }
+    const itemTypes = await this.itemTypesTable.find(parsedFilter);
+    return Promise.resolve(itemTypes);
   }
 }

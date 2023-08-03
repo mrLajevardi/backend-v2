@@ -1,10 +1,10 @@
 import { AbilityFactory } from './ability.factory';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { InvoicesService } from '../../invoice/service/invoices.service';
-import { User } from 'src/infrastructure/database/test-entities/User';
+import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { UserService } from '../../user/service/user.service';
@@ -15,6 +15,10 @@ import { SessionsTableService } from '../../crud/sessions-table/sessions-table.s
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 import { Action } from './enum/action.enum';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
+import { CrudModule } from '../../crud/crud.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
@@ -22,10 +26,11 @@ describe('AbilityFactory', () => {
   let testDataService: TestDataService;
   let aclTable: ACLTableService;
   let invoiceService: InvoicesService;
+  let module: TestingModule;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule, CrudModule, InvoicesModule],
       providers: [AbilityFactory],
     }).compile();
 
@@ -52,6 +57,7 @@ describe('AbilityFactory', () => {
       user.id = 2;
       await userTable.create(user);
 
+      await await aclTable.deleteAll({});
       await aclTable.create({
         model: 'Acl',
         accessType: 'read',
@@ -92,7 +98,7 @@ describe('AbilityFactory', () => {
 
     it('should return 2 for acl.getAll', async () => {
       const acls = await aclTable.find();
-      // console.log(acls);
+      //console.log(acls.length);
       expect(acls.length).toBe(3);
     });
 

@@ -1,18 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionsService } from './transactions.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TransactionsTableService } from '../crud/transactions-table/transactions-table.service';
+import { CrudModule } from '../crud/crud.module';
 
 describe('TransactionsService', () => {
   let service: TransactionsService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
-      providers: [],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule, CrudModule],
+      providers: [TransactionsService],
     }).compile();
 
     service = module.get<TransactionsService>(TransactionsService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

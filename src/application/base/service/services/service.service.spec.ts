@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceService } from './service.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
@@ -19,39 +19,68 @@ import { ServiceTypesTableService } from '../../crud/service-types-table/service
 import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
+import { BullModule } from '@nestjs/bull';
+import { forwardRef } from '@nestjs/common';
+import { NetworkService } from 'src/application/vdc/service/network.service';
+import { VdcModule } from 'src/application/vdc/vdc.module';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { SessionsModule } from '../../sessions/sessions.module';
+import { TaskManagerService } from '../../tasks/service/task-manager.service';
+import { TasksService } from '../../tasks/service/tasks.service';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserModule } from '../../user/user.module';
+import { CreateServiceService } from './create-service.service';
+import { DeleteServiceService } from './delete-service.service';
+import { DiscountsService } from './discounts.service';
+import { ExtendServiceService } from './extend-service.service';
+import { PayAsYouGoService } from './pay-as-you-go.service';
+import { ServiceChecksService } from './service-checks/service-checks.service';
 
 describe('ServiceService', () => {
   let service: ServiceService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [
+        CrudModule,
+        DatabaseModule,
+        SessionsModule,
+        UserModule,
+        BullModule.registerQueue({
+          name: 'tasks',
+        }),
+        LoggerModule,
+        // VdcModule,
+        forwardRef(() => VgpuModule),
+        CrudModule,
+        SessionsModule,
+        OrganizationModule,
+        TransactionsModule,
+        VdcModule,
+      ],
       providers: [
         ServiceService,
-        DiscountsTableService,
-        ServiceInstancesTableService,
-        ItemTypesTableService,
-        ServiceTypesTableService,
-        ServicePropertiesTableService,
-        InvoiceDiscountsTableService,
-        ServiceService,
-        PlansTableService,
-        ConfigsTableService,
-        ServiceItemsTableService,
-        SessionsTableService,
-        UserTableService,
-        OrganizationTableService,
-        TransactionsTableService,
-        InvoicesTableService,
-        InvoiceItemsTableService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        PlansQueryService,
-        ServiceItemsTableService,
+        PayAsYouGoService,
+        CreateServiceService,
+        ExtendServiceService,
+        DiscountsService,
+        ServiceChecksService,
+        DeleteServiceService,
+        TaskManagerService,
+        TasksService,
+        NetworkService,
       ],
     }).compile();
 
     service = module.get<ServiceService>(ServiceService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

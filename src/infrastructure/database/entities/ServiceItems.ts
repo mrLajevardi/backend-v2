@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
 import { ItemTypes } from './ItemTypes';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_ServiceResources', ['id'], { unique: true })
 @Entity('ServiceItems', { schema: 'user' })
@@ -21,7 +22,9 @@ export class ServiceItems {
   @Column('varchar', { name: 'ItemTypeCode', nullable: true, length: 50 })
   itemTypeCode: string | null;
 
-  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceID',
+  })
   serviceInstanceId: string;
 
   @Column('int', { name: 'ItemTypeID' })

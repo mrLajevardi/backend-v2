@@ -49,7 +49,7 @@ export class AbilityFactory {
         //console.log("parsed query: ", propertyCondition);
       } catch (error) {
         propertyCondition = acl.property;
-        console.log(error);
+        //console.log(error);
         console.log('Error parsing query, treat as simple field list ');
       }
       if (acl.permission == 'can') {

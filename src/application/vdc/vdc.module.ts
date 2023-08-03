@@ -12,6 +12,7 @@ import { VdcAdminController } from './controller/vdc-admin.controller';
 import { CrudModule } from '../base/crud/crud.module';
 import { ServiceModule } from '../base/service/service.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { NetworkService } from './service/network.service';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
     UserModule,
     ServiceModule,
   ],
-  providers: [VdcService, OrgService, EdgeService],
+  providers: [VdcService, OrgService, EdgeService, NetworkService],
   controllers: [VdcController, VdcAdminController],
+  exports: [EdgeService, OrgService, VdcService, NetworkService],
 })
 export class VdcModule {}

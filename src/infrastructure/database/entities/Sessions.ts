@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Organization } from './Organization';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__sessions__3213E83FD79F4A05', ['id'], { unique: true })
 @Entity('Sessions', { schema: 'vdc' })
@@ -20,7 +21,7 @@ export class Sessions {
   @Column('text', { name: 'token' })
   token: string;
 
-  @Column('bit', { name: 'active' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'active' })
   active: boolean;
 
   @Column('datetime', { name: 'createDate', nullable: true })
@@ -29,7 +30,10 @@ export class Sessions {
   @Column('datetime', { name: 'updateDate', nullable: true })
   updateDate: Date | null;
 
-  @Column('bit', { name: 'isAdmin', nullable: true })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'isAdmin',
+    nullable: true,
+  })
   isAdmin: boolean | null;
 
   @Column('int', { name: 'orgId' })

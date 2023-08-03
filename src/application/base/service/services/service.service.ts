@@ -1,10 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { map } from 'lodash';
 import { In } from 'typeorm';
+import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
+import { TaskManagerService } from '../../tasks/service/task-manager.service';
 
 @Injectable()
 export class ServiceService {
@@ -12,6 +18,7 @@ export class ServiceService {
     private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
+    private readonly tasksTableService: TasksTableService,
   ) {}
 
   // Create Service Items

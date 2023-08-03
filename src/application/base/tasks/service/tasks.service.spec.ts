@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { EdgeService } from 'src/application/vdc/service/edge.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';
 import { OrgService } from 'src/application/vdc/service/org.service';
@@ -20,22 +20,42 @@ import { TransactionsService } from '../../transactions/transactions.service';
 import { UserService } from '../../user/service/user.service';
 import { TaskManagerService } from './task-manager.service';
 import { BullModule } from '@nestjs/bull';
+import { forwardRef } from '@nestjs/common';
+import { VdcModule } from 'src/application/vdc/vdc.module';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { SessionsModule } from '../../sessions/sessions.module';
+import { ServiceService } from '../../service/services/service.service';
 
 describe('TasksService', () => {
   let service: TasksService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
+        DatabaseModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),
+        LoggerModule,
+        // VdcModule,
+        forwardRef(() => VgpuModule),
+        CrudModule,
+        SessionsModule,
+        OrganizationModule,
+        VdcModule,
       ],
-      providers: [],
+      providers: [TaskManagerService, TasksService, ServiceService],
     }).compile();
 
     service = module.get<TasksService>(TasksService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

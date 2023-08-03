@@ -4,7 +4,7 @@ import { OrganizationService } from 'src/application/base/organization/organizat
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
 import { UserService } from 'src/application/base/user/service/user.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { EdgeService } from '../service/edge.service';
 import { VdcService } from '../service/vdc.service';
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
@@ -25,23 +25,40 @@ import { SessionsTableService } from 'src/application/base/crud/sessions-table/s
 import { ServiceService } from 'src/application/base/service/services/service.service';
 import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
 import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
+import { NatModule } from 'src/application/nat/nat.module';
+import { CrudModule } from 'src/application/base/crud/crud.module';
+import { OrganizationModule } from 'src/application/base/organization/organization.module';
+import { ServiceModule } from 'src/application/base/service/service.module';
+import { SessionsModule } from 'src/application/base/sessions/sessions.module';
+import { UserModule } from 'src/application/base/user/user.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
-        BullModule.registerQueue({
-          name: 'tasks',
-        }),
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        //TasksModule,
+        SessionsModule,
+        OrganizationModule,
+        UserModule,
+        ServiceModule,
       ],
-      providers: [],
+      providers: [VdcService, OrgService, EdgeService, NetworkService],
+
       controllers: [VdcAdminController],
     }).compile();
 
     controller = module.get<VdcAdminController>(VdcAdminController);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {
