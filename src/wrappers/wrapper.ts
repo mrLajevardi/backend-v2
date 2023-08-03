@@ -62,8 +62,16 @@ export class Wrapper {
       console.log(endpoint);
       return Promise.resolve(request);
     } catch (err) {
-      console.dir(err);
-      return Promise.reject(new WrapperErrorException(err));
+      // console.dir(err);
+      console.log(err.stack, '🥚');
+      return Promise.reject(
+        new WrapperErrorException(
+          err.response.status,
+          err.response?.data?.message,
+          err.stack,
+          err.response?.data?.minorErrorCode,
+        ),
+      );
     }
   }
 }
