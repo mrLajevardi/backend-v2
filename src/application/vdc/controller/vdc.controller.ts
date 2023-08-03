@@ -130,10 +130,10 @@ export class VdcController {
   async getNamedDisk(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
-    vdcInstanceId: string,
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
   ) {
-    return this.vdcService.getNamedDisk(options, vdcInstanceId);
+    return this.vdcService.getNamedDisk(options, serviceInstanceId);
   }
 
   @Get('/:serviceInstanceId')
