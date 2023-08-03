@@ -27,8 +27,11 @@ export async function initServices() {
     const configFile = await import(relativeConfigFilePath);
     console.log(configFile);
     const config: TasksConfigsInterface = configFile.default;
+    console.log(config);
     for (const step of config.steps) {
-      dependencies.push(step);
+      if (st) {
+        
+      }
     }
   }
   console.log(dependencies, '🍗');
