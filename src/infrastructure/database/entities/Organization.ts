@@ -32,7 +32,7 @@ export class Organization {
   @Column('datetime', { name: 'updateDate', nullable: true })
   updateDate: Date | null;
 
-  @Column(isTestingEnv ? 'varchar' : 'char', { name: 'status', nullable: true, length: 1 })
+  @Column(isTestingEnv() ? 'varchar' : 'char', { name: 'status', nullable: true, length: 1 })
   status: string | null;
 
   @Column('int', { name: 'userId' })

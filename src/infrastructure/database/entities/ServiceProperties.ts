@@ -13,7 +13,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Index('PK_ServiceProperties', ['id'], { unique: true })
 @Entity('ServiceProperties', { schema: 'user' })
 export class ServiceProperties {
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
   serviceInstanceId: string;
 
   @Column('varchar', { name: 'PropertyKey', length: 50 })

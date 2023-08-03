@@ -21,7 +21,7 @@ export class Tickets {
   @Column('int', { name: 'TicketID' })
   ticketId: number;
 
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
   serviceInstanceId: string | null;
 
   @ManyToOne(

@@ -14,7 +14,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Index('PK__tasks__7C6949D195E39C4E', ['taskId'], { unique: true })
 @Entity('Tasks', { schema: 'user' })
 export class Tasks {
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'TaskID', primary: true })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'TaskID', primary: true })
   taskId: string;
 
   @Column('int', { name: 'UserID' })
@@ -41,7 +41,7 @@ export class Tasks {
   @Column('int', { name: 'StepCounts', nullable: true })
   stepCounts: number | null;
 
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
   serviceInstanceId: string;
 
   //@Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })

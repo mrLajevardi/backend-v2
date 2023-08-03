@@ -37,10 +37,10 @@ export class Invoices {
   @Column('datetime', { name: 'DateTime' })
   dateTime: Date;
 
-  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'Payed' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Payed' })
   payed: boolean;
 
-  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'Voided' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Voided' })
   voided: boolean;
 
   @Column('datetime', { name: 'EndDateTime', default: () => 'getdate()' })
@@ -55,7 +55,7 @@ export class Invoices {
   @Column('int', { name: 'UserID' })
   userId: number;
 
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
   serviceInstanceId: string;
 
   @ManyToOne(() => User, (user) => user.invoices, {

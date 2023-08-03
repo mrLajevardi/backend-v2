@@ -21,7 +21,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Index('PK_ServiceInstances', ['id'], { unique: true })
 @Entity('ServiceInstances', { schema: 'user' })
 export class ServiceInstances {
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { primary: true, name: 'ID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { primary: true, name: 'ID' })
   id: string;
 
   @Column('int', { name: 'UserID' })
@@ -42,7 +42,7 @@ export class ServiceInstances {
   @Column('datetime', { name: 'DeletedDate', nullable: true })
   deletedDate: Date | null;
 
-  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'IsDeleted', default: () => '(0)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'IsDeleted', default: () => '(0)' })
   isDeleted: boolean;
 
   @Column('int', { name: 'Index', nullable: true })

@@ -20,7 +20,7 @@ export class ServiceTypes {
   @Column('varchar', { name: 'CreateInstanceScript', length: 255 })
   createInstanceScript: string;
 
-  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'VerifyInstance' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'VerifyInstance' })
   verifyInstance: boolean;
 
   @Column('int', { name: 'MaxAvailable' })
@@ -29,7 +29,7 @@ export class ServiceTypes {
   @Column('tinyint', { name: 'Type', default: () => '(0)' })
   type: number;
 
-  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'IsPAYG' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'IsPAYG' })
   isPayg: boolean;
 
   @Column('time', { name: 'PAYGInterval', nullable: true })

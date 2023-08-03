@@ -41,10 +41,10 @@ export class Transactions {
   @Column('int', { name: 'UserID' })
   userId: number;
 
-  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'isApproved', default: () => "'0'" })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'isApproved', default: () => "'0'" })
   isApproved: boolean;
 
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
   serviceInstanceId: string;
 
   @ManyToOne(() => User, (user) => user.transactions, {

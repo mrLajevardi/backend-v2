@@ -9,7 +9,7 @@ import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
 import { ConfigModule } from '@nestjs/config';
-const isTestMode = process.env.NODE_ENV === 'test';
+import { isTestingEnv } from '../helpers/helpers';
 
 @Module({
   imports: [
@@ -18,7 +18,7 @@ const isTestMode = process.env.NODE_ENV === 'test';
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () =>
-        (!isTestMode
+        (!isTestingEnv()
           ? {
               type: process.env.DB_TYPE,
               host: process.env.DB_HOST,
@@ -53,7 +53,7 @@ const isTestMode = process.env.NODE_ENV === 'test';
 })
 export class DatabaseModule implements OnModuleInit {
   onModuleInit() {
-    if (isTestMode) {
+    if (isTestingEnv()) {
       console.log('Running in unit test mode');
       // Perform additional actions for test mode if needed
     } else {

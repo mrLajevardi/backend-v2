@@ -13,6 +13,6 @@ export class Migrations {
   @Column('int', { name: 'batch', nullable: true })
   batch: number | null;
 
-  @Column(isTestingEnv ? "datetime" : "datetime2",{ name: 'migration_time', nullable: true })
+  @Column(isTestingEnv() ? "datetime" : "datetime2",{ name: 'migration_time', nullable: true })
   migrationTime: Date | null;
 }

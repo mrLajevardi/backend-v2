@@ -13,7 +13,7 @@ export class Setting {
   @Column('nvarchar', { name: 'Key', length: 50 })
   key: string;
 
-  @Column(isTestingEnv ? 'text' : 'ntext', { name: 'Value', nullable: true })
+  @Column(isTestingEnv() ? 'text' : 'ntext', { name: 'Value', nullable: true })
   value: string | null;
 
   @Column('datetime', { name: 'InsertTime', default: () => 'getdate()' })
