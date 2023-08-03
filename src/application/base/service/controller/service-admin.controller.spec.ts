@@ -5,7 +5,6 @@ import { ServiceAdminService } from '../services/service-admin.service';
 import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SessionsModule } from '../../sessions/sessions.module';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -13,7 +12,7 @@ describe('ServiceAdminController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule, 
+        DatabaseModule, 
         ServiceInstancesTableModule,
         LoggerModule,
         SessionsModule

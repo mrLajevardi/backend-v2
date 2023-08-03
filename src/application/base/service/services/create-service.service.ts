@@ -54,6 +54,8 @@ export class CreateServiceService {
     private readonly taskManagerService: TaskManagerService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly vgpuService: VgpuService,
+    private readonly discountsTable: DiscountsTableService,
+    private readonly itemTypesTable: ItemTypesTableService,
   ) {}
 
   async createService(options, dto: CreateServiceDto) {
