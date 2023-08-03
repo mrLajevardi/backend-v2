@@ -27,6 +27,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { CrudModule } from '../../crud/crud.module';
 import { OrganizationModule } from '../../organization/organization.module';
 import { SessionsModule } from '../../sessions/sessions.module';
+import { ServiceService } from '../../service/services/service.service';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -50,7 +51,8 @@ describe('TasksService', () => {
       ],
       providers: [
         TaskManagerService,
-        TasksService
+        TasksService,
+        ServiceService,
       ],
     }).compile();
 

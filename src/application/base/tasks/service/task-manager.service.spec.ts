@@ -27,6 +27,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { OrganizationModule } from '../../organization/organization.module';
 import { VdcModule } from 'src/application/vdc/vdc.module';
+import { ServiceService } from '../../service/services/service.service';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -50,7 +51,8 @@ describe('TaskManagerService', () => {
       ],
       providers: [
         TaskManagerService,
-        TasksService
+        TasksService,
+        ServiceService,
       ],
     }).compile();
 
