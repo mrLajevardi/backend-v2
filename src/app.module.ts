@@ -33,6 +33,7 @@ import { OauthService } from './application/base/security/auth/service/oauth.ser
 import { SecurityToolsModule } from './application/base/security/security-tools/security-tools.module';
 import { GroupModule } from './application/base/group/group.module';
 import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
+import { BullModule as BullMQModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -41,6 +42,12 @@ import { TaskManagerModule } from './application/base/task-manager/task-manager.
     }),
     BullModule.forRoot({
       redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullMQModule.forRoot({
+      connection: {
         host: 'localhost',
         port: 6379,
       },

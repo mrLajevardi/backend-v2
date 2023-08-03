@@ -10,7 +10,7 @@ export class TaskController {
   @Get()
   async getTask() {
     console.log('first')
-    await this.taskManager.addTask({});
+    // await this.taskManager.addTask({});
     return;
   }
 }

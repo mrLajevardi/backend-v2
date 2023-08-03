@@ -1,5 +1,7 @@
+import { Job } from 'bullmq';
+
 export interface TaskInterface {
   stepName: string;
-  execute(): any;
+  execute(job: Job): any;
   [key: string]: any;
 }
