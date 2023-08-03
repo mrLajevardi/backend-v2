@@ -1,16 +1,15 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export class WrapperErrorException extends HttpException {
-  constructor(message = 'wrapper error', cause?: Error) {
+  constructor(status: number, message: string, stack, code?: string) {
     super(
       {
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-        error: message,
+        status: status,
+        message,
+        stack,
+        code,
       },
-      HttpStatus.INTERNAL_SERVER_ERROR,
-      {
-        cause: cause,
-      },
+      status,
     );
   }
 }
