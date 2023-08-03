@@ -7,12 +7,14 @@ import {
   Delete,
   Get,
   Req,
+  Query,
   Put,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { NatDto } from './dto/nat.dto';
@@ -62,13 +64,13 @@ export class NatController {
   @Get('/:serviceInstanceId')
   @ApiOperation({ summary: 'get user natRules' })
   @ApiParam({ name: 'serviceInstanceId', description: 'vdc instance id ' })
-  @ApiParam({ name: 'pageSize', description: 'page size : number' })
-  @ApiParam({ name: 'getAll', description: 'getAll : boolean' })
+  @ApiQuery({ name: 'pageSize', description: 'page size : number' })
+  @ApiQuery({ name: 'getAll', description: 'getAll : boolean' })
   async getNatRules(
     @Request() options,
     @Param('serviceInstanceId') serviceInstanceId,
-    @Param('pageSize') pageSize: number,
-    @Param('getAll') getAll: boolean,
+    @Query('pageSize') pageSize: number,
+    @Query('getAll') getAll: boolean,
   ): Promise<any> {
     return await this.service.getNatRules(
       options,
