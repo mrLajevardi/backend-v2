@@ -25,7 +25,8 @@ describe('EdgeGatewayService', () => {
         EdgeGatewayService,
         ApplicationPortProfileService,
         FirewallService,
-      ],    }).compile();
+      ],
+    }).compile();
 
     service = module.get<EdgeGatewayService>(EdgeGatewayService);
   });

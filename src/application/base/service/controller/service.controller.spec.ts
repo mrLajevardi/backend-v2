@@ -55,7 +55,7 @@ describe('ServiceController', () => {
         DeleteServiceService,
         TaskManagerService,
         TasksService,
-        NetworkService
+        NetworkService,
       ],
       controllers: [ServiceController],
     }).compile();

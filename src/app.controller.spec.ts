@@ -39,24 +39,20 @@ import { OauthService } from './application/base/security/auth/service/oauth.ser
 
 describe('AppController', () => {
   let controller: AppController;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-
-      ],
+      imports: [],
       controllers: [AppController],
-      providers: [
-        AppService,
-      ],
+      providers: [AppService],
     }).compile();
     controller = module.get<AppController>(AppController);
   });
 
   afterAll(async () => {
     await module.close();
-  })
+  });
 
   describe('root', () => {
     it('should return "Hello World!"', () => {

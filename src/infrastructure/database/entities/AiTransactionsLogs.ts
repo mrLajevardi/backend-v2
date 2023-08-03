@@ -16,7 +16,9 @@ export class AiTransactionsLogs {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: string;
 
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceID',
+  })
   serviceInstanceId: string;
 
   @Column('datetime', { name: 'DateTime' })

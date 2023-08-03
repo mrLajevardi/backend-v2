@@ -42,8 +42,17 @@ describe('AuthController', () => {
           secret: process.env.JWT_SECRET,
           signOptions: { expiresIn: '1800s' },
         }),
-      ],      controllers: [AuthController],
-      providers: [AuthService, UserService, JwtService, UserTableService, OauthService, OtpService, LoginService],
+      ],
+      controllers: [AuthController],
+      providers: [
+        AuthService,
+        UserService,
+        JwtService,
+        UserTableService,
+        OauthService,
+        OtpService,
+        LoginService,
+      ],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);

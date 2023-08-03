@@ -50,7 +50,7 @@ describe('VdcAdminController', () => {
         ServiceModule,
       ],
       providers: [VdcService, OrgService, EdgeService, NetworkService],
-      
+
       controllers: [VdcAdminController],
     }).compile();
 

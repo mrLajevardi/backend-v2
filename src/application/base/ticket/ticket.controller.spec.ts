@@ -10,9 +10,9 @@ describe('TicketController', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule,CrudModule],
+      imports: [DatabaseModule, CrudModule],
       controllers: [TicketController],
-      providers: [TicketService]
+      providers: [TicketService],
     }).compile();
 
     controller = module.get<TicketController>(TicketController);

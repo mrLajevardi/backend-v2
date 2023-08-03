@@ -31,7 +31,7 @@ describe('InvoicesService', () => {
       providers: [
         InvoicesService,
         InvoicesChecksService,
-        CostCalculationService
+        CostCalculationService,
       ],
       exports: [InvoicesService, CostCalculationService, InvoicesChecksService],
     }).compile();

@@ -15,12 +15,12 @@ describe('ServiceAdminService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DatabaseModule, 
+        DatabaseModule,
         CrudModule,
         LoggerModule,
         TasksModule,
         SessionsModule,
-        VgpuModule
+        VgpuModule,
       ],
       providers: [ServiceAdminService, ServiceService],
     }).compile();

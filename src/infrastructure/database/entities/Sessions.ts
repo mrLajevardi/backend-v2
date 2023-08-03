@@ -30,7 +30,10 @@ export class Sessions {
   @Column('datetime', { name: 'updateDate', nullable: true })
   updateDate: Date | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'isAdmin', nullable: true })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'isAdmin',
+    nullable: true,
+  })
   isAdmin: boolean | null;
 
   @Column('int', { name: 'orgId' })

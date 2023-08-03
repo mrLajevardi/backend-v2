@@ -17,12 +17,12 @@ describe('ServiceAdminController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
-        DatabaseModule, 
+        DatabaseModule,
         CrudModule,
         LoggerModule,
         SessionsModule,
         TasksModule,
-        VgpuModule
+        VgpuModule,
       ],
       providers: [ServiceAdminService, ServiceService, DeleteServiceService],
       controllers: [ServiceAdminController],

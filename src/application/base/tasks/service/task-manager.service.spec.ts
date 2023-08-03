@@ -47,13 +47,8 @@ describe('TaskManagerService', () => {
         SessionsModule,
         OrganizationModule,
         VdcModule,
-        
       ],
-      providers: [
-        TaskManagerService,
-        TasksService,
-        ServiceService,
-      ],
+      providers: [TaskManagerService, TasksService, ServiceService],
     }).compile();
 
     service = module.get<TaskManagerService>(TaskManagerService);

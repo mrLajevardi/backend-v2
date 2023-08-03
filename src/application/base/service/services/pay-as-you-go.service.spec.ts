@@ -70,7 +70,7 @@ describe('PayAsYouGoService', () => {
         DeleteServiceService,
         TaskManagerService,
         TasksService,
-        NetworkService
+        NetworkService,
       ],
     }).compile();
 

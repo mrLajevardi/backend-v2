@@ -22,7 +22,12 @@ describe('InvoicesChecksService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule, VgpuModule,CrudModule, forwardRef(() => VgpuModule)],
+      imports: [
+        DatabaseModule,
+        VgpuModule,
+        CrudModule,
+        forwardRef(() => VgpuModule),
+      ],
       providers: [],
     }).compile();
 

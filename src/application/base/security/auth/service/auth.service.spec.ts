@@ -43,8 +43,16 @@ describe('AuthService', () => {
           secret: process.env.JWT_SECRET,
           signOptions: { expiresIn: '1800s' },
         }),
-      ],      
-      providers: [AuthService, UserService, JwtService, UserTableService, LoginService, OauthService, OtpService],
+      ],
+      providers: [
+        AuthService,
+        UserService,
+        JwtService,
+        UserTableService,
+        LoginService,
+        OauthService,
+        OtpService,
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);

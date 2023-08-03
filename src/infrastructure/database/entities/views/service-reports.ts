@@ -12,10 +12,10 @@ export class ServiceReports {
   @Column({ type: 'integer' })
   UserID: number;
 
-  @Column({ type: isTestingEnv()?  'date' : 'timestamp' })
+  @Column({ type: isTestingEnv() ? 'date' : 'timestamp' })
   CreateDate: Date;
 
-  @Column({ type: isTestingEnv()?  'date' : 'timestamp' })
+  @Column({ type: isTestingEnv() ? 'date' : 'timestamp' })
   ExpireDate: Date;
 
   @Column()
@@ -33,6 +33,6 @@ export class ServiceReports {
   @Column()
   OrgName: string;
 
-  @Column({ type:  isTestingEnv()?  'boolean' : 'bit' })
+  @Column({ type: isTestingEnv() ? 'boolean' : 'bit' })
   IsExpired: boolean;
 }

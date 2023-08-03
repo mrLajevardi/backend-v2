@@ -30,7 +30,8 @@ describe('UserController', () => {
         NotificationModule,
         SecurityToolsModule,
       ],
-      providers: [UserService, UserAdminService],      controllers: [UserController],
+      providers: [UserService, UserAdminService],
+      controllers: [UserController],
     }).compile();
 
     controller = module.get<UserController>(UserController);

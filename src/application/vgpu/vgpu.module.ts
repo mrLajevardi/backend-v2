@@ -17,7 +17,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
     forwardRef(() => ServiceModule),
     forwardRef(() => TasksModule),
   ],
-  providers: [VgpuService,JwtService],
+  providers: [VgpuService, JwtService],
   controllers: [VgpuController],
   exports: [VgpuService],
 })

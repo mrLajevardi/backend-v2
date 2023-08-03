@@ -62,7 +62,7 @@ describe('CreateServiceService', () => {
         CreateServiceService,
         ExtendServiceService,
         ServiceChecksService,
-       ],
+      ],
     }).compile();
 
     service = module.get<CreateServiceService>(CreateServiceService);

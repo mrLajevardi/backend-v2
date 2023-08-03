@@ -44,7 +44,6 @@ describe('EdgeService', () => {
         ServiceModule,
       ],
       providers: [VdcService, OrgService, EdgeService, NetworkService],
-      
     }).compile();
 
     service = module.get<EdgeService>(EdgeService);

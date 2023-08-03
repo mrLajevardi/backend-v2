@@ -5,7 +5,7 @@ import { CrudModule } from 'src/application/base/crud/crud.module';
 
 describe('LoggerService', () => {
   let service: LoggerService;
-  let module : TestingModule; 
+  let module: TestingModule;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({

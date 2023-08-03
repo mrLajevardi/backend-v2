@@ -17,9 +17,7 @@ describe('OrganizationService', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [DatabaseModule, SessionsModule, UserModule, CrudModule],
-      providers: [
-        OrganizationService,
-      ],
+      providers: [OrganizationService],
     }).compile();
 
     service = module.get<OrganizationService>(OrganizationService);

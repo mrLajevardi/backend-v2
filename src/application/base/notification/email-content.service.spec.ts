@@ -14,7 +14,7 @@ describe('EmailContentService', () => {
         EmailContentService,
         EmailService,
         SmsService,
-        NotificationService
+        NotificationService,
       ],
     }).compile();
 

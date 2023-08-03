@@ -33,7 +33,6 @@ describe('InvoicesController', () => {
         InvoicesService,
         InvoicesChecksService,
         CostCalculationService,
-        
       ],
       controllers: [InvoicesController],
     }).compile();

@@ -18,8 +18,8 @@ import { isTestingEnv } from '../helpers/helpers';
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () =>
-        (!isTestingEnv()
-          ? {
+        !isTestingEnv()
+          ? ({
               type: process.env.DB_TYPE,
               host: process.env.DB_HOST,
               port: Number(process.env.DB_PORT),
@@ -31,15 +31,14 @@ import { isTestingEnv } from '../helpers/helpers';
               extra: {
                 trustServerCertificate: true,
               },
-            } as TypeOrmModuleOptions
-          : {
+            } as TypeOrmModuleOptions)
+          : ({
               type: 'sqlite',
               database: ':memory:',
               autoLoadEntities: true,
               entities: dbEntities,
               synchronize: true,
-            } as TypeOrmModuleOptions
-        )
+            } as TypeOrmModuleOptions),
     }),
     TypeOrmModule.forFeature(dbEntities),
   ],

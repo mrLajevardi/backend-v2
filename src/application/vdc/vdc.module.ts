@@ -27,6 +27,6 @@ import { NetworkService } from './service/network.service';
   ],
   providers: [VdcService, OrgService, EdgeService, NetworkService],
   controllers: [VdcController, VdcAdminController],
-  exports: [EdgeService,OrgService,VdcService, NetworkService]
+  exports: [EdgeService, OrgService, VdcService, NetworkService],
 })
 export class VdcModule {}

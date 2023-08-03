@@ -66,7 +66,7 @@ describe('VdcController', () => {
         ServiceModule,
       ],
       providers: [VdcService, OrgService, EdgeService, NetworkService],
-      
+
       controllers: [VdcController],
     }).compile();
 

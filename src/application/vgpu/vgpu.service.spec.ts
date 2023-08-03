@@ -25,7 +25,7 @@ describe('VgpuService', () => {
         forwardRef(() => ServiceModule),
         forwardRef(() => TasksModule),
       ],
-      providers: [VgpuService,JwtService],
+      providers: [VgpuService, JwtService],
     }).compile();
 
     service = module.get<VgpuService>(VgpuService);

@@ -22,7 +22,9 @@ export class ServiceItems {
   @Column('varchar', { name: 'ItemTypeCode', nullable: true, length: 50 })
   itemTypeCode: string | null;
 
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceID',
+  })
   serviceInstanceId: string;
 
   @Column('int', { name: 'ItemTypeID' })

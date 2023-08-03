@@ -61,7 +61,7 @@ describe('ServiceChecksService', () => {
         DeleteServiceService,
         TaskManagerService,
         TasksService,
-        NetworkService
+        NetworkService,
       ],
     }).compile();
 

@@ -77,7 +77,7 @@ describe('AiController', () => {
         InvoicesModule,
         ServiceModule,
         LoggerModule,
-        JwtModule
+        JwtModule,
       ],
       controllers: [AiController],
       providers: [AiService],

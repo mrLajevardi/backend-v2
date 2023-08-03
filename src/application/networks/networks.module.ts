@@ -18,6 +18,6 @@ import { NetworksController } from './networks.controller';
   ],
   providers: [NetworksService, DhcpService],
   controllers: [NetworksController],
-  exports: [NetworksService, DhcpService]
+  exports: [NetworksService, DhcpService],
 })
 export class NetworksModule {}

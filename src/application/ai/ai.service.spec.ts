@@ -71,7 +71,7 @@ describe('AiService', () => {
         InvoicesModule,
         ServiceModule,
         LoggerModule,
-        JwtModule
+        JwtModule,
       ],
       providers: [AiService],
     }).compile();

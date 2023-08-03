@@ -30,11 +30,7 @@ describe('AbilityFactory', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        CrudModule,
-        InvoicesModule,
-      ],
+      imports: [DatabaseModule, CrudModule, InvoicesModule],
       providers: [AbilityFactory],
     }).compile();
 

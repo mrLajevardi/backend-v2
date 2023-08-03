@@ -39,9 +39,6 @@ import { ServiceModule } from '../service/service.module';
     VdcService,
   ],
   controllers: [TasksController],
-  exports: [
-    TasksService, 
-    TaskManagerService
-  ],
+  exports: [TasksService, TaskManagerService],
 })
 export class TasksModule {}

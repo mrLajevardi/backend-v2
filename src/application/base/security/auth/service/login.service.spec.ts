@@ -31,7 +31,7 @@ describe('LoginService', () => {
           secret: process.env.JWT_SECRET,
           signOptions: { expiresIn: '1800s' },
         }),
-      ],      
+      ],
       providers: [LoginService, OtpService],
     }).compile();
 

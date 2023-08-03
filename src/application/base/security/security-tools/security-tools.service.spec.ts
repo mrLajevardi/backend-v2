@@ -15,8 +15,9 @@ describe('SecurityToolsService', () => {
         ConfigModule.forRoot({
           isGlobal: true,
         }),
-        DatabaseModule, 
-        AuthModule],
+        DatabaseModule,
+        AuthModule,
+      ],
       providers: [SecurityToolsService, OtpService],
     }).compile();
 

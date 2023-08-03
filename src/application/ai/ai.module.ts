@@ -17,7 +17,7 @@ import { JwtModule } from '@nestjs/jwt';
     InvoicesModule,
     ServiceModule,
     LoggerModule,
-    JwtModule
+    JwtModule,
   ],
   controllers: [AiController],
   providers: [AiService],

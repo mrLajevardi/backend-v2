@@ -31,7 +31,7 @@ describe('OauthService', () => {
           secret: process.env.JWT_SECRET,
           signOptions: { expiresIn: '1800s' },
         }),
-      ],      
+      ],
       providers: [OauthService, LoginService, OtpService],
     }).compile();
 

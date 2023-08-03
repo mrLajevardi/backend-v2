@@ -17,6 +17,9 @@ export class Sysdiagrams {
   @Column('int', { name: 'version', nullable: true })
   version: number | null;
 
-  @Column(isTestingEnv() ? 'blob': 'varbinary', { name: 'definition', nullable: true })
+  @Column(isTestingEnv() ? 'blob' : 'varbinary', {
+    name: 'definition',
+    nullable: true,
+  })
   definition: Buffer | null;
 }
