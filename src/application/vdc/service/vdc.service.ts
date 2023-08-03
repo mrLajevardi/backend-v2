@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
@@ -10,6 +10,8 @@ import { ServiceItemsTableService } from 'src/application/base/crud/service-item
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { ServiceService } from 'src/application/base/service/services/service.service';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Injectable()
 export class VdcService {
@@ -22,6 +24,8 @@ export class VdcService {
     private readonly configTable: ConfigsTableService,
     private readonly organizationTable: OrganizationTableService,
     private readonly userTable: UserTableService,
+    private readonly serviceService: ServiceService,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async createVdc(
@@ -238,6 +242,242 @@ export class VdcService {
     );
     return Promise.resolve({
       __vcloudTask: deleteVdc.headers['location'],
+    });
+  }
+
+  async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
+    const userId = options.user.userId;
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const namedDisk = await mainWrapper.user.vdc.attachNamedDisk(
+      session,
+      nameDiskID,
+      vmID,
+    );
+    await this.loggerService.info(
+      'services',
+      'attachNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
+    return Promise.resolve({
+      taskId: namedDisk.__vcloudTask.split('task/')[1],
+    });
+  }
+  async createNamedDisk(options, vdcInstanceId, data) {
+    const userId = options.user.userId;
+    const { busType } = data;
+    if (busType != 20) {
+      throw new BadRequestException();
+    }
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const namedDisk = await mainWrapper.user.vdc.createNamedDisk(
+      session,
+      props['vdcId'],
+      data,
+    );
+    const taskId = await mainWrapper.user.vdc.vcloudQuery(session, {
+      page: 1,
+      pageSize: 10,
+      filter: 'object==' + namedDisk.__vcloudTask,
+      type: 'task',
+    });
+    await this.loggerService.info(
+      'services',
+      'createNamedDisk',
+      {
+        _object: taskId.data.record[0].href.split('task/')[1],
+      },
+      { ...options.locals },
+    );
+    return Promise.resolve({
+      taskId: taskId.data.record[0].href.split('task/')[1],
+    });
+  }
+
+  async detachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
+    const userId = options.user.userId;
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const namedDisk = await mainWrapper.user.vdc.dettachNamedDisk(
+      session,
+      nameDiskID,
+      vmID,
+    );
+    await this.loggerService.info(
+      'services',
+      'dettachNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
+    return Promise.resolve({
+      taskId: namedDisk.__vcloudTask.split('task/')[1],
+    });
+  }
+  async getNamedDisk(options, vdcInstanceId) {
+    const userId = options.accessToken.userId;
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const recordList = await mainWrapper.user.vdc.getNamedDisk(
+      session,
+      props['vdcId'],
+    );
+    const recordListForFront = [];
+    recordList.forEach((element) => {
+      const id = element.href.split('https://vpc.aradcloud.com/api/disk/')[1];
+      const name = element.name;
+      const sizeMb = element.sizeMb;
+      const description = element.description;
+      const isAttached = element.isAttached;
+      const ownerName = element.ownerName;
+      const status = element.status;
+      const attachedVmCount = element.attachedVmCount;
+      recordListForFront.push({
+        id,
+        name,
+        sizeMb,
+        description,
+        isAttached,
+        ownerName,
+        status,
+        attachedVmCount,
+        busType: element.busType,
+        busSubType: element.busSubType,
+        sharingType: element.sharingType,
+        busTypeDesc: element.busTypeDesc,
+      });
+    });
+    return Promise.resolve(recordListForFront);
+  }
+
+  /**
+   * @param {Object} app
+   * @param {Object} options
+   * @param {String} vdcInstanceId
+   * @return {Promise}
+   */
+  async getVdc(options, vdcInstanceId) {
+    const userId = options.accessToken.userId;
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const vdcData = await mainWrapper.user.vdc.vcloudQuery(session, {
+      type: 'orgVdc',
+      format: 'records',
+      page: 1,
+      pageSize: 10,
+      filter: `id==${props['vdcId']}`,
+    });
+    return Promise.resolve({
+      instanceId: vdcInstanceId,
+      records: vdcData.data.record,
+    });
+  }
+
+  async getVmAttachedToNamedDisk(options, vdcInstanceId, nameDiskID) {
+    const userId = options.accessToken.userId;
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const vmData = await mainWrapper.user.vdc.getVmAttachedNamedDisk(
+      session,
+      nameDiskID,
+    );
+
+    if (vmData.data) {
+      return vmData.data.vmReference[0].href.split('vApp/')[1];
+    }
+    return Promise.resolve();
+  }
+
+  async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
+    const userId = options.accessToken.userId;
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const namedDisk = await mainWrapper.user.vdc.removeNamedDisk(
+      session,
+      nameDiskID,
+    );
+    await this.loggerService.info(
+      'services',
+      'removeNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
+    return Promise.resolve({
+      taskId: namedDisk.__vcloudTask.split('task/')[1],
+    });
+  }
+
+  async updateNamedDisk(options, vdcInstanceId, nameDiskID, data) {
+    const userId = options.accessToken.userId;
+    const { busType } = data;
+    if (busType != 20) {
+      return Promise.reject(new BadRequestException());
+    }
+    const props = await this.serviceService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const namedDisk = await mainWrapper.user.vdc.updateNamedDisk(
+      session,
+      props['vdcId'],
+      nameDiskID,
+      data,
+    );
+    await this.loggerService.info(
+      'services',
+      'updateNamedDisk',
+      {
+        _object: namedDisk.__vcloudTask.split('task/')[1],
+      },
+      { ...options.locals },
+    );
+    return Promise.resolve({
+      taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
   }
 }

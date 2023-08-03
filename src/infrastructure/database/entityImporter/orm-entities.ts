@@ -46,6 +46,7 @@ import { QualityPlans } from '../entities/views/quality-plans';
 import { ServiceItemsSum } from '../entities/views/service-items-sum';
 import { InvoiceItemList } from '../entities/views/invoice-item-list';
 import { ServicePlans } from '../entities/ServicePlans';
+import { ServiceReports } from '../entities/views/service-reports';
 
 export const dbEntities = [
   //Views
@@ -97,4 +98,5 @@ export const dbEntities = [
   Tasks,
   Tickets,
   Transactions,
+  ServiceReports,
 ];
