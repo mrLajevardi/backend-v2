@@ -4,6 +4,10 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
 import { SessionsModule } from '../../sessions/sessions.module';
+import { TasksModule } from '../../tasks/tasks.module';
+import { CrudModule } from '../../crud/crud.module';
+import { ServiceService } from './service.service';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -12,11 +16,13 @@ describe('ServiceAdminService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule, 
-        ServiceInstancesTableModule,
+        CrudModule,
         LoggerModule,
-        SessionsModule
+        TasksModule,
+        SessionsModule,
+        VgpuModule
       ],
-      providers: [ServiceAdminService],
+      providers: [ServiceAdminService, ServiceService],
     }).compile();
 
     service = module.get<ServiceAdminService>(ServiceAdminService);

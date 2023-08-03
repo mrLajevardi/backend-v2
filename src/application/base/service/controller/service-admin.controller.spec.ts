@@ -5,6 +5,11 @@ import { ServiceAdminService } from '../services/service-admin.service';
 import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SessionsModule } from '../../sessions/sessions.module';
+import { TasksModule } from '../../tasks/tasks.module';
+import { CrudModule } from '../../crud/crud.module';
+import { ServiceService } from '../services/service.service';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { DeleteServiceService } from '../services/delete-service.service';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -13,11 +18,13 @@ describe('ServiceAdminController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule, 
-        ServiceInstancesTableModule,
+        CrudModule,
         LoggerModule,
-        SessionsModule
+        SessionsModule,
+        TasksModule,
+        VgpuModule
       ],
-      providers: [ServiceAdminService],
+      providers: [ServiceAdminService, ServiceService, DeleteServiceService],
       controllers: [ServiceAdminController],
     }).compile();
 
