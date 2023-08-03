@@ -64,7 +64,12 @@ export class VdcController {
     @Param('vmId')
     vmId: string,
   ) {
-    return this.vdcService.attachNamedDisk(options, vdcInstanceId, namedDiskId, vmId)
+    return this.vdcService.attachNamedDisk(
+      options,
+      vdcInstanceId,
+      namedDiskId,
+      vmId,
+    );
   }
 
   @Post('/:serviceInstanceId/namedDisk')
@@ -81,9 +86,9 @@ export class VdcController {
     @Param('vdcInstanceId')
     vdcInstanceId: string,
     @Body()
-    data: CreateGroupsDto
+    data: CreateGroupsDto,
   ) {
-    return this.vdcService.createNamedDisk(options, vdcInstanceId, data)
+    return this.vdcService.createNamedDisk(options, vdcInstanceId, data);
   }
 
   @Post('/:serviceInstanceId/namedDisk/:namedDisk/detach/:vmId')
@@ -106,7 +111,12 @@ export class VdcController {
     @Param('vmId')
     vmId: string,
   ) {
-    return this.vdcService.detachNamedDisk(options, vdcInstanceId, namedDiskId, vmId)
+    return this.vdcService.detachNamedDisk(
+      options,
+      vdcInstanceId,
+      namedDiskId,
+      vmId,
+    );
   }
 
   @Get('/:serviceInstanceId/namedDisk')
@@ -123,7 +133,7 @@ export class VdcController {
     @Param('vdcInstanceId')
     vdcInstanceId: string,
   ) {
-    return this.vdcService.getNamedDisk(options, vdcInstanceId)
+    return this.vdcService.getNamedDisk(options, vdcInstanceId);
   }
 
   @Get('/:serviceInstanceId')
@@ -140,7 +150,7 @@ export class VdcController {
     @Param('vdcInstanceId')
     vdcInstanceId: string,
   ) {
-    return this.vdcService.getVdc(options, vdcInstanceId)
+    return this.vdcService.getVdc(options, vdcInstanceId);
   }
 
   @Get('/:serviceInstanceId/namedDisk/:namedDiskId/attachedVm')
@@ -160,7 +170,11 @@ export class VdcController {
     @Param('namedDiskId')
     namedDiskId: string,
   ) {
-    return this.vdcService.getVmAttachedToNamedDisk(options, vdcInstanceId, namedDiskId)
+    return this.vdcService.getVmAttachedToNamedDisk(
+      options,
+      vdcInstanceId,
+      namedDiskId,
+    );
   }
 
   @Delete('/:serviceInstanceId/namedDisk/:namedDiskId')
@@ -180,9 +194,9 @@ export class VdcController {
     @Param('namedDiskId')
     namedDiskId: string,
   ) {
-    return this.vdcService.removeNamedDisk(options, vdcInstanceId, namedDiskId)
+    return this.vdcService.removeNamedDisk(options, vdcInstanceId, namedDiskId);
   }
-  
+
   @Put('/:serviceInstanceId/namedDisk/:namedDiskId')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
@@ -200,10 +214,13 @@ export class VdcController {
     @Param('namedDiskId')
     namedDiskId: string,
     @Body()
-    data: CreateGroupsDto
+    data: CreateGroupsDto,
   ) {
-    return this.vdcService.updateNamedDisk(options, vdcInstanceId, namedDiskId, data)
+    return this.vdcService.updateNamedDisk(
+      options,
+      vdcInstanceId,
+      namedDiskId,
+      data,
+    );
   }
-  
-  
 }

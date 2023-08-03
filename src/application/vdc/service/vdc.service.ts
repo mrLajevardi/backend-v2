@@ -275,7 +275,7 @@ export class VdcService {
     const userId = options.user.userId;
     const { busType } = data;
     if (busType != 20) {
-      throw new BadRequestException()
+      throw new BadRequestException();
     }
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
@@ -479,5 +479,5 @@ export class VdcService {
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
-  }  
+  }
 }

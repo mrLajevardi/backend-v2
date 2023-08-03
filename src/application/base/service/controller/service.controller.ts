@@ -111,7 +111,7 @@ export class ServiceController {
     status: 200,
     description: 'user services have been fetched successfully',
   })
-  @ApiQuery({name: 'filter'})
+  @ApiQuery({ name: 'filter' })
   @Get('/discounts')
   async getDiscounts(@Query('filter') filter: string): Promise<any> {
     return this.createService.getDiscounts(filter);
@@ -123,7 +123,7 @@ export class ServiceController {
     status: 200,
     description: 'user services have been fetched successfully',
   })
-  @ApiQuery({name: 'filter'})
+  @ApiQuery({ name: 'filter' })
   @Get('/itemTypes')
   async getItemTypes(@Query('filter') filter: string): Promise<any> {
     return this.createService.getItemTypes(filter);

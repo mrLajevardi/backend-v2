@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
@@ -65,6 +70,4 @@ export class ServiceService {
     });
     return extendedServiceList;
   }
-
-  
 }

@@ -238,7 +238,6 @@ export class CreateServiceService {
       taskId: taskId,
       token: null,
     });
-    
   }
   async repairService(options, serviceInstanceId) {
     const service = await this.serviceInstancesTableService.findOne({
@@ -247,7 +246,7 @@ export class CreateServiceService {
       },
     });
     if (service.status === 1 || service.status === 3) {
-      throw new BadRequestException()
+      throw new BadRequestException();
     }
     const task = await this.tasksTableService.create({
       userId: options.locals.userId,
@@ -258,11 +257,14 @@ export class CreateServiceService {
       endTime: null,
       status: 'running',
     });
-    await this.serviceInstancesTableService.updateAll({
-      id: serviceInstanceId,
-    }, {
-      status: 1,
-    });
+    await this.serviceInstancesTableService.updateAll(
+      {
+        id: serviceInstanceId,
+      },
+      {
+        status: 1,
+      },
+    );
     await this.taskManagerService.addTask({
       serviceInstanceId,
       customTaskId: task.taskId,
@@ -277,13 +279,16 @@ export class CreateServiceService {
   }
 
   async updateServiceInfo(serviceInstanceId, data) {
-    const {name} = data;
-    await this.serviceInstancesTable.updateAll({
-      id: serviceInstanceId,
-    }, {
-      name: name,
-    });
-  };
+    const { name } = data;
+    await this.serviceInstancesTable.updateAll(
+      {
+        id: serviceInstanceId,
+      },
+      {
+        name: name,
+      },
+    );
+  }
 
   async getDiscounts(filter) {
     let parsedFilter;
@@ -292,7 +297,7 @@ export class CreateServiceService {
     }
     const discounts = await this.discountsTable.find(parsedFilter);
     return Promise.resolve(discounts);
-  };
+  }
 
   async getItemTypes(filter) {
     let parsedFilter;
@@ -301,6 +306,5 @@ export class CreateServiceService {
     }
     const itemTypes = await this.itemTypesTable.find(parsedFilter);
     return Promise.resolve(itemTypes);
-  };
-  
+  }
 }
