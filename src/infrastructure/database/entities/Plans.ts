@@ -1,3 +1,4 @@
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Column, Entity, Index } from 'typeorm';
 
 @Index('PK_QualityPlans', ['code'], { unique: true })
@@ -18,7 +19,7 @@ export class Plans {
   @Column('nvarchar', { name: 'Condition', default: () => "''" })
   condition: string;
 
-  @Column('bit', { name: 'Enabled', default: () => '(1)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Enabled', default: () => '(1)' })
   enabled: boolean;
 
   @Column('varchar', { name: 'ApplyTo', nullable: true, length: 255 })

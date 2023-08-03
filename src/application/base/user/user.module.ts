@@ -18,6 +18,7 @@ import { UserAdminController } from './controller/user-admin.controller';
     CrudModule,
     LoggerModule,
     PaymentModule,
+    JwtModule,
     NotificationModule,
     SecurityToolsModule,
   ],

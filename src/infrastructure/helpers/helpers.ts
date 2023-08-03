@@ -2,6 +2,12 @@ import { getIPRange } from 'get-ip-range';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 
+
+export function isTestingEnv(){
+  return (process.env.NODE_ENV === 'test')
+}
+
+
 export function isEmpty(value) {
   if (value === null || value === undefined) {
     return true;

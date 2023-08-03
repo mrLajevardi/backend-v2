@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExtendServiceService } from './extend-service.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { SessionsService } from '../../sessions/sessions.service';
 import { OrganizationService } from '../../organization/organization.service';
 import { UserService } from '../../user/service/user.service';
@@ -24,49 +24,68 @@ import { SessionsTableService } from '../../crud/sessions-table/sessions-table.s
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { ServiceService } from './service.service';
+import { BullModule } from '@nestjs/bull';
+import { forwardRef } from '@nestjs/common';
+import { NetworkService } from 'src/application/vdc/service/network.service';
+import { VdcModule } from 'src/application/vdc/vdc.module';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { SessionsModule } from '../../sessions/sessions.module';
+import { TaskManagerService } from '../../tasks/service/task-manager.service';
+import { TasksService } from '../../tasks/service/tasks.service';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserModule } from '../../user/user.module';
+import { CreateServiceService } from './create-service.service';
+import { DeleteServiceService } from './delete-service.service';
+import { DiscountsService } from './discounts.service';
+import { PayAsYouGoService } from './pay-as-you-go.service';
+import { ServiceChecksService } from './service-checks/service-checks.service';
 
 describe('ExtendServiceService', () => {
   let service: ExtendServiceService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [
+        CrudModule,
+        DatabaseModule,
+        SessionsModule,
+        UserModule,
+        BullModule.registerQueue({
+          name: 'tasks',
+        }),
+        LoggerModule,
+        // VdcModule,
+        forwardRef(() => VgpuModule),
+        CrudModule,
+        SessionsModule,
+        OrganizationModule,
+        TransactionsModule,
+        VdcModule,
+      ],
       providers: [
         ExtendServiceService,
-        ItemTypesTableService,
-        PlansTableService,
-        ServiceTypesTableService,
-        ConfigsTableService,
-        ServiceItemsTableService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        SessionsService,
-        UserService,
-        OrganizationService,
-        TransactionsService,
-        DiscountsTableService,
-        ServiceInstancesTableService,
-        ItemTypesTableService,
-        ServiceTypesTableService,
-        ServicePropertiesTableService,
-        InvoiceDiscountsTableService,
         ServiceService,
-        PlansTableService,
-        ConfigsTableService,
-        ServiceItemsTableService,
-        SessionsTableService,
-        UserTableService,
-        OrganizationTableService,
-        TransactionsTableService,
-        InvoicesTableService,
-        InvoiceItemsTableService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        PlansQueryService,
+        PayAsYouGoService,
+        CreateServiceService,
+        ExtendServiceService,
+        DiscountsService,
+        ServiceChecksService,
+        DeleteServiceService,
+        TaskManagerService,
+        TasksService,
+        NetworkService
       ],
     }).compile();
 
     service = module.get<ExtendServiceService>(ExtendServiceService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

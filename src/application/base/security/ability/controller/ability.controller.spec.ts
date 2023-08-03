@@ -1,17 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AbilityController } from './ability.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CrudModule } from 'src/application/base/crud/crud.module';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
+import { AbilityAdminService } from '../service/ability-admin.service';
 
 describe('AbilityController', () => {
   let controller: AbilityController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [CrudModule, DatabaseModule],
+      providers: [AbilityAdminService],
       controllers: [AbilityController],
     }).compile();
 
     controller = module.get<AbilityController>(AbilityController);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

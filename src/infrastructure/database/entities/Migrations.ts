@@ -1,3 +1,4 @@
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('PK__Migratio__3213E83FC60BF224', ['id'], { unique: true })
@@ -12,6 +13,6 @@ export class Migrations {
   @Column('int', { name: 'batch', nullable: true })
   batch: number | null;
 
-  @Column('datetime2', { name: 'migration_time', nullable: true })
+  @Column(isTestingEnv() ? "datetime" : "datetime2",{ name: 'migration_time', nullable: true })
   migrationTime: Date | null;
 }

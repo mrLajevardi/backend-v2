@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { ItemTypes } from './ItemTypes';
 
-@Index('PK_InvoiceItems', ['id'], { unique: true })
+//@Index('PK_InvoiceItems', ['id'], { unique: true })
 @Entity('InvoiceItems', { schema: 'user' })
 export class InvoiceItems {
   @Column('int', { name: 'InvoiceID' })

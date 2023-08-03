@@ -1,29 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrganizationService } from './organization.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { SessionsService } from '../sessions/sessions.service';
 import { UserService } from '../user/service/user.service';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
 import { SessionsTableService } from '../crud/sessions-table/sessions-table.service';
 import { UserTableService } from '../crud/user-table/user-table.service';
+import { CrudModule } from '../crud/crud.module';
+import { SessionsModule } from '../sessions/sessions.module';
+import { UserModule } from '../user/user.module';
 
 describe('OrganizationService', () => {
   let service: OrganizationService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule, SessionsModule, UserModule, CrudModule],
       providers: [
         OrganizationService,
-        SessionsService,
-        UserService,
-        OrganizationTableService,
-        SessionsTableService,
-        UserTableService,
       ],
     }).compile();
 
     service = module.get<OrganizationService>(OrganizationService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

@@ -1,9 +1,10 @@
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('PK_ServicePlans', ['id'], { unique: true })
 @Entity('ServicePlans', { schema: 'user' })
 export class ServicePlans {
-  @Column('uniqueidentifier', { name: 'ServiceInstanceID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID' })
   serviceInstanceId: string;
 
   @Column('varchar', { name: 'PlanCode', length: 25 })

@@ -7,7 +7,7 @@ import { TaskManagerService } from 'src/application/base/tasks/service/task-mana
 import { TasksService } from 'src/application/base/tasks/service/tasks.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
 import { UserService } from 'src/application/base/user/service/user.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { EdgeService } from '../service/edge.service';
 import { NetworkService } from '../service/network.service';
 import { OrgService } from '../service/org.service';
@@ -42,23 +42,39 @@ import { ExtendServiceService } from 'src/application/base/service/services/exte
 import { ServiceService } from 'src/application/base/service/services/service.service';
 import { InvoicesTableService } from 'src/application/base/crud/invoices-table/invoices-table.service';
 import { PlansQueryService } from 'src/application/base/crud/plans-table/plans-query.service';
+import { CrudModule } from 'src/application/base/crud/crud.module';
+import { OrganizationModule } from 'src/application/base/organization/organization.module';
+import { ServiceModule } from 'src/application/base/service/service.module';
+import { SessionsModule } from 'src/application/base/sessions/sessions.module';
+import { UserModule } from 'src/application/base/user/user.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 describe('VdcController', () => {
   let controller: VdcController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
-        BullModule.registerQueue({
-          name: 'tasks',
-        }),
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        //TasksModule,
+        SessionsModule,
+        OrganizationModule,
+        UserModule,
+        ServiceModule,
       ],
-      providers: [],
+      providers: [VdcService, OrgService, EdgeService, NetworkService],
+      
       controllers: [VdcController],
     }).compile();
 
     controller = module.get<VdcController>(VdcController);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

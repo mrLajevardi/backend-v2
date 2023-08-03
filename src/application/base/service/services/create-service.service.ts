@@ -45,21 +45,9 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 @Injectable()
 export class CreateServiceService {
   constructor(
-    private readonly discountsTable: DiscountsTableService,
-    private readonly discountsService: DiscountsService,
     private readonly userService: UserService,
-    private readonly invoiceService: InvoicesService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly serviceChecksService: ServiceChecksService,
-    private readonly qualityPlansService: QualityPlansService,
-    private readonly itemTypesTable: ItemTypesTableService,
-    private readonly serviceItemsSumService: ServiceItemsSumService,
-    private readonly serviceTypeTable: ServiceTypesTableService,
-    private readonly servicePropertiesTable: ServicePropertiesTableService,
-    private readonly invoiceDiscountsTable: InvoiceDiscountsTableService,
-    private readonly transactionService: TransactionsService,
     private readonly transactionTableService: TransactionsTableService,
-    private readonly serviceService: ServiceService,
     private readonly InvoiceTableService: InvoicesTableService,
     private readonly extendService: ExtendServiceService,
     private readonly tasksTableService: TasksTableService,
