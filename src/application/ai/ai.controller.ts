@@ -28,7 +28,7 @@ import { PlansTableService } from '../base/crud/plans-table/plans-table.service'
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-table.service';
 import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
-import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.service';
+import { PayAsYouGoService } from '../base/pay-as-you-go/pay-as-you-go.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
 import { ILike, Not } from 'typeorm';

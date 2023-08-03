@@ -36,7 +36,7 @@ import { UserTableService } from '../base/crud/user-table/user-table.service';
 import { ServiceService } from '../base/service/services/service.service';
 import { InvoicesTableService } from '../base/crud/invoices-table/invoices-table.service';
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
-import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.service';
+import { PayAsYouGoService } from '../base/pay-as-you-go/pay-as-you-go.service';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-table/dto/create-aitransactions-logs.dto';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';

@@ -25,7 +25,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { CreateServiceService } from '../create-service.service';
 import { DeleteServiceService } from '../delete-service.service';
 import { ExtendServiceService } from '../extend-service.service';
-import { PayAsYouGoService } from '../pay-as-you-go.service';
+import { PayAsYouGoService } from '../../../pay-as-you-go/pay-as-you-go.service';
 import { ServiceService } from '../service.service';
 
 describe('ServiceChecksService', () => {
@@ -39,29 +39,9 @@ describe('ServiceChecksService', () => {
         DatabaseModule,
         SessionsModule,
         UserModule,
-        BullModule.registerQueue({
-          name: 'tasks',
-        }),
-        LoggerModule,
-        // VdcModule,
-        forwardRef(() => VgpuModule),
-        CrudModule,
-        SessionsModule,
-        OrganizationModule,
-        TransactionsModule,
-        VdcModule,
       ],
       providers: [
-        ServiceService,
-        PayAsYouGoService,
-        CreateServiceService,
-        ExtendServiceService,
-        DiscountsService,
-        ServiceChecksService,
-        DeleteServiceService,
-        TaskManagerService,
-        TasksService,
-        NetworkService,
+        ServiceChecksService
       ],
     }).compile();
 

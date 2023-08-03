@@ -30,7 +30,6 @@ import { ServiceReports } from 'src/infrastructure/database/entities/views/servi
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 
-
 @ApiTags('Services-admin')
 @Controller('admin/services')
 @ApiBearerAuth() // Requires authentication with a JWT token

@@ -8,6 +8,8 @@ import { TasksModule } from '../../tasks/tasks.module';
 import { CrudModule } from '../../crud/crud.module';
 import { ServiceService } from './service.service';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { ExtendServiceService } from './extend-service.service';
+import { PaymentModule } from 'src/application/payment/payment.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -21,8 +23,13 @@ describe('ServiceAdminService', () => {
         TasksModule,
         SessionsModule,
         VgpuModule,
+        PaymentModule
       ],
-      providers: [ServiceAdminService, ServiceService],
+      providers: [
+        ServiceAdminService, 
+        ServiceService,
+        ExtendServiceService,
+      ],
     }).compile();
 
     service = module.get<ServiceAdminService>(ServiceAdminService);

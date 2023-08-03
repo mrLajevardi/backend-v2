@@ -18,9 +18,13 @@ import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserModule } from '../../user/user.module';
 import { DiscountsService } from '../services/discounts.service';
 import { ExtendServiceService } from '../services/extend-service.service';
-import { PayAsYouGoService } from '../services/pay-as-you-go.service';
+import { PayAsYouGoService } from '../../pay-as-you-go/pay-as-you-go.service';
 import { ServiceChecksService } from '../services/service-checks/service-checks.service';
 import { ServiceService } from '../services/service.service';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { TasksModule } from '../../tasks/tasks.module';
+import { ServiceAdminService } from '../services/service-admin.service';
+import { UserService } from '../../user/service/user.service';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -29,33 +33,21 @@ describe('ServiceController', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
-        CrudModule,
         DatabaseModule,
-        SessionsModule,
-        UserModule,
-        BullModule.registerQueue({
-          name: 'tasks',
-        }),
-        LoggerModule,
-        // VdcModule,
-        forwardRef(() => VgpuModule),
         CrudModule,
         SessionsModule,
-        OrganizationModule,
-        TransactionsModule,
-        VdcModule,
+        TasksModule,
+        LoggerModule,
+        PaymentModule,
+        VgpuModule,
+        UserModule
       ],
       providers: [
+        ServiceAdminService, 
         ServiceService,
-        PayAsYouGoService,
-        CreateServiceService,
         ExtendServiceService,
-        DiscountsService,
-        ServiceChecksService,
         DeleteServiceService,
-        TaskManagerService,
-        TasksService,
-        NetworkService,
+        CreateServiceService,
       ],
       controllers: [ServiceController],
     }).compile();

@@ -1,27 +1,26 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
-import { ServiceService } from '../../service/services/service.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
+import { ServicePropertiesService } from '../../service-properties/service-properties.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     private readonly taskTable: TasksTableService,
     private readonly sessionService: SessionsService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly configsTable: ConfigsTableService,
-    private readonly servicePropertiesTableService: ServicePropertiesTableService,
   ) {}
 
   async getTasksList(options, vdcInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.serviceService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const service = await this.serviceInstancesTable.findById(vdcInstanceId);
@@ -123,7 +122,7 @@ export class TasksService {
 
   async getTask(options, vdcInstanceId, taskId) {
     const userId = options.user.userId;
-    const props: any = await this.serviceService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     let session;
@@ -181,7 +180,7 @@ export class TasksService {
 
   async cancelTask(options, vdcInstanceId, taskId) {
     const userId = options.user.userId;
-    const props: any = await this.serviceService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(

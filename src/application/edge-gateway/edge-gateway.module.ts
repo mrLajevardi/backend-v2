@@ -9,14 +9,15 @@ import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { OrganizationTableModule } from '../base/crud/organization-table/organization-table.module';
 import { CrudModule } from '../base/crud/crud.module';
+import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 
 @Module({
   imports: [
     DatabaseModule,
     LoggerModule,
-    ServiceModule,
     SessionsModule,
     CrudModule,
+    ServicePropertiesModule
   ],
   controllers: [EdgeGatewayController],
   providers: [

@@ -25,7 +25,6 @@ import { ServiceService } from '../services/service.service';
 import { CreateGroupsDto } from '../../crud/groups-table/dto/create-groups.dto';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 
-
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -135,38 +134,56 @@ export class ServiceController {
 
   @Get('/invioce/:invoiceId')
   @ApiOperation({ summary: 'Get service invoice' })
-  @ApiResponse({ status: 200, description: 'Invoice information', type: Object }) // Adjust the type as needed
+  @ApiResponse({
+    status: 200,
+    description: 'Invoice information',
+    type: Object,
+  }) // Adjust the type as needed
   @ApiParam({ name: 'invoiceId', type: String, description: 'Invoice ID' })
   async getInvoice(
     @Req() options,
     @Param('invoiceId') invoiceId: number,
   ): Promise<any> {
-    return await this.service.getInvoice(options,invoiceId);
+    return await this.service.getInvoice(options, invoiceId);
   }
 
   @Get('servicePlans')
   @ApiOperation({ summary: 'Returns service plans' })
-  @ApiResponse({ status: 200, description: 'Array of service plans', type: Array }) // Adjust the type as needed
-  async getServicePlans(
-    @Req() options
-    ): Promise<any> {
+  @ApiResponse({
+    status: 200,
+    description: 'Array of service plans',
+    type: Array,
+  }) // Adjust the type as needed
+  async getServicePlans(@Req() options): Promise<any> {
     return await this.service.getServicePlans(options);
   }
 
   @Get('/verifyAuthority/:authorityCode')
   @ApiOperation({ summary: 'Verify Zarinpal Authority code' })
-  @ApiResponse({ status: 200, description: 'Verification result', type: Object }) // Adjust the type as needed
-  @ApiParam({ name: 'authorityCode', type: String, description: 'Zarinpal Authority code' })
+  @ApiResponse({
+    status: 200,
+    description: 'Verification result',
+    type: Object,
+  }) // Adjust the type as needed
+  @ApiParam({
+    name: 'authorityCode',
+    type: String,
+    description: 'Zarinpal Authority code',
+  })
   async verifyZarinpalAuthority(
     @Req() options,
     @Param('authorityCode') authorityCode: string,
   ): Promise<any> {
-    return this.service.verifyZarinpalAuthority(options,authorityCode);
+    return this.service.verifyZarinpalAuthority(options, authorityCode);
   }
 
   @Get('/zarinpalAuthority/:invoiceId')
   @ApiOperation({ summary: 'Get Zarinpal Authority code' })
-  @ApiResponse({ status: 200, description: 'Zarinpal Authority URL', type: String }) // Adjust the type as needed
+  @ApiResponse({
+    status: 200,
+    description: 'Zarinpal Authority URL',
+    type: String,
+  }) // Adjust the type as needed
   @ApiParam({ name: 'invoiceId', type: String, description: 'Invoice ID' })
   async getZarinpalAuthority(
     @Req() options,
@@ -177,15 +194,21 @@ export class ServiceController {
 
   @Get('serviceTypes')
   @ApiOperation({ summary: 'Get all serviceTypes' })
-  @ApiResponse({ status: 200, description: 'Array of serviceTypes', type: Array }) // Adjust the type as needed
-  @ApiQuery({ name: 'filter', type: String, required: false, description: 'Filter string' })
-  async getServiceTypes (
+  @ApiResponse({
+    status: 200,
+    description: 'Array of serviceTypes',
+    type: Array,
+  }) // Adjust the type as needed
+  @ApiQuery({
+    name: 'filter',
+    type: String,
+    required: false,
+    description: 'Filter string',
+  })
+  async getServiceTypes(
     @Req() options,
-    @Query('filter') filter: string): 
-    Promise<any> {
-    return this.service.getServicetypes(options,filter);
+    @Query('filter') filter: string,
+  ): Promise<any> {
+    return this.service.getServicetypes(options, filter);
   }
-
-
-
 }

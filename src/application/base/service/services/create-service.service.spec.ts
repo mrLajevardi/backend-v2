@@ -41,6 +41,7 @@ import { SessionsModule } from '../../sessions/sessions.module';
 import { TasksModule } from '../../tasks/tasks.module';
 import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserModule } from '../../user/user.module';
+import { PaymentModule } from 'src/application/payment/payment.module';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -52,6 +53,7 @@ describe('CreateServiceService', () => {
         CrudModule,
         DatabaseModule,
         SessionsModule,
+        PaymentModule,
         UserModule,
         forwardRef(() => InvoicesModule),
         TasksModule,

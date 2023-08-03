@@ -29,7 +29,6 @@ export class TaskManagerService {
   constructor(
     @InjectQueue('tasks')
     private taskQueue: Queue,
-    private readonly taskService: TasksService,
     private readonly sessionService: SessionsService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,

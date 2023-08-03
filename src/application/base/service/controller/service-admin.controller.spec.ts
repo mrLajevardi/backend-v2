@@ -10,6 +10,8 @@ import { CrudModule } from '../../crud/crud.module';
 import { ServiceService } from '../services/service.service';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { DeleteServiceService } from '../services/delete-service.service';
+import { ExtendServiceService } from '../services/extend-service.service';
+import { PaymentModule } from 'src/application/payment/payment.module';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -19,12 +21,19 @@ describe('ServiceAdminController', () => {
       imports: [
         DatabaseModule,
         CrudModule,
-        LoggerModule,
         SessionsModule,
         TasksModule,
+        LoggerModule,
+        PaymentModule,
         VgpuModule,
       ],
-      providers: [ServiceAdminService, ServiceService, DeleteServiceService],
+      providers: [
+        ServiceAdminService, 
+        ServiceService,
+        ExtendServiceService,
+        DeleteServiceService,
+        
+      ],
       controllers: [ServiceAdminController],
     }).compile();
 

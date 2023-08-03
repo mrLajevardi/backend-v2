@@ -13,11 +13,12 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { userPartialUpload } from 'src/wrappers/mainWrapper/user/vm/partialUpload';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { CreateTemplateDto } from '../dto/create-template.dto';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 
 @Injectable()
 export class VmService {
   constructor(
-    private readonly servicesService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionsServices: SessionsService,
     private readonly servicePropertiesTableService: ServicePropertiesTableService,
     private readonly organizationTableService: OrganizationTableService,
@@ -27,7 +28,7 @@ export class VmService {
 
   async acquireVMTicket(options, vdcInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -83,7 +84,7 @@ export class VmService {
 
   async createVMFromTemplate(options, data, vdcInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -122,7 +123,7 @@ export class VmService {
 
   async createVm(options, data, serviceInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -204,7 +205,7 @@ export class VmService {
 
   async deleteMedia(options, serviceInstanceId, mediaId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -227,7 +228,7 @@ export class VmService {
 
   async deleteTemplate(options, serviceInstanceId, templateId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -253,7 +254,7 @@ export class VmService {
 
   async deleteVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -276,7 +277,7 @@ export class VmService {
 
   async deployVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -291,7 +292,7 @@ export class VmService {
 
   async discardSuspendVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -306,7 +307,7 @@ export class VmService {
 
   async ejectMedia(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -333,7 +334,7 @@ export class VmService {
 
   async getAllUserVm(options, serviceInstanceId, filter = '', search) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -386,7 +387,7 @@ export class VmService {
 
   async getAllUserVmTemplates(options, serviceInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -452,7 +453,7 @@ export class VmService {
 
   async getCatalogMedias(options, serviceInstanceId, page, pageSize) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -488,7 +489,7 @@ export class VmService {
 
   async getVmDiskSection(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -537,7 +538,7 @@ export class VmService {
 
   async getVmGeneralSection(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -588,7 +589,7 @@ export class VmService {
 
   async getHardwareInfo(options, serviceInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -661,7 +662,7 @@ export class VmService {
 
   async getMedia(options, serviceInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -689,7 +690,7 @@ export class VmService {
 
   async getOsInfo(options, serviceInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -717,7 +718,7 @@ export class VmService {
 
   async getQuestion(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -751,7 +752,7 @@ export class VmService {
   }
   async getVmRemovableMedia(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -776,7 +777,7 @@ export class VmService {
 
   async getSupportedHardDiskAdaptors(options, serviceInstanceId, osType) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -835,7 +836,7 @@ export class VmService {
 
   async getTemplateAdaptors(options, serviceInstanceId, templateId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -878,7 +879,7 @@ export class VmService {
 
   async getVAppTemplate(options, serviceInstanceId, templateId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -902,7 +903,7 @@ export class VmService {
 
   async getVmComputeSection(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -956,7 +957,7 @@ export class VmService {
 
   async getVmGuestCustomization(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1015,7 +1016,7 @@ export class VmService {
 
   async getVmNetworkSection(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1059,7 +1060,7 @@ export class VmService {
 
   async insertMedia(options, serviceInstanceId, vAppId, data) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1089,7 +1090,7 @@ export class VmService {
 
   async installVmTools(options, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1112,7 +1113,7 @@ export class VmService {
 
   async postAnswer(options, serviceInstanceId, vmId, data) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1140,7 +1141,7 @@ export class VmService {
 
   async powerOnVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1168,7 +1169,7 @@ export class VmService {
     link,
   ) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1192,7 +1193,7 @@ export class VmService {
 
   async rebootVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1207,7 +1208,7 @@ export class VmService {
 
   async removeVmSnapShot(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1230,7 +1231,7 @@ export class VmService {
 
   async resetVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1245,7 +1246,7 @@ export class VmService {
 
   async revertVmSnapShot(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1260,7 +1261,7 @@ export class VmService {
 
   async suspendVm(options, serviceInstanceId, vAppId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1275,7 +1276,7 @@ export class VmService {
 
   async transferFile(options, serviceInstanceId, transferId, contentLength) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1298,7 +1299,7 @@ export class VmService {
 
   async undeployVm(options, serviceInstanceId, vAppId, data) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1317,7 +1318,7 @@ export class VmService {
 
   async updateVmComputeSection(options, serviceInstanceId, vmId, data) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1365,7 +1366,7 @@ export class VmService {
 
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1406,7 +1407,7 @@ export class VmService {
 
   async updateGuestCustomization(options, data, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1436,7 +1437,7 @@ export class VmService {
       throw new BadRequestException();
     }
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1463,7 +1464,7 @@ export class VmService {
 
   async updateVAppTemplate(options, data, serviceInstanceId, templateId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1491,7 +1492,7 @@ export class VmService {
 
   async updateVmGeneralSection(options, data, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1523,7 +1524,7 @@ export class VmService {
 
   async updateVmNetworkSection(options, data, serviceInstanceId, vmId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(
@@ -1557,7 +1558,7 @@ export class VmService {
 
   async uploadFileInfo(options, data, serviceInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicesService.getAllServiceProperties(
+    const props: any = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionsServices.checkUserSession(

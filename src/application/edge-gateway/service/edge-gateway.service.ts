@@ -2,17 +2,17 @@ import { Injectable } from '@nestjs/common';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { ServiceService } from '../../base/service/services/service.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { ServicePropertiesTableService } from '../../base/crud/service-properties-table/service-properties-table.service';
 import { ApplicationPortProfileService } from './application-port-profile.service';
 import { FirewallService } from './firewall.service';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 
 @Injectable()
 export class EdgeGatewayService {
   constructor(
     private readonly logger: LoggerService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     readonly applicationPortProfile: ApplicationPortProfileService,
@@ -21,7 +21,7 @@ export class EdgeGatewayService {
 
   async createIPSet(options, vdcInstanceId, data) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -50,7 +50,7 @@ export class EdgeGatewayService {
 
   async deleteIPSet(options, vdcInstanceId, ipSetId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -97,7 +97,7 @@ export class EdgeGatewayService {
 
   async getDnsForwarder(options, vdcInstanceId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -133,7 +133,7 @@ export class EdgeGatewayService {
     search,
   ) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -177,7 +177,7 @@ export class EdgeGatewayService {
 
   async getSingleIPSet(options, vdcInstanceId, ipSetId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -278,7 +278,7 @@ export class EdgeGatewayService {
 
   async updateIPSet(options, vdcInstanceId, ipSetId, data) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(

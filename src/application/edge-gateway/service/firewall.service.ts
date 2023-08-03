@@ -1,21 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { ServiceService } from '../../base/service/services/service.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { FirewalListDto } from '../dto/firewall-list.dto';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 
 @Injectable()
 export class FirewallService {
   constructor(
     private readonly logger: LoggerService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
   ) {}
   async addToFirewallList(options, vdcInstanceId, data) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -78,7 +78,7 @@ export class FirewallService {
 
   async deleteFirewall(options, vdcInstanceId, ruleId) {
     const userId = options.user.id;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -97,7 +97,7 @@ export class FirewallService {
 
   async getFirewallList(options, vdcInstanceId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -136,7 +136,7 @@ export class FirewallService {
 
   async getSingleFirewall(options, vdcInstanceId, ruleId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -163,7 +163,7 @@ export class FirewallService {
 
   async updateFirewallList(options, vdcInstanceId, data) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -209,7 +209,7 @@ export class FirewallService {
 
   async updateSingleFirewall(options, vdcInstanceId, ruleId, data) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(

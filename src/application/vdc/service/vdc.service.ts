@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
 import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
@@ -10,8 +10,8 @@ import { ServiceItemsTableService } from 'src/application/base/crud/service-item
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { ServiceService } from 'src/application/base/service/services/service.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 
 @Injectable()
 export class VdcService {
@@ -20,11 +20,10 @@ export class VdcService {
     private readonly sessionService: SessionsService,
     private readonly serviceInstanceTable: ServiceInstancesTableService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
-    private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly configTable: ConfigsTableService,
-    private readonly organizationTable: OrganizationTableService,
-    private readonly userTable: UserTableService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
+   // @Inject(forwardRef(() => servicePropertiesService))
+   // private readonly servicePropertiesService: servicePropertiesService,
     private readonly loggerService: LoggerService,
   ) {}
 
@@ -247,7 +246,7 @@ export class VdcService {
 
   async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -277,7 +276,7 @@ export class VdcService {
     if (busType != 20) {
       throw new BadRequestException();
     }
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -310,7 +309,7 @@ export class VdcService {
 
   async detachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -336,7 +335,7 @@ export class VdcService {
   }
   async getNamedDisk(options, vdcInstanceId) {
     const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -383,7 +382,7 @@ export class VdcService {
    */
   async getVdc(options, vdcInstanceId) {
     const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -405,7 +404,7 @@ export class VdcService {
 
   async getVmAttachedToNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -425,7 +424,7 @@ export class VdcService {
 
   async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -455,7 +454,7 @@ export class VdcService {
     if (busType != 20) {
       return Promise.reject(new BadRequestException());
     }
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(

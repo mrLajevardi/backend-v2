@@ -1,6 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { ServiceService } from 'src/application/base/service/services/service.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
@@ -13,7 +14,7 @@ export class VdcAdminController {
     // private readonly tasksService: TasksService,
     private readonly sessionService: SessionsService,
     // private readonly taskManagerService: TaskManagerService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
   ) {}
   /**
    * delete vdc by admin
@@ -78,7 +79,7 @@ export class VdcAdminController {
     });
     console.log(service);
     const userId = service.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
