@@ -9,7 +9,6 @@ import { Severity } from '@sentry/node';
 @Injectable()
 export class PayAsYouGoService {
   constructor(
-    private readonly transactionsTable: TransactionsTableService,
     private readonly userTable: UserTableService,
     private readonly serviceInstanceTable: ServiceInstancesTableService,
   ) {}

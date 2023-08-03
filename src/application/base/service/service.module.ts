@@ -18,6 +18,8 @@ import { DeleteServiceService } from './services/delete-service.service';
 import { ServiceAdminController } from './controller/service-admin.controller';
 import { ServiceAdminService } from './services/service-admin.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { TaskManagerService } from '../tasks/service/task-manager.service';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
     SessionsModule,
     LoggerModule,
     UserModule,
+    PaymentModule,
     forwardRef(() => InvoicesModule),
     forwardRef(() => VgpuModule),
     forwardRef(() => TasksModule),
