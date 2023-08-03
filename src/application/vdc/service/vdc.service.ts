@@ -335,7 +335,7 @@ export class VdcService {
     });
   }
   async getNamedDisk(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -382,7 +382,7 @@ export class VdcService {
    * @return {Promise}
    */
   async getVdc(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -404,7 +404,7 @@ export class VdcService {
   }
 
   async getVmAttachedToNamedDisk(options, vdcInstanceId, nameDiskID) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -424,7 +424,7 @@ export class VdcService {
   }
 
   async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const props = await this.serviceService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -450,7 +450,7 @@ export class VdcService {
   }
 
   async updateNamedDisk(options, vdcInstanceId, nameDiskID, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const { busType } = data;
     if (busType != 20) {
       return Promise.reject(new BadRequestException());
