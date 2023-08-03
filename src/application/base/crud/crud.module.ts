@@ -40,6 +40,7 @@ import { QualityPlansModule } from './quality-plans/quality-plans.module';
 import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.module';
 import { ServicePlansTableModule } from './service-plans-table/service-plans-table.module';
 import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.module';
+import { ServiceReportsViewModule } from './service-reports-view/service-reports-view.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.mod
     ServiceItemsSumModule,
     ServicePlansTableModule,
     InvoiceItemListModule,
+    ServiceReportsViewModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -129,6 +131,7 @@ import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.mod
     ServiceItemsSumModule,
     ServicePlansTableModule,
     InvoiceItemListModule,
+    ServiceReportsViewModule,
   ],
 })
 export class CrudModule {}

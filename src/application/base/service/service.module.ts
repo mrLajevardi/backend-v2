@@ -15,12 +15,16 @@ import { TasksModule } from '../tasks/tasks.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { ServiceController } from './controller/service.controller';
 import { DeleteServiceService } from './services/delete-service.service';
+import { ServiceAdminController } from './controller/service-admin.controller';
+import { ServiceAdminService } from './services/service-admin.service';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 
 @Module({
   imports: [
     CrudModule,
     DatabaseModule,
     SessionsModule,
+    LoggerModule,
     UserModule,
     forwardRef(() => InvoicesModule),
     forwardRef(() => VgpuModule),
@@ -35,8 +39,9 @@ import { DeleteServiceService } from './services/delete-service.service';
     DiscountsService,
     ServiceChecksService,
     DeleteServiceService,
+    ServiceAdminService,
   ],
-  controllers: [ServiceController],
+  controllers: [ServiceController, ServiceAdminController],
   exports: [
     ServiceService,
     PayAsYouGoService,
