@@ -1,18 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DiscountsService } from './discounts.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 
 describe('DiscountsService', () => {
   let service: DiscountsService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [DiscountsService, DiscountsTableService],
     }).compile();
 
     service = module.get<DiscountsService>(DiscountsService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

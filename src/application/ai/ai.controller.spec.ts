@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AiController } from './ai.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { AiService } from './ai.service';
 import { UserService } from '../base/user/service/user.service';
 import { DiscountsService } from '../base/service/services/discounts.service';
@@ -42,6 +42,12 @@ import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-ta
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
 import { ConfigModule } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../base/crud/crud.module';
+import { InvoicesModule } from '../base/invoice/invoices.module';
+import { ServiceModule } from '../base/service/service.module';
+import { UserModule } from '../base/user/user.module';
 // import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 describe('AiController', () => {
@@ -58,56 +64,23 @@ describe('AiController', () => {
   let config: ConfigsTableService;
   let plan: PlansTableService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
           isGlobal: true,
         }),
-        TestDatabaseModule,
-      ],
-      providers: [
-        AiService,
-        UserService,
-        ServicePropertiesTableService,
-        ServiceInstancesTableService,
-        ServiceTypesTableService,
-        AITransactionsLogsTableService,
-        SettingTableService,
-        ConfigsTableService,
-        DiscountsService,
-        TransactionsService,
-        ItemTypesTableService,
-        CreateServiceService,
-        ServiceChecksService,
-        PlansTableService,
-        QualityPlansService,
-        ServiceItemsTableService,
-        ServiceItemsSumService,
-        InvoicesService,
-        InvoiceItemsTableService,
-        InvoiceDiscountsTableService,
-        InvoicesChecksService,
-        CostCalculationService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        VgpuService,
-        SessionsService,
-        SessionsService,
-        UserTableService,
-        ServiceInstancesStoredProcedureService,
-        UserTableService,
-        DiscountsTableService,
-        TransactionsTableService,
-        ServiceService,
-        PlansQueryService,
-        UserTableService,
-        SessionsTableService,
-        InvoicesTableService,
-        AitransactionsLogsStoredProcedureService,
-        PayAsYouGoService,
+        DatabaseModule,
+        UserModule,
+        CrudModule,
+        InvoicesModule,
+        ServiceModule,
+        LoggerModule,
+        JwtModule
       ],
       controllers: [AiController],
+      providers: [AiService],
     }).compile();
 
     controller = module.get<AiController>(AiController);
@@ -131,6 +104,10 @@ describe('AiController', () => {
     plan = module.get<PlansTableService>(PlansTableService);
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

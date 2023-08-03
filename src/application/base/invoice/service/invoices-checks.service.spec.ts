@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicesChecksService } from './invoices-checks.service';
 import { ServiceChecksService } from 'src/application/base/service/services/service-checks/service-checks.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { DiscountsService } from '../../service/services/discounts.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { UserService } from '../../user/service/user.service';
@@ -12,17 +12,25 @@ import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
+import { forwardRef } from '@nestjs/common';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { CrudModule } from '../../crud/crud.module';
 
 describe('InvoicesChecksService', () => {
   let service: InvoicesChecksService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule, VgpuModule,CrudModule, forwardRef(() => VgpuModule)],
       providers: [],
     }).compile();
 
     service = module.get<InvoicesChecksService>(InvoicesChecksService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

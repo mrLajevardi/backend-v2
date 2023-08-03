@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VastController } from './vast.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('VastController', () => {
   let controller: VastController;
-
+  let module : TestingModule;
+  
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       controllers: [VastController],
     }).compile();
 

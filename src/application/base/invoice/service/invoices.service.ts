@@ -40,7 +40,7 @@ import {
   InvoiceItemsDto,
 } from '../dto/create-service-invoice.dto';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
-import { Plans } from 'src/infrastructure/database/test-entities/Plans';
+import { Plans } from 'src/infrastructure/database/entities/Plans';
 
 @Injectable()
 export class InvoicesService {

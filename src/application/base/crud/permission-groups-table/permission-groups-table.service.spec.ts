@@ -1,25 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PermissionGroupsTableService } from './permission-groups-table.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
 describe('PermissionGroupsTableService', () => {
   let service: PermissionGroupsTableService;
-  let testDataService: TestDataService;
+  let module : TestingModule; 
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [PermissionGroupsTableService, TestDataService],
     }).compile();
 
     service = module.get<PermissionGroupsTableService>(
       PermissionGroupsTableService,
     );
-    testDataService = module.get<TestDataService>(TestDataService);
-    await testDataService.seedTestData();
   });
 
+  afterAll(async ()=>{
+    await module.close();
+  })
+  
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 
-@Index('PK_services.Config', ['id'], { unique: true })
+@Index('PK_Configs', ['id'], { unique: true })
 @Entity('Configs', { schema: 'services' })
 export class Configs {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })

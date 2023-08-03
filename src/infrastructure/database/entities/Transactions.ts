@@ -7,11 +7,12 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_Transactions', ['id'], { unique: true })
 @Entity('Transactions', { schema: 'user' })
 export class Transactions {
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
+  @PrimaryGeneratedColumn({ type: 'integer', name: 'ID' })
   id: string;
 
   @Column('datetime', { name: 'DateTime' })
@@ -40,10 +41,10 @@ export class Transactions {
   @Column('int', { name: 'UserID' })
   userId: number;
 
-  @Column('bit', { name: 'isApproved', default: () => "'0'" })
+  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'isApproved', default: () => "'0'" })
   isApproved: boolean;
 
-  @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
+  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
   serviceInstanceId: string;
 
   @ManyToOne(() => User, (user) => user.transactions, {

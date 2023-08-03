@@ -1,25 +1,45 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { encryptPassword } from 'src/infrastructure/helpers/helpers';
+import { JwtModule } from '@nestjs/jwt';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { NotificationModule } from '../../notification/notification.module';
+import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
+import { UserAdminService } from './user-admin.service';
 
 describe('UserService', () => {
   let table: UserTableService;
   let service: UserService;
   let testDataService: TestDataService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
-      providers: [],
+    module = await Test.createTestingModule({
+      imports: [
+        DatabaseModule,
+        CrudModule,
+        LoggerModule,
+        PaymentModule,
+        JwtModule,
+        NotificationModule,
+        SecurityToolsModule,
+      ],
+      providers: [UserService, UserAdminService],
     }).compile();
 
     table = module.get<UserTableService>(UserTableService);
     service = module.get<UserService>(UserService);
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

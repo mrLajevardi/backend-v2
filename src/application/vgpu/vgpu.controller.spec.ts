@@ -1,18 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VgpuController } from './vgpu.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { forwardRef } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
+import { CrudModule } from '../base/crud/crud.module';
+import { ServiceModule } from '../base/service/service.module';
+import { SessionsModule } from '../base/sessions/sessions.module';
+import { TasksModule } from '../base/tasks/tasks.module';
+import { VgpuService } from './vgpu.service';
 
 describe('VgpuController', () => {
   let controller: VgpuController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [
+        CrudModule,
+        DatabaseModule,
+        JwtModule,
+        SessionsModule,
+        forwardRef(() => ServiceModule),
+        forwardRef(() => TasksModule),
+      ],
+      providers: [VgpuService],
       controllers: [VgpuController],
-      providers: [],
     }).compile();
 
     controller = module.get<VgpuController>(VgpuController);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

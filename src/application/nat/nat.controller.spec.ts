@@ -1,17 +1,34 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NatController } from './nat.controller';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { NatService } from './nat.service';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { ServiceModule } from '../base/service/service.module';
+import { CrudModule } from '../base/crud/crud.module';
+import { SessionsModule } from '../base/sessions/sessions.module';
 
 describe('NatController', () => {
   let controller: NatController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [
+        DatabaseModule,
+        LoggerModule,
+        ServiceModule,
+        SessionsModule,
+        CrudModule,
+      ],
+      providers: [NatService],
       controllers: [NatController],
     }).compile();
 
     controller = module.get<NatController>(NatController);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

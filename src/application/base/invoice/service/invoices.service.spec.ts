@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicesService } from './invoices.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CostCalculationService } from './cost-calculation.service';
 import { InvoicesChecksService } from './invoices-checks.service';
 import { TransactionsService } from 'src/application/base/transactions/transactions.service';
@@ -17,35 +17,30 @@ import { TransactionsTableService } from '../../crud/transactions-table/transact
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
+import { forwardRef } from '@nestjs/common';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { CrudModule } from '../../crud/crud.module';
 
 describe('InvoicesService', () => {
   let service: InvoicesService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule, CrudModule, forwardRef(() => VgpuModule)],
       providers: [
         InvoicesService,
-        CostCalculationService,
         InvoicesChecksService,
-        PlansTableService,
-        ItemTypesTableService,
-        ServiceTypesTableService,
-        InvoiceItemsTableService,
-        TransactionsTableService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        VgpuService,
-        ConfigsTableService,
-        SessionsService,
-        InvoicesTableService,
-        PlansQueryService,
-        SessionsTableService,
+        CostCalculationService
       ],
       exports: [InvoicesService, CostCalculationService, InvoicesChecksService],
     }).compile();
 
     service = module.get<InvoicesService>(InvoicesService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {
