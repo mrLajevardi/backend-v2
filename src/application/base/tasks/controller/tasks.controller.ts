@@ -18,7 +18,7 @@ import {
 import { TasksService } from '../service/tasks.service';
 
 @ApiTags('Tasks')
-@Controller('tasks')
+@Controller('/tasks')
 @ApiBearerAuth()
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
@@ -44,7 +44,7 @@ export class TasksController {
   })
   @ApiParam({ name: 'vdcInstanceId' })
   @ApiParam({ name: 'taskId' })
-  @Get(':vdcInstanceId/:taskId')
+  @Get(':vdcInstanceId/task/:taskId')
   async getTask(
     @Request() options: any,
     @Param('vdcInstanceId') vdcInstanceId: string,

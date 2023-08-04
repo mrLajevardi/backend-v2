@@ -96,7 +96,7 @@ export class ServiceController {
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiResponse({
     status: 204,
-    description: 'The item has been successfully deleted',
+    description: 'The item has been successfully updated ',
   })
   @Put('/:serviceInstanceId')
   async updateServiceInfo(

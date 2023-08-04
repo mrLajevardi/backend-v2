@@ -135,12 +135,13 @@ export class InvoicesService {
       const service = await this.serviceInstancesTableService.findById(
         serviceInstanceId,
       );
+      console.log(service.userId, userId, service.isDeleted);
       if (!service || service.isDeleted || service.userId != userId) {
         throw new BadRequestException();
       }
       // overWrite name and serviceType with existing service's name and serviceTypeID
       data.name = service.name;
-      data.serviceTypeId = service.serviceType.id;
+      data.serviceTypeId = service.serviceTypeId;
     }
     // overwrite probable given plans with service instance's plans
     if (type === 2) {
@@ -376,7 +377,7 @@ export class InvoicesService {
     };
     const servicePlans = await this.servicePlansTableService.find({
       where: {
-        ServiceInstanceID: serviceInstanceId,
+        serviceInstanceId: serviceInstanceId,
       },
     });
     let targetPeriod = 0;
