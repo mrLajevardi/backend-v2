@@ -135,7 +135,7 @@ export class InvoicesService {
       const service = await this.serviceInstancesTableService.findById(
         serviceInstanceId,
       );
-      console.log(service.userId,userId,service.isDeleted);
+      console.log(service.userId, userId, service.isDeleted);
       if (!service || service.isDeleted || service.userId != userId) {
         throw new BadRequestException();
       }

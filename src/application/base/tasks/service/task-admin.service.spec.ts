@@ -14,7 +14,8 @@ describe('TaskAdminService', () => {
         DatabaseModule,
         CrudModule,
         ServicePropertiesModule,
-        SessionsModule      ],
+        SessionsModule,
+      ],
       providers: [TaskAdminService],
     }).compile();
 

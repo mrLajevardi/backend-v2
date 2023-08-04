@@ -15,10 +15,10 @@ describe('TaskAdminController', () => {
         DatabaseModule,
         CrudModule,
         ServicePropertiesModule,
-        SessionsModule
+        SessionsModule,
       ],
       controllers: [TaskAdminController],
-      providers: [TaskAdminService]
+      providers: [TaskAdminService],
     }).compile();
 
     controller = module.get<TaskAdminController>(TaskAdminController);

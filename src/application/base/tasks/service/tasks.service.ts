@@ -72,8 +72,8 @@ export class TasksService {
         sortDesc: 'startDate',
       });
     }
-    if (!tasks){
-      throw new VcloudErrorException()
+    if (!tasks) {
+      throw new VcloudErrorException();
     }
     let data = [];
     for (const task of tasks.data.record) {
