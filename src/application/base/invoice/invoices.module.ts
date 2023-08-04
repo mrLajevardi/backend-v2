@@ -9,10 +9,10 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 
 @Module({
   imports: [
-    DatabaseModule, 
-    CrudModule, 
-    VgpuModule
-   // forwardRef(() => VgpuModule)
+    DatabaseModule,
+    CrudModule,
+    // VgpuModule
+    forwardRef(() => VgpuModule),
   ],
   providers: [InvoicesService, InvoicesChecksService, CostCalculationService],
   controllers: [InvoicesController],

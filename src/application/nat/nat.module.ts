@@ -14,7 +14,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     LoggerModule,
     SessionsModule,
     CrudModule,
-    ServicePropertiesModule
+    ServicePropertiesModule,
   ],
   providers: [NatService],
   controllers: [NatController],

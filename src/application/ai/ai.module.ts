@@ -19,7 +19,7 @@ import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
     ServiceModule,
     LoggerModule,
     JwtModule,
-    PayAsYouGoModule
+    PayAsYouGoModule,
   ],
   controllers: [AiController],
   providers: [AiService],

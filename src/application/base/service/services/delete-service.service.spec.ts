@@ -29,6 +29,8 @@ import { VdcModule } from 'src/application/vdc/vdc.module';
 import { NetworksService } from 'src/application/networks/networks.service';
 import { NetworkService } from 'src/application/vdc/service/network.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -53,6 +55,7 @@ describe('DeleteServiceService', () => {
         OrganizationModule,
         TransactionsModule,
         VdcModule,
+        ServicePropertiesModule,
       ],
       providers: [
         ServiceService,
@@ -65,6 +68,7 @@ describe('DeleteServiceService', () => {
         TaskManagerService,
         TasksService,
         NetworkService,
+        VgpuDnatService,
       ],
     }).compile();
 

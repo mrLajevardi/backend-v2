@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
@@ -38,7 +44,6 @@ export class ServiceAdminService {
     private readonly tasksTable: TasksTableService,
     private readonly logger: LoggerService,
     private readonly configsTable: ConfigsTableService,
-    private readonly serviceService: ServiceService,
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly serviceItemsSumTable: ServiceItemsSumService,
     private readonly serviceReportsTable: ServiceReportsViewService,
@@ -46,7 +51,6 @@ export class ServiceAdminService {
     private readonly transactionsTable: TransactionsTableService,
     private readonly vgpuService: VgpuService,
     private readonly servicePropertiesService: ServicePropertiesService,
-
   ) {}
 
   async deleteService(options, serviceInstanceId) {

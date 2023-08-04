@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
@@ -22,8 +27,8 @@ export class VdcService {
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly configTable: ConfigsTableService,
     private readonly servicePropertiesService: ServicePropertiesService,
-   // @Inject(forwardRef(() => servicePropertiesService))
-   // private readonly servicePropertiesService: servicePropertiesService,
+    // @Inject(forwardRef(() => servicePropertiesService))
+    // private readonly servicePropertiesService: servicePropertiesService,
     private readonly loggerService: LoggerService,
   ) {}
 

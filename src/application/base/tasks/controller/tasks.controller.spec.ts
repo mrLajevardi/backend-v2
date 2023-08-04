@@ -10,6 +10,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { OrganizationModule } from '../../organization/organization.module';
 import { ServiceModule } from '../../service/service.module';
 import { SessionsModule } from '../../sessions/sessions.module';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -22,7 +23,7 @@ describe('TasksController', () => {
           name: 'tasks',
         }),
         LoggerModule,
-        ServiceModule,
+        ServicePropertiesModule,
         // VdcModule,
         forwardRef(() => VgpuModule),
         CrudModule,

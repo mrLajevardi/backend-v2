@@ -34,10 +34,7 @@ import { Public } from '../../security/auth/decorators/ispublic.decorator';
 @Controller('admin/services')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class ServiceAdminController {
-  constructor(
-    private readonly service: ServiceAdminService,
-    private readonly deleteService: DeleteServiceService,
-  ) {}
+  constructor(private readonly service: ServiceAdminService) {}
 
   @Delete(':serviceInstanceId')
   @ApiOperation({ summary: 'Delete service by Admin' })

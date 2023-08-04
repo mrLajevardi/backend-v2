@@ -42,6 +42,8 @@ import { TasksModule } from '../../tasks/tasks.module';
 import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserModule } from '../../user/user.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -55,15 +57,17 @@ describe('CreateServiceService', () => {
         SessionsModule,
         PaymentModule,
         UserModule,
-        forwardRef(() => InvoicesModule),
+        InvoicesModule,
         TasksModule,
         forwardRef(() => VgpuModule),
         TransactionsModule,
+        ServicePropertiesModule,
       ],
       providers: [
         CreateServiceService,
         ExtendServiceService,
         ServiceChecksService,
+        VgpuDnatService,
       ],
     }).compile();
 

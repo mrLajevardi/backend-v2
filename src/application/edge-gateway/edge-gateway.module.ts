@@ -17,7 +17,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     LoggerModule,
     SessionsModule,
     CrudModule,
-    ServicePropertiesModule
+    ServicePropertiesModule,
   ],
   controllers: [EdgeGatewayController],
   providers: [

@@ -25,6 +25,7 @@ import { PaymentModule } from 'src/application/payment/payment.module';
 import { TasksModule } from '../../tasks/tasks.module';
 import { ServiceAdminService } from '../services/service-admin.service';
 import { UserService } from '../../user/service/user.service';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -40,10 +41,11 @@ describe('ServiceController', () => {
         LoggerModule,
         PaymentModule,
         VgpuModule,
-        UserModule
+        UserModule,
+        ServicePropertiesModule,
       ],
       providers: [
-        ServiceAdminService, 
+        ServiceAdminService,
         ServiceService,
         ExtendServiceService,
         DeleteServiceService,

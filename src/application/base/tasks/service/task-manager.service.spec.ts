@@ -28,6 +28,10 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { OrganizationModule } from '../../organization/organization.module';
 import { VdcModule } from 'src/application/vdc/vdc.module';
 import { ServiceService } from '../../service/services/service.service';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { ServicePropertiesService } from '../../service-properties/service-properties.service';
+import { ServiceModule } from '../../service/service.module';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -46,9 +50,16 @@ describe('TaskManagerService', () => {
         CrudModule,
         SessionsModule,
         OrganizationModule,
+        ServicePropertiesModule,
+        ServiceModule,
         VdcModule,
       ],
-      providers: [TaskManagerService, TasksService, ServiceService],
+      providers: [
+        TaskManagerService,
+        TasksService,
+        VgpuDnatService,
+        ServicePropertiesService,
+      ],
     }).compile();
 
     service = module.get<TaskManagerService>(TaskManagerService);

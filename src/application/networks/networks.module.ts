@@ -16,7 +16,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     SessionsModule,
     CrudModule,
     ServicePropertiesModule,
-    ServiceModule
+    ServiceModule,
   ],
   providers: [NetworksService, DhcpService],
   controllers: [NetworksController],

@@ -65,11 +65,8 @@ describe('ExtendServiceService', () => {
         OrganizationModule,
         TransactionsModule,
         TasksModule,
-
       ],
-      providers: [
-        ExtendServiceService,
-      ],
+      providers: [ExtendServiceService],
     }).compile();
 
     service = module.get<ExtendServiceService>(ExtendServiceService);

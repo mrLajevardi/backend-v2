@@ -20,9 +20,10 @@ export class TasksService {
 
   async getTasksList(options, vdcInstanceId) {
     const userId = options.user.userId;
-    const props: any = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props: any =
+      await this.servicePropertiesService.getAllServiceProperties(
+        vdcInstanceId,
+      );
     const service = await this.serviceInstancesTable.findById(vdcInstanceId);
     let session;
     let tasks;
@@ -122,9 +123,10 @@ export class TasksService {
 
   async getTask(options, vdcInstanceId, taskId) {
     const userId = options.user.userId;
-    const props: any = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props: any =
+      await this.servicePropertiesService.getAllServiceProperties(
+        vdcInstanceId,
+      );
     let session;
     const customTask = await this.taskTable.findById(taskId);
     const service = await this.serviceInstancesTable.findById(vdcInstanceId);
@@ -180,9 +182,10 @@ export class TasksService {
 
   async cancelTask(options, vdcInstanceId, taskId) {
     const userId = options.user.userId;
-    const props: any = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props: any =
+      await this.servicePropertiesService.getAllServiceProperties(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
       props.orgId,

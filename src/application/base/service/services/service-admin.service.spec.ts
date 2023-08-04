@@ -10,6 +10,7 @@ import { ServiceService } from './service.service';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { ExtendServiceService } from './extend-service.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -23,13 +24,10 @@ describe('ServiceAdminService', () => {
         TasksModule,
         SessionsModule,
         VgpuModule,
-        PaymentModule
+        PaymentModule,
+        ServicePropertiesModule,
       ],
-      providers: [
-        ServiceAdminService, 
-        ServiceService,
-        ExtendServiceService,
-      ],
+      providers: [ServiceAdminService, ServiceService, ExtendServiceService],
     }).compile();
 
     service = module.get<ServiceAdminService>(ServiceAdminService);

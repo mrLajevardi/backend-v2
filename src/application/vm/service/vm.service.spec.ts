@@ -5,6 +5,7 @@ import { CrudModule } from 'src/application/base/crud/crud.module';
 import { ServiceModule } from 'src/application/base/service/service.module';
 import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 
 describe('VmService', () => {
   let service: VmService;
@@ -15,7 +16,7 @@ describe('VmService', () => {
       imports: [
         DatabaseModule,
         LoggerModule,
-        ServiceModule,
+        ServicePropertiesModule,
         SessionsModule,
         CrudModule,
       ],

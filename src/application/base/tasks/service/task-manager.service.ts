@@ -20,9 +20,9 @@ import { ServiceItemsTableService } from '../../crud/service-items-table/service
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { VgpuService } from 'src/application/vgpu/vgpu.service';
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 
 @Processor('tasks')
 export class TaskManagerService {
@@ -42,8 +42,7 @@ export class TaskManagerService {
     private readonly vdcService: VdcService,
     private readonly taskTable: TasksTableService,
     private readonly loggerService: LoggerService,
-    @Inject(forwardRef(() => VgpuService))
-    private readonly vgpuService: VgpuService,
+    private readonly vgpuDnatService: VgpuDnatService,
   ) {}
 
   @Process()
@@ -474,7 +473,7 @@ export class TaskManagerService {
     }
 
     const internalAddresses = internalIP.value;
-    const createDnat = await this.vgpuService.createVgpuDnat(
+    const createDnat = await this.vgpuDnatService.createVgpuDnat(
       serviceInstanceId,
       userId,
       props['orgId'],

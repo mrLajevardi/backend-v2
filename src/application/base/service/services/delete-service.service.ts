@@ -24,7 +24,6 @@ export class DeleteServiceService {
     private readonly tasksTableService: TasksTableService,
     private readonly configsTable: ConfigsTableService,
     private readonly taskManagerService: TaskManagerService,
-    @Inject(forwardRef(() => VgpuService))
     private readonly vgpuService: VgpuService,
   ) {}
 

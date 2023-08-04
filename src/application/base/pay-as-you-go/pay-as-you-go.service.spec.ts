@@ -53,12 +53,8 @@ describe('PayAsYouGoService', () => {
         LoggerModule,
         // VdcModule,
         forwardRef(() => VgpuModule),
-
       ],
-      providers: [
-        PayAsYouGoService,
-       
-      ],
+      providers: [PayAsYouGoService],
     }).compile();
 
     service = module.get<PayAsYouGoService>(PayAsYouGoService);

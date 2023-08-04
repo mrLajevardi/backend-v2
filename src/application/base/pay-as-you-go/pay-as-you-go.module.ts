@@ -5,15 +5,8 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { PayAsYouGoService } from './pay-as-you-go.service';
 
 @Module({
-    imports: [
-        DatabaseModule,
-        CrudModule,
-    ],
-    providers: [
-        PayAsYouGoService
-    ],
-    exports: [
-        PayAsYouGoService
-    ]
+  imports: [DatabaseModule, CrudModule],
+  providers: [PayAsYouGoService],
+  exports: [PayAsYouGoService],
 })
 export class PayAsYouGoModule {}

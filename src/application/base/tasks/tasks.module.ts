@@ -17,6 +17,8 @@ import { TasksController } from './controller/tasks.controller';
 import { ServiceModule } from '../service/service.module';
 import { NetworksModule } from 'src/application/networks/networks.module';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { PayAsYouGoModule } from '../pay-as-you-go/pay-as-you-go.module';
 
 @Module({
   imports: [
@@ -27,17 +29,19 @@ import { ServicePropertiesModule } from '../service-properties/service-propertie
     }),
     LoggerModule,
     // VdcModule,
-    forwardRef(() => VgpuModule),
     CrudModule,
     SessionsModule,
     OrganizationModule,
     VdcModule,
-    NetworksModule,
-    ServicePropertiesModule
+    PayAsYouGoModule,
+    //NetworksModule,
+    ServicePropertiesModule,
   ],
   providers: [
     TasksService,
-    TaskManagerService,   
+    TaskManagerService,
+    VgpuDnatService,
+    NetworkService,
   ],
   controllers: [TasksController],
   exports: [TasksService, TaskManagerService],

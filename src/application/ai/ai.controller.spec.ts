@@ -48,6 +48,7 @@ import { CrudModule } from '../base/crud/crud.module';
 import { InvoicesModule } from '../base/invoice/invoices.module';
 import { ServiceModule } from '../base/service/service.module';
 import { UserModule } from '../base/user/user.module';
+import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
 // import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 describe('AiController', () => {
@@ -77,6 +78,7 @@ describe('AiController', () => {
         InvoicesModule,
         ServiceModule,
         LoggerModule,
+        PayAsYouGoModule,
         JwtModule,
       ],
       controllers: [AiController],

@@ -25,8 +25,6 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     OrganizationModule,
     UserModule,
     ServicePropertiesModule,
-    ServiceModule
-   // ServiceModule
   ],
   providers: [VdcService, OrgService, EdgeService, NetworkService],
   controllers: [VdcController, VdcAdminController],

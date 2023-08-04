@@ -34,15 +34,8 @@ describe('ServiceChecksService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        CrudModule,
-        DatabaseModule,
-        SessionsModule,
-        UserModule,
-      ],
-      providers: [
-        ServiceChecksService
-      ],
+      imports: [CrudModule, DatabaseModule, SessionsModule, UserModule],
+      providers: [ServiceChecksService],
     }).compile();
 
     service = module.get<ServiceChecksService>(ServiceChecksService);

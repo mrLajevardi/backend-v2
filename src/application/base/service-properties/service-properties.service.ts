@@ -3,21 +3,20 @@ import { ServicePropertiesTableService } from '../crud/service-properties-table/
 
 @Injectable()
 export class ServicePropertiesService {
+  constructor(
+    private readonly servicePropertiesTable: ServicePropertiesTableService,
+  ) {}
 
-    constructor(
-        private readonly servicePropertiesTable: ServicePropertiesTableService
-    ){}
-    
-    async getAllServiceProperties(serviceId) {
-        const ServiceProperties = await this.servicePropertiesTable.find({
-          where: {
-            serviceInstanceId: serviceId,
-          },
-        });
-        const props = {};
-        for (const prop of ServiceProperties) {
-          props[prop.propertyKey] = prop.value;
-        }
-        return Promise.resolve(props);
-      }
+  async getAllServiceProperties(serviceId) {
+    const ServiceProperties = await this.servicePropertiesTable.find({
+      where: {
+        serviceInstanceId: serviceId,
+      },
+    });
+    const props = {};
+    for (const prop of ServiceProperties) {
+      props[prop.propertyKey] = prop.value;
+    }
+    return Promise.resolve(props);
+  }
 }

@@ -4,11 +4,8 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CrudModule } from '../crud/crud.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    CrudModule,
-  ],
+  imports: [DatabaseModule, CrudModule],
   providers: [ServicePropertiesService],
-  exports: [ServicePropertiesService]
+  exports: [ServicePropertiesService],
 })
 export class ServicePropertiesModule {}

@@ -32,10 +32,8 @@ import { ServiceTypesTableService } from '../../crud/service-types-table/service
 export class ServiceService {
   constructor(
     private readonly serviceItemsTable: ServiceItemsTableService,
-    private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly invoicesTable: InvoicesTableService,
-    @Inject(forwardRef(() => TaskManagerService))
     private readonly taskManagerService: TaskManagerService,
     private readonly transactionsTable: TransactionsTableService,
     private readonly tasksTable: TasksTableService,
@@ -433,8 +431,6 @@ export class ServiceService {
       await this.serviceItemsTable.create(dto);
     }
   }
-
-
 
   async getServices(options: any) {
     const {

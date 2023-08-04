@@ -23,7 +23,6 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 import { DeleteServiceService } from '../services/delete-service.service';
 import { ServiceService } from '../services/service.service';
 import { CreateGroupsDto } from '../../crud/groups-table/dto/create-groups.dto';
-import { Public } from '../../security/auth/decorators/ispublic.decorator';
 
 @ApiTags('Services')
 @Controller('services')

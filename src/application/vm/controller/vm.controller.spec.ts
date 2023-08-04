@@ -6,6 +6,7 @@ import { ServiceModule } from 'src/application/base/service/service.module';
 import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { VmService } from '../service/vm.service';
+import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 describe('VmController', () => {
   let controller: VmController;
 
@@ -15,7 +16,7 @@ describe('VmController', () => {
       imports: [
         DatabaseModule,
         LoggerModule,
-        ServiceModule,
+        ServicePropertiesModule,
         SessionsModule,
         CrudModule,
       ],

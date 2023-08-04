@@ -7,6 +7,7 @@ import { CrudModule } from '../base/crud/crud.module';
 import { ServiceModule } from '../base/service/service.module';
 import { TasksModule } from '../base/tasks/tasks.module';
 import { JwtModule, JwtService } from '@nestjs/jwt';
+import { VgpuDnatService } from './vgpu-dnat.service';
 import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
 
 @Module({
@@ -14,11 +15,11 @@ import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
     CrudModule,
     DatabaseModule,
     JwtModule,
-    PayAsYouGoModule,
     SessionsModule,
-    forwardRef(() => TasksModule),
+    TasksModule,
+    PayAsYouGoModule,
   ],
-  providers: [VgpuService, JwtService],
+  providers: [VgpuService, JwtService, VgpuDnatService],
   controllers: [VgpuController],
   exports: [VgpuService],
 })

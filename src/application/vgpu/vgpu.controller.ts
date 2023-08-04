@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Request, UseFilters } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Request,
+  UseFilters,
+  forwardRef,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-table.service';
