@@ -340,7 +340,7 @@ export class VdcService {
   }
   async getNamedDisk(options, vdcInstanceId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -387,7 +387,7 @@ export class VdcService {
    */
   async getVdc(options, vdcInstanceId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -409,7 +409,7 @@ export class VdcService {
 
   async getVmAttachedToNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -429,7 +429,7 @@ export class VdcService {
 
   async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
