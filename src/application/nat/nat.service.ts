@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
-import { ServiceService } from '../base/service/services/service.service';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { EdgeService } from '../vdc/service/edge.service';
+import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
 
 @Injectable()
 export class NatService {
   constructor(
     private readonly logger: LoggerService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
   ) {}
 
@@ -21,7 +21,7 @@ export class NatService {
     //   NO_SNAT: ["internalAddresses", "snatDestinationAddresses"],
     //   REFLEXIVE: ["externalAddresses", "internalAddresses"]
     // }
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -65,7 +65,7 @@ export class NatService {
   }
 
   async deleteNatRule(options, serviceInstanceId, ruleId) {
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -93,7 +93,7 @@ export class NatService {
   }
 
   async getNatRule(options, serviceInstanceId, ruleId) {
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await await this.sessionService.checkUserSession(
@@ -124,7 +124,7 @@ export class NatService {
   }
 
   async getNatRules(options, serviceInstanceId, pageSize = 25, getAll = false) {
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await await this.sessionService.checkUserSession(
@@ -205,7 +205,7 @@ export class NatService {
     //   NO_SNAT: ["internalAddresses", "snatDestinationAddresses"],
     //   REFLEXIVE: ["externalAddresses", "internalAddresses"]
     // }
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
     const session = await await this.sessionService.checkUserSession(

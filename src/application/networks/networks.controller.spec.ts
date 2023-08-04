@@ -7,6 +7,7 @@ import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { DhcpService } from './dhcp.service';
 import { NetworksService } from './networks.service';
+import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 
 describe('NetworksController', () => {
   let controller: NetworksController;
@@ -17,9 +18,10 @@ describe('NetworksController', () => {
       imports: [
         DatabaseModule,
         LoggerModule,
-        ServiceModule,
+        ServicePropertiesModule,
         SessionsModule,
         CrudModule,
+        ServiceModule,
       ],
       providers: [NetworksService, DhcpService],
       controllers: [NetworksController],

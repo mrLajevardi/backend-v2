@@ -26,6 +26,7 @@ import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { NetworkService } from './network.service';
 import { OrgService } from './org.service';
+import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 
 describe('EdgeService', () => {
   let service: EdgeService;
@@ -41,7 +42,7 @@ describe('EdgeService', () => {
         SessionsModule,
         OrganizationModule,
         UserModule,
-        ServiceModule,
+        ServicePropertiesModule,
       ],
       providers: [VdcService, OrgService, EdgeService, NetworkService],
     }).compile();

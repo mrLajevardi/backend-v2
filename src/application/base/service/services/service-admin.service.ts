@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
@@ -27,6 +33,7 @@ import { VgpuService } from 'src/application/vgpu/vgpu.service';
 import { UpdateItemTypesDto } from '../../crud/item-types-table/dto/update-item-types.dto';
 import { VdcResourceLimitsDto } from '../dto/vdc-resource-limits.dto';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { ServicePropertiesService } from '../../service-properties/service-properties.service';
 
 @Injectable()
 export class ServiceAdminService {
@@ -37,13 +44,13 @@ export class ServiceAdminService {
     private readonly tasksTable: TasksTableService,
     private readonly logger: LoggerService,
     private readonly configsTable: ConfigsTableService,
-    private readonly serviceService: ServiceService,
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly serviceItemsSumTable: ServiceItemsSumService,
     private readonly serviceReportsTable: ServiceReportsViewService,
     private readonly invoicesTable: InvoicesTableService,
     private readonly transactionsTable: TransactionsTableService,
     private readonly vgpuService: VgpuService,
+    private readonly servicePropertiesService: ServicePropertiesService,
   ) {}
 
   async deleteService(options, serviceInstanceId) {
@@ -172,7 +179,7 @@ export class ServiceAdminService {
       },
     );
     if (serviceType === 'vdc') {
-      const props = await this.serviceService.getAllServiceProperties(
+      const props = await this.servicePropertiesService.getAllServiceProperties(
         service.id,
       );
       const session = await this.sessionService.checkAdminSession(
@@ -244,7 +251,7 @@ export class ServiceAdminService {
       },
     );
     if (serviceType === 'vdc') {
-      const props = await this.serviceService.getAllServiceProperties(
+      const props = await this.servicePropertiesService.getAllServiceProperties(
         service.id,
       );
       const session = await this.sessionService.checkAdminSession(

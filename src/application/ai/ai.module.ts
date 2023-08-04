@@ -8,6 +8,7 @@ import { InvoicesModule } from '../base/invoice/invoices.module';
 import { ServiceModule } from '../base/service/service.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { JwtModule } from '@nestjs/jwt';
+import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
     ServiceModule,
     LoggerModule,
     JwtModule,
+    PayAsYouGoModule,
   ],
   controllers: [AiController],
   providers: [AiService],

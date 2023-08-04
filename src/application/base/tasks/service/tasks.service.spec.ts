@@ -28,6 +28,10 @@ import { CrudModule } from '../../crud/crud.module';
 import { OrganizationModule } from '../../organization/organization.module';
 import { SessionsModule } from '../../sessions/sessions.module';
 import { ServiceService } from '../../service/services/service.service';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { ServiceModule } from '../../service/service.module';
+import { PaymentModule } from 'src/application/payment/payment.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -46,9 +50,17 @@ describe('TasksService', () => {
         CrudModule,
         SessionsModule,
         OrganizationModule,
+        ServiceModule,
+        PaymentModule,
+        ServicePropertiesModule,
         VdcModule,
       ],
-      providers: [TaskManagerService, TasksService, ServiceService],
+      providers: [
+        TaskManagerService,
+        TasksService,
+        ServiceService,
+        VgpuDnatService,
+      ],
     }).compile();
 
     service = module.get<TasksService>(TasksService);

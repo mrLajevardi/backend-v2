@@ -6,6 +6,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServiceModule } from '../base/service/service.module';
 import { CrudModule } from '../base/crud/crud.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
+import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 
 describe('NatController', () => {
   let controller: NatController;
@@ -16,7 +17,7 @@ describe('NatController', () => {
       imports: [
         DatabaseModule,
         LoggerModule,
-        ServiceModule,
+        ServicePropertiesModule,
         SessionsModule,
         CrudModule,
       ],

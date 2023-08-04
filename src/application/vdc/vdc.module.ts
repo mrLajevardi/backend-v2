@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { VdcService } from './service/vdc.service';
 import { OrgService } from './service/org.service';
 import { EdgeService } from './service/edge.service';
@@ -13,6 +13,7 @@ import { CrudModule } from '../base/crud/crud.module';
 import { ServiceModule } from '../base/service/service.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { NetworkService } from './service/network.service';
+import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { NetworkService } from './service/network.service';
     SessionsModule,
     OrganizationModule,
     UserModule,
-    ServiceModule,
+    ServicePropertiesModule,
   ],
   providers: [VdcService, OrgService, EdgeService, NetworkService],
   controllers: [VdcController, VdcAdminController],

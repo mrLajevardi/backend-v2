@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { ServiceService } from '../../base/service/services/service.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { OrganizationTableService } from '../../base/crud/organization-table/organization-table.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isNil } from 'lodash';
 import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 
 @Injectable()
 export class ApplicationPortProfileService {
   constructor(
     private readonly logger: LoggerService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
     private readonly organizationTable: OrganizationTableService,
   ) {}
@@ -25,7 +25,7 @@ export class ApplicationPortProfileService {
    */
   async createApplicationPortProfile(options, vdcInstanceId, data) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const vcloudOrg = await this.organizationTable.findById(props['orgId']);
@@ -67,7 +67,7 @@ export class ApplicationPortProfileService {
    */
   async deleteApplicationPortProfile(options, vdcInstanceId, applicationId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -101,7 +101,7 @@ export class ApplicationPortProfileService {
    */
   async getApplicationPortProfile(options, vdcInstanceId, applicationId) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -147,7 +147,7 @@ export class ApplicationPortProfileService {
     search,
   ) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -203,7 +203,7 @@ export class ApplicationPortProfileService {
     applicationId,
   ) {
     const userId = options.user.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const vcloudOrg = await this.organizationTable.findById(props['orgId']);

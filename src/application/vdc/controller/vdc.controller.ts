@@ -38,9 +38,6 @@ import { CreateGroupsDto } from 'src/application/base/crud/groups-table/dto/crea
 export class VdcController {
   constructor(
     // private readonly tasksService: TasksService,
-    private readonly sessionService: SessionsService,
-    private readonly serviceService: ServiceService,
-    private readonly loggerService: LoggerService,
     private readonly vdcService: VdcService,
   ) {}
 

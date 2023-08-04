@@ -40,8 +40,10 @@ import { UserModule } from '../../user/user.module';
 import { CreateServiceService } from './create-service.service';
 import { DeleteServiceService } from './delete-service.service';
 import { DiscountsService } from './discounts.service';
-import { PayAsYouGoService } from './pay-as-you-go.service';
+import { PayAsYouGoService } from '../../pay-as-you-go/pay-as-you-go.service';
 import { ServiceChecksService } from './service-checks/service-checks.service';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { TasksModule } from '../../tasks/tasks.module';
 
 describe('ExtendServiceService', () => {
   let service: ExtendServiceService;
@@ -54,31 +56,17 @@ describe('ExtendServiceService', () => {
         DatabaseModule,
         SessionsModule,
         UserModule,
+        PaymentModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),
         LoggerModule,
         // VdcModule,
-        forwardRef(() => VgpuModule),
-        CrudModule,
-        SessionsModule,
         OrganizationModule,
         TransactionsModule,
-        VdcModule,
+        TasksModule,
       ],
-      providers: [
-        ExtendServiceService,
-        ServiceService,
-        PayAsYouGoService,
-        CreateServiceService,
-        ExtendServiceService,
-        DiscountsService,
-        ServiceChecksService,
-        DeleteServiceService,
-        TaskManagerService,
-        TasksService,
-        NetworkService,
-      ],
+      providers: [ExtendServiceService],
     }).compile();
 
     service = module.get<ExtendServiceService>(ExtendServiceService);

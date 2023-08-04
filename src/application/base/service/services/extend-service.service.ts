@@ -44,7 +44,6 @@ export class ExtendServiceService {
     private readonly invoicesTableService: InvoicesTableService,
     private readonly invoiceItemListService: InvoiceItemListService,
     private readonly invoicePlanTableService: InvoicePlansTableService,
-    private readonly serviceSum: ServiceItemsSumService,
   ) {}
 
   async getAiServiceInfo(

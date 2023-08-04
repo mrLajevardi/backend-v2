@@ -48,6 +48,7 @@ import { ServiceModule } from 'src/application/base/service/service.module';
 import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 
 describe('VdcController', () => {
   let controller: VdcController;
@@ -63,7 +64,7 @@ describe('VdcController', () => {
         SessionsModule,
         OrganizationModule,
         UserModule,
-        ServiceModule,
+        ServicePropertiesModule,
       ],
       providers: [VdcService, OrgService, EdgeService, NetworkService],
 

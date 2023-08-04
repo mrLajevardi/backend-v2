@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
 import { isEmpty, isNil } from 'lodash';
-import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
-import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
 
 @Injectable()
 export class ServiceChecksService {
-  constructor(
-    private readonly serviceInstancesTable: ServiceInstancesTableService,
-  ) {}
   //Moved from serviceChecks
   checkNatParams(data, keys) {
     let status = 0;

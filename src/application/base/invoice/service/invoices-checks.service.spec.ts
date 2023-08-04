@@ -28,7 +28,7 @@ describe('InvoicesChecksService', () => {
         CrudModule,
         forwardRef(() => VgpuModule),
       ],
-      providers: [],
+      providers: [InvoicesChecksService],
     }).compile();
 
     service = module.get<InvoicesChecksService>(InvoicesChecksService);

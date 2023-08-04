@@ -15,28 +15,33 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { TasksController } from './controller/tasks.controller';
 import { ServiceModule } from '../service/service.module';
+import { NetworksModule } from 'src/application/networks/networks.module';
+import { ServicePropertiesModule } from '../service-properties/service-properties.module';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { PayAsYouGoModule } from '../pay-as-you-go/pay-as-you-go.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    VdcModule,
     BullModule.registerQueue({
       name: 'tasks',
     }),
     LoggerModule,
     // VdcModule,
-    forwardRef(() => VgpuModule),
     CrudModule,
     SessionsModule,
     OrganizationModule,
-    forwardRef(() => ServiceModule),
+    VdcModule,
+    PayAsYouGoModule,
+    //NetworksModule,
+    ServicePropertiesModule,
   ],
   providers: [
     TasksService,
     TaskManagerService,
-    EdgeService,
-    OrgService,
+    VgpuDnatService,
     NetworkService,
-    VdcService,
   ],
   controllers: [TasksController],
   exports: [TasksService, TaskManagerService],

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { ServiceService } from '../base/service/services/service.service';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
@@ -11,12 +10,13 @@ import validator from 'validator';
 import { DhcpService } from './dhcp.service';
 import { InvalidIpParamException } from 'src/infrastructure/exceptions/invalid-ip-param.exceptionts';
 import { NetworkDto } from './dto/network.dto';
+import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
 
 @Injectable()
 export class NetworksService {
   constructor(
     private readonly logger: LoggerService,
-    private readonly serviceService: ServiceService,
+    private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly serviceChecksService: ServiceChecksService,
@@ -25,7 +25,7 @@ export class NetworksService {
 
   async createNetwork(data: NetworkDto, options, vdcInstanceId) {
     await this.checkNetworkParams(data);
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -68,7 +68,7 @@ export class NetworksService {
   }
 
   async deleteNetwork(options, vdcInstanceId, networkId) {
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -100,7 +100,7 @@ export class NetworksService {
     filter = '',
     search,
   ) {
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -141,7 +141,7 @@ export class NetworksService {
 
   async updateNetwork(data, options, vdcInstanceId, networkId) {
     await this.checkNetworkParams(data);
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     console.log(props);

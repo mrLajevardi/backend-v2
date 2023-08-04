@@ -1,6 +1,6 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { ServiceService } from './services/service.service';
-import { PayAsYouGoService } from './services/pay-as-you-go.service';
+import { PayAsYouGoService } from '../pay-as-you-go/pay-as-you-go.service';
 import { CrudModule } from '../crud/crud.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { SessionsModule } from '../sessions/sessions.module';
@@ -18,6 +18,9 @@ import { DeleteServiceService } from './services/delete-service.service';
 import { ServiceAdminController } from './controller/service-admin.controller';
 import { ServiceAdminService } from './services/service-admin.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { TaskManagerService } from '../tasks/service/task-manager.service';
+import { ServicePropertiesModule } from '../service-properties/service-properties.module';
 
 @Module({
   imports: [
@@ -26,14 +29,15 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
     SessionsModule,
     LoggerModule,
     UserModule,
-    forwardRef(() => InvoicesModule),
-    forwardRef(() => VgpuModule),
-    forwardRef(() => TasksModule),
+    PaymentModule,
+    InvoicesModule,
+    TasksModule,
+    VgpuModule,
+    ServicePropertiesModule,
     TransactionsModule,
   ],
   providers: [
     ServiceService,
-    PayAsYouGoService,
     CreateServiceService,
     ExtendServiceService,
     DiscountsService,
@@ -44,7 +48,6 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
   controllers: [ServiceController, ServiceAdminController],
   exports: [
     ServiceService,
-    PayAsYouGoService,
     CreateServiceService,
     ExtendServiceService,
     DiscountsService,

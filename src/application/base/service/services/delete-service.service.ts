@@ -1,7 +1,9 @@
 import {
   BadGatewayException,
   ConflictException,
+  Inject,
   Injectable,
+  forwardRef,
 } from '@nestjs/common';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -12,6 +14,7 @@ import { isEmpty } from 'lodash';
 import { ServiceIsDeployException } from 'src/infrastructure/exceptions/service-is-deploy.exception';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 
 @Injectable()
 export class DeleteServiceService {

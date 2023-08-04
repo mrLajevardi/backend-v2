@@ -7,14 +7,16 @@ import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { CrudModule } from '../base/crud/crud.module';
 import { NetworksController } from './networks.controller';
+import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 
 @Module({
   imports: [
     DatabaseModule,
     LoggerModule,
-    ServiceModule,
     SessionsModule,
     CrudModule,
+    ServicePropertiesModule,
+    ServiceModule,
   ],
   providers: [NetworksService, DhcpService],
   controllers: [NetworksController],

@@ -4,7 +4,7 @@ import { SessionsService } from '../base/sessions/sessions.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
-import { PayAsYouGoService } from '../base/service/services/pay-as-you-go.service';
+import { PayAsYouGoService } from '../base/pay-as-you-go/pay-as-you-go.service';
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-table.service';
 import { JwtService } from '@nestjs/jwt';
@@ -28,7 +28,6 @@ export class VgpuService {
     private readonly userTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly invoicePropertiesTable: InvoicePropertiesTableService,
-    @Inject(forwardRef(() => TaskManagerService))
     private readonly taskManagerService: TaskManagerService,
     private readonly tasksTable: TasksTableService,
   ) {}
@@ -346,43 +345,6 @@ search ." > /etc/resolv.conf`;
       },
     );
     return createdVm;
-  }
-
-  async createVgpuDnat(
-    serviceId,
-    userId,
-    orgId,
-    edgeName,
-    externalIP,
-    internalIP,
-    typeNat,
-    externalPort,
-    portProfileName,
-    portProfileId,
-  ) {
-    const session = await this.sessionService.checkAdminSession(orgId);
-    const config = {
-      enabled: true,
-      logging: false,
-      priority: 0,
-      firewallMatch: 'BYPASS',
-      externalAddresses: externalIP,
-      internalAddresses: internalIP,
-      dnatExternalPort: externalPort,
-      name: serviceId + typeNat,
-      dnatDestinationAddresses: null,
-      applicationPortProfile: { name: portProfileName, id: portProfileId },
-      type: typeNat,
-      authToken: session,
-    };
-    const dnet = await mainWrapper.user.nat.createNatRule(config, edgeName);
-
-    await this.servicePropertiesTable.create({
-      serviceInstanceId: serviceId,
-      propertyKey: 'VgpuExternalPort',
-      value: externalPort,
-    });
-    return dnet;
   }
 
   async createVgpu(userId, invoiceID, serviceInstanceId, options) {
