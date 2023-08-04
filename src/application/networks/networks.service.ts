@@ -184,20 +184,20 @@ export class NetworksService {
   }
 
   async checkNetworkParams(data) {
-    if (!this.serviceChecksService.checkNetworkType(data.networkType)) {
-      const error = new InvalidServiceParamsException();
-      console.log('1');
+    // if (!this.serviceChecksService.checkNetworkType(data.networkType)) {
+    //   const error = new InvalidServiceParamsException();
+    //   console.log('1');
 
-      return Promise.reject(error);
-    }
-    const ipParams = ['gateway', 'dnsServer1', 'dnsServer2'];
-    for (const ipParam of ipParams) {
-      console.log(data, '🍳');
-      if (!validator.isIP(data[ipParam]) && data[ipParam].length !== 0) {
-        const err = new InvalidIpParamException();
-        return Promise.reject(err);
-      }
-    }
+    //   return Promise.reject(error);
+    // }
+    // const ipParams = ['gateway', 'dnsServer1', 'dnsServer2'];
+    // for (const ipParam of ipParams) {
+    //   console.log(data, '🍳');
+    //   if (!validator.isIP(data[ipParam]) && data[ipParam].length !== 0) {
+    //     const err = new InvalidIpParamException();
+    //     return Promise.reject(err);
+    //   }
+    // }
     return Promise.resolve(true);
   }
 }

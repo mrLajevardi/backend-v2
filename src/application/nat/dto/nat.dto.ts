@@ -32,7 +32,7 @@ export class NatDto {
   externalIP: string;
 
   @ApiProperty({ type: Number, default: '', example: '22' })
-  @IsNumber()
+  @IsString()
   @IsOptional()
   externalPort?: number;
 
