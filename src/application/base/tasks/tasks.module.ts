@@ -19,6 +19,8 @@ import { NetworksModule } from 'src/application/networks/networks.module';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { PayAsYouGoModule } from '../pay-as-you-go/pay-as-you-go.module';
+import { TaskAdminController } from './controller/task-admin.controller';
+import { TaskAdminService } from './service/task-admin.service';
 
 @Module({
   imports: [
@@ -42,8 +44,9 @@ import { PayAsYouGoModule } from '../pay-as-you-go/pay-as-you-go.module';
     TaskManagerService,
     VgpuDnatService,
     NetworkService,
+    TaskAdminService,
   ],
-  controllers: [TasksController],
+  controllers: [TasksController, TaskAdminController],
   exports: [TasksService, TaskManagerService],
 })
 export class TasksModule {}

@@ -7,6 +7,7 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { ServicePropertiesService } from '../../service-properties/service-properties.service';
+import { VcloudErrorException } from 'src/infrastructure/exceptions/vcloud-error.exception';
 
 @Injectable()
 export class TasksService {
@@ -70,6 +71,9 @@ export class TasksService {
         pageSize: 10,
         sortDesc: 'startDate',
       });
+    }
+    if (!tasks){
+      throw new VcloudErrorException()
     }
     let data = [];
     for (const task of tasks.data.record) {
