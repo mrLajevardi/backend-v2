@@ -23,6 +23,7 @@ export class CheckServiceService {
 
   serviceInstanceExe(sql, params){
       return new Promise((resolve, reject) => {
+        this.serviceInstancesTable.
         app.models.ServiceInstances.dataSource.connector
             .execute(sql, params, (err, data) => {
               if (err) {
