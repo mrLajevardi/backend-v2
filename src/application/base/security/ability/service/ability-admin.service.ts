@@ -136,4 +136,77 @@ export class AbilityAdminService {
       principalId: userId.toString(),
     });
   }
+
+  async permitAccess(accessType: Action, on: string){
+    await this.aclTable.deleteAll({
+      model: on,
+      accessType: accessType,
+      principalType: "",
+      principalId: "",
+    });
+
+    await this.aclTable.create({
+      model: on,
+      accessType: accessType,
+      principalType: "",
+      principalId: "",
+      permission: "can"      
+    })
+  }
+
+  async denyAccess(accessType: Action, on: string){
+    await this.aclTable.deleteAll({
+      model: on,
+      accessType: accessType,
+      principalType: "",
+      principalId: "",
+    });
+
+    await this.aclTable.create({
+      model: on,
+      accessType: accessType,
+      principalType: "",
+      principalId: "",
+      permission: "cannot"      
+    })
+
+  }
+
+  async getAllAcls(page: number = 1, pageSize: number = 10, search: string) {
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    let where: any = {};
+    if (search) {
+      where = {
+        or: [
+          { model: { contains: search } },
+          { accessType: { contains: search } },
+          { principalType: { contains: search } },
+          { principalId: { contains: search } },
+          { permission: { contains: search } },
+        ],
+      };
+    }
+
+    const acls = await this.aclTable.find({
+      where,
+      skip,
+      take,
+    });
+
+    const totalItems = await this.aclTable.count({
+      where: where
+    })
+
+    return {
+      data: acls,
+      page,
+      pageSize,
+      totalItems,
+    };
+
+  }
+
+
 }

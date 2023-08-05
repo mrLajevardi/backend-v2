@@ -23,6 +23,9 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 import { DeleteServiceService } from '../services/delete-service.service';
 import { ServiceService } from '../services/service.service';
 import { CreateGroupsDto } from '../../crud/groups-table/dto/create-groups.dto';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PureAbility } from '@casl/ability';
+import { Action } from '../../security/ability/enum/action.enum';
 
 @ApiTags('Services')
 @Controller('services')

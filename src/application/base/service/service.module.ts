@@ -21,6 +21,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { TaskManagerService } from '../tasks/service/task-manager.service';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
+import { AbilityModule } from '../security/ability/ability.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { ServicePropertiesModule } from '../service-properties/service-propertie
     InvoicesModule,
     TasksModule,
     VgpuModule,
+    AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
   ],

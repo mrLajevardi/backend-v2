@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -29,10 +30,18 @@ import { UpdateItemTypesDto } from '../../crud/item-types-table/dto/update-item-
 import { ServiceReports } from 'src/infrastructure/database/entities/views/service-reports';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
+import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PureAbility } from '@casl/ability';
+import { Action } from '../../security/ability/enum/action.enum';
+import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
 
 @ApiTags('Services-admin')
 @Controller('admin/services')
 @ApiBearerAuth() // Requires authentication with a JWT token
+@UseGuards(PoliciesGuard)
+@CheckPolicies((ability: PureAbility) => ability.can(Action.Manage  , PredefinedRoles.AdminRole ))
+ 
 export class ServiceAdminController {
   constructor(private readonly service: ServiceAdminService) {}
 

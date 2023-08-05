@@ -1,13 +1,23 @@
-import { Controller } from '@nestjs/common';
+import { PureAbility } from '@casl/ability';
+import { Controller, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { isEmpty } from 'lodash';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
+import { Action } from 'src/application/base/security/ability/enum/action.enum';
+import { PredefinedRoles } from 'src/application/base/security/ability/enum/predefined-enum.type';
+import { PoliciesGuard } from 'src/application/base/security/ability/guards/policies.guard';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { ServiceService } from 'src/application/base/service/services/service.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 
-@Controller('vdc-admin')
+@Controller('vdc/admin')
+@ApiBearerAuth()
+@UseGuards(PoliciesGuard)
+@CheckPolicies((ability: PureAbility) => ability.can(Action.Manage  , PredefinedRoles.AdminRole ))
+ 
 export class VdcAdminController {
   constructor(
     private readonly serviceInstancesTableService: ServiceInstancesTableService,

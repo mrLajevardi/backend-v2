@@ -5,6 +5,7 @@ import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 import { PredefinedRoles } from './enum/predefined-enum.type';
 import { Action } from './enum/action.enum';
+import or from 'typeorm'
 
 export type AbilitySubjects =
   | (typeof dbEntities)[number]
@@ -34,12 +35,15 @@ export class AbilityFactory {
   async createForUser(user: User) {
     const builder = new AbilityBuilder(createMongoAbility);
 
-    const acls = await this.aclTable.find({
-      where: [
-        { principalType: '' },
-        { principalType: 'User', principalId: user ? user.id : '' },
-      ],
+    const simpleAcls = await this.aclTable.find({
+      where: { principalType: null }
     });
+    
+    console.log(simpleAcls);
+    const comoundAcls = await this.aclTable.find({
+          where: { principalType: 'User', principalId: user ? user.id : null }
+    });
+    const acls = [...simpleAcls, ...comoundAcls];
 
     for (const acl of acls) {
       let propertyCondition = '';
@@ -54,8 +58,11 @@ export class AbilityFactory {
       }
       if (acl.permission == 'can') {
         // console.log(propertyCondition);
+        console.log('can',acl.accessType,acl.model,propertyCondition);
         builder.can(acl.accessType, acl.model, propertyCondition);
       } else {
+        console.log('cannot',acl.accessType,acl.model,propertyCondition);
+
         builder.cannot(acl.accessType, acl.model, propertyCondition);
       }
     }
