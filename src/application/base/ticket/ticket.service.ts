@@ -65,7 +65,7 @@ export class TicketService {
       userId: userId,
       serviceInstanceId: data.serviceInstanceId,
     });
-    return Promise.resolve({ticketId});
+    return Promise.resolve({ ticketId });
   }
 
   async getAllTickets(options) {
