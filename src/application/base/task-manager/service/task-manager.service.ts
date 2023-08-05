@@ -12,7 +12,7 @@ import {
   InjectFlowProducer,
   WorkerHost,
 } from '@nestjs/bullmq';
-import { FlowProducer, Job, Queue } from 'bullmq';
+import { FlowJob, FlowProducer, Job, Queue } from 'bullmq';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { TasksConfigsInterface } from '../interface/tasks-configs.interface';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -35,7 +35,7 @@ export class TaskManagerService extends WorkerHost {
     super();
   }
 
-  async process(job: Job) {
+  async process(job: Job): Promise<any> {
     const task = await this.tasksTableService.findById(job.data.taskId);
     if (!task) {
       throw new InternalServerErrorException();
@@ -105,9 +105,9 @@ export class TaskManagerService extends WorkerHost {
   }
 
   async createFlow(
-    taskName,
-    serviceInstanceId,
-    args = null,
+    taskName: string,
+    serviceInstanceId: string,
+    args: Record<string, never> | null = null,
     options = {},
   ): Promise<Tasks> {
     const task = await this.initTask(taskName, serviceInstanceId, args);
@@ -116,7 +116,7 @@ export class TaskManagerService extends WorkerHost {
     const queueName = 'newTasks';
     const targetTaskConfig: TasksConfigsInterface =
       this.taskManagerTasks[taskName];
-    const flow = {
+    const flow: FlowJob= {
       name: taskName,
       data: {
         type: 'task',
@@ -124,7 +124,7 @@ export class TaskManagerService extends WorkerHost {
       },
       queueName,
     };
-    let lastChildRef: any = flow;
+    let lastChildRef: FlowJob = flow;
     for (const step in targetTaskConfig.steps) {
       const lastChild = {
         name: step,
