@@ -70,7 +70,7 @@ export class TransactionsTableService {
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(options: FindOptionsWhere<Transactions> ) {
+    await this.repository.delete(options);
   }
 }
