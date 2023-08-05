@@ -1,5 +1,6 @@
 import { Body, Controller, Param, Get, Post, Request } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiOperation,
@@ -11,6 +12,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { ReplyTicketDto } from './dto/reply-ticket.dto';
 
 @ApiTags('Tickets')
+@ApiBearerAuth()
 @Controller('ticket')
 export class TicketController {
   constructor(private readonly service: TicketService) {}
@@ -32,7 +34,7 @@ export class TicketController {
   async createTicket(
     @Body() data: CreateTicketDto,
     @Request() options,
-  ): Promise<number> {
+  ): Promise<any> {
     const ticketId = await this.service.createTicket(options, data);
     return ticketId;
   }
