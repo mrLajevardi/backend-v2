@@ -36,7 +36,7 @@ export class TicketService {
   }
 
   async createTicket(options, data) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     const service = await this.serviceInstancesTable.findOne({
       where: {
@@ -65,11 +65,11 @@ export class TicketService {
       userId: userId,
       serviceInstanceId: data.serviceInstanceId,
     });
-    return Promise.resolve(ticketId);
+    return Promise.resolve({ ticketId });
   }
 
   async getAllTickets(options) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     try {
       const tickets = await getListOfTickets({
@@ -78,7 +78,7 @@ export class TicketService {
       });
       return Promise.resolve(tickets);
     } catch (error) {
-      if (error.statusCode === 404) {
+      if (error.status === 404) {
         return {
           tickets: [],
           pagination: {},
@@ -89,8 +89,7 @@ export class TicketService {
   }
 
   async getTicket(options, ticketId) {
-    const userId = options.accessToken.userId;
-    const user = await this.userTable.findById(userId);
+    const userId = options.user.userId;
     const ticketExists = await this.ticketTable.findOne({
       where: {
         userId: userId,
@@ -99,13 +98,13 @@ export class TicketService {
     });
     if (!ticketExists) {
       return Promise.reject(new ForbiddenException());
-      const ticket = await getTicket(ticketId);
-      return Promise.resolve(ticket);
     }
+    const ticket = await getTicket(ticketId);
+    return Promise.resolve(ticket);
   }
 
   async replyToTicket(options, data, ticketId) {
-    const userId = options.accessToken.userId;
+    const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     const ticketExists = await this.ticketTable.findOne({
       where: {

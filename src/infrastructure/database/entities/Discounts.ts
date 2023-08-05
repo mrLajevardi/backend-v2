@@ -38,6 +38,9 @@ export class Discounts {
   @Column('varchar', { name: 'Code', nullable: true, length: 50 })
   code: string | null;
 
+  @Column('varchar', { name: 'ServiceTypeID' })
+  serviceTypeId: string;
+
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.discounts, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
