@@ -43,7 +43,7 @@ describe('AppController', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [],
+      imports: [CrudModule],
       controllers: [AppController],
       providers: [AppService],
     }).compile();
