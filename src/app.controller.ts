@@ -7,10 +7,14 @@ import { ApiOperation } from '@nestjs/swagger';
 import { AuthService } from './application/base/security/auth/service/auth.service';
 import { LoginDto } from './application/base/security/auth/dto/login.dto';
 import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
+import { SystemSettingsTableService } from './application/base/crud/system-settings-table/system-settings-table.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private readonly systemSettingsService: SystemSettingsTableService,
+  ) {}
 
   @Get()
   @Public()
@@ -25,5 +29,14 @@ export class AppController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @ApiOperation({ summary: 'get system settings' })
+  @ApiResponse({ status: 200, description: 'Returns the system settings' })
+  @ApiBearerAuth() // Requires authentication with a JWT token
+  @UseGuards(JwtAuthGuard)
+  @Get('systemSettings')
+  getSystemSettings() {
+    return this.systemSettingsService.find();
   }
 }
