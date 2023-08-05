@@ -67,6 +67,25 @@ export class LoginService {
     return null;
   }
 
+  async getRobotLoginToken(token: string) {
+    const systemToken = process.env.ROBOT_TOKEN;
+
+    console.log(token, systemToken);
+    if (isEmpty(systemToken) || isEmpty(token)) {
+      return Promise.reject(new UnauthorizedException());
+    }
+
+    if (token != systemToken) {
+      return Promise.reject(new UnauthorizedException());
+    }
+
+    const payload = {
+      isRobot: true,
+      sub: token,
+    };
+    return this.jwtService.sign(payload);
+  }
+
   // This function will be called in AuthController.login after
   // the success of local strategy
   // it will return the JWT token

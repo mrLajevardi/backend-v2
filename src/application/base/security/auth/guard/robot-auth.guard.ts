@@ -2,10 +2,9 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from '../decorators/ispublic.decorator';
-import { IS_ROBOT_KEY } from '../decorators/is-robot.decorator';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {
+export class RobotAuthGuard extends AuthGuard('robot') {
   constructor(private reflector: Reflector) {
     super();
   }
@@ -17,17 +16,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
 
-    const isRobot = this.reflector.getAllAndOverride<boolean>(IS_ROBOT_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
-    if (isRobot) {
-      return true;
-    }
-
     if (isPublic) {
-      return true;
+      return false;
     }
 
     return super.canActivate(context);

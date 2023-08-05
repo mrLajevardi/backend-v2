@@ -41,6 +41,7 @@ import { CreateUserWithOtpDto } from '../dto/create-user-with-otp.dto';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { UserService } from 'src/application/base/user/service/user.service';
 import { UserAlreadyExist } from 'src/infrastructure/exceptions/user-already-exist.exception';
+import { RobotLoginDto } from '../dto/robot-login.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -92,6 +93,16 @@ export class AuthController {
   @Post('login')
   async login(@Request() req) {
     return this.authService.login.getLoginToken(req.user.id);
+  }
+
+  @Public()
+  @Post('/robot/login')
+  @ApiBody({
+    type: RobotLoginDto,
+    description: 'Local server api token for automated tasks',
+  })
+  async robotLogin(@Body() dto: RobotLoginDto): Promise<string> {
+    return this.authService.login.getRobotLoginToken(dto.token);
   }
 
   @Public()
