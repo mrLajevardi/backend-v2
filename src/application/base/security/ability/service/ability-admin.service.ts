@@ -1,45 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { ACLTableService } from 'src/application/base/crud/acl-table/acl-table.service';
-import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { AbilitySubjects } from '../ability.factory';
-import { User } from 'src/infrastructure/database/entities/User';
-import { Action } from '../enum/action.enum';
-import { PredefinedRoles } from '../enum/predefined-enum.type';
-import { BadRequestError } from 'passport-headerapikey';
-import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
-import { In } from 'typeorm';
-import { PredefinedRoleDto } from '../dto/predefined-role.dto';
-import { stringToEnum } from 'src/infrastructure/helpers/helpers';
+import { Injectable } from "@nestjs/common";
+import { ACLTableService } from "src/application/base/crud/acl-table/acl-table.service";
+import { UserTableService } from "src/application/base/crud/user-table/user-table.service";
+import { AbilitySubjects, getStringListOfAbilities } from "../ability.factory";
+import { User } from "src/infrastructure/database/entities/User";
+import { Action } from "../enum/action.enum";
+import { PredefinedRoles } from "../enum/predefined-enum.type";
+import { BadRequestError } from "passport-headerapikey";
+import { BadRequestException } from "src/infrastructure/exceptions/bad-request.exception";
+import { In } from "typeorm";
+import { PredefinedRoleDto } from "../dto/predefined-role.dto";
+import { stringToEnum } from "src/infrastructure/helpers/helpers";
+import { dbEntities } from "src/infrastructure/database/entityImporter/orm-entities";
 
 @Injectable()
 export class AbilityAdminService {
   constructor(
     private readonly aclTable: ACLTableService,
-    private readonly userTable: UserTableService,
+    private readonly userTable: UserTableService
   ) {}
 
-  getAvailableModules() {
-    return [];
+  getListOfModels() : string[] {
+    return getStringListOfAbilities();
   }
 
-  async getAllPredefinedRoles(userId: number) {
-    const returnResult: PredefinedRoleDto[] = [];
+
+  async getAllPredefinedRoles(userId: number): Promise<string[]> {
+    const returnResult: string[] = [];
     const predefinedRoles = Object.values(PredefinedRoles);
     const result = await this.aclTable.find({
       where: {
         model: In(predefinedRoles),
-        principalType: 'User',
+        principalType: "User",
         principalId: userId.toString(),
       },
     });
     result.forEach((item) => {
       // console.log(item);
-      const dtoItem: PredefinedRoleDto = {
-        action: stringToEnum(item.accessType, Action),
-        permission: item.permission,
-        model: stringToEnum(item.model, PredefinedRoles),
-      };
-      returnResult.push(dtoItem);
+      returnResult.push(item.model);
     });
     return returnResult;
   }
@@ -51,16 +48,16 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: 'User',
+      principalType: "User",
       principalId: userId.toString(),
     });
 
     await this.aclTable.create({
       model: role,
-      principalType: 'User',
+      principalType: "User",
       principalId: userId.toString(),
       accessType: Action.Manage,
-      permission: 'can',
+      permission: "can",
     });
   }
 
@@ -71,7 +68,7 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: 'User',
+      principalType: "User",
       principalId: userId.toString(),
     });
   }
@@ -83,16 +80,16 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: 'User',
+      principalType: "User",
       principalId: userId.toString(),
     });
 
     await this.aclTable.create({
       model: role,
-      principalType: 'User',
+      principalType: "User",
       principalId: userId.toString(),
       accessType: Action.Manage,
-      permission: 'cannot',
+      permission: "cannot",
     });
   }
 
@@ -100,15 +97,15 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: 'User',
+      principalType: "User",
       principalId: to.toString(),
     });
     await this.aclTable.create({
       model: on,
       accessType: accessType,
-      principalType: 'User',
+      principalType: "User",
       principalId: to.toString(),
-      permission: 'can',
+      permission: "can",
     });
   }
 
@@ -116,15 +113,15 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: 'User',
+      principalType: "User",
       principalId: from.toString(),
     });
     await this.aclTable.create({
       model: on,
       accessType: accessType,
-      principalType: 'User',
+      principalType: "User",
       principalId: from.toString(),
-      permission: 'cannot',
+      permission: "cannot",
     });
   }
 
@@ -132,12 +129,12 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: 'User',
+      principalType: "User",
       principalId: userId.toString(),
     });
   }
 
-  async permitAccess(accessType: Action, on: string){
+  async permitAccess(accessType: Action, on: string) {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
@@ -150,11 +147,11 @@ export class AbilityAdminService {
       accessType: accessType,
       principalType: "",
       principalId: "",
-      permission: "can"      
-    })
+      permission: "can",
+    });
   }
 
-  async denyAccess(accessType: Action, on: string){
+  async denyAccess(accessType: Action, on: string) {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
@@ -167,9 +164,8 @@ export class AbilityAdminService {
       accessType: accessType,
       principalType: "",
       principalId: "",
-      permission: "cannot"      
-    })
-
+      permission: "cannot",
+    });
   }
 
   async getAllAcls(page: number = 1, pageSize: number = 10, search: string) {
@@ -196,8 +192,8 @@ export class AbilityAdminService {
     });
 
     const totalItems = await this.aclTable.count({
-      where: where
-    })
+      where: where,
+    });
 
     return {
       data: acls,
@@ -205,8 +201,5 @@ export class AbilityAdminService {
       pageSize,
       totalItems,
     };
-
   }
-
-
 }

@@ -4,6 +4,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { isEmpty } from 'lodash';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
 import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
+import { Roles } from 'src/application/base/security/ability/decorators/roles.decorator';
 import { Action } from 'src/application/base/security/ability/enum/action.enum';
 import { PredefinedRoles } from 'src/application/base/security/ability/enum/predefined-enum.type';
 import { PoliciesGuard } from 'src/application/base/security/ability/guards/policies.guard';
@@ -16,8 +17,7 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 @Controller('vdc/admin')
 @ApiBearerAuth()
 @UseGuards(PoliciesGuard)
-@CheckPolicies((ability: PureAbility) => ability.can(Action.Manage  , PredefinedRoles.AdminRole ))
- 
+@Roles(PredefinedRoles.AdminRole)
 export class VdcAdminController {
   constructor(
     private readonly serviceInstancesTableService: ServiceInstancesTableService,

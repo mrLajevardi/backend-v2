@@ -37,12 +37,12 @@ import { PureAbility } from '@casl/ability';
 import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
 import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
+import { Roles } from '../../security/ability/decorators/roles.decorator';
 
 @ApiTags('User-admin')
 @Controller('admin/users')
 @ApiBearerAuth() // Requires authentication with a JWT token
-@UseGuards(PoliciesGuard)
-@CheckPolicies((ability: PureAbility) => ability.can(Action.Manage  , PredefinedRoles.AdminRole ))
+@Roles(PredefinedRoles.AdminRole)
 export class UserAdminController {
   constructor(
     private readonly userAdminService: UserAdminService,

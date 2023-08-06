@@ -15,12 +15,12 @@ import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.typ
 import { PureAbility } from '@casl/ability';
 import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
+import { Roles } from '../../security/ability/decorators/roles.decorator';
 
 @Controller('/tasks/admin')
 @ApiBearerAuth()
 @ApiTags('Task-admin')
-@UseGuards(PoliciesGuard)
-@CheckPolicies((ability: PureAbility) => ability.can(Action.Manage  , PredefinedRoles.AdminRole ))
+@Roles(PredefinedRoles.AdminRole)
 export class TaskAdminController {
   constructor(private readonly service: TaskAdminService) {}
 

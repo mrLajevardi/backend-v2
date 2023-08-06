@@ -14,6 +14,22 @@ export type AbilitySubjects =
   | PredefinedRoles.UserRole
   | 'all';
 
+export function getStringListOfAbilities() : string[] {
+  const retVal: string[] = ['all'];
+
+  const roles = Object.values(PredefinedRoles);
+  roles.forEach(role => {
+    retVal.push(role);
+  });
+  retVal.concat(roles);
+
+  for (const entity of dbEntities) {
+    retVal.push((entity as any).name);
+  }
+
+  return retVal;
+}
+
 export const ability = createMongoAbility<[Action, AbilitySubjects]>();
 
 @Injectable()
@@ -34,6 +50,9 @@ export class AbilityFactory {
   // creates the abilities related to the user .
   async createForUser(user: User) {
     const builder = new AbilityBuilder(createMongoAbility);
+
+    // all activities is denied except we permit it 
+    builder.cannot(Action.Manage, 'all');
 
     const simpleAcls = await this.aclTable.find({
       where: { principalType: null }
