@@ -21,19 +21,6 @@ export class CheckServiceService {
     private readonly logger: LoggerService
   ) {}
 
-  serviceInstanceExe(sql, params){
-      return new Promise((resolve, reject) => {
-        this.serviceInstancesTable.
-        app.models.ServiceInstances.dataSource.connector
-            .execute(sql, params, (err, data) => {
-              if (err) {
-                reject(err);
-              }
-              resolve(data);
-            });
-      });
-    };
-
   private getWarningsSettings() {
     const data = fs.readFileSync("./testJsonFile.json", "utf8");
     const warningsSettings = JSON.parse(data);
@@ -46,9 +33,9 @@ export class CheckServiceService {
       const date = new Date(
         new Date().getTime() + warningsProp.daysAfterNow * 24 * 60 * 60 * 1000
       );
-      let data = await serviceInstanceExe(enabledServiceSql, [date, "vdc"]);
+      let data = await this.serviceInstancesTable.enabledServices([date, "vdc"]);
       if (warningsProp.daysAfterNow === -13) {
-        data = await serviceInstanceExe(disabledServiceSql, [date, "vdc"]);
+        data = await this.serviceInstancesTable.disabledServices([date, "vdc"]);
         console.log("tes", { data, date });
       }
       for (const service of data) {
@@ -85,7 +72,7 @@ export class CheckServiceService {
       );
       if (warningsProp.code === "deleteService") {
         console.log("hello");
-        const data = await serviceInstanceExe(disabledServiceSql, [
+        const data = await this.serviceInstancesTable.disabledServices([
           date,
           "vdc",
         ]);
@@ -102,7 +89,7 @@ export class CheckServiceService {
         }
       } else if (warningsProp.code === "disableService") {
         console.log("first");
-        const data = await serviceInstanceExe(enabledServiceExtendedSql, [
+        const data = await this.serviceInstancesTable.enabledServiceExtended([
           date,
           "vdc",
         ]);
@@ -111,7 +98,6 @@ export class CheckServiceService {
           const props =
             await this.servicePropertiesServicee.getAllServiceProperties(
               service.ID,
-              app
             );
           const session = await this.sessionService.checkAdminSession(
             service.userId

@@ -27,27 +27,7 @@ export class PaygInvoiceService {
 
       
     async paygInvoiceRobot() {
-        const sql = `SELECT SUM
-          ( VALUE ) AS Sum,
-          MAX ( ID ) AS LastID,
-          MAX ( DateTime ) AS EndDate,
-          MIN ( DateTime ) AS StartDate,
-          [user].Transactions.ServiceInstanceID AS ServiceInstanceID 
-          FROM
-          [user].Transactions 
-          WHERE
-          PaymentType = 2 AND InvoiceID IS NULL
-          GROUP BY
-        [user].Transactions.ServiceInstanceID`;
-        const targetTransactions = await new Promise((resolve, reject) => {
-          app.models.Transactions
-              .dataSource.connector.execute(sql, [], (err, data) => {
-                if (err) {
-                  return reject(err);
-                }
-                return resolve(data);
-              });
-        });
+        const targetTransactions = await this.transactionsTable.robotPaygTargetTransactions();
         console.log(targetTransactions);
         for (const targetTransaction of targetTransactions) {
           if (targetTransaction.ServiceInstanceID) {
@@ -81,15 +61,4 @@ export class PaygInvoiceService {
           }
         }
       }
-      
-      paygInvoiceRobot().then((d) => {
-        console.log(d);
-      }).catch((err) => {
-        logger.error({
-          message: err.message,
-          stackTrace: err.stack,
-          userId: null,
-        });
-      });
-      
 }

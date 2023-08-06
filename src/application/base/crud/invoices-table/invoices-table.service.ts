@@ -43,11 +43,11 @@ export class InvoicesTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateInvoicesDto): Promise<number> {
+  async create(dto: CreateInvoicesDto): Promise<Invoices> {
     const newItem = plainToClass(Invoices, dto);
     const createdItem = this.repository.create(newItem);
     const item = await this.repository.save(createdItem);
-    return item.id;
+    return item;
   }
 
   // Update an Item using updateDTO

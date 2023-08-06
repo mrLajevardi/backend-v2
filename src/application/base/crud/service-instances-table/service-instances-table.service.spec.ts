@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ServiceInstancesTableService } from './service-instances-table.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { TestDataService } from 'src/infrastructure/database/test-data.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { ServiceInstancesTableService } from "./service-instances-table.service";
+import { DatabaseModule } from "src/infrastructure/database/database.module";
+import { TestDataService } from "src/infrastructure/database/test-data.service";
 
-describe('ServiceInstancesTableService', () => {
+describe("ServiceInstancesTableService", () => {
   let service: ServiceInstancesTableService;
   let module: TestingModule;
 
@@ -14,7 +14,7 @@ describe('ServiceInstancesTableService', () => {
     }).compile();
 
     service = module.get<ServiceInstancesTableService>(
-      ServiceInstancesTableService,
+      ServiceInstancesTableService
     );
   });
 
@@ -22,7 +22,7 @@ describe('ServiceInstancesTableService', () => {
     await module.close();
   });
 
-  it('should be defined', () => {
+  it("should be defined", () => {
     expect(service).toBeDefined();
   });
 });

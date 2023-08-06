@@ -18,6 +18,22 @@ export class ConfigsTableService {
     private readonly repository: Repository<Configs>,
   ) {}
 
+  async getVgpuRobotConfigData(): Promise<Configs[]> {
+    const propertyKeys = [
+      'config.vgpu.orgName',
+      'config.vgpu.orgId',
+      'config.vgpu.vdcId',
+      'QualityPlans.bronze.costPerHour',
+      'QualityPlans.silver.costPerHour',
+      'QualityPlans.gold.costPerHour',
+    ];
+
+    return this.repository
+      .createQueryBuilder('configs')
+      .where('configs.PropertyKey IN (:...propertyKeys)', { propertyKeys })
+      .getMany();
+  }
+
   // Find One Item by its ID
   async findById(id: number): Promise<Configs> {
     const serviceType = await this.repository.findOne({ where: { id: id } });

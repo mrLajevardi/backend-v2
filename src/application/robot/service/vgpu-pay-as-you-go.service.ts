@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { InvoicesTableService } from 'src/application/base/crud/invoices-table/invoices-table.service';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
 import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { NotificationService } from 'src/application/base/notification/notification.service';
+import { PayAsYouGoService } from 'src/application/base/pay-as-you-go/pay-as-you-go.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { In } from 'typeorm';
 
 @Injectable()
 export class VgpuPayAsYouGoService {
@@ -19,45 +23,34 @@ export class VgpuPayAsYouGoService {
         private readonly taskManagerService: TaskManagerService,
         private readonly servicePropertiesServicee: ServicePropertiesService,
         private readonly sessionService: SessionsService,
+        private readonly servicePropertiesTable: ServicePropertiesTableService,
         private readonly transactionsTable: TransactionsTableService,
         private readonly logger: LoggerService,
         private readonly invoicesTable: InvoicesTableService,
+        private readonly configsTable: ConfigsTableService,
+        private readonly paygService: PayAsYouGoService,
       ) {}
       
-    async function vgpuPayAsYouGoRobot() {
-
-
+    async vgpuPayAsYouGoRobot() {
         /**
          * checks if user have enough credit or not if not shut down user's vms
          */
-        const adminSession = await new CheckSession(app, null).checkAdminSession();
+        const adminSession = await this.sessionService.checkAdminSession(null);
         // configs properties
-        const configsData = await app.models.Configs.find({
-          where: {
-            PropertyKey: {
-              inq: [
-                'config.vgpu.orgName',
-                'config.vgpu.orgId',
-                'config.vgpu.vdcId',
-                'QualityPlans.bronze.costPerHour',
-                'QualityPlans.silver.costPerHour',
-                'QualityPlans.gold.costPerHour',
-              ]},
-          },
-        });
+        const configsData = await this.configsTable.getVgpuRobotConfigData();
         // filtered configs
         const configs = {};
         configsData.forEach((property) => {
-          configs[property.PropertyKey] = property.Value;
+          configs[property.propertyKey] = property.value;
         });
-        const {
-          'config.vgpu.orgName': orgName,
-          'config.vgpu.orgId': orgId,
-          'config.vgpu.vdcId': vdcId,
-          'QualityPlans.bronze.costPerHour': bronzePlan,
-          'QualityPlans.gold.costPerHour': goldPlan,
-          'QualityPlans.silver.costPerHour': silverPlan,
-        } = configs;
+
+        const orgName = configs['config.vgpu.orgName'];
+        const orgId = configs['config.vgpu.orgId'];
+        const vdcId = configs['config.vgpu.vdcId'];
+        const bronzePlan = configs['QualityPlans.bronze.costPerHour'];
+        const goldPlan = configs['QualityPlans.gold.costPerHour'];
+        const silverPlan = configs['QualityPlans.silver.costPerHour'];
+
         // plans
         const plans = {
           gold: goldPlan,
@@ -98,57 +91,54 @@ export class VgpuPayAsYouGoService {
         const sql = `SELECT ID, NextPAYG
          FROM [user].[ServiceInstances] 
          WHERE DATEDIFF(hh, NextPAYG, @param1) > 0 AND ID IN ${params}`;
-        const expiredServices = await new Promise((resolve, reject) => {
-          app.models.ServiceProperties
-              .dataSource.connector.execute(sql, [new Date().toISOString(), ...gpuIds], (err, data) => {
-                if (err) {
-                  return reject(err);
-                }
-                return resolve(data);
-              });
-        });
+
+         const expiredServicesQuery  = this.serviceInstancesTable.getQueryBuilder()
+         .select(['serviceInstances.ID', 'serviceInstances.NextPAYG'])
+         .where('DATEDIFF(hour, serviceInstances.NextPAYG, :param1) > 0', { param1: Date() })
+         .andWhere('serviceInstances.ID IN (:...params)', { params : gpuIds });
+         const expiredServices = await expiredServicesQuery.getMany();
+   
+
         console.log(expiredServices, 'expired');
         const targetServiceIDs = expiredServices.map((service) => {
-          return service.ID;
+          return service.id;
         });
-        const targetServiceProperties = await app.models.ServiceProperties.find({
+        const targetServiceProperties = await this.servicePropertiesTable.find({
           where: {
-            ServiceInstanceID: {
-              inq: targetServiceIDs,
-            },
+              serviceInstanceId: In(targetServiceIDs),
           },
         });
         console.log(gpuIds);
         // service id and service plan
         const targetServices = [];
         for (const targetProps of targetServiceProperties) {
-          if (targetProps.PropertyKey === 'plan') {
+          if (targetProps.propertyKey === 'plan') {
             targetServices.push({
-              plan: targetProps.Value,
-              ID: targetProps.ServiceInstanceID,
+              plan: targetProps.value,
+              ID: targetProps.serviceInstanceId,
             });
           }
         }
-        await servicePayment(targetServices, plans);
+        await this.servicePayment(targetServices, plans);
         return Promise.resolve(targetServiceProperties);
       }
       
-      async function servicePayment(serviceList, plans) {
+      async servicePayment(serviceList, plans) {
         for (const service of serviceList) {
-          const serviceInstance = await app.models.ServiceInstances.findOne({
+          const serviceInstance = await this.serviceInstancesTable.findOne({
             where: {
-              ID: service.ID,
+              id: service.id,
             },
           });
-          const user = await app.models.Users.findById(serviceInstance.UserID);
+          const user = await this.userTable.findById(serviceInstance.userId);
           console.log('dfdf');
           const cost = plans[service.plan];
           console.log(user.credit, '🐉');
           console.log(service.plan);
           if (user.credit < cost) {
             console.log('here');
-            await taskQueue.add({
-              serviceInstanceId: service.ID,
+            await this.taskManagerService.addTask({
+              serviceInstanceId: service.id,
               customTaskId: null,
               requestOptions: {},
               vcloudTask: null,
@@ -157,24 +147,13 @@ export class VgpuPayAsYouGoService {
               taskType: 'adminTask',
             });
           } else {
-            await payAsYouGoService(service.ID, cost);
-            const newDate = new Date(new Date().getTime() + 1000 * 3600).toISOString();
-            await app.models.ServiceInstances.updateAll({ID: service.ID}, {
-              LastPAYG: new Date().toISOString(),
-              NextPAYG: newDate,
+            await this.paygService.payAsYouGoService(service.id, cost);
+            const newDate = new Date(new Date().getTime() + 1000 * 3600);
+            await this.serviceInstancesTable.updateAll({id: service.id}, {
+              lastPayg: new Date(),
+              nextPayg: newDate,
             });
           }
         }
       }
-      vgpuPayAsYouGoRobot().then((d) => {
-        console.log(d);
-      }).catch((err) => {
-        logger.error({
-          message: err.message,
-          stackTrace: err.stack,
-          userId: null,
-        });
-      });
-
-      
 }
