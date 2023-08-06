@@ -5,9 +5,9 @@ import { VgpuPayAsYouGoService } from './vgpu-pay-as-you-go.service';
 
 @Injectable()
 export class RobotService {
-    constructor(
-        public readonly checkService: CheckServiceService,
-        public readonly paygInvoice: PaygInvoiceService,
-        public readonly vgpuPayAsYouGo: VgpuPayAsYouGoService
-    ){}
+  constructor(
+    public readonly checkService: CheckServiceService,
+    public readonly paygInvoice: PaygInvoiceService,
+    public readonly vgpuPayAsYouGo: VgpuPayAsYouGoService,
+  ) {}
 }

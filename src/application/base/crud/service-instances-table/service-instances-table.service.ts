@@ -15,15 +15,14 @@ import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class ServiceInstancesTableService {
-  private enabledServiceSql : string  = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [user].[ServiceInstances]
+  private enabledServiceSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [user].[ServiceInstances]
   WHERE DATEDIFF(dd, ExpireDate, @param1) = 0 AND ServiceTypeID = @param2 AND IsDeleted=0 AND IsDisabled=0`;
-  private disabledServiceSql : string = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [user].[ServiceInstances]
+  private disabledServiceSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [user].[ServiceInstances]
   WHERE DATEDIFF(dd, ExpireDate, @param1) = 0 AND ServiceTypeID = @param2 AND IsDeleted=0 AND IsDisabled=1`;
-  private enabledServiceExtendedSql : string  = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent, Status FROM [user].[ServiceInstances]
+  private enabledServiceExtendedSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent, Status FROM [user].[ServiceInstances]
   WHERE (DATEDIFF(dd, ExpireDate, @param1) = 0 AND ServiceTypeID = @param2 AND IsDeleted=0 AND IsDisabled=0) 
   OR (Status=4 AND ServiceTypeID='vdc' AND IsDeleted=0 AND IsDisabled=0)`;
 
-  
   constructor(
     @InjectRepository(ServiceInstances)
     private readonly repository: Repository<ServiceInstances>,
@@ -32,16 +31,16 @@ export class ServiceInstancesTableService {
   getQueryBuilder(): SelectQueryBuilder<ServiceInstances> {
     return this.repository.createQueryBuilder('serviceInstances');
   }
-  
-  async enabledServices(params : any[] ) : Promise<any> {
+
+  async enabledServices(params: any[]): Promise<any> {
     return await this.repository.query(this.enabledServiceSql, params);
   }
 
-  async disabledServices(params: any[]) : Promise<any> {
+  async disabledServices(params: any[]): Promise<any> {
     return await this.repository.query(this.disabledServiceSql, params);
   }
 
-  async enabledServiceExtended(params: any[]) : Promise<any> {
+  async enabledServiceExtended(params: any[]): Promise<any> {
     return await this.repository.query(this.enabledServiceExtendedSql, params);
   }
 
