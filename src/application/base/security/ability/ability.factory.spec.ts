@@ -199,6 +199,7 @@ describe('AbilityFactory', () => {
       const user2 = await userTable.findById(2);
       const ability = await abilityFactory.createForUser(user2);
       const result = ability.can(Action.Read, 'Acl');
+      // console.log(ability.rules);
       expect(result).toBeFalsy();
     });
 

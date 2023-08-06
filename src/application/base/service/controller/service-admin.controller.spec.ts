@@ -13,6 +13,7 @@ import { DeleteServiceService } from '../services/delete-service.service';
 import { ExtendServiceService } from '../services/extend-service.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { AbilityModule } from '../../security/ability/ability.module';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -21,6 +22,7 @@ describe('ServiceAdminController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         CrudModule,
         SessionsModule,
         TasksModule,

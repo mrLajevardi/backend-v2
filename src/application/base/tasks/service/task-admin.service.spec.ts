@@ -4,6 +4,7 @@ import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CrudModule } from '../../crud/crud.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { SessionsModule } from '../../sessions/sessions.module';
+import { AbilityModule } from '../../security/ability/ability.module';
 
 describe('TaskAdminService', () => {
   let service: TaskAdminService;
@@ -12,6 +13,7 @@ describe('TaskAdminService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         CrudModule,
         ServicePropertiesModule,
         SessionsModule,

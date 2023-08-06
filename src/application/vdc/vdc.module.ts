@@ -26,7 +26,7 @@ import { AbilityModule } from '../base/security/ability/ability.module';
     OrganizationModule,
     UserModule,
     ServicePropertiesModule,
-    AbilityModule
+    AbilityModule,
   ],
   providers: [VdcService, OrgService, EdgeService, NetworkService],
   controllers: [VdcController, VdcAdminController],

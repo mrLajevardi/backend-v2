@@ -8,6 +8,8 @@ import { CrudModule } from '../../crud/crud.module';
 import { NotificationModule } from '../../notification/notification.module';
 import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { UserService } from './user.service';
+import { AbilityFactory } from '../../security/ability/ability.factory';
+import { AbilityModule } from '../../security/ability/ability.module';
 
 describe('UserAdminService', () => {
   let service: UserAdminService;
@@ -17,6 +19,7 @@ describe('UserAdminService', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         CrudModule,
         LoggerModule,
         PaymentModule,

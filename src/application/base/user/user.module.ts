@@ -22,7 +22,7 @@ import { AbilityModule } from '../security/ability/ability.module';
     JwtModule,
     NotificationModule,
     SecurityToolsModule,
-    AbilityModule
+    AbilityModule,
   ],
   providers: [UserService, UserAdminService],
   controllers: [UserController, UserAdminController],

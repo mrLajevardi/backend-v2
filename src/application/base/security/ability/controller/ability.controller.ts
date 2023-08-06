@@ -41,8 +41,8 @@ import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entit
 export class AbilityController {
   constructor(
     private readonly abilityAdminService: AbilityAdminService,
-    private readonly aclTable : ACLTableService
-    ) {}
+    private readonly aclTable: ACLTableService,
+  ) {}
 
   @Get('/:userId/predefined-roles')
   @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
@@ -56,18 +56,19 @@ export class AbilityController {
   @Get('/predefined-roles')
   @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
   @ApiOperation({ summary: 'returns all predefined roles for the user' })
-  async getAllMyPredefinedRoles(
-    @Request() options,
-  ): Promise<string[]> {
-    return await this.abilityAdminService.getAllPredefinedRoles(options.user.userId);
+  async getAllMyPredefinedRoles(@Request() options): Promise<string[]> {
+    return await this.abilityAdminService.getAllPredefinedRoles(
+      options.user.userId,
+    );
   }
 
   @Public()
   @Get('/predefined-roles/list')
   @ApiResponse({ status: 200, type: String, isArray: true })
-  @ApiOperation({ summary: 'returns all predefined roles usable in this system' })
-  async getListOfPredefinedRoles(
-  ): Promise<string[]> {
+  @ApiOperation({
+    summary: 'returns all predefined roles usable in this system',
+  })
+  async getListOfPredefinedRoles(): Promise<string[]> {
     const roles = Object.values(PredefinedRoles);
     return roles;
   }
@@ -76,21 +77,18 @@ export class AbilityController {
   @Get('/actions/list')
   @ApiResponse({ status: 200, type: String, isArray: true })
   @ApiOperation({ summary: 'returns all actions in system' })
-  async getListOfActions(
-  ): Promise<string[]> {
+  async getListOfActions(): Promise<string[]> {
     const actions = Object.values(Action);
     return actions;
   }
 
   @Public()
   @Get('/models/list')
-  @ApiResponse({ status: 200, type: String , isArray: true })
+  @ApiResponse({ status: 200, type: String, isArray: true })
   @ApiOperation({ summary: 'returns all models available in system' })
-  async getListOfModels(
-  ): Promise<string[]> {
+  async getListOfModels(): Promise<string[]> {
     return await this.abilityAdminService.getListOfModels();
   }
-
 
   @Get()
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -98,8 +96,8 @@ export class AbilityController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiResponse({ status: 200, description: 'Retrieved ACLs successfully' })
   async getAllAcls(
-    @Query('page', ParseIntPipe) page: number = 1,
-    @Query('pageSize', ParseIntPipe) pageSize: number = 10,
+    @Query('page', ParseIntPipe) page = 1,
+    @Query('pageSize', ParseIntPipe) pageSize = 10,
     @Query('search') search: string,
   ) {
     return await this.abilityAdminService.getAllAcls(page, pageSize, search);
@@ -116,7 +114,10 @@ export class AbilityController {
   @ApiParam({ name: 'id', type: Number })
   @ApiBody({ type: UpdateACLDto })
   @ApiResponse({ status: 200, description: 'Updated ACL successfully' })
-  async updateAcl(@Param('id') id: number, @Body() data: UpdateACLDto): Promise<Acl> {
+  async updateAcl(
+    @Param('id') id: number,
+    @Body() data: UpdateACLDto,
+  ): Promise<Acl> {
     return await this.aclTable.update(id, data);
   }
 
@@ -126,7 +127,6 @@ export class AbilityController {
   async deleteAcl(@Param('id') id: number): Promise<void> {
     return await this.aclTable.delete(id);
   }
-
 
   @Post('/:userId/predefined-roles')
   @ApiOperation({ summary: 'assign a predefined role to user ' })

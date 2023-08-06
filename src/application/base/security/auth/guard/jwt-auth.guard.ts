@@ -12,10 +12,10 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   canActivate(context: ExecutionContext) {
     console.log('can activate');
-    // check always valid modes, like public modes or when user is admin 
-    if (guardHelper.checkValidModes(this.reflector,context)){
+    // check always valid modes, like public modes or when user is admin
+    if (guardHelper.checkValidModes(this.reflector, context)) {
       return true;
-  }
+    }
     return super.canActivate(context);
   }
 }

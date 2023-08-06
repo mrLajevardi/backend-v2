@@ -87,11 +87,11 @@ import { RolesGuard } from './application/base/security/ability/guards/roles.gua
     },
     {
       provide: APP_GUARD,
-      useClass: RolesGuard
+      useClass: RolesGuard,
     },
     {
       provide: APP_GUARD,
-      useClass: PoliciesGuard
+      useClass: PoliciesGuard,
     },
     NetworkService,
     ApplicationPortProfileService,

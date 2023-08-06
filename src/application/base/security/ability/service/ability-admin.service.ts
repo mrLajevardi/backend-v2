@@ -1,28 +1,27 @@
-import { Injectable } from "@nestjs/common";
-import { ACLTableService } from "src/application/base/crud/acl-table/acl-table.service";
-import { UserTableService } from "src/application/base/crud/user-table/user-table.service";
-import { AbilitySubjects, getStringListOfAbilities } from "../ability.factory";
-import { User } from "src/infrastructure/database/entities/User";
-import { Action } from "../enum/action.enum";
-import { PredefinedRoles } from "../enum/predefined-enum.type";
-import { BadRequestError } from "passport-headerapikey";
-import { BadRequestException } from "src/infrastructure/exceptions/bad-request.exception";
-import { In } from "typeorm";
-import { PredefinedRoleDto } from "../dto/predefined-role.dto";
-import { stringToEnum } from "src/infrastructure/helpers/helpers";
-import { dbEntities } from "src/infrastructure/database/entityImporter/orm-entities";
+import { Injectable } from '@nestjs/common';
+import { ACLTableService } from 'src/application/base/crud/acl-table/acl-table.service';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { AbilitySubjects, getStringListOfAbilities } from '../ability.factory';
+import { User } from 'src/infrastructure/database/entities/User';
+import { Action } from '../enum/action.enum';
+import { PredefinedRoles } from '../enum/predefined-enum.type';
+import { BadRequestError } from 'passport-headerapikey';
+import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
+import { In } from 'typeorm';
+import { PredefinedRoleDto } from '../dto/predefined-role.dto';
+import { stringToEnum } from 'src/infrastructure/helpers/helpers';
+import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 
 @Injectable()
 export class AbilityAdminService {
   constructor(
     private readonly aclTable: ACLTableService,
-    private readonly userTable: UserTableService
+    private readonly userTable: UserTableService,
   ) {}
 
-  getListOfModels() : string[] {
+  getListOfModels(): string[] {
     return getStringListOfAbilities();
   }
-
 
   async getAllPredefinedRoles(userId: number): Promise<string[]> {
     const returnResult: string[] = [];
@@ -30,7 +29,7 @@ export class AbilityAdminService {
     const result = await this.aclTable.find({
       where: {
         model: In(predefinedRoles),
-        principalType: "User",
+        principalType: 'User',
         principalId: userId.toString(),
       },
     });
@@ -48,16 +47,16 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: "User",
+      principalType: 'User',
       principalId: userId.toString(),
     });
 
     await this.aclTable.create({
       model: role,
-      principalType: "User",
+      principalType: 'User',
       principalId: userId.toString(),
       accessType: Action.Manage,
-      permission: "can",
+      permission: 'can',
     });
   }
 
@@ -68,7 +67,7 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: "User",
+      principalType: 'User',
       principalId: userId.toString(),
     });
   }
@@ -80,16 +79,16 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: "User",
+      principalType: 'User',
       principalId: userId.toString(),
     });
 
     await this.aclTable.create({
       model: role,
-      principalType: "User",
+      principalType: 'User',
       principalId: userId.toString(),
       accessType: Action.Manage,
-      permission: "cannot",
+      permission: 'cannot',
     });
   }
 
@@ -97,15 +96,15 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: "User",
+      principalType: 'User',
       principalId: to.toString(),
     });
     await this.aclTable.create({
       model: on,
       accessType: accessType,
-      principalType: "User",
+      principalType: 'User',
       principalId: to.toString(),
-      permission: "can",
+      permission: 'can',
     });
   }
 
@@ -113,15 +112,15 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: "User",
+      principalType: 'User',
       principalId: from.toString(),
     });
     await this.aclTable.create({
       model: on,
       accessType: accessType,
-      principalType: "User",
+      principalType: 'User',
       principalId: from.toString(),
-      permission: "cannot",
+      permission: 'cannot',
     });
   }
 
@@ -129,7 +128,7 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: "User",
+      principalType: 'User',
       principalId: userId.toString(),
     });
   }
@@ -138,16 +137,16 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: "",
-      principalId: "",
+      principalType: '',
+      principalId: '',
     });
 
     await this.aclTable.create({
       model: on,
       accessType: accessType,
-      principalType: "",
-      principalId: "",
-      permission: "can",
+      principalType: '',
+      principalId: '',
+      permission: 'can',
     });
   }
 
@@ -155,20 +154,20 @@ export class AbilityAdminService {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
-      principalType: "",
-      principalId: "",
+      principalType: '',
+      principalId: '',
     });
 
     await this.aclTable.create({
       model: on,
       accessType: accessType,
-      principalType: "",
-      principalId: "",
-      permission: "cannot",
+      principalType: '',
+      principalId: '',
+      permission: 'cannot',
     });
   }
 
-  async getAllAcls(page: number = 1, pageSize: number = 10, search: string) {
+  async getAllAcls(page = 1, pageSize = 10, search: string) {
     const skip = (page - 1) * pageSize;
     const take = pageSize;
 

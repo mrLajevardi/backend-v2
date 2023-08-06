@@ -41,7 +41,9 @@ export class AppController {
   @ApiOperation({ summary: 'get system settings' })
   @ApiResponse({ status: 200, description: 'Returns the system settings' })
   @ApiBearerAuth() // Requires authentication with a JWT token
-  @CheckPolicies((ability: PureAbility) => ability.can(Action.Manage  , PredefinedRoles.AdminRole ))
+  @CheckPolicies((ability: PureAbility) =>
+    ability.can(Action.Manage, PredefinedRoles.AdminRole),
+  )
   @Get('systemSettings')
   getSystemSettings() {
     return this.systemSettingsService.find();
