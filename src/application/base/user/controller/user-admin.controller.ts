@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -26,17 +27,22 @@ import { UserAdminService } from '../service/user-admin.service';
 import { UserService } from '../service/user.service';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CreateErrorException } from 'src/infrastructure/exceptions/create-error.exception';
-import { UserPaginationDto } from '../dto/user-pagination.dto';
-import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { GroupsMapping } from 'src/infrastructure/database/entities/GroupsMapping';
 import { Groups } from 'src/infrastructure/database/entities/Groups';
 import { User } from 'src/infrastructure/database/entities/User';
 import { PostUserCreditDto } from '../dto/post-user-credit.dto';
 import { UpdateUserGroupsDto } from '../dto/update-user-groups.dto';
+import { Action } from '../../security/ability/enum/action.enum';
+import { PureAbility } from '@casl/ability';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
+import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
+import { Roles } from '../../security/ability/decorators/roles.decorator';
 
 @ApiTags('User-admin')
-@Controller('users')
+@Controller('admin/users')
 @ApiBearerAuth() // Requires authentication with a JWT token
+@Roles(PredefinedRoles.AdminRole)
 export class UserAdminController {
   constructor(
     private readonly userAdminService: UserAdminService,

@@ -19,10 +19,12 @@ import { LoginService } from './service/login.service';
 import { UserModule } from '../../user/user.module';
 import { SecurityToolsModule } from '../security-tools/security-tools.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { AbilityModule } from '../ability/ability.module';
 
 @Module({
   imports: [
     DatabaseModule,
+    AbilityModule,
     PassportModule,
     CrudModule,
     UserModule,

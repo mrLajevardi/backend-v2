@@ -5,6 +5,7 @@ import { CrudModule } from '../../crud/crud.module';
 import { TaskAdminService } from '../service/task-admin.service';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { SessionsModule } from '../../sessions/sessions.module';
+import { AbilityModule } from '../../security/ability/ability.module';
 
 describe('TaskAdminController', () => {
   let controller: TaskAdminController;
@@ -13,6 +14,7 @@ describe('TaskAdminController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         CrudModule,
         ServicePropertiesModule,
         SessionsModule,

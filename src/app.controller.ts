@@ -8,6 +8,12 @@ import { AuthService } from './application/base/security/auth/service/auth.servi
 import { LoginDto } from './application/base/security/auth/dto/login.dto';
 import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
 import { SystemSettingsTableService } from './application/base/crud/system-settings-table/system-settings-table.service';
+import { CheckPolicies } from './application/base/security/ability/decorators/check-policies.decorator';
+import { PureAbility } from '@casl/ability';
+import { Action } from './application/base/security/ability/enum/action.enum';
+import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
+import { PredefinedRoles } from './application/base/security/ability/enum/predefined-enum.type';
+import { Roles } from './application/base/security/ability/decorators/roles.decorator';
 
 @Controller()
 export class AppController {
@@ -31,10 +37,13 @@ export class AppController {
     return req.user;
   }
 
+  @Roles(PredefinedRoles.AdminRole)
   @ApiOperation({ summary: 'get system settings' })
   @ApiResponse({ status: 200, description: 'Returns the system settings' })
   @ApiBearerAuth() // Requires authentication with a JWT token
-  @UseGuards(JwtAuthGuard)
+  @CheckPolicies((ability: PureAbility) =>
+    ability.can(Action.Manage, PredefinedRoles.AdminRole),
+  )
   @Get('systemSettings')
   getSystemSettings() {
     return this.systemSettingsService.find();

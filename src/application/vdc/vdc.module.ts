@@ -14,6 +14,7 @@ import { ServiceModule } from '../base/service/service.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { NetworkService } from './service/network.service';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
+import { AbilityModule } from '../base/security/ability/ability.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     OrganizationModule,
     UserModule,
     ServicePropertiesModule,
+    AbilityModule,
   ],
   providers: [VdcService, OrgService, EdgeService, NetworkService],
   controllers: [VdcController, VdcAdminController],

@@ -33,6 +33,7 @@ import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { AbilityModule } from 'src/application/base/security/ability/ability.module';
 
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
@@ -42,6 +43,7 @@ describe('VdcAdminController', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         CrudModule,
         LoggerModule,
         //TasksModule,

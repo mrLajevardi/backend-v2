@@ -11,6 +11,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { ExtendServiceService } from './extend-service.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { AbilityModule } from '../../security/ability/ability.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -19,6 +20,7 @@ describe('ServiceAdminService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         CrudModule,
         LoggerModule,
         TasksModule,

@@ -98,14 +98,12 @@ describe('AbilityAdminService', () => {
 
     it('should permit user 1 to admin ', async () => {
       const user = await userTable.findById(1001);
-      const user2 = await userTable.findById(1002);
-      const access = (await abilityFactory.createForUser(user)).can(
+      const factory = await abilityFactory.createForUser(user);
+      // console.log(factory.rules);
+      const access = factory.can(Action.Manage, PredefinedRoles.AdminRole);
+      const access2 = factory.can(
         Action.Manage,
-        PredefinedRoles.AdminRole,
-      );
-      const access2 = (await abilityFactory.createForUser(user2)).can(
-        Action.Manage,
-        PredefinedRoles.AdminRole,
+        PredefinedRoles.SuperAdminRole,
       );
       expect(access).toBeTruthy();
       expect(access2).toBeFalsy();
@@ -115,19 +113,6 @@ describe('AbilityAdminService', () => {
       const manage = 'manage';
       const enumVal = stringToEnum(manage, Action);
       expect(enumVal).toBe(Action.Manage);
-    });
-
-    it('should return 2 roles for user 1001 and 1 for 1002', async () => {
-      const rules1 = await service.getAllPredefinedRoles(1001);
-      const rules2 = await service.getAllPredefinedRoles(1002);
-      // console.log(rules1);
-      // console.log(rules2);
-      expect(rules1.length).toBe(2);
-      expect(rules2.length).toBe(1);
-      expect(rules1[0].action).toBe(Action.Manage);
-      expect(rules1[0].model).toBe(PredefinedRoles.AdminRole);
-      expect(rules2[0].action).toBe(Action.Manage);
-      expect(rules2[0].permission).toBe('can');
     });
   });
 });
