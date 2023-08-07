@@ -86,8 +86,7 @@ export class TaskManagerService {
       );
       await this.serviceInstancesTable.updateAll(
         {
-          // MOVE: where is this parameter from?
-          //id: this.serviceInstanceId,
+          id: job.data.serviceInstanceId,
         },
         {
           status: 3,
