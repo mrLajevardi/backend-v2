@@ -26,7 +26,7 @@ export class Wrapper {
    * path to method
    * options of a method
    */
-  posts<T extends EndpointOptionsInterface, U = any>(
+  posts<T extends EndpointOptionsInterface, U>(
     path: string,
     options: T,
   ): Promise<AxiosResponse<U>> {

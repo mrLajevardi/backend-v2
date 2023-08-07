@@ -6,13 +6,13 @@ export interface EndpointInterface {
   params: object;
   body: object;
   headers: Partial<RawAxiosRequestHeaders>;
-  additionalConfig: Partial<AxiosRequestConfig>;
+  additionalConfig?: Partial<AxiosRequestConfig>;
 }
 
 export interface EndpointOptionsInterface {
-  params: string;
-  body: object;
-  urlParams: object;
-  additionalHeaders: Partial<RawAxiosRequestHeaders>;
-  additionalConfigs: Partial<AxiosRequestConfig>;
+  params?: any;
+  body?: any;
+  urlParams?: any;
+  headers?: Partial<RawAxiosRequestHeaders>;
+  additionalConfigs?: Partial<AxiosRequestConfig>;
 }
