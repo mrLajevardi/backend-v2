@@ -32,7 +32,7 @@ export class Wrapper {
     const existingEndPoint = lodash.get(this.endPoints, path);
     if (!isNil(existingEndPoint)) {
       const endpoint = existingEndPoint(options);
-     // console.log(endpoint);
+      // console.log(endpoint);
       return this.#request(endpoint);
     } else {
       throw new Error(`method [${path}] not found`);

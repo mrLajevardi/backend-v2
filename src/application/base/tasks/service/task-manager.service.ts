@@ -265,7 +265,7 @@ export class TaskManagerService {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
-    console.log('create Edge for',service.userId);
+    console.log('create Edge for', service.userId);
     const userId = service.userId;
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
@@ -427,7 +427,7 @@ export class TaskManagerService {
       serviceInstanceId,
     );
 
-    console.log('createdVdc', createdVdc)
+    console.log('createdVdc', createdVdc);
     const vcloudTask = createdVdc.__vcloudTask;
 
     this.taskQueue.add({
