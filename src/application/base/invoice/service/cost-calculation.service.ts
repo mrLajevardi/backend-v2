@@ -1,8 +1,24 @@
 import { Injectable } from '@nestjs/common';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
+import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
+import { Plans } from 'src/infrastructure/database/entities/Plans';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 
 @Injectable()
 export class CostCalculationService {
-  totalCosts(serviceType, data, plans, items, options = {}) {
+  totalCosts(
+    serviceType: ServiceTypes,
+    data: CreateServiceInvoiceDto,
+    plans: Plans[],
+    items: ItemTypes[],
+    options = {},
+  ) {
+    console.log(
+      this.itemsCost(items, data, serviceType),
+      this.plansRatioForItems(plans, data),
+      this.plansRatioForInvoice(plans, data),
+      '🧂',
+    );
     const totalCost =
       (this.itemsCost(items, data, serviceType) *
         this.plansRatioForItems(plans, data) +
@@ -11,13 +27,18 @@ export class CostCalculationService {
     return totalCost;
   }
 
-  itemsCost(items, data, serviceType) {
+  itemsCost(
+    items: ItemTypes[],
+    data: CreateServiceInvoiceDto,
+    serviceType: ServiceTypes,
+  ) {
     let itemTotalCost = 0;
-    if (!serviceType.IsPAYG) {
+    if (!serviceType.isPayg) {
+      console.log('first');
       items.forEach((element) => {
         data.items.forEach((el) => {
-          if (el.itemCode == element.Title) {
-            itemTotalCost += el.quantity * element.Fee;
+          if (el.itemCode == element.title) {
+            itemTotalCost += el.quantity * element.fee;
           }
         });
       });
@@ -26,15 +47,15 @@ export class CostCalculationService {
     return itemTotalCost;
   }
 
-  plansCost(plans, data, options: any = {}) {
+  plansCost(plans: Plans[], data: CreateServiceInvoiceDto, options: any = {}) {
     if (!options?.calculatePlanCost) {
       return 0;
     }
     let planTotalCost = 0;
     plans.forEach((element) => {
       data.plans.forEach((el) => {
-        if (element.Code == el) {
-          planTotalCost += element.AdditionAmount;
+        if (element.code == el) {
+          planTotalCost += element.additionAmount;
         }
       });
     });
@@ -42,13 +63,13 @@ export class CostCalculationService {
     return planTotalCost;
   }
 
-  plansRatioForInvoice(plans, data) {
+  plansRatioForInvoice(plans: Plans[], data: CreateServiceInvoiceDto) {
     let planTotalRatio = 1;
     let additionRatio;
     plans.forEach((element) => {
       data.plans.forEach((el) => {
-        if (element.Code == el && element.AdditionAmount == 0) {
-          additionRatio = 1 + element.AdditionRatio;
+        if (element.code == el && element.additionAmount == 0) {
+          additionRatio = 1 + element.additionRatio;
           planTotalRatio *= additionRatio;
         }
       });
@@ -56,13 +77,13 @@ export class CostCalculationService {
     return planTotalRatio;
   }
 
-  plansRatioForItems(plans, data) {
+  plansRatioForItems(plans: Plans[], data: CreateServiceInvoiceDto) {
     let planTotalRatio = 1;
     let additionRatio;
     plans.forEach((element) => {
       data.plans.forEach((el) => {
-        if (element.Code == el && element.AdditionAmount != 0) {
-          additionRatio = 1 + element.AdditionRatio;
+        if (element.code == el && element.additionAmount != 0) {
+          additionRatio = 1 + element.additionRatio;
           planTotalRatio *= additionRatio;
         }
       });

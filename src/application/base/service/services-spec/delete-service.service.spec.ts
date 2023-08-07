@@ -45,7 +45,7 @@ describe('DeleteServiceService', () => {
         UserModule,
         PaymentModule,
         BullModule.registerQueue({
-          name: 'tasks',
+          name: 'tasks2',
         }),
         LoggerModule,
         // VdcModule,

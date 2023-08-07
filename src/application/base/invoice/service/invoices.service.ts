@@ -228,6 +228,7 @@ export class InvoicesService {
       itemTypes,
       { calculatePlanCost },
     );
+    console.log('🥓', totalCosts);
     let duration = data.duration;
     if (data.serviceTypeId == 'vgpu') {
       await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
