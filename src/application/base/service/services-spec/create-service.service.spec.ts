@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CreateServiceService } from './create-service.service';
+import { CreateServiceService } from '../services/create-service.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { ExtendServiceService } from './extend-service.service';
+import { ExtendServiceService } from '../services/extend-service.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { OrganizationService } from '../../organization/organization.service';
 import { UserService } from '../../user/service/user.service';
-import { DiscountsService } from './discounts.service';
-import { ServiceChecksService } from './service-checks/service-checks.service';
+import { DiscountsService } from '../services/discounts.service';
+import { ServiceChecksService } from '../services/service-checks.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { QualityPlansService } from '../../crud/quality-plans/quality-plans.service';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
@@ -20,7 +20,7 @@ import { ItemTypesTableService } from '../../crud/item-types-table/item-types-ta
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
-import { ServiceService } from './service.service';
+import { ServiceService } from '../services/service.service';
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';

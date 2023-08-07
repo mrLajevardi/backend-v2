@@ -7,7 +7,7 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { CreateServiceService } from './services/create-service.service';
 import { ExtendServiceService } from './services/extend-service.service';
 import { DiscountsService } from './services/discounts.service';
-import { ServiceChecksService } from './services/service-checks/service-checks.service';
+import { ServiceChecksService } from './services/service-checks.service';
 import { UserModule } from '../user/user.module';
 import { InvoicesModule } from '../invoice/invoices.module';
 import { TransactionsModule } from '../transactions/transactions.module';

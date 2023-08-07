@@ -5,7 +5,7 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
-import { ServiceChecksService } from '../base/service/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../base/service/services/service-checks.service';
 import validator from 'validator';
 import { DhcpService } from './dhcp.service';
 import { InvalidIpParamException } from 'src/infrastructure/exceptions/invalid-ip-param.exceptionts';

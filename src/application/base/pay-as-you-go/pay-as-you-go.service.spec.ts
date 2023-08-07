@@ -33,7 +33,7 @@ import { UserModule } from '../user/user.module';
 import { CreateServiceService } from '../service/services/create-service.service';
 import { DeleteServiceService } from '../service/services/delete-service.service';
 import { DiscountsService } from '../service/services/discounts.service';
-import { ServiceChecksService } from '../service/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../service/services/service-checks.service';
 import { ServiceService } from '../service/services/service.service';
 
 describe('PayAsYouGoService', () => {

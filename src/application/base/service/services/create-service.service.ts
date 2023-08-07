@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
-import { ServiceChecksService } from './service-checks/service-checks.service';
+import { ServiceChecksService } from './service-checks.service';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
 import { InvalidServiceIdException } from 'src/infrastructure/exceptions/invalid-service-id.exception';
 import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
