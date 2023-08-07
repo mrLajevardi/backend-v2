@@ -24,10 +24,10 @@ import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 
-@Processor('tasks')
+@Processor('tasks2')
 export class TaskManagerService {
   constructor(
-    @InjectQueue('tasks')
+    @InjectQueue('tasks2')
     private taskQueue: Queue,
     private readonly sessionService: SessionsService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
