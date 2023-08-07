@@ -14,7 +14,7 @@ import { OrgService } from '../service/org.service';
 import { VdcService } from '../service/vdc.service';
 import { CreateServiceService } from 'src/application/base/service/services/create-service.service';
 import { DiscountsService } from 'src/application/base/service/services/discounts.service';
-import { ServiceChecksService } from 'src/application/base/service/services/service-checks/service-checks.service';
+import { ServiceChecksService } from 'src/application/base/service/services/service-checks.service';
 import { QualityPlansService } from 'src/application/base/crud/quality-plans/quality-plans.service';
 import { ServiceItemsSumService } from 'src/application/base/crud/service-items-sum/service-items-sum.service';
 import { InvoicesService } from 'src/application/base/invoice/service/invoices.service';

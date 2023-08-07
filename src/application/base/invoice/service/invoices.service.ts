@@ -30,7 +30,7 @@ import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.s
 import { CreateInvoicePluralDto } from '../../crud/invoices-table/dto/create-invoice-plural.dto';
 import { VgpuPcNamePassRequired } from 'src/infrastructure/exceptions/vgpu-pc-name-pass-required.exception';
 import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
-import { ServiceChecksService } from '../../service/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../../service/services/service-checks.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
@@ -228,6 +228,7 @@ export class InvoicesService {
       itemTypes,
       { calculatePlanCost },
     );
+    console.log('🥓', totalCosts);
     let duration = data.duration;
     if (data.serviceTypeId == 'vgpu') {
       await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);

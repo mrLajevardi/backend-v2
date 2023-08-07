@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServiceChecksService } from './service-checks.service';
+import { ServiceChecksService } from '../services/service-checks.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { DiscountsService } from '../discounts.service';
-import { TransactionsService } from '../../../transactions/transactions.service';
-import { UserService } from '../../../user/service/user.service';
+import { DiscountsService } from '../services/discounts.service';
+import { TransactionsService } from '../../transactions/transactions.service';
+import { UserService } from '../../user/service/user.service';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
 import { ServiceTypesTableService } from 'src/application/base/crud/service-types-table/service-types-table.service';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
@@ -22,11 +22,11 @@ import { NetworkService } from 'src/application/vdc/service/network.service';
 import { VdcModule } from 'src/application/vdc/vdc.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
-import { CreateServiceService } from '../create-service.service';
-import { DeleteServiceService } from '../delete-service.service';
-import { ExtendServiceService } from '../extend-service.service';
-import { PayAsYouGoService } from '../../../pay-as-you-go/pay-as-you-go.service';
-import { ServiceService } from '../service.service';
+import { CreateServiceService } from '../services/create-service.service';
+import { DeleteServiceService } from '../services/delete-service.service';
+import { ExtendServiceService } from '../services/extend-service.service';
+import { PayAsYouGoService } from '../../pay-as-you-go/pay-as-you-go.service';
+import { ServiceService } from '../services/service.service';
 
 describe('ServiceChecksService', () => {
   let service: ServiceChecksService;

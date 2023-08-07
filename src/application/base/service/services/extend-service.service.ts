@@ -17,7 +17,7 @@ import { InvoicesService } from '../../invoice/service/invoices.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { UserService } from '../../user/service/user.service';
 import { DiscountsService } from './discounts.service';
-import { ServiceChecksService } from './service-checks/service-checks.service';
+import { ServiceChecksService } from './service-checks.service';
 import { ServiceService } from './service.service';
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';

@@ -42,7 +42,7 @@ describe('TasksService', () => {
       imports: [
         DatabaseModule,
         BullModule.registerQueue({
-          name: 'tasks',
+          name: 'tasks2',
         }),
         LoggerModule,
         // VdcModule,

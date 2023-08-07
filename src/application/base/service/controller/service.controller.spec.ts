@@ -19,7 +19,7 @@ import { UserModule } from '../../user/user.module';
 import { DiscountsService } from '../services/discounts.service';
 import { ExtendServiceService } from '../services/extend-service.service';
 import { PayAsYouGoService } from '../../pay-as-you-go/pay-as-you-go.service';
-import { ServiceChecksService } from '../services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../services/service-checks.service';
 import { ServiceService } from '../services/service.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { TasksModule } from '../../tasks/tasks.module';

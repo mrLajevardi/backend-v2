@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DiscountsService } from './discounts.service';
+import { DiscountsService } from '../services/discounts.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 
