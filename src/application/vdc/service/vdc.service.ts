@@ -353,7 +353,7 @@ export class VdcService {
     );
     const recordListForFront = [];
     recordList.forEach((element) => {
-      const id = element.href.split('https://vpc.aradcloud.com/api/disk/')[1];
+      const id = element.href.split('disk/')[1];
       const name = element.name;
       const sizeMb = element.sizeMb;
       const description = element.description;

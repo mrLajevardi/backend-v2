@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ACLTableService } from 'src/application/base/crud/acl-table/acl-table.service';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { AbilitySubjects } from '../ability.factory';
+import { AbilitySubjects, getStringListOfAbilities } from '../ability.factory';
 import { User } from 'src/infrastructure/database/entities/User';
 import { Action } from '../enum/action.enum';
 import { PredefinedRoles } from '../enum/predefined-enum.type';
@@ -10,6 +10,7 @@ import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.e
 import { In } from 'typeorm';
 import { PredefinedRoleDto } from '../dto/predefined-role.dto';
 import { stringToEnum } from 'src/infrastructure/helpers/helpers';
+import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 
 @Injectable()
 export class AbilityAdminService {
@@ -18,12 +19,12 @@ export class AbilityAdminService {
     private readonly userTable: UserTableService,
   ) {}
 
-  getAvailableModules() {
-    return [];
+  getListOfModels(): string[] {
+    return getStringListOfAbilities();
   }
 
-  async getAllPredefinedRoles(userId: number) {
-    const returnResult: PredefinedRoleDto[] = [];
+  async getAllPredefinedRoles(userId: number): Promise<string[]> {
+    const returnResult: string[] = [];
     const predefinedRoles = Object.values(PredefinedRoles);
     const result = await this.aclTable.find({
       where: {
@@ -34,12 +35,7 @@ export class AbilityAdminService {
     });
     result.forEach((item) => {
       // console.log(item);
-      const dtoItem: PredefinedRoleDto = {
-        action: stringToEnum(item.accessType, Action),
-        permission: item.permission,
-        model: stringToEnum(item.model, PredefinedRoles),
-      };
-      returnResult.push(dtoItem);
+      returnResult.push(item.model);
     });
     return returnResult;
   }
@@ -135,5 +131,74 @@ export class AbilityAdminService {
       principalType: 'User',
       principalId: userId.toString(),
     });
+  }
+
+  async permitAccess(accessType: Action, on: string) {
+    await this.aclTable.deleteAll({
+      model: on,
+      accessType: accessType,
+      principalType: '',
+      principalId: '',
+    });
+
+    await this.aclTable.create({
+      model: on,
+      accessType: accessType,
+      principalType: '',
+      principalId: '',
+      permission: 'can',
+    });
+  }
+
+  async denyAccess(accessType: Action, on: string) {
+    await this.aclTable.deleteAll({
+      model: on,
+      accessType: accessType,
+      principalType: '',
+      principalId: '',
+    });
+
+    await this.aclTable.create({
+      model: on,
+      accessType: accessType,
+      principalType: '',
+      principalId: '',
+      permission: 'cannot',
+    });
+  }
+
+  async getAllAcls(page = 1, pageSize = 10, search: string) {
+    const skip = (page - 1) * pageSize;
+    const take = pageSize;
+
+    let where: any = {};
+    if (search) {
+      where = {
+        or: [
+          { model: { contains: search } },
+          { accessType: { contains: search } },
+          { principalType: { contains: search } },
+          { principalId: { contains: search } },
+          { permission: { contains: search } },
+        ],
+      };
+    }
+
+    const acls = await this.aclTable.find({
+      where,
+      skip,
+      take,
+    });
+
+    const totalItems = await this.aclTable.count({
+      where: where,
+    });
+
+    return {
+      data: acls,
+      page,
+      pageSize,
+      totalItems,
+    };
   }
 }

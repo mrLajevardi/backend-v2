@@ -11,6 +11,7 @@ import { AuthModule } from '../security/auth/auth.module';
 import { UserAdminService } from './service/user-admin.service';
 import { SecurityToolsModule } from '../security/security-tools/security-tools.module';
 import { UserAdminController } from './controller/user-admin.controller';
+import { AbilityModule } from '../security/ability/ability.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserAdminController } from './controller/user-admin.controller';
     JwtModule,
     NotificationModule,
     SecurityToolsModule,
+    AbilityModule,
   ],
   providers: [UserService, UserAdminService],
   controllers: [UserController, UserAdminController],

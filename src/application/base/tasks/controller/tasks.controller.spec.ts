@@ -11,6 +11,7 @@ import { OrganizationModule } from '../../organization/organization.module';
 import { ServiceModule } from '../../service/service.module';
 import { SessionsModule } from '../../sessions/sessions.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { AbilityModule } from '../../security/ability/ability.module';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -19,6 +20,7 @@ describe('TasksController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         BullModule.registerQueue({
           name: 'tasks',
         }),

@@ -6,7 +6,7 @@ import { UserService } from '../base/user/service/user.service';
 import { DiscountsService } from '../base/service/services/discounts.service';
 import { TransactionsService } from '../base/transactions/transactions.service';
 import { CreateServiceService } from '../base/service/services/create-service.service';
-import { ServiceChecksService } from '../base/service/services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../base/service/services/service-checks.service';
 import { QualityPlansService } from '../base/crud/quality-plans/quality-plans.service';
 import { InvoicesService } from '../base/invoice/service/invoices.service';
 import { ServiceItemsSumService } from '../base/crud/service-items-sum/service-items-sum.service';

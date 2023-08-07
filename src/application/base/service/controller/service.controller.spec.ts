@@ -19,13 +19,14 @@ import { UserModule } from '../../user/user.module';
 import { DiscountsService } from '../services/discounts.service';
 import { ExtendServiceService } from '../services/extend-service.service';
 import { PayAsYouGoService } from '../../pay-as-you-go/pay-as-you-go.service';
-import { ServiceChecksService } from '../services/service-checks/service-checks.service';
+import { ServiceChecksService } from '../services/service-checks.service';
 import { ServiceService } from '../services/service.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { TasksModule } from '../../tasks/tasks.module';
 import { ServiceAdminService } from '../services/service-admin.service';
 import { UserService } from '../../user/service/user.service';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { AbilityModule } from '../../security/ability/ability.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -35,6 +36,7 @@ describe('ServiceController', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         CrudModule,
         SessionsModule,
         TasksModule,

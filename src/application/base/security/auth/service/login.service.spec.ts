@@ -11,6 +11,7 @@ import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SecurityToolsModule } from '../../security-tools/security-tools.module';
 import { OtpService } from '../../security-tools/otp.service';
+import { AbilityModule } from '../../ability/ability.module';
 
 describe('LoginService', () => {
   let service: LoginService;
@@ -20,6 +21,7 @@ describe('LoginService', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        AbilityModule,
         PassportModule,
         CrudModule,
         UserModule,

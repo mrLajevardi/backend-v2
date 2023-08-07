@@ -46,14 +46,14 @@ export class ACLTableService {
   async create(dto: CreateACLDto) {
     const newItem = plainToClass(Acl, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
   async update(id: number, dto: UpdateACLDto) {
     const item = await this.findById(id);
     const updateItem: Partial<Acl> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items

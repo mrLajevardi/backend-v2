@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicesChecksService } from './invoices-checks.service';
-import { ServiceChecksService } from 'src/application/base/service/services/service-checks/service-checks.service';
+import { ServiceChecksService } from 'src/application/base/service/services/service-checks.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { DiscountsService } from '../../service/services/discounts.service';
 import { TransactionsService } from '../../transactions/transactions.service';

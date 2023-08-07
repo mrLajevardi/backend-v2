@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Req } from '@nestjs/common';
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { TaskAdminService } from '../service/task-admin.service';
 import {
   ApiBearerAuth,
@@ -10,10 +10,17 @@ import {
 } from '@nestjs/swagger';
 import { SingleTaskDTO } from '../dto/single-task.dto';
 import { TaskDataDTO } from '../dto/task-data.dto';
+import { Action } from '../../security/ability/enum/action.enum';
+import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
+import { PureAbility } from '@casl/ability';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
+import { Roles } from '../../security/ability/decorators/roles.decorator';
 
 @Controller('/tasks/admin')
 @ApiBearerAuth()
 @ApiTags('Task-admin')
+@Roles(PredefinedRoles.AdminRole)
 export class TaskAdminController {
   constructor(private readonly service: TaskAdminService) {}
 

@@ -24,10 +24,10 @@ import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 
-@Processor('tasks')
+@Processor('tasks2')
 export class TaskManagerService {
   constructor(
-    @InjectQueue('tasks')
+    @InjectQueue('tasks2')
     private taskQueue: Queue,
     private readonly sessionService: SessionsService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
@@ -47,6 +47,7 @@ export class TaskManagerService {
 
   @Process()
   async processTask(job: Job, done) {
+    console.log('processTask', job.data);
     const taskType = job.data?.taskType || 'task';
     if (job.data.vcloudTask === null) {
       this.taskRunner(
@@ -86,8 +87,7 @@ export class TaskManagerService {
       );
       await this.serviceInstancesTable.updateAll(
         {
-          // MOVE: where is this parameter from?
-          //id: this.serviceInstanceId,
+          id: job.data.serviceInstanceId,
         },
         {
           status: 3,
@@ -265,6 +265,7 @@ export class TaskManagerService {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
+    console.log('create Edge for', service.userId);
     const userId = service.userId;
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
@@ -400,10 +401,12 @@ export class TaskManagerService {
   }
 
   async createVdc(serviceInstanceId, customTaskId, requestOptions) {
-    console.log('😙', serviceInstanceId, customTaskId, requestOptions);
+    //console.log('😙', serviceInstanceId, customTaskId, requestOptions);
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
+    console.log('createVDC for ', service.userId);
+
     const userId = service.userId;
     const ServiceItems = await this.serviceItemsTable.find({
       where: {
@@ -423,6 +426,8 @@ export class TaskManagerService {
       data,
       serviceInstanceId,
     );
+
+    console.log('createdVdc', createdVdc);
     const vcloudTask = createdVdc.__vcloudTask;
 
     this.taskQueue.add({

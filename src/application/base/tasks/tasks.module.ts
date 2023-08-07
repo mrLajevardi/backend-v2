@@ -21,19 +21,21 @@ import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { PayAsYouGoModule } from '../pay-as-you-go/pay-as-you-go.module';
 import { TaskAdminController } from './controller/task-admin.controller';
 import { TaskAdminService } from './service/task-admin.service';
+import { AbilityModule } from '../security/ability/ability.module';
 
 @Module({
   imports: [
     DatabaseModule,
     VdcModule,
     BullModule.registerQueue({
-      name: 'tasks',
+      name: 'tasks2',
     }),
     LoggerModule,
     // VdcModule,
     CrudModule,
     SessionsModule,
     OrganizationModule,
+    AbilityModule,
     VdcModule,
     PayAsYouGoModule,
     //NetworksModule,

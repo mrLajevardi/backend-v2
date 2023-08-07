@@ -45,7 +45,7 @@ export class UpdateDiscountsDto {
   code?: string;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   @ApiProperty()
-  serviceTypeId?: number;
+  serviceTypeId?: string;
 }

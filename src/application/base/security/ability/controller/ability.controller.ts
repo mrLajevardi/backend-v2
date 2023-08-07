@@ -6,6 +6,9 @@ import {
   Body,
   Delete,
   Request,
+  Query,
+  ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,35 +17,115 @@ import {
   ApiBearerAuth,
   ApiProperty,
   ApiBody,
+  ApiQuery,
+  ApiParam,
 } from '@nestjs/swagger';
 import { AbilityAdminService } from '../service/ability-admin.service';
 import { PredefinedRoles } from '../enum/predefined-enum.type';
 import { PredefinedRoleDto } from '../dto/predefined-role.dto';
 import { AssignPredefinedRoleDto } from '../dto/assign-predefined-role.dto';
 import { AssignActionDto } from '../dto/assign-action.dto';
+import { Public } from '../../auth/decorators/ispublic.decorator';
+import { Acl } from 'src/infrastructure/database/entities/Acl';
+import { ACLTableService } from 'src/application/base/crud/acl-table/acl-table.service';
+import { CreateACLDto } from 'src/application/base/crud/acl-table/dto/create-acls.dto';
+import { UpdateACLDto } from 'src/application/base/crud/acl-table/dto/update-acls.dto';
+import { Roles } from '../decorators/roles.decorator';
+import { Action } from '../enum/action.enum';
+import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 
 @ApiTags('Ability')
 @Controller('ability')
 @ApiBearerAuth() // Requires authentication with a JWT token
+@Roles(PredefinedRoles.SuperAdminRole)
 export class AbilityController {
-  constructor(private readonly abilityAdminService: AbilityAdminService) {}
+  constructor(
+    private readonly abilityAdminService: AbilityAdminService,
+    private readonly aclTable: ACLTableService,
+  ) {}
 
   @Get('/:userId/predefined-roles')
   @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
   @ApiOperation({ summary: 'returns all predefined roles for the user' })
   async getAllPredefinedRoles(
     @Param('userId') userId: number,
-  ): Promise<PredefinedRoleDto[]> {
-    return this.abilityAdminService.getAllPredefinedRoles(userId);
+  ): Promise<string[]> {
+    return await this.abilityAdminService.getAllPredefinedRoles(userId);
   }
 
   @Get('/predefined-roles')
   @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
   @ApiOperation({ summary: 'returns all predefined roles for the user' })
-  async getAllMyPredefinedRoles(
-    @Request() options,
-  ): Promise<PredefinedRoleDto[]> {
-    return this.abilityAdminService.getAllPredefinedRoles(options.user.userId);
+  async getAllMyPredefinedRoles(@Request() options): Promise<string[]> {
+    return await this.abilityAdminService.getAllPredefinedRoles(
+      options.user.userId,
+    );
+  }
+
+  @Public()
+  @Get('/predefined-roles/list')
+  @ApiResponse({ status: 200, type: String, isArray: true })
+  @ApiOperation({
+    summary: 'returns all predefined roles usable in this system',
+  })
+  async getListOfPredefinedRoles(): Promise<string[]> {
+    const roles = Object.values(PredefinedRoles);
+    return roles;
+  }
+
+  @Public()
+  @Get('/actions/list')
+  @ApiResponse({ status: 200, type: String, isArray: true })
+  @ApiOperation({ summary: 'returns all actions in system' })
+  async getListOfActions(): Promise<string[]> {
+    const actions = Object.values(Action);
+    return actions;
+  }
+
+  @Public()
+  @Get('/models/list')
+  @ApiResponse({ status: 200, type: String, isArray: true })
+  @ApiOperation({ summary: 'returns all models available in system' })
+  async getListOfModels(): Promise<string[]> {
+    return await this.abilityAdminService.getListOfModels();
+  }
+
+  @Get()
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiResponse({ status: 200, description: 'Retrieved ACLs successfully' })
+  async getAllAcls(
+    @Query('page', ParseIntPipe) page = 1,
+    @Query('pageSize', ParseIntPipe) pageSize = 10,
+    @Query('search') search: string,
+  ) {
+    return await this.abilityAdminService.getAllAcls(page, pageSize, search);
+  }
+
+  @Post()
+  @ApiBody({ type: CreateACLDto })
+  @ApiResponse({ status: 201, description: 'Created ACL successfully' })
+  async createAcl(@Body() data: UpdateACLDto): Promise<Acl> {
+    return await this.aclTable.create(data);
+  }
+
+  @Put(':id')
+  @ApiParam({ name: 'id', type: Number })
+  @ApiBody({ type: UpdateACLDto })
+  @ApiResponse({ status: 200, description: 'Updated ACL successfully' })
+  async updateAcl(
+    @Param('id') id: number,
+    @Body() data: UpdateACLDto,
+  ): Promise<Acl> {
+    return await this.aclTable.update(id, data);
+  }
+
+  @Delete(':id')
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({ status: 200, description: 'Deleted ACL successfully' })
+  async deleteAcl(@Param('id') id: number): Promise<void> {
+    return await this.aclTable.delete(id);
   }
 
   @Post('/:userId/predefined-roles')
@@ -50,8 +133,6 @@ export class AbilityController {
   @ApiProperty({ enum: PredefinedRoles, enumName: 'PredefinedRoles' })
   @ApiBody({
     type: AssignPredefinedRoleDto,
-    description:
-      ' role: [admin-role-template,user-role-template,sysadmin-role-template]',
   })
   async assignPredefinedRole(
     @Param('userId') userId: number,
@@ -67,8 +148,6 @@ export class AbilityController {
   @ApiOperation({ summary: 'delete a predefined role from user ' })
   @ApiBody({
     type: AssignPredefinedRoleDto,
-    description:
-      ' role: [admin-role-template,user-role-template,sysadmin-role-template]',
   })
   async deletePredefinedRole(
     @Param('userId') userId: number,
@@ -82,8 +161,6 @@ export class AbilityController {
   @ApiOperation({ summary: 'deny a predefined role from user ' })
   @ApiBody({
     type: AssignPredefinedRoleDto,
-    description:
-      ' role: [admin-role-template,user-role-template,sysadmin-role-template]',
   })
   async denyPredefinedRole(
     @Param('userId') userId: number,

@@ -5,6 +5,8 @@ import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 import { PredefinedRoles } from './enum/predefined-enum.type';
 import { Action } from './enum/action.enum';
+import or, { In } from 'typeorm';
+import { isEmpty } from 'lodash';
 
 export type AbilitySubjects =
   | (typeof dbEntities)[number]
@@ -12,6 +14,22 @@ export type AbilitySubjects =
   | PredefinedRoles.SuperAdminRole
   | PredefinedRoles.UserRole
   | 'all';
+
+export function getStringListOfAbilities(): string[] {
+  const retVal: string[] = ['all'];
+
+  const roles = Object.values(PredefinedRoles);
+  roles.forEach((role) => {
+    retVal.push(role);
+  });
+  retVal.concat(roles);
+
+  for (const entity of dbEntities) {
+    retVal.push((entity as any).name);
+  }
+
+  return retVal;
+}
 
 export const ability = createMongoAbility<[Action, AbilitySubjects]>();
 
@@ -34,13 +52,20 @@ export class AbilityFactory {
   async createForUser(user: User) {
     const builder = new AbilityBuilder(createMongoAbility);
 
-    const acls = await this.aclTable.find({
-      where: [
-        { principalType: '' },
-        { principalType: 'User', principalId: user ? user.id : '' },
-      ],
+    const simpleAcls = await this.aclTable.find({
+      where: {
+        principalType: In([null, '']),
+      },
+    });
+    const compoundAcls = await this.aclTable.find({
+      where: {
+        principalType: 'User',
+        principalId: isEmpty(user) ? null : user.id,
+      },
     });
 
+    const acls = [...simpleAcls, ...compoundAcls];
+    //console.log('for userId' , user.id, 'simples', simpleAcls, 'com', compoundAcls);
     for (const acl of acls) {
       let propertyCondition = '';
       try {
@@ -50,12 +75,15 @@ export class AbilityFactory {
       } catch (error) {
         propertyCondition = acl.property;
         //console.log(error);
-        console.log('Error parsing query, treat as simple field list ');
+        //console.log('Error parsing query, treat as simple field list ');
       }
       if (acl.permission == 'can') {
         // console.log(propertyCondition);
+        //console.log('can',acl.accessType,acl.model,propertyCondition);
         builder.can(acl.accessType, acl.model, propertyCondition);
       } else {
+        // console.log('cannot',acl.accessType,acl.model,propertyCondition);
+
         builder.cannot(acl.accessType, acl.model, propertyCondition);
       }
     }

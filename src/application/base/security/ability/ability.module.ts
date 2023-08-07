@@ -9,7 +9,7 @@ import { AbilityController } from './controller/ability.controller';
 @Module({
   imports: [TypeOrmModule.forFeature([Acl]), CrudModule],
   providers: [AbilityFactory, AbilityAdminService],
-  exports: [AbilityFactory],
+  exports: [AbilityFactory, AbilityAdminService],
   controllers: [AbilityController],
 })
 export class AbilityModule {}
