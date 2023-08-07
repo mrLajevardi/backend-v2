@@ -2,53 +2,38 @@ import { WrapperErrorException } from 'src/infrastructure/exceptions/wrapper-err
 import * as lodash from 'lodash';
 import axios, { AxiosResponse } from 'axios';
 import { isNil } from 'lodash';
-import {
-  EndpointInterface,
-  EndpointOptionsInterface,
-} from './interfaces/endpoint.interface';
+import { EndpointInterface } from './interfaces/endpoint.interface';
 
-export class Wrapper {
-  static baseUrl = '';
+export class Wrapper<T> {
+  static baseUrl: string;
   /**
    * initialize endpoints object
    */
   httpsAgent: any;
-  endPoints: any;
+  endPoints: T;
   errHandling: any;
 
-  constructor(httpsAgent, endpoints, baseURL) {
+  constructor(httpsAgent: object, endpoints: T, baseURL: string) {
     Wrapper.baseUrl = baseURL;
     this.httpsAgent = httpsAgent;
     this.endPoints = endpoints;
   }
   /**
-   * this method converts path to real path and call request
-   * path to method
-   * options of a method
+   * this method converts path to real path
    */
-  posts<T extends EndpointOptionsInterface, U>(
-    path: string,
-    options: T,
-  ): Promise<AxiosResponse<U>> {
-    console.log(this.endPoints, path);
-    const existingEndPoint = lodash.get(this.endPoints, path);
-    if (!isNil(existingEndPoint)) {
-      const endpoint = existingEndPoint(options);
-      console.log(endpoint);
-      return this.request(endpoint);
-    } else {
-      throw new Error(`method [${path}] not found`);
-    }
+  public getWrapper<T1 extends string>(path: T1): lodash.GetFieldType<T, T1> {
+    const existingEndPoint = lodash.get<T, T1>(this.endPoints, path);
+    return existingEndPoint;
   }
   /**
    * endpoint object created by endpoint methods
    */
-  private async request<T = any>(
-    endpoint: Partial<EndpointInterface>,
-  ): Promise<AxiosResponse<T>> {
+  public async request<U>(
+    endpoint: EndpointInterface,
+  ): Promise<AxiosResponse<U>> {
     try {
       const additionalConfig = endpoint?.additionalConfig || {};
-      const request: AxiosResponse<T> = await axios.request({
+      const request: AxiosResponse<U> = await axios.request({
         url: endpoint.resource,
         httpsAgent: this.httpsAgent,
         method: endpoint.method,

@@ -34,6 +34,7 @@ import { SecurityToolsModule } from './application/base/security/security-tools/
 import { GroupModule } from './application/base/group/group.module';
 import { PayAsYouGoModule } from './application/base/pay-as-you-go/pay-as-you-go.module';
 import { ServicePropertiesModule } from './application/base/service-properties/service-properties.module';
+import { VcloudWrapper } from './wrappers/vcloudWrapper/vcloudWrapper';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { ServicePropertiesModule } from './application/base/service-properties/s
     GroupModule,
     PayAsYouGoModule,
     ServicePropertiesModule,
+    VcloudWrapper,
   ],
   controllers: [AppController],
   providers: [
