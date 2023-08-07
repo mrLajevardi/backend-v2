@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { isEmpty } from 'lodash';
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
 import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
@@ -6,6 +7,8 @@ import { UserTableService } from 'src/application/base/crud/user-table/user-tabl
 import { PayAsYouGoService } from 'src/application/base/pay-as-you-go/pay-as-you-go.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
+import { Configs } from 'src/infrastructure/database/entities/Configs';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { In } from 'typeorm';
 
@@ -25,9 +28,10 @@ export class VgpuPayAsYouGoService {
     /**
      * checks if user have enough credit or not if not shut down user's vms
      */
-    const adminSession = await this.sessionService.checkAdminSession(null);
+    const adminSession: any = await this.sessionService.checkAdminSession(null);
     // configs properties
-    const configsData = await this.configsTable.getVgpuRobotConfigData();
+    const configsData: Configs[] =
+      await this.configsTable.getVgpuRobotConfigData();
     // filtered configs
     const configs = {};
     configsData.forEach((property) => {
@@ -80,20 +84,26 @@ export class VgpuPayAsYouGoService {
       return id.slice(0, id.length - 2);
     });
     // Finds a list of powered-on VMs which it's last pay as you go payment date is one hour after now
-    const sql = `SELECT ID, NextPAYG
-         FROM [user].[ServiceInstances] 
-         WHERE DATEDIFF(hh, NextPAYG, @param1) > 0 AND ID IN ${params}`;
 
-    const expiredServicesQuery = this.serviceInstancesTable
-      .getQueryBuilder()
-      .select(['serviceInstances.ID', 'serviceInstances.NextPAYG'])
-      .where('DATEDIFF(hour, serviceInstances.NextPAYG, :param1) > 0', {
-        param1: Date(),
-      })
-      .andWhere('serviceInstances.ID IN (:...params)', { params: gpuIds });
-    const expiredServices = await expiredServicesQuery.getMany();
+    // const expiredServicesQuery = this.serviceInstancesTable
+    //   .getQueryBuilder()
+    //   .select(['serviceInstances.ID', 'serviceInstances.NextPAYG'])
+    //   .where('DATEDIFF(hour, serviceInstances.NextPAYG, @0) > 0', [
+    //     Date(),
+    //   ])
+    //   .andWhere('serviceInstances.ID IN (:...@0)',[gpuIds]);
+    console.log(gpuIds);
 
-    console.log(expiredServices, 'expired');
+    // return if no gpu id is present
+    if (isEmpty(gpuIds)) {
+      return Promise.resolve(null);
+    }
+    const expiredServices = await this.serviceInstancesTable.expiredServices([
+      Date(),
+      gpuIds,
+    ]);
+
+    //console.log(expiredServices, 'expired');
     const targetServiceIDs = expiredServices.map((service) => {
       return service.id;
     });
@@ -102,7 +112,7 @@ export class VgpuPayAsYouGoService {
         serviceInstanceId: In(targetServiceIDs),
       },
     });
-    console.log(gpuIds);
+    //console.log(gpuIds);
     // service id and service plan
     const targetServices = [];
     for (const targetProps of targetServiceProperties) {
@@ -117,13 +127,14 @@ export class VgpuPayAsYouGoService {
     return Promise.resolve(targetServiceProperties);
   }
 
-  async servicePayment(serviceList, plans) {
+  async servicePayment(serviceList: any[], plans: any) {
     for (const service of serviceList) {
-      const serviceInstance = await this.serviceInstancesTable.findOne({
-        where: {
-          id: service.id,
-        },
-      });
+      const serviceInstance: ServiceInstances =
+        await this.serviceInstancesTable.findOne({
+          where: {
+            id: service.id,
+          },
+        });
       const user = await this.userTable.findById(serviceInstance.userId);
       console.log('dfdf');
       const cost = plans[service.plan];

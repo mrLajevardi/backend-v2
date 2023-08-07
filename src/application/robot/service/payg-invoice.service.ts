@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from 'src/application/base/crud/invoices-table/invoices-table.service';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
 import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
+import { Invoices } from 'src/infrastructure/database/entities/Invoices';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { Not } from 'typeorm';
 
 @Injectable()
@@ -13,15 +16,15 @@ export class PaygInvoiceService {
   ) {}
 
   async paygInvoiceRobot() {
-    const targetTransactions =
+    const targetTransactions: any[] =
       await this.transactionsTable.robotPaygTargetTransactions();
-    console.log(targetTransactions);
     for (const targetTransaction of targetTransactions) {
       if (targetTransaction.ServiceInstanceID) {
-        const service = await this.serviceInstancesTable.findById(
-          targetTransaction.ServiceInstanceID,
-        );
-        const invoice = await this.invoicesTable.create({
+        const service: ServiceInstances =
+          await this.serviceInstancesTable.findById(
+            targetTransaction.ServiceInstanceID,
+          );
+        const invoice: Invoices = await this.invoicesTable.create({
           serviceInstanceId: targetTransaction.ServiceInstanceID,
           rawAmount: -targetTransaction.Sum,
           finalAmount: -targetTransaction.Sum,

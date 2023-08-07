@@ -42,6 +42,7 @@ import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-tok
 import { UserService } from 'src/application/base/user/service/user.service';
 import { UserAlreadyExist } from 'src/infrastructure/exceptions/user-already-exist.exception';
 import { RobotLoginDto } from '../dto/robot-login.dto';
+import { AccessTokenDto } from '../dto/access-token.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -101,7 +102,7 @@ export class AuthController {
     type: RobotLoginDto,
     description: 'Local server api token for automated tasks',
   })
-  async robotLogin(@Body() dto: RobotLoginDto): Promise<string> {
+  async robotLogin(@Body() dto: RobotLoginDto): Promise<AccessTokenDto> {
     return this.authService.login.getRobotLoginToken(dto.token);
   }
 
