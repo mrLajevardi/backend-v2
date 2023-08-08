@@ -28,7 +28,7 @@ export class VdcEndpointService {
       },
     };
   }
-  dettachNamedDisk(options?: any) {
+  detachNamedDisk(options?: any) {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmID}/disk/action/detach`,
