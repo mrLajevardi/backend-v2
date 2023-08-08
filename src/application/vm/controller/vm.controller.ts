@@ -926,4 +926,25 @@ export class VmController {
   ): Promise<any> {
     return this.vmService.uploadFileInfo(options, data, serviceInstanceId);
   }
+
+  @Get('/:serviceInstanceId/:templateId/templateAdaptors')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'templateId', description: 'templateId of adaptors' })
+  @ApiResponse({
+    status: 201,
+    description: 'supported adaptors of a template',
+    type: 'object',
+  })
+  async getTemplateAdaptors(
+    @Param('serviceInstanceId') serviceInstanceId: string,
+    @Param('templateId') templateId: string,
+    @Request() options,
+  ): Promise<any> {
+    return this.vmService.getTemplateAdaptors(
+      options,
+      serviceInstanceId,
+      templateId,
+    );
+  }
 }
