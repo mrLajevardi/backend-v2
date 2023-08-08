@@ -5,7 +5,7 @@ import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exce
 import { ImpersonateAs } from '../dto/impersonate-as.interface';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class RobotStrategy extends PassportStrategy(Strategy, 'robot') {
   constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -18,28 +18,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   // endpoint protected using Jwt-auth.guard
   async validate(payload: any) {
     console.log(payload);
-    if (payload.isRobot) {
-      throw new UnauthorizedException('Access denied for robots');
+    if (payload.ispublic) {
+      throw new UnauthorizedException('No public access permited');
+    }
+
+    if (!payload.isRobot) {
+      throw new UnauthorizedException('Only robots can access this endpoint');
     }
 
     if (!payload.sub) {
       throw new ForbiddenException('error in jwt');
     }
-    let retVal = {};
-    const originalData = {
-      userId: payload.sub.toString(),
-      username: payload.username,
-    };
-    const impersonateAs = payload['impersonateAs'] as ImpersonateAs;
-    if (impersonateAs) {
-      retVal = {
-        userId: impersonateAs.userId,
-        username: impersonateAs.username,
-        originalUser: originalData,
-      };
-    } else {
-      retVal = originalData;
-    }
-    return retVal;
+
+    return payload;
   }
 }

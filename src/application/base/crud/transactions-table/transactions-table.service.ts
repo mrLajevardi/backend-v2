@@ -18,6 +18,21 @@ export class TransactionsTableService {
     private readonly repository: Repository<Transactions>,
   ) {}
 
+  // target transactions for robot  paygservice
+  async robotPaygTargetTransactions(): Promise<any[]> {
+    return this.repository
+      .createQueryBuilder('transactions')
+      .select('SUM(transactions.VALUE)', 'Sum')
+      .addSelect('MAX(transactions.ID)', 'LastID')
+      .addSelect('MAX(transactions.DateTime)', 'EndDate')
+      .addSelect('MIN(transactions.DateTime)', 'StartDate')
+      .addSelect('transactions.ServiceInstanceID', 'ServiceInstanceID')
+      .where('transactions.PaymentType = 2', { paymentType: 2 })
+      .andWhere('transactions.InvoiceID IS NULL')
+      .groupBy('transactions.ServiceInstanceID')
+      .getRawMany();
+  }
+
   // Find One Item by its ID
   async findById(id: string): Promise<Transactions> {
     const serviceType = await this.repository.findOne({ where: { id: id } });
@@ -70,7 +85,7 @@ export class TransactionsTableService {
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(options: FindOptionsWhere<Transactions>) {
+    await this.repository.delete(options);
   }
 }

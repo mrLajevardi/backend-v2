@@ -19,6 +19,7 @@ import { LoginService } from './service/login.service';
 import { UserModule } from '../../user/user.module';
 import { SecurityToolsModule } from '../security-tools/security-tools.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { RobotStrategy } from './strategy/robot.strategy';
 import { AbilityModule } from '../ability/ability.module';
 
 @Module({
@@ -47,6 +48,7 @@ import { AbilityModule } from '../ability/ability.module';
     GoogleStrategy,
     LinkedInStrategy,
     GithubStrategy,
+    RobotStrategy,
     AuthService,
     LoginService,
   ],

@@ -9,6 +9,7 @@ import { User } from 'src/infrastructure/database/entities/User';
 import { isEmpty } from 'lodash';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { OtpService } from '../../security-tools/otp.service';
+import { AccessTokenDto } from '../dto/access-token.dto';
 
 @Injectable()
 export class LoginService {
@@ -65,6 +66,28 @@ export class LoginService {
       return result;
     }
     return null;
+  }
+
+  async getRobotLoginToken(token: string): Promise<AccessTokenDto> {
+    const systemToken = process.env.ROBOT_TOKEN;
+
+    console.log(token, systemToken);
+    if (isEmpty(systemToken) || isEmpty(token)) {
+      return Promise.reject(new UnauthorizedException());
+    }
+
+    if (token != systemToken) {
+      return Promise.reject(new UnauthorizedException());
+    }
+
+    const payload = {
+      isRobot: true,
+      sub: token,
+    };
+
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   // This function will be called in AuthController.login after

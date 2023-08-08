@@ -251,8 +251,8 @@ export class InvoicesService {
       description: 'description',
     };
 
-    const invoiceId = await this.invoicesTable.create(dto);
-    await this.createInvoiceItems(invoiceId, itemTypes, data.items);
+    const invoice = await this.invoicesTable.create(dto);
+    await this.createInvoiceItems(invoice.id, itemTypes, data.items);
     console.log(userId);
     await this.transactionTable.create({
       userId,
@@ -261,17 +261,17 @@ export class InvoicesService {
       paymentToken: '-',
       isApproved: false,
       value: totalCosts,
-      invoiceId: invoiceId,
+      invoiceId: invoice.id,
       description: serviceType.title,
       serviceInstanceId: serviceInstanceId,
     });
     console.log('------');
     await this.createInvoicePlans({
       plans: approvedPlans,
-      invoiceId: invoiceId,
+      invoiceId: invoice.id,
     });
-    await this.createInvoiceProperties(data, invoiceId, data.serviceTypeId);
-    return { invoiceId: invoiceId };
+    await this.createInvoiceProperties(data, invoice.id, data.serviceTypeId);
+    return { invoiceId: invoice.id };
   }
   async getExpiredInvoice(userId, serviceInstanceId) {
     return await this.invoicesTable.findOne({

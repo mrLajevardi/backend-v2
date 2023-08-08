@@ -25,7 +25,9 @@ export class ServicePropertiesTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<ServiceProperties[]> {
+  async find(
+    options?: FindManyOptions<ServiceProperties>,
+  ): Promise<ServiceProperties[]> {
     const result = await this.repository.find(options);
     return result;
   }
