@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as util from 'util';
 import jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 
@@ -50,8 +49,7 @@ export class EmailService {
       id,
       sub: tokenType,
     };
-    const generateToken = util.promisify(jwt.sign);
-    const token = await generateToken(payload, process.env.EMAIL_JWT_SECRET); //, {expiresIn: '2m'} removed. number of params error
+    const token = jwt.sign(payload, process.env.EMAIL_JWT_SECRET);
     const link = url + token;
     return { link, token };
   }
