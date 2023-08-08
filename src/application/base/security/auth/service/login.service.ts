@@ -40,11 +40,11 @@ export class LoginService {
   async validateUser(username: string, pass: string): Promise<any> {
     console.log('validate user');
     if (!username) {
-      throw new UnauthorizedException('No username provided');
+      throw new UnauthorizedException();
     }
 
     if (!pass) {
-      throw new UnauthorizedException('No password provided');
+      throw new UnauthorizedException();
     }
 
     const user = await this.userTable.findOne({
@@ -52,7 +52,7 @@ export class LoginService {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Wrong username or password');
+      throw new UnauthorizedException();
     }
 
     // checking the availablity of the user and
@@ -73,11 +73,11 @@ export class LoginService {
   async getLoginToken(userId: number, impersonateId?: number) {
     console.log('getLoginToken', userId, impersonateId);
     if (!userId) {
-      throw new ForbiddenException('no userId provided');
+      throw new UnauthorizedException();
     }
     const user: User = await this.userTable.findById(userId);
     if (!user) {
-      throw new ForbiddenException();
+      throw new UnauthorizedException();
     }
     let impersonateAs: User = null;
     if (impersonateId) {
