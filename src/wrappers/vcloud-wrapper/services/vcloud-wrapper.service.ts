@@ -14,5 +14,10 @@ export class VcloudWrapperService extends Wrapper<VcloudWrapperInterface> {
       rejectUnauthorized: false,
     });
     super(httpsAgent, vcloudWrapper, 'https://labvpc.aradcloud.com');
+    // const wrapper =
+    //   this.getWrapper<'VmEndpointService.acquireVmTicketEndpoint'>(
+    //     'VmEndpointService.acquireVmTicketEndpoint',
+    //   );
+    // await this.request(wrapper({}));
   }
 }
