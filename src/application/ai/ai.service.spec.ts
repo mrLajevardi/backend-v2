@@ -59,7 +59,7 @@ describe('AiService', () => {
   let config: ConfigsTableService;
 
   let module: TestingModule;
-  beforeEach(async () => {
+  beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
