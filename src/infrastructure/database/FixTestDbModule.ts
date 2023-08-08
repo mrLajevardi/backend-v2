@@ -11,18 +11,7 @@ import { Acl } from "./entities/Acl";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    TypeOrmModule.forRoot(
-        {
-          type: "sqlite",
-          database: ":memory:",
-          autoLoadEntities: true,
-          entities: [Acl],
-          synchronize: true,
-        } as TypeOrmModuleOptions,
-    ),
+
    TypeOrmModule.forFeature([Acl]),
   ],
   exports: [TypeOrmModule],
