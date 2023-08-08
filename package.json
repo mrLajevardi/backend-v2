@@ -21,7 +21,7 @@
     "test:leak": "node   ./node_modules/.bin/jest    --detectLeaks --runInBand --logHeapUsage",
     "test:leak2": "node  ./node_modules/.bin/jest --runInBand --logHeapUsage ",
     "test:clearCache": "jest --clear-cache",
-    "test": "jest --max-workers=10 --ci --reporters=default --reporters=jest-junit",
+    "test": "jest --max-workers=15 --ci --reporters=default --reporters=jest-junit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node  --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
