@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { GroupsTableService } from '../crud/groups-table/groups-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { isEmpty, isNil } from 'lodash';
+import { isEmpty } from 'lodash';
 import { FindOptionsWhere, Like } from 'typeorm';
 import { Groups } from 'src/infrastructure/database/entities/Groups';
 
@@ -12,7 +12,11 @@ export class GroupService {
     private readonly logger: LoggerService,
   ) {}
 
-  async logCreateGroup(name: string, id: number, userId: number) {
+  async logCreateGroup(
+    name: string,
+    id: number,
+    userId: number,
+  ): Promise<void> {
     await this.logger.info(
       'groups',
       'createGroup',
@@ -26,7 +30,7 @@ export class GroupService {
     );
   }
 
-  async logDeleteGroup(id: number, userId: number) {
+  async logDeleteGroup(id: number, userId: number): Promise<void> {
     await this.logger.info(
       'groups',
       'deleteGroup',
@@ -71,7 +75,7 @@ export class GroupService {
     }
     const groups = await this.groupTable.find({
       where,
-      take: pageSize,
+      take: limit,
       skip,
     });
     const countAll = await this.groupTable.count({ where });
@@ -83,7 +87,11 @@ export class GroupService {
     });
   }
 
-  async logUpdateGroup(name: string, id: number, userId: number) {
+  async logUpdateGroup(
+    name: string,
+    id: number,
+    userId: number,
+  ): Promise<void> {
     await this.logger.info(
       'groups',
       'updateGroup',

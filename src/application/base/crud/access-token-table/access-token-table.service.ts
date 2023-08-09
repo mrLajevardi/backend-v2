@@ -8,7 +8,6 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
-  DeleteOptions,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -51,27 +50,27 @@ export class AccessTokenTableService {
   }
 
   // Update an Item using updateDTO
-  async update(id: string, dto: UpdateAccessTokenDto) {
+  async update(id: string, dto: UpdateAccessTokenDto): Promise<AccessToken> {
     const item = await this.findById(id);
     const updateItem: Partial<AccessToken> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<AccessToken>,
     dto: UpdateAccessTokenDto,
-  ) {
+  ): Promise<void> {
     await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: string) {
+  async delete(id: string): Promise<void> {
     await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(options?: FindOptionsWhere<AccessToken>) {
+  async deleteAll(options?: FindOptionsWhere<AccessToken>): Promise<void> {
     await this.repository.delete(options);
   }
 }

@@ -8,6 +8,7 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -67,7 +68,7 @@ export class SessionsTableService {
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(where: FindOptionsWhere<Sessions>): Promise<DeleteResult> {
+    return await this.repository.delete(where);
   }
 }

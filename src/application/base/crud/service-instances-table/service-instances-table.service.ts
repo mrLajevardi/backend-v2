@@ -10,6 +10,7 @@ import {
   FindOptionsWhere,
   QueryBuilder,
   SelectQueryBuilder,
+  DeleteResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -102,7 +103,7 @@ export class ServiceInstancesTableService {
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(where: FindOptionsWhere<ServiceInstances>): Promise<DeleteResult> {
+    return await this.repository.delete(where);
   }
 }

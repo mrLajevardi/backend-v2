@@ -11,25 +11,23 @@ import {
   Res,
 } from '@nestjs/common';
 import { GroupService } from './group.service';
+import { Response } from 'express';
 import {
   ApiTags,
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
-  ApiNotFoundResponse,
   ApiParam,
   ApiBody,
-  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { GroupsTableService } from '../crud/groups-table/groups-table.service';
 import { CreateGroupsDto } from '../crud/groups-table/dto/create-groups.dto';
 import { UpdateGroupsDto } from '../crud/groups-table/dto/update-groups.dto';
 import { Groups } from 'src/infrastructure/database/entities/Groups';
 import { NotFoundException } from 'src/infrastructure/exceptions/not-found.exception';
-import { Public } from '../security/auth/decorators/ispublic.decorator';
-import { DeleteResult } from 'typeorm';
 import { CreateErrorException } from 'src/infrastructure/exceptions/create-error.exception';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @ApiTags('Group')
 @Controller('group')
@@ -55,7 +53,7 @@ export class GroupController {
     @Query('name') name: string = undefined,
     @Query('description') description: string = undefined,
     @Query('color') color: string = undefined,
-  ) {
+  ): Promise<Groups[]> {
     const groups = await this.service.getGroups(
       page,
       pageSize,
@@ -69,7 +67,7 @@ export class GroupController {
   @Get('/:id')
   @ApiOperation({ summary: 'Get a group by ID' })
   @ApiParam({ name: 'id', type: Number, description: 'Group ID' })
-  async getGroup(@Param('id') id: number) {
+  async getGroup(@Param('id') id: number): Promise<Groups> {
     const group = await this.groupTable.findById(id);
     if (!group) {
       throw new NotFoundException('Group not found');
@@ -80,7 +78,11 @@ export class GroupController {
   @Post('/create')
   @ApiOperation({ summary: 'Create a new group' })
   @ApiBody({ type: CreateGroupsDto })
-  async createGroup(@Body() dto: CreateGroupsDto, @Req() request, @Res() res) {
+  async createGroup(
+    @Body() dto: CreateGroupsDto,
+    @Req() request: SessionRequest,
+    @Res() res: Response,
+  ): Promise<Response> {
     const userId = request.user.userId;
     const result = await this.groupTable.create(dto);
     await this.service.logCreateGroup(dto.name, result.id, userId);
@@ -100,8 +102,8 @@ export class GroupController {
   async updateGroup(
     @Param('id') id: number,
     @Body() dto: UpdateGroupsDto,
-    @Req() request,
-  ) {
+    @Req() request: SessionRequest,
+  ): Promise<Partial<Groups>> {
     const userId = request.user.userId;
     const result = await this.groupTable.update(id, dto);
     await this.service.logUpdateGroup(dto.name, id, userId);
@@ -110,7 +112,11 @@ export class GroupController {
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a group by ID' })
-  async deleteGroup(@Param('id') id: number, @Req() request, @Res() res) {
+  async deleteGroup(
+    @Param('id') id: number,
+    @Req() request: SessionRequest,
+    @Res() res: Response,
+  ): Promise<Response> {
     const result = await this.groupTable.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException('Group not found');

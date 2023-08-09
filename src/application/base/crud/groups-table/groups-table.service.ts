@@ -53,10 +53,10 @@ export class GroupsTableService {
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateGroupsDto) {
+  async update(id: number, dto: UpdateGroupsDto): Promise<Partial<Groups>> {
     const item = await this.findById(id);
     const updateItem: Partial<Groups> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items

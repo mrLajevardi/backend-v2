@@ -82,7 +82,7 @@ export class LoginService {
 
     const payload = {
       isRobot: true,
-      sub: token,
+      robotToken: token,
     };
 
     return {

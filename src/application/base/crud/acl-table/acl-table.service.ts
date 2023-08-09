@@ -8,6 +8,7 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -43,31 +44,31 @@ export class ACLTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateACLDto) {
+  async create(dto: CreateACLDto) : Promise<Acl> {
     const newItem = plainToClass(Acl, dto);
     const createdItem = this.repository.create(newItem);
     return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateACLDto) {
+  async update(id: number, dto: UpdateACLDto) : Promise<Acl> {
     const item = await this.findById(id);
     const updateItem: Partial<Acl> = Object.assign(item, dto);
     return await this.repository.save(updateItem);
   }
 
   // update many items
-  async updateAll(where: FindOptionsWhere<Acl>, dto: UpdateACLDto) {
+  async updateAll(where: FindOptionsWhere<Acl>, dto: UpdateACLDto) : Promise<void>{
     await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: number) {
-    await this.repository.delete(id);
+  async delete(id: number) : Promise<DeleteResult>{
+    return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<Acl>) {
-    await this.repository.delete(where);
+  async deleteAll(where: FindOptionsWhere<Acl>) : Promise<DeleteResult>{
+    return await this.repository.delete(where);
   }
 }
