@@ -4,11 +4,9 @@ import {
   UseGuards,
   Request,
   Get,
-  Req,
   Res,
   Body,
   Param,
-  Put,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -32,7 +30,6 @@ import { OtpAuthGuard } from '../guard/otp-auth.guard';
 import { LoginAsUserDto } from '../dto/login-as-user.dto';
 import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
 import { GoogleLoginDto } from '../dto/google-login.dto';
-import { userInfo } from 'os';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { PhoneNumberDto } from '../dto/phoneNumber.dto';
 import { SecurityToolsService } from '../../security-tools/security-tools.service';
@@ -43,6 +40,8 @@ import { UserService } from 'src/application/base/user/service/user.service';
 import { UserAlreadyExist } from 'src/infrastructure/exceptions/user-already-exist.exception';
 import { RobotLoginDto } from '../dto/robot-login.dto';
 import { AccessTokenDto } from '../dto/access-token.dto';
+import { UserPayload } from '../dto/user-payload.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -92,7 +91,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
+  async login(@Request() req: SessionRequest): Promise<AccessTokenDto> {
     return this.authService.login.getLoginToken(req.user.id);
   }
 
@@ -112,7 +111,7 @@ export class AuthController {
   @ApiBody({ type: OtpLoginDto })
   @UseGuards(OtpAuthGuard)
   @Post('otpLogin')
-  async otpLogin(@Request() req) {
+  async otpLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
   }
 
@@ -120,7 +119,7 @@ export class AuthController {
   @Post('github')
   @ApiBody({ type: GithubLoginDto })
   @UseGuards(GithubAuthGuard)
-  async githubLogin(@Request() req) {
+  async githubLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
   }
 
@@ -128,7 +127,7 @@ export class AuthController {
   @Post('linkedin')
   @ApiBody({ type: LinkedInLoginDto })
   @UseGuards(LinkedInAuthGuard)
-  async linkedInLogin(@Request() req) {
+  async linkedInLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
   }
 
@@ -136,7 +135,7 @@ export class AuthController {
   @Post('google')
   @ApiBody({ type: GoogleLoginDto })
   @UseGuards(GoogleAuthGuard)
-  async googleLogin(@Request() req) {
+  async googleLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
   }
 
@@ -150,8 +149,8 @@ export class AuthController {
   })
   async loginAsUser(
     @Body() data: LoginAsUserDto,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<AccessTokenDto> {
     const currentUserId = options.user.userId;
     const userCredentials = await this.authService.login.getLoginToken(
       currentUserId,
@@ -168,7 +167,9 @@ export class AuthController {
     status: 200,
     description: 'Logged in successfully',
   })
-  async revertBackToOriginalUser(@Request() options): Promise<any> {
+  async revertBackToOriginalUser(
+    @Request() options: SessionRequest,
+  ): Promise<AccessTokenDto> {
     if (!options.user.originalUser) {
       throw new ForbiddenException();
     }
@@ -188,8 +189,8 @@ export class AuthController {
   })
   async registerByOauth(
     @Body() data: RegisterByOauthDto,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<AccessTokenDto> {
     return this.authService.oath.registerByOauth(options, data);
   }
 
@@ -198,10 +199,9 @@ export class AuthController {
   @ApiOperation({ summary: 'register user with otp ' })
   @ApiBody({ type: CreateUserWithOtpDto })
   async registerByOtp(
-    @Request() options,
     @Body() dto: CreateUserWithOtpDto,
-    @Res() res,
-  ) {
+    @Res() res: SessionRequest,
+  ): Promise<string> {
     // checking if the user exists or not
     const userExist = await this.userService.checkPhoneNumber(dto.phoneNumber);
 

@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import axios from 'axios';
 import * as https from 'https';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
@@ -10,6 +14,12 @@ import { generatePassword } from 'src/infrastructure/helpers/helpers';
 import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
 import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
 import { LoginService } from './login.service';
+import { OauthResponseDto } from '../dto/oauth-response.dto';
+import { VerifyOauthDto } from '../dto/verify-oauth.dto';
+import { AccessTokenDto } from '../dto/access-token.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
+import { DecodedPhone } from '../dto/decoded-phone.dto';
 
 @Injectable()
 export class OauthService {
@@ -19,7 +29,7 @@ export class OauthService {
     private readonly loginService: LoginService,
   ) {}
 
-  async googleOauth(token) {
+  async googleOauth(token: string): Promise<OauthResponseDto> {
     let email;
     let error;
     let verified = false;
@@ -48,9 +58,9 @@ export class OauthService {
     };
   }
 
-  async githubOauth(code) {
-    let email;
-    let error;
+  async githubOauth(code: string): Promise<OauthResponseDto> {
+    let email: string;
+    let error: Error;
     let verified = false;
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
@@ -84,7 +94,7 @@ export class OauthService {
       });
       if (!checkEmail.data.email) {
         error = new BadRequestException();
-        error.code = 'NO_EMAIL_REGISTERED';
+        error.message = 'NO_EMAIL_REGISTERED';
       }
       email = checkEmail.data.email;
       verified = true;
@@ -99,9 +109,9 @@ export class OauthService {
     };
   }
 
-  async linkedinOauth(code) {
-    let email;
-    let error;
+  async linkedinOauth(code: string): Promise<OauthResponseDto> {
+    let email: string;
+    let error: Error;
     let verified = false;
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
@@ -139,7 +149,7 @@ export class OauthService {
 
       if (!(checkEmail.data?.elements.length === 0)) {
         error = new BadRequestException();
-        error.code = 'NO_EMAIL_REGISTERED';
+        error.message = 'NO_EMAIL_REGISTERED';
       }
 
       const primaryEmail = checkEmail.data?.elements.filter(
@@ -158,12 +168,15 @@ export class OauthService {
     };
   }
 
-  async verifyGoogleOauth(token: string) {
+  async verifyGoogleOauth(
+    token: string,
+  ): Promise<VerifyOauthDto | AccessTokenDto> {
     const check = await this.googleOauth(token);
-    const { email, verified, error } = check;
+    const email = check.email;
+    const error = check.error;
     console.log(email, '😉');
     if (error) {
-      return error;
+      throw new UnauthorizedException();
     }
     const user = await this.userTable.findOne({
       where: {
@@ -185,14 +198,16 @@ export class OauthService {
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
-    const ttl = process.env.USER_OPTIONS_TTL;
+    //const ttl = process.env.USER_OPTIONS_TTL;
 
     return this.loginService.getLoginToken(user.id);
   }
 
-  async verifyLinkedinOauth(code) {
+  async verifyLinkedinOauth(
+    code: string,
+  ): Promise<VerifyOauthDto | AccessTokenDto> {
     const check = await this.linkedinOauth(code);
-    const { email, verified, error } = check;
+    const { email, error } = check;
     if (error) {
       return Promise.reject(error);
     }
@@ -220,9 +235,11 @@ export class OauthService {
     return this.loginService.getLoginToken(user.id);
   }
 
-  async verifyGithubOauth(code: string) {
+  async verifyGithubOauth(
+    code: string,
+  ): Promise<VerifyOauthDto | AccessTokenDto> {
     const check = await this.githubOauth(code);
-    const { email, verified, error } = check;
+    const { email, error } = check;
     if (error) {
       return Promise.reject(error);
     }
@@ -249,13 +266,13 @@ export class OauthService {
     return this.loginService.getLoginToken(user.id);
   }
 
-  async registerByOauth(options, data: RegisterByOauthDto) {
+  async registerByOauth(
+    options: SessionRequest,
+    data: RegisterByOauthDto,
+  ): Promise<AccessTokenDto> {
     const decodedPhone: DecodedPhone = jwt.decode(data.pjwt) as DecodedPhone;
 
-    const pjwtVerified = await jwt.verify(
-      data.pjwt,
-      process.env.OTP_SECRET_KEY,
-    );
+    const pjwtVerified = jwt.verify(data.pjwt, process.env.OTP_SECRET_KEY);
     if (!pjwtVerified) {
       return Promise.reject(new InvalidPhoneTokenException());
     }
@@ -274,6 +291,10 @@ export class OauthService {
         data.emailToken,
         process.env.JWT_SECRET_KEY,
       );
+
+      if (!emailVerified) {
+        throw new InvalidEmailTokenException();
+      }
     } catch (err) {
       return Promise.reject(new BadRequestException());
     }

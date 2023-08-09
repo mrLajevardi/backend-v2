@@ -1,13 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
-import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { NotificationService } from 'src/application/base/notification/notification.service';
-import * as bcrypt from 'bcrypt';
 import { comparePassword } from 'src/infrastructure/helpers/helpers';
 import { User } from 'src/infrastructure/database/entities/User';
 import { isEmpty } from 'lodash';
-import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { OtpService } from '../../security-tools/otp.service';
 import { AccessTokenDto } from '../dto/access-token.dto';
 
@@ -93,7 +90,10 @@ export class LoginService {
   // This function will be called in AuthController.login after
   // the success of local strategy
   // it will return the JWT token
-  async getLoginToken(userId: number, impersonateId?: number) {
+  async getLoginToken(
+    userId: number,
+    impersonateId?: number,
+  ): Promise<AccessTokenDto> {
     console.log('getLoginToken', userId, impersonateId);
     if (!userId) {
       throw new UnauthorizedException();
@@ -108,7 +108,7 @@ export class LoginService {
     }
     const payload = {
       username: user.username,
-      sub: user.id,
+      userId: user.id,
       impersonateAs: !isEmpty(impersonateAs)
         ? {
             username: impersonateAs.username,

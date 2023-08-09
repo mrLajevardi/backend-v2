@@ -5,6 +5,7 @@ export class UserPayload {
     userId?: number;
     username?: string;
   };
-  isRobot?: number; 
+  isRobot?: number;
   robotToken?: string;
+  isPublic?: boolean;
 }
