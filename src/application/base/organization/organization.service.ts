@@ -4,6 +4,7 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
 import { UserTableService } from '../crud/user-table/user-table.service';
+import { InitOrgReturnDto } from './dto/init-org-return.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -13,7 +14,7 @@ export class OrganizationService {
     private readonly userTable: UserTableService,
   ) {}
 
-  async initOrg(userId) {
+  async initOrg(userId: number): Promise<InitOrgReturnDto> {
     const sessionToken = await this.sessionService.checkAdminSession(userId);
     const user = await this.userTable.findById(userId);
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');

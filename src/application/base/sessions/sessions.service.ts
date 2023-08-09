@@ -66,7 +66,7 @@ export class SessionsService {
    * checks admin session
    * @return {Promise}
    */
-  async checkAdminSession(userId: string) {
+  async checkAdminSession(userId: number) {
     const session = await this.sessionTable.findOne({
       where: {
         isAdmin: true,
