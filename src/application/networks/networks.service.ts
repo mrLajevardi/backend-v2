@@ -23,7 +23,7 @@ export class NetworksService {
     readonly dhcp: DhcpService,
   ) {}
 
-  async createNetwork(data: NetworkDto, options, vdcInstanceId) {
+  async createNetwork(data: any, options, vdcInstanceId) {
     await this.checkNetworkParams(data);
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
