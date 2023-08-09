@@ -1,11 +1,17 @@
-import { createMongoAbility, AbilityBuilder } from '@casl/ability';
+import {
+  createMongoAbility,
+  AbilityBuilder,
+  MongoAbility,
+  AbilityTuple,
+  MongoQuery,
+} from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
 import { PredefinedRoles } from './enum/predefined-enum.type';
 import { Action } from './enum/action.enum';
-import or, { In } from 'typeorm';
+import { In } from 'typeorm';
 import { isEmpty } from 'lodash';
 
 export type AbilitySubjects =
@@ -49,7 +55,9 @@ export class AbilityFactory {
   }
 
   // creates the abilities related to the user .
-  async createForUser(user: User) {
+  async createForUser(
+    user: User,
+  ): Promise<MongoAbility<AbilityTuple, MongoQuery>> {
     const builder = new AbilityBuilder(createMongoAbility);
 
     const simpleAcls = await this.aclTable.find({

@@ -72,7 +72,7 @@ export class PlansTableService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<Plans>): Promise<DeleteResult> {
+  async deleteAll(where?: FindOptionsWhere<Plans>): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

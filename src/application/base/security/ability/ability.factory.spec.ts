@@ -2,30 +2,17 @@ import { AbilityFactory } from './ability.factory';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { InvoicesService } from '../../invoice/service/invoices.service';
 import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
-import { UserService } from '../../user/service/user.service';
-import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
-import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
-import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
-import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 import { Action } from './enum/action.enum';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Acl } from 'src/infrastructure/database/entities/Acl';
 import { CrudModule } from '../../crud/crud.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
   let userTable: UserTableService;
-  let testDataService: TestDataService;
   let aclTable: ACLTableService;
-  let invoiceService: InvoicesService;
   let module: TestingModule;
 
   beforeAll(async () => {
@@ -37,9 +24,6 @@ describe('AbilityFactory', () => {
     abilityFactory = module.get<AbilityFactory>(AbilityFactory);
     userTable = module.get<UserTableService>(UserTableService);
     aclTable = module.get<ACLTableService>(ACLTableService);
-    testDataService = module.get<TestDataService>(TestDataService);
-    invoiceService = module.get<InvoicesService>(InvoicesService);
-    //await testDataService.seedTestData();
   });
 
   describe('Generic Access Tests, that are not based on specific user ', () => {

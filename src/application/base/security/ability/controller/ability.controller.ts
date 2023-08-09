@@ -32,7 +32,9 @@ import { CreateACLDto } from 'src/application/base/crud/acl-table/dto/create-acl
 import { UpdateACLDto } from 'src/application/base/crud/acl-table/dto/update-acls.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { Action } from '../enum/action.enum';
-import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
+import { DeleteOptions } from 'typeorm';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { GetAllAclsDto } from '../dto/get-all-acls.dto';
 
 @ApiTags('Ability')
 @Controller('ability')
@@ -56,7 +58,9 @@ export class AbilityController {
   @Get('/predefined-roles')
   @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
   @ApiOperation({ summary: 'returns all predefined roles for the user' })
-  async getAllMyPredefinedRoles(@Request() options): Promise<string[]> {
+  async getAllMyPredefinedRoles(
+    @Request() options: SessionRequest,
+  ): Promise<string[]> {
     return await this.abilityAdminService.getAllPredefinedRoles(
       options.user.userId,
     );
@@ -99,7 +103,7 @@ export class AbilityController {
     @Query('page', ParseIntPipe) page = 1,
     @Query('pageSize', ParseIntPipe) pageSize = 10,
     @Query('search') search: string,
-  ) {
+  ): Promise<GetAllAclsDto> {
     return await this.abilityAdminService.getAllAcls(page, pageSize, search);
   }
 
@@ -124,7 +128,7 @@ export class AbilityController {
   @Delete(':id')
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: 200, description: 'Deleted ACL successfully' })
-  async deleteAcl(@Param('id') id: number): Promise<void> {
+  async deleteAcl(@Param('id') id: number): Promise<DeleteOptions> {
     return await this.aclTable.delete(id);
   }
 

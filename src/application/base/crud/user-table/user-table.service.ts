@@ -78,7 +78,7 @@ export class UserTableService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<User>): Promise<DeleteResult> {
+  async deleteAll(where?: FindOptionsWhere<User>): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

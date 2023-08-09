@@ -74,7 +74,7 @@ export class GroupsTableService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<Groups>): Promise<DeleteResult> {
+  async deleteAll(where?: FindOptionsWhere<Groups>): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

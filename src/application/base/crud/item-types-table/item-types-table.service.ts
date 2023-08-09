@@ -72,7 +72,7 @@ export class ItemTypesTableService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<ItemTypes>): Promise<DeleteResult> {
+  async deleteAll(where?: FindOptionsWhere<ItemTypes>): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

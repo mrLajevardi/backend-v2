@@ -72,7 +72,7 @@ export class RoleMappingTableService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<RoleMapping>): Promise<DeleteResult> {
+  async deleteAll(where?: FindOptionsWhere<RoleMapping>): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }
