@@ -55,7 +55,6 @@ describe('AuthController', () => {
 
     controller = module.get<AuthController>(AuthController);
     testDataService = module.get<TestDataService>(TestDataService);
-    authService = module.get<AuthService>(AuthService);
 
     await testDataService.seedTestData();
   });

@@ -16,7 +16,7 @@ export class EmailService {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
     };
-    const secure = process.env.EMAIL_SECURE.toLowerCase() === 'true';
+    const secure = process.env.EMAIL_SECURE?.toLowerCase() === 'true';
     this.from = process.env.EMAIL_FROM;
     const tls = process.env.EMAIL_TLS as any;
     // create transporter object
