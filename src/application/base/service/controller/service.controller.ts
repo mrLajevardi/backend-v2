@@ -26,6 +26,7 @@ import { CreateGroupsDto } from '../../crud/groups-table/dto/create-groups.dto';
 import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 import { PureAbility } from '@casl/ability';
 import { Action } from '../../security/ability/enum/action.enum';
+import { TempDto } from 'src/application/vdc/dto/temp.dto';
 
 @ApiTags('Services')
 @Controller('services')
@@ -70,13 +71,17 @@ export class ServiceController {
 
   // create new item
   @ApiOperation({ summary: 'get services of a user' })
+  @ApiQuery({ name: 'id', required: false })
   @ApiResponse({
     status: 200,
     description: 'user services have been fetched successfully',
   })
   @Get()
-  async getServices(@Request() options: any): Promise<any> {
-    return this.serviceService.getServices(options);
+  async getServices(
+    @Request() options: any,
+    @Query('id') id?: string,
+  ): Promise<any> {
+    return this.serviceService.getServices(options, id);
     // await this.invoicesTable.create(dto);
   }
 
@@ -104,7 +109,7 @@ export class ServiceController {
   @Put('/:serviceInstanceId')
   async updateServiceInfo(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: CreateGroupsDto,
+    @Body() data: TempDto,
     @Request() options: any,
   ): Promise<any> {
     return this.createService.updateServiceInfo(serviceInstanceId, data);

@@ -126,7 +126,7 @@ export class TaskManagerService {
     );
   }
 
-  taskRunner(taskName, serviceInstanceId, customTaskId, requestOptions = {}) {
+  taskRunner(taskName, serviceInstanceId, customTaskId, requestOptions: any) {
     // const tasks = {
     //   createEdge: this.createEdgeTask,
     //   createOrg: this.createOrgTask,
@@ -175,7 +175,7 @@ export class TaskManagerService {
         await this.loggerService.error({
           stackTrace: err?.stack,
           message: err?.message,
-          userId: requestOptions['userId'] || null,
+          userId: requestOptions?.userId || null,
         });
       } catch (err) {
         console.log(err);
@@ -262,6 +262,7 @@ export class TaskManagerService {
   }
 
   async createEdge(serviceInstanceId, customTaskId, requestOptions) {
+    console.log('🍢');
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
