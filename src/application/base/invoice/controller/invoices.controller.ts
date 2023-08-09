@@ -16,10 +16,10 @@ import {
 } from '@nestjs/swagger';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { InvoicesService } from '../service/invoices.service';
-import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -56,7 +56,7 @@ export class InvoicesController {
   @Post()
   async create(
     @Body() dto: CreateServiceInvoiceDto,
-    @Request() options: any,
+    @Request() options: SessionRequest,
   ): Promise<any> {
     return this.invoiceService.createInvoice(dto, options);
     // await this.invoicesTable.create(dto);

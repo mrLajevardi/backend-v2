@@ -12,13 +12,13 @@ export class CostCalculationService {
     plans: Plans[],
     items: ItemTypes[],
     options = {},
-  ) {
-    console.log(
-      this.itemsCost(items, data, serviceType),
-      this.plansRatioForItems(plans, data),
-      this.plansRatioForInvoice(plans, data),
-      '🧂',
-    );
+  ): number {
+    // console.log(
+    //   this.itemsCost(items, data, serviceType),
+    //   this.plansRatioForItems(plans, data),
+    //   this.plansRatioForInvoice(plans, data),
+    //   '🧂',
+    // );
     const totalCost =
       (this.itemsCost(items, data, serviceType) *
         this.plansRatioForItems(plans, data) +
@@ -31,7 +31,7 @@ export class CostCalculationService {
     items: ItemTypes[],
     data: CreateServiceInvoiceDto,
     serviceType: ServiceTypes,
-  ) {
+  ): number {
     let itemTotalCost = 0;
     if (!serviceType.isPayg) {
       console.log('first');
@@ -47,7 +47,11 @@ export class CostCalculationService {
     return itemTotalCost;
   }
 
-  plansCost(plans: Plans[], data: CreateServiceInvoiceDto, options: any = {}) {
+  plansCost(
+    plans: Plans[],
+    data: CreateServiceInvoiceDto,
+    options: any = {},
+  ): number {
     if (!options?.calculatePlanCost) {
       return 0;
     }
@@ -63,7 +67,7 @@ export class CostCalculationService {
     return planTotalCost;
   }
 
-  plansRatioForInvoice(plans: Plans[], data: CreateServiceInvoiceDto) {
+  plansRatioForInvoice(plans: Plans[], data: CreateServiceInvoiceDto): number {
     let planTotalRatio = 1;
     let additionRatio;
     plans.forEach((element) => {
@@ -77,7 +81,7 @@ export class CostCalculationService {
     return planTotalRatio;
   }
 
-  plansRatioForItems(plans: Plans[], data: CreateServiceInvoiceDto) {
+  plansRatioForItems(plans: Plans[], data: CreateServiceInvoiceDto): number {
     let planTotalRatio = 1;
     let additionRatio;
     plans.forEach((element) => {
