@@ -32,6 +32,6 @@ module.exports = {
         "endOfLine": "auto"
       }
     ],
-    "crud-function-name": "error"
+  //  "crud-function-name": "error"
   },
 };

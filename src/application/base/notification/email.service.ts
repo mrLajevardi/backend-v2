@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
+import { MailOptions } from 'nodemailer/lib/json-transport';
+import { CreateLinkDto } from './dto/create-link.dto';
 
 @Injectable()
 export class EmailService {
@@ -14,39 +16,37 @@ export class EmailService {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
     };
-    const secure = process.env.EMAIL_SECURE;
+    const secure = process.env.EMAIL_SECURE.toLowerCase() === 'true';
     this.from = process.env.EMAIL_FROM;
-    const tls = process.env.EMAIL_TLS;
+    const tls = process.env.EMAIL_TLS as any;
     // create transporter object
-    let options: nodemailer.TransportOptions;
+    // let options: nodemailer.TransportOptions;
 
     this.transporter = nodemailer.createTransport({
       port: port,
       host: host,
       auth: auth,
       from: this.from,
+      secure: secure, // Use TLS
+      tls: tls,
     });
   }
 
-  sendMail(options) {
+  async sendMail(options: MailOptions): Promise<void> {
     const message = {
       ...options,
       from: this.from,
     };
-    return new Promise((resolve, reject) => {
-      this.transporter.sendMail(message, (err, info) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(info);
-        }
-      });
-    });
+    await this.transporter.sendMail(message);
   }
 
-  async createLink(url, id, tokenType) {
+  async createLink(
+    url: string,
+    id: number,
+    tokenType: string,
+  ): Promise<CreateLinkDto> {
     const payload = {
-      id,
+      id: id,
       sub: tokenType,
     };
     const token = jwt.sign(payload, process.env.EMAIL_JWT_SECRET);
