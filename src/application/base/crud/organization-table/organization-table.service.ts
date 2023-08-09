@@ -9,6 +9,7 @@ import {
   Repository,
   FindOptionsWhere,
   DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -51,18 +52,18 @@ export class OrganizationTableService {
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateOrganizationDto) {
+  async update(id: number, dto: UpdateOrganizationDto): Promise<Organization> {
     const item = await this.findById(id);
     const updateItem: Partial<Organization> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<Organization>,
     dto: UpdateOrganizationDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
@@ -71,7 +72,9 @@ export class OrganizationTableService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<Organization>): Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<Organization>,
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

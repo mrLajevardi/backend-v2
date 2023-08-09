@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { InvoiceItemList } from 'src/infrastructure/database/entities/views/invoice-item-list';
-import { DeleteResult, FindManyOptions, FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
+import {
+  DeleteResult,
+  FindManyOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 
 // This is a view
 
@@ -25,7 +30,9 @@ export class InvoiceItemListService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<InvoiceItemList>): Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<InvoiceItemList>,
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

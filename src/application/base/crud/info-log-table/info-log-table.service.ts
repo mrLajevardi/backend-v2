@@ -9,6 +9,7 @@ import {
   Repository,
   FindOptionsWhere,
   DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -44,22 +45,25 @@ export class InfoLogTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateInfoLogDto) {
+  async create(dto: CreateInfoLogDto): Promise<InfoLog> {
     const newItem = plainToClass(InfoLog, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateInfoLogDto) {
+  async update(id: number, dto: UpdateInfoLogDto): Promise<InfoLog> {
     const item = await this.findById(id);
     const updateItem: Partial<InfoLog> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
-  async updateAll(where: FindOptionsWhere<InfoLog>, dto: UpdateInfoLogDto) {
-    await this.repository.update(where, dto);
+  async updateAll(
+    where: FindOptionsWhere<InfoLog>,
+    dto: UpdateInfoLogDto,
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item

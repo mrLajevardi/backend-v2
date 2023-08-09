@@ -9,6 +9,7 @@ import {
   Repository,
   FindOptionsWhere,
   DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -44,7 +45,7 @@ export class GroupsTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateGroupsDto) {
+  async create(dto: CreateGroupsDto): Promise<Groups> {
     const newItem = plainToClass(Groups, dto);
     newItem.createDate = new Date();
     console.log(newItem);
@@ -53,15 +54,18 @@ export class GroupsTableService {
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateGroupsDto): Promise<Partial<Groups>> {
+  async update(id: number, dto: UpdateGroupsDto): Promise<Groups> {
     const item = await this.findById(id);
     const updateItem: Partial<Groups> = Object.assign(item, dto);
     return await this.repository.save(updateItem);
   }
 
   // update many items
-  async updateAll(where: FindOptionsWhere<Groups>, dto: UpdateGroupsDto) {
-    await this.repository.update(where, dto);
+  async updateAll(
+    where: FindOptionsWhere<Groups>,
+    dto: UpdateGroupsDto,
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item

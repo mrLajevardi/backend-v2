@@ -9,6 +9,7 @@ import {
   Repository,
   FindOptionsWhere,
   DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -44,34 +45,39 @@ export class AITransactionsLogsTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateAITransactionsLogsDto) {
+  async create(dto: CreateAITransactionsLogsDto): Promise<AiTransactionsLogs> {
     const newItem = plainToClass(AiTransactionsLogs, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: string, dto: UpdateAITransactionsLogsDto) {
+  async update(
+    id: string,
+    dto: UpdateAITransactionsLogsDto,
+  ): Promise<AiTransactionsLogs> {
     const item = await this.findById(id);
     const updateItem: Partial<AiTransactionsLogs> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<AiTransactionsLogs>,
     dto: UpdateAITransactionsLogsDto,
-  ) : Promise<void>{
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: string) : Promise<DeleteResult>{
+  async delete(id: string): Promise<DeleteResult> {
     return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<AiTransactionsLogs>): Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<AiTransactionsLogs>,
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

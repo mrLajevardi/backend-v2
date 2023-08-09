@@ -61,7 +61,7 @@ export class AccessTokenTableService {
     where: FindOptionsWhere<AccessToken>,
     dto: UpdateAccessTokenDto,
   ): Promise<void> {
-    await this.repository.update(where, dto);
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item

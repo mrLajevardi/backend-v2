@@ -9,6 +9,7 @@ import {
   Repository,
   FindOptionsWhere,
   DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -44,25 +45,28 @@ export class PermissionMappingsTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreatePermissionMappingsDto) {
+  async create(dto: CreatePermissionMappingsDto): Promise<PermissionMappings> {
     const newItem = plainToClass(PermissionMappings, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdatePermissionMappingsDto) {
+  async update(
+    id: number,
+    dto: UpdatePermissionMappingsDto,
+  ): Promise<PermissionMappings> {
     const item = await this.findById(id);
     const updateItem: Partial<PermissionMappings> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<PermissionMappings>,
     dto: UpdatePermissionMappingsDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
@@ -71,7 +75,9 @@ export class PermissionMappingsTableService {
   }
 
   // delete all items
-  async deleteAll(where: FindOptionsWhere<PermissionMappings>): Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<PermissionMappings>,
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

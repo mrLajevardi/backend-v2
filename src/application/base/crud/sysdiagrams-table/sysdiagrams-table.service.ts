@@ -9,6 +9,7 @@ import {
   Repository,
   FindOptionsWhere,
   DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -46,25 +47,25 @@ export class SysdiagramsTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateSysdiagramsDto) {
+  async create(dto: CreateSysdiagramsDto): Promise<Sysdiagrams> {
     const newItem = plainToClass(Sysdiagrams, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateSysdiagramsDto) {
+  async update(id: number, dto: UpdateSysdiagramsDto): Promise<Sysdiagrams> {
     const item = await this.findById(id);
     const updateItem: Partial<Sysdiagrams> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<Sysdiagrams>,
     dto: UpdateSysdiagramsDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item

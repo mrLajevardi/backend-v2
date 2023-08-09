@@ -45,31 +45,34 @@ export class ErrorLogTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateErrorLogDto) {
+  async create(dto: CreateErrorLogDto): Promise<ErrorLog> {
     const newItem = plainToClass(ErrorLog, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateErrorLogDto) {
+  async update(id: number, dto: UpdateErrorLogDto): Promise<ErrorLog> {
     const item = await this.findById(id);
     const updateItem: Partial<ErrorLog> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
-  async updateAll(where: FindOptionsWhere<ErrorLog>, dto: UpdateErrorLogDto): Promise<UpdateResult> {
+  async updateAll(
+    where: FindOptionsWhere<ErrorLog>,
+    dto: UpdateErrorLogDto,
+  ): Promise<UpdateResult> {
     return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: number) : Promise<DeleteResult>{
+  async delete(id: number): Promise<DeleteResult> {
     return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(where?: FindOptionsWhere<ErrorLog>) : Promise<DeleteResult>{
+  async deleteAll(where?: FindOptionsWhere<ErrorLog>): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

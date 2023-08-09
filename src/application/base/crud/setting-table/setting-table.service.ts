@@ -9,6 +9,7 @@ import {
   Repository,
   FindOptionsWhere,
   DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -44,22 +45,25 @@ export class SettingTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateSettingDto) {
+  async create(dto: CreateSettingDto): Promise<Setting> {
     const newItem = plainToClass(Setting, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateSettingDto) {
+  async update(id: number, dto: UpdateSettingDto): Promise<Setting> {
     const item = await this.findById(id);
     const updateItem: Partial<Setting> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
-  async updateAll(where: FindOptionsWhere<Setting>, dto: UpdateSettingDto) {
-    await this.repository.update(where, dto);
+  async updateAll(
+    where: FindOptionsWhere<Setting>,
+    dto: UpdateSettingDto,
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item

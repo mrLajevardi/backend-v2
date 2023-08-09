@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { QualityPlansService } from './quality-plans.service';
-import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('QualityPlansService', () => {

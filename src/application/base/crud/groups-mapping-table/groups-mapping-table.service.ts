@@ -45,34 +45,39 @@ export class GroupsMappingTableService {
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateGroupMappingsDto) {
+  async create(dto: CreateGroupMappingsDto): Promise<GroupsMapping> {
     const newItem = plainToClass(GroupsMapping, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateGroupMappingsDto) {
+  async update(
+    id: number,
+    dto: UpdateGroupMappingsDto,
+  ): Promise<GroupsMapping> {
     const item = await this.findById(id);
     const updateItem: Partial<GroupsMapping> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<GroupsMapping>,
     dto: UpdateGroupMappingsDto,
-  ) : Promise<UpdateResult>{
+  ): Promise<UpdateResult> {
     return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: number) : Promise<DeleteResult>{
+  async delete(id: number): Promise<DeleteResult> {
     return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(where?: FindOptionsWhere<GroupsMapping>) : Promise<DeleteResult>{
+  async deleteAll(
+    where?: FindOptionsWhere<GroupsMapping>,
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }
