@@ -31,7 +31,7 @@ import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.e
 
 @ApiTags('vgpu')
 @Controller('vgpu')
-@UseFilters(new HttpExceptionFilter())
+// @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VgpuController {
   constructor(
