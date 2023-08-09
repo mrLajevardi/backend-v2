@@ -241,7 +241,7 @@ export class CreateServiceService {
       throw new BadRequestException();
     }
     const task = await this.tasksTableService.create({
-      userId: options.locals.userId,
+      userId: options.user.userId,
       serviceInstanceId: serviceInstanceId,
       operation: 'createDataCenter',
       details: null,

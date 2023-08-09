@@ -432,16 +432,20 @@ export class ServiceService {
     }
   }
 
-  async getServices(options: any) {
+  async getServices(options: any, id?: string) {
     const {
       user: { userId },
     } = options;
+    const where: any = {
+      userId,
+      isDeleted: false,
+      serviceTypeId: In(['vdc', 'vgpu', 'aradAi']),
+    };
+    if (id) {
+      where.id = id;
+    }
     const services = await this.serviceInstancesTableService.find({
-      where: {
-        userId,
-        isDeleted: false,
-        serviceTypeId: In(['vdc', 'vgpu', 'aradAi']),
-      },
+      where,
       relations: ['serviceItems'],
     });
     const extendedServiceList = services.map((service) => {

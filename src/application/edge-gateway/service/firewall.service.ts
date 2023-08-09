@@ -208,6 +208,7 @@ export class FirewallService {
   }
 
   async updateSingleFirewall(options, vdcInstanceId, ruleId, data) {
+    console.log(ruleId);
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,

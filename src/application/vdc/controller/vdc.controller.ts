@@ -30,7 +30,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
-import { CreateGroupsDto } from 'src/application/base/crud/groups-table/dto/create-groups.dto';
+import { TempDto } from '../dto/temp.dto';
 @ApiBearerAuth()
 @ApiTags('Vpc')
 @UseFilters(new HttpExceptionFilter())
@@ -41,7 +41,7 @@ export class VdcController {
     private readonly vdcService: VdcService,
   ) {}
 
-  @Post('/:serviceInstanceId/namedDisk/:namedDisk/attach/:vmId')
+  @Post('/:serviceInstanceId/namedDisk/:namedDiskId/attach/:vmId')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
@@ -54,9 +54,9 @@ export class VdcController {
   async attachNamedDisk(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
+    @Param('serviceInstanceId')
     vdcInstanceId: string,
-    @Param('vdcInstanceId')
+    @Param('namedDiskId')
     namedDiskId: string,
     @Param('vmId')
     vmId: string,
@@ -80,15 +80,15 @@ export class VdcController {
   async createNamedDisk(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
+    @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Body()
-    data: CreateGroupsDto,
+    data: TempDto,
   ) {
     return this.vdcService.createNamedDisk(options, vdcInstanceId, data);
   }
 
-  @Post('/:serviceInstanceId/namedDisk/:namedDisk/detach/:vmId')
+  @Post('/:serviceInstanceId/namedDisk/:namedDiskId/detach/:vmId')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
@@ -101,7 +101,7 @@ export class VdcController {
   async detachNamedDisk(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
+    @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
@@ -144,7 +144,7 @@ export class VdcController {
   async getVdc(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
+    @Param('serviceInstanceId')
     vdcInstanceId: string,
   ) {
     return this.vdcService.getVdc(options, vdcInstanceId);
@@ -162,7 +162,7 @@ export class VdcController {
   async getVmAttachedToNamedDisk(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
+    @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
@@ -186,7 +186,7 @@ export class VdcController {
   async removeNamedDisk(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
+    @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
@@ -206,12 +206,12 @@ export class VdcController {
   async updateNamedDisk(
     @Request()
     options: any,
-    @Param('vdcInstanceId')
+    @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
     @Body()
-    data: CreateGroupsDto,
+    data: TempDto,
   ) {
     return this.vdcService.updateNamedDisk(
       options,

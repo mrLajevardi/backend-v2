@@ -31,18 +31,18 @@ export class LoggerService {
     const typeInfo = loggerObjects[type];
     const actionInfo = typeInfo.actions[action];
     const description = this.replacer(actionInfo.description, options);
-    let userId = requestOptions.userId;
+    let userId = requestOptions?.userId;
 
-    if (requestOptions.adminId) {
-      userId = requestOptions.adminId;
+    if (requestOptions?.adminId) {
+      userId = requestOptions?.adminId;
     }
     await this.infoLogTable.create({
-      userId: requestOptions.userId || null,
+      userId: requestOptions?.userId || null,
       actionId: actionInfo.actionId || null,
       typeId: typeInfo.typeId || null,
       description: description || null,
       timeStamp: new Date(),
-      ip: requestOptions.ip || null,
+      ip: requestOptions?.ip || null,
       serviceInstanceId: requestOptions.serviceInstanceId || null,
       object: actionInfo.object || options._object,
     });

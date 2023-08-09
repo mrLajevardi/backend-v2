@@ -205,6 +205,7 @@ export class NatService {
     //   NO_SNAT: ["internalAddresses", "snatDestinationAddresses"],
     //   REFLEXIVE: ["externalAddresses", "internalAddresses"]
     // }
+    console.log(options.user.userId);
     const props = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );

@@ -11,46 +11,48 @@ import { ApplicationRefDto } from './application-ref.dto';
 import { FirewallGroupDto } from './firewall-group.dto';
 
 export class FirewallDto {
-  @ApiProperty({ example: '9615c4c7-2354-48fc-9639-cc76875ad466' })
-  @IsNotEmpty()
-  @IsString()
-  @IsOptional()
-  id: string;
-
-  @ApiProperty({ example: 'test' })
-  @IsNotEmpty()
-  @IsString()
+  @ApiProperty()
   name: string;
+  // @ApiProperty({ example: '9615c4c7-2354-48fc-9639-cc76875ad466' })
+  // @IsNotEmpty()
+  // @IsString()
+  // @IsOptional()
+  // id: string;
 
-  @ApiProperty({ type: [ApplicationRefDto], required: false })
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => ApplicationRefDto)
-  applicationPortProfiles?: ApplicationRefDto[];
+  // @ApiProperty({ example: 'test' })
+  // @IsNotEmpty()
+  // @IsString()
+  // name: string;
 
-  @ApiProperty({ example: 'DROP' })
-  @IsNotEmpty()
-  @IsString()
-  ruleType: string;
+  // @ApiProperty({ type: [ApplicationRefDto], required: false })
+  // @IsOptional()
+  // @ValidateNested({ each: true })
+  // @Type(() => ApplicationRefDto)
+  // applicationPortProfiles?: ApplicationRefDto[];
 
-  @ApiProperty()
-  @IsBoolean()
-  enabled: boolean;
+  // @ApiProperty({ example: 'DROP' })
+  // @IsNotEmpty()
+  // @IsString()
+  // ruleType: string;
 
-  @ApiProperty({ type: [FirewallGroupDto] })
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => FirewallGroupDto)
-  sourceFirewallGroups: FirewallGroupDto[];
+  // @ApiProperty()
+  // @IsBoolean()
+  // enabled: boolean;
 
-  @ApiProperty({ type: [FirewallGroupDto] })
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @Type(() => FirewallGroupDto)
-  destinationFirewallGroups: FirewallGroupDto[];
+  // @ApiProperty({ type: [FirewallGroupDto] })
+  // @IsNotEmpty()
+  // @ValidateNested({ each: true })
+  // @Type(() => FirewallGroupDto)
+  // sourceFirewallGroups: FirewallGroupDto[];
 
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
-  description?: string;
+  // @ApiProperty({ type: [FirewallGroupDto] })
+  // @IsNotEmpty()
+  // @ValidateNested({ each: true })
+  // @Type(() => FirewallGroupDto)
+  // destinationFirewallGroups: FirewallGroupDto[];
+
+  // @ApiProperty()
+  // @IsOptional()
+  // @IsString()
+  // description?: string;
 }

@@ -80,7 +80,7 @@ export class NatController {
     );
   }
 
-  @Put('/:vdcInstanceId/:ruleId')
+  @Put('/:serviceInstanceId/:ruleId')
   @ApiOperation({ summary: ' update natRule ' })
   @ApiParam({ name: 'serviceInstanceId', description: 'vdc instance id ' })
   @ApiParam({ name: 'ruleId', description: 'rule id ' })
