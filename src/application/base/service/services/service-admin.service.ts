@@ -183,7 +183,7 @@ export class ServiceAdminService {
         service.id,
       );
       const session = await this.sessionService.checkAdminSession(
-        service.userId.toString(),
+        service.userId,
       );
       await mainWrapper.admin.vdc.disableVdc(session, props['vdcId']);
       task = await this.tasksTable.create({
@@ -255,7 +255,7 @@ export class ServiceAdminService {
         service.id,
       );
       const session = await this.sessionService.checkAdminSession(
-        service.userId.toString(),
+        service.userId,
       );
       await mainWrapper.admin.vdc.enableVdc(props['vdcId'], session);
     }

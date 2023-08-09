@@ -42,7 +42,7 @@ export class TaskAdminService {
       return Promise.resolve(data);
     }
     if (service.serviceTypeId === 'vgpu') {
-      session = await this.sessionService.checkAdminSession(userId.toString());
+      session = await this.sessionService.checkAdminSession(userId);
     }
     if (service.serviceTypeId === 'vdc') {
       session = await this.sessionService.checkUserSession(
@@ -87,7 +87,7 @@ export class TaskAdminService {
     let tasks;
     let data = [];
     if (service.serviceTypeId === 'vgpu') {
-      session = await this.sessionService.checkAdminSession(userId.toString());
+      session = await this.sessionService.checkAdminSession(userId);
       const configsData = await this.configTable.find({
         where: {
           propertyKey: In(['config.vgpu.orgName', 'config.vgpu.orgId']),

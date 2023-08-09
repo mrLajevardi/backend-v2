@@ -32,7 +32,7 @@ export class TasksService {
       return Promise.resolve({});
     }
     if (service.serviceTypeId === 'vgpu') {
-      session = await this.sessionService.checkAdminSession('');
+      session = await this.sessionService.checkAdminSession(null);
       const configsData = await this.configsTable.find({
         where: {
           propertyKey: {
@@ -141,7 +141,7 @@ export class TasksService {
         return Promise.resolve({});
       }
       if (service.serviceTypeId === 'vgpu') {
-        session = await this.sessionService.checkAdminSession('');
+        session = await this.sessionService.checkAdminSession(null);
       }
       if (service.serviceTypeId === 'vdc') {
         session = await this.sessionService.checkUserSession(

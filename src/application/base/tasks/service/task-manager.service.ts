@@ -675,7 +675,7 @@ export class TaskManagerService {
     const userId = service.userId;
     let vcloudTask = null;
     const session = await this.sessionService.checkAdminSession(
-      userId.toString(),
+      userId,
     );
     // const vdcName = props?.name;
     const user = await this.userTable.findById(userId);
@@ -689,7 +689,7 @@ export class TaskManagerService {
       const orgId = `urn:vcloud:org:${org}`;
       const orgName = query.data.record[0].orgName;
       console.log(userId, orgId);
-      const adminSession = await this.sessionService.checkAdminSession('');
+      const adminSession = await this.sessionService.checkAdminSession(null);
       const catalogId = await this.checkCatalog(adminSession, orgId, orgName);
       const totalVdcs = query.data.total;
       // Delete Catalog, If last vdc in org
@@ -746,7 +746,7 @@ export class TaskManagerService {
     const vdcName = user?.username + '_org_vdc_' + service.index;
 
     const session = await this.sessionService.checkAdminSession(
-      userId.toString(),
+      userId,
     );
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'adminOrgVdc',
@@ -1106,7 +1106,7 @@ export class TaskManagerService {
     });
     const userId = service.userId;
     const session = await this.sessionService.checkAdminSession(
-      userId.toString(),
+      userId,
     );
     const configsData = await this.configsTable.find({
       where: {
@@ -1205,7 +1205,7 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const session = await this.sessionService.checkAdminSession(
-      userId.toString(),
+      userId,
     );
     const networkProfile = await mainWrapper.admin.vdc.updateNetworkProfile(
       props['vdcId'],

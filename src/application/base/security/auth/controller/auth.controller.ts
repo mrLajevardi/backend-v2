@@ -42,6 +42,7 @@ import { RobotLoginDto } from '../dto/robot-login.dto';
 import { AccessTokenDto } from '../dto/access-token.dto';
 import { UserPayload } from '../dto/user-payload.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { Response } from 'express';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -92,7 +93,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req: SessionRequest): Promise<AccessTokenDto> {
-    return this.authService.login.getLoginToken(req.user.id);
+    return this.authService.login.getLoginToken(req.user.userId);
   }
 
   @Public()
@@ -200,8 +201,8 @@ export class AuthController {
   @ApiBody({ type: CreateUserWithOtpDto })
   async registerByOtp(
     @Body() dto: CreateUserWithOtpDto,
-    @Res() res: SessionRequest,
-  ): Promise<string> {
+    @Res() res: Response,
+  ): Promise<Response> {
     // checking if the user exists or not
     const userExist = await this.userService.checkPhoneNumber(dto.phoneNumber);
 
