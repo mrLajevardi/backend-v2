@@ -66,8 +66,8 @@ export class AITransactionsLogsTableService {
   }
 
   // delete an Item
-  async delete(id: string) : Promise<void>{
-    await this.repository.delete(id);
+  async delete(id: string) : Promise<DeleteResult>{
+    return await this.repository.delete(id);
   }
 
   // delete all items

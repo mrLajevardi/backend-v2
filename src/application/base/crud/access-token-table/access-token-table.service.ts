@@ -66,7 +66,7 @@ export class AccessTokenTableService {
 
   // delete an Item
   async delete(id: string): Promise<void> {
-    await this.repository.delete(id);
+    return await this.repository.delete(id);
   }
 
   // delete all items
