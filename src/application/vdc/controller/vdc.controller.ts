@@ -33,7 +33,7 @@ import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
 @ApiBearerAuth()
 @ApiTags('Vpc')
-@UseFilters(new HttpExceptionFilter())
+// @UseFilters(new HttpExceptionFilter())
 @Controller('vdc')
 export class VdcController {
   constructor(

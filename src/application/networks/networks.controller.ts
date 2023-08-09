@@ -25,6 +25,7 @@ import { GetDhcpDto } from './dto/get-dhcp.dto';
 import { GetNetworkListDto } from './dto/get-network-list.dto';
 import { GetNetworksDto } from './dto/get-networks.dto';
 import { UpdateDhcpDto } from '../edge-gateway/dto/update-dbcp.dto';
+import { TempDto } from '../vdc/dto/temp.dto';
 
 @ApiTags('Networks')
 @ApiBearerAuth()
@@ -46,7 +47,7 @@ export class NetworksController {
     @Request() options,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('networkId') networkId: string,
-    @Body() data: DhcpBindingsDataDto,
+    @Body() data: TempDto,
   ): Promise<object> {
     return await this.service.dhcp.createDhcpBinding(
       options,
@@ -68,7 +69,7 @@ export class NetworksController {
   async createNetwork(
     @Request() options,
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Body() data: NetworkDto,
+    @Body() data: TempDto,
   ): Promise<object> {
     return await this.service.createNetwork(data, options, vdcInstanceId);
   }
@@ -253,7 +254,7 @@ export class NetworksController {
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('networkId') networkId: string,
     @Param('bindingId') bindingId: string,
-    @Body() data: DhcpBindingsDataDto,
+    @Body() data: TempDto,
   ): Promise<object> {
     return this.service.dhcp.updateDhcpBinding(
       options,
@@ -278,7 +279,7 @@ export class NetworksController {
     @Request() options,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('networkId') networkId: string,
-    @Body() data: UpdateDhcpDto,
+    @Body() data: TempDto,
   ): Promise<object> {
     return await this.service.dhcp.updateDhcp(
       options,
@@ -302,7 +303,7 @@ export class NetworksController {
     @Request() options,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('networkId') networkId: string,
-    @Body() data: NetworkDto,
+    @Body() data: TempDto,
   ): Promise<object> {
     return await this.service.updateNetwork(
       data,

@@ -31,7 +31,7 @@ import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
 
 @ApiTags('VM')
 @Controller('vm')
-@UseFilters(new HttpExceptionFilter())
+// @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VmController {
   constructor(private readonly vmService: VmService) {}

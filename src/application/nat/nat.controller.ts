@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger';
 import { NatDto } from './dto/nat.dto';
 import { NatService } from './nat.service';
+import { TempDto } from '../vdc/dto/temp.dto';
 
 @ApiTags('Nat')
 @Controller('nat')
@@ -32,7 +33,7 @@ export class NatController {
   async createNatRule(
     @Request() options,
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: NatDto,
+    @Body() data: TempDto,
   ): Promise<any> {
     return await this.service.createNatRule(data, options, serviceInstanceId);
   }
@@ -88,7 +89,7 @@ export class NatController {
     @Request() options,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('ruleId') ruleId: string,
-    @Body() data: NatDto,
+    @Body() data: TempDto,
   ) {
     return await this.service.updateNatRule(
       data,
