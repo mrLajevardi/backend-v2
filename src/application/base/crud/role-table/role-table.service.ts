@@ -72,7 +72,7 @@ export class RoleTableService {
   }
 
   // delete all items
-  async deleteAll(where?: FindOptionsWhere<Role>): Promise<DeleteResult> {
+  async deleteAll( where: FindOptionsWhere<Role> = {} ) :  Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

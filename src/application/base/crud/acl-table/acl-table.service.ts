@@ -72,7 +72,7 @@ export class ACLTableService {
   }
 
   // delete all items
-  async deleteAll(where?: FindOptionsWhere<Acl>): Promise<DeleteResult> {
+  async deleteAll( where: FindOptionsWhere<Acl> = {} ) :  Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }
