@@ -34,6 +34,7 @@ import { UpdateItemTypesDto } from '../../crud/item-types-table/dto/update-item-
 import { VdcResourceLimitsDto } from '../dto/vdc-resource-limits.dto';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { ServicePropertiesService } from '../../service-properties/service-properties.service';
+import { ItemTypesReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
 
 @Injectable()
 export class ServiceAdminService {
@@ -339,7 +340,7 @@ export class ServiceAdminService {
     maxAvailable,
     maxPerRequest,
     minPerRequest,
-  ) {
+  ) : Promise<ItemTypesReturnDto> {
     let skip = 0;
     let limit = 10;
     if (!isEmpty(page)) {

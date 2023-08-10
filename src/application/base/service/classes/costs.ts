@@ -1,13 +1,17 @@
+import { Discounts } from "src/infrastructure/database/entities/Discounts";
+import { ItemTypes } from "src/infrastructure/database/entities/ItemTypes";
+import { Plans } from "src/infrastructure/database/entities/Plans";
+
 class Costs {
-  totalCosts(
+  totalCosts  (
     data: any,
-    discount: any,
-    plan: any,
-    items: any,
+    discount: Discounts,
+    plan: Plans,
+    items: ItemTypes[],
     duration: number,
-    bulitInDiscount: any,
+    bulitInDiscount: Discounts,
     costSerive?: number,
-  ) {
+  ) : {rawAmount: number, finalAmount: number } {
     let itemCost = this.#itemCosts(items, data, duration);
     if (costSerive !== 0) {
       itemCost = costSerive;
@@ -30,11 +34,11 @@ class Costs {
 
   totalCostsAi(
     cost: number,
-    discount: any,
-    plan: any,
-    bulitInDiscount: any,
+    discount: Discounts,
+    plan: Plans ,
+    bulitInDiscount: Discounts ,
     duration: number,
-  ) {
+  ) : { rawAmount: number, finalAmount: number} {
     cost = cost * duration;
     const planCost = this.#planCost(plan, cost);
     let totalCost = planCost;
@@ -52,27 +56,28 @@ class Costs {
     };
   }
 
-  #itemCosts(items: any, data: any, duration: number) {
+  #itemCosts(items: ItemTypes[] , data: any, duration: number) {
     let totalCost = 0;
-    for (const item of Object.keys(items)) {
-      const itemTitle = items[item].Title;
+    for (const itemKey of Object.keys(items)) {
+      const item : ItemTypes = items[itemKey];
+      const itemTitle = item.title;
       const itemQuantity = data[itemTitle];
-      totalCost += itemQuantity * items[item].Fee;
+      totalCost += itemQuantity * item.fee;
     }
     totalCost = totalCost * duration;
     return totalCost;
   }
 
-  #planCost(plan: any, itemCost: number) {
-    const additionalRatio = itemCost * plan.AdditionRatio;
-    const additionalAmount = itemCost * plan.AdditionAmount;
+  #planCost(plan: Plans, itemCost: number) : number {
+    const additionalRatio = itemCost * plan.additionRatio;
+    const additionalAmount = itemCost * plan.additionAmount;
     const totalCost = additionalRatio + additionalAmount + itemCost;
     return totalCost;
   }
 
-  #discount(discount: any, planCost: number) {
-    let additionalRatio = planCost * discount.Ratio;
-    let additionalAmount = planCost * discount.Amount;
+  #discount(discount: Discounts, planCost: number) {
+    let additionalRatio = planCost * discount.ratio;
+    let additionalAmount = planCost * discount.amount;
     const discountSum = additionalAmount + additionalRatio;
     if (discountSum > planCost) {
       additionalRatio = 0;

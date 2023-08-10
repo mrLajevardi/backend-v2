@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceAdminController } from './service-admin.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { ServiceAdminService } from '../services/service-admin.service';
-import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SessionsModule } from '../../sessions/sessions.module';
 import { TasksModule } from '../../tasks/tasks.module';
