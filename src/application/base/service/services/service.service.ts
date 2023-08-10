@@ -453,8 +453,6 @@ export class ServiceService {
     const extendedServiceList = services.map((service) => {
       const expired =
         new Date(service.expireDate).getTime() < new Date().getTime();
-
-      
       return {
         ...service,
         expired,
