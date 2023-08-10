@@ -14,7 +14,7 @@ import { AdminEdgeGatewayEndpointService } from './services/admin/edgeGateway/ad
 import { AdminUserEndpointService } from './services/admin/user/admin-user-endpoint.service';
 import { AdminOrgEndpointService } from './services/admin/org/admin-org-endpoint.service';
 import { ConfigService } from '@nestjs/config';
-
+import { VcloudWrapperService } from './services/vcloud-wrapper.service';
 @Module({
   providers: [
     {
@@ -61,6 +61,7 @@ import { ConfigService } from '@nestjs/config';
     AdminUserEndpointService,
     AdminOrgEndpointService,
     ConfigService,
+    VcloudWrapperService,
   ],
 })
 export class VcloudWrapperModule {}

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import {
   CreateApplicationPortProfileInterface,
   CreateApplicationPortProfileDto,
-} from './interface/createApplicationPortProfile.interface;
-import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
-import { DeleteApplicationPortProfileDto } from './interface/deleteApplicationPortProfile.interface;
+} from './interface/createApplicationPortProfile.interface';
+import { VcloudWrapperService } from '../../../../vcloud-wrapper/services/vcloud-wrapper.service';
+import { DeleteApplicationPortProfileDto } from './interface/deleteApplicationPortProfile.interface';
 
 @Injectable()
 export class ApplicationPortProfileWrapperService {
