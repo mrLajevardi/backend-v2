@@ -31,7 +31,6 @@ import { Tasks } from "src/infrastructure/database/entities/Tasks";
 import { PaginationReturnDto } from "src/infrastructure/dto/pagination-return.dto";
 import { Configs } from "src/infrastructure/database/entities/Configs";
 import { ItemTypes } from "src/infrastructure/database/entities/ItemTypes";
-import { RequestOptions } from "https";
 import { ServiceReports } from "src/infrastructure/database/entities/views/service-reports";
 import { Invoices } from "src/infrastructure/database/entities/Invoices";
 import { ServiceTypes } from "src/infrastructure/database/entities/ServiceTypes";
@@ -342,7 +341,7 @@ export class ServiceAdminService {
     pageSize: number,
     serviceTypeId: string,
     title: string,
-    unit: number,
+    unit: string,
     fee: number,
     code: string,
     maxAvailable: number,
@@ -391,7 +390,7 @@ export class ServiceAdminService {
   }
 
   async getReports(
-    options: RequestOptions,
+    options: SessionRequest,
     page: number,
     pageSize: number,
     serviceTypeId: string,
@@ -429,7 +428,7 @@ export class ServiceAdminService {
     });
   }
 
-  async getServiceCount(options: RequestOptions): Promise<{}> {
+  async getServiceCount(options: SessionRequest): Promise<{}> {
     const serviceTypes = ["vdc", "aradAi", "vgpu"];
     const serviceCounts = {};
     for (const serviceType of serviceTypes) {
@@ -542,7 +541,7 @@ export class ServiceAdminService {
     options: SessionRequest,
     page: number,
     pageSize: number,
-    serviceType: ServiceTypes,
+    serviceType: string,
     userId: number,
     value: number,
     invoiceID: number,

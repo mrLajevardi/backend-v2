@@ -267,9 +267,10 @@ export class ServiceAdminController {
   @ApiOkResponse({ description: 'The object containing services' })
   async adminGetServices(
     @Req() options,
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
     @Query('serviceTypeId') serviceTypeId?: string,
+    @Query('title') filter?: string,
     @Query('title') title?: string,
     @Query('unit') unit?: string,
     @Query('fee') fee?: string,
@@ -279,7 +280,7 @@ export class ServiceAdminController {
     @Query('minPerRequest') minPerRequest?: string,
   ): Promise<{services: ServiceInstances[], countAll: number}> {
     console.log('get service');
-    return await this.service.getService(options, page, pageSize, filter);
+    return await this.service.getService(options , page , pageSize  , filter );
   }
 
   @Get('transactions')
@@ -299,9 +300,9 @@ export class ServiceAdminController {
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('serviceType') serviceType?: string,
-    @Query('userID') userID?: string,
-    @Query('value') value?: string,
-    @Query('invoiceID') invoiceID?: string,
+    @Query('userID') userID?: number,
+    @Query('value') value?: number,
+    @Query('invoiceID') invoiceID?: number,
     @Query('ServiceID') ServiceID?: string,
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
@@ -315,8 +316,8 @@ export class ServiceAdminController {
       value,
       invoiceID,
       ServiceID,
-      startDateTime,
-      endDateTime,
+      startDateTime ? new Date(startDateTime) : null ,
+      endDateTime ?  new Date(endDateTime) : null ,
     );
   }
 
@@ -333,7 +334,7 @@ export class ServiceAdminController {
   })
   async adminUpdateConfigurations(
     @Req() options : SessionRequest,
-    @Param('configId') configId: string,
+    @Param('configId') configId: number,
     @Body() data: any,
   ): Promise<void> {
     await this.service.updateConfigs(options, configId, data);
@@ -352,7 +353,7 @@ export class ServiceAdminController {
   })
   async adminUpdateItemTypes(
     @Req() options : SessionRequest,
-    @Param('serviceItemTypeId') serviceItemTypeId: string,
+    @Param('serviceItemTypeId') serviceItemTypeId: number,
     @Body() data: UpdateItemTypesDto,
   ): Promise<void> {
     await this.service.updateItemTypes(options, serviceItemTypeId, data);
