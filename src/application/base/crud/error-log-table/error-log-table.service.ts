@@ -33,7 +33,7 @@ export class ErrorLogTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<ErrorLog>): Promise<number> {
+  async count(options?: FindManyOptions<ErrorLog>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

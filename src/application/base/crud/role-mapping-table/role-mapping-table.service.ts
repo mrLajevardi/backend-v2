@@ -33,7 +33,7 @@ export class RoleMappingTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<RoleMapping>): Promise<number> {
+  async count(options?: FindManyOptions<RoleMapping>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

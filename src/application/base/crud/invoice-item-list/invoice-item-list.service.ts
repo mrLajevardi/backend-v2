@@ -4,6 +4,7 @@ import { InvoiceItemList } from 'src/infrastructure/database/entities/views/invo
 import {
   DeleteResult,
   FindManyOptions,
+  FindOneOptions,
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
@@ -24,7 +25,7 @@ export class InvoiceItemListService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<InvoiceItemList>): Promise<number> {
+  async count(options?: FindManyOptions<InvoiceItemList>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

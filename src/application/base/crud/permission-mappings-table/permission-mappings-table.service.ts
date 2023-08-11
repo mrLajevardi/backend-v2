@@ -33,7 +33,7 @@ export class PermissionMappingsTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<PermissionMappings>): Promise<number> {
+  async count(options?: FindManyOptions<PermissionMappings>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

@@ -39,7 +39,7 @@ export class UserTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<User>): Promise<number> {
+  async count(options?: FindManyOptions<User>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

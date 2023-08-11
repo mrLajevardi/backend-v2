@@ -33,7 +33,7 @@ export class InvoiceItemsTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<InvoiceItems>): Promise<number> {
+  async count(options?: FindManyOptions<InvoiceItems>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

@@ -35,7 +35,7 @@ export class TasksTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<Tasks>): Promise<number> {
+  async count(options?: FindManyOptions<Tasks>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

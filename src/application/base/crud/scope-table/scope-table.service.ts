@@ -33,7 +33,7 @@ export class ScopeTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<Scope>): Promise<number> {
+  async count(options?: FindManyOptions<Scope>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

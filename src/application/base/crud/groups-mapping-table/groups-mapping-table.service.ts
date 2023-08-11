@@ -33,7 +33,7 @@ export class GroupsMappingTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<GroupsMapping>): Promise<number> {
+  async count(options?: FindManyOptions<GroupsMapping>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

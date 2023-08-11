@@ -25,7 +25,7 @@ export class ServiceItemsSumService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<ServiceItemsSum>): Promise<number> {
+  async count(options?: FindManyOptions<ServiceItemsSum>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

@@ -33,7 +33,7 @@ export class SystemSettingsTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<SystemSettings>): Promise<number> {
+  async count(options?: FindManyOptions<SystemSettings>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

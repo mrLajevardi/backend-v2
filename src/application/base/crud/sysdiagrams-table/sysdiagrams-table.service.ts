@@ -35,7 +35,7 @@ export class SysdiagramsTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<Sysdiagrams>): Promise<number> {
+  async count(options?: FindManyOptions<Sysdiagrams>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

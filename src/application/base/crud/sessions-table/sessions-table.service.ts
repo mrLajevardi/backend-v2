@@ -33,7 +33,7 @@ export class SessionsTableService {
   }
 
   // Count the items
-  async count(options?: FindOneOptions<Sessions>): Promise<number> {
+  async count(options?: FindManyOptions<Sessions>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
