@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
+import { Discounts } from 'src/infrastructure/database/entities/Discounts';
 
 @Injectable()
 export class DiscountsService {
   constructor(private readonly discountsTable: DiscountsTableService) {}
 
   // Moved from createService.js
-  async findBuiltInDiscount(duration) {
+  async findBuiltInDiscount(duration) : Promise<Discounts | null>  {
     const builtInDiscounts = [
       {
         duration: 3,

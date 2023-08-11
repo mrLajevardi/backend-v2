@@ -1,9 +1,7 @@
 import {
   BadGatewayException,
   ConflictException,
-  Inject,
   Injectable,
-  forwardRef,
 } from '@nestjs/common';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -14,7 +12,9 @@ import { isEmpty } from 'lodash';
 import { ServiceIsDeployException } from 'src/infrastructure/exceptions/service-is-deploy.exception';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { Like } from 'typeorm';
 
 @Injectable()
 export class DeleteServiceService {
@@ -27,7 +27,7 @@ export class DeleteServiceService {
     private readonly vgpuService: VgpuService,
   ) {}
 
-  async deleteService(options, serviceInstanceId) {
+  async deleteService(options: SessionRequest , serviceInstanceId: string ) : Promise<TaskReturnDto>  {
     const userId = options.user.userId;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
@@ -74,7 +74,7 @@ export class DeleteServiceService {
       const props: any = {};
       const VgpuConfigs = await this.configsTable.find({
         where: {
-          propertyKey: { like: '%config.vgpu.%' },
+          propertyKey: Like('%config.vgpu.%'),
         },
       });
       for (const prop of VgpuConfigs) {
