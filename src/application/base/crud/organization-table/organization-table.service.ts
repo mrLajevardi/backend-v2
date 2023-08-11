@@ -27,19 +27,19 @@ export class OrganizationTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<Organization[]> {
+  async find(options?: FindManyOptions<Organization>): Promise<Organization[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<Organization>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<Organization> {
+  async findOne(options?: FindOneOptions<Organization>): Promise<Organization> {
     const result = await this.repository.findOne(options);
     return result;
   }

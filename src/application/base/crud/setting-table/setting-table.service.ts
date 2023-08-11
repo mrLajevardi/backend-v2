@@ -27,19 +27,19 @@ export class SettingTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<Setting[]> {
+  async find(options?: FindManyOptions<Setting>): Promise<Setting[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<Setting>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<Setting> {
+  async findOne(options?: FindOneOptions<Setting>): Promise<Setting> {
     const result = await this.repository.findOne(options);
     return result;
   }

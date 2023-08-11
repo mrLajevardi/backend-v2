@@ -27,19 +27,19 @@ export class GroupsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<Groups[]> {
+  async find(options?: FindManyOptions<Groups>): Promise<Groups[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<Groups>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<Groups> {
+  async findOne(options?: FindOneOptions<Groups>): Promise<Groups> {
     const result = await this.repository.findOne(options);
     return result;
   }

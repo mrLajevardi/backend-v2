@@ -18,13 +18,13 @@ export class InvoiceItemListService {
   ) {}
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<InvoiceItemList[]> {
+  async find(options?: FindManyOptions<InvoiceItemList>): Promise<InvoiceItemList[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<InvoiceItemList>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

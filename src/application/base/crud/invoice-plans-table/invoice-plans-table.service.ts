@@ -27,19 +27,19 @@ export class InvoicePlansTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<InvoicePlans[]> {
+  async find(options?: FindManyOptions<InvoicePlans>): Promise<InvoicePlans[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<InvoicePlans>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<InvoicePlans> {
+  async findOne(options?: FindOneOptions<InvoicePlans>): Promise<InvoicePlans> {
     const result = await this.repository.findOne(options);
     return result;
   }

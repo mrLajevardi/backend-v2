@@ -27,25 +27,25 @@ export class UserTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<User[]> {
+  async find(options?: FindManyOptions<User>): Promise<User[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Find Items using search criteria
-  async findAndCount(options?: FindManyOptions): Promise<[User[], number]> {
+  async findAndCount(options?: FindManyOptions<User>): Promise<[User[], number]> {
     const result = await this.repository.findAndCount(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<User>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<User> {
+  async findOne(options?: FindOneOptions<User>): Promise<User> {
     const result = await this.repository.findOne(options);
     return result;
   }

@@ -58,13 +58,13 @@ export class ServiceInstancesTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<ServiceInstances[]> {
+  async find(options?: FindManyOptions<ServiceInstances>): Promise<ServiceInstances[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<ServiceInstances>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }

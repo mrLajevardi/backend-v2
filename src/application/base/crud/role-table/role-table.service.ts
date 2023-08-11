@@ -27,19 +27,19 @@ export class RoleTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<Role[]> {
+  async find(options?: FindManyOptions<Role>): Promise<Role[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<Role>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<Role> {
+  async findOne(options?: FindOneOptions<Role>): Promise<Role> {
     const result = await this.repository.findOne(options);
     return result;
   }

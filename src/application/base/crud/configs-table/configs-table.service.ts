@@ -43,19 +43,19 @@ export class ConfigsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<Configs[]> {
+  async find(options?: FindManyOptions<Configs>): Promise<Configs[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<Configs>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<Configs> {
+  async findOne(options?: FindOneOptions<Configs>): Promise<Configs> {
     const result = await this.repository.findOne(options);
     return result;
   }

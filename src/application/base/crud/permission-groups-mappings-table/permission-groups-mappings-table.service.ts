@@ -27,19 +27,19 @@ export class PermissionGroupsMappingsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<PermissionGroupsMappings[]> {
+  async find(options?: FindManyOptions<PermissionGroupsMappings>): Promise<PermissionGroupsMappings[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindOneOptions<PermissionGroupsMappings>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<PermissionGroupsMappings> {
+  async findOne(options?: FindOneOptions<PermissionGroupsMappings>): Promise<PermissionGroupsMappings> {
     const result = await this.repository.findOne(options);
     return result;
   }
