@@ -13,7 +13,7 @@ export class SessionsService {
     private readonly organizationTable: OrganizationTableService,
   ) {}
 
-  async createAdminSession(): Promise<{
+  async createAdminSession(orgId: number = parseInt(vcdAuthConfig.org) ): Promise<{
     username: string;
     password: string;
     org: string;
@@ -29,7 +29,7 @@ export class SessionsService {
 
     await this.sessionTable.create({
       isAdmin: true,
-      orgId: null, // DOUBLE CHECK THIS PART , this part changed after MOVE
+      orgId:orgId,
       sessionId: sessionData.sessionId,
       token: sessionData.token,
       active: true,
@@ -84,7 +84,7 @@ export class SessionsService {
    * checks admin session
    * @return {Promise}
    */
-  async checkAdminSession(): Promise<string> {
+  async checkAdminSession(orgId? : number ): Promise<string> {
     const session = await this.sessionTable.findOne({
       where: {
         isAdmin: true,
@@ -102,12 +102,12 @@ export class SessionsService {
           active: false,
         });
         //const adminSession = new AdminSession(this.userId, t);
-        const createdSession = await this.createAdminSession();
+        const createdSession = await this.createAdminSession(orgId);
         return Promise.resolve(createdSession.token);
       }
     } else {
       // const adminSession = new AdminSession(null,this.userId);
-      const createdSession = await this.createAdminSession();
+      const createdSession = await this.createAdminSession(orgId);
       return Promise.resolve(createdSession.token);
     }
   }

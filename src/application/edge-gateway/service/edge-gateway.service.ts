@@ -86,7 +86,7 @@ export class EdgeGatewayService {
       },
     });
     const edgeName = edge.value;
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(userId, orgId);
     const dhcpForwarder = await mainWrapper.user.edgeGateway.getDhcpForwarder(
       session,
@@ -212,7 +212,7 @@ export class EdgeGatewayService {
       },
     });
     const edgeName = edge.value;
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(userId, orgId);
     const dhcpForwarder =
       await mainWrapper.user.edgeGateway.updateDhcpForwarder(
@@ -250,7 +250,7 @@ export class EdgeGatewayService {
       },
     });
     const edgeName = edge.value;
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(userId, orgId);
     const config = {
       enabled: data.enabled,

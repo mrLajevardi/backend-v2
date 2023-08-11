@@ -286,12 +286,10 @@ export class InvoicesService {
   ): Promise<Invoices> {
     return await this.invoicesTable.findOne({
       where: {
-        and: [
-          { UserID: userId },
-          { ServiceInstanceID: serviceInstanceId },
-          { Type: 0 },
-          { Payed: true },
-        ],
+        userId: userId ,
+        serviceInstanceId: serviceInstanceId ,
+        type: 0 ,
+        payed: true ,
       },
     });
   }
@@ -302,12 +300,10 @@ export class InvoicesService {
   ): Promise<Invoices[]> {
     return await this.invoicesTable.find({
       where: {
-        and: [
-          { UserID: userId },
-          { ServiceInstanceID: serviceInstanceId },
-          { Type: 1 },
-          { Payed: true },
-        ],
+        userId: userId ,
+        serviceInstanceId: serviceInstanceId ,
+        type: 1 ,
+        payed: true ,
       },
     });
   }
@@ -318,12 +314,10 @@ export class InvoicesService {
   ): Promise<Invoices> {
     return await this.invoicesTable.findOne({
       where: {
-        and: [
-          { UserID: userId },
-          { ServiceInstanceID: serviceInstanceId },
-          { Type: 1 },
-          { Payed: false },
-        ],
+        userId: userId,
+        serviceInstanceId: serviceInstanceId,
+        type: 1,
+        payed: false,
       },
     });
   }
@@ -345,7 +339,7 @@ export class InvoicesService {
   ): Promise<CreatedServicePlansAndItemsDto> {
     const serviceItems = await this.serviceItemsTableService.find({
       where: {
-        ServiceInstanceID: serviceInstanceId,
+        serviceInstanceId: serviceInstanceId,
       },
     });
     const formattedServiceItems: InvoiceItemsDto[] = serviceItems.map(
@@ -358,7 +352,7 @@ export class InvoicesService {
     );
     const servicePlans = await this.servicePlansTableService.find({
       where: {
-        ServiceInstanceID: serviceInstanceId,
+        serviceInstanceId: serviceInstanceId,
       },
     });
     let duration = 0;

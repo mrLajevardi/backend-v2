@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TasksService } from './service/tasks.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { BullModule } from '@nestjs/bull';
@@ -20,17 +20,16 @@ import { AbilityModule } from '../security/ability/ability.module';
 @Module({
   imports: [
     DatabaseModule,
-    VdcModule,
     BullModule.registerQueue({
       name: 'tasks2',
     }),
     LoggerModule,
     // VdcModule,
+    forwardRef(()=>VdcModule),
     CrudModule,
     SessionsModule,
     OrganizationModule,
     AbilityModule,
-    VdcModule,
     PayAsYouGoModule,
     //NetworksModule,
     ServicePropertiesModule,

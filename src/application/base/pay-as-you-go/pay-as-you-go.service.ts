@@ -59,7 +59,7 @@ export class PayAsYouGoService {
   async updateLastPAYG(serviceInstanceId: string, cost: number): Promise<void> {
     const service = await this.serviceInstanceTable.findOne({
       where: {
-        ID: serviceInstanceId,
+        id: serviceInstanceId,
       },
     });
     const nextPayg = service.nextPayg;

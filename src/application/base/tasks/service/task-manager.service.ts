@@ -20,7 +20,7 @@ import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
-import { Like } from 'typeorm';
+import { In, Like } from 'typeorm';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 
@@ -36,6 +36,7 @@ export class TaskManagerService {
     private readonly configsTable: ConfigsTableService,
     private readonly organizationTable: OrganizationTableService,
     private readonly userTable: UserTableService,
+    
     private readonly edgeService: EdgeService,
     private readonly orgService: OrgService,
     private readonly networkService: NetworkService,
@@ -1179,9 +1180,9 @@ export class TaskManagerService {
     const session = await this.sessionService.checkAdminSession(userId);
     const configsData = await this.configsTable.find({
       where: {
-        PropertyKey: {
-          inq: ['config.vgpu.orgName', 'config.vgpu.orgId'],
-        },
+        propertyKey: 
+          In(['config.vgpu.orgName', 'config.vgpu.orgId']),
+        
       },
     });
     let configs: any;

@@ -68,7 +68,7 @@ export class AbilityFactory {
     const compoundAcls = await this.aclTable.find({
       where: {
         principalType: 'User',
-        principalId: isEmpty(user) ? null : user.id,
+        principalId: isEmpty(user) ? null : user.id.toString(),
       },
     });
 

@@ -180,7 +180,7 @@ export class OauthService {
     }
     const user = await this.userTable.findOne({
       where: {
-        and: [{ email }],
+        email: email,
       },
     });
     if (!user) {
@@ -213,7 +213,7 @@ export class OauthService {
     }
     const user = await this.userTable.findOne({
       where: {
-        and: [{ email }],
+        email: email,
       },
     });
     if (!user) {
@@ -245,7 +245,7 @@ export class OauthService {
     }
     const user = await this.userTable.findOne({
       where: {
-        and: [{ email }],
+        email: email,
       },
     });
     if (!user) {
