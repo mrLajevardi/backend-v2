@@ -31,6 +31,7 @@ export class AdminOrgEndpointService {
     return {
       method: 'delete',
       resource: `/api/admin/catalog/${options.urlParams.catalogId}?recursive=true&force=true`,
+      body: null,
       params: {},
       headers: {
         Accept: 'application/*+json;version=36.3',
