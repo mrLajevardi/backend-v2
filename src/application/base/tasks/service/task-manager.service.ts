@@ -24,6 +24,11 @@ import { In, Like } from 'typeorm';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
+import { TaskDataDTO } from '../dto/task-data.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { TaskRunnerDto } from '../dto/task-runner.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { UserPayload } from '../../security/auth/dto/user-payload.dto';
 
 @Processor('tasks2')
 export class TaskManagerService {
@@ -48,7 +53,10 @@ export class TaskManagerService {
   ) {}
 
   @Process()
-  async processTask(job: Job, done: () => any): Promise<() => any> {
+  async processTask(
+    job: Job<TaskRunnerDto>,
+    done: () => any,
+  ): Promise<() => any> {
     console.log('processTask', job.data);
     const taskType = job.data?.taskType || 'task';
     if (job.data.vcloudTask === null) {
@@ -136,7 +144,7 @@ export class TaskManagerService {
     taskName: string,
     serviceInstanceId: string,
     customTaskId: string,
-    requestOptions: object = {},
+    requestOptions: UserPayload = {},
   ): Promise<object> {
     // const tasks = {
     //   createEdge: this.createEdgeTask,
@@ -350,12 +358,12 @@ export class TaskManagerService {
     console.log('end of createEdge');
     const vcloudTask = createdEdge.__vcloudTask;
     this.taskQueue.add({
-      serviceInstanceId,
-      customTaskId,
-      vcloudTask,
+      serviceInstanceId: serviceInstanceId,
+      customTaskId: customTaskId,
+      vcloudTask: vcloudTask,
       target: 'task',
       nextTask: 'finishVdcTask',
-      requestOptions,
+      requestOptions: requestOptions,
     });
   }
 

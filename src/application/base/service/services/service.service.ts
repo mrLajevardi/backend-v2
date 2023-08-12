@@ -465,7 +465,10 @@ export class ServiceService {
     }
   }
 
-  async getServices(options: SessionRequest, id?: string) : Promise<GetServicesReturnDto[]> {
+  async getServices(
+    options: SessionRequest,
+    id?: string,
+  ): Promise<GetServicesReturnDto[]> {
     const {
       user: { userId },
     } = options;

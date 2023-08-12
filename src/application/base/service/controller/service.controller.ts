@@ -23,12 +23,13 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 import { DeleteServiceService } from '../services/delete-service.service';
 import { ServiceService } from '../services/service.service';
 import { CreateGroupsDto } from '../../crud/groups-table/dto/create-groups.dto';
-import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
-import { PureAbility } from '@casl/ability';
-import { Action } from '../../security/ability/enum/action.enum';
-import { TempDto } from 'src/application/vdc/dto/temp.dto';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { GetServicesReturnDto } from '../dto/return/get-services.dto';
+import { Discounts } from 'src/infrastructure/database/entities/Discounts';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
+import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
