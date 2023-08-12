@@ -70,7 +70,7 @@ export class ServiceInstancesTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<ServiceInstances> {
+  async findOne(options?: FindOneOptions<ServiceInstances> ): Promise<ServiceInstances> {
     const result = await this.repository.findOne(options);
     return result;
   }

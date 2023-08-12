@@ -1,34 +1,38 @@
 import {
-  BadRequestException,
-  Inject,
   Injectable,
-  forwardRef,
-} from '@nestjs/common';
-import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
-import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
-import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
-import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { In } from 'typeorm';
-import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
-import { TaskManagerService } from '../../tasks/service/task-manager.service';
-import { isEmpty } from 'lodash';
-import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { ExtendServiceService } from './extend-service.service';
-import { PaymentService } from 'src/application/payment/payment.service';
-import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
-import { InvoiceItemListService } from '../../crud/invoice-item-list/invoice-item-list.service';
-import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
-import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
-import { PlansTableService } from '../../crud/plans-table/plans-table.service';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { UserTableService } from '../../crud/user-table/user-table.service';
-import { ZarinpalConfigDto } from 'src/application/payment/dto/zarinpal-config.dto';
-import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
-import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
-import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
-import { GetServicesReturnDto } from '../dto/get-services-return.dto';
+} from "@nestjs/common";
+import { CreateServiceItemsDto } from "../../crud/service-items-table/dto/create-service-items.dto";
+import { ServiceItemsTableService } from "../../crud/service-items-table/service-items-table.service";
+import { ServiceInstancesTableService } from "../../crud/service-instances-table/service-instances-table.service";
+import { In } from "typeorm";
+import { TasksTableService } from "../../crud/tasks-table/tasks-table.service";
+import { TaskManagerService } from "../../tasks/service/task-manager.service";
+import { isEmpty } from "lodash";
+import { ForbiddenException } from "src/infrastructure/exceptions/forbidden.exception";
+import { InvoicesTableService } from "../../crud/invoices-table/invoices-table.service";
+import { TransactionsTableService } from "../../crud/transactions-table/transactions-table.service";
+import { ExtendServiceService } from "./extend-service.service";
+import { PaymentService } from "src/application/payment/payment.service";
+import { DiscountsTableService } from "../../crud/discounts-table/discounts-table.service";
+import { InvoiceItemListService } from "../../crud/invoice-item-list/invoice-item-list.service";
+import { InvoicePlansTableService } from "../../crud/invoice-plans-table/invoice-plans-table.service";
+import { InvoiceDiscountsTableService } from "../../crud/invoice-discounts-table/invoice-discounts-table.service";
+import { PlansTableService } from "../../crud/plans-table/plans-table.service";
+import { ItemTypesTableService } from "../../crud/item-types-table/item-types-table.service";
+import { UserTableService } from "../../crud/user-table/user-table.service";
+import { ZarinpalConfigDto } from "src/application/payment/dto/zarinpal-config.dto";
+import { InvoiceItemsTableService } from "../../crud/invoice-items-table/invoice-items-table.service";
+import { ServiceTypesTableService } from "../../crud/service-types-table/service-types-table.service";
+import { GetInvoiceReturnDto } from "../dto/return/get-invoice.dto";
+import { GetServicePlansReturnDto } from "../dto/return/get-service-plans.dto";
+import { SessionRequest } from "src/infrastructure/types/session-request.type";
+import { Invoices } from "src/infrastructure/database/entities/Invoices";
+import { ServiceInstances } from "src/infrastructure/database/entities/ServiceInstances";
+import { ItemTypes } from "src/infrastructure/database/entities/ItemTypes";
+import { ServiceTypes } from "src/infrastructure/database/entities/ServiceTypes";
+import { UpdateServiceInstancesDto } from "../../crud/service-instances-table/dto/update-service-instances.dto";
+import { ZarinpalVerifyReturnDto } from "../dto/return/zarinpal-verify.dto";
+import { GetServicesReturnDto } from "../dto/return/get-services.dto";
 
 @Injectable()
 export class ServiceService {
@@ -49,12 +53,12 @@ export class ServiceService {
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly usersTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
-    private readonly serviceTypesTable: ServiceTypesTableService,
+    private readonly serviceTypesTable: ServiceTypesTableService
   ) {}
 
-  async increaseServiceResources(options, invoice) {
+  async increaseServiceResources(options : SessionRequest , invoice : Invoices ) : Promise<ServiceInstances>  {
     const userId = options.user.userId;
-    const serviceInstanceId = invoice.ServiceInstanceID;
+    const serviceInstanceId = invoice.serviceInstanceId;
 
     const oldService = await this.serviceInstancesTableService.findOne({
       where: {
@@ -68,10 +72,10 @@ export class ServiceService {
     }
     const invoiceItems = await this.invoiceItemsTable.find({
       where: {
-        InvoiceID: invoice.ID,
+        InvoiceID: invoice.id,
       },
     });
-    console.log({ invoiceItems, invoice }, '😚');
+    console.log({ invoiceItems, invoice }, "😚");
     for (const invoiceItem of invoiceItems) {
       const targetItem = await this.serviceItemsTable.findOne({
         where: {
@@ -79,10 +83,10 @@ export class ServiceService {
           ServiceInstanceID: serviceInstanceId,
         },
       });
-      console.log({ targetItem }, '😚');
+      console.log({ targetItem }, "😚");
 
       const updatedQuantity = targetItem.quantity + invoiceItem.quantity;
-      console.log({ updatedQuantity }, '😚');
+      console.log({ updatedQuantity }, "😚");
 
       await this.serviceItemsTable.updateAll(
         {
@@ -90,7 +94,7 @@ export class ServiceService {
         },
         {
           quantity: updatedQuantity,
-        },
+        }
       );
     }
     await this.serviceInstancesTableService.updateAll(
@@ -99,12 +103,15 @@ export class ServiceService {
       },
       {
         lastUpdateDate: new Date(),
-      },
+      }
     );
     return oldService;
   }
 
-  async getInvoice(options, invoiceId: number = null) {
+  async getInvoice(
+    options : SessionRequest ,
+    invoiceId: number = null
+  ): Promise<GetInvoiceReturnDto> {
     const userId = options.user.userId;
     const invoice = await this.invoicesTable.findOne({
       where: {
@@ -149,7 +156,7 @@ export class ServiceService {
     });
   }
 
-  async getItemTypes(options, filter) {
+  async getItemTypes(options : SessionRequest , filter : string ) : Promise<ItemTypes[]> {
     let parsedFilter;
     if (!isEmpty(filter)) {
       parsedFilter = JSON.parse(filter);
@@ -158,7 +165,7 @@ export class ServiceService {
     return Promise.resolve(itemTypes);
   }
 
-  async getServicePlans(options) {
+  async getServicePlans(options: SessionRequest) : Promise<GetServicePlansReturnDto> {
     const plans = await this.plansTable.find();
     const organizedPlans = {};
     console.log(plans);
@@ -174,21 +181,21 @@ export class ServiceService {
     const data = {
       vdc: {
         servicePeriods: {
-          oneMonthPeriod: organizedPlans['oneMonthPeriod'],
-          sixMonthPeriod: organizedPlans['sixMonthPeriod'],
-          threeMonthPeriod: organizedPlans['threeMonthPeriod'],
+          oneMonthPeriod: organizedPlans["oneMonthPeriod"],
+          sixMonthPeriod: organizedPlans["sixMonthPeriod"],
+          threeMonthPeriod: organizedPlans["threeMonthPeriod"],
         },
         qualityPlans: {
-          vdcBronze: organizedPlans['vdcBronze'],
-          vdcGold: organizedPlans['vdcGold'],
-          vdcSilver: organizedPlans['vdcSilver'],
+          vdcBronze: organizedPlans["vdcBronze"],
+          vdcGold: organizedPlans["vdcGold"],
+          vdcSilver: organizedPlans["vdcSilver"],
         },
       },
     };
     return Promise.resolve(data);
   }
 
-  async getServicetypes(options, filter) {
+  async getServicetypes(options : SessionRequest , filter: string) : Promise<ServiceTypes[]>  {
     let parsedFilter;
     if (!isEmpty(filter)) {
       parsedFilter = JSON.parse(filter);
@@ -197,7 +204,7 @@ export class ServiceService {
     return Promise.resolve(serviceTypes);
   }
 
-  async getZarinpalAuthority(options, invoiceId = null) {
+  async getZarinpalAuthority(options : SessionRequest , invoiceId : number = null) {
     const userId = options.user.userId;
     // find user invoice
     const invoice = await this.invoicesTable.findOne({
@@ -218,7 +225,7 @@ export class ServiceService {
     });
 
     let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.locals.username;
+    zarinpalConfig.metadata.email = options.user.username;
     zarinpalConfig.metadata.mobile = user.phoneNumber;
 
     const paymentRequestData = {
@@ -226,7 +233,7 @@ export class ServiceService {
       amount: invoice.finalAmount,
     };
     const authorityCode = await this.paymentService.zarinpal.paymentRequest(
-      paymentRequestData,
+      paymentRequestData
     );
 
     if (authorityCode) {
@@ -238,15 +245,16 @@ export class ServiceService {
         },
         {
           paymentToken: authorityCode,
-        },
+        }
       );
     }
     return Promise.resolve(
-      'https://www.zarinpal.com/pg/StartPay/' + authorityCode,
+      "https://www.zarinpal.com/pg/StartPay/" + authorityCode
     );
   }
 
-  async updateServiceInfo(options, serviceInstanceId, data) {
+  async updateServiceInfo(options : SessionRequest , serviceInstanceId : string , data : UpdateServiceInstancesDto)
+  : Promise<void> {
     const { name } = data;
     await this.serviceInstancesTableService.updateAll(
       {
@@ -254,11 +262,12 @@ export class ServiceService {
       },
       {
         name: name,
-      },
+      }
     );
   }
 
-  async verifyZarinpalAuthority(options, authority = null) {
+  async verifyZarinpalAuthority(options : SessionRequest , authority : string | null = null)
+  : Promise<ZarinpalVerifyReturnDto>  {
     const userId = options.user.userId;
     // find user transaction
     const transaction = await this.transactionsTable.findOne({
@@ -292,11 +301,11 @@ export class ServiceService {
     if (verified && !transaction.isApproved && invoice.type === 1) {
       const extendedService =
         await this.extendServiceService.extendServiceInstanceAndToken(
-          options,
-          invoice,
+          options ,
+          invoice
         );
       serviceInstanceId = extendedService.serviceInstanceId;
-      token = extendedService['token'];
+      token = extendedService["token"];
 
       // approve user transaction
       await this.transactionsTable.updateAll(
@@ -307,7 +316,7 @@ export class ServiceService {
         {
           isApproved: true,
           serviceInstanceId: serviceInstanceId,
-        },
+        }
       );
       // update user invoice
       this.invoicesTable.updateAll(
@@ -318,7 +327,7 @@ export class ServiceService {
         {
           payed: true,
           serviceInstanceId: serviceInstanceId,
-        },
+        }
       );
     }
     if (verified && !transaction.isApproved && invoice.type === 0) {
@@ -330,15 +339,15 @@ export class ServiceService {
           invoice.endDateTime,
           invoice.serviceTypeId,
           transaction,
-          invoice.name,
+          invoice.name
         );
       serviceInstanceId = createdService.serviceInstanceId;
-      token = createdService['token'];
+      token = createdService["token"];
 
-      options.locals = {
-        ...options.locals,
-        serviceInstanceId,
-      };
+      // options.locals = {
+      //   ...options.locals,
+      //   serviceInstanceId,
+      // };
       // approve user transaction
       await this.transactionsTable.updateAll(
         {
@@ -348,46 +357,49 @@ export class ServiceService {
         {
           isApproved: true,
           serviceInstanceId: serviceInstanceId,
-        },
+        }
       );
-      if (invoice.serviceTypeId === 'vdc') {
+      if (invoice.serviceTypeId === "vdc") {
         task = await this.tasksTable.create({
-          userId: options.locals.userId,
+          userId: options.user.userId,
           serviceInstanceId: serviceInstanceId,
-          operation: 'createDataCenter',
+          operation: "createDataCenter",
           details: null,
           startTime: new Date(),
           endTime: null,
-          status: 'running',
+          status: "running",
         });
         await this.taskManagerService.addTask({
           serviceInstanceId,
           customTaskId: task.TaskID,
           vcloudTask: null,
-          nextTask: 'createOrg',
-          requestOptions: options.locals,
-          target: 'object',
+          nextTask: "createOrg",
+          requestOptions: {
+            serviceInstanceId : serviceInstanceId,
+            userId: options.user.userId
+          },
+          target: "object",
         });
         taskId = task.TaskID;
       }
 
-      if (invoice.serviceTypeId == 'aradAi') {
+      if (invoice.serviceTypeId == "aradAi") {
         await this.serviceInstancesTableService.updateAll(
           {
             id: serviceInstanceId,
           },
           {
             status: 3,
-          },
+          }
         );
         task = await this.tasksTable.create({
-          userId: options.locals.userId,
+          userId: options.user.userId,
           serviceInstanceId: serviceInstanceId,
-          operation: 'aradAi',
+          operation: "aradAi",
           details: null,
           startTime: new Date(),
           endTime: new Date(),
-          status: 'success',
+          status: "success",
         });
         await this.serviceInstancesTableService.updateAll(
           {
@@ -395,7 +407,7 @@ export class ServiceService {
           },
           {
             status: 3,
-          },
+          }
         );
         taskId = task.TaskID;
       }
@@ -408,7 +420,7 @@ export class ServiceService {
         {
           payed: true,
           serviceInstanceId: serviceInstanceId,
-        },
+        }
       );
     }
 
@@ -422,7 +434,7 @@ export class ServiceService {
   }
 
   // Create Service Items
-  async createServiceItems(serviceInstanceId, items, data) {
+  async createServiceItems(serviceInstanceId: string, items: CreateServiceItemsDto[] , data) {
     for (const item of Object.keys(items)) {
       let dto: CreateServiceItemsDto;
       const itemTitle = items[item].code;
@@ -455,7 +467,7 @@ export class ServiceService {
         new Date(service.expireDate).getTime() < new Date().getTime();
       return {
         ...service,
-        expired,
+        expired: expired,
       };
     });
     return extendedServiceList;

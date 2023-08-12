@@ -12,6 +12,7 @@ export class CreateGroupsDto {
   description?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty()
-  color: string;
+  color?: string;
 }

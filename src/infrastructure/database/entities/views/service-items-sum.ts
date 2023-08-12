@@ -9,5 +9,5 @@ export class ServiceItemsSum {
   id: string;
 
   @Column({ type: 'int' })
-  Sum: number;
+  sum: number;
 }

@@ -1,9 +1,6 @@
 import {
-  HttpException,
   HttpStatus,
-  Inject,
-  Injectable,
-  forwardRef,
+  Inject,Injectable,e,
 } from '@nestjs/common';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -11,13 +8,12 @@ import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { ConflictException } from 'src/infrastructure/exceptions/conflict.exception';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
-import { isEmpty, isInteger, isNil } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { ServiceIsDeployException } from 'src/infrastructure/exceptions/service-is-deploy.exception';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { DisabledServiceException } from 'src/infrastructure/exceptions/disabled-service.exception';
-import { ServiceService } from './service.service';
 import { NotDisabledServiceException } from 'src/infrastructure/exceptions/not-disabled-service.exception';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
@@ -28,13 +24,12 @@ import { TransactionsTableService } from '../../crud/transactions-table/transact
 import { FindOptionsWhere, ILike, Not } from 'typeorm';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { NotFoundException } from 'src/infrastructure/exceptions/not-found.exception';
-import async from 'async';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
 import { UpdateItemTypesDto } from '../../crud/item-types-table/dto/update-item-types.dto';
 import { VdcResourceLimitsDto } from '../dto/vdc-resource-limits.dto';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { ServicePropertiesService } from '../../service-properties/service-properties.service';
-import { ItemTypesReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @Injectable()
 export class ServiceAdminService {
@@ -54,11 +49,11 @@ export class ServiceAdminService {
     private readonly servicePropertiesService: ServicePropertiesService,
   ) {}
 
-  async deleteService(options, serviceInstanceId) {
-    const userId = options.accessToken.userId;
+  async deleteService(options : SessionRequest , serviceInstanceId : string ) {
+    const userId = options.user.userId;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
-        ID: serviceInstanceId,
+        id: serviceInstanceId,
       },
     });
     let nextDeleteTask = null;
