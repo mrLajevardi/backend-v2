@@ -1,3 +1,3 @@
-class GetDemoTokenDto {
+export class GetDemoTokenDto {
   demoToken: string;
 }

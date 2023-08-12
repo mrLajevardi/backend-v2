@@ -10,7 +10,6 @@ import {
   monthDiff,
 } from 'src/infrastructure/helpers/date-time.helper';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
-import jwt from 'jsonwebtoken';
 import { UserTableService } from '../base/crud/user-table/user-table.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { SettingTableService } from '../base/crud/setting-table/setting-table.service';
@@ -21,6 +20,8 @@ import { ServiceInstancesStoredProcedureService } from '../base/crud/service-ins
 import { Between, ILike } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { toInteger } from 'lodash';
+import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
+import { GetAradAiDashoardDto } from './dto/get-arad-ai-dashoard.dto';
 
 @Injectable()
 export class AiService {
@@ -35,10 +36,10 @@ export class AiService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async verifyToken(token: string) {
+  async verifyToken(token: string): Promise<object> {
     const JWT_SECRET_KEY = process.env.ARAD_AI_JWT_SECRET_KEY;
-    console.log(token, JWT_SECRET_KEY);
-    console.log(this.jwtService.verify(token, { secret: JWT_SECRET_KEY }));
+    //console.log(token, JWT_SECRET_KEY);
+    //console.log(this.jwtService.verify(token, { secret: JWT_SECRET_KEY }));
     return this.jwtService.verify(token, { secret: JWT_SECRET_KEY });
   }
 
@@ -113,7 +114,7 @@ export class AiService {
     return true;
   }
 
-  async usedPerDay(serviceInstanceId: string) {
+  async usedPerDay(serviceInstanceId: string): Promise<number> {
     const todayDate = new Date().toISOString().slice(0, 10);
     return await this.aiTransactionLogsTable.count({
       where: {
@@ -126,7 +127,10 @@ export class AiService {
     });
   }
 
-  async usedPerMonth(serviceInstanceId: string, createdDate: Date) {
+  async usedPerMonth(
+    serviceInstanceId: string,
+    createdDate: Date,
+  ): Promise<AiTransactionsLogs[]> {
     const todayDate = new Date().toISOString().slice(0, 10);
     const difference = monthDiff(new Date(createdDate), new Date(todayDate));
     const fromDay = new Date(addMonths(createdDate, difference))
@@ -167,7 +171,7 @@ export class AiService {
   async getAradAIDashboard(
     userId: number,
     serviceInstanceId: string,
-  ): Promise<any> {
+  ): Promise<GetAradAiDashoardDto> {
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: { serviceInstanceId: serviceInstanceId },
     });
@@ -194,7 +198,7 @@ export class AiService {
     );
     const remainingDays = await dayDiff(verified.expireDate);
     const numberOfServiceCalled =
-      this.serviceInstancesSP.spCountAradAiUsedEachService(
+      await this.serviceInstancesSP.spCountAradAiUsedEachService(
         serviceProperties.serviceInstanceId,
       );
     const allRequestuse = await this.allRequestused(
@@ -221,11 +225,11 @@ export class AiService {
     serviceId: string,
     qualityPlanCode: string,
     duration: number,
-  ) {
+  ): Promise<object> {
     const aiServiceConfigs = await this.configsTable.find({
       where: {
         propertyKey: ILike(`%${qualityPlanCode}%`),
-        // serviceType: serviceId,
+        serviceTypeId: serviceId,
       },
     });
 

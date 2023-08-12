@@ -1,4 +1,4 @@
-interface GetAradAiDashoardDto {
+export interface GetAradAiDashoardDto {
   token: string;
   usedPerDay: number;
   allRequestused: number;
@@ -10,7 +10,7 @@ interface GetAradAiDashoardDto {
   QualityPlan: QualityPlanDto;
 }
 
-interface MonthlyUsageDto {
+export interface MonthlyUsageDto {
   id: string;
   serviceInstanceId: string;
   dateTime: Date;
@@ -24,7 +24,7 @@ interface MonthlyUsageDto {
   ip: string;
 }
 
-interface QualityPlanDto {
+export interface QualityPlanDto {
   qualityPlanCode: string;
   createdDate: Date;
   userId: string;

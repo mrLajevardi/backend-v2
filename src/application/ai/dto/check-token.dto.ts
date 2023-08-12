@@ -1,3 +1,3 @@
-class CheckTokenDto {
+export class CheckTokenDto {
   tokenValidity: boolean;
 }

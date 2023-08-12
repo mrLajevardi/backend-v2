@@ -14,8 +14,6 @@ import { isEmpty } from 'lodash';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { InvalidItemTypesException } from 'src/infrastructure/exceptions/invalid-item-types.exception';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
-import { CreateServiceService } from '../base/service/services/create-service.service';
-import jwt from 'jsonwebtoken';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -27,15 +25,23 @@ import { SettingTableService } from '../base/crud/setting-table/setting-table.se
 import { PlansTableService } from '../base/crud/plans-table/plans-table.service';
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-table.service';
-import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
 import { PayAsYouGoService } from '../base/pay-as-you-go/pay-as-you-go.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
 import { ILike, Not } from 'typeorm';
-import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { Public } from './../../application/base/security/auth/decorators/ispublic.decorator';
-import { ExtendServiceService } from '../base/service/services/extend-service.service';
 import { JwtService } from '@nestjs/jwt';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { CheckTokenDto } from './dto/check-token.dto';
+import { GetDemoTokenDto } from './dto/get-demo-token.dto';
+import { GetAradAiDashoardDto } from './dto/get-arad-ai-dashoard.dto';
+import {
+  AiTransactionLogDto,
+  GetAiTransactionsLogsDto,
+} from './dto/get-ai-transactions-logs.dto';
+import { GetPlanItemsDto } from './dto/get-plan-items.dto';
+import { GetAradAiDashoardChartDto } from './dto/get-arad-ai-dashoard-chart.dto';
+import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
 
 @ApiTags('AI')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -50,13 +56,11 @@ export class AiController {
     private readonly plansTable: PlansTableService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly itemTypesTable: ItemTypesTableService,
-    private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly createServiceSvc: ExtendServiceService,
     private readonly payAsYouGoService: PayAsYouGoService,
     private readonly configsTable: ConfigsTableService,
     private readonly jwtService: JwtService,
-    private readonly loggerService: LoggerService,
   ) {}
+
   async sign(payload: object): Promise<string> {
     const JWT_SECRET_KEY = process.env.ARAD_AI_JWT_SECRET_KEY;
     return this.jwtService.sign(payload, { secret: JWT_SECRET_KEY });
@@ -81,7 +85,9 @@ export class AiController {
   @ApiOperation({ summary: 'create AI transactions logs' })
   @Post('/aiTransactionsLogs')
   @Public()
-  async createAITransactionsLogs(@Body() data: CreateAITransactionsLogsDto) {
+  async createAITransactionsLogs(
+    @Body() data: CreateAITransactionsLogsDto,
+  ): Promise<AiTransactionsLogs> {
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: {
         value: ILike(`%${data.token}%`),
@@ -117,7 +123,7 @@ export class AiController {
     const itemType = await this.itemTypesTable.findById(itemTypes.id);
     const itemData = {
       dateTime: new Date(),
-      itemTypeId: itemTypes.id,
+      itemTypeId: itemType.id,
       serviceInstanceId: serviceProperties.serviceInstanceId,
       description: data.methodName,
       request: data.request,
@@ -140,7 +146,7 @@ export class AiController {
   })
   @Get('/createOrGetDemoToken')
   async createOrGetDemoToken(
-    @Request() options: any,
+    @Request() options: SessionRequest,
   ): Promise<GetDemoTokenDto> {
     const userId = options.user.userId;
     const getDemoToken = await this.settingsTable.findOne({
@@ -185,10 +191,10 @@ export class AiController {
   @Get('/aradAiDashoard/:serviceInstanceId')
   async getAradAiaDshboard(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Request() options: any,
+    @Request() options: SessionRequest,
   ): Promise<GetAradAiDashoardDto> {
     return await this.service.getAradAIDashboard(
-      options.user.id,
+      options.user.userId,
       serviceInstanceId,
     );
   }
@@ -204,11 +210,11 @@ export class AiController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
-    @Request() options,
+    //@Request() options: SessionRequest,
   ): Promise<GetAiTransactionsLogsDto> {
     let skip = 0;
     let limit = 10;
-    const userId = options.user.userId;
+    // const userId = options.user.userId;
     if (!isEmpty(page) && !isEmpty(pageSize)) {
       skip = pageSize * (page - 1);
     }
@@ -228,18 +234,18 @@ export class AiController {
 
     const aiTransactionsLogs = transactionsLogs.map((log) => {
       return {
-        ID: log.id,
-        ServiceInstanceID: log.serviceInstanceId,
-        Method: log.method,
-        CodeStatus: log.codeStatus,
-        MethodName: log.methodName,
-        IP: log.ip,
-        Description: log.description,
-        DateTime: log.dateTime,
-        Request: log.request,
-        Body: log.body,
-        Response: log.response,
-      };
+        id: log.id,
+        serviceInstanceId: log.serviceInstanceId,
+        method: log.method,
+        codeStatus: log.codeStatus,
+        methodName: log.methodName,
+        ip: log.ip,
+        description: log.description,
+        dateTime: log.dateTime,
+        request: log.request,
+        body: log.body,
+        response: log.response,
+      } as AiTransactionLogDto;
     });
 
     const countAll = await this.aiTransactionLogsTable.count({
@@ -265,7 +271,7 @@ export class AiController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('startDate') startDate: string,
     @Param('endDate') endDate: string,
-    // @Request() options: any,
+    // @Request() options: SessionRequest,
   ): Promise<GetAradAiDashoardChartDto> {
     const result = await this.aiTransactionLogsSP.getChartAIUsed(
       startDate,
