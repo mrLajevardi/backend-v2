@@ -73,7 +73,9 @@ export class DiscountsTableService {
 
   // delete all items
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Discounts> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<Discounts> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

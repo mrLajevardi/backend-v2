@@ -6,9 +6,7 @@ import {
   Body,
   Put,
   Request,
-  Delete,
   Res,
-  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -19,37 +17,25 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
-  ApiQuery,
 } from '@nestjs/swagger';
-import { UserTableService } from '../../crud/user-table/user-table.service';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
 import { UserService } from '../service/user.service';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResendEmailDto } from '../dto/resend-email.dto';
-import { NotificationService } from '../../notification/notification.service';
-import { ResetForgottenPasswordDto } from '../dto/reset-forgotten-password.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { PostUserCreditDto } from '../dto/post-user-credit.dto';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
-import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
-import { UserAdminService } from '../service/user-admin.service';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { PhoneNumberDto } from '../../security/auth/dto/phoneNumber.dto';
-import { CreateUserWithOtpDto } from '../../security/auth/dto/create-user-with-otp.dto';
-import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
-import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
-import { RegisterByOauthDto } from '../../security/auth/dto/register-by-oauth.dto';
-import { AuthService } from '../../security/auth/service/auth.service';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { Response } from 'express';
 
 @ApiTags('User')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly securityTools: SecurityToolsService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   @Public()
   @Get('/checkPhoneNumber/:phoneNumber')
@@ -68,10 +54,10 @@ export class UserController {
   @ApiOperation({ summary: 'update user data' })
   @ApiBody({ type: UpdateUserDto })
   async updateUser(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Body() updateUserDto: UpdateUserDto,
-    @Res() res,
-  ) {
+    @Res() res: Response,
+  ): Promise<Response> {
     const userId = options.user.userId;
     await this.userService.updateUser(userId, updateUserDto);
     return res.status(200).json({ message: 'User updated successfully' });
@@ -81,10 +67,10 @@ export class UserController {
   @ApiOperation({ summary: 'change password ' })
   @ApiBody({ type: ChangePasswordDto })
   async changePassword(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Body() dto: ChangePasswordDto,
-    @Res() res,
-  ) {
+    @Res() res: Response,
+  ): Promise<Response> {
     console.log('change pass');
     console.log(options.user);
     const userId = options.user.userId;
@@ -98,7 +84,7 @@ export class UserController {
   @ApiCreatedResponse({ description: 'The payment link', type: String })
   async incrementCredit(
     @Body() data: CreditIncrementDto,
-    @Request() options,
+    @Request() options: SessionRequest,
   ): Promise<string> {
     const paymentLink = await this.userService.creditIncrement(options, data);
     return paymentLink;
@@ -115,7 +101,7 @@ export class UserController {
   })
   async forgotPassword(
     @Body() data: ForgotPasswordDto,
-    @Request() options,
+    @Request() options: SessionRequest,
   ): Promise<void> {
     await this.userService.forgotPassword(options, data);
   }
@@ -123,7 +109,7 @@ export class UserController {
   @Get('/credit')
   @ApiOperation({ summary: 'returns user credit' })
   @ApiOkResponse({ description: "The user's credit", type: Number })
-  async getUserCredit(@Request() options): Promise<number> {
+  async getUserCredit(@Request() options: SessionRequest): Promise<number> {
     const userCredit = await this.userService.getUserCredit(options);
     console.log(options.user.userId);
     return userCredit;
@@ -135,7 +121,7 @@ export class UserController {
   @ApiCreatedResponse({ description: 'User credit updated successfully' })
   async updateUserCredit(
     @Body() body: PostUserCreditDto,
-    @Request() options,
+    @Request() options: SessionRequest,
   ): Promise<void> {
     await this.userService.postUserCredit(options, body.credit);
   }
@@ -147,7 +133,7 @@ export class UserController {
     description: 'The user information',
     type: Object,
   })
-  async getSingleUserInfo(@Request() options): Promise<any> {
+  async getSingleUserInfo(@Request() options: SessionRequest): Promise<any> {
     const userInfo = await this.userService.getSingleUserInfo(options);
     return userInfo;
   }
@@ -158,21 +144,21 @@ export class UserController {
   @ApiCreatedResponse({ description: 'Email resent successfully' })
   async resendEmail(
     @Body() data: ResendEmailDto,
-    @Request() options,
+    @Request() options: SessionRequest,
   ): Promise<void> {
     await this.userService.resendEmail(data, options);
   }
 
-  @Post('/resetForgottenPassword')
-  @ApiOperation({ summary: `reset user's password` })
-  @ApiBody({ type: ResetForgottenPasswordDto })
-  @ApiOkResponse({ description: 'Password reset successfully' })
-  async resetForgottenPassword(
-    @Body() data: ResetForgottenPasswordDto,
-    @Request() options,
-  ): Promise<void> {
-    await this.userService.resetForgottenPassword(data, options);
-  }
+  // @Post('/resetForgottenPassword')
+  // @ApiOperation({ summary: `reset user's password` })
+  // @ApiBody({ type: ResetForgottenPasswordDto })
+  // @ApiOkResponse({ description: 'Password reset successfully' })
+  // async resetForgottenPassword(
+  //   @Body() data: ResetForgottenPasswordDto,
+  //   @Request() options : SessionRequest,
+  // ): Promise<void> {
+  //   await this.userService.resetForgottenPassword(data, options);
+  // }
 
   @Post('/resetPasswordByPhone')
   @ApiOperation({ summary: 'reset Password By phone number' })
@@ -180,9 +166,8 @@ export class UserController {
   @ApiOkResponse({ description: 'Password reset successfully' })
   async resetPasswordByPhone(
     @Body() data: ResetPasswordByPhoneDto,
-    @Request() options,
   ): Promise<void> {
-    await this.userService.resetPasswordByPhone(data, options);
+    await this.userService.resetPasswordByPhone(data);
   }
 
   @Post('/credit/increment/:authority/verify')
@@ -194,7 +179,7 @@ export class UserController {
   })
   async verifyCreditIncrement(
     @Param('authority') authority: string,
-    @Request() options,
+    @Request() options: SessionRequest,
   ): Promise<void> {
     await this.userService.verifyCreditIncrement(options, authority);
   }
@@ -204,7 +189,7 @@ export class UserController {
   @ApiParam({ name: 'token', type: 'string' })
   async verifyEmail(
     @Param('token') token: string,
-    @Request() options,
+    @Request() options: SessionRequest,
   ): Promise<void> {
     await this.userService.verifyEmail(options, token);
   }

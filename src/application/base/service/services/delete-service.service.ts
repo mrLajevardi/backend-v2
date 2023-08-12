@@ -47,7 +47,7 @@ export class DeleteServiceService {
       throw new BadGatewayException();
     }
     if (serviceTypeID == 'vdc') {
-      const adminSession = await this.sessionsService.checkAdminSession(null);
+      const adminSession = await this.sessionsService.checkAdminSession();
       const query = await mainWrapper.user.vdc.vcloudQuery(adminSession, {
         filter: `((name==networkEdgeGatewayDelete),(name==vdcDeleteVdc));((status==queued),(status==running))`,
         type: 'adminTask',
@@ -89,7 +89,7 @@ export class DeleteServiceService {
       }
       const vmName = serviceInstanceId + 'VM';
       const vdcIdVgpu = props.vdcId.split(':').slice(-1);
-      const session = await this.sessionsService.checkAdminSession(props.orgId);
+      const session = await this.sessionsService.checkAdminSession();
       const vmInfo = await this.vgpuService.getVmsInfo(
         session,
         vdcIdVgpu,

@@ -72,7 +72,9 @@ export class TicketsTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Tickets> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<Tickets> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

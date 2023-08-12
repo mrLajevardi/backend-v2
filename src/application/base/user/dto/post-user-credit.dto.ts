@@ -1,4 +1,4 @@
-import { ApiParam, ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, Min, IsPositive } from 'class-validator';
 
 export class PostUserCreditDto {

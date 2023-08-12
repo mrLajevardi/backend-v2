@@ -41,7 +41,9 @@ export class ServicePropertiesTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions<ServiceProperties>): Promise<ServiceProperties> {
+  async findOne(
+    options?: FindOneOptions<ServiceProperties>,
+  ): Promise<ServiceProperties> {
     const result = await this.repository.findOne(options);
     return result;
   }

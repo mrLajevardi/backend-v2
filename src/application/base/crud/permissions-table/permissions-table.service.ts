@@ -72,7 +72,9 @@ export class PermissionsTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Permissions> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<Permissions> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

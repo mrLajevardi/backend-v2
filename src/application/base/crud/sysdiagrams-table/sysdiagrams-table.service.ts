@@ -74,7 +74,9 @@ export class SysdiagramsTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Sysdiagrams> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<Sysdiagrams> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

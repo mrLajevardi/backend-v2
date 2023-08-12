@@ -75,7 +75,7 @@ export class TasksTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Tasks> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(where: FindOptionsWhere<Tasks> = {}): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

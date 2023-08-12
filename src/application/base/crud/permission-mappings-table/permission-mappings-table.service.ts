@@ -27,7 +27,9 @@ export class PermissionMappingsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions<PermissionMappings>): Promise<PermissionMappings[]> {
+  async find(
+    options?: FindManyOptions<PermissionMappings>,
+  ): Promise<PermissionMappings[]> {
     const result = await this.repository.find(options);
     return result;
   }
@@ -39,7 +41,9 @@ export class PermissionMappingsTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions<PermissionMappings>): Promise<PermissionMappings> {
+  async findOne(
+    options?: FindOneOptions<PermissionMappings>,
+  ): Promise<PermissionMappings> {
     const result = await this.repository.findOne(options);
     return result;
   }

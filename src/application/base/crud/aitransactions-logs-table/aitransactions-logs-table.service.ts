@@ -27,7 +27,9 @@ export class AITransactionsLogsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions<AiTransactionsLogs>): Promise<AiTransactionsLogs[]> {
+  async find(
+    options?: FindManyOptions<AiTransactionsLogs>,
+  ): Promise<AiTransactionsLogs[]> {
     const result = await this.repository.find(options);
     return result;
   }
@@ -39,7 +41,9 @@ export class AITransactionsLogsTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions<AiTransactionsLogs>): Promise<AiTransactionsLogs> {
+  async findOne(
+    options?: FindOneOptions<AiTransactionsLogs>,
+  ): Promise<AiTransactionsLogs> {
     const result = await this.repository.findOne(options);
     return result;
   }

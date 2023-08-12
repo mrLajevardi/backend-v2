@@ -4,7 +4,6 @@ import { InvoiceItemList } from 'src/infrastructure/database/entities/views/invo
 import {
   DeleteResult,
   FindManyOptions,
-  FindOneOptions,
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
@@ -19,7 +18,9 @@ export class InvoiceItemListService {
   ) {}
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions<InvoiceItemList>): Promise<InvoiceItemList[]> {
+  async find(
+    options?: FindManyOptions<InvoiceItemList>,
+  ): Promise<InvoiceItemList[]> {
     const result = await this.repository.find(options);
     return result;
   }

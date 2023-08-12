@@ -72,7 +72,9 @@ export class InfoLogTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<InfoLog> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<InfoLog> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

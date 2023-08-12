@@ -1,8 +1,7 @@
 // src/dto/pagination.dto.ts
 
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsNumberString, IsOptional } from 'class-validator';
-import { IsNull } from 'typeorm';
+import { IsNumberString, IsOptional } from 'class-validator';
 
 export class UserPaginationDto {
   @IsOptional()

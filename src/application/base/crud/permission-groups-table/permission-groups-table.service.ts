@@ -27,7 +27,9 @@ export class PermissionGroupsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions<PermissionGroups>): Promise<PermissionGroups[]> {
+  async find(
+    options?: FindManyOptions<PermissionGroups>,
+  ): Promise<PermissionGroups[]> {
     const result = await this.repository.find(options);
     return result;
   }
@@ -39,7 +41,9 @@ export class PermissionGroupsTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions<PermissionGroups>): Promise<PermissionGroups> {
+  async findOne(
+    options?: FindOneOptions<PermissionGroups>,
+  ): Promise<PermissionGroups> {
     const result = await this.repository.findOne(options);
     return result;
   }

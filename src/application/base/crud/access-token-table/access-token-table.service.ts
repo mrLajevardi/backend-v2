@@ -72,7 +72,9 @@ export class AccessTokenTableService {
   }
 
   // delete all items
-  async deleteAll(options?: FindOptionsWhere<AccessToken>): Promise<DeleteResult> {
+  async deleteAll(
+    options?: FindOptionsWhere<AccessToken>,
+  ): Promise<DeleteResult> {
     return await this.repository.delete(options);
   }
 }

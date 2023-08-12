@@ -6,32 +6,38 @@ import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { AccessTokenTableService } from '../../crud/access-token-table/access-token-table.service';
 import { NotificationService } from '../../notification/notification.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import jwt from 'jsonwebtoken';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { encryptPassword } from 'src/infrastructure/helpers/helpers';
 import { GroupsMappingTableService } from '../../crud/groups-mapping-table/groups-mapping-table.service';
 import { Groups } from 'src/infrastructure/database/entities/Groups';
 import { GroupsTableService } from '../../crud/groups-table/groups-table.service';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { FilteredUser } from '../types/filtered-user.type';
+import { FindOptionsSelect, Like } from 'typeorm';
+import { User } from 'src/infrastructure/database/entities/User';
+import { PaginationReturnDto } from 'src/infrastructure/dto/pagination-return.dto';
+import { SystemErrorDto } from '../dto/system-error.dto';
+import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 
 @Injectable()
 export class UserAdminService {
-  userFilter = [
-    'id',
-    'realm',
-    'username',
-    'email',
-    'name',
-    'family',
-    'deleted',
-    'createDate',
-    'updateDate',
-    'credit',
-    'hasVdc',
-    'phoneNumber',
-    'orgName',
-    'acceptTermsOfService',
-    'phoneVerified',
-  ];
+  userFilter: FindOptionsSelect<User> = {
+    id: true,
+    realm: true,
+    username: true,
+    email: true,
+    name: true,
+    family: true,
+    deleted: true,
+    createDate: true,
+    updateDate: true,
+    credit: true,
+    hasVdc: true,
+    phoneNumber: true,
+    orgName: true,
+    acceptTermsOfService: true,
+    phoneVerified: true,
+  };
 
   constructor(
     private readonly userTable: UserTableService,
@@ -43,12 +49,12 @@ export class UserAdminService {
     private readonly groupTable: GroupsTableService,
   ) {}
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
     createUserDto.password = await encryptPassword(createUserDto.password);
     return await this.userTable.create(createUserDto);
   }
 
-  async deleteUsers(options, userId) {
+  async deleteUsers(options: SessionRequest, userId: number): Promise<void> {
     const user = await this.userTable.findById(userId);
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
@@ -66,12 +72,12 @@ export class UserAdminService {
         username: user.username,
         _object: user.id.toString(),
       },
-      { ...options.locals },
+      { ...options.user },
     );
     return;
   }
 
-  async disableUser(options, userId) {
+  async disableUser(options: SessionRequest, userId: number): Promise<void> {
     const user = await this.userTable.findById(userId);
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
@@ -82,7 +88,7 @@ export class UserAdminService {
         active: false,
       },
     );
-    await this.accessTokenTable.deleteAll({ userId: userId });
+    await this.accessTokenTable.deleteAll({ userId: userId.toString() });
     await this.logger.info(
       'user',
       'adminDisableUser',
@@ -90,12 +96,12 @@ export class UserAdminService {
         username: user.username,
         _object: user.id.toString(),
       },
-      { ...options.locals },
+      { ...options.user },
     );
     return;
   }
 
-  async enableUser(options, userId) {
+  async enableUser(options: SessionRequest, userId: number): Promise<void> {
     const user = await this.userTable.findById(userId);
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
@@ -113,21 +119,29 @@ export class UserAdminService {
         username: user.username,
         _object: user.id.toString(),
       },
-      { ...options.locals },
+      { ...options.user },
     );
     return;
   }
 
-  async getUserInfo(userId): Promise<any> {
+  async getUserInfo(userId: number): Promise<FilteredUser> {
     const user = await this.userTable.findById(userId);
     if (!user) {
       return Promise.reject(new ForbiddenException());
     }
     const { password, vdcPassword, ...retVal } = user;
+    console.log(password == vdcPassword ? '' : ''); // prevent lint warning
     return retVal;
   }
 
-  async getUsers(role, page, pageSize, name, username, family) {
+  async getUsers(
+    role: string,
+    page: number,
+    pageSize: number,
+    name: string,
+    username: string,
+    family: string,
+  ): Promise<PaginationReturnDto<User>> {
     let skip = 0;
     let limit = 10;
     if (!isEmpty(page)) {
@@ -136,15 +150,16 @@ export class UserAdminService {
     const where = isNil(username || name || family || limit)
       ? {}
       : {
-          username: username ? { like: `%${username}%` } : undefined,
-          name: name ? { like: `%${name}%` } : undefined,
-          family: family ? { like: `%${family}%` } : undefined,
+          username: username ? Like(`%${username}%`) : undefined,
+          name: name ? Like(`%${name}%`) : undefined,
+          family: family ? Like(`%${family}%`) : undefined,
           roleId: role,
         };
     if (!isEmpty(pageSize)) {
       limit = pageSize;
     }
     console.log(where);
+
     const users = await this.userTable.find({
       where,
       take: pageSize,
@@ -160,25 +175,25 @@ export class UserAdminService {
     });
   }
 
-  async impersonateAsUser(options, data) {
-    const { userId } = data;
-    const user = await this.userTable.findById(userId);
-    if (!user) {
-      return Promise.reject(new ForbiddenException());
-    }
-    const adminId = options.accessToken.userId;
-    const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
-    const payload = {
-      id: adminId,
-      impersonateAs: userId,
-    };
-    const token = jwt.sign(payload, JWT_SECRET_KEY, {
-      expiresIn: 3600 * 1,
-    });
-    return Promise.resolve({ token });
-  }
+  // async impersonateAsUser(options: SessionRequest, data: ) {
+  //   const { userId } = data;
+  //   const user = await this.userTable.findById(userId);
+  //   if (!user) {
+  //     return Promise.reject(new ForbiddenException());
+  //   }
+  //   const adminId = options.accessToken.userId;
+  //   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+  //   const payload = {
+  //     id: adminId,
+  //     impersonateAs: userId,
+  //   };
+  //   const token = jwt.sign(payload, JWT_SECRET_KEY, {
+  //     expiresIn: 3600 * 1,
+  //   });
+  //   return Promise.resolve({ token });
+  // }
 
-  async systemError(options, data) {
+  async systemError(data: SystemErrorDto): Promise<void> {
     const { text, isHtml, title } = data;
     const users = [
       {
@@ -218,7 +233,11 @@ export class UserAdminService {
     return Promise.resolve();
   }
 
-  async updateUserCredit(options, credit, userId) {
+  async updateUserCredit(
+    options: SessionRequest,
+    credit: number,
+    userId: number,
+  ): Promise<void> {
     const user = await this.userTable.findById(userId);
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
@@ -248,12 +267,12 @@ export class UserAdminService {
         credit,
         _object: user.id.toString(),
       },
-      { ...options.locals },
+      { ...options.user },
     );
     return;
   }
 
-  async getUserGroups(userId): Promise<Groups[]> {
+  async getUserGroups(userId: number): Promise<Groups[]> {
     const user = await this.userTable.findOne({
       where: {
         id: userId,
@@ -278,7 +297,11 @@ export class UserAdminService {
     return groups;
   }
 
-  async updateUserGroups(options, userId, data: number[]): Promise<number[]> {
+  async updateUserGroups(
+    options: SessionRequest,
+    userId: number,
+    data: number[],
+  ): Promise<number[]> {
     const user = await this.userTable.findOne({
       where: {
         id: userId,
@@ -324,12 +347,16 @@ export class UserAdminService {
         username: user.username,
         _object: user.id.toString(),
       },
-      { ...options.locals },
+      { ...options.user },
     );
     return updatedGroups;
   }
 
-  async updateUser(options, userId, data) {
+  async updateUser(
+    options: SessionRequest,
+    userId: number,
+    data: UpdateUserDto,
+  ): Promise<void> {
     const user = await this.userTable.findOne({
       where: {
         id: userId,
@@ -340,7 +367,7 @@ export class UserAdminService {
     }
     const newData = { ...data };
     delete newData.groups;
-    delete newData.roles;
+    //delete newData.roles;
     delete newData.username;
     delete newData.email;
     console.log('❤️');
@@ -354,7 +381,7 @@ export class UserAdminService {
           data,
           _object: user.id.toString(),
         },
-        { ...options.locals },
+        { ...options.user },
       );
     }
 
@@ -366,16 +393,16 @@ export class UserAdminService {
       for (const group of data.groups) {
         const groupMapExists = await this.groupMappingTable.findOne({
           where: {
-            GroupID: group,
-            UserID: userId,
+            groupId: group.id,
+            userId: userId,
           },
         });
         if (!groupMapExists) {
-          const groupExists = await this.groupTable.findOne(group);
+          const groupExists = await this.groupTable.findById(group.id);
           if (groupExists) {
             await this.groupMappingTable.create({
               userId: userId,
-              groupId: group,
+              groupId: group.id,
               createDate: new Date(),
             });
           }
@@ -390,7 +417,7 @@ export class UserAdminService {
         username: user.username,
         _object: user.id.toString(),
       },
-      { ...options.locals },
+      { ...options.user },
     );
     // await app.models.RoleMappings.destroyAll({
     //   principalId: userId,

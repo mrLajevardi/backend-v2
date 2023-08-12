@@ -72,7 +72,9 @@ export class ErrorLogTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<ErrorLog> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<ErrorLog> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

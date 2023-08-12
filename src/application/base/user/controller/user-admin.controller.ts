@@ -9,7 +9,6 @@ import {
   Query,
   Req,
   Res,
-  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -32,12 +31,11 @@ import { Groups } from 'src/infrastructure/database/entities/Groups';
 import { User } from 'src/infrastructure/database/entities/User';
 import { PostUserCreditDto } from '../dto/post-user-credit.dto';
 import { UpdateUserGroupsDto } from '../dto/update-user-groups.dto';
-import { Action } from '../../security/ability/enum/action.enum';
-import { PureAbility } from '@casl/ability';
-import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
-import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
 import { Roles } from '../../security/ability/decorators/roles.decorator';
+import { PaginationReturnDto } from 'src/infrastructure/dto/pagination-return.dto';
+import { Response } from 'express';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @ApiTags('User-admin')
 @Controller('admin/users')
@@ -59,8 +57,8 @@ export class UserAdminController {
   @Delete(':userId')
   async deleteUser(
     @Param('userId') userId: string,
-    @Req() options,
-  ): Promise<any> {
+    @Req() options: SessionRequest,
+  ): Promise<{ message: string }> {
     await this.userAdminService.deleteUsers(options, userId);
     return { message: `User with ID ${userId} has been deleted by admin` };
   }
@@ -75,8 +73,8 @@ export class UserAdminController {
   @Post(':userId/disable')
   async disableUser(
     @Param('userId') userId: string,
-    @Req() options,
-  ): Promise<any> {
+    @Req() options: SessionRequest,
+  ): Promise<{ message: string }> {
     await this.userAdminService.disableUser(options, userId);
     return { message: `User with ID ${userId} has been disabled by admin` };
   }
@@ -91,8 +89,8 @@ export class UserAdminController {
   @Post(':userId/enable')
   async enableUser(
     @Param('userId') userId: string,
-    @Req() options,
-  ): Promise<any> {
+    @Req() options: SessionRequest,
+  ): Promise<{ message: string }> {
     await this.userAdminService.enableUser(options, userId);
     return { message: `User with ID ${userId} has been enabled by admin` };
   }
@@ -184,7 +182,7 @@ export class UserAdminController {
     @Query('name') name?: string,
     @Query('username') username?: string,
     @Query('family') family?: string,
-  ): Promise<any> {
+  ): Promise<PaginationReturnDto<User>> {
     const users = await this.userAdminService.getUsers(
       role,
       page,
@@ -199,7 +197,10 @@ export class UserAdminController {
   @Post()
   @ApiOperation({ summary: 'create user : Admin ' })
   @ApiBody({ type: CreateUserDto })
-  async CreateUser(@Body() createUserDto: CreateUserDto, @Res() res) {
+  async CreateUser(
+    @Body() createUserDto: CreateUserDto,
+    @Res() res: Response,
+  ): Promise<Response> {
     const result = await this.userAdminService.createUser(createUserDto);
     if (!result) {
       throw new CreateErrorException('error creaging user');
@@ -224,9 +225,9 @@ export class UserAdminController {
   async updateUserCreditByAdmin(
     @Param('userId') userId: string,
     @Body() dto: PostUserCreditDto,
-    @Req() options,
-    @Res() res,
-  ): Promise<void> {
+    @Req() options: SessionRequest,
+    @Res() res: Response,
+  ): Promise<Response> {
     await this.userAdminService.updateUserCredit(options, dto.credit, userId);
     return res.status(200).json({ message: 'credit updated' });
   }
@@ -248,9 +249,9 @@ export class UserAdminController {
   async updateUserGroupsByAdmin(
     @Param('userId') userId: string,
     @Body() dto: UpdateUserGroupsDto,
-    @Req() options,
-    @Res() res,
-  ): Promise<void> {
+    @Req() options: SessionRequest,
+    @Res() res: Response,
+  ): Promise<Response> {
     const updatedGroups = await this.userAdminService.updateUserGroups(
       options,
       userId,
@@ -269,10 +270,10 @@ export class UserAdminController {
   @ApiOperation({ summary: 'update user data : Admin' })
   @ApiBody({ type: UpdateUserDto })
   async updateUser(
-    @Param('id') userId,
+    @Param('id') userId: number,
     @Body() updateUserDto: UpdateUserDto,
-    @Res() res,
-  ) {
+    @Res() res: Response,
+  ): Promise<Response> {
     await this.userService.updateUser(userId, updateUserDto);
     return res.status(200).json({ message: 'User updated successfully' });
   }
@@ -281,10 +282,10 @@ export class UserAdminController {
   @ApiOperation({ summary: 'change password : Admin ' })
   @ApiBody({ type: ChangePasswordDto })
   async changePassword(
-    @Param('id') userId,
+    @Param('id') userId: number,
     @Body() dto: ChangePasswordDto,
-    @Res() res,
-  ) {
+    @Res() res: Response,
+  ): Promise<Response> {
     await this.userService.changePassword(userId, dto.password);
     return res.status(200).json({ message: 'Password changed successfully' });
   }

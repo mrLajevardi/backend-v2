@@ -27,7 +27,9 @@ export class GroupsMappingTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions<GroupsMapping>): Promise<GroupsMapping[]> {
+  async find(
+    options?: FindManyOptions<GroupsMapping>,
+  ): Promise<GroupsMapping[]> {
     const result = await this.repository.find(options);
     return result;
   }
@@ -39,7 +41,9 @@ export class GroupsMappingTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions<GroupsMapping>): Promise<GroupsMapping> {
+  async findOne(
+    options?: FindOneOptions<GroupsMapping>,
+  ): Promise<GroupsMapping> {
     const result = await this.repository.findOne(options);
     return result;
   }

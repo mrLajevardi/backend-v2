@@ -58,7 +58,9 @@ export class ServiceInstancesTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions<ServiceInstances>): Promise<ServiceInstances[]> {
+  async find(
+    options?: FindManyOptions<ServiceInstances>,
+  ): Promise<ServiceInstances[]> {
     const result = await this.repository.find(options);
     return result;
   }
@@ -70,7 +72,9 @@ export class ServiceInstancesTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions<ServiceInstances> ): Promise<ServiceInstances> {
+  async findOne(
+    options?: FindOneOptions<ServiceInstances>,
+  ): Promise<ServiceInstances> {
     const result = await this.repository.findOne(options);
     return result;
   }

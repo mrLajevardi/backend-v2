@@ -144,7 +144,7 @@ export class ExtendServiceService {
   //enable Vdc On Vcloud
   async enableVdcOnVcloud(
     serviceInstanceId: string,
-    userId: number,
+    //userId: number,
   ): Promise<void> {
     const vdc = await this.servicePropertiesTable.findOne({
       where: {
@@ -153,7 +153,7 @@ export class ExtendServiceService {
       },
     });
 
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
+    const sessionToken = await this.sessionService.checkAdminSession();
     await mainWrapper.admin.vdc.enableVdc(vdc.value, sessionToken);
   }
 
@@ -293,7 +293,7 @@ export class ExtendServiceService {
     );
     // }
     if (invoice.serviceTypeId == 'vdc') {
-      await this.enableVdcOnVcloud(serviceInstanceId, userId);
+      await this.enableVdcOnVcloud(serviceInstanceId);
     }
 
     return Promise.resolve({

@@ -88,7 +88,9 @@ export class ConfigsTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Configs> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<Configs> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

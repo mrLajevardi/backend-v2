@@ -73,7 +73,9 @@ export class InvoicesTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Invoices> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(
+    where: FindOptionsWhere<Invoices> = {},
+  ): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

@@ -9,6 +9,7 @@ import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exce
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { In } from 'typeorm';
 import { VcloudErrorException } from 'src/infrastructure/exceptions/vcloud-error.exception';
+import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
 
 @Injectable()
 export class TaskAdminService {
@@ -20,7 +21,10 @@ export class TaskAdminService {
     private readonly configTable: ConfigsTableService,
   ) {}
 
-  async getTask(vdcInstanceId: string, taskId: string) {
+  async getTask(
+    vdcInstanceId: string,
+    taskId: string,
+  ): Promise<GetTasksReturnDto> {
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -42,7 +46,7 @@ export class TaskAdminService {
       return Promise.resolve(data);
     }
     if (service.serviceTypeId === 'vgpu') {
-      session = await this.sessionService.checkAdminSession(userId);
+      session = await this.sessionService.checkAdminSession();
     }
     if (service.serviceTypeId === 'vdc') {
       session = await this.sessionService.checkUserSession(
@@ -77,7 +81,7 @@ export class TaskAdminService {
     return Promise.resolve(data);
   }
 
-  async getTasksList(vdcInstanceId: string) {
+  async getTasksList(vdcInstanceId: string): Promise<GetTasksReturnDto[]> {
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -87,7 +91,7 @@ export class TaskAdminService {
     let tasks;
     let data = [];
     if (service.serviceTypeId === 'vgpu') {
-      session = await this.sessionService.checkAdminSession(userId);
+      session = await this.sessionService.checkAdminSession();
       const configsData = await this.configTable.find({
         where: {
           propertyKey: In(['config.vgpu.orgName', 'config.vgpu.orgId']),

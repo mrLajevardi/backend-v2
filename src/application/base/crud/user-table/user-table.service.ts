@@ -33,7 +33,9 @@ export class UserTableService {
   }
 
   // Find Items using search criteria
-  async findAndCount(options?: FindManyOptions<User>): Promise<[User[], number]> {
+  async findAndCount(
+    options?: FindManyOptions<User>,
+  ): Promise<[User[], number]> {
     const result = await this.repository.findAndCount(options);
     return result;
   }
@@ -78,7 +80,7 @@ export class UserTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<User> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(where: FindOptionsWhere<User> = {}): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }

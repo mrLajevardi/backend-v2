@@ -27,7 +27,9 @@ export class SystemSettingsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions<SystemSettings>): Promise<SystemSettings[]> {
+  async find(
+    options?: FindManyOptions<SystemSettings>,
+  ): Promise<SystemSettings[]> {
     const result = await this.repository.find(options);
     return result;
   }
@@ -39,7 +41,9 @@ export class SystemSettingsTableService {
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions<SystemSettings>): Promise<SystemSettings> {
+  async findOne(
+    options?: FindOneOptions<SystemSettings>,
+  ): Promise<SystemSettings> {
     const result = await this.repository.findOne(options);
     return result;
   }

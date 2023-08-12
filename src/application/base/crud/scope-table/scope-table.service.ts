@@ -72,7 +72,7 @@ export class ScopeTableService {
   }
 
   // delete all items
-  async deleteAll( where: FindOptionsWhere<Scope> = {} ) :  Promise<DeleteResult> {
+  async deleteAll(where: FindOptionsWhere<Scope> = {}): Promise<DeleteResult> {
     return await this.repository.delete(where);
   }
 }
