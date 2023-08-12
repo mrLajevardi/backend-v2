@@ -24,10 +24,7 @@ import { In, Like } from 'typeorm';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
-import { TaskDataDTO } from '../dto/task-data.dto';
-import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { TaskRunnerDto } from '../dto/task-runner.dto';
-import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { UserPayload } from '../../security/auth/dto/user-payload.dto';
 
 @Processor('tasks2')
