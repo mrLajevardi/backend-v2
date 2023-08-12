@@ -7,7 +7,7 @@ export class ServicePropertiesService {
     private readonly servicePropertiesTable: ServicePropertiesTableService,
   ) {}
 
-  async getAllServiceProperties(serviceId) {
+  async getAllServiceProperties(serviceId: string): Promise<object> {
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
         serviceInstanceId: serviceId,

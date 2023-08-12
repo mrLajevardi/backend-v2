@@ -1,15 +1,12 @@
 import {
-  IsInt,
   IsNumber,
   IsString,
-  IsBoolean,
-  IsDate,
-  IsOptional,
   IsArray,
   Min,
   Max,
   Matches,
   ValidateIf,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class InvoiceItemsDto {
@@ -64,4 +61,14 @@ export class CreateServiceInvoiceDto {
   })
   @ApiProperty()
   serviceInstanceId: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  pcName?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  pcPassword?: string;
 }

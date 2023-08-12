@@ -2,7 +2,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { ImpersonateAs } from '../dto/impersonate-as.interface';
+import { UserPayload } from '../dto/user-payload.dto';
 
 @Injectable()
 export class RobotStrategy extends PassportStrategy(Strategy, 'robot') {
@@ -16,9 +16,9 @@ export class RobotStrategy extends PassportStrategy(Strategy, 'robot') {
 
   // The validation that will be take place before any
   // endpoint protected using Jwt-auth.guard
-  async validate(payload: any) {
+  async validate(payload: UserPayload): Promise<UserPayload> {
     console.log(payload);
-    if (payload.ispublic) {
+    if (payload.isPublic) {
       throw new UnauthorizedException('No public access permited');
     }
 
@@ -26,7 +26,7 @@ export class RobotStrategy extends PassportStrategy(Strategy, 'robot') {
       throw new UnauthorizedException('Only robots can access this endpoint');
     }
 
-    if (!payload.sub) {
+    if (!payload.robotToken) {
       throw new ForbiddenException('error in jwt');
     }
 

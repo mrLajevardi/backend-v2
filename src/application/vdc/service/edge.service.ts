@@ -29,7 +29,7 @@ export class EdgeService {
    * @return {Promise}
    */
   async createEdge(vdcId, ip, vdcName, serviceInstanceId, orgId, userId) {
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
+    const sessionToken = await this.sessionService.checkAdminSession();
     const edgeName = vdcName + '_edge';
 
     const service = await this.serviceInstanceTable.findOne({

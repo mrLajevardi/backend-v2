@@ -3,7 +3,6 @@ import { Reflector } from '@nestjs/core';
 import { PredefinedRoles } from '../enum/predefined-enum.type';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { AbilityAdminService } from '../service/ability-admin.service';
-import { IS_PUBLIC_KEY } from '../../auth/decorators/ispublic.decorator';
 import { guardHelper } from 'src/infrastructure/helpers/guard-helper';
 
 @Injectable()

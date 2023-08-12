@@ -2,38 +2,35 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
-import * as bcrypt from 'bcrypt';
-import { BadRequestError } from 'passport-headerapikey';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { ZarinpalConfigDto } from 'src/application/payment/dto/zarinpal-config.dto';
-import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invalid-phone-token.exception';
 import { InvalidUsernameException } from 'src/infrastructure/exceptions/invalid-username.exception';
 import { UnprocessableEntity } from 'src/infrastructure/exceptions/unprocessable-entity.exception';
-import { UserAlreadyExist } from 'src/infrastructure/exceptions/user-already-exist.exception';
 import { RoleMappingTableService } from '../../crud/role-mapping-table/role-mapping-table.service';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import jwt from 'jsonwebtoken';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { create, isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { PaymentService } from 'src/application/payment/payment.service';
 import { NotificationService } from '../../notification/notification.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
-import { AuthService } from '../../security/auth/service/auth.service';
 import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
 import * as util from 'util';
 import { JwtService } from '@nestjs/jwt';
-import {
-  encryptPassword,
-  generatePassword,
-} from 'src/infrastructure/helpers/helpers';
+import { encryptPassword } from 'src/infrastructure/helpers/helpers';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { Like } from 'typeorm';
+import { ResendEmailDto } from '../dto/resend-email.dto';
+import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
+import { CreditIncrementDto } from '../dto/credit-increment.dto';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 
 @Injectable()
 export class UserService {
@@ -62,7 +59,7 @@ export class UserService {
     });
   }
 
-  async changePassword(userId: number, newPassword: string) {
+  async changePassword(userId: number, newPassword: string): Promise<void> {
     if (!newPassword) {
       return Promise.reject(new BadRequestException());
     }
@@ -74,7 +71,12 @@ export class UserService {
     );
   }
 
-  async checkUserCredit(costs, userId, options, serviceType) {
+  async checkUserCredit(
+    costs: number,
+    userId: number,
+    options: SessionRequest,
+    serviceType: string,
+  ): Promise<boolean> {
     try {
       const user = await this.userTable.findById(userId);
       const userCredit = user.credit;
@@ -83,7 +85,7 @@ export class UserService {
         const updatedCredit = userCredit - costs;
         // Implement
 
-        const updateResult = await this.userTable.updateAll(
+        await this.userTable.updateAll(
           { id: userId },
           { credit: updatedCredit },
         );
@@ -101,7 +103,7 @@ export class UserService {
             serviceType,
             _object: userId,
           },
-          { ...options.locals },
+          { ...options.user },
         );
         // if (updateResult.count < 1) {
         //   return Promise.reject(new Error('not updated'));
@@ -115,7 +117,10 @@ export class UserService {
     }
   }
 
-  async createUserByPhoneNumber(phoneNumber: string, password: string) {
+  async createUserByPhoneNumber(
+    phoneNumber: string,
+    password: string,
+  ): Promise<User> {
     const createDto: CreateUserDto = {
       phoneNumber: phoneNumber,
       username: `U-${phoneNumber}`,
@@ -159,12 +164,15 @@ export class UserService {
     return theUser;
   }
 
-  async creditIncrement(options, data) {
+  async creditIncrement(
+    options: SessionRequest,
+    data: CreditIncrementDto,
+  ): Promise<string> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     const settings = await this.systemSettingsTable.find({
       where: {
-        PropertyKey: { like: '%credit.%' },
+        propertyKey: Like('%credit.%'),
       },
     });
     const filteredSettings = {};
@@ -181,7 +189,7 @@ export class UserService {
     }
 
     let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.locals.username;
+    zarinpalConfig.metadata.email = options.user.username;
     zarinpalConfig.metadata.mobile = user.phoneNumber;
 
     const paymentRequestData = { ...zarinpalConfig, amount };
@@ -209,10 +217,13 @@ export class UserService {
     );
   }
 
-  async forgotPassword(options, data) {
+  async forgotPassword(
+    options: SessionRequest,
+    data: ForgotPasswordDto,
+  ): Promise<void> {
     const user = await this.userTable.findOne({
       where: {
-        username: data.username,
+        username: data.email,
         emailVerified: true,
       },
     });
@@ -236,7 +247,7 @@ export class UserService {
           username: user.username,
           _object: user.id.toString(),
         },
-        { ...options.locals },
+        { ...options.user },
       );
     } else {
       const err = new InvalidUsernameException();
@@ -244,7 +255,9 @@ export class UserService {
     }
   }
 
-  async getSingleUserInfo(options) {
+  async getSingleUserInfo(
+    options: SessionRequest,
+  ): Promise<{ name: string; family: string; phoneNumber: string }> {
     const user = await this.userTable.findById(options.user.userId);
     return Promise.resolve({
       name: user.name,
@@ -253,26 +266,26 @@ export class UserService {
     });
   }
 
-  async getUserCredit(options) {
+  async getUserCredit(options: SessionRequest): Promise<number> {
     console.log(options.user.userId);
     const user = await this.userTable.findById(options.user.userId);
     return Promise.resolve(user.credit);
   }
 
-  getActiveRemoteMethods(model) {
-    const activeRemoteMethods = model.sharedClass
-      .methods({ includeDisabled: false })
-      .reduce((result, sharedMethod) => {
-        Object.assign(result, {
-          [sharedMethod.name]: sharedMethod.isStatic,
-        });
-        return result;
-      }, {});
+  // getActiveRemoteMethods(model) {
+  //   const activeRemoteMethods = model.sharedClass
+  //     .methods({ includeDisabled: false })
+  //     .reduce((result, sharedMethod) => {
+  //       Object.assign(result, {
+  //         [sharedMethod.name]: sharedMethod.isStatic,
+  //       });
+  //       return result;
+  //     }, {});
 
-    return activeRemoteMethods;
-  }
+  //   return activeRemoteMethods;
+  // }
 
-  async postUserCredit(options, credit) {
+  async postUserCredit(options: SessionRequest, credit: number): Promise<void> {
     const user = await this.userTable.findById(options.user.userId);
     await this.userTable.updateAll(
       { id: options.user.userId },
@@ -283,7 +296,10 @@ export class UserService {
     return;
   }
 
-  async updateUser(userId: number, updateUserDto: UpdateUserDto) {
+  async updateUser(
+    userId: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<User | Error> {
     const forbiddenFields = [
       'active',
       'emailVerified',
@@ -310,13 +326,20 @@ export class UserService {
     return this.userTable.update(userId, updateUserDto);
   }
 
-  async verifyCreditIncrement(options, authority = null) {
+  async verifyCreditIncrement(
+    options: SessionRequest,
+    authority: string = null,
+  ): Promise<{
+    verified: boolean;
+    refID: string;
+  }> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     // find user transaction
     const transaction = await this.transactionsTable.findOne({
       where: {
-        and: [{ PaymentToken: authority }, { UserID: userId }],
+        paymentToken: authority,
+        userId: userId,
       },
     });
     if (transaction === null) {
@@ -344,7 +367,7 @@ export class UserService {
       );
       await this.userTable.updateAll(
         {
-          id: userId.toString(),
+          id: userId,
         },
         {
           credit: user.credit + transaction.value,
@@ -358,7 +381,10 @@ export class UserService {
     });
   }
 
-  async resendEmail(data, options) {
+  async resendEmail(
+    data: ResendEmailDto,
+    options: SessionRequest,
+  ): Promise<void> {
     try {
       const email = data.email;
       const user = await this.userTable.findOne({
@@ -386,7 +412,7 @@ export class UserService {
             _object: email,
           },
           {
-            ...options.locals,
+            ...options.user,
           },
         );
       } else {
@@ -402,37 +428,39 @@ export class UserService {
     }
   }
 
-  async resetForgottenPassword(data, options) {
-    const pjwtVerified = await jwt.verify(
-      data.pjwt,
-      process.env.OTP_SECRET_KEY,
-    );
-    if (!pjwtVerified) {
-      return Promise.reject(new InvalidPhoneNumberException());
-    }
-    const phone = jwt.decode(data.pjwt);
-    const user = await this.userTable.findOne({
-      where: {
-        phoneNumber: phone,
-      },
-    });
-    await this.userTable.updateAll(
-      { id: user.id },
-      { password: await encryptPassword(data.password) },
-    );
-    await this.logger.info(
-      'user',
-      'resetPassword',
-      {
-        username: user.username,
-        _object: user.id,
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({ passwordChanged: true });
-  }
+  // async resetForgottenPassword(data: ResetForgottenPasswordDto, options: SessionRequest) : Promise<{passwordChanged: boolean}> {
+  //   const pjwtVerified = await jwt.verify(
+  //     data.pjwt,
+  //     process.env.OTP_SECRET_KEY,
+  //   );
+  //   if (!pjwtVerified) {
+  //     return Promise.reject(new InvalidPhoneNumberException());
+  //   }
+  //   const phone = jwt.decode(data.pjwt);
+  //   const user = await this.userTable.findOne({
+  //     where: {
+  //       phoneNumber: phone,
+  //     },
+  //   });
+  //   await this.userTable.updateAll(
+  //     { id: user.id },
+  //     { password: await encryptPassword(data.password) },
+  //   );
+  //   await this.logger.info(
+  //     'user',
+  //     'resetPassword',
+  //     {
+  //       username: user.username,
+  //       _object: user.id,
+  //     },
+  //     { ...options.user },
+  //   );
+  //   return Promise.resolve({ passwordChanged: true });
+  // }
 
-  async resetPasswordByPhone(data, options) {
+  async resetPasswordByPhone(
+    data: ResetPasswordByPhoneDto,
+  ): Promise<{ hash: string }> {
     const user = await this.userTable.findOne({
       where: {
         phoneNumber: data.phoneNumber,
@@ -461,30 +489,33 @@ export class UserService {
     return Promise.resolve({ hash });
   }
 
-  async verifyEmail(token, options) {
-    const verifyToken = util.promisify(jwt.verify);
-    const parsedToken = null;
+  async verifyEmail(options: SessionRequest, token: string): Promise<void> {
     try {
+      const verifyToken = util.promisify(jwt.verify);
       const parsedToken = this.jwtService.verify(token, {
         subject: 'emailVerification',
       });
+
+      if (!verifyToken) {
+        throw new InvalidEmailTokenException();
+      }
+      const user = await this.userTable.findById(parsedToken.id);
+      await this.userTable.updateAll(
+        { id: parsedToken.id },
+        { emailVerified: true },
+      );
+      await this.logger.info(
+        'user',
+        'verifyEmail',
+        {
+          username: user.username,
+          _object: user.id,
+        },
+        { ...options.user },
+      );
     } catch (err) {
       console.log(err);
       return Promise.reject(new InvalidEmailTokenException());
     }
-    const user = await this.userTable.findById(parsedToken.id);
-    await this.userTable.updateAll(
-      { id: parsedToken.id },
-      { emailVerified: true },
-    );
-    await this.logger.info(
-      'user',
-      'verifyEmail',
-      {
-        username: user.username,
-        _object: user.id,
-      },
-      { ...options.locals },
-    );
   }
 }

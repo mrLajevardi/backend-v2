@@ -8,6 +8,8 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -25,52 +27,61 @@ export class GroupsMappingTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<GroupsMapping[]> {
+  async find(
+    options?: FindManyOptions<GroupsMapping>,
+  ): Promise<GroupsMapping[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<GroupsMapping>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<GroupsMapping> {
+  async findOne(
+    options?: FindOneOptions<GroupsMapping>,
+  ): Promise<GroupsMapping> {
     const result = await this.repository.findOne(options);
     return result;
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateGroupMappingsDto) {
+  async create(dto: CreateGroupMappingsDto): Promise<GroupsMapping> {
     const newItem = plainToClass(GroupsMapping, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateGroupMappingsDto) {
+  async update(
+    id: number,
+    dto: UpdateGroupMappingsDto,
+  ): Promise<GroupsMapping> {
     const item = await this.findById(id);
     const updateItem: Partial<GroupsMapping> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<GroupsMapping>,
     dto: UpdateGroupMappingsDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: number) {
-    await this.repository.delete(id);
+  async delete(id: number): Promise<DeleteResult> {
+    return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(where?: FindOptionsWhere<GroupsMapping>) {
-    await this.repository.delete(where);
+  async deleteAll(
+    where?: FindOptionsWhere<GroupsMapping>,
+  ): Promise<DeleteResult> {
+    return await this.repository.delete(where);
   }
 }

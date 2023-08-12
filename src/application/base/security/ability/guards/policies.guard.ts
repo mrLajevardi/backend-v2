@@ -3,7 +3,6 @@ import { Reflector } from '@nestjs/core';
 import { PolicyHandler } from '../interfaces/policy-handler.interface';
 import { CHECK_POLICIES_KEY } from '../decorators/check-policies.decorator';
 import { AbilityFactory } from '../ability.factory';
-import { UserService } from '../../../user/service/user.service';
 import { PureAbility } from '@casl/ability';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { guardHelper } from 'src/infrastructure/helpers/guard-helper';
@@ -43,10 +42,13 @@ export class PoliciesGuard implements CanActivate {
     );
   }
 
-  private execPolicyHandler(handler: PolicyHandler, ability: PureAbility) {
+  private execPolicyHandler(
+    handler: PolicyHandler,
+    ability: PureAbility,
+  ): boolean {
     console.log('exec policy handler');
     if (typeof handler === 'function') {
-      const retVal = handler(ability);
+      const retVal: boolean = handler(ability);
       //console.log(retVal);
       return retVal;
       //return handler(ability);

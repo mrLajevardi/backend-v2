@@ -18,19 +18,23 @@ export class ServiceReportsViewService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<ServiceReports[]> {
+  async find(
+    options?: FindManyOptions<ServiceReports>,
+  ): Promise<ServiceReports[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<ServiceReports>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<ServiceReports> {
+  async findOne(
+    options?: FindOneOptions<ServiceReports>,
+  ): Promise<ServiceReports> {
     const result = await this.repository.findOne(options);
     return result;
   }

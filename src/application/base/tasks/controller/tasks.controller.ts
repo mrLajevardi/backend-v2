@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Request,
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, Request } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
@@ -16,6 +7,8 @@ import {
   ApiParam,
 } from '@nestjs/swagger';
 import { TasksService } from '../service/tasks.service';
+import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @ApiTags('Tasks')
 @Controller('/tasks')
@@ -31,9 +24,9 @@ export class TasksController {
   @ApiParam({ name: 'vdcInstanceId' })
   @Get(':vdcInstanceId')
   async getTasks(
-    @Request() options: any,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
-  ) {
+  ): Promise<GetTasksReturnDto[]> {
     return this.tasksService.getTasksList(options, vdcInstanceId);
   }
 
@@ -46,10 +39,10 @@ export class TasksController {
   @ApiParam({ name: 'taskId' })
   @Get(':vdcInstanceId/task/:taskId')
   async getTask(
-    @Request() options: any,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('taskId') taskId: string,
-  ) {
+  ): Promise<GetTasksReturnDto> {
     return this.tasksService.getTask(options, vdcInstanceId, taskId);
   }
 
@@ -62,10 +55,10 @@ export class TasksController {
   @ApiParam({ name: 'taskId' })
   @Post(':vdcInstanceId/:taskId/cancel')
   async cancelTask(
-    @Request() options: any,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('taskId') taskId: string,
-  ) {
+  ): Promise<void> {
     return this.tasksService.cancelTask(options, vdcInstanceId, taskId);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
 
@@ -6,19 +6,10 @@ import { SessionsService } from 'src/application/base/sessions/sessions.service'
 import { InvalidServiceIdException } from 'src/infrastructure/exceptions/invalid-service-id.exception';
 import jwt from 'jsonwebtoken';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
-import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
-import { InvoicesService } from '../../invoice/service/invoices.service';
-import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/service/user.service';
-import { DiscountsService } from './discounts.service';
-import { ServiceChecksService } from './service-checks.service';
-import { ServiceService } from './service.service';
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
@@ -28,6 +19,12 @@ import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.s
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { InvoiceItemListService } from '../../crud/invoice-item-list/invoice-item-list.service';
 import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
+import { Like, UpdateResult } from 'typeorm';
+import { ServiceAiInfoDto } from '../dto/return/service-ai-info.dto';
+import { QualityPlansService } from '../../crud/quality-plans/quality-plans.service';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @Injectable()
 export class ExtendServiceService {
@@ -44,33 +41,33 @@ export class ExtendServiceService {
     private readonly invoicesTableService: InvoicesTableService,
     private readonly invoiceItemListService: InvoiceItemListService,
     private readonly invoicePlanTableService: InvoicePlansTableService,
+    private readonly qualityPlansTable: QualityPlansService,
   ) {}
 
   async getAiServiceInfo(
-    userId,
-    serviceId,
-    qualityPlanCode,
-    duration,
-    expireDate,
-    createdDate,
-  ) {
+    userId: number,
+    serviceId: string,
+    qualityPlanCode: string,
+    duration: number,
+    expireDate: Date,
+    createdDate: Date,
+  ): Promise<ServiceAiInfoDto> {
     const aradAiItem = await this.itemTypesTable.findOne({
       where: {
-        and: [{ Code: 'ARADAIItem' }],
+        code: 'ARADAIItem',
       },
     });
-    const plans = await this.plansTable.findOne({
+    const plans = await this.qualityPlansTable.findOne({
       where: {
-        and: [{ ServiceTypeID: 'aradAi' }, { Code: { like: qualityPlanCode } }],
+        serviceTypeId: 'aradAi',
+        code: Like(qualityPlanCode),
       },
     });
 
     const AiServiceConfigs = await this.configsTable.find({
       where: {
-        and: [
-          { PropertyKey: { like: '%' + qualityPlanCode + '%' } },
-          { ServiceTypeID: serviceId },
-        ],
+        propertyKey: Like('%' + qualityPlanCode + '%'),
+        serviceTypeId: serviceId,
       },
     });
     const ServiceAiInfo = {
@@ -97,7 +94,11 @@ export class ExtendServiceService {
   }
 
   // create service items
-  async createServiceItems(serviceInstanceID, items, data) {
+  async createServiceItems(
+    serviceInstanceID: string,
+    items: ItemTypes[],
+    data: object,
+  ): Promise<void> {
     for (const item of Object.keys(items)) {
       const itemTitle = items[item].code;
       // TODO just items of current user should be added
@@ -113,7 +114,12 @@ export class ExtendServiceService {
   }
 
   //create service instance
-  async createServiceInstance(userId, serviceTypeID, expireDate, name = null) {
+  async createServiceInstance(
+    userId: number,
+    serviceTypeID: string,
+    expireDate: Date,
+    name = null,
+  ): Promise<string> {
     const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
       where: {
         userId,
@@ -136,23 +142,27 @@ export class ExtendServiceService {
   }
 
   //enable Vdc On Vcloud
-  async enableVdcOnVcloud(serviceInstanceId, userId) {
+  async enableVdcOnVcloud(
+    serviceInstanceId: string,
+    //userId: number,
+  ): Promise<void> {
     const vdc = await this.servicePropertiesTable.findOne({
       where: {
         serviceInstanceId,
-        propertykey: 'vdcId',
+        propertyKey: 'vdcId',
       },
     });
 
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
-
-    // PLEASE TAKE CARE , THIS PART IS DISABLED BECAUSE OF MOVEMENT PROCESS
-    throw new InternalServerErrorException('METHOD SHOULD BE IMPLEMENTED');
-    // await mainWrapper.admin.vdc.enableVdc(vdc.value, sessionToken);
+    const sessionToken = await this.sessionService.checkAdminSession();
+    await mainWrapper.admin.vdc.enableVdc(vdc.value, sessionToken);
   }
 
   //update service instance
-  async updateServiceInstanceExpireDate(userId, serviceInstanceId, expireDate) {
+  async updateServiceInstanceExpireDate(
+    userId: number,
+    serviceInstanceId: string,
+    expireDate: Date,
+  ): Promise<UpdateResult> {
     const serivce = await this.serviceInstancesTable.updateAll(
       {
         userId: userId,
@@ -169,15 +179,17 @@ export class ExtendServiceService {
     return Promise.resolve(serivce);
   }
 
-  QualityPlans;
   async createServiceInstanceAndToken(
-    options,
-    expireDate,
-    serviceId,
+    options: SessionRequest,
+    expireDate: Date,
+    serviceId: string,
     transaction: Transactions,
-    name,
-  ) {
-    const token = null;
+    name: string,
+  ): Promise<
+    | { token: string; serviceInstanceId: string }
+    | { scriptPath: string; serviceInstanceId: string }
+  > {
+    //const token = null;
     const userId = options.user.userId;
 
     const serviceType = await this.serviceTypeTable.findOne({
@@ -199,7 +211,7 @@ export class ExtendServiceService {
     });
     const invoiceItemList = await this.invoiceItemListService.find({
       where: {
-        invoiceId: transaction.invoiceId,
+        invoiceId: transaction.invoiceId.toString(),
         userId,
       },
     });
@@ -221,7 +233,7 @@ export class ExtendServiceService {
       console.log(invoice);
       const invoicePlan = await this.invoicePlanTableService.findOne({
         where: {
-          planCode: { like: '%ai%' },
+          planCode: Like('%ai%'),
           invoiceId: transaction.invoiceId,
         },
       });
@@ -254,15 +266,19 @@ export class ExtendServiceService {
       serviceInstanceId,
     });
   }
-  async extendServiceInstanceAndToken(options, invoice: Invoices) {
-    const token = null;
-    const userId = options.accessToken.userId;
+
+  async extendServiceInstanceAndToken(
+    options: SessionRequest,
+    invoice: Invoices,
+  ): Promise<{ serviceInstanceId: string }> {
+    //const token = null;
+    const userId = options.user.userId;
     const serviceInstanceId = invoice.serviceInstance.id;
 
     const oldSerivce = await this.serviceInstancesTable.findOne({
       where: {
         userId,
-        serviceInstanceId,
+        id: serviceInstanceId,
         isDeleted: false,
       },
     });
@@ -277,17 +293,18 @@ export class ExtendServiceService {
     );
     // }
     if (invoice.serviceTypeId == 'vdc') {
-      await this.enableVdcOnVcloud(serviceInstanceId, userId);
+      await this.enableVdcOnVcloud(serviceInstanceId);
     }
 
     return Promise.resolve({
       serviceInstanceId,
     });
   }
+
   async approveTransactionAndInvoice(
     invoice: Invoices,
     transaction: Transactions,
-  ) {
+  ): Promise<void> {
     const { serviceInstanceId, userId: userId, id: invoiceId } = invoice;
     // approve user transaction
     await this.transactionTableService.updateAll(

@@ -9,6 +9,8 @@ import { createTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/create
 import { getListOfTickets } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/getListOfTickets';
 import { getTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/getTicket';
 import { replyTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/replyTicket';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { CreateTicketDto } from './dto/create-ticket.dto';
 
 @Injectable()
 export class TicketService {
@@ -17,9 +19,8 @@ export class TicketService {
     private readonly ticketTable: TicketsTableService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
   ) {}
-  async closeTicket(options, ticketId) {
-    const userId = options.user.id;
-    const user = await this.userTable.findById(userId);
+  async closeTicket(options: SessionRequest, ticketId: number): Promise<void> {
+    const userId = options.user.userId;
     const ticketExists = await this.ticketTable.findOne({
       where: {
         userId: userId,
@@ -31,11 +32,15 @@ export class TicketService {
     }
     // update status to 3
     console.log(ticketId, '💀💀💀');
-    const ticket = await updateTicket('status', 5, ticketId);
+    await updateTicket('status', 5, ticketId);
     return Promise.resolve();
   }
 
-  async createTicket(options, data) {
+  async createTicket(
+    options: SessionRequest,
+    data: CreateTicketDto,
+  ): Promise<{ ticketId: number }> {
+    console.log('create ticket');
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     const service = await this.serviceInstancesTable.findOne({
@@ -68,7 +73,9 @@ export class TicketService {
     return Promise.resolve({ ticketId });
   }
 
-  async getAllTickets(options) {
+  async getAllTickets(
+    options: SessionRequest,
+  ): Promise<{ tickets: object[]; pagination: object }> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     try {
@@ -88,7 +95,7 @@ export class TicketService {
     }
   }
 
-  async getTicket(options, ticketId) {
+  async getTicket(options: SessionRequest, ticketId: number): Promise<object> {
     const userId = options.user.userId;
     const ticketExists = await this.ticketTable.findOne({
       where: {
@@ -103,7 +110,11 @@ export class TicketService {
     return Promise.resolve(ticket);
   }
 
-  async replyToTicket(options, data, ticketId) {
+  async replyToTicket(
+    options: SessionRequest,
+    data: { message: string },
+    ticketId: number,
+  ): Promise<object> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     const ticketExists = await this.ticketTable.findOne({

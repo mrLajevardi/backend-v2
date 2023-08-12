@@ -10,7 +10,6 @@ import { UserModule } from '../base/user/user.module';
 import { VdcController } from './controller/vdc.controller';
 import { VdcAdminController } from './controller/vdc-admin.controller';
 import { CrudModule } from '../base/crud/crud.module';
-import { ServiceModule } from '../base/service/service.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { NetworkService } from './service/network.service';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
@@ -21,7 +20,7 @@ import { AbilityModule } from '../base/security/ability/ability.module';
     DatabaseModule,
     CrudModule,
     LoggerModule,
-    //TasksModule,
+    forwardRef(() => TasksModule),
     SessionsModule,
     OrganizationModule,
     UserModule,

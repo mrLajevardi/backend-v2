@@ -5,7 +5,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { CrudModule } from '../../crud/crud.module';
-import { UserTableModule } from '../../crud/user-table/user-table.module';
 import { NotificationModule } from '../../notification/notification.module';
 import { OtpService } from '../security-tools/otp.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';

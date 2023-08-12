@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsBoolean,
   IsDate,
   IsEmail,
@@ -7,7 +8,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-
+import { Groups } from 'src/infrastructure/database/entities/Groups';
 export class UpdateUserDto {
   @IsString()
   @IsOptional()
@@ -102,4 +103,9 @@ export class UpdateUserDto {
   @IsBoolean()
   @ApiProperty()
   phoneVerified?: boolean;
+
+  @IsArray()
+  @IsOptional()
+  @ApiProperty({ type: [Groups] })
+  groups?: Groups[];
 }

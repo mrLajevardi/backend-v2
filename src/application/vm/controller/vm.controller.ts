@@ -11,9 +11,6 @@ import {
   Headers,
   Body,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { isEmpty, isNil } from 'lodash';
-import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -22,9 +19,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.filter';
-import { Raw } from 'typeorm';
-import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { VmService } from '../service/vm.service';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';

@@ -5,9 +5,11 @@ import { ServiceInstancesTableService } from '../../crud/service-instances-table
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
-import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { ServicePropertiesService } from '../../service-properties/service-properties.service';
 import { VcloudErrorException } from 'src/infrastructure/exceptions/vcloud-error.exception';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { In } from 'typeorm';
+import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
 
 @Injectable()
 export class TasksService {
@@ -19,7 +21,10 @@ export class TasksService {
     private readonly configsTable: ConfigsTableService,
   ) {}
 
-  async getTasksList(options, vdcInstanceId) {
+  async getTasksList(
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<GetTasksReturnDto[] | null> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -29,15 +34,13 @@ export class TasksService {
     let session;
     let tasks;
     if (service.serviceTypeId === 'aradAi') {
-      return Promise.resolve({});
+      return Promise.resolve(null);
     }
     if (service.serviceTypeId === 'vgpu') {
-      session = await this.sessionService.checkAdminSession('');
+      session = await this.sessionService.checkAdminSession();
       const configsData = await this.configsTable.find({
         where: {
-          propertyKey: {
-            inq: ['config.vgpu.orgName', 'config.vgpu.orgId'],
-          },
+          propertyKey: In(['config.vgpu.orgName', 'config.vgpu.orgId']),
         },
       });
       const configs: any = {};
@@ -125,7 +128,11 @@ export class TasksService {
     return Promise.resolve(data);
   }
 
-  async getTask(options, vdcInstanceId, taskId) {
+  async getTask(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    taskId: string,
+  ): Promise<GetTasksReturnDto | null> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -138,10 +145,10 @@ export class TasksService {
     let data;
     if (isEmpty(customTask)) {
       if (service.serviceTypeId === 'aradAi') {
-        return Promise.resolve({});
+        return Promise.resolve(null);
       }
       if (service.serviceTypeId === 'vgpu') {
-        session = await this.sessionService.checkAdminSession('');
+        session = await this.sessionService.checkAdminSession();
       }
       if (service.serviceTypeId === 'vdc') {
         session = await this.sessionService.checkUserSession(
@@ -184,7 +191,11 @@ export class TasksService {
     return Promise.resolve(data);
   }
 
-  async cancelTask(options, vdcInstanceId, taskId) {
+  async cancelTask(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    taskId: string,
+  ): Promise<void> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(

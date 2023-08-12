@@ -8,7 +8,8 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
-  DeleteOptions,
+  UpdateResult,
+  DeleteResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -26,19 +27,19 @@ export class AccessTokenTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<AccessToken[]> {
+  async find(options?: FindManyOptions<AccessToken>): Promise<AccessToken[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<AccessToken>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<AccessToken> {
+  async findOne(options?: FindOneOptions<AccessToken>): Promise<AccessToken> {
     const result = await this.repository.findOne(options);
     return result;
   }
@@ -51,27 +52,29 @@ export class AccessTokenTableService {
   }
 
   // Update an Item using updateDTO
-  async update(id: string, dto: UpdateAccessTokenDto) {
+  async update(id: string, dto: UpdateAccessTokenDto): Promise<AccessToken> {
     const item = await this.findById(id);
     const updateItem: Partial<AccessToken> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<AccessToken>,
     dto: UpdateAccessTokenDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: string) {
-    await this.repository.delete(id);
+  async delete(id: string): Promise<DeleteResult> {
+    return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(options?: FindOptionsWhere<AccessToken>) {
-    await this.repository.delete(options);
+  async deleteAll(
+    options?: FindOptionsWhere<AccessToken>,
+  ): Promise<DeleteResult> {
+    return await this.repository.delete(options);
   }
 }

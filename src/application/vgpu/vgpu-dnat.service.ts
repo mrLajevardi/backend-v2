@@ -21,7 +21,7 @@ export class VgpuDnatService {
     portProfileName,
     portProfileId,
   ) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const config = {
       enabled: true,
       logging: false,

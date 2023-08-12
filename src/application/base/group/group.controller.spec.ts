@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { GroupController } from './group.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { GroupsTableModule } from '../crud/groups-table/groups-table.module';
-import { GroupModule } from './group.module';
 import { GroupService } from './group.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 

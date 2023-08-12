@@ -14,7 +14,7 @@ import { InvoiceItemsTableService } from '../base/crud/invoice-items-table/invoi
 import { InvoicePropertiesTableService } from '../base/crud/invoice-properties-table/invoice-properties-table.service';
 import { TaskManagerService } from '../base/tasks/service/task-manager.service';
 import { TasksTableService } from '../base/crud/tasks-table/tasks-table.service';
-import { Raw } from 'typeorm';
+import { Not, Raw } from 'typeorm';
 
 @Injectable()
 export class VgpuService {
@@ -69,7 +69,7 @@ export class VgpuService {
       props[key] = item;
     }
     const vdcIdVgpu = props['vdcId'].split(':').slice(-1);
-    const session = await this.sessionService.checkAdminSession(userId);
+    const session = await this.sessionService.checkAdminSession();
     const vmInfo = await this.getVmsInfo(
       session,
       vdcIdVgpu,
@@ -93,7 +93,7 @@ export class VgpuService {
   }
 
   async createAvailableInternalIP(serviceId, userId, orgId, networkId) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const allocatedIpAddresses =
       await mainWrapper.user.network.getIPUsageNetwrok(
         session,
@@ -144,7 +144,7 @@ export class VgpuService {
   async deployVgpuVm(serviceId, userId, vdcId, orgId, orgName) {
     const vmName = serviceId + 'VM';
     const vdcIdVgpu = vdcId.split(':').slice(-1);
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const vmInfo = await this.getVmsInfo(
       session,
       vdcIdVgpu,
@@ -157,8 +157,8 @@ export class VgpuService {
       const action = await mainWrapper.user.vm.deployVm(session, vmId);
       const servieproperties = await this.servicePropertiesTable.findOne({
         where: {
-          ServiceInstanceID: serviceId,
-          PropertyKey: 'plan',
+          serviceInstanceId: serviceId,
+          propertyKey: 'plan',
         },
       });
 
@@ -170,7 +170,7 @@ export class VgpuService {
       };
       const planCost = await this.itemTypesTable.find({
         where: {
-          Code: Raw(
+          code: Raw(
             (alias) =>
               `${alias} LIKE ${gpuPlans[servieproperties.value] + 'Cost%'}`,
           ),
@@ -185,7 +185,7 @@ export class VgpuService {
   }
 
   async deleteVgpuNat(userId, orgId, edgeName, natName) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const vgpuNat = await this.getVgpuNat(session, edgeName, natName);
     const ruleId = vgpuNat[0].id;
     const nat = await mainWrapper.user.nat.deleteNatRule(
@@ -215,7 +215,7 @@ export class VgpuService {
       orgId,
       networkId,
     );
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const sourceHref =
       'https://vcd.aradcloud.com/api/vAppTemplate/vm-' + templateId;
     const createdVm = await mainWrapper.user.vm.instantiateVmFromTemplateAdmin(
@@ -253,7 +253,7 @@ export class VgpuService {
     internalIP,
     typeNat,
   ) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
 
     const config = {
       enabled: true,
@@ -276,12 +276,12 @@ export class VgpuService {
     serviceId,
     userId,
     vdcId,
-    orgId,
+    orgId: number,
     orgName,
     adminPassword,
     computerName,
   ) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const vmName = serviceId + 'VM';
     const vdcIdVgpu = vdcId.split(':').slice(-1);
     const query = await mainWrapper.user.vdc.vcloudQuery(
@@ -352,7 +352,7 @@ search ." > /etc/resolv.conf`;
     // check minimum cost at Credit
     const minimumCost = await this.configsTable.findOne({
       where: {
-        PropertyKey: 'config.vgpu.minimumCost',
+        propertyKey: 'config.vgpu.minimumCost',
       },
     });
     const user = await this.userTable.findById(userId);
@@ -368,8 +368,8 @@ search ." > /etc/resolv.conf`;
     };
     const invoiceItems = await this.invoiceItemsTable.find({
       where: {
-        invoiceID: invoiceID,
-        ItemID: { neq: 38 },
+        invoiceId: invoiceID,
+        itemId: Not(38),
       },
     });
     const item = await this.itemTypesTable.findById(invoiceItems[0].item.id);
@@ -381,7 +381,7 @@ search ." > /etc/resolv.conf`;
 
     const pcProp = await this.invoicePropertiesTable.find({
       where: {
-        InvoiceID: invoiceID,
+        invoiceId: invoiceID,
       },
     });
     const props = {};

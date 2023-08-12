@@ -1,9 +1,7 @@
 import {
   BadGatewayException,
   ConflictException,
-  Inject,
   Injectable,
-  forwardRef,
 } from '@nestjs/common';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -14,7 +12,10 @@ import { isEmpty } from 'lodash';
 import { ServiceIsDeployException } from 'src/infrastructure/exceptions/service-is-deploy.exception';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { Like } from 'typeorm';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Injectable()
 export class DeleteServiceService {
@@ -25,9 +26,13 @@ export class DeleteServiceService {
     private readonly configsTable: ConfigsTableService,
     private readonly taskManagerService: TaskManagerService,
     private readonly vgpuService: VgpuService,
+    private readonly logger: LoggerService,
   ) {}
 
-  async deleteService(options, serviceInstanceId) {
+  async deleteService(
+    options: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
@@ -42,7 +47,7 @@ export class DeleteServiceService {
       throw new BadGatewayException();
     }
     if (serviceTypeID == 'vdc') {
-      const adminSession = await this.sessionsService.checkAdminSession('');
+      const adminSession = await this.sessionsService.checkAdminSession();
       const query = await mainWrapper.user.vdc.vcloudQuery(adminSession, {
         filter: `((name==networkEdgeGatewayDelete),(name==vdcDeleteVdc));((status==queued),(status==running))`,
         type: 'adminTask',
@@ -74,7 +79,7 @@ export class DeleteServiceService {
       const props: any = {};
       const VgpuConfigs = await this.configsTable.find({
         where: {
-          propertyKey: { like: '%config.vgpu.%' },
+          propertyKey: Like('%config.vgpu.%'),
         },
       });
       for (const prop of VgpuConfigs) {
@@ -84,7 +89,7 @@ export class DeleteServiceService {
       }
       const vmName = serviceInstanceId + 'VM';
       const vdcIdVgpu = props.vdcId.split(':').slice(-1);
-      const session = await this.sessionsService.checkAdminSession(props.orgId);
+      const session = await this.sessionsService.checkAdminSession();
       const vmInfo = await this.vgpuService.getVmsInfo(
         session,
         vdcIdVgpu,
@@ -121,7 +126,12 @@ export class DeleteServiceService {
       taskType: 'adminTask',
       requestOptions: options.user,
     });
-    // await logger.info(logType, logAction, { _object: serviceInstanceId }, options.locals);
+    await this.logger.info(
+      logType,
+      logAction,
+      { _object: serviceInstanceId },
+      options.user,
+    );
     console.log({
       id: serviceInstanceId,
       taskId: task.taskId,

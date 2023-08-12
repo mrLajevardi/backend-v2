@@ -10,6 +10,7 @@ import {
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { ReplyTicketDto } from './dto/reply-ticket.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
@@ -20,7 +21,10 @@ export class TicketController {
   @Post('/:ticketId/close')
   @ApiOperation({ summary: 'close a ticket' })
   @ApiParam({ name: 'ticketId', type: 'number' })
-  async closeTicket(@Param('ticketId') ticketId: number, @Request() options) {
+  async closeTicket(
+    @Param('ticketId') ticketId: number,
+    @Request() options: SessionRequest,
+  ): Promise<void> {
     await this.service.closeTicket(options, ticketId);
   }
 
@@ -33,15 +37,17 @@ export class TicketController {
   })
   async createTicket(
     @Body() data: CreateTicketDto,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<{ ticketId: number }> {
     const ticketId = await this.service.createTicket(options, data);
     return ticketId;
   }
 
   @Get()
   @ApiOperation({ summary: 'get a list of tickets' })
-  async getAllTickets(@Request() options): Promise<any[]> {
+  async getAllTickets(
+    @Request() options: SessionRequest,
+  ): Promise<{ tickets: object[]; pagination: object }> {
     const tickets = await this.service.getAllTickets(options);
     return tickets;
   }
@@ -51,8 +57,8 @@ export class TicketController {
   @ApiParam({ name: 'ticketId', type: 'number' })
   async getTicket(
     @Param('ticketId') ticketId: number,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<object> {
     const ticket = await this.service.getTicket(options, ticketId);
     return ticket;
   }
@@ -64,7 +70,7 @@ export class TicketController {
   async replyToTicket(
     @Param('ticketId') ticketId: number,
     @Body() data: ReplyTicketDto,
-    @Request() options,
+    @Request() options: SessionRequest,
   ): Promise<any> {
     const replyData = await this.service.replyToTicket(options, data, ticketId);
     return replyData;

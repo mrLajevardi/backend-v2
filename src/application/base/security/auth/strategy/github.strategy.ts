@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-strategy';
@@ -17,7 +17,6 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
   // any endpoint protected with jwt-auth guard
   async authenticate(
     req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-    options?: any,
   ): Promise<void> {
     try {
       if (!req || !req.body) {

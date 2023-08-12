@@ -8,25 +8,25 @@ import {
 import { ServiceTypes } from '../ServiceTypes';
 @Entity()
 export class QualityPlans {
-  @PrimaryGeneratedColumn()
-  ID: number;
+  @PrimaryGeneratedColumn({ name: 'ID' })
+  id: number;
 
-  @Column({ type: 'string' })
-  ServiceTypeID: string;
+  @Column({ type: 'string', name: 'ServiceTypeID' })
+  serviceTypeId: string;
 
-  @Column({ type: 'int' })
-  AdditionRatio: number;
+  @Column({ type: 'int', name: 'AdditionRatio' })
+  additionRatio: number;
 
-  @Column({ type: 'int' })
-  AdditionAmount: number;
+  @Column({ type: 'int', name: 'AdditionAmount' })
+  additionAmount: number;
 
-  @Column({ type: 'nvarchar' })
-  Description: string;
+  @Column({ type: 'nvarchar', name: 'Description' })
+  description: string;
 
-  @Column({ type: 'nvarchar' })
-  Code: string;
+  @Column({ type: 'nvarchar', name: 'Code' })
+  code: string;
 
   @ManyToOne(() => ServiceTypes, { eager: true })
   @JoinColumn({ name: 'ServiceTypeID', referencedColumnName: 'id' })
-  ServiceTypes: ServiceTypes;
+  serviceTypes: ServiceTypes;
 }

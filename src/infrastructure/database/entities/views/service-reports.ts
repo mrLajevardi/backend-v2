@@ -6,33 +6,33 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
   name: 'ServiceReports',
 })
 export class ServiceReports {
-  @PrimaryColumn({ type: 'uuid' })
+  @PrimaryColumn('nvarchar', { name: 'id', type: 'uuid' })
   id: string;
 
-  @Column({ type: 'integer' })
-  UserID: number;
+  @Column('int', { name: 'UserID' })
+  userId: number;
 
-  @Column({ type: isTestingEnv() ? 'date' : 'timestamp' })
-  CreateDate: Date;
+  @Column({ type: isTestingEnv() ? 'date' : 'timestamp', name: 'CreateDate' })
+  createDate: Date;
 
-  @Column({ type: isTestingEnv() ? 'date' : 'timestamp' })
-  ExpireDate: Date;
+  @Column({ type: isTestingEnv() ? 'date' : 'timestamp', name: 'ExpireDate' })
+  expireDate: Date;
 
-  @Column()
-  ServiceName: string;
+  @Column({ name: 'ServiceName' })
+  serviceName: string;
 
-  @Column()
-  ServiceTypeID: string;
+  @Column({ name: 'ServiceTypeID' })
+  serviceTypeId: string;
 
-  @Column()
-  Name: string;
+  @Column({ name: 'Name' })
+  name: string;
 
-  @Column()
-  Family: string;
+  @Column({ name: 'Family' })
+  family: string;
 
-  @Column()
-  OrgName: string;
+  @Column({ name: 'OrgName' })
+  orgName: string;
 
-  @Column({ type: isTestingEnv() ? 'boolean' : 'bit' })
-  IsExpired: boolean;
+  @Column({ type: isTestingEnv() ? 'boolean' : 'bit', name: 'IsExpired' })
+  isExpired: boolean;
 }

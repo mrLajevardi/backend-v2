@@ -56,7 +56,7 @@ export class VmService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const vcloudOrgId = await this.organizationTableService.findOne({
       where: {
         id: orgId,
@@ -186,7 +186,7 @@ export class VmService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionsServices.checkUserSession(userId, orgId);
     const snapShot = await mainWrapper.user.vm.createSnapShot(
       session,

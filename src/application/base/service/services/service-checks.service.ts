@@ -1,11 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
 import { isEmpty, isNil } from 'lodash';
+import { ErrorDetail } from '../dto/return/error-detail.dto';
+import { ServiceItemsSum } from 'src/infrastructure/database/entities/views/service-items-sum';
+import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 
 @Injectable()
 export class ServiceChecksService {
+  constructor(private readonly serviceItemsSumTable: ServiceItemsSumService) {}
+
   //Moved from serviceChecks
-  checkNatParams(data, keys) {
+  checkNatParams(data: object, keys: string[]): boolean | ErrorDetail {
     let status = 0;
     const errorDetail = {
       codes: {},
@@ -23,7 +29,7 @@ export class ServiceChecksService {
   }
 
   // Moved from service checks
-  checkNetworkType(networkType) {
+  checkNetworkType(networkType: string): boolean {
     const networkTypes = ['NAT_ROUTED', 'ISOLATED'];
     if (networkTypes.includes(networkType)) {
       return true;
@@ -32,13 +38,16 @@ export class ServiceChecksService {
   }
 
   // Moved from service checks
-  async checkServiceItems(data, items, serviceItemsSum) {
+  async checkServiceItems(
+    data: [number],
+    items: ItemTypes[],
+  ): Promise<ErrorDetail | null> {
     const itemsList = [];
     const errorDetail = {
       codes: {},
     };
     for (const item of Object.keys(items)) {
-      itemsList.push(items[item].Title);
+      itemsList.push(items[item].title);
     }
     let status = 0;
     for (const item of itemsList) {
@@ -51,11 +60,13 @@ export class ServiceChecksService {
       }
     }
     for (const item of itemsList) {
-      const itemSum = serviceItemsSum.find((itemSum) => itemSum.id == item);
-      const sum = !isNil(itemSum) ? itemSum.Sum + data[item] : data[item];
+      const itemSum: ServiceItemsSum = await this.serviceItemsSumTable.findById(
+        item,
+      );
+      const sum = !isNil(itemSum) ? itemSum.sum + data[item] : data[item];
       if (
-        sum > items[itemsList.indexOf(item)].MaxAvailable &&
-        items[itemsList.indexOf(item)].MaxAvailable !== 0
+        sum > items[itemsList.indexOf(item)].maxAvailable &&
+        items[itemsList.indexOf(item)].maxAvailable !== 0
       ) {
         if (!errorDetail.codes[item]) {
           errorDetail.codes[item] = [
@@ -69,10 +80,7 @@ export class ServiceChecksService {
         status = 1;
       }
       // checks maxPerRequest
-      if (
-        parseInt(data[item]) >
-        parseInt(items[itemsList.indexOf(item)].MaxPerRequest)
-      ) {
+      if (data[item] > items[itemsList.indexOf(item)].maxPerRequest) {
         if (!errorDetail.codes[item]) {
           // if errorDetails.codes[item] does not exist
           errorDetail.codes[item] = [

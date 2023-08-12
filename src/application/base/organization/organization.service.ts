@@ -4,6 +4,7 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
 import { UserTableService } from '../crud/user-table/user-table.service';
+import { InitOrgReturnDto } from './dto/init-org-return.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -13,8 +14,9 @@ export class OrganizationService {
     private readonly userTable: UserTableService,
   ) {}
 
-  async initOrg(userId) {
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
+  async initOrg(userId: number): Promise<InitOrgReturnDto> {
+    console.log('init org');
+    const sessionToken = await this.sessionService.checkAdminSession();
     const user = await this.userTable.findById(userId);
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     const name = `${filteredUsername}_org`;
@@ -26,11 +28,11 @@ export class OrganizationService {
       },
       sessionToken,
     );
-    console.log(checkOrg);
+    console.log('org gotten from wrapper', checkOrg);
     // if org exists in cloud save it into database
     if (checkOrg.values.length > 0) {
       const createdOrg = await this.organizationTable.create({
-        name,
+        name: name,
         dsc: 'none',
         createDate: new Date(),
         updateDate: new Date(),
@@ -56,6 +58,7 @@ export class OrganizationService {
       orgId: orgInfo.id,
       status: '1',
     });
+    console.log('created org ', createdOrg);
     const checkUser = await mainWrapper.user.vdc.vcloudQuery(
       sessionToken,
       {

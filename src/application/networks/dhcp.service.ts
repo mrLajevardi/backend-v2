@@ -19,7 +19,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,
@@ -60,7 +60,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,
@@ -90,7 +90,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,
@@ -171,7 +171,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,
@@ -194,7 +194,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,
@@ -225,7 +225,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,
@@ -254,7 +254,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,
@@ -299,7 +299,7 @@ export class DhcpService {
         propertyKey: 'orgId',
       },
     });
-    const orgId = serviceOrg.value;
+    const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
       orgId,

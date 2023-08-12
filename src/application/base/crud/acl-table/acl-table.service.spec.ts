@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ACLTableService } from './acl-table.service';
-import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('ACLTableService', () => {

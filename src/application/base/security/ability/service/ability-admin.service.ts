@@ -1,23 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ACLTableService } from 'src/application/base/crud/acl-table/acl-table.service';
-import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { AbilitySubjects, getStringListOfAbilities } from '../ability.factory';
-import { User } from 'src/infrastructure/database/entities/User';
 import { Action } from '../enum/action.enum';
 import { PredefinedRoles } from '../enum/predefined-enum.type';
-import { BadRequestError } from 'passport-headerapikey';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { In } from 'typeorm';
-import { PredefinedRoleDto } from '../dto/predefined-role.dto';
-import { stringToEnum } from 'src/infrastructure/helpers/helpers';
-import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
+import { getStringListOfAbilities } from '../ability.factory';
+import { GetAllAclsDto } from '../dto/get-all-acls.dto';
 
 @Injectable()
 export class AbilityAdminService {
-  constructor(
-    private readonly aclTable: ACLTableService,
-    private readonly userTable: UserTableService,
-  ) {}
+  constructor(private readonly aclTable: ACLTableService) {}
 
   getListOfModels(): string[] {
     return getStringListOfAbilities();
@@ -40,7 +32,10 @@ export class AbilityAdminService {
     return returnResult;
   }
 
-  async assignPredefinedRole(userId: number, role: PredefinedRoles) {
+  async assignPredefinedRole(
+    userId: number,
+    role: PredefinedRoles,
+  ): Promise<void> {
     if (!role || !userId) {
       throw new BadRequestException();
     }
@@ -60,7 +55,10 @@ export class AbilityAdminService {
     });
   }
 
-  async deletePredefinedRole(userId: number, role: PredefinedRoles) {
+  async deletePredefinedRole(
+    userId: number,
+    role: PredefinedRoles,
+  ): Promise<void> {
     if (!role || !userId) {
       throw new BadRequestException();
     }
@@ -72,7 +70,10 @@ export class AbilityAdminService {
     });
   }
 
-  async denyPredefinedRole(userId: number, role: PredefinedRoles) {
+  async denyPredefinedRole(
+    userId: number,
+    role: PredefinedRoles,
+  ): Promise<void> {
     if (!role || !userId) {
       throw new BadRequestException();
     }
@@ -92,7 +93,11 @@ export class AbilityAdminService {
     });
   }
 
-  async permitAccessToUser(accessType: Action, on: string, to: number) {
+  async permitAccessToUser(
+    accessType: Action,
+    on: string,
+    to: number,
+  ): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
@@ -108,7 +113,11 @@ export class AbilityAdminService {
     });
   }
 
-  async denyAccessFromUser(accessType: Action, on: string, from: number) {
+  async denyAccessFromUser(
+    accessType: Action,
+    on: string,
+    from: number,
+  ): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
@@ -124,7 +133,11 @@ export class AbilityAdminService {
     });
   }
 
-  async deleteAccessForUser(accessType: Action, on: string, userId: number) {
+  async deleteAccessForUser(
+    accessType: Action,
+    on: string,
+    userId: number,
+  ): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
@@ -133,7 +146,7 @@ export class AbilityAdminService {
     });
   }
 
-  async permitAccess(accessType: Action, on: string) {
+  async permitAccess(accessType: Action, on: string): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
@@ -150,7 +163,7 @@ export class AbilityAdminService {
     });
   }
 
-  async denyAccess(accessType: Action, on: string) {
+  async denyAccess(accessType: Action, on: string): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
       accessType: accessType,
@@ -167,7 +180,11 @@ export class AbilityAdminService {
     });
   }
 
-  async getAllAcls(page = 1, pageSize = 10, search: string) {
+  async getAllAcls(
+    page = 1,
+    pageSize = 10,
+    search: string,
+  ): Promise<GetAllAclsDto> {
     const skip = (page - 1) * pageSize;
     const take = pageSize;
 

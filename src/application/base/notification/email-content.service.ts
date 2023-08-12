@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { MailOptions } from 'nodemailer/lib/json-transport';
 
 @Injectable()
 export class EmailContentService {
-  userVerification(link, to) {
+  userVerification(link: string, to: string): MailOptions {
     const htmlContent = `<h1>
                 <a href=${link}>احراز هویت</a>
             </h1>`;
@@ -14,7 +15,7 @@ export class EmailContentService {
     };
   }
 
-  forgotPassword(link, to) {
+  forgotPassword(link: string, to: string): MailOptions {
     const htmlContent = `<h1>
                 <a href=${link}>بازیابی رمز عبور</a>
             </h1>`;
@@ -26,7 +27,11 @@ export class EmailContentService {
     };
   }
 
-  serviceExpirationWarning(message, to, subject) {
+  serviceExpirationWarning(
+    message: string,
+    to: string,
+    subject: string,
+  ): MailOptions {
     const htmlContent = `<h4 dir="rtl">
             ${message}
         </h4>`;

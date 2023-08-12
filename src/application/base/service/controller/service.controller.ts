@@ -23,11 +23,13 @@ import { CreateServiceDto } from '../dto/create-service.dto';
 import { DeleteServiceService } from '../services/delete-service.service';
 import { ServiceService } from '../services/service.service';
 import { CreateGroupsDto } from '../../crud/groups-table/dto/create-groups.dto';
-import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
-import { PureAbility } from '@casl/ability';
-import { Action } from '../../security/ability/enum/action.enum';
-import { TempDto } from 'src/application/vdc/dto/temp.dto';
-
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { GetServicesReturnDto } from '../dto/return/get-services.dto';
+import { Discounts } from 'src/infrastructure/database/entities/Discounts';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
+import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -48,10 +50,9 @@ export class ServiceController {
   @Post()
   async create(
     @Body() dto: CreateServiceDto,
-    @Request() options: any,
+    @Request() options: SessionRequest,
   ): Promise<any> {
     return this.createService.createService(options, dto);
-    // await this.invoicesTable.create(dto);
   }
 
   // create new item
@@ -64,8 +65,8 @@ export class ServiceController {
   @Delete('/:serviceInstanceId')
   async delete(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Request() options: any,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return this.deleteService.deleteService(options, serviceInstanceId);
   }
 
@@ -78,9 +79,9 @@ export class ServiceController {
   })
   @Get()
   async getServices(
-    @Request() options: any,
+    @Request() options: SessionRequest,
     @Query('id') id?: string,
-  ): Promise<any> {
+  ): Promise<GetServicesReturnDto[]> {
     return this.serviceService.getServices(options, id);
     // await this.invoicesTable.create(dto);
   }
@@ -95,8 +96,8 @@ export class ServiceController {
   async repair(
     @Param('serviceInstanceId')
     serviceInstanceId: string,
-    @Request() options: any,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return this.createService.repairService(options, serviceInstanceId);
   }
 
@@ -109,9 +110,8 @@ export class ServiceController {
   @Put('/:serviceInstanceId')
   async updateServiceInfo(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: TempDto,
-    @Request() options: any,
-  ): Promise<any> {
+    @Body() data: CreateGroupsDto,
+  ): Promise<void> {
     return this.createService.updateServiceInfo(serviceInstanceId, data);
   }
 
@@ -123,7 +123,7 @@ export class ServiceController {
   })
   @ApiQuery({ name: 'filter' })
   @Get('/discounts')
-  async getDiscounts(@Query('filter') filter: string): Promise<any> {
+  async getDiscounts(@Query('filter') filter: string): Promise<Discounts[]> {
     return this.createService.getDiscounts(filter);
   }
 
@@ -135,7 +135,7 @@ export class ServiceController {
   })
   @ApiQuery({ name: 'filter' })
   @Get('/itemTypes')
-  async getItemTypes(@Query('filter') filter: string): Promise<any> {
+  async getItemTypes(@Query('filter') filter: string): Promise<ItemTypes[]> {
     return this.createService.getItemTypes(filter);
   }
 
@@ -148,9 +148,9 @@ export class ServiceController {
   }) // Adjust the type as needed
   @ApiParam({ name: 'invoiceId', type: String, description: 'Invoice ID' })
   async getInvoice(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Param('invoiceId') invoiceId: number,
-  ): Promise<any> {
+  ): Promise<GetInvoiceReturnDto> {
     return await this.service.getInvoice(options, invoiceId);
   }
 
@@ -161,8 +161,8 @@ export class ServiceController {
     description: 'Array of service plans',
     type: Array,
   }) // Adjust the type as needed
-  async getServicePlans(@Req() options): Promise<any> {
-    return await this.service.getServicePlans(options);
+  async getServicePlans(): Promise<GetServicePlansReturnDto> {
+    return await this.service.getServicePlans();
   }
 
   @Get('/verifyAuthority/:authorityCode')
@@ -178,7 +178,7 @@ export class ServiceController {
     description: 'Zarinpal Authority code',
   })
   async verifyZarinpalAuthority(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Param('authorityCode') authorityCode: string,
   ): Promise<any> {
     return this.service.verifyZarinpalAuthority(options, authorityCode);
@@ -193,8 +193,8 @@ export class ServiceController {
   }) // Adjust the type as needed
   @ApiParam({ name: 'invoiceId', type: String, description: 'Invoice ID' })
   async getZarinpalAuthority(
-    @Req() options,
-    @Param('invoiceId') invoiceId: string,
+    @Req() options: SessionRequest,
+    @Param('invoiceId') invoiceId: number,
   ): Promise<string> {
     return await this.service.getZarinpalAuthority(options, invoiceId);
   }
@@ -213,7 +213,7 @@ export class ServiceController {
     description: 'Filter string',
   })
   async getServiceTypes(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Query('filter') filter: string,
   ): Promise<any> {
     return this.service.getServicetypes(options, filter);

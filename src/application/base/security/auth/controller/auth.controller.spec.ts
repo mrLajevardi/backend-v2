@@ -6,7 +6,6 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
-import { LoginDto } from '../dto/login.dto';
 import { PassportModule } from '@nestjs/passport';
 import { CrudModule } from 'src/application/base/crud/crud.module';
 import { UserTableModule } from 'src/application/base/crud/user-table/user-table.module';
@@ -22,7 +21,6 @@ import { PaymentModule } from 'src/application/payment/payment.module';
 describe('AuthController', () => {
   let controller: AuthController;
   let testDataService: TestDataService;
-  let authService: AuthService;
 
   let module: TestingModule;
   beforeEach(async () => {
@@ -57,7 +55,6 @@ describe('AuthController', () => {
 
     controller = module.get<AuthController>(AuthController);
     testDataService = module.get<TestDataService>(TestDataService);
-    authService = module.get<AuthService>(AuthService);
 
     await testDataService.seedTestData();
   });

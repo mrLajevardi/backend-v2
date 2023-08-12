@@ -1,12 +1,6 @@
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  forwardRef,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
-import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { In } from 'typeorm';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
@@ -27,6 +21,16 @@ import { UserTableService } from '../../crud/user-table/user-table.service';
 import { ZarinpalConfigDto } from 'src/application/payment/dto/zarinpal-config.dto';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
+import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { Invoices } from 'src/infrastructure/database/entities/Invoices';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
+import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
+import { ZarinpalVerifyReturnDto } from '../dto/return/zarinpal-verify.dto';
+import { GetServicesReturnDto } from '../dto/return/get-services.dto';
 
 @Injectable()
 export class ServiceService {
@@ -50,14 +54,17 @@ export class ServiceService {
     private readonly serviceTypesTable: ServiceTypesTableService,
   ) {}
 
-  async increaseServiceResources(options, invoice) {
+  async increaseServiceResources(
+    options: SessionRequest,
+    invoice: Invoices,
+  ): Promise<ServiceInstances> {
     const userId = options.user.userId;
-    const serviceInstanceId = invoice.ServiceInstanceID;
+    const serviceInstanceId = invoice.serviceInstanceId;
 
     const oldService = await this.serviceInstancesTableService.findOne({
       where: {
         userId: userId,
-        serviceInstanceId: serviceInstanceId,
+        id: serviceInstanceId,
         isDeleted: false,
       },
     });
@@ -66,15 +73,15 @@ export class ServiceService {
     }
     const invoiceItems = await this.invoiceItemsTable.find({
       where: {
-        InvoiceID: invoice.ID,
+        invoiceId: invoice.id,
       },
     });
     console.log({ invoiceItems, invoice }, '😚');
     for (const invoiceItem of invoiceItems) {
       const targetItem = await this.serviceItemsTable.findOne({
         where: {
-          ItemTypeID: invoiceItem.itemId,
-          ServiceInstanceID: serviceInstanceId,
+          itemTypeId: invoiceItem.itemId,
+          serviceInstanceId: serviceInstanceId,
         },
       });
       console.log({ targetItem }, '😚');
@@ -102,7 +109,10 @@ export class ServiceService {
     return oldService;
   }
 
-  async getInvoice(options, invoiceId: number = null) {
+  async getInvoice(
+    options: SessionRequest,
+    invoiceId: number = null,
+  ): Promise<GetInvoiceReturnDto> {
     const userId = options.user.userId;
     const invoice = await this.invoicesTable.findOne({
       where: {
@@ -116,7 +126,7 @@ export class ServiceService {
     }
     const invoiceItemsList = await this.invoiceItemListTable.find({
       where: {
-        invoiceId: invoiceId,
+        invoiceId: invoiceId.toString(),
         userId: userId,
       },
     });
@@ -147,7 +157,10 @@ export class ServiceService {
     });
   }
 
-  async getItemTypes(options, filter) {
+  async getItemTypes(
+    options: SessionRequest,
+    filter: string,
+  ): Promise<ItemTypes[]> {
     let parsedFilter;
     if (!isEmpty(filter)) {
       parsedFilter = JSON.parse(filter);
@@ -156,7 +169,7 @@ export class ServiceService {
     return Promise.resolve(itemTypes);
   }
 
-  async getServicePlans(options) {
+  async getServicePlans(): Promise<GetServicePlansReturnDto> {
     const plans = await this.plansTable.find();
     const organizedPlans = {};
     console.log(plans);
@@ -186,7 +199,10 @@ export class ServiceService {
     return Promise.resolve(data);
   }
 
-  async getServicetypes(options, filter) {
+  async getServicetypes(
+    options: SessionRequest,
+    filter: string,
+  ): Promise<ServiceTypes[]> {
     let parsedFilter;
     if (!isEmpty(filter)) {
       parsedFilter = JSON.parse(filter);
@@ -195,7 +211,10 @@ export class ServiceService {
     return Promise.resolve(serviceTypes);
   }
 
-  async getZarinpalAuthority(options, invoiceId = null) {
+  async getZarinpalAuthority(
+    options: SessionRequest,
+    invoiceId: number = null,
+  ): Promise<string> {
     const userId = options.user.userId;
     // find user invoice
     const invoice = await this.invoicesTable.findOne({
@@ -216,7 +235,7 @@ export class ServiceService {
     });
 
     let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.locals.username;
+    zarinpalConfig.metadata.email = options.user.username;
     zarinpalConfig.metadata.mobile = user.phoneNumber;
 
     const paymentRequestData = {
@@ -244,7 +263,11 @@ export class ServiceService {
     );
   }
 
-  async updateServiceInfo(options, serviceInstanceId, data) {
+  async updateServiceInfo(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    data: UpdateServiceInstancesDto,
+  ): Promise<void> {
     const { name } = data;
     await this.serviceInstancesTableService.updateAll(
       {
@@ -256,7 +279,10 @@ export class ServiceService {
     );
   }
 
-  async verifyZarinpalAuthority(options, authority = null) {
+  async verifyZarinpalAuthority(
+    options: SessionRequest,
+    authority: string | null = null,
+  ): Promise<ZarinpalVerifyReturnDto> {
     const userId = options.user.userId;
     // find user transaction
     const transaction = await this.transactionsTable.findOne({
@@ -333,10 +359,10 @@ export class ServiceService {
       serviceInstanceId = createdService.serviceInstanceId;
       token = createdService['token'];
 
-      options.locals = {
-        ...options.locals,
-        serviceInstanceId,
-      };
+      // options.locals = {
+      //   ...options.locals,
+      //   serviceInstanceId,
+      // };
       // approve user transaction
       await this.transactionsTable.updateAll(
         {
@@ -350,7 +376,7 @@ export class ServiceService {
       );
       if (invoice.serviceTypeId === 'vdc') {
         task = await this.tasksTable.create({
-          userId: options.locals.userId,
+          userId: options.user.userId,
           serviceInstanceId: serviceInstanceId,
           operation: 'createDataCenter',
           details: null,
@@ -363,7 +389,10 @@ export class ServiceService {
           customTaskId: task.TaskID,
           vcloudTask: null,
           nextTask: 'createOrg',
-          requestOptions: options.locals,
+          requestOptions: {
+            serviceInstanceId: serviceInstanceId,
+            userId: options.user.userId,
+          },
           target: 'object',
         });
         taskId = task.TaskID;
@@ -379,7 +408,7 @@ export class ServiceService {
           },
         );
         task = await this.tasksTable.create({
-          userId: options.locals.userId,
+          userId: options.user.userId,
           serviceInstanceId: serviceInstanceId,
           operation: 'aradAi',
           details: null,
@@ -420,7 +449,11 @@ export class ServiceService {
   }
 
   // Create Service Items
-  async createServiceItems(serviceInstanceId, items, data) {
+  async createServiceItems(
+    serviceInstanceId: string,
+    items: CreateServiceItemsDto[],
+    data: object,
+  ): Promise<void> {
     for (const item of Object.keys(items)) {
       let dto: CreateServiceItemsDto;
       const itemTitle = items[item].code;
@@ -432,7 +465,10 @@ export class ServiceService {
     }
   }
 
-  async getServices(options: any, id?: string) {
+  async getServices(
+    options: SessionRequest,
+    id?: string,
+  ): Promise<GetServicesReturnDto[]> {
     const {
       user: { userId },
     } = options;
@@ -451,10 +487,9 @@ export class ServiceService {
     const extendedServiceList = services.map((service) => {
       const expired =
         new Date(service.expireDate).getTime() < new Date().getTime();
-      console.log(expired);
       return {
         ...service,
-        expired,
+        expired: expired,
       };
     });
     return extendedServiceList;

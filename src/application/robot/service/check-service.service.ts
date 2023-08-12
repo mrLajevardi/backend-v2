@@ -107,9 +107,7 @@ export class CheckServiceService {
             await this.servicePropertiesServicee.getAllServiceProperties(
               service.ID,
             );
-          const session = await this.sessionService.checkAdminSession(
-            service.userId,
-          );
+          const session = await this.sessionService.checkAdminSession();
           await mainWrapper.admin.vdc.disableVdc(session, props['vdcId']);
           await this.taskManagerService.addTask({
             serviceInstanceId: service.ID,

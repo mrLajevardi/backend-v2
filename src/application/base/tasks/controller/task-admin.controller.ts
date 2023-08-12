@@ -1,21 +1,16 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { TaskAdminService } from '../service/task-admin.service';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { SingleTaskDTO } from '../dto/single-task.dto';
-import { TaskDataDTO } from '../dto/task-data.dto';
-import { Action } from '../../security/ability/enum/action.enum';
 import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
-import { PureAbility } from '@casl/ability';
-import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
-import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
 import { Roles } from '../../security/ability/decorators/roles.decorator';
+import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
 
 @Controller('/tasks/admin')
 @ApiBearerAuth()
@@ -36,8 +31,7 @@ export class TaskAdminController {
   async getTask(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('taskId') taskId: string,
-    @Req() options: object,
-  ): Promise<any> {
+  ): Promise<{ task: GetTasksReturnDto }> {
     console.log('get  a task');
     const task = await this.service.getTask(vdcInstanceId, taskId);
     return { task };
@@ -48,7 +42,7 @@ export class TaskAdminController {
   @Get(':serviceInstanceId/userTask')
   async getTasksList(
     @Param('serviceInstanceId') serviceInstanceId: string,
-  ): Promise<any> {
+  ): Promise<{ tasksList: GetTasksReturnDto[] }> {
     console.log('get tasks');
     const tasksList = await this.service.getTasksList(serviceInstanceId);
     return { tasksList };

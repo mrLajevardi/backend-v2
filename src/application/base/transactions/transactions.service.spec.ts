@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionsService } from './transactions.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { TransactionsTableService } from '../crud/transactions-table/transactions-table.service';
 import { CrudModule } from '../crud/crud.module';
 
 describe('TransactionsService', () => {

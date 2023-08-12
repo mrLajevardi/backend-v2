@@ -1,18 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AbilityAdminService } from './ability-admin.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { AbilityFactory, ability } from '../ability.factory';
+import { AbilityFactory } from '../ability.factory';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { Action } from '../enum/action.enum';
 import { User } from 'src/infrastructure/database/entities/User';
 import { PredefinedRoles } from '../enum/predefined-enum.type';
-import exp from 'constants';
 import { stringToEnum } from 'src/infrastructure/helpers/helpers';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { CrudModule } from 'src/application/base/crud/crud.module';
-import { Acl } from 'src/infrastructure/database/entities/Acl';
 
 describe('AbilityAdminService', () => {
   let service: AbilityAdminService;
@@ -81,15 +77,15 @@ describe('AbilityAdminService', () => {
       user.updateDate = new Date();
       await userTable.create(user);
 
-      const user2 = new User();
-      user.id = 1002;
-      user.name = 'majid2';
-      user.family = 'ziaei';
-      user.username = 'majid1';
-      user.password = '123';
-      user.createDate = new Date();
-      user.updateDate = new Date();
-      await userTable.create(user);
+      // const user2 = new User();
+      // user.id = 1002;
+      // user.name = 'majid2';
+      // user.family = 'ziaei';
+      // user.username = 'majid1';
+      // user.password = '123';
+      // user.createDate = new Date();
+      // user.updateDate = new Date();
+      // await userTable.create(user);
 
       await service.assignPredefinedRole(1001, PredefinedRoles.AdminRole);
       await service.assignPredefinedRole(1001, PredefinedRoles.UserRole);

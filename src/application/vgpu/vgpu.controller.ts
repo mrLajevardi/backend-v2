@@ -58,14 +58,14 @@ export class VgpuController {
     const vgpuPlans = await this.configsTable.find({
       where: {
         propertyKey: Raw((alias) => `${alias} LIKE 'QualityPlans.%'`),
-        serviceType: await this.serviceTypeTable.findById('vgpu'),
+        serviceTypeId: 'vgpu',
       },
     });
 
     const planCost = await this.itemTypesTable.find({
       where: {
         code: Raw((alias) => `${alias} LIKE '%Cost%'`),
-        serviceType: await this.serviceTypeTable.findById('vgpu'),
+        serviceTypeId: 'vgpu',
       },
     });
     return Promise.resolve({ vgpuPlans, planCost });
@@ -188,7 +188,7 @@ export class VgpuController {
     }
 
     const vdcIdVgpu = props['vdcId'].split(':').slice(-1);
-    const session = await this.sessionService.checkAdminSession(userId);
+    const session = await this.sessionService.checkAdminSession();
     const vmInfo = await this.service.getVmsInfo(
       session,
       vdcIdVgpu,

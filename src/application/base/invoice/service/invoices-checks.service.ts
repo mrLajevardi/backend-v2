@@ -4,6 +4,10 @@ import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
 import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { Plans } from 'src/infrastructure/database/entities/Plans';
+import { CreatePlansDto } from '../../crud/plans-table/dto/create-plans.dto';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { InvoiceItemsDto } from '../dto/create-service-invoice.dto';
 
 @Injectable()
 export class InvoicesChecksService {
@@ -13,8 +17,12 @@ export class InvoicesChecksService {
     private readonly serviceInstancesTable: ServiceInstancesTableService,
   ) {}
 
-  async checkPlanCondition(data, serviceId, duration) {
-    const plansList = await this.plansTable.find();
+  async checkPlanCondition(
+    data: string[],
+    serviceId: string,
+    duration: number,
+  ): Promise<CreatePlansDto[]> {
+    const plansList: Plans[] = await this.plansTable.find();
     let matchedPlansList = [];
     data.forEach((el) =>
       matchedPlansList.push(plansList.find((element) => element.code == el)),
@@ -49,20 +57,24 @@ export class InvoicesChecksService {
     return matchedPlansList;
   }
 
-  async checkInvoiceItems(itemTypes, items, serviceTypeId) {
+  async checkInvoiceItems(
+    itemTypes: ItemTypes[],
+    items: InvoiceItemsDto[],
+    //serviceTypeId: string,
+  ): Promise<void> {
     const convertedItemTypes = {};
     for (const item of items) {
       convertedItemTypes[item.itemCode] = item;
     }
     for (const itemType of itemTypes) {
-      if (convertedItemTypes[itemType.Code]) {
-        console.log(convertedItemTypes[itemType.Code]);
+      if (convertedItemTypes[itemType.code]) {
+        console.log(convertedItemTypes[itemType.code]);
         const maxPerRequestRule =
-          parseInt(convertedItemTypes[itemType.Code].quantity) >
-          itemType.MaxPerRequest;
+          parseInt(convertedItemTypes[itemType.code].quantity) >
+          itemType.maxPerRequest;
         const minPerRequestRule =
-          parseInt(convertedItemTypes[itemType.Code].quantity) <
-          itemType.MinPerRequest;
+          parseInt(convertedItemTypes[itemType.code].quantity) <
+          itemType.minPerRequest;
         if (maxPerRequestRule || minPerRequestRule) {
           throw new BadRequestException();
         }
@@ -71,11 +83,11 @@ export class InvoicesChecksService {
   }
 
   async checkServiceMaxAvailable(
-    unlimitedService,
-    serviceTypeMaxAvailable,
-    serviceId,
-    userId,
-  ) {
+    unlimitedService: number,
+    serviceTypeMaxAvailable: number,
+    serviceId: string,
+    userId: number,
+  ): Promise<void> {
     const isMaxAvailable = await this.checkMaxService(
       unlimitedService,
       serviceTypeMaxAvailable,
@@ -88,7 +100,12 @@ export class InvoicesChecksService {
   }
 
   // Moved from service checks
-  async checkMaxService(unlimitedMax, serviceMaxAvailable, serviceId, userId) {
+  async checkMaxService(
+    unlimitedMax: number,
+    serviceMaxAvailable: number,
+    serviceId: string,
+    userId: number,
+  ): Promise<boolean> {
     // checks max service
     const userServiceCount = await this.serviceInstancesTable.count({
       where: {

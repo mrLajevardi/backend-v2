@@ -20,22 +20,22 @@ import {
   ApiTags,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { DeleteServiceService } from '../services/delete-service.service';
 import { ServiceAdminService } from '../services/service-admin.service';
 import { Configs } from 'src/infrastructure/database/entities/Configs';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
-import { filter } from 'lodash';
 import { VdcResourceLimitsDto } from '../dto/vdc-resource-limits.dto';
 import { UpdateItemTypesDto } from '../../crud/item-types-table/dto/update-item-types.dto';
 import { ServiceReports } from 'src/infrastructure/database/entities/views/service-reports';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
-import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { PoliciesGuard } from '../../security/ability/guards/policies.guard';
-import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
-import { PureAbility } from '@casl/ability';
-import { Action } from '../../security/ability/enum/action.enum';
 import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
 import { Roles } from '../../security/ability/decorators/roles.decorator';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { PaginationReturnDto } from 'src/infrastructure/dto/pagination-return.dto';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
+import { ItemTypeWithConsumption } from '../types/item-type-with-consumption.type';
+import { UpdateConfigsDto } from '../../crud/configs-table/dto/update-configs.dto';
 
 @ApiTags('Services-admin')
 @Controller('admin/services')
@@ -44,6 +44,21 @@ import { Roles } from '../../security/ability/decorators/roles.decorator';
 @Roles(PredefinedRoles.AdminRole)
 export class ServiceAdminController {
   constructor(private readonly service: ServiceAdminService) {}
+
+  @Delete('/all')
+  @ApiParam({
+    name: 'serviceCount',
+    type: 'number',
+    description: 'number of all services ',
+  })
+  @ApiOperation({ summary: 'Delete all services' })
+  async adminDeleteAll(
+    @Req() options: SessionRequest,
+    @Param('serviceCount') serviceCount: number,
+  ): Promise<void> {
+    console.log(serviceCount);
+    await this.service.deleteAllServices(serviceCount, options);
+  }
 
   @Delete(':serviceInstanceId')
   @ApiOperation({ summary: 'Delete service by Admin' })
@@ -55,8 +70,8 @@ export class ServiceAdminController {
   @ApiOkResponse({ description: 'The deleted service data' })
   async adminDeleteService(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Req() options,
-  ): Promise<any> {
+    @Req() options: SessionRequest,
+  ): Promise<{ message: string }> {
     await this.service.deleteService(options, serviceInstanceId);
     return {
       message: `Service with ID ${serviceInstanceId} deleted successfully`,
@@ -73,8 +88,8 @@ export class ServiceAdminController {
   @ApiOkResponse({ description: 'The disabled service data' })
   async adminDisableService(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Req() options,
-  ): Promise<any> {
+    @Req() options: SessionRequest,
+  ): Promise<{ message: string }> {
     await this.service.disableService(options, serviceInstanceId);
     return {
       message: `Service with ID ${serviceInstanceId} disabled successfully`,
@@ -91,8 +106,8 @@ export class ServiceAdminController {
   @ApiOkResponse({ description: 'The enabled service data' })
   async adminEnableService(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Req() options,
-  ): Promise<any> {
+    @Req() options: SessionRequest,
+  ): Promise<{ message: string }> {
     await this.service.enableService(options, serviceInstanceId);
     return {
       message: `Service with ID ${serviceInstanceId} enabled successfully`,
@@ -111,13 +126,13 @@ export class ServiceAdminController {
     type: [Configs],
   })
   async adminGetConfigurations(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('serviceTypeId') serviceTypeId?: string,
     @Query('key') key?: string,
     @Query('value') value?: string,
-  ): Promise<any> {
+  ): Promise<PaginationReturnDto<Configs>> {
     return await this.service.getConfigs(
       options,
       page,
@@ -145,7 +160,7 @@ export class ServiceAdminController {
     type: [ItemTypes],
   })
   async adminGetItemTypes(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('serviceTypeID') serviceTypeID?: string,
@@ -156,7 +171,7 @@ export class ServiceAdminController {
     @Query('maxAvailable') maxAvailable?: number,
     @Query('maxPerRequest') maxPerRequest?: number,
     @Query('minPerRequest') minPerRequest?: number,
-  ): Promise<any> {
+  ): Promise<PaginationReturnDto<ItemTypeWithConsumption>> {
     return await this.service.getItemTypes(
       options,
       page,
@@ -186,7 +201,7 @@ export class ServiceAdminController {
     type: [ServiceReports],
   })
   async adminGetReports(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('serviceTypeId') serviceTypeId?: string,
@@ -194,7 +209,7 @@ export class ServiceAdminController {
     @Query('name') name?: string,
     @Query('family') family?: string,
     @Query('orgName') orgName?: string,
-  ): Promise<any> {
+  ): Promise<PaginationReturnDto<ServiceReports>> {
     return await this.service.getReports(
       options,
       page,
@@ -210,8 +225,8 @@ export class ServiceAdminController {
   @Get('count')
   @ApiOperation({ summary: 'Return service count for admin' })
   @ApiOkResponse({ description: 'The service count data', type: Object })
-  async adminGetServiceCount(@Req() options): Promise<object> {
-    return await this.service.getServiceCount(options);
+  async adminGetServiceCount(): Promise<object> {
+    return await this.service.getServiceCount();
   }
 
   @Get(':serviceInstanceId/invoices')
@@ -230,7 +245,7 @@ export class ServiceAdminController {
   @ApiQuery({ name: 'payed', type: Boolean, required: false })
   @ApiOkResponse({ description: 'The array of invoices', type: [Invoices] })
   async adminGetServiceInvoices(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
@@ -239,7 +254,7 @@ export class ServiceAdminController {
     @Query('description') description?: string,
     @Query('id') id?: number,
     @Query('payed') payed?: boolean,
-  ): Promise<any> {
+  ): Promise<{ invoices: Invoices[]; total: number }> {
     return await this.service.getServiceInvoices(
       options,
       serviceInstanceId,
@@ -267,20 +282,13 @@ export class ServiceAdminController {
   @ApiQuery({ name: 'minPerRequest', type: String, required: false })
   @ApiOkResponse({ description: 'The object containing services' })
   async adminGetServices(
-    @Req() options,
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
-    @Query('serviceTypeId') serviceTypeId?: string,
-    @Query('title') title?: string,
-    @Query('unit') unit?: string,
-    @Query('fee') fee?: string,
-    @Query('code') code?: string,
-    @Query('maxAvailable') maxAvailable?: string,
-    @Query('maxPerRequest') maxPerRequest?: string,
-    @Query('minPerRequest') minPerRequest?: string,
-  ): Promise<object> {
+    @Req() options: SessionRequest,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('title') filter?: string,
+  ): Promise<{ services: ServiceInstances[]; countAll: number }> {
     console.log('get service');
-    return await this.service.getService(options, page, pageSize, filter);
+    return await this.service.getService(page, pageSize, filter);
   }
 
   @Get('transactions')
@@ -296,19 +304,18 @@ export class ServiceAdminController {
   @ApiQuery({ name: 'endDateTime', type: String, required: false })
   @ApiOkResponse({ description: 'The array of user transactions', type: Array })
   async getTransactions(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('serviceType') serviceType?: string,
-    @Query('userID') userID?: string,
-    @Query('value') value?: string,
-    @Query('invoiceID') invoiceID?: string,
+    @Query('userID') userID?: number,
+    @Query('value') value?: number,
+    @Query('invoiceID') invoiceID?: number,
     @Query('ServiceID') ServiceID?: string,
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
-  ): Promise<any> {
+  ): Promise<{ transaction: Transactions[]; totalRecords: number }> {
     return await this.service.getTransactions(
-      options,
       page,
       pageSize,
       serviceType,
@@ -316,8 +323,8 @@ export class ServiceAdminController {
       value,
       invoiceID,
       ServiceID,
-      startDateTime,
-      endDateTime,
+      startDateTime ? new Date(startDateTime) : null,
+      endDateTime ? new Date(endDateTime) : null,
     );
   }
 
@@ -333,11 +340,10 @@ export class ServiceAdminController {
     description: 'Data to update the service configuration',
   })
   async adminUpdateConfigurations(
-    @Req() options,
-    @Param('configId') configId: string,
-    @Body() data: any,
+    @Param('configId') configId: number,
+    @Body() data: UpdateConfigsDto,
   ): Promise<void> {
-    await this.service.updateConfigs(options, configId, data);
+    await this.service.updateConfigs(configId, data);
   }
 
   @Patch('itemTypes/:serviceItemTypeId')
@@ -352,8 +358,8 @@ export class ServiceAdminController {
     description: 'Updated data for the service item type',
   })
   async adminUpdateItemTypes(
-    @Req() options,
-    @Param('serviceItemTypeId') serviceItemTypeId: string,
+    @Req() options: SessionRequest,
+    @Param('serviceItemTypeId') serviceItemTypeId: number,
     @Body() data: UpdateItemTypesDto,
   ): Promise<void> {
     await this.service.updateItemTypes(options, serviceItemTypeId, data);
@@ -371,7 +377,7 @@ export class ServiceAdminController {
     description: 'Updated data for the resource limits',
   })
   async adminUpdateVdcResourceLimits(
-    @Req() options,
+    @Req() options: SessionRequest,
     @Param('serviceTypeId') serviceTypeId: string,
     @Body() data: VdcResourceLimitsDto,
   ): Promise<void> {
