@@ -1,4 +1,4 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UnavailableResource } from 'src/infrastructure/exceptions/unavailable-resource.exception';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
@@ -15,6 +15,7 @@ import { InvoicePropertiesTableService } from '../base/crud/invoice-properties-t
 import { TaskManagerService } from '../base/tasks/service/task-manager.service';
 import { TasksTableService } from '../base/crud/tasks-table/tasks-table.service';
 import { Not, Raw } from 'typeorm';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @Injectable()
 export class VgpuService {
@@ -32,7 +33,13 @@ export class VgpuService {
     private readonly tasksTable: TasksTableService,
   ) {}
 
-  async getVmsInfo(session, vdcIdVgpu, orgId, orgName, filter = '') {
+  async getVmsInfo(
+    session: string,
+    vdcIdVgpu: string,
+    orgId: number,
+    orgName: string,
+    filter = '',
+  ): Promise<object> {
     if (filter !== '') {
       filter = `(isVAppTemplate==false;vdc==${vdcIdVgpu});` + `(${filter})`;
     } else {
@@ -56,7 +63,7 @@ export class VgpuService {
     return vmdataRecord;
   }
 
-  async chackAvalibleToPowerOnVgpu(userId) {
+  async chackAvalibleToPowerOnVgpu(): Promise<void> {
     const props = {};
     const VgpuConfigs = await this.configsTable.find({
       where: {
@@ -76,7 +83,8 @@ export class VgpuService {
       props['orgId'],
       props['orgName'],
     );
-    const poweredOnVm = await vmInfo.filter((value) => {
+    const filter = vmInfo['filter'];
+    const poweredOnVm = await filter((value) => {
       return value.status === 'POWERED_ON';
     });
 
@@ -92,7 +100,10 @@ export class VgpuService {
     }
   }
 
-  async createAvailableInternalIP(serviceId, userId, orgId, networkId) {
+  async createAvailableInternalIP(
+    serviceId: string,
+    networkId: string,
+  ): Promise<string> {
     const session = await this.sessionService.checkAdminSession();
     const allocatedIpAddresses =
       await mainWrapper.user.network.getIPUsageNetwrok(
@@ -125,10 +136,14 @@ export class VgpuService {
     return internalIp;
   }
 
-  async getVgpuNat(session, edgeName, natName) {
+  async getVgpuNat(
+    token: string,
+    edgeName: string,
+    natName: string,
+  ): Promise<object[]> {
     const pageSize = 225;
     const natRules = await mainWrapper.user.nat.getNatRuleList(
-      session,
+      token,
       pageSize,
       '',
       edgeName,
@@ -141,9 +156,14 @@ export class VgpuService {
     return natsList;
   }
 
-  async deployVgpuVm(serviceId, userId, vdcId, orgId, orgName) {
+  async deployVgpuVm(
+    serviceId: string,
+    vdcId: string,
+    orgId: number,
+    orgName: string,
+  ): Promise<object> {
     const vmName = serviceId + 'VM';
-    const vdcIdVgpu = vdcId.split(':').slice(-1);
+    const vdcIdVgpu = vdcId.split(':').slice(-1)[0];
     const session = await this.sessionService.checkAdminSession();
     const vmInfo = await this.getVmsInfo(
       session,
@@ -184,12 +204,12 @@ export class VgpuService {
     return null;
   }
 
-  async deleteVgpuNat(userId, orgId, edgeName, natName) {
-    const session = await this.sessionService.checkAdminSession();
-    const vgpuNat = await this.getVgpuNat(session, edgeName, natName);
-    const ruleId = vgpuNat[0].id;
+  async deleteVgpuNat(edgeName: string, natName: string): Promise<object> {
+    const token = await this.sessionService.checkAdminSession();
+    const vgpuNat = await this.getVgpuNat(token, edgeName, natName);
+    const ruleId = vgpuNat[0]['id'];
     const nat = await mainWrapper.user.nat.deleteNatRule(
-      session,
+      token,
       ruleId,
       edgeName,
     );
@@ -198,21 +218,17 @@ export class VgpuService {
   }
 
   async createVgpuVm(
-    serviceId,
-    userId,
-    vdcId,
-    orgId,
-    templateId,
-    templateName,
-    networkId,
-    networkNam,
-    computerName,
-    vdcComputePolicy,
-  ) {
+    serviceId: string,
+    vdcId: string,
+    templateId: string,
+    templateName: string,
+    networkId: string,
+    networkNam: string,
+    computerName: string,
+    vdcComputePolicy: string,
+  ): Promise<object> {
     const internalIP = await this.createAvailableInternalIP(
       serviceId,
-      userId,
-      orgId,
       networkId,
     );
     const session = await this.sessionService.checkAdminSession();
@@ -245,14 +261,12 @@ export class VgpuService {
   }
 
   async createVgpuSnat(
-    serviceId,
-    userId,
-    orgId,
-    edgeName,
-    externalIP,
-    internalIP,
-    typeNat,
-  ) {
+    serviceId: string,
+    edgeName: string,
+    externalIP: string,
+    internalIP: string,
+    typeNat: string,
+  ): Promise<object> {
     const session = await this.sessionService.checkAdminSession();
 
     const config = {
@@ -273,14 +287,13 @@ export class VgpuService {
   }
 
   async createVgpuRunScript(
-    serviceId,
-    userId,
-    vdcId,
+    serviceId: string,
+    vdcId: string,
     orgId: number,
-    orgName,
-    adminPassword,
-    computerName,
-  ) {
+    orgName: string,
+    adminPassword: string,
+    computerName: string,
+  ): Promise<object> {
     const session = await this.sessionService.checkAdminSession();
     const vmName = serviceId + 'VM';
     const vdcIdVgpu = vdcId.split(':').slice(-1);
@@ -347,8 +360,13 @@ search ." > /etc/resolv.conf`;
     return createdVm;
   }
 
-  async createVgpu(userId, invoiceID, serviceInstanceId, options) {
-    await this.chackAvalibleToPowerOnVgpu(userId);
+  async createVgpu(
+    userId: number,
+    invoiceId: number,
+    serviceInstanceId: string,
+    options: SessionRequest,
+  ): Promise<string> {
+    await this.chackAvalibleToPowerOnVgpu();
     // check minimum cost at Credit
     const minimumCost = await this.configsTable.findOne({
       where: {
@@ -368,7 +386,7 @@ search ." > /etc/resolv.conf`;
     };
     const invoiceItems = await this.invoiceItemsTable.find({
       where: {
-        invoiceId: invoiceID,
+        invoiceId: invoiceId,
         itemId: Not(38),
       },
     });
@@ -381,7 +399,7 @@ search ." > /etc/resolv.conf`;
 
     const pcProp = await this.invoicePropertiesTable.find({
       where: {
-        invoiceId: invoiceID,
+        invoiceId: invoiceId,
       },
     });
     const props = {};
@@ -409,9 +427,9 @@ search ." > /etc/resolv.conf`;
       customTaskId: task['TaskID'],
       vcloudTask: null,
       nextTask: 'createVgpuVm',
-      requestOptions: options,
+      requestOptions: options.user,
       target: 'object',
     });
-    return task['TaskID'];
+    return task.taskId;
   }
 }

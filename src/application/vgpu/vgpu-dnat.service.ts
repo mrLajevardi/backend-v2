@@ -10,17 +10,15 @@ export class VgpuDnatService {
     private readonly sessionService: SessionsService,
   ) {}
   async createVgpuDnat(
-    serviceId,
-    userId,
-    orgId,
-    edgeName,
-    externalIP,
-    internalIP,
-    typeNat,
-    externalPort,
-    portProfileName,
-    portProfileId,
-  ) {
+    serviceId: string,
+    edgeName: string,
+    externalIP: string,
+    internalIP: string,
+    typeNat: string,
+    externalPort: string,
+    portProfileName: string,
+    portProfileId: string,
+  ): Promise<object> {
     const session = await this.sessionService.checkAdminSession();
     const config = {
       enabled: true,
