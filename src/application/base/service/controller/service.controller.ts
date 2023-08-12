@@ -27,6 +27,7 @@ import { CheckPolicies } from '../../security/ability/decorators/check-policies.
 import { PureAbility } from '@casl/ability';
 import { Action } from '../../security/ability/enum/action.enum';
 import { TempDto } from 'src/application/vdc/dto/temp.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 
 @ApiTags('Services')
@@ -49,8 +50,8 @@ export class ServiceController {
   @Post()
   async create(
     @Body() dto: CreateServiceDto,
-    @Request() options: SessionRequest,
-  ): Promise<{id: string, taskId: string, token: string }> {
+    @Request() options: any,
+  ): Promise<any> {
     return this.createService.createService(options, dto);
   }
 
@@ -65,7 +66,7 @@ export class ServiceController {
   async delete(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options: SessionRequest,
-  ): Promise<{id: string, taskId: string}> {
+  ): Promise<TaskReturnDto> {
     return this.deleteService.deleteService(options, serviceInstanceId);
   }
 
