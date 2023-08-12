@@ -18,10 +18,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    const userPayload : UserPayload = {
+    const userPayload: UserPayload = {
       userId: user.id,
       username: user.username,
-    }
+    };
     return userPayload;
   }
 }
