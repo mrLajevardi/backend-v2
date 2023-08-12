@@ -49,29 +49,34 @@ export class VdcAdminController {
     }
 
     const task = await this.tasksTable.create({
-        userId: userId,
-        serviceInstanceId: vdcInstanceId,
-        operation: 'deleteVdcService',
-        details: null,
-        startTime: new Date(),
-        endTime: null,
-        status: 'running',
+      userId: userId,
+      serviceInstanceId: vdcInstanceId,
+      operation: 'deleteVdcService',
+      details: null,
+      startTime: new Date(),
+      endTime: null,
+      status: 'running',
     });
 
     await this.taskManagerService.addTask({
-        serviceInstanceId: vdcInstanceId,
-        customTaskId: task['TaskID'],
-        vcloudTask: null,
-        target: 'task',
-        nextTask: 'deleteVdc',
-        taskType: 'adminTask',
-        requestOptions: options,
+      serviceInstanceId: vdcInstanceId,
+      customTaskId: task['TaskID'],
+      vcloudTask: null,
+      target: 'task',
+      nextTask: 'deleteVdc',
+      taskType: 'adminTask',
+      requestOptions: options,
     });
 
-    await this.logger.info('vdc', 'deleteVdc', { _object: vdcInstanceId }, options.locals);
+    await this.logger.info(
+      'vdc',
+      'deleteVdc',
+      { _object: vdcInstanceId },
+      options.locals,
+    );
     return Promise.resolve({
-        id: vdcInstanceId,
-        taskId: task['TaskID'],
+      id: vdcInstanceId,
+      taskId: task['TaskID'],
     });
   }
 
@@ -139,9 +144,9 @@ export class VdcAdminController {
     const vdcServices = await this.serviceInstancesTableService.find({
       relations: ['Users', 'ServiceItems'],
       where: {
-       isDeleted: false,
-       serviceTypeId: 'vdc',
-       ...parsedFilter
+        isDeleted: false,
+        serviceTypeId: 'vdc',
+        ...parsedFilter,
       },
       take: limit,
       skip: skip,

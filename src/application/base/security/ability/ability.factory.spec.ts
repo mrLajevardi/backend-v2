@@ -182,6 +182,7 @@ describe('AbilityFactory', () => {
     it('should return false', async () => {
       const user2 = await userTable.findById(2);
       const ability = await abilityFactory.createForUser(user2);
+      console.log(ability.rulesFor(Action.Read, 'Acl'));
       const result = ability.can(Action.Read, 'Acl');
       // console.log(ability.rules);
       expect(result).toBeFalsy();
@@ -281,11 +282,13 @@ describe('AbilityFactory', () => {
       let err = undefined;
       try {
         const user = new User();
+        user.id = 100100;
         user.name = 'test';
         const ability = await abilityFactory.createForUser(user);
         ability.can(Action.Create, 'Acl');
       } catch (error) {
         err = error;
+        console.log(err);
       }
       expect(err).toBeUndefined();
     });

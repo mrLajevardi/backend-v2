@@ -13,7 +13,7 @@ export class OrgService {
     private readonly organizationService: OrganizationService,
   ) {}
 
-  async checkOrg(userId: number ) {
+  async checkOrg(userId: number) {
     let org: Organization | InitOrgReturnDto;
     org = await this.organizationTable.findOne({
       where: { userId: userId },

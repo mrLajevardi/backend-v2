@@ -20,7 +20,7 @@ import { AbilityModule } from '../base/security/ability/ability.module';
     DatabaseModule,
     CrudModule,
     LoggerModule,
-    forwardRef(()=>TasksModule),
+    forwardRef(() => TasksModule),
     SessionsModule,
     OrganizationModule,
     UserModule,

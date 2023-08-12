@@ -1,3 +1,3 @@
-import { UserPayload } from "src/application/base/security/auth/dto/user-payload.dto";
+import { UserPayload } from 'src/application/base/security/auth/dto/user-payload.dto';
 
-export type SessionRequest = Request & { user: UserPayload }
+export type SessionRequest = Request & { user: UserPayload };

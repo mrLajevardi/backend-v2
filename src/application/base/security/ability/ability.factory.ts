@@ -12,7 +12,6 @@ import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entit
 import { PredefinedRoles } from './enum/predefined-enum.type';
 import { Action } from './enum/action.enum';
 import { In } from 'typeorm';
-import { isEmpty } from 'lodash';
 
 export type AbilitySubjects =
   | (typeof dbEntities)[number]
@@ -59,7 +58,6 @@ export class AbilityFactory {
     user: User,
   ): Promise<MongoAbility<AbilityTuple, MongoQuery>> {
     const builder = new AbilityBuilder(createMongoAbility);
-
     const simpleAcls = await this.aclTable.find({
       where: {
         principalType: In([null, '']),
@@ -68,7 +66,7 @@ export class AbilityFactory {
     const compoundAcls = await this.aclTable.find({
       where: {
         principalType: 'User',
-        principalId: isEmpty(user) ? null : user.id.toString(),
+        principalId: user ? user.id.toString() : null,
       },
     });
 

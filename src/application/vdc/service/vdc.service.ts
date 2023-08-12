@@ -1,7 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
@@ -26,12 +23,12 @@ export class VdcService {
   ) {}
 
   async createVdc(
-    userId : number ,
-    orgId : number ,
-    vcloudOrgId : string ,
-    orgName : string ,
+    userId: number,
+    orgId: number,
+    vcloudOrgId: string,
+    orgName: string,
     data: object,
-    serviceInstanceId : string ,
+    serviceInstanceId: string,
   ) {
     const sessionToken = await this.sessionService.checkAdminSession();
     console.log('find service ', '🍟');
@@ -45,7 +42,7 @@ export class VdcService {
       orgId,
       serviceInstanceId,
     );
-    console.log('vdc exists',vdcExist);
+    console.log('vdc exists', vdcExist);
     if (service.status == 2 || vdcExist !== null) {
       // service is broken
       const repair = await this.repairVdc(userId, orgId, serviceInstanceId);
@@ -171,12 +168,12 @@ export class VdcService {
    * @return {Promise}
    */
   async initVdc(
-    data : object,
-    sessionToken : string ,
-    vdcName : string ,
-    vcloudOrgId : string ,
-    orgId : number  ,
-    serviceInstanceId : string ,
+    data: object,
+    sessionToken: string,
+    vdcName: string,
+    vcloudOrgId: string,
+    orgId: number,
+    serviceInstanceId: string,
   ) {
     console.log('init vdc');
     const cpuSpeed = await this.configTable.findOne({
@@ -191,7 +188,7 @@ export class VdcService {
         serviceTypeId: 'vdc',
       },
     });
-    console.log('create vdc with wrapper with data: ' , data);
+    console.log('create vdc with wrapper with data: ', data);
     const vdcInfo: any = await mainWrapper.admin.vdc.createVdc(
       {
         ProviderVdcReference: vcdConfig.admin.vdc.ProviderVdcReference,

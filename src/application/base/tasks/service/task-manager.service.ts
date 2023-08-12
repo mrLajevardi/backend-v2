@@ -23,6 +23,7 @@ import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { In, Like } from 'typeorm';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 
 @Processor('tasks2')
 export class TaskManagerService {
@@ -36,7 +37,7 @@ export class TaskManagerService {
     private readonly configsTable: ConfigsTableService,
     private readonly organizationTable: OrganizationTableService,
     private readonly userTable: UserTableService,
-    
+
     private readonly edgeService: EdgeService,
     private readonly orgService: OrgService,
     private readonly networkService: NetworkService,
@@ -424,7 +425,7 @@ export class TaskManagerService {
       requestOptions,
     });
 
-    console.log('end of createOrg', org );
+    console.log('end of createOrg', org);
   }
 
   async createVdc(
@@ -444,7 +445,7 @@ export class TaskManagerService {
         serviceInstanceId,
       },
     });
-    let data : object = {};
+    const data: object = {};
     for (const item of ServiceItems) {
       data[item.itemTypeCode] = item.quantity;
     }
@@ -452,7 +453,7 @@ export class TaskManagerService {
     console.log('checking org');
     const org = await this.orgService.checkOrg(userId);
 
-    console.log('org checked', org.id ); 
+    console.log('org checked', org.id);
     const createdVdc = await this.vdcService.createVdc(
       userId,
       org.id,
@@ -1181,13 +1182,11 @@ export class TaskManagerService {
         id: serviceInstanceId,
       },
     });
-    const userId = service.userId;
+    //const userId = service.userId;
     const session = await this.sessionService.checkAdminSession();
     const configsData = await this.configsTable.find({
       where: {
-        propertyKey: 
-          In(['config.vgpu.orgName', 'config.vgpu.orgId']),
-        
+        propertyKey: In(['config.vgpu.orgName', 'config.vgpu.orgId']),
       },
     });
     let configs: any;
@@ -1273,7 +1272,11 @@ export class TaskManagerService {
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
-    const userId = service.userId;
+
+    if (isEmpty(service)) {
+      throw new InvalidServiceInstanceIdException();
+    }
+    //const userId = service.userId;
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
         serviceInstanceId,

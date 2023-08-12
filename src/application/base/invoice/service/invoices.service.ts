@@ -286,10 +286,10 @@ export class InvoicesService {
   ): Promise<Invoices> {
     return await this.invoicesTable.findOne({
       where: {
-        userId: userId ,
-        serviceInstanceId: serviceInstanceId ,
-        type: 0 ,
-        payed: true ,
+        userId: userId,
+        serviceInstanceId: serviceInstanceId,
+        type: 0,
+        payed: true,
       },
     });
   }
@@ -300,10 +300,10 @@ export class InvoicesService {
   ): Promise<Invoices[]> {
     return await this.invoicesTable.find({
       where: {
-        userId: userId ,
-        serviceInstanceId: serviceInstanceId ,
-        type: 1 ,
-        payed: true ,
+        userId: userId,
+        serviceInstanceId: serviceInstanceId,
+        type: 1,
+        payed: true,
       },
     });
   }

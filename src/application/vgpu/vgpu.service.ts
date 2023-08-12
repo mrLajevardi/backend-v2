@@ -276,7 +276,7 @@ export class VgpuService {
     serviceId,
     userId,
     vdcId,
-    orgId : number ,
+    orgId: number,
     orgName,
     adminPassword,
     computerName,

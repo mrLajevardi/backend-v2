@@ -25,7 +25,7 @@ import { AbilityModule } from '../security/ability/ability.module';
     }),
     LoggerModule,
     // VdcModule,
-    forwardRef(()=>VdcModule),
+    forwardRef(() => VdcModule),
     CrudModule,
     SessionsModule,
     OrganizationModule,

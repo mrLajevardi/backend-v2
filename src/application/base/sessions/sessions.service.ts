@@ -13,7 +13,7 @@ export class SessionsService {
     private readonly organizationTable: OrganizationTableService,
   ) {}
 
-  async createAdminSession() : Promise<{
+  async createAdminSession(): Promise<{
     username: string;
     password: string;
     org: string;
@@ -31,7 +31,7 @@ export class SessionsService {
 
     await this.sessionTable.create({
       isAdmin: true,
-      orgId:orgId,
+      orgId: orgId,
       sessionId: sessionData.sessionId,
       token: sessionData.token,
       active: true,
