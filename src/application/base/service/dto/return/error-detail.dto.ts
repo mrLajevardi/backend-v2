@@ -1,3 +1,3 @@
 export class ErrorDetail {
-    codes : {}
+  codes: object;
 }

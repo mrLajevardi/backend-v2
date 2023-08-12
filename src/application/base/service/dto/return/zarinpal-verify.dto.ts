@@ -1,7 +1,7 @@
 export class ZarinpalVerifyReturnDto {
-    verified: boolean;
-    refID: string;
-    id: string;
-    taskId: string;
-    token: string;
+  verified: boolean;
+  refID: string;
+  id: string;
+  taskId: string;
+  token: string;
 }

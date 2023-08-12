@@ -15,6 +15,7 @@ import { VgpuService } from 'src/application/vgpu/vgpu.service';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { Like } from 'typeorm';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 
 @Injectable()
 export class DeleteServiceService {
@@ -25,9 +26,13 @@ export class DeleteServiceService {
     private readonly configsTable: ConfigsTableService,
     private readonly taskManagerService: TaskManagerService,
     private readonly vgpuService: VgpuService,
+    private readonly logger: LoggerService,
   ) {}
 
-  async deleteService(options: SessionRequest , serviceInstanceId: string ) : Promise<TaskReturnDto>  {
+  async deleteService(
+    options: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
@@ -121,7 +126,12 @@ export class DeleteServiceService {
       taskType: 'adminTask',
       requestOptions: options.user,
     });
-    // await logger.info(logType, logAction, { _object: serviceInstanceId }, options.locals);
+    await this.logger.info(
+      logType,
+      logAction,
+      { _object: serviceInstanceId },
+      options.user,
+    );
     console.log({
       id: serviceInstanceId,
       taskId: task.taskId,

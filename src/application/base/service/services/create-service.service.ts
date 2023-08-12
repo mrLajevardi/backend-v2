@@ -20,6 +20,7 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { Discounts } from 'src/infrastructure/database/entities/Discounts';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
 
 @Injectable()
 export class CreateServiceService {
@@ -37,8 +38,10 @@ export class CreateServiceService {
     private readonly itemTypesTable: ItemTypesTableService,
   ) {}
 
-  async createService(options: SessionRequest , dto: CreateServiceDto) 
-  : Promise<TaskReturnDto>{
+  async createService(
+    options: SessionRequest,
+    dto: CreateServiceDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const { invoiceId } = dto;
     // find user invoice
@@ -140,7 +143,7 @@ export class CreateServiceService {
           nextTask: 'createOrg',
           requestOptions: {
             ...options.user,
-            serviceInstanceId: serviceInstanceId
+            serviceInstanceId: serviceInstanceId,
           },
           target: 'object',
         });
@@ -212,7 +215,10 @@ export class CreateServiceService {
       token: null,
     });
   }
-  async repairService(options: SessionRequest, serviceInstanceId: string) : Promise<TaskReturnDto>  {
+  async repairService(
+    options: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<TaskReturnDto> {
     const service = await this.serviceInstancesTableService.findOne({
       where: {
         id: serviceInstanceId,
@@ -251,7 +257,10 @@ export class CreateServiceService {
     });
   }
 
-  async updateServiceInfo(serviceInstanceId, data) {
+  async updateServiceInfo(
+    serviceInstanceId: string,
+    data: UpdateServiceInstancesDto,
+  ): Promise<void> {
     const { name } = data;
     await this.serviceInstancesTable.updateAll(
       {
@@ -263,7 +272,7 @@ export class CreateServiceService {
     );
   }
 
-  async getDiscounts(filter : string ): Promise<Discounts[]>  {
+  async getDiscounts(filter: string): Promise<Discounts[]> {
     let parsedFilter;
     if (!isEmpty(filter)) {
       parsedFilter = JSON.parse(filter);
@@ -272,7 +281,7 @@ export class CreateServiceService {
     return Promise.resolve(discounts);
   }
 
-  async getItemTypes(filter: string ): Promise<ItemTypes[]> {
+  async getItemTypes(filter: string): Promise<ItemTypes[]> {
     let parsedFilter;
     if (!isEmpty(filter)) {
       parsedFilter = JSON.parse(filter);

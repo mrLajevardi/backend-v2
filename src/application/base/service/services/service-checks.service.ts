@@ -8,13 +8,10 @@ import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 
 @Injectable()
 export class ServiceChecksService {
-
-  constructor(
-    private readonly serviceItemsSumTable : ServiceItemsSumService
-  ){}
+  constructor(private readonly serviceItemsSumTable: ServiceItemsSumService) {}
 
   //Moved from serviceChecks
-  checkNatParams(data : [{}], keys : string[] ) : boolean | ErrorDetail {
+  checkNatParams(data: object, keys: string[]): boolean | ErrorDetail {
     let status = 0;
     const errorDetail = {
       codes: {},
@@ -32,7 +29,7 @@ export class ServiceChecksService {
   }
 
   // Moved from service checks
-  checkNetworkType(networkType : string ) : boolean {
+  checkNetworkType(networkType: string): boolean {
     const networkTypes = ['NAT_ROUTED', 'ISOLATED'];
     if (networkTypes.includes(networkType)) {
       return true;
@@ -41,7 +38,10 @@ export class ServiceChecksService {
   }
 
   // Moved from service checks
-  async checkServiceItems(data : [number], items : ItemTypes[]) : Promise<ErrorDetail | null> {
+  async checkServiceItems(
+    data: [number],
+    items: ItemTypes[],
+  ): Promise<ErrorDetail | null> {
     const itemsList = [];
     const errorDetail = {
       codes: {},
@@ -60,7 +60,9 @@ export class ServiceChecksService {
       }
     }
     for (const item of itemsList) {
-      const itemSum  : ServiceItemsSum = await this.serviceItemsSumTable.findById(item);
+      const itemSum: ServiceItemsSum = await this.serviceItemsSumTable.findById(
+        item,
+      );
       const sum = !isNil(itemSum) ? itemSum.sum + data[item] : data[item];
       if (
         sum > items[itemsList.indexOf(item)].maxAvailable &&
@@ -78,10 +80,7 @@ export class ServiceChecksService {
         status = 1;
       }
       // checks maxPerRequest
-      if (
-        data[item] >
-        items[itemsList.indexOf(item)].maxPerRequest
-      ) {
+      if (data[item] > items[itemsList.indexOf(item)].maxPerRequest) {
         if (!errorDetail.codes[item]) {
           // if errorDetails.codes[item] does not exist
           errorDetail.codes[item] = [

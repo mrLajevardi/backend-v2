@@ -1,6 +1,5 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ServiceService } from './services/service.service';
-import { PayAsYouGoService } from '../pay-as-you-go/pay-as-you-go.service';
 import { CrudModule } from '../crud/crud.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { SessionsModule } from '../sessions/sessions.module';
@@ -19,7 +18,6 @@ import { ServiceAdminController } from './controller/service-admin.controller';
 import { ServiceAdminService } from './services/service-admin.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
-import { TaskManagerService } from '../tasks/service/task-manager.service';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
 import { AbilityModule } from '../security/ability/ability.module';
 

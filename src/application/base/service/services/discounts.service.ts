@@ -7,7 +7,7 @@ export class DiscountsService {
   constructor(private readonly discountsTable: DiscountsTableService) {}
 
   // Moved from createService.js
-  async findBuiltInDiscount(duration) : Promise<Discounts | null>  {
+  async findBuiltInDiscount(duration: number): Promise<Discounts | null> {
     const builtInDiscounts = [
       {
         duration: 3,

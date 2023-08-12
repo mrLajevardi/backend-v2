@@ -1,4 +1,4 @@
-import { Plans } from "src/infrastructure/database/entities/Plans";
+import { Plans } from 'src/infrastructure/database/entities/Plans';
 
 export class GetServicePlansReturnDto {
   vdc: {
