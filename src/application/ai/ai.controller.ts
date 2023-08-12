@@ -189,7 +189,7 @@ export class AiController {
     type: 'object',
   })
   @Get('/aradAiDashoard/:serviceInstanceId')
-  async getAradAiaDshboard(
+  async getAradAiDashboard(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options: SessionRequest,
   ): Promise<GetAradAiDashoardDto> {

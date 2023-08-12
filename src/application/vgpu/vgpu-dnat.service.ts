@@ -15,10 +15,10 @@ export class VgpuDnatService {
     externalIP: string,
     internalIP: string,
     typeNat: string,
-    externalPort: string,
+    externalPort: number,
     portProfileName: string,
     portProfileId: string,
-  ): Promise<object> {
+  ): Promise<{__vcloudTask: object}> {
     const session = await this.sessionService.checkAdminSession();
     const config = {
       enabled: true,
@@ -39,7 +39,7 @@ export class VgpuDnatService {
     await this.servicePropertiesTable.create({
       serviceInstanceId: serviceId,
       propertyKey: 'VgpuExternalPort',
-      value: externalPort,
+      value: externalPort.toString(),
     });
     return dnet;
   }

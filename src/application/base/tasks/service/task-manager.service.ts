@@ -525,8 +525,8 @@ export class TaskManagerService {
     const internalAddresses = internalIP.value;
     const createDnat = await this.vgpuDnatService.createVgpuDnat(
       serviceInstanceId,
-      userId,
-      props['orgId'],
+      //userId,
+      //props['orgId'],
       props['edgeName'],
       props['externalAddresses'],
       internalAddresses,
