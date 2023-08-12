@@ -27,6 +27,8 @@ import { UserTableService } from '../../crud/user-table/user-table.service';
 import { ZarinpalConfigDto } from 'src/application/payment/dto/zarinpal-config.dto';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { GetServicesReturnDto } from '../dto/get-services-return.dto';
 
 @Injectable()
 export class ServiceService {
@@ -432,7 +434,7 @@ export class ServiceService {
     }
   }
 
-  async getServices(options: any, id?: string) {
+  async getServices(options: any, id?: string) : Promise<GetServicesReturnDto[]> {
     const {
       user: { userId },
     } = options;
@@ -451,7 +453,8 @@ export class ServiceService {
     const extendedServiceList = services.map((service) => {
       const expired =
         new Date(service.expireDate).getTime() < new Date().getTime();
-      console.log(expired);
+
+      
       return {
         ...service,
         expired,

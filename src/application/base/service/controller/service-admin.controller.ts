@@ -33,6 +33,8 @@ import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.typ
 import { Roles } from '../../security/ability/decorators/roles.decorator';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { PaginationReturnDto } from 'src/infrastructure/dto/pagination-return.dto';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 
 @ApiTags('Services-admin')
 @Controller('admin/services')
@@ -236,7 +238,7 @@ export class ServiceAdminController {
     @Query('description') description?: string,
     @Query('id') id?: number,
     @Query('payed') payed?: boolean,
-  ): Promise<any> {
+  ): Promise<{invoices: Invoices[], total: number }> {
     return await this.service.getServiceInvoices(
       options,
       serviceInstanceId,
@@ -275,7 +277,7 @@ export class ServiceAdminController {
     @Query('maxAvailable') maxAvailable?: string,
     @Query('maxPerRequest') maxPerRequest?: string,
     @Query('minPerRequest') minPerRequest?: string,
-  ): Promise<object> {
+  ): Promise<{services: ServiceInstances[], countAll: number}> {
     console.log('get service');
     return await this.service.getService(options, page, pageSize, filter);
   }
@@ -303,7 +305,7 @@ export class ServiceAdminController {
     @Query('ServiceID') ServiceID?: string,
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
-  ): Promise<any> {
+  ): Promise<{transaction: Transactions[], totalRecords: number }> {
     return await this.service.getTransactions(
       options,
       page,

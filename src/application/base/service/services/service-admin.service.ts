@@ -606,7 +606,7 @@ export class ServiceAdminService {
     return Promise.resolve(data);
   }
 
-  async updateConfigs(options, configId, data) {
+  async updateConfigs(options, configId, data) : Promise<void> {
     const config = await this.configsTable.findById(configId);
     if (isNil(config)) {
       return Promise.reject(new NotFoundException());
