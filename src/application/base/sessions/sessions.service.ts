@@ -13,12 +13,14 @@ export class SessionsService {
     private readonly organizationTable: OrganizationTableService,
   ) {}
 
-  async createAdminSession(orgId: number = parseInt(vcdAuthConfig.org) ): Promise<{
+  async createAdminSession() : Promise<{
     username: string;
     password: string;
     org: string;
     token: string;
   }> {
+    console.log('create admin session');
+    const orgId: number = parseInt(vcdAuthConfig.org);
     const session = mainWrapper.admin.user.createSession;
     console.log(session);
     const sessionData = await session.providerSession(
@@ -84,7 +86,8 @@ export class SessionsService {
    * checks admin session
    * @return {Promise}
    */
-  async checkAdminSession(orgId? : number ): Promise<string> {
+  async checkAdminSession(): Promise<string> {
+    console.log('check admin session for org');
     const session = await this.sessionTable.findOne({
       where: {
         isAdmin: true,
@@ -102,12 +105,12 @@ export class SessionsService {
           active: false,
         });
         //const adminSession = new AdminSession(this.userId, t);
-        const createdSession = await this.createAdminSession(orgId);
+        const createdSession = await this.createAdminSession();
         return Promise.resolve(createdSession.token);
       }
     } else {
       // const adminSession = new AdminSession(null,this.userId);
-      const createdSession = await this.createAdminSession(orgId);
+      const createdSession = await this.createAdminSession();
       return Promise.resolve(createdSession.token);
     }
   }

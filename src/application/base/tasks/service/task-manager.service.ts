@@ -423,7 +423,8 @@ export class TaskManagerService {
       nextTask: 'createVdc',
       requestOptions,
     });
-    console.log('end of createOrg');
+
+    console.log('end of createOrg', org );
   }
 
   async createVdc(
@@ -443,11 +444,15 @@ export class TaskManagerService {
         serviceInstanceId,
       },
     });
-    const data = {};
+    let data : object = {};
     for (const item of ServiceItems) {
       data[item.itemTypeCode] = item.quantity;
     }
+
+    console.log('checking org');
     const org = await this.orgService.checkOrg(userId);
+
+    console.log('org checked', org.id ); 
     const createdVdc = await this.vdcService.createVdc(
       userId,
       org.id,
@@ -724,7 +729,7 @@ export class TaskManagerService {
       const orgId = `urn:vcloud:org:${org}`;
       const orgName = query.data.record[0].orgName;
       console.log(userId, orgId);
-      const adminSession = await this.sessionService.checkAdminSession(null);
+      const adminSession = await this.sessionService.checkAdminSession();
       const catalogId = await this.checkCatalog(adminSession, orgId, orgName);
       const totalVdcs = query.data.total;
       // Delete Catalog, If last vdc in org
@@ -788,7 +793,7 @@ export class TaskManagerService {
     const user = await this.userTable.findById(userId);
     const vdcName = user?.username + '_org_vdc_' + service.index;
 
-    const session = await this.sessionService.checkAdminSession(userId);
+    const session = await this.sessionService.checkAdminSession();
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'adminOrgVdc',
       filter: `name==${vdcName}`,
@@ -1177,7 +1182,7 @@ export class TaskManagerService {
       },
     });
     const userId = service.userId;
-    const session = await this.sessionService.checkAdminSession(userId);
+    const session = await this.sessionService.checkAdminSession();
     const configsData = await this.configsTable.find({
       where: {
         propertyKey: 
@@ -1278,7 +1283,7 @@ export class TaskManagerService {
     for (const prop of ServiceProperties) {
       props[prop.propertyKey] = prop.value;
     }
-    const session = await this.sessionService.checkAdminSession(userId);
+    const session = await this.sessionService.checkAdminSession();
     const networkProfile = await mainWrapper.admin.vdc.updateNetworkProfile(
       props['vdcId'],
       session,

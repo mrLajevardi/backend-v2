@@ -188,7 +188,7 @@ export class VgpuController {
     }
 
     const vdcIdVgpu = props['vdcId'].split(':').slice(-1);
-    const session = await this.sessionService.checkAdminSession(userId);
+    const session = await this.sessionService.checkAdminSession();
     const vmInfo = await this.service.getVmsInfo(
       session,
       vdcIdVgpu,

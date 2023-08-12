@@ -28,7 +28,7 @@ export class VgpuPayAsYouGoService {
     /**
      * checks if user have enough credit or not if not shut down user's vms
      */
-    const adminSession: any = await this.sessionService.checkAdminSession(null);
+    const adminSession: any = await this.sessionService.checkAdminSession();
     // configs properties
     const configsData: Configs[] =
       await this.configsTable.getVgpuRobotConfigData();

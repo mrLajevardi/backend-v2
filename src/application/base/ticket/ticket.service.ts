@@ -40,6 +40,7 @@ export class TicketService {
     options: SessionRequest,
     data: CreateTicketDto,
   ): Promise<{ ticketId: number }> {
+    console.log('create ticket');
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
     const service = await this.serviceInstancesTable.findOne({

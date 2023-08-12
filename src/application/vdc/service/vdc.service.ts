@@ -1,20 +1,13 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
-  forwardRef,
 } from '@nestjs/common';
-import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
-import { ServicePropertiesTableModule } from 'src/application/base/crud/service-properties-table/service-properties-table.module';
 import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
-import { ServiceItemsTableService } from 'src/application/base/crud/service-items-table/service-items-table.service';
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
-import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
-import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 
@@ -33,15 +26,15 @@ export class VdcService {
   ) {}
 
   async createVdc(
-    userId,
-    orgId,
-    vcloudOrgId,
-    orgName,
-    data,
-    serviceInstanceId,
+    userId : number ,
+    orgId : number ,
+    vcloudOrgId : string ,
+    orgName : string ,
+    data: object,
+    serviceInstanceId : string ,
   ) {
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
-    console.log(userId, '🍟');
+    const sessionToken = await this.sessionService.checkAdminSession();
+    console.log('find service ', '🍟');
     const service = await this.serviceInstanceTable.findOne({
       where: {
         id: serviceInstanceId,
@@ -52,6 +45,7 @@ export class VdcService {
       orgId,
       serviceInstanceId,
     );
+    console.log('vdc exists',vdcExist);
     if (service.status == 2 || vdcExist !== null) {
       // service is broken
       const repair = await this.repairVdc(userId, orgId, serviceInstanceId);
@@ -79,6 +73,7 @@ export class VdcService {
         serviceInstanceId,
       );
     }
+    console.log('create new vdc');
     // creates a new vdc name
     const vdcName = orgName + '_vdc_' + service.index;
     console.log(vdcName, '🍔');
@@ -150,7 +145,7 @@ export class VdcService {
   async checkVdcExistence(userId, orgId, serviceInstanceId) {
     const vdcNameProperty = await this.servicePropertiesTable.findOne({
       where: {
-        serviceInstanceId,
+        serviceInstanceId: serviceInstanceId,
         propertyKey: 'name',
       },
     });
@@ -176,13 +171,14 @@ export class VdcService {
    * @return {Promise}
    */
   async initVdc(
-    data,
-    sessionToken,
-    vdcName,
-    vcloudOrgId,
-    orgId,
-    serviceInstanceId,
+    data : object,
+    sessionToken : string ,
+    vdcName : string ,
+    vcloudOrgId : string ,
+    orgId : number  ,
+    serviceInstanceId : string ,
   ) {
+    console.log('init vdc');
     const cpuSpeed = await this.configTable.findOne({
       where: {
         propertyKey: 'vCpuSpeed',
@@ -195,6 +191,7 @@ export class VdcService {
         serviceTypeId: 'vdc',
       },
     });
+    console.log('create vdc with wrapper with data: ' , data);
     const vdcInfo: any = await mainWrapper.admin.vdc.createVdc(
       {
         ProviderVdcReference: vcdConfig.admin.vdc.ProviderVdcReference,
@@ -202,13 +199,13 @@ export class VdcService {
         NetworkPoolReference: vcdConfig.admin.vdc.NetworkPoolReference,
         ResourceGuaranteedMemory: vcdConfig.admin.vdc.ResourceGuaranteedMemory,
         ResourceGuaranteedCpu: vcdConfig.admin.vdc.ResourceGuaranteedCpu,
-        cores: data.cpuCores,
+        cores: data['cpuCores'],
         vCpuInMhz: cpuSpeed.value,
-        ram: data.ram,
-        storage: data.storage,
+        ram: data['ram'],
+        storage: data['storage'],
         authToken: sessionToken,
         name: vdcName,
-        vm: data.vm,
+        vm: data['vm'],
         NetworkQuota: networkQuota.value,
       },
       vcloudOrgId,
@@ -238,7 +235,7 @@ export class VdcService {
    * @return {Promise}
    */
   async deleteVdc(userId, orgId, vdcId, serviceInstanceId) {
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
+    const sessionToken = await this.sessionService.checkAdminSession();
 
     const deleteVdc = await mainWrapper.admin.vdc.deleteVdc(
       sessionToken,

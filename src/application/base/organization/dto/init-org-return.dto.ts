@@ -1,6 +1,7 @@
 export class InitOrgReturnDto {
   id: number;
-  vcloudOrgId: number;
+  isNew?: boolean;
+  vcloudOrgId: string;
   name: string;
   __vcloudTask: any;
 }

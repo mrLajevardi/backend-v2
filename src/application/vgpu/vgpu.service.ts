@@ -69,7 +69,7 @@ export class VgpuService {
       props[key] = item;
     }
     const vdcIdVgpu = props['vdcId'].split(':').slice(-1);
-    const session = await this.sessionService.checkAdminSession(userId);
+    const session = await this.sessionService.checkAdminSession();
     const vmInfo = await this.getVmsInfo(
       session,
       vdcIdVgpu,
@@ -93,7 +93,7 @@ export class VgpuService {
   }
 
   async createAvailableInternalIP(serviceId, userId, orgId, networkId) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const allocatedIpAddresses =
       await mainWrapper.user.network.getIPUsageNetwrok(
         session,
@@ -144,7 +144,7 @@ export class VgpuService {
   async deployVgpuVm(serviceId, userId, vdcId, orgId, orgName) {
     const vmName = serviceId + 'VM';
     const vdcIdVgpu = vdcId.split(':').slice(-1);
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const vmInfo = await this.getVmsInfo(
       session,
       vdcIdVgpu,
@@ -185,7 +185,7 @@ export class VgpuService {
   }
 
   async deleteVgpuNat(userId, orgId, edgeName, natName) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const vgpuNat = await this.getVgpuNat(session, edgeName, natName);
     const ruleId = vgpuNat[0].id;
     const nat = await mainWrapper.user.nat.deleteNatRule(
@@ -215,7 +215,7 @@ export class VgpuService {
       orgId,
       networkId,
     );
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const sourceHref =
       'https://vcd.aradcloud.com/api/vAppTemplate/vm-' + templateId;
     const createdVm = await mainWrapper.user.vm.instantiateVmFromTemplateAdmin(
@@ -253,7 +253,7 @@ export class VgpuService {
     internalIP,
     typeNat,
   ) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
 
     const config = {
       enabled: true,
@@ -281,7 +281,7 @@ export class VgpuService {
     adminPassword,
     computerName,
   ) {
-    const session = await this.sessionService.checkAdminSession(orgId);
+    const session = await this.sessionService.checkAdminSession();
     const vmName = serviceId + 'VM';
     const vdcIdVgpu = vdcId.split(':').slice(-1);
     const query = await mainWrapper.user.vdc.vcloudQuery(
