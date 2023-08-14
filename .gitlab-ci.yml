@@ -6,7 +6,9 @@ stages:          # List of stages for jobs, and their order of execution
 default:
   image: node:latest
   cache:  # Cache modules in between jobs
-    key: $CI_COMMIT_REF_SLUG
+    key: 
+      files:
+        - package-lock.json
     paths:
       - .npm/
   before_script:
