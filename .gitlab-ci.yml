@@ -17,6 +17,10 @@ default:
 install:
   stage: .pre
   needs: []
+  only:
+    - develop
+    - merge_requests
+    - main
 
 unit-test-job:   # This job runs in the test stage.
   stage: test 
