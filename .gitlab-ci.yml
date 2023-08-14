@@ -3,8 +3,7 @@ stages:     # List of stages for jobs, and their order of execution
   - build
   - deploy
 
-default:
-  image: node:latest
+.job-cache:
   cache:  # Cache modules in between jobs
     key: 
       files:
@@ -16,7 +15,9 @@ default:
     
 unit-test-job:   # This job runs in the test stage.
   stage: test 
-  needs: []  
+  needs: []
+  extends:
+    - .job-cache
   only:
     - develop
     - merge_requests
@@ -35,6 +36,8 @@ unit-test-job:   # This job runs in the test stage.
 lint-test-job:
   stage: test
   needs: []
+  extends:
+    - .job-cache
   only:
     - develop
     - main
