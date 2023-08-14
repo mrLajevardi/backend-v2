@@ -73,7 +73,11 @@ export class ServiceController {
   // create new item
   @ApiOperation({ summary: 'get services of a user' })
   @ApiQuery({ name: 'id', required: false })
-  @ApiQuery({ name: 'serviceTypeId', required: false, description: " vdc, aradAi, vgpu"})
+  @ApiQuery({
+    name: 'serviceTypeId',
+    required: false,
+    description: ' vdc, aradAi, vgpu',
+  })
   @ApiResponse({
     status: 200,
     description: 'user services have been fetched successfully',
