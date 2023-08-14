@@ -1,5 +1,4 @@
-stages:  
-  - install     # List of stages for jobs, and their order of execution
+stages:     # List of stages for jobs, and their order of execution
   - test
   - build
   - deploy
@@ -14,17 +13,10 @@ default:
       - .npm/
   before_script:
     - npm ci --cache .npm --prefer-offline
-
-install: 
-  stage: install
-  before_script: []
-  script: 
-    - npm ci --cache .npm --prefer-offline
-
+    
 unit-test-job:   # This job runs in the test stage.
   stage: test 
-  needs: 
-    - job: install
+  needs: []  
   only:
     - develop
     - merge_requests
@@ -42,8 +34,7 @@ unit-test-job:   # This job runs in the test stage.
 
 lint-test-job:
   stage: test
-  needs: 
-    - job: install
+  needs: []
   only:
     - develop
     - main
