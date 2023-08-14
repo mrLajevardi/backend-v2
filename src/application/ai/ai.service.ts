@@ -130,7 +130,7 @@ export class AiService {
   async usedPerMonth(
     serviceInstanceId: string,
     createdDate: Date,
-  ): Promise<AiTransactionsLogs[]> {
+  ): Promise<number> {
     const todayDate = new Date().toISOString().slice(0, 10);
     const difference = monthDiff(new Date(createdDate), new Date(todayDate));
     const fromDay = new Date(addMonths(createdDate, difference))
@@ -139,7 +139,7 @@ export class AiService {
     const endDay = addMonths(createdDate, difference + 1)
       .toISOString()
       .slice(0, 10);
-    return await this.aiTransactionLogsTable.find({
+    return await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceId,
         dateTime: Between(

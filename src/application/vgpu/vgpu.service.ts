@@ -39,7 +39,7 @@ export class VgpuService {
     orgId: number,
     orgName: string,
     filter = '',
-  ): Promise<object> {
+  ): Promise<any> {
     if (filter !== '') {
       filter = `(isVAppTemplate==false;vdc==${vdcIdVgpu});` + `(${filter})`;
     } else {
@@ -83,8 +83,7 @@ export class VgpuService {
       props['orgId'],
       props['orgName'],
     );
-    const filter = vmInfo['filter'];
-    const poweredOnVm = await filter((value) => {
+    const poweredOnVm = await vmInfo.filter((value) => {
       return value.status === 'POWERED_ON';
     });
 
