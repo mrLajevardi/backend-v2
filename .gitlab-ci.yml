@@ -1,10 +1,11 @@
-stages:         # List of stages for jobs, and their order of execution
+stages: 
+  - install        # List of stages for jobs, and their order of execution
   - test
   - build
   - deploy
 
 install:
-  stage: .pre
+  stage: install
   cache:  # Cache modules in between jobs
     key: 
       files:
