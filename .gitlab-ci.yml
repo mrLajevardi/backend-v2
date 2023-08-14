@@ -17,7 +17,9 @@ install:
 
 unit-test-job:   # This job runs in the test stage.
   stage: test 
-  needs: []
+  needs: 
+    - job: install
+  
   only:
     - develop
     - merge_requests
@@ -35,7 +37,8 @@ unit-test-job:   # This job runs in the test stage.
 
 lint-test-job:
   stage: test
-  needs: []
+  needs: 
+    - job: install
   only:
     - develop
     - main
