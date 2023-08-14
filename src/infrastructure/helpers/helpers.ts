@@ -3,6 +3,7 @@ import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
 
 export function isTestingEnv() {
+  console.log(process.env.NODE_ENV);
   return process.env.NODE_ENV === 'test';
 }
 
