@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 
 @Injectable()
-export class DhcpService {
+export class DhcpWrapperService {
   constructor(
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
