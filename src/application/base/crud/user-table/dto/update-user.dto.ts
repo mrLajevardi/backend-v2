@@ -16,11 +16,13 @@ export class UpdateUserDto {
   realm?: string | null;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   username?: string;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   password?: string;
 
   @IsEmail()

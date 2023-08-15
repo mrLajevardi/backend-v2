@@ -12,7 +12,7 @@ import { RoleMappingTableService } from '../../crud/role-mapping-table/role-mapp
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isEmpty } from 'lodash';
 import { PaymentService } from 'src/application/payment/payment.service';
@@ -31,6 +31,7 @@ import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { ChangeEmailDto } from '../dto/change-email.dto';
 
 @Injectable()
 export class UserService {
@@ -57,6 +58,11 @@ export class UserService {
     return await this.userTable.findOne({
       where: { phoneNumber: phoneNumber },
     });
+  }
+
+  //changing the user email and set email verified to false 
+  async changeEmail(userId: number, dto: ChangeEmailDto): Promise<void> {
+    await this.userTable.update(userId, {email: dto.email, emailVerified: false});
   }
 
   async changePassword(userId: number, newPassword: string): Promise<void> {
@@ -219,11 +225,11 @@ export class UserService {
 
   async forgotPassword(
     options: SessionRequest,
-    data: ForgotPasswordDto,
+    data: ForgotPasswordDto,  
   ): Promise<void> {
     const user = await this.userTable.findOne({
       where: {
-        username: data.email,
+        email: data.email,
         emailVerified: true,
       },
     });
@@ -237,6 +243,7 @@ export class UserService {
         'resetPassword',
       );
       const link = url + createLink.token;
+      console.log(link);
       const emailOptions =
         this.notificationService.emailContents.forgotPassword(link, email);
       await this.notificationService.email.sendMail(emailOptions);
@@ -257,12 +264,13 @@ export class UserService {
 
   async getSingleUserInfo(
     options: SessionRequest,
-  ): Promise<{ name: string; family: string; phoneNumber: string }> {
+  ): Promise<{ name: string; family: string; phoneNumber: string, email: string  }> {
     const user = await this.userTable.findById(options.user.userId);
     return Promise.resolve({
       name: user.name,
       family: user.family,
       phoneNumber: user.phoneNumber,
+      email: user.email
     });
   }
 

@@ -24,12 +24,13 @@ import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { PostUserCreditDto } from '../dto/post-user-credit.dto';
-import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { PhoneNumberDto } from '../../security/auth/dto/phoneNumber.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { Response } from 'express';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { ChangeEmailDto } from '../dto/change-email.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -63,6 +64,29 @@ export class UserController {
     return res.status(200).json({ message: 'User updated successfully' });
   }
 
+  @Put('email')
+  @ApiOperation({ summary: 'set user email ' })
+  @ApiBody({ type: ChangeEmailDto })
+  async changeEmail(
+    @Request() options: SessionRequest,
+    @Body() changeEmailDto: ChangeEmailDto,
+    @Res() res: Response,
+  ): Promise<Response> {
+    const userId = options.user.userId;
+    await this.userService.changeEmail(userId, changeEmailDto);
+    return res.status(200).json({ message: 'User updated successfully' });
+  }
+
+  @Get('email')
+  @ApiOperation({ summary: 'get user email ' })
+  async getEmail(
+    @Request() options: SessionRequest,
+  ): Promise<{email: string}> {
+    const info = await this.userService.getSingleUserInfo(options);
+    return {email: info.email};
+  }
+
+
   @Put('changePassword')
   @ApiOperation({ summary: 'change password ' })
   @ApiBody({ type: ChangePasswordDto })
@@ -90,6 +114,7 @@ export class UserController {
     return paymentLink;
   }
 
+  @Public()
   @Post('/forgot-password')
   @ApiOperation({
     summary: "Sends an email to the user to reset the user's password",

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { MailOptions } from 'nodemailer/lib/json-transport';
 import { CreateLinkDto } from './dto/create-link.dto';
@@ -12,15 +12,20 @@ export class EmailService {
   constructor() {
     const host = process.env.EMAIL_HOST;
     const port = 25;
-    const auth = {
+    let auth = {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
     };
     const secure = process.env.EMAIL_SECURE?.toLowerCase() === 'true';
     this.from = process.env.EMAIL_FROM;
-    const tls = process.env.EMAIL_TLS as any;
+    console.log(process.env.EMAIL_TLS);
+    const tls = JSON.parse(process.env.EMAIL_TLS) || null ;
     // create transporter object
     // let options: nodemailer.TransportOptions;
+
+    if (!auth.user){
+      auth=null; 
+    }
 
     this.transporter = nodemailer.createTransport({
       port: port,
