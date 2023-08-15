@@ -20,7 +20,6 @@ import { ServiceInstancesStoredProcedureService } from '../base/crud/service-ins
 import { Between, ILike } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { toInteger } from 'lodash';
-import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
 import { GetAradAiDashoardDto } from './dto/get-arad-ai-dashoard.dto';
 
 @Injectable()
