@@ -271,11 +271,12 @@ export class UserAdminController {
   @ApiOperation({ summary: 'update user data : Admin' })
   @ApiBody({ type: UpdateUserDto })
   async updateUser(
+    @Req() options: SessionRequest,
     @Param('id') userId: number,
     @Body() updateUserDto: UpdateUserDto,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.userService.updateUser(userId, updateUserDto);
+    await this.userAdminService.updateUser(options, userId, updateUserDto);
     return res.status(200).json({ message: 'User updated successfully' });
   }
 
