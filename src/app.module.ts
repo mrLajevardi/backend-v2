@@ -34,9 +34,11 @@ import { SecurityToolsModule } from './application/base/security/security-tools/
 import { GroupModule } from './application/base/group/group.module';
 import { PayAsYouGoModule } from './application/base/pay-as-you-go/pay-as-you-go.module';
 import { ServicePropertiesModule } from './application/base/service-properties/service-properties.module';
+import { VcloudWrapper } from './wrappers/vcloudWrapper/vcloudWrapper';
 import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
+import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
 
 @Module({
   imports: [
@@ -78,6 +80,8 @@ import { RolesGuard } from './application/base/security/ability/guards/roles.gua
     GroupModule,
     PayAsYouGoModule,
     ServicePropertiesModule,
+    VcloudWrapper,
+    MainWrapperModule,
     RobotModule,
   ],
   controllers: [AppController],
