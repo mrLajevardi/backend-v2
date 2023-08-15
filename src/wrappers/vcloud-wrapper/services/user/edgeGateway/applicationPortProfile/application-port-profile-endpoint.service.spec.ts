@@ -9,7 +9,9 @@ describe('ApplicationPortProfileEndpointService', () => {
       providers: [ApplicationPortProfileEndpointService],
     }).compile();
 
-    service = module.get<ApplicationPortProfileEndpointService>(ApplicationPortProfileEndpointService);
+    service = module.get<ApplicationPortProfileEndpointService>(
+      ApplicationPortProfileEndpointService,
+    );
   });
 
   it('should be defined', () => {

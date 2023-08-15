@@ -5,10 +5,7 @@ import { Builder } from 'xml2js';
 
 @Injectable()
 export class VdcWrapperService {
-  constructor(
-    private readonly vcloudWrapperService: VcloudWrapperService,
-    private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
-  ) {}
+  constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
   /**
    *
    * @param {String} authToken

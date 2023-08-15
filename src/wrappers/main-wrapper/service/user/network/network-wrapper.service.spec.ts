@@ -1,12 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { NetworkWrapperService } from './network-wrapper.service';
+import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
+import { VcloudWrapperModule } from 'src/wrappers/vcloud-wrapper/vcloud-wrapper.module';
 
 describe('NetworkWrapperService', () => {
   let service: NetworkWrapperService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [NetworkWrapperService],
+      imports: [VcloudWrapperModule],
+      providers: [NetworkWrapperService, EdgeGatewayWrapperService],
     }).compile();
 
     service = module.get<NetworkWrapperService>(NetworkWrapperService);

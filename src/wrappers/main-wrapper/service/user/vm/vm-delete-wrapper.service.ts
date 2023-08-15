@@ -6,11 +6,7 @@ import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.servic
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 @Injectable()
 export class VmDeleteWrapperService {
-  constructor(
-    private readonly vcloudWrapperService: VcloudWrapperService,
-    private readonly vdcWrapperService: VdcWrapperService,
-    private readonly adminOrgWrapperService: AdminOrgWrapperService,
-  ) {}
+  constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
   /**
    * delete media by given id
    * @param {String} authToken

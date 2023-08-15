@@ -9,7 +9,9 @@ describe('AdminEdgeGatewayWrapperService', () => {
       providers: [AdminEdgeGatewayWrapperService],
     }).compile();
 
-    service = module.get<AdminEdgeGatewayWrapperService>(AdminEdgeGatewayWrapperService);
+    service = module.get<AdminEdgeGatewayWrapperService>(
+      AdminEdgeGatewayWrapperService,
+    );
   });
 
   it('should be defined', () => {

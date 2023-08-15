@@ -11,7 +11,6 @@ export class VmWrapperService {
   constructor(
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly vdcWrapperService: VdcWrapperService,
-    private readonly adminOrgWrapperService: AdminOrgWrapperService,
   ) {}
   /**
    *

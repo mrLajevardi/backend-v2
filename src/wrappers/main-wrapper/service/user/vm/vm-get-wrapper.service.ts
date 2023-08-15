@@ -6,11 +6,7 @@ import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
 import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
 @Injectable()
 export class VmGetWrapperService {
-  constructor(
-    private readonly vcloudWrapperService: VcloudWrapperService,
-    private readonly vdcWrapperService: VdcWrapperService,
-    private readonly adminOrgWrapperService: AdminOrgWrapperService,
-  ) {}
+  constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
   /**
    * get a single vm
    * @param {String} authToken

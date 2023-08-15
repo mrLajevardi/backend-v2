@@ -9,7 +9,9 @@ describe('EdgeGatewayEndpointService', () => {
       providers: [EdgeGatewayEndpointService],
     }).compile();
 
-    service = module.get<EdgeGatewayEndpointService>(EdgeGatewayEndpointService);
+    service = module.get<EdgeGatewayEndpointService>(
+      EdgeGatewayEndpointService,
+    );
   });
 
   it('should be defined', () => {

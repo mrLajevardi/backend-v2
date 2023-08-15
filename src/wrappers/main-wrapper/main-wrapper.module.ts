@@ -13,7 +13,9 @@ import { AdminEdgeGatewayWrapperService } from './service/admin/edgeGateway/admi
 import { AdminOrgWrapperService } from './service/admin/org/admin-org-wrapper.service';
 import { AdminUserWrapperService } from './service/admin/user/admin-user-wrapper.service';
 import { AdminVdcWrapperService } from './service/admin/vdc/admin-vdc-wrapper.service';
+import { VcloudWrapperModule } from '../vcloud-wrapper/vcloud-wrapper.module';
 @Module({
+  imports: [VcloudWrapperModule],
   providers: [
     ApplicationPortProfileWrapperService,
     DhcpWrapperService,

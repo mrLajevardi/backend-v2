@@ -4,10 +4,7 @@ import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.s
 
 @Injectable()
 export class TaskWrapperService {
-  constructor(
-    private readonly vcloudWrapperService: VcloudWrapperService,
-    private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
-  ) {}
+  constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
   async cancelTask(authToken, taskId) {
     const endpoint = 'TasksEndpointService.cancelTaskEndpoint';
     const wrapper =
