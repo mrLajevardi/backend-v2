@@ -20,6 +20,7 @@ export class AdminVdcEndpointService {
       method: 'delete',
       resource: `/api/admin/vdc/${options.urlParams.vdcId[0]}?force=true&recursive=true`,
       params: {},
+      body: null,
       headers: {
         Accept: 'application/*+json;version=36.3',
         'Content-Type': 'application/*+json',

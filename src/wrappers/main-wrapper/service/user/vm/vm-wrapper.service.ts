@@ -581,11 +581,16 @@ export class VmWrapperService {
    * @return {Promise}
    */
   async uploadFile(authToken, catalogId, data) {
-    const response = new VcloudWrapper().posts('user.vm.uploadFile', {
-      urlParams: { catalogId },
-      headers: { Authorization: `Bearer ${authToken}` },
-      body: data,
-    });
+    const endpoint = 'VmEndpointService.undeployVmEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const response = await this.vcloudWrapperService.request(
+      wrapper({
+        urlParams: { catalogId },
+        headers: { Authorization: `Bearer ${authToken}` },
+        body: data,
+      }),
+    );
     return response;
   }
 }

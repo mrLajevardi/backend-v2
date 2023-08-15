@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { Builder } from 'xml2js';
 import { isEmpty, isNil } from 'lodash';
@@ -21,7 +21,7 @@ export class VmUpdateWrapperService {
    * @return {Promise}
    */
   async updateDiskSection(authToken, vmId, diskSettings, vdcId) {
-    const vmInfo = await this.getVApp(authToken, vmId);
+    const vmInfo = await this.vmGetWrapperService.getVApp(authToken, vmId);
     const vmInfoData: any = vmInfo.data;
     const controllers = await this.calcBusCombination(
       diskSettings,
@@ -141,7 +141,7 @@ export class VmUpdateWrapperService {
       }
       // check if there is enough combinations for given disks
       if (validCombCount < element.length) {
-        throw new BadGatewayException();
+        throw new BadRequestException();
       }
       // bus number
       let i = 0;
