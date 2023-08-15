@@ -37,9 +37,12 @@ import { ServicePropertiesModule } from './application/base/service-properties/s
 import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
+import { RavenInterceptor, RavenModule } from 'nest-raven';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
+    RavenModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -94,6 +97,10 @@ import { RolesGuard } from './application/base/security/ability/guards/roles.gua
     {
       provide: APP_GUARD,
       useClass: PoliciesGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useValue: new RavenInterceptor(),
     },
     NetworkService,
     ApplicationPortProfileService,
