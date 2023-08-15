@@ -36,15 +36,18 @@ export class UpdateUserDto {
   emailVerified?: boolean | null;
 
   @IsBoolean()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   active?: boolean;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   name?: string;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   family?: string;
 
   @IsBoolean()
@@ -103,11 +106,12 @@ export class UpdateUserDto {
   acceptTermsOfService?: boolean | null;
 
   @IsBoolean()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   phoneVerified?: boolean;
 
   @IsArray()
   @IsOptional()
-  @ApiProperty({ type: [Groups] })
+  @ApiProperty({ type: [Groups], required: false })
   groups?: Groups[];
 }

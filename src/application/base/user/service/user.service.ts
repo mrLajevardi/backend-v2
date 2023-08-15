@@ -12,15 +12,12 @@ import { RoleMappingTableService } from '../../crud/role-mapping-table/role-mapp
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import * as jwt from 'jsonwebtoken';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isEmpty } from 'lodash';
 import { PaymentService } from 'src/application/payment/payment.service';
 import { NotificationService } from '../../notification/notification.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
-import * as util from 'util';
-import { JwtService } from '@nestjs/jwt';
 import { encryptPassword } from 'src/infrastructure/helpers/helpers';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
@@ -32,6 +29,10 @@ import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ChangeEmailDto } from '../dto/change-email.dto';
+import { ResetForgottenPasswordDto } from '../dto/reset-forgotten-password.dto';
+import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invalid-phone-token.exception';
+import { JwtService } from '@nestjs/jwt';
+import { MoreThanOneUserWithSameEmail } from 'src/infrastructure/exceptions/more-than-one-user-with-this-email.exception';
 
 @Injectable()
 export class UserService {
@@ -44,7 +45,6 @@ export class UserService {
     private readonly paymentService: PaymentService,
     private readonly notificationService: NotificationService,
     private readonly securityTools: SecurityToolsService,
-    private readonly jwtService: JwtService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -60,9 +60,12 @@ export class UserService {
     });
   }
 
-  //changing the user email and set email verified to false 
+  //changing the user email and set email verified to false
   async changeEmail(userId: number, dto: ChangeEmailDto): Promise<void> {
-    await this.userTable.update(userId, {email: dto.email, emailVerified: false});
+    await this.userTable.update(userId, {
+      email: dto.email,
+      emailVerified: false,
+    });
   }
 
   async changePassword(userId: number, newPassword: string): Promise<void> {
@@ -225,13 +228,18 @@ export class UserService {
 
   async forgotPassword(
     options: SessionRequest,
-    data: ForgotPasswordDto,  
+    data: ForgotPasswordDto,
   ): Promise<void> {
+    const where = {
+      email: data.email,
+      emailVerified: true,
+    };
+    const count = await this.userTable.count({ where: where });
+    if (count > 1) {
+      throw new MoreThanOneUserWithSameEmail();
+    }
     const user = await this.userTable.findOne({
-      where: {
-        email: data.email,
-        emailVerified: true,
-      },
+      where: where,
     });
     if (!isEmpty(user)) {
       const email = user.email;
@@ -262,15 +270,55 @@ export class UserService {
     }
   }
 
-  async getSingleUserInfo(
+  async resetForgottenPassword(
     options: SessionRequest,
-  ): Promise<{ name: string; family: string; phoneNumber: string, email: string  }> {
+    data: ResetForgottenPasswordDto,
+  ) {
+    const secretKey = process.env.EMAIL_JWT_SECRET;
+    const jwtService = new JwtService({ secret: secretKey });
+    const pjwtVerified = jwtService.verify(data.token);
+    if (!pjwtVerified) {
+      return Promise.reject(new InvalidPhoneTokenException());
+    }
+    const dto = jwtService.decode(data.token);
+    if (!dto) {
+      throw new InvalidEmailTokenException();
+    }
+    console.log(dto);
+    const user = await this.userTable.findById(dto['id']);
+    const updated = await this.userTable.updateAll(
+      { id: user.id },
+      { password: await encryptPassword(data.newPassword) },
+    );
+    console.log(
+      user,
+      data.newPassword,
+      await encryptPassword(data.newPassword),
+    );
+    await this.logger.info(
+      'user',
+      'resetPassword',
+      {
+        username: user.username,
+        _object: user.id.toString(),
+      },
+      { ...options.user },
+    );
+    return Promise.resolve({ passwordChanged: true });
+  }
+
+  async getSingleUserInfo(options: SessionRequest): Promise<{
+    name: string;
+    family: string;
+    phoneNumber: string;
+    email: string;
+  }> {
     const user = await this.userTable.findById(options.user.userId);
     return Promise.resolve({
       name: user.name,
       family: user.family,
       phoneNumber: user.phoneNumber,
-      email: user.email
+      email: user.email,
     });
   }
 
@@ -319,8 +367,6 @@ export class UserService {
       'code',
       'hasVdc',
       'id',
-      'credit',
-      'email',
     ];
     for (const key of Object.keys(updateUserDto)) {
       if (forbiddenFields.includes(key)) {
@@ -436,36 +482,6 @@ export class UserService {
     }
   }
 
-  // async resetForgottenPassword(data: ResetForgottenPasswordDto, options: SessionRequest) : Promise<{passwordChanged: boolean}> {
-  //   const pjwtVerified = await jwt.verify(
-  //     data.pjwt,
-  //     process.env.OTP_SECRET_KEY,
-  //   );
-  //   if (!pjwtVerified) {
-  //     return Promise.reject(new InvalidPhoneNumberException());
-  //   }
-  //   const phone = jwt.decode(data.pjwt);
-  //   const user = await this.userTable.findOne({
-  //     where: {
-  //       phoneNumber: phone,
-  //     },
-  //   });
-  //   await this.userTable.updateAll(
-  //     { id: user.id },
-  //     { password: await encryptPassword(data.password) },
-  //   );
-  //   await this.logger.info(
-  //     'user',
-  //     'resetPassword',
-  //     {
-  //       username: user.username,
-  //       _object: user.id,
-  //     },
-  //     { ...options.user },
-  //   );
-  //   return Promise.resolve({ passwordChanged: true });
-  // }
-
   async resetPasswordByPhone(
     data: ResetPasswordByPhoneDto,
   ): Promise<{ hash: string }> {
@@ -499,12 +515,14 @@ export class UserService {
 
   async verifyEmail(options: SessionRequest, token: string): Promise<void> {
     try {
-      const verifyToken = util.promisify(jwt.verify);
-      const parsedToken = this.jwtService.verify(token, {
+      const jwtService = new JwtService({
+        secret: process.env.EMAIL_JWT_SECRET,
+      });
+      const parsedToken = jwtService.verify(token, {
         subject: 'emailVerification',
       });
 
-      if (!verifyToken) {
+      if (!jwtService.verify(token)) {
         throw new InvalidEmailTokenException();
       }
       const user = await this.userTable.findById(parsedToken.id);
@@ -517,7 +535,7 @@ export class UserService {
         'verifyEmail',
         {
           username: user.username,
-          _object: user.id,
+          _object: user.id.toString(),
         },
         { ...options.user },
       );

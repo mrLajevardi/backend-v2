@@ -10,14 +10,10 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Groups } from 'src/infrastructure/database/entities/Groups';
 export class UpdateUserDto {
-
-
-
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
   password?: string;
-
 
   @IsString()
   @ApiProperty()
@@ -26,7 +22,6 @@ export class UpdateUserDto {
   @IsString()
   @ApiProperty()
   family?: string;
-
 
   @IsString()
   @IsOptional()
