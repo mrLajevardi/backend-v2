@@ -315,10 +315,10 @@ export class ServiceAdminController {
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
   ): Promise<{ transaction: Transactions[]; totalRecords: number }> {
-    if (!page){
-      page=0;
+    if (!page) {
+      page = 0;
     }
-    if (!pageSize){
+    if (!pageSize) {
       pageSize = 10;
     }
     return await this.service.getTransactions(

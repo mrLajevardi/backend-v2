@@ -69,10 +69,10 @@ export class ServiceAdminService {
     if (serviceInstances.length == count) {
       for (const serviceInstance of serviceInstances) {
         try {
-        await this.deleteService(options, serviceInstance.id);
+          await this.deleteService(options, serviceInstance.id);
           console.log('deleting', serviceInstance.id);
-        }catch(error){
-          console.log('unable to delete ' , serviceInstance.id);
+        } catch (error) {
+          console.log('unable to delete ', serviceInstance.id);
         }
       }
     }
