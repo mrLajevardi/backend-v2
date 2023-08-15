@@ -12,7 +12,9 @@ export class ServiceInstancesStoredProcedureService {
   ) {}
 
   // Exec Sp_CountAradAIUsedEachService
-  async spCountAradAiUsedEachService(instanceId: string): Promise<Record<string,number>> {
+  async spCountAradAiUsedEachService(
+    instanceId: string,
+  ): Promise<Record<string, number>> {
     const query =
       "EXEC Sp_CountAradAIUsedEachService @ServiceInstanceID='" +
       instanceId +

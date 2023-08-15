@@ -18,7 +18,7 @@ export class VgpuDnatService {
     externalPort: number,
     portProfileName: string,
     portProfileId: string,
-  ): Promise<{__vcloudTask: object}> {
+  ): Promise<{ __vcloudTask: object }> {
     const session = await this.sessionService.checkAdminSession();
     const config = {
       enabled: true,

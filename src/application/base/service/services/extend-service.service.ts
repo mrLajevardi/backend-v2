@@ -58,13 +58,13 @@ export class ExtendServiceService {
 
     const plans = await this.plansTable.findOne({
       where: {
-        code: Like('%'+qualityPlanCode+'%'),
+        code: Like('%' + qualityPlanCode + '%'),
       },
     });
     console.log(plans);
 
     //qualityPlanCode='normal';
-    console.log(qualityPlanCode,serviceId);
+    console.log(qualityPlanCode, serviceId);
     const AiServiceConfigs = await this.configsTable.find({
       where: {
         propertyKey: Like('%' + qualityPlanCode + '%'),

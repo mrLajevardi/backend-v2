@@ -250,7 +250,7 @@ describe('AiService', () => {
       const serviceInstanceId = 'B66F95BB-F018-4346-8B02-4CD4535D9F11';
       const createdDate = new Date();
       const result = await service.usedPerMonth(serviceInstanceId, createdDate);
-      expect(result).toEqual([]);
+      expect(result).toEqual(0);
     });
   });
 
