@@ -66,9 +66,14 @@ export class ServiceAdminService {
       },
     });
     console.log(serviceInstances.length, count);
-    if (serviceInstances.length === count) {
+    if (serviceInstances.length == count) {
       for (const serviceInstance of serviceInstances) {
-        await this.deleteService(options, serviceInstance.id);
+        try {
+          await this.deleteService(options, serviceInstance.id);
+          console.log('deleting', serviceInstance.id);
+        } catch (error) {
+          console.log('unable to delete ', serviceInstance.id);
+        }
       }
     }
   }
@@ -460,6 +465,7 @@ export class ServiceAdminService {
       const count = await this.serviceInstancesTable.count({
         where: {
           serviceTypeId: serviceType,
+          isDeleted: false,
         },
       });
       serviceCounts[serviceType] = count;
