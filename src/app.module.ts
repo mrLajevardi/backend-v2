@@ -39,6 +39,8 @@ import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
 import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
+import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
+import { BullModule as BullMQModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -47,6 +49,12 @@ import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
     }),
     BullModule.forRoot({
       redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullMQModule.forRoot({
+      connection: {
         host: 'localhost',
         port: 6379,
       },
@@ -83,6 +91,7 @@ import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
     VcloudWrapper,
     MainWrapperModule,
     RobotModule,
+    TaskManagerModule,
   ],
   controllers: [AppController],
   providers: [
