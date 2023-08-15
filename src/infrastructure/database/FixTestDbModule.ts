@@ -4,7 +4,7 @@ Importing this module in the app.module.ts is sufficient for loading the databse
 
 */
 
-import { Module, OnModuleInit } from '@nestjs/common';
+import { Module /*, OnModuleInit*/ } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { Acl } from './entities/Acl';

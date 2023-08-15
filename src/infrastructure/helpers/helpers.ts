@@ -1,26 +1,27 @@
 import { getIPRange } from 'get-ip-range';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { RangeIpDto } from '../dto/range-ip.dto';
 
-export function isTestingEnv() {
+export function isTestingEnv(): boolean {
   //console.log(process.env.NODE_ENV);
   return process.env.NODE_ENV === 'test';
 }
 
-export function isEmpty(value) {
+export function isEmpty(value: string): boolean {
   if (value === null || value === undefined) {
     return true;
   }
   return false;
 }
 
-export function isCidr(cidr) {
+export function isCidr(cidr: string): RegExpMatchArray {
   const regex = new RegExp(
     '^([0-9]{1,3}.){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$',
   );
   return cidr.match(regex);
 }
-export function isValidIpRange(range, cidr) {
+export function isValidIpRange(range: RangeIpDto, cidr: string): boolean {
   const ipList = getIPRange(cidr);
   const startAddressExist = ipList.includes(range.startAddress);
   const endAddressExist = ipList.includes(range.endAddress);
@@ -33,7 +34,7 @@ export function isValidIpRange(range, cidr) {
   return false;
 }
 
-export function hasDuplicates(array) {
+export function hasDuplicates(array: Array<any>): boolean {
   return new Set(array).size !== array.length;
 }
 
@@ -55,7 +56,7 @@ export async function encryptPassword(plain: string): Promise<string> {
 export function generatePassword(
   length = 32,
   wishlist = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz~!@-#$/}{[]+)(&;?<>*',
-) {
+): string {
   return Array.from(crypto.randomFillSync(new Uint32Array(length)))
     .map((x) => wishlist[(x as number) % wishlist.length])
     .join('');

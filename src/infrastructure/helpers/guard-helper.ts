@@ -1,8 +1,14 @@
+import { ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from 'src/application/base/security/auth/decorators/ispublic.decorator';
+import { UserPayload } from 'src/application/base/security/auth/dto/user-payload.dto';
 
 export class guardHelper {
-  static checkValidModes(reflector: Reflector, context, user?) {
+  static checkValidModes(
+    reflector: Reflector,
+    context: ExecutionContext,
+    user?: UserPayload,
+  ): boolean {
     const isPublic = reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),

@@ -1,4 +1,8 @@
-import { Entity, Column, PrimaryColumn, ViewEntity, ViewColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn /*, ViewEntity, ViewColumn */,
+} from 'typeorm';
 @Entity({
   schema: 'user',
   name: 'InvoiceItemList',

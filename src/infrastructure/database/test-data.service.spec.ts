@@ -1,15 +1,18 @@
-import { Test, TestingModule, TestingModuleBuilder } from '@nestjs/testing';
-import { Repository } from 'typeorm';
-import { TestDataService } from './test-data.service';
+import {
+  Test,
+  TestingModule /*, TestingModuleBuilder*/,
+} from '@nestjs/testing';
+/* import { Repository } from 'typeorm'; */
+/* import { TestDataService } from './test-data.service'; */
 import {
   TypeOrmModule,
   TypeOrmModuleOptions,
-  getRepositoryToken,
+  /* getRepositoryToken, */
 } from '@nestjs/typeorm';
 // Import other test entities...
 
-import { Acl } from './entities/Acl';
-import { DatabaseModule } from './database.module';
+/* import { Acl } from './entities/Acl'; */
+/* import { DatabaseModule } from './database.module'; */
 import { dbEntities } from './entityImporter/orm-entities';
 
 describe('TestDataService', () => {

@@ -5,9 +5,9 @@ so we need to convert all of entities effortlessly.
 This script is responsible for that. 
 */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
 
+import path from 'path';
 // Source and destination directories
 const sourceDir = './entities';
 const destinationDir = './test-entities';

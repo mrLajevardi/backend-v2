@@ -114,7 +114,7 @@ export class ServiceInstances {
   tickets: Tickets[];
 
   @BeforeInsert()
-  setId() {
+  setId(): void {
     this.id = randomUUID();
   }
 }

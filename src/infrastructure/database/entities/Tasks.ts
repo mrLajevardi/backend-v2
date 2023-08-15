@@ -5,7 +5,7 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
-  PrimaryGeneratedColumn,
+  /*PrimaryGeneratedColumn, */
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
 import { randomUUID } from 'crypto';
@@ -60,7 +60,7 @@ export class Tasks {
   @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
   @BeforeInsert()
-  setId() {
+  setId(): void {
     this.taskId = randomUUID();
   }
 }

@@ -51,7 +51,7 @@ import { isTestingEnv } from '../helpers/helpers';
   ],
 })
 export class DatabaseModule implements OnModuleInit {
-  onModuleInit() {
+  onModuleInit(): void {
     if (isTestingEnv()) {
       console.log('Running in unit test mode');
       // Perform additional actions for test mode if needed

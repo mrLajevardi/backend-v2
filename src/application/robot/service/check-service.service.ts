@@ -9,6 +9,7 @@ import { SessionsService } from 'src/application/base/sessions/sessions.service'
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { User } from 'src/infrastructure/database/entities/User';
+import { LogErrorDto } from 'src/infrastructure/dto/log-error.dto';
 
 @Injectable()
 export class CheckServiceService {

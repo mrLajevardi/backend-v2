@@ -4,6 +4,9 @@ import * as fs from 'fs';
 import { InfoLogTableService } from 'src/application/base/crud/info-log-table/info-log-table.service';
 import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/debug-log-table.service';
 import { isEmpty } from 'lodash';
+import { LogErrorDto } from '../dto/log-error.dto';
+import { SessionRequest } from '../types/session-request.type';
+// import { ResponseType } from 'axios';
 
 @Injectable()
 export class LoggerService {
@@ -13,7 +16,7 @@ export class LoggerService {
     private readonly debugLogTable: DebugLogTableService,
   ) {}
 
-  async error(info) {
+  async error(info: LogErrorDto): Promise<void> {
     await this.errorLogTable.create({
       userId: info?.userId,
       stackTrace: info?.stackTrace,
@@ -23,7 +26,12 @@ export class LoggerService {
     });
   }
 
-  async info(type, action, options, requestOptions) {
+  async info(
+    type: string,
+    action: string,
+    options,
+    requestOptions,
+  ): Promise<void> {
     const path = 'src/infrastructure/logger/loggerObjects.json';
     const jsonData = fs.readFileSync(path, 'utf8');
     const loggerObjects = JSON.parse(jsonData);
@@ -31,11 +39,11 @@ export class LoggerService {
     const typeInfo = loggerObjects[type];
     const actionInfo = typeInfo.actions[action];
     const description = this.replacer(actionInfo.description, options);
-    let userId = requestOptions?.userId;
+    /* let userId = requestOptions?.userId;
 
     if (requestOptions?.adminId) {
       userId = requestOptions?.adminId;
-    }
+    } */
     await this.infoLogTable.create({
       userId: requestOptions?.userId || null,
       actionId: actionInfo.actionId || null,
@@ -48,11 +56,11 @@ export class LoggerService {
     });
   }
 
-  async debug(req, res, err = null) {
+  async debug(req: SessionRequest, res: Response, err = null): Promise<void> {
     const url = req.url;
     const date = new Date().toISOString();
-    let status = res.statusCode;
-    let body = res.locals.body;
+    let status = res.status; /*statusCode*/
+    let body = await res.body.getReader().read(); /*.locals.body*/ // TODO handle get request's body
     if (err) {
       status = err.statusCode;
       if (isEmpty(status)) {
@@ -63,8 +71,8 @@ export class LoggerService {
     }
     const requestBody = req.body;
     let userId = null;
-    if (req?.accessToken?.userId) {
-      userId = req?.accessToken.userId || null;
+    if (req?.user.userId) {
+      userId = req?.user.userId || null;
     }
     await this.debugLogTable
       .create({
@@ -75,7 +83,7 @@ export class LoggerService {
         request: JSON.stringify(requestBody),
         response: JSON.stringify(body),
         method: req.method,
-        ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
+        ip: req.headers['x-forwarded-for'] /* || req.socket.remoteAddress */, // TODO get Ip from socket,
       })
       .then((log) => {
         console.log(log);
@@ -85,7 +93,7 @@ export class LoggerService {
       });
   }
 
-  replacer(template, obj) {
+  replacer(template: string, obj: object): string {
     const keys = Object.keys(obj);
     const func = Function(...keys, 'return `' + template + '`;');
     return func(...keys.map((k) => obj[k]));
