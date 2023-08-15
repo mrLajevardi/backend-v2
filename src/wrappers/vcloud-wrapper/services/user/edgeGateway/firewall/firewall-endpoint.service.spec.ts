@@ -2,14 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FirewallEndpointService } from './firewall-endpoint.service';
 
 describe('FirewallEndpointService', () => {
-  let service: FirwallEndpointService;
+  let service: FirewallEndpointService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [FirwallEndpointService],
+      providers: [FirewallEndpointService],
     }).compile();
 
-    service = module.get<FirwallEndpointService>(FirwallEndpointService);
+    service = module.get<FirewallEndpointService>(FirewallEndpointService);
   });
 
   it('should be defined', () => {
