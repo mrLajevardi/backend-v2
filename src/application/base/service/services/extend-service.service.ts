@@ -4,7 +4,7 @@ import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/inva
 
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { InvalidServiceIdException } from 'src/infrastructure/exceptions/invalid-service-id.exception';
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -21,7 +21,6 @@ import { InvoiceItemListService } from '../../crud/invoice-item-list/invoice-ite
 import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
 import { Like, UpdateResult } from 'typeorm';
 import { ServiceAiInfoDto } from '../dto/return/service-ai-info.dto';
-import { QualityPlansService } from '../../crud/quality-plans/quality-plans.service';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
@@ -41,7 +40,6 @@ export class ExtendServiceService {
     private readonly invoicesTableService: InvoicesTableService,
     private readonly invoiceItemListService: InvoiceItemListService,
     private readonly invoicePlanTableService: InvoicePlansTableService,
-    private readonly qualityPlansTable: QualityPlansService,
   ) {}
 
   async getAiServiceInfo(
@@ -57,19 +55,24 @@ export class ExtendServiceService {
         code: 'ARADAIItem',
       },
     });
-    const plans = await this.qualityPlansTable.findOne({
+
+    const plans = await this.plansTable.findOne({
       where: {
-        serviceTypeId: 'aradAi',
-        code: Like(qualityPlanCode),
+        code: Like('%' + qualityPlanCode + '%'),
       },
     });
+    console.log(plans);
 
+    //qualityPlanCode='normal';
+    console.log(qualityPlanCode, serviceId);
     const AiServiceConfigs = await this.configsTable.find({
       where: {
         propertyKey: Like('%' + qualityPlanCode + '%'),
-        serviceTypeId: serviceId,
+        serviceTypeId: 'AradAi',
       },
     });
+
+    console.log(AiServiceConfigs);
     const ServiceAiInfo = {
       qualityPlanCode,
       createdDate,

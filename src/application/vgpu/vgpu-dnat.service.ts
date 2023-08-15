@@ -10,17 +10,15 @@ export class VgpuDnatService {
     private readonly sessionService: SessionsService,
   ) {}
   async createVgpuDnat(
-    serviceId,
-    userId,
-    orgId,
-    edgeName,
-    externalIP,
-    internalIP,
-    typeNat,
-    externalPort,
-    portProfileName,
-    portProfileId,
-  ) {
+    serviceId: string,
+    edgeName: string,
+    externalIP: string,
+    internalIP: string,
+    typeNat: string,
+    externalPort: number,
+    portProfileName: string,
+    portProfileId: string,
+  ): Promise<{ __vcloudTask: object }> {
     const session = await this.sessionService.checkAdminSession();
     const config = {
       enabled: true,
@@ -41,7 +39,7 @@ export class VgpuDnatService {
     await this.servicePropertiesTable.create({
       serviceInstanceId: serviceId,
       propertyKey: 'VgpuExternalPort',
-      value: externalPort,
+      value: externalPort.toString(),
     });
     return dnet;
   }

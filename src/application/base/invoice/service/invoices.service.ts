@@ -236,7 +236,7 @@ export class InvoicesService {
     console.log('🥓', totalCosts);
     let duration = data.duration;
     if (data.serviceTypeId == 'vgpu') {
-      await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
+      await this.vgpuService.chackAvalibleToPowerOnVgpu();
       duration = 36;
     }
     const dto: CreateInvoicesDto = {

@@ -1,4 +1,4 @@
-interface ServiceItemDto {
+export interface ServiceItemDto {
   ID: number;
   ServiceTypeID: string;
   Title: string;
@@ -11,7 +11,7 @@ interface ServiceItemDto {
   AddressDemo: string;
 }
 
-interface GetPlanItemsDto {
+export interface GetPlanItemsDto {
   Code: string;
   AdditionRatio: number;
   Description: string;
