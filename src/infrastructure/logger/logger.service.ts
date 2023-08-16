@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import { InfoLogTableService } from 'src/application/base/crud/info-log-table/info-log-table.service';
 import { DebugLogTableService } from 'src/application/base/crud/debug-log-table/debug-log-table.service';
 import { isEmpty } from 'lodash';
-import { LogErrorDto } from '../dto/log-error.dto';
+import { LogErrorDto } from '../dto/log/log-error.dto';
 import { SessionRequest } from '../types/session-request.type';
 // import { ResponseType } from 'axios';
 
