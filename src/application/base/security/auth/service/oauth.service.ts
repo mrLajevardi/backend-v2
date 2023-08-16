@@ -99,17 +99,7 @@ export class OauthService {
       console.log(checkCode.data)
       const accessToken = checkCode.data.access_token;
 
-        // Use access token to fetch user email
-  const emailResponse = await axios.get('https://api.github.com/user/emails', {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
 
-  const userEmails = emailResponse.data;
-
-  console.log(userEmails);
-  
       const checkEmail = await axios.get(`https://api.github.com/user`, {
         httpsAgent,
         headers: {
@@ -125,7 +115,7 @@ export class OauthService {
       email = checkEmail.data.email;
       verified = true;
     } catch (err) {
-      console.log(err);
+      console.log(err.message);
       error = new BadRequestException();
     }
     return {
@@ -365,8 +355,8 @@ export class OauthService {
     const password = data.password ? data.password : generatePassword();
     newUser.password = await encryptPassword(password);
     newUser.vdcPassword = generatePassword();
-    newUser.name = firstname;
-    newUser.family = lastname;
+    newUser.name = firstname || 'کاربر';
+    newUser.family = lastname || 'گرامی';
     newUser.phoneNumber = phoneNumber;
     newUser.active = data.active;
     newUser.phoneVerified = true;
