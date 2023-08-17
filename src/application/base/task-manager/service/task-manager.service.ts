@@ -116,7 +116,7 @@ export class TaskManagerService extends WorkerHost {
     const queueName = 'newTasks';
     const targetTaskConfig: TasksConfigsInterface =
       this.taskManagerTasks[taskName];
-    const flow: FlowJob= {
+    const flow: FlowJob = {
       name: taskName,
       data: {
         type: 'task',
