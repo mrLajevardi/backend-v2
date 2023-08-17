@@ -31,6 +31,9 @@ import {
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
+import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { ExtendedOptionsDto } from 'src/infrastructure/dto/extended-options.dto';
 @ApiBearerAuth()
 @ApiTags('Vpc')
 // @UseFilters(new HttpExceptionFilter())
@@ -79,12 +82,12 @@ export class VdcController {
   })
   async createNamedDisk(
     @Request()
-    options: any,
+    options: ExtendedOptionsDto,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Body()
-    data: TempDto,
-  ) {
+    data: CreateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
     return this.vdcService.createNamedDisk(options, vdcInstanceId, data);
   }
 

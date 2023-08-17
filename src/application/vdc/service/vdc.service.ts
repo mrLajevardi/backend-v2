@@ -7,6 +7,9 @@ import { ServicePropertiesTableService } from 'src/application/base/crud/service
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { ExtendedOptionsDto } from 'src/infrastructure/dto/extended-options.dto';
 
 @Injectable()
 export class VdcService {
@@ -269,7 +272,11 @@ export class VdcService {
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
   }
-  async createNamedDisk(options, vdcInstanceId, data) {
+  async createNamedDisk(
+    options: ExtendedOptionsDto,
+    vdcInstanceId: string,
+    data: CreateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const { busType } = data;
     if (busType != 20) {
@@ -299,7 +306,7 @@ export class VdcService {
       {
         _object: taskId.data.record[0].href.split('task/')[1],
       },
-      { ...options.locals },
+      {},
     );
     return Promise.resolve({
       taskId: taskId.data.record[0].href.split('task/')[1],
