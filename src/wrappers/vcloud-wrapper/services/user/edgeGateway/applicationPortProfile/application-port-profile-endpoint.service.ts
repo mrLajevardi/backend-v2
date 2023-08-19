@@ -1,8 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { CreateApplicationPortProfilesDto } from './dto/create-application-port-profiles.dto';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { UpdateApplicationPortProfilesDto } from './dto/update-application-port-profiles.dto';
+import { DeleteApplicationPortProfilesDto } from './dto/delete-application-port-profile.dto';
+import { GetApplicationPortProfilesDto } from './dto/get-application-port-profiles.dto';
+import { GetApplicationPortProfilesListDto } from './dto/get-application-port-profiles-list.dto';
 
 @Injectable()
 export class ApplicationPortProfileEndpointService {
-  createApplicationPortProfilesEndpoint(options?: any) {
+  createApplicationPortProfilesEndpoint(
+    options: CreateApplicationPortProfilesDto,
+  ): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/applicationPortProfiles/`,
@@ -14,7 +22,9 @@ export class ApplicationPortProfileEndpointService {
       },
     };
   }
-  deleteApplicationPortProfilesEndpoint(options?: any) {
+  deleteApplicationPortProfilesEndpoint(
+    options: DeleteApplicationPortProfilesDto,
+  ): EndpointInterface {
     return {
       method: 'delete',
       resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,
@@ -26,7 +36,9 @@ export class ApplicationPortProfileEndpointService {
       },
     };
   }
-  getApplicationPortProfileEndpoint(options?: any) {
+  getApplicationPortProfileEndpoint(
+    options: GetApplicationPortProfilesDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,
@@ -38,7 +50,9 @@ export class ApplicationPortProfileEndpointService {
       },
     };
   }
-  getApplicationPortProfilesListEndpoint(options?: any) {
+  getApplicationPortProfilesListEndpoint(
+    options: GetApplicationPortProfilesListDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/applicationPortProfiles`,
@@ -50,7 +64,9 @@ export class ApplicationPortProfileEndpointService {
       },
     };
   }
-  updateApplicationPortProfilesEndpoint(options?: any) {
+  updateApplicationPortProfilesEndpoint(
+    options: UpdateApplicationPortProfilesDto,
+  ): EndpointInterface {
     return {
       method: 'put',
       resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,
