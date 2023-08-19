@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { CreateDhcpBindingDto } from './dto/create-dhcp-binding.dto';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { DeleteDhcpBindingDto } from './dto/delete-dhcp-bindings.dto';
+import { DeleteDhcpDto } from './dto/delete-dhcp.dto';
+import { GetAllDhcpBindingsDto } from './dto/get-all-dhcp-binding.dto';
+import { GetDhcpBindingsDto } from './dto/get-dhcp-binding.dto';
+import { UpdateDhcpBindingDto } from './dto/update-dhcp-bindings.dto';
 
 @Injectable()
 export class DhcpEndpointService {
-  createDhcpBindingEndpoint(options?: any) {
+  createDhcpBindingEndpoint(options: CreateDhcpBindingDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp/bindings`,
@@ -14,10 +21,9 @@ export class DhcpEndpointService {
       },
     };
   }
-  deleteDhcpBindingsEndpoint(options?: any) {
+  deleteDhcpBindingsEndpoint(options: DeleteDhcpBindingDto): EndpointInterface {
     return {
       method: 'delete',
-      // eslint-disable-next-line max-len
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp/bindings/${options.urlParams.bindingId}`,
       params: {},
       body: null,
@@ -27,7 +33,7 @@ export class DhcpEndpointService {
       },
     };
   }
-  deleteDhcpEndpoint(options?: any) {
+  deleteDhcpEndpoint(options: DeleteDhcpDto): EndpointInterface {
     return {
       method: 'delete',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp`,
@@ -39,7 +45,7 @@ export class DhcpEndpointService {
       },
     };
   }
-  getAllDhcpBindingEndpoint(options?: any) {
+  getAllDhcpBindingEndpoint(options: GetAllDhcpBindingsDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp/bindings`,
@@ -51,12 +57,11 @@ export class DhcpEndpointService {
       },
     };
   }
-  getDhcpBindingEndpoint(options?: any) {
+  getDhcpBindingEndpoint(options: GetDhcpBindingsDto): EndpointInterface {
     return {
       method: 'get',
-      // eslint-disable-next-line max-len
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp/bindings/${options.urlParams.bindingId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
@@ -77,10 +82,9 @@ export class DhcpEndpointService {
       },
     };
   }
-  updateDhcpBindingEndpoint(options?: any) {
+  updateDhcpBindingEndpoint(options: UpdateDhcpBindingDto): EndpointInterface {
     return {
       method: 'put',
-      // eslint-disable-next-line max-len
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp/bindings/${options.urlParams.bindingId}`,
       params: {},
       body: options.body,
