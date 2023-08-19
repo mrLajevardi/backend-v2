@@ -39,7 +39,7 @@ import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
 import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
-import { UvdeskWrapperModule } from './uvdesk-wrapper/uvdesk-wrapper.module';
+import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 @Module({
   imports: [
