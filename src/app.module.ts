@@ -41,6 +41,7 @@ import { RolesGuard } from './application/base/security/ability/guards/roles.gua
 import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
 import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
 import { BullModule as BullMQModule } from '@nestjs/bullmq';
+import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { BullModule as BullMQModule } from '@nestjs/bullmq';
     MainWrapperModule,
     RobotModule,
     TaskManagerModule,
+    UvdeskWrapperModule,
   ],
   controllers: [AppController],
   providers: [
