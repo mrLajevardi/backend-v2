@@ -49,8 +49,8 @@ export class Tasks {
   })
   serviceInstanceId: string;
 
-  //@Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })
-  //currrentStep: string | null;
+  @Column('varchar', { name: 'CurrentStep', nullable: true, length: 60 })
+  currentStep: string | null;
 
   @ManyToOne(
     () => ServiceInstances,

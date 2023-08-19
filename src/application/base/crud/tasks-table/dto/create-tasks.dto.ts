@@ -43,7 +43,7 @@ export class CreateTasksDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  currrentStep?: string | null;
+  currentStep?: string | null;
 
   @IsNumber()
   @ApiProperty()

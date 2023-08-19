@@ -39,6 +39,8 @@ import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
 import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
+import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
+import { BullModule as BullMQModule } from '@nestjs/bullmq';
 import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 @Module({
@@ -48,6 +50,12 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
     }),
     BullModule.forRoot({
       redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullMQModule.forRoot({
+      connection: {
         host: 'localhost',
         port: 6379,
       },
@@ -84,6 +92,7 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
     VcloudWrapper,
     MainWrapperModule,
     RobotModule,
+    TaskManagerModule,
     UvdeskWrapperModule,
   ],
   controllers: [AppController],
