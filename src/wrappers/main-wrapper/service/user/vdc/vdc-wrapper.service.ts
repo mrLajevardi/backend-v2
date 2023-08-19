@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
 import { Builder } from 'xml2js';
+import { CreateNamedDiskBody } from 'src/wrappers/vcloud-wrapper/services/user/dto/create-named-disk.dto';
 
 @Injectable()
 export class VdcWrapperService {
@@ -13,7 +14,7 @@ export class VdcWrapperService {
    * @param {String} vAppAction
    * @return {Promise}
    */
-  async attachNamedDisk(authToken, nameDiskID, vmID) {
+  async attachNamedDisk(authToken: string, nameDiskID: string, vmId: string) {
     const request = {
       disk: {
         href: `https://vcd.aradcloud.com/api/disk/${nameDiskID}`,
@@ -33,7 +34,7 @@ export class VdcWrapperService {
       wrapper({
         ...options,
         headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: { vmID },
+        urlParams: { vmId },
       }),
     );
     return Promise.resolve({
@@ -68,7 +69,11 @@ export class VdcWrapperService {
    * @param {String} vAppAction
    * @return {Promise}
    */
-  async createNamedDisk(authToken, vdcId, namedDiskProperties) {
+  async createNamedDisk(
+    authToken: string,
+    vdcId: string,
+    namedDiskProperties: any,
+  ): any {
     const query: any = await this.vcloudQuery(authToken, {
       type: 'orgVdcStorageProfile',
       format: 'records',
@@ -79,8 +84,9 @@ export class VdcWrapperService {
       filter: `vdc==${vdcId}`,
     });
     const vdcStorageProfileLink = query.data.record[0].href;
-    const formattedVdcId = vdcId.split(':').slice(-1);
-    const request = {
+    const formattedVdcId = vdcId.split(':').slice(-1)[0];
+    // TODO: این اینترفیس را به فولدر پرنت این فایل انتقال دهید
+    const request: CreateNamedDiskBody = {
       'root:DiskCreateParams': {
         $: {
           'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
@@ -123,7 +129,7 @@ export class VdcWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  async detachNamedDisk(authToken, nameDiskID, vmID) {
+  async detachNamedDisk(authToken, nameDiskID, vmId) {
     const request = {
       disk: {
         href: `https://vcd.aradcloud.com/api/disk/${nameDiskID}`,
@@ -141,15 +147,15 @@ export class VdcWrapperService {
       wrapper({
         ...options,
         headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: { vmID },
+        urlParams: { vmId },
       }),
     );
     return Promise.resolve({
       __vcloudTask: action.headers['location'],
     });
   }
-  getHardwareInfo = async (authToken, vdcId) => {
-    const formattedVdcId = vdcId.split(':').slice(-1);
+  async getHardwareInfo(authToken, vdcId: string) {
+    const formattedVdcId = vdcId.split(':').slice(-1)[0];
     const endpoint = 'VdcEndpointService.getHardwareInfoEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
@@ -160,7 +166,7 @@ export class VdcWrapperService {
       }),
     );
     return Promise.resolve(response.data);
-  };
+  }
   /**
    *
    * @param {String} authToken
@@ -212,7 +218,7 @@ export class VdcWrapperService {
    * @param {String} vAppAction
    * @return {Promise}
    */
-  async getVmAttachedNamedDisk(authToken, nameDiskID) {
+  async getVmAttachedNamedDisk(authToken, namedDiskId: string) {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
     };
@@ -223,7 +229,7 @@ export class VdcWrapperService {
       wrapper({
         ...options,
         headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: { nameDiskID },
+        urlParams: { namedDiskId },
       }),
     );
     return action;
@@ -234,7 +240,7 @@ export class VdcWrapperService {
    * @param {String} nameDiskID
    * @return {Promise}
    */
-  async removeNamedDisk(authToken, nameDiskID) {
+  async removeNamedDisk(authToken: string, namedDiskId: string) {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
     };
@@ -245,7 +251,7 @@ export class VdcWrapperService {
       wrapper({
         ...options,
         headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: { nameDiskID },
+        urlParams: { namedDiskId },
       }),
     );
     return Promise.resolve({
@@ -259,7 +265,7 @@ export class VdcWrapperService {
    * @param {String} vAppAction
    * @return {Promise}
    */
-  async updateNamedDisk(authToken, vdcId, nameDiskID, namedDiskProperties) {
+  async updateNamedDisk(authToken, vdcId, namedDiskId, namedDiskProperties) {
     const query: any = await this.vcloudQuery(authToken, {
       type: 'orgVdcStorageProfile',
       format: 'records',
@@ -303,7 +309,7 @@ export class VdcWrapperService {
       wrapper({
         ...options,
         headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: { vdcId: formattedVdcId, nameDiskID },
+        urlParams: { namedDiskId },
       }),
     );
     return Promise.resolve({
