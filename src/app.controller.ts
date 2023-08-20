@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Request, Req, Param, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LocalAuthGuard } from './application/base/security/auth/guard/local-auth.guard';
@@ -24,9 +24,17 @@ export class AppController {
 
   @Get()
   @Public()
-  getHello(): string {
+  getHello(
+    @Query('state') state: string,
+    @Query('code') code: string ,
+  ): string {
+    if (code){
+      return code;
+    }
     return this.appService.getHello();
   }
+
+
 
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({ status: 200, description: 'Returns the user profile' })

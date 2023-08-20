@@ -24,11 +24,11 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         this.error(new ForbiddenException());
       }
 
-      if (!req.body.token) {
+      if (!req.body.code) {
         this.error(new ForbiddenException('no token provided'));
       }
 
-      this.success(this.oauthService.verifyGoogleOauth(req.body.token));
+      this.success(this.oauthService.verifyGoogleOauth(req.body.code));
     } catch (error) {
       console.log('found error');
       this.error(error);

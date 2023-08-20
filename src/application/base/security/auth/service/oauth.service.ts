@@ -54,7 +54,7 @@ export class OauthService {
     });
     try {
       const checkEmail = await axios.post(
-        `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${token}`,
+        `https://www.googleapis.com/oauth2/v4/tokeninfo?access_token=${token}`,
         {
           httpsAgent,
         }
@@ -317,7 +317,7 @@ export class OauthService {
       phoneNumber,
       otpCode,
       phoneHash
-    );
+    ); 
 
     if (!phoneVerified) {
       return Promise.reject(new InvalidPhoneTokenException());
