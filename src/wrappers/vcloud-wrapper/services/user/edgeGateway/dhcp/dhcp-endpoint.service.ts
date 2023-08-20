@@ -6,6 +6,8 @@ import { DeleteDhcpDto } from './dto/delete-dhcp.dto';
 import { GetAllDhcpBindingsDto } from './dto/get-all-dhcp-binding.dto';
 import { GetDhcpBindingsDto } from './dto/get-dhcp-binding.dto';
 import { UpdateDhcpBindingDto } from './dto/update-dhcp-bindings.dto';
+import { UpdateDhcpDto } from './dto/update-dhcp.dto';
+import { GetDhcpDto } from './dto/get-dhcp.dto';
 
 @Injectable()
 export class DhcpEndpointService {
@@ -69,7 +71,7 @@ export class DhcpEndpointService {
       },
     };
   }
-  getDhcpEndpoint(options?: any) {
+  getDhcpEndpoint(options: GetDhcpDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp`,
@@ -94,7 +96,7 @@ export class DhcpEndpointService {
       },
     };
   }
-  updateDhcpEndpoint(options?: any) {
+  updateDhcpEndpoint(options: UpdateDhcpDto): EndpointInterface {
     return {
       method: 'put',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/dhcp`,

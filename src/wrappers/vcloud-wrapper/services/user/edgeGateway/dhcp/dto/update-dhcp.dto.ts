@@ -1,6 +1,8 @@
-export interface UpdateDhcpDto {
-  urlParams: object;
-  body: object;
+import { EndpointOptionsInterface } from 'src/wrappers/interfaces/endpoint.interface';
+
+export interface UpdateDhcpDto extends EndpointOptionsInterface {
+  urlParams: UpdateDhcpUrlParams;
+  body: UpdateDhcpBody;
 }
 
 export class UpdateDhcpBody {
@@ -8,6 +10,10 @@ export class UpdateDhcpBody {
   ipAddress: string;
   leaseTime: number;
   enable: boolean;
-  dnsServers: Array<void | string>;
-  dhcpPools
+  dnsServers: string[];
+  dhcpPools: object;
+}
+
+export interface UpdateDhcpUrlParams {
+  networkId: string;
 }

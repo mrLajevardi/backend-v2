@@ -16,7 +16,7 @@ export class CreateDhcpBindingBody {
   leaseTime: number;
   macAddress: string;
   ipAddress: string;
-  dnsServers: Array<string | void>;
+  dnsServers: string[];
   dhcpV4BindingConfig: DhcpV4BindingConfig;
 }
 
