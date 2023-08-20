@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { CreateNetworkDto } from './dto/create-network.dto';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { DeleteNetworkDto } from './dto/delete-network.dto';
+import { GetNetworkDto } from './dto/get-network.dto';
+import { GetNetworkIpUsageListDto } from './dto/get-network-ip-usage-list.dto';
+import { GetNetworkListDto } from './dto/get-network-list.dto';
+import { UpdateNetworkDto } from './dto/update-network.dto';
 
 @Injectable()
 export class NetworkEndpointService {
-  createNetworkEndpoint(options?: any) {
+  createNetworkEndpoint(options: CreateNetworkDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/orgVdcNetworks`,
@@ -15,11 +22,11 @@ export class NetworkEndpointService {
       },
     };
   }
-  deleteNetworkEndpoint(options?: any) {
+  deleteNetworkEndpoint(options: DeleteNetworkDto): EndpointInterface {
     return {
       method: 'delete',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
@@ -28,7 +35,7 @@ export class NetworkEndpointService {
       },
     };
   }
-  getNetworkEndpoint(options?: any) {
+  getNetworkEndpoint(options: GetNetworkDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/orgVdcNetworks`,
@@ -43,7 +50,9 @@ export class NetworkEndpointService {
       },
     };
   }
-  getNetworkIPUsageListEndpoint(options?: any) {
+  getNetworkIPUsageListEndpoint(
+    options: GetNetworkIpUsageListDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}/allocatedIpAddresses`,
@@ -56,7 +65,7 @@ export class NetworkEndpointService {
       },
     };
   }
-  getNetworkListEndpoint(options?: any) {
+  getNetworkListEndpoint(options: GetNetworkListDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/orgVdcNetworks`,
@@ -69,7 +78,7 @@ export class NetworkEndpointService {
       },
     };
   }
-  updateNetworkEndpoint(options?: any) {
+  updateNetworkEndpoint(options: UpdateNetworkDto): EndpointInterface {
     return {
       method: 'put',
       resource: `/cloudapi/1.0.0/orgVdcNetworks/${options.urlParams.networkId}`,

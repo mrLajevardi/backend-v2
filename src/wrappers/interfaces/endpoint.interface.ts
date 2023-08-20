@@ -10,9 +10,6 @@ export interface EndpointInterface {
 }
 
 export interface EndpointOptionsInterface {
-  params?: object;
-  body?: object;
-  urlParams?: object;
   headers?: Partial<RawAxiosRequestHeaders>;
   additionalConfigs?: Partial<AxiosRequestConfig>;
 }
