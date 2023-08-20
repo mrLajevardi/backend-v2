@@ -1,8 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { GetDhcpForwarderDto } from './dto/get-dhcp-forwarder.dto';
+import { GetDnsForwarderDto } from './dto/get-dns-forwarder.dto';
+import { GetEdgeGatewayDto } from './dto/get-edge-gateway.dto';
+import { UpdateDhcpForwarderDto } from './dto/update-dhcp-forwarder.dto';
+import { UpdateDnsForwarderDto } from './dto/update-dns-forwarder.dto';
 
 @Injectable()
 export class EdgeGatewayEndpointService {
-  getDhcpForwarderEndpoint(options?: any) {
+  getDhcpForwarderEndpoint(options: GetDhcpForwarderDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/dhcpForwarder`,
@@ -15,7 +21,7 @@ export class EdgeGatewayEndpointService {
       },
     };
   }
-  getDnsForwarderEndpoint(options?: any) {
+  getDnsForwarderEndpoint(options: GetDnsForwarderDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/dns`,
@@ -28,7 +34,7 @@ export class EdgeGatewayEndpointService {
       },
     };
   }
-  getEdgeGatewayEndpoint(options?: any) {
+  getEdgeGatewayEndpoint(options: GetEdgeGatewayDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/edgeGateways`,
@@ -41,7 +47,9 @@ export class EdgeGatewayEndpointService {
       },
     };
   }
-  updateDhcpForwarderEndpoint(options?: any) {
+  updateDhcpForwarderEndpoint(
+    options: UpdateDhcpForwarderDto,
+  ): EndpointInterface {
     return {
       method: 'put',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/dhcpForwarder`,
@@ -54,7 +62,9 @@ export class EdgeGatewayEndpointService {
       },
     };
   }
-  updateDnsForwarderEndpoint(options?: any) {
+  updateDnsForwarderEndpoint(
+    options: UpdateDnsForwarderDto,
+  ): EndpointInterface {
     return {
       method: 'put',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/dns`,
