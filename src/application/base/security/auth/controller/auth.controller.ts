@@ -134,6 +134,23 @@ export class AuthController {
   }
 
   @Public()
+  @Get('googleUrl')
+  getGoogleUrl() : {consentUrl:string} {
+    const clientID = process.env.GOOGLE_CLIENT_ID;
+    const redirectURI = process.env.GOOGLE_REDIRECT_URI;
+    const scope = 'openid email';
+    const state = '123'; // You can generate and manage this value
+  
+    const consentURL = `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
+  
+    return {
+
+      "consentUrl": consentURL
+    }
+     
+  }
+
+  @Public()
   @Post('google')
   @ApiBody({ type: GoogleLoginDto })
   @UseGuards(GoogleAuthGuard)
