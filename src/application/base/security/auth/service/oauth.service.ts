@@ -32,14 +32,14 @@ import { stringify } from "querystring";
 
 @Injectable()
 export class OauthService {
-  jwtService: JwtService;
+  emailJwtService: JwtService;
 
   constructor(
     private readonly userTable: UserTableService,
     private readonly loginService: LoginService,
     private readonly otpService: OtpService
   ) {
-    this.jwtService = new JwtService({
+    this.emailJwtService = new JwtService({
       secret: process.env.JWT_SECRET,
       signOptions: {
         expiresIn: 60 * 2, // 2 min
@@ -253,7 +253,7 @@ export class OauthService {
         firstname,
         lastname,
       };
-      const token = this.jwtService.sign(payload);
+      const token = this.emailJwtService.sign(payload);
       return Promise.resolve({
         userExists: false,
         token: token,
@@ -287,7 +287,7 @@ export class OauthService {
         lastname,
       };
 
-      const token = this.jwtService.sign(payload);
+      const token = this.emailJwtService.sign(payload);
       return Promise.resolve({
         userExists: false,
         token: token,
@@ -317,7 +317,7 @@ export class OauthService {
       const payload = {
         email,
       };
-      const token = this.jwtService.sign(payload);
+      const token = this.emailJwtService.sign(payload);
       return Promise.resolve({
         userExists: false,
         token: token,
@@ -353,19 +353,13 @@ export class OauthService {
     if (!data.emailToken) {
       return Promise.reject(new BadRequestException("no email token"));
     }
-    const encodedData = this.jwtService.decode(data.emailToken);
+    const encodedData = this.emailJwtService.decode(data.emailToken);
     const email = encodedData["email"];
     const firstname = encodedData["firstname"];
     const lastname = encodedData["lastname"];
-
-    try {
-      const emailVerified = this.jwtService.verify(data.emailToken);
-      if (!emailVerified) {
-        throw new InvalidEmailTokenException();
-      }
-    } catch (err) {
-      console.log(err.message);
-      return Promise.reject(new BadRequestException("email verify error"));
+    const emailVerified = this.emailJwtService.verify(data.emailToken);
+    if (!emailVerified) {
+      throw new InvalidEmailTokenException();
     }
 
     const findEmail = await this.userTable.findOne({
@@ -378,6 +372,7 @@ export class OauthService {
     if (findEmail) {
       return Promise.reject(new BadRequestException("email already in use"));
     }
+
     if (user) {
       await this.userTable.updateAll(
         {
