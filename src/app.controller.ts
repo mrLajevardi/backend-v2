@@ -35,10 +35,9 @@ export class AppController {
 
   @Get()
   @Public()
-  @UseGuards(AuthGuard('google'))
-  googleLogin(
+  hello(
   ): string {
-    return "validated";
+    return this.appService.getHello();
   }
 
   @ApiOperation({ summary: 'Get user profile' })

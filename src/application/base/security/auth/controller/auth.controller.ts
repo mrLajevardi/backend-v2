@@ -43,6 +43,7 @@ import { AccessTokenDto } from '../dto/access-token.dto';
 import { UserPayload } from '../dto/user-payload.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -133,6 +134,15 @@ export class AuthController {
     return req.user;
   }
 
+  
+  @Public()
+  @Get('google')
+  @ApiBody({ type: GoogleLoginDto })
+  @UseGuards(AuthGuard('google'))
+  async googleLogin(@Request() req: SessionRequest): Promise<UserPayload> {
+    return req.user;
+  }
+
   @Public()
   @Get('googleUrl')
   getGoogleUrl() : {consentUrl:string} {
@@ -150,13 +160,6 @@ export class AuthController {
      
   }
 
-  @Public()
-  @Post('google')
-  @ApiBody({ type: GoogleLoginDto })
-  @UseGuards(GoogleAuthGuard)
-  async googleLogin(@Request() req: SessionRequest): Promise<UserPayload> {
-    return req.user;
-  }
 
   @Post('/loginAsUser')
   @ApiOperation({ summary: 'login admin as a user' })
