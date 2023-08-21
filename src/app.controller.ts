@@ -14,6 +14,9 @@ import { Action } from './application/base/security/ability/enum/action.enum';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { PredefinedRoles } from './application/base/security/ability/enum/predefined-enum.type';
 import { Roles } from './application/base/security/ability/decorators/roles.decorator';
+import { GoogleAuthGuard } from './application/base/security/auth/guard/google-auth.guard';
+import { GoogleLoginDto } from './application/base/security/auth/dto/google-login.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class AppController {
@@ -22,19 +25,21 @@ export class AppController {
     private readonly systemSettingsService: SystemSettingsTableService,
   ) {}
 
+  // @Get()
+  // @Public()
+  // getHello(
+  // ): string {
+  //   return this.appService.getHello();
+  // }
+
+
   @Get()
   @Public()
-  getHello(
-    @Query('state') state: string,
-    @Query('code') code: string ,
+  @UseGuards(AuthGuard('google'))
+  googleLogin(
   ): string {
-    if (code){
-      return code;
-    }
-    return this.appService.getHello();
+    return "validated";
   }
-
-
 
   @ApiOperation({ summary: 'Get user profile' })
   @ApiResponse({ status: 200, description: 'Returns the user profile' })

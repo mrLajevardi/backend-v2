@@ -1,37 +1,28 @@
-import { Injectable } from '@nestjs/common';
-import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-strategy';
-import { Request } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import { OauthService } from '../service/oauth.service';
+import { Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-  constructor(private readonly oauthService: OauthService) {
-    super();
+  constructor() {
+    super({
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_REDIRECT_URI,
+      scope: ['profile', 'email'],
+    });
   }
 
-  // The validation that will be checked before
-  // any endpoint protected with jwt-auth guard
-  async authenticate(
-    req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-  ): Promise<void> {
-    console.log('im in google auth');
-    try {
-      if (!req || !req.body) {
-        this.error(new ForbiddenException());
-      }
-
-      if (!req.body.code) {
-        this.error(new ForbiddenException('no token provided'));
-      }
-
-      this.success(this.oauthService.verifyGoogleOauth(req.body.code));
-    } catch (error) {
-      console.log('found error');
-      this.error(error);
-    }
+  async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
+    // You can access the user's Google profile information here
+    // Call done() with the user or false if authentication fails
+    console.log('validating')
+    const user = {
+      googleId: profile.id,
+      email: profile.emails[0].value,
+      name: profile.displayName,
+      // ...other fields you might need
+    };
+    done(null, user);
   }
 }

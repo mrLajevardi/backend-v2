@@ -27,6 +27,8 @@ import { first, isEmpty, last, split } from "lodash";
 import { CreateUserDto } from "src/application/base/crud/user-table/dto/create-user.dto";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "src/infrastructure/database/entities/User";
+import { OAuth2Client } from "google-auth-library";
+import { stringify } from "querystring";
 
 @Injectable()
 export class OauthService {
@@ -45,27 +47,48 @@ export class OauthService {
     });
   }
 
-  async googleOauth(token: string): Promise<OauthResponseDto> {
-    let email: string ;
-    let error: Error ;
+  async googleOauth(code: string): Promise<OauthResponseDto> {
+    let email: string;
+    let error: Error;
     let verified = false;
-    const httpsAgent = new https.Agent({
-      rejectUnauthorized: false,
-    });
     try {
-      const checkEmail = await axios.post(
-        `https://www.googleapis.com/oauth2/v4/tokeninfo?access_token=${token}`,
+      const postData = stringify({
+        code: code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+        grant_type: "authorization_code",
+      });
+
+      const response = await axios.post(
+        "https://oauth2.googleapis.com/token",
+        postData,
         {
-          httpsAgent,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
         }
       );
 
-      console.log('checkmail data', checkEmail.data);
-      if (!checkEmail.data.verified_email) {
-        error = new BadRequestException();
-      }
-      email = checkEmail.data.email;
-      verified = true;
+      const accessToken = response.data.access_token;
+      console.log("Access token:", accessToken);
+
+      // const httpsAgent = new https.Agent({
+      //   rejectUnauthorized: false,
+      // });
+      //   console.log( `https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`)
+      //   const checkEmail = await axios.get(
+      //     `https://oauth2.googleapis.com/tokeninfo?access_token=${accessToken}`,
+      //     {
+      //       httpsAgent,
+      //     }
+      //   );
+      //   console.log('checkmail data', checkEmail.data);
+      //   if (!checkEmail.data.verified_email) {
+      //     error = new BadRequestException();
+      //   }
+      //   email = checkEmail.data.email;
+      //   verified = true;
     } catch (err) {
       console.log(err.message);
       error = new BadRequestException("bad request", err);
@@ -123,10 +146,10 @@ export class OauthService {
       email = checkEmail.data.email;
       verified = true;
 
-      if (! isEmpty(checkEmail.data.name)){
-        const nameParts = checkEmail.data.name.split(' ');
-        firstname = nameParts[0] || '';
-        lastname = nameParts.slice(1).join(' ');
+      if (!isEmpty(checkEmail.data.name)) {
+        const nameParts = checkEmail.data.name.split(" ");
+        firstname = nameParts[0] || "";
+        lastname = nameParts.slice(1).join(" ");
       }
     } catch (err) {
       console.log(err.message);
@@ -228,7 +251,7 @@ export class OauthService {
       const payload = {
         email,
         firstname,
-        lastname
+        lastname,
       };
       const token = this.jwtService.sign(payload);
       return Promise.resolve({
@@ -317,7 +340,7 @@ export class OauthService {
       phoneNumber,
       otpCode,
       phoneHash
-    ); 
+    );
 
     if (!phoneVerified) {
       return Promise.reject(new InvalidPhoneTokenException());
