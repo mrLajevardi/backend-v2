@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
-import { AttachNamedDiskOptionsDto } from '../dto/attach-named-disk.dto';
-import { CreateNamedDiskOptionsDto } from '../dto/create-named-disk.dto';
-import { DetachNamedDiskOptionsDto } from '../dto/detach-named-disk.dto';
-import { GetHardwareInfoOptionsDto } from '../dto/get-hardware-info.dto';
-import { GetVdcComputePolicyDto } from '../dto/get-vdc-compute-policy.dto';
-import { VmAttachedNamedDiskDto } from '../dto/vm-attached-named-disk.dto';
-import { RemoveNamedDiskDto } from '../dto/remove-named-disk.dto';
-import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
-import { VcloudQueryDto } from '../dto/vcloud-query.dto';
+import { AttachNamedDiskOptionsDto } from './dto/attach-named-disk.dto';
+import { CreateNamedDiskOptionsDto } from './dto/create-named-disk.dto';
+import { DetachNamedDiskOptionsDto } from './dto/detach-named-disk.dto';
+import { GetHardwareInfoOptionsDto } from './dto/get-hardware-info.dto';
+import { GetVdcComputePolicyDto } from './dto/get-vdc-compute-policy.dto';
+import { VmAttachedNamedDiskDto } from './dto/vm-attached-named-disk.dto';
+import { RemoveNamedDiskDto } from './dto/remove-named-disk.dto';
+import { UpdateNamedDiskDto } from './dto/update-named-disk.dto';
+import { VcloudQueryDto } from './dto/vcloud-query.dto';
 
 @Injectable()
 export class VdcEndpointService {

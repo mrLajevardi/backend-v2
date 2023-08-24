@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
 import { Builder } from 'xml2js';
-import { CreateNamedDiskBody } from 'src/wrappers/vcloud-wrapper/services/user/dto/create-named-disk.dto';
+import { CreateNamedDiskBody } from 'src/wrappers/vcloud-wrapper/services/user/vdc/dto/create-named-disk.dto';
 
 @Injectable()
 export class VdcWrapperService {

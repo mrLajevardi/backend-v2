@@ -3,12 +3,16 @@ import {
   EndpointInterface,
   EndpointOptionsInterface,
 } from 'src/wrappers/interfaces/endpoint.interface';
+import { AcquireVmTicketDto } from './dto/acquire-vm-ticket.dto';
+import { AnswerDto } from './dto/answer.dto';
+import { CreateTemplateDto } from './dto/create-template.dto';
+import { CreateVmDto } from './dto/create-vm.dto';
+import { CreateVmSnapshotDto } from './dto/create-vm-snap-shot.dto';
+import { DeleteMediaDto } from './dto/delete-media.dto';
 
 @Injectable()
 export class VmEndpointService {
-  acquireVmTicketEndpoint(
-    options: EndpointOptionsInterface,
-  ): EndpointInterface {
+  acquireVmTicketEndpoint(options: AcquireVmTicketDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/screen/action/acquireMksTicket`,
@@ -21,7 +25,7 @@ export class VmEndpointService {
       },
     };
   }
-  answerEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  answerEndpoint(options: AnswerDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/question/action/answer`,
@@ -34,7 +38,7 @@ export class VmEndpointService {
       },
     };
   }
-  createTemplateEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  createTemplateEndpoint(options: CreateTemplateDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/catalog/${options.urlParams.catalogId}/action/captureVApp`,
@@ -47,7 +51,7 @@ export class VmEndpointService {
       },
     };
   }
-  createVmEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  createVmEndpoint(options: CreateVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vdc/${options.urlParams.vdcId}/action/createVm`,
@@ -60,7 +64,7 @@ export class VmEndpointService {
       },
     };
   }
-  createVmSnapShotEndpoint(options?: any) {
+  createVmSnapShotEndpoint(options: CreateVmSnapshotDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/createSnapshot`,
@@ -73,12 +77,12 @@ export class VmEndpointService {
       },
     };
   }
-  deleteMediaEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  deleteMediaEndpoint(options: DeleteMediaDto): EndpointInterface {
     return {
       method: 'delete',
       resource: `/api/media/${options.urlParams.mediaId}`,
       params: {},
-      body: options.body,
+      body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
         'Content-Type': 'application/* +json;',
