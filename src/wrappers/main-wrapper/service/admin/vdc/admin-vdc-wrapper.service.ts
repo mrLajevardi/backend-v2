@@ -139,7 +139,6 @@ export class AdminVdcWrapperService {
     const options = {
       headers: { Authorization: `Bearer ${session}` },
       urlParams: { vdcId: vdcId },
-      body: null,
     };
     const endpoint = 'AdminVdcEndpointService.enableVdcEndpoint';
     const wrapper =
@@ -270,7 +269,9 @@ export class AdminVdcWrapperService {
     };
     const options = {
       headers: { Authorization: `Bearer ${config.authToken}` },
-      fullUrl: storageProfileLink,
+      urlParams: {
+        fullUrl: storageProfileLink,
+      },
       body: request,
     };
     const endpoint = 'AdminVdcEndpointService.updateVdcStorageProfileEndpoint';

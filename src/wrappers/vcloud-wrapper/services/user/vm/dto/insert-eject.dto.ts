@@ -7,4 +7,5 @@ export interface InsertOrEjectDto extends EndpointOptionsInterface {
 
 interface InsertOrEjectUrlParams {
   vmId: string;
+  action: string;
 }

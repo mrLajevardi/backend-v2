@@ -32,6 +32,7 @@ import { UpdateMediaDto } from './dto/update-media.dto';
 import { UpdateVAppTemplateDto } from './dto/update-vapp-template.dto';
 import { UpdateVmDto } from './dto/update-vm.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
+import { GetMediaItemDto } from './dto/get-media-item.dto';
 
 @Injectable()
 export class VmEndpointService {
@@ -166,7 +167,7 @@ export class VmEndpointService {
     };
   }
 
-  getMediaItemEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  getMediaItemEndpoint(options: GetMediaItemDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/media/${options.urlParams.mediaItemId}`,
