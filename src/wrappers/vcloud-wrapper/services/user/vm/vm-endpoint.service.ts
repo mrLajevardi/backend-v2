@@ -9,6 +9,29 @@ import { CreateTemplateDto } from './dto/create-template.dto';
 import { CreateVmDto } from './dto/create-vm.dto';
 import { CreateVmSnapshotDto } from './dto/create-vm-snap-shot.dto';
 import { DeleteMediaDto } from './dto/delete-media.dto';
+import { DeleteTemplateDto } from './dto/delete-template.dto';
+import { DeleteVmDto } from './dto/delete-vm.dto';
+import { DeployVmDto } from './dto/deploy-vm.dto';
+import { DiscardSuspendVmDto } from './dto/discard-suspend-vm.dto';
+import { GetVmDto } from './dto/get-vm.dto';
+import { GetVmTemplatesDto } from './dto/get-vm-templates.dto';
+import { InsertOrEjectDto } from './dto/insert-eject.dto';
+import { InstallVmToolsDto } from './dto/install-vm-tools.dto';
+import { InstantiateVmFromTemplateDto } from './dto/instantiate-vm-from-template.dto';
+import { PartialUploadDto } from './dto/partial-upload.dto';
+import { PowerOnVmDto } from './dto/power-on-vm.dto';
+import { QuestionDto } from './dto/question.dto';
+import { RebootVmDto } from './dto/reboot-vm.dto';
+import { RemoveVmDto } from './dto/remove-vm.dto';
+import { ResetVmDto } from './dto/reset-vm.dto';
+import { RevertVmDto } from './dto/revert-vm.dto';
+import { SuspendVmDto } from './dto/suspend-vm.dto';
+import { UndeployVmDto } from './dto/undeploy-vm.dto';
+import { UpdateGuestCustomizationDto } from './dto/update-guest-customazation-dto';
+import { UpdateMediaDto } from './dto/update-media.dto';
+import { UpdateVAppTemplateDto } from './dto/update-vapp-template.dto';
+import { UpdateVmDto } from './dto/update-vm.dto';
+import { UploadFileDto } from './dto/upload-file.dto';
 
 @Injectable()
 export class VmEndpointService {
@@ -90,12 +113,12 @@ export class VmEndpointService {
       },
     };
   }
-  deleteTemplateEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  deleteTemplateEndpoint(options: DeleteTemplateDto): EndpointInterface {
     return {
       method: 'delete',
       resource: `/api/vAppTemplate/${options.urlParams.templateId}`,
       params: {},
-      body: options.body,
+      body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
         'Content-Type': 'application/* +json;',
@@ -103,12 +126,12 @@ export class VmEndpointService {
       },
     };
   }
-  deleteVmEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  deleteVmEndpoint(options: DeleteVmDto): EndpointInterface {
     return {
       method: 'delete',
       resource: `/api/vApp/${options.urlParams.vmId}`,
       params: {},
-      body: options.body,
+      body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
         'Content-Type': 'application/* +xml;',
@@ -116,7 +139,7 @@ export class VmEndpointService {
       },
     };
   }
-  deployVmEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  deployVmEndpoint(options: DeployVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/deploy`,
@@ -129,9 +152,7 @@ export class VmEndpointService {
       },
     };
   }
-  discardSuspendVmEndpoint(
-    options: EndpointOptionsInterface,
-  ): EndpointInterface {
+  discardSuspendVmEndpoint(options: DiscardSuspendVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/discardSuspendedState`,
@@ -158,11 +179,11 @@ export class VmEndpointService {
       },
     };
   }
-  getVmEndpoint(options?: any) {
+  getVmEndpoint(options: GetVmDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/vApp/${options.urlParams.vmId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
@@ -171,11 +192,11 @@ export class VmEndpointService {
       },
     };
   }
-  getVmTemplatesEndpoint(options?: any) {
+  getVmTemplatesEndpoint(options: GetVmTemplatesDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/vAppTemplate/${options.urlParams.vmId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
@@ -184,7 +205,7 @@ export class VmEndpointService {
       },
     };
   }
-  insertOrEjectEndpoint(options?: any) {
+  insertOrEjectEndpoint(options: InsertOrEjectDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/media/action/${options.urlParams.action}`,
@@ -197,7 +218,7 @@ export class VmEndpointService {
       },
     };
   }
-  installVmToolsEndpoint(options?: any) {
+  installVmToolsEndpoint(options: InstallVmToolsDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/installVMwareTools`,
@@ -210,7 +231,9 @@ export class VmEndpointService {
       },
     };
   }
-  instantiateVmFromTemplateEndpoint(options?: any) {
+  instantiateVmFromTemplateEndpoint(
+    options: InstantiateVmFromTemplateDto,
+  ): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vdc/${options.urlParams.vdcId}/action/instantiateVmFromTemplate`,
@@ -223,7 +246,7 @@ export class VmEndpointService {
       },
     };
   }
-  partialUploadEndpoint(options?: any) {
+  partialUploadEndpoint(options: PartialUploadDto): EndpointInterface {
     return {
       method: 'put',
       resource: options.urlParams.fullAddress,
@@ -239,7 +262,7 @@ export class VmEndpointService {
       },
     };
   }
-  powerOnVmEndpoint(options?: any) {
+  powerOnVmEndpoint(options: PowerOnVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/power/action/powerOn`,
@@ -252,7 +275,7 @@ export class VmEndpointService {
       },
     };
   }
-  questionEndpoint(options?: any) {
+  questionEndpoint(options: QuestionDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/vApp/${options.urlParams.vmId}/question`,
@@ -265,7 +288,7 @@ export class VmEndpointService {
       },
     };
   }
-  rebootVmEndpoint(options?: any) {
+  rebootVmEndpoint(options: RebootVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/power/action/reboot`,
@@ -278,7 +301,7 @@ export class VmEndpointService {
       },
     };
   }
-  removeVmSnapShot(options?: any) {
+  removeVmSnapShot(options: RemoveVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/removeAllSnapshots`,
@@ -291,7 +314,7 @@ export class VmEndpointService {
       },
     };
   }
-  resetVmEndpoint(options?: any) {
+  resetVmEndpoint(options: ResetVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/power/action/reset`,
@@ -304,7 +327,7 @@ export class VmEndpointService {
       },
     };
   }
-  revertVmSnapShot(options?: any) {
+  revertVmSnapShot(options: RevertVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/revertToCurrentSnapshot`,
@@ -317,7 +340,7 @@ export class VmEndpointService {
       },
     };
   }
-  suspendVmEndpoint(options?: any) {
+  suspendVmEndpoint(options: SuspendVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/power/action/suspend`,
@@ -330,7 +353,7 @@ export class VmEndpointService {
       },
     };
   }
-  undeployVmEndpoint(options?: any) {
+  undeployVmEndpoint(options: UndeployVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/undeploy`,
@@ -343,7 +366,9 @@ export class VmEndpointService {
       },
     };
   }
-  updateGuestCustomizationEndpoint(options?: any) {
+  updateGuestCustomizationEndpoint(
+    options: UpdateGuestCustomizationDto,
+  ): EndpointInterface {
     return {
       method: 'put',
       resource: `/api/vApp/${options.urlParams.vmId}/guestCustomizationSection/`,
@@ -356,7 +381,7 @@ export class VmEndpointService {
       },
     };
   }
-  updateMediaEndpoint(options?: any) {
+  updateMediaEndpoint(options: UpdateMediaDto): EndpointInterface {
     return {
       method: 'put',
       resource: `/api/media/${options.urlParams.mediaId}`,
@@ -369,7 +394,9 @@ export class VmEndpointService {
       },
     };
   }
-  updateNetworkSectionEndpoint(options?: any) {
+  updateNetworkSectionEndpoint(
+    options: UpdateGuestCustomizationDto,
+  ): EndpointInterface {
     return {
       method: 'put',
       resource: `api/vApp/${options.urlParams.vmId}/networkConnectionSection/`,
@@ -382,7 +409,9 @@ export class VmEndpointService {
       },
     };
   }
-  updateVAppTemplateEndpoint(options?: any) {
+  updateVAppTemplateEndpoint(
+    options: UpdateVAppTemplateDto,
+  ): EndpointInterface {
     return {
       method: 'put',
       resource: `api/vAppTemplate/${options.urlParams.templateId}`,
@@ -395,7 +424,7 @@ export class VmEndpointService {
       },
     };
   }
-  updateVmEndpoint(options?: any) {
+  updateVmEndpoint(options: UpdateVmDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/action/reconfigureVm`,
@@ -408,7 +437,7 @@ export class VmEndpointService {
       },
     };
   }
-  uploadFileEndpoint(options?: any) {
+  uploadFileEndpoint(options: UploadFileDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/catalog/${options.urlParams.catalogId}/action/upload`,

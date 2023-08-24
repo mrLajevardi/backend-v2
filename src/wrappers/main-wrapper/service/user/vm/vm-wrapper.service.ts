@@ -5,7 +5,7 @@ import { isEmpty, isNil } from 'lodash';
 import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
 import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
 import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
-
+import { Stream } from 'stream';
 @Injectable()
 export class VmWrapperService {
   constructor(
@@ -26,7 +26,6 @@ export class VmWrapperService {
       wrapper({
         headers: { Authorization: `Bearer ${authToken}` },
         urlParams: { vmId: vAppId },
-        body: {},
       }),
     );
     return ticket;
@@ -37,7 +36,7 @@ export class VmWrapperService {
    * @param {String} vAppId
    * @return {Promise}
    */
-  async deployvApp(authToken, vAppId) {
+  async deployVApp(authToken, vAppId) {
     const request = {
       'root:DeployVAppParams': {
         $: {
@@ -394,7 +393,7 @@ export class VmWrapperService {
    * @param {String} vAppId
    * @return {Promise}
    */
-  async partialUpload(authToken, fullAddress, data, header) {
+  async partialUpload(authToken, fullAddress, data: Stream, header) {
     const endpoint = 'VmEndpointService.partialUploadEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);

@@ -6,6 +6,10 @@ import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
 import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
 import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
 import { VmGetWrapperService } from './vm-get-wrapper.service';
+import {
+  UpdateGuestCustomizationBody,
+  UpdateGuestCustomizationDto,
+} from 'src/wrappers/vcloud-wrapper/services/user/vm/dto/update-guest-customazation-dto';
 @Injectable()
 export class VmUpdateWrapperService {
   constructor(
@@ -274,25 +278,14 @@ export class VmUpdateWrapperService {
    * @param {Object} config
    * @return {Promise}
    */
-  async updateGuestCustomization(authToken, vmId, config) {
+  async updateGuestCustomization(
+    authToken,
+    vmId,
+    config: Omit<UpdateGuestCustomizationBody, '_type'>,
+  ) {
     const requestBody = {
       _type: 'GuestCustomizationSectionType',
-      enabled: config.enabled,
-      changeSid: config.changeSid,
-      joinDomainEnabled: config.joinDomainEnabled,
-      useOrgSettings: config.useOrgSettings,
-      domainName: config.domainName,
-      domainUserName: config.domainUserName,
-      domainUserPassword: config.domainUserPassword,
-      machineObjectOU: config.machineObjectOU,
-      adminPasswordEnabled: config.adminPasswordEnabled,
-      adminPasswordAuto: config.adminPasswordAuto,
-      adminPassword: config.adminPassword,
-      adminAutoLogonEnabled: config.adminAutoLogonEnabled,
-      adminAutoLogonCount: config.adminAutoLogonCount,
-      resetPasswordRequired: config.resetPasswordRequired,
-      customizationScript: config.customizationScript,
-      computerName: config.computerName,
+      ...config,
     };
     const endpoint = 'VmEndpointService.updateGuestCustomizationEndpoint';
     const wrapper =
