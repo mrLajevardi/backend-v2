@@ -405,12 +405,13 @@ export class OauthService {
 
     let newUser: CreateUserDto = new User();
     newUser.username = `U-${phoneNumber}`;
-    const password = data.password ? data.password : generatePassword();
-    newUser.password = await encryptPassword(password);
-    newUser.vdcPassword = generatePassword();
+    const password = data.password ? encryptPassword(data.password) : generatePassword();
+    newUser.password = await encryptPassword(data.password);
+    newUser.vdcPassword = data.password;
     newUser.name = firstname || "کاربر";
     newUser.family = lastname || "گرامی";
     newUser.phoneNumber = phoneNumber;
+    newUser.email = email;
     newUser.active = data.active;
     newUser.phoneVerified = true;
     newUser.acceptTermsOfService = data.acceptTermsOfService;

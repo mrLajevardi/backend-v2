@@ -18,11 +18,17 @@ import { OtpService } from "../../security-tools/otp.service";
 import { LoginService } from "../service/login.service";
 import { PaymentModule } from "src/application/payment/payment.module";
 import { RegisterByOauthDto } from "../dto/register-by-oauth.dto";
+import {
+  comparePassword,
+  encryptPassword,
+} from "src/infrastructure/helpers/helpers";
+import { BadRequestException } from "src/infrastructure/exceptions/bad-request.exception";
 
 describe("AuthController", () => {
   let controller: AuthController;
   let service: AuthService;
   let testDataService: TestDataService;
+  let userTable: UserTableService;
 
   let module: TestingModule;
   beforeEach(async () => {
@@ -57,6 +63,7 @@ describe("AuthController", () => {
 
     controller = module.get<AuthController>(AuthController);
     service = module.get<AuthService>(AuthService);
+    userTable = module.get<UserTableService>(UserTableService);
     testDataService = module.get<TestDataService>(TestDataService);
 
     await testDataService.seedTestData();
@@ -95,21 +102,22 @@ describe("AuthController", () => {
   });
 
   describe("register by oauth for google ", () => {
-    beforeAll(async () => {
-
-    });
-
-    it("", async () => {
-      //given
+    const emailAddress = "ziaee.majid2@gmail.com";
+    const firstname = "majid";
+    const lastname = "ziaei";
+    beforeEach(async () => {
       service.oath.decodeEmailToken = jest.fn().mockReturnValue({
-        email: "ziaee.majid2@gmail.com",
-        firstname: "majid",
-        lastname: "ziaei",
+        email: emailAddress,
+        firstname: firstname,
+        lastname: lastname,
         emailVerified: true,
       });
 
-      console.log(service.oath.decodeEmailToken(null));
+      service.login.getLoginToken = jest.fn().mockResolvedValue("logintoken");
+    });
 
+    it("should return login token", async () => {
+      //given
       const phoneNumber = "07921121213";
       const { otp, hash } = await service.login.generateOtp(phoneNumber, false);
       let dto: RegisterByOauthDto = new RegisterByOauthDto();
@@ -119,15 +127,47 @@ describe("AuthController", () => {
       dto.otpCode = otp;
       dto.password = "abcd1234";
       dto.phoneNumber = phoneNumber;
-      dto.emailToken = 'test';
-      
+      dto.emailToken = "test";
+
       //when
+      const userCountBefore = await userTable.count();
+      const result = await controller.registerByOauth(dto, null);
+      const userCountAfter = await userTable.count();
 
-      await controller.registerByOauth(dto, null);
-
+      const user = await userTable.findOne({
+        where: { email: emailAddress },
+      });
 
       //then
+      expect(result).toBe("logintoken");
+      expect(userCountAfter).toBe(userCountBefore + 1);
+      expect(user).not.toBe(null);
+      expect(user.name).toBe(firstname);
+      expect(user.family).toBe(lastname);
+      expect(await comparePassword(user.password, dto.password)).toBe(true);
+      expect(user.email).toBe(emailAddress);
+      expect(user.phoneNumber).toBe(phoneNumber);
+    });
 
+    it("should encounter error", async () => {
+      //given
+      const phoneNumber = "07921121213";
+      const { otp, hash } = await service.login.generateOtp(phoneNumber, false);
+      let dto: RegisterByOauthDto = new RegisterByOauthDto();
+      dto.acceptTermsOfService = true;
+      dto.active = true;
+      dto.otpHash = hash;
+      dto.otpCode = otp;
+      dto.password = "abcd1234";
+      dto.phoneNumber = phoneNumber;
+      dto.emailToken = "test";
+
+      //when
+     
+      await expect( async () => {
+        await controller.registerByOauth(dto, null);
+        await controller.registerByOauth(dto, null);
+      }).rejects.toThrow();
     });
   });
 });

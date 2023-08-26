@@ -1,6 +1,7 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { PermissionGroupsMappings } from './PermissionGroupsMappings';
 import { RoleMapping } from './RoleMapping';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__Role__3213E83F33C5C466', ['id'], { unique: true })
 @Entity('Role', { schema: 'security' })
@@ -17,14 +18,14 @@ export class Role {
   @Column('datetime', {
     name: 'created',
     nullable: true,
-    default: () => 'getdate()',
+    default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()',
   })
   created: Date | null;
 
   @Column('datetime', {
     name: 'modified',
     nullable: true,
-    default: () => 'getdate()',
+    default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()',
   })
   modified: Date | null;
 
