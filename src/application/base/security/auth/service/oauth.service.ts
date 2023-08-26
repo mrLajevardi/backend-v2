@@ -32,21 +32,22 @@ import { stringify } from "querystring";
 
 @Injectable()
 export class OauthService {
-  emailJwtService: JwtService;
-
   constructor(
     private readonly userTable: UserTableService,
     private readonly loginService: LoginService,
-    private readonly otpService: OtpService
-  ) {
-    this.emailJwtService = new JwtService({
-      secret: process.env.JWT_SECRET,
-      signOptions: {
-        expiresIn: 60 * 2, // 2 min
-      },
-    });
-  }
+    private readonly otpService: OtpService,
+    private readonly emailJwtService: JwtService
+  ) {}
 
+  getGoogleConsentURL(){
+    const clientID = process.env.GOOGLE_CLIENT_ID;
+    const redirectURI = process.env.GOOGLE_REDIRECT_URI;
+    const scope = 'profile email';
+    const state = '123'; // You can generate and manage this value
+  
+    return `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
+  
+  }
   async googleOauth(code: string): Promise<OauthResponseDto> {
     let email: string;
     let error: Error;
@@ -329,6 +330,18 @@ export class OauthService {
     return this.loginService.getLoginToken(user.id);
   }
 
+
+  decodeEmailToken(emailToken: string): {email: string, firstname: string, lastname: string, emailVerified: boolean}{
+    const encodedData = this.emailJwtService.decode(emailToken);
+    const email = encodedData["email"] as string ;
+    const firstname = encodedData["firstname"] as string;
+    const lastname = encodedData["lastname"] as string ;
+    const emailVerified = this.emailJwtService.verify(emailToken);
+    return {
+      email,firstname,lastname,emailVerified
+    }
+  }
+
   async registerByOauth(
     options: SessionRequest,
     data: RegisterByOauthDto
@@ -353,11 +366,9 @@ export class OauthService {
     if (!data.emailToken) {
       return Promise.reject(new BadRequestException("no email token"));
     }
-    const encodedData = this.emailJwtService.decode(data.emailToken);
-    const email = encodedData["email"];
-    const firstname = encodedData["firstname"];
-    const lastname = encodedData["lastname"];
-    const emailVerified = this.emailJwtService.verify(data.emailToken);
+
+    const {email,firstname,lastname,emailVerified} = this.decodeEmailToken(data.emailToken);
+
     if (!emailVerified) {
       throw new InvalidEmailTokenException();
     }

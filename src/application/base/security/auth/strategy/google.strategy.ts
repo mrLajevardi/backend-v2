@@ -26,15 +26,14 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     console.log('validating');
     console.log(profile);
     const email = profile.emails[0].value; 
-
     const user = await this.userTable.findOne({
       where: {
         email: email,
       },
     });
 
-    let firstname : string;
-    let lastname : string; 
+    let firstname : string = profile.name.givenName;
+    let lastname : string = profile.name.familyName; 
     if (!isEmpty(profile.displayName)) {
       const nameParts = profile.displayName.split(" ");
       firstname = nameParts[0] || "";

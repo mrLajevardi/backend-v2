@@ -67,12 +67,12 @@ export class AuthController {
   async sendOtp(
     @Param() dto: PhoneNumberDto,
   ): Promise<{ phoneNumber: string; hash: string }> {
-    const hash: string = await this.authService.login.generateOtp(
+    const otp = await this.authService.login.generateOtp(
       dto.phoneNumber,
     );
     return {
       phoneNumber: dto.phoneNumber,
-      hash: hash,
+      hash: otp.hash,
     };
   }
 
@@ -146,18 +146,10 @@ export class AuthController {
   @Public()
   @Get('googleUrl')
   getGoogleUrl() : {consentUrl:string} {
-    const clientID = process.env.GOOGLE_CLIENT_ID;
-    const redirectURI = process.env.GOOGLE_REDIRECT_URI;
-    const scope = 'openid email';
-    const state = '123'; // You can generate and manage this value
-  
-    const consentURL = `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
-  
+    const consentURL = this.authService.oath.getGoogleConsentURL();
     return {
-
       "consentUrl": consentURL
     }
-     
   }
 
 
