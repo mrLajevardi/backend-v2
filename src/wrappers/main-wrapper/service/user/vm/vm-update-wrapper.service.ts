@@ -509,7 +509,7 @@ export class VmUpdateWrapperService {
       headers: { Authorization: `Bearer ${authToken}` },
       body: xml,
     };
-    const endpoint = 'VmEndpointService.updateNetworkSectionEndpoint';
+    const endpoint = 'VmEndpointService.updateVmEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
     const createdVm = await this.vcloudWrapperService.request(wrapper(options));
@@ -621,24 +621,5 @@ export class VmUpdateWrapperService {
     return Promise.resolve({
       __vcloudTask: generalSection.headers['location'],
     });
-  }
-  /**
-   * get a single vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async uploadFile(authToken, catalogId, data) {
-    const endpoint = 'VmEndpointService.updateNetworkSectionEndpoint';
-    const wrapper =
-      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const response = await this.vcloudWrapperService.request(
-      wrapper({
-        urlParams: { catalogId },
-        headers: { Authorization: `Bearer ${authToken}` },
-        body: data,
-      }),
-    );
-    return response;
   }
 }

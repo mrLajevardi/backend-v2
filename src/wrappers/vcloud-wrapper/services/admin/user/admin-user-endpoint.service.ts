@@ -1,8 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import {
+  EndpointInterface,
+  EndpointOptionsInterface,
+} from 'src/wrappers/interfaces/endpoint.interface';
+import { CreateUserDto } from './dto/create-user.dtop';
 
 @Injectable()
 export class AdminUserEndpointService {
-  createProviderSessionEndpoint(options?: any) {
+  createProviderSessionEndpoint(
+    options: EndpointOptionsInterface,
+  ): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/sessions/provider`,
@@ -14,7 +21,7 @@ export class AdminUserEndpointService {
       },
     };
   }
-  createUserEndpoint(options?: any) {
+  createUserEndpoint(options: CreateUserDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/admin/org/${options.urlParams.orgId}/users`,
@@ -27,7 +34,9 @@ export class AdminUserEndpointService {
       },
     };
   }
-  createUserSessionEndpoint(options?: any) {
+  createUserSessionEndpoint(
+    options: EndpointOptionsInterface,
+  ): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/sessions`,

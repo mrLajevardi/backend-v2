@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Wrapper } from 'src/wrappers/newWrapper';
 import { VcloudWrapperInterface } from '../interface/vcloud-wrapper.interface';
 import * as https from 'https';
-import * as _ from 'lodash';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

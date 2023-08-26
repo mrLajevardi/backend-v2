@@ -9,7 +9,7 @@ export class UpdateDhcpBody {
   mode: string;
   ipAddress: string;
   leaseTime: number;
-  enable: boolean;
+  enabled: boolean;
   dnsServers: string[];
   dhcpPools: object;
 }

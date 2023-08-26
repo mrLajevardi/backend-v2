@@ -15,19 +15,15 @@ import { AdminUserEndpointService } from './services/admin/user/admin-user-endpo
 import { AdminOrgEndpointService } from './services/admin/org/admin-org-endpoint.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { VcloudWrapperService } from './services/vcloud-wrapper.service';
+import { VcloudWrapperInterface } from './interface/vcloud-wrapper.interface';
 @Module({
   imports: [ConfigModule],
   providers: [
     {
       provide: 'VCLOUD_WRAPPER',
-      useFactory: (...wrappers: Provider[]) => {
-        let wrappersList = {};
-        for (const wrapper of wrappers) {
-          wrappersList = {
-            ...wrappersList,
-            wrapper,
-          };
-        }
+      useFactory: (...wrappers: Provider[]): VcloudWrapperInterface => {
+        let wrappersList: VcloudWrapperInterface;
+        Object.assign(wrappersList, ...wrappers);
         return wrappersList;
       },
       inject: [

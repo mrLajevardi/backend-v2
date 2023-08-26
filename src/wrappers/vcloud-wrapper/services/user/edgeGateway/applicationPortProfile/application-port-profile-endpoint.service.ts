@@ -29,7 +29,7 @@ export class ApplicationPortProfileEndpointService {
       method: 'delete',
       resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,
       params: {},
-      body: options.body,
+      body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
         ...options.headers,
@@ -42,7 +42,7 @@ export class ApplicationPortProfileEndpointService {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/applicationPortProfiles/${options.urlParams.applicationId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',

@@ -579,7 +579,7 @@ export class VmWrapperService {
    * @return {Promise}
    */
   async uploadFile(authToken, catalogId, data) {
-    const endpoint = 'VmEndpointService.undeployVmEndpoint';
+    const endpoint = 'VmEndpointService.uploadFileEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
     const response = await this.vcloudWrapperService.request(

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { getIPRange } from 'get-ip-range';
 import { isNil } from 'lodash';
+import { CreateEdgeGatewayBody } from 'src/wrappers/vcloud-wrapper/services/admin/edgeGateway/dto/create-edge-gateway.dto';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 
 @Injectable()
@@ -123,7 +124,7 @@ export class AdminEdgeGatewayWrapperService {
       config.authToken,
       config.userIpCount,
     );
-    const request = {
+    const request: CreateEdgeGatewayBody = {
       name: config.name,
       description: '',
       ownerRef: {

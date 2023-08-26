@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import {
-  EndpointInterface,
-  EndpointOptionsInterface,
-} from 'src/wrappers/interfaces/endpoint.interface';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
 import { AcquireVmTicketDto } from './dto/acquire-vm-ticket.dto';
 import { AnswerDto } from './dto/answer.dto';
 import { CreateTemplateDto } from './dto/create-template.dto';
@@ -33,6 +30,7 @@ import { UpdateVAppTemplateDto } from './dto/update-vapp-template.dto';
 import { UpdateVmDto } from './dto/update-vm.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { GetMediaItemDto } from './dto/get-media-item.dto';
+import { UpdateNetworkSectionDto } from './dto/update-network-section.dto';
 
 @Injectable()
 export class VmEndpointService {
@@ -396,7 +394,7 @@ export class VmEndpointService {
     };
   }
   updateNetworkSectionEndpoint(
-    options: UpdateGuestCustomizationDto,
+    options: UpdateNetworkSectionDto,
   ): EndpointInterface {
     return {
       method: 'put',

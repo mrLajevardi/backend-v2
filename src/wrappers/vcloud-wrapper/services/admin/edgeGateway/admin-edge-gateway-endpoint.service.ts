@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { CreateEdgeGatewayDto } from './dto/create-edge-gateway.dto';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { GetAvailableIpAddressesDto } from './dto/get-available-ip-addresses.dto';
+import { GetExternalNetworksDto } from './dto/get-external-networks.dto';
+import { GetNsxtEdgeClustersDto } from './dto/get-nsxt-edge-cluster.dto';
 
 @Injectable()
 export class AdminEdgeGatewayEndpointService {
-  createEdgeGatewayEndpoint(options?: any) {
+  createEdgeGatewayEndpoint(options: CreateEdgeGatewayDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/edgeGateways`,
@@ -15,11 +20,13 @@ export class AdminEdgeGatewayEndpointService {
       },
     };
   }
-  getAvailableIpAddressesEndpoint(options?: any) {
+  getAvailableIpAddressesEndpoint(
+    options: GetAvailableIpAddressesDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/externalNetworks/${options.urlParams.externalNetworkId}/availableIpAddresses`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
@@ -28,7 +35,9 @@ export class AdminEdgeGatewayEndpointService {
       },
     };
   }
-  getExternalNetworksEndpoint(options?: any) {
+  getExternalNetworksEndpoint(
+    options: GetExternalNetworksDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/externalNetworks`,
@@ -41,7 +50,9 @@ export class AdminEdgeGatewayEndpointService {
       },
     };
   }
-  getNsxtEdgeClustersEndpoint(options?: any) {
+  getNsxtEdgeClustersEndpoint(
+    options: GetNsxtEdgeClustersDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/nsxTResources/edgeClusters`,

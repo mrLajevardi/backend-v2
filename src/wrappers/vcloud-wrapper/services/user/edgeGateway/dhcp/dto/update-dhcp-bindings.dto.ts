@@ -11,6 +11,7 @@ interface UpdateDhcpBindingUrlParams {
 }
 
 export class UpdateDhcpBindingBody {
+  id: string;
   bindingType: string;
   name: string;
   description: string;
@@ -19,6 +20,7 @@ export class UpdateDhcpBindingBody {
   ipAddress: string;
   dnsServers: string[];
   dhcpV4BindingConfig: DhcpV4BindingConfig;
+  version: number;
 }
 
 class DhcpV4BindingConfig {

@@ -2,14 +2,14 @@ import { EndpointOptionsInterface } from 'src/wrappers/interfaces/endpoint.inter
 
 export interface CreateVmDto extends EndpointOptionsInterface {
   urlParams: CreateVmUrlParams;
-  body: CreateVmBody;
+  body: string;
 }
 
 interface CreateVmUrlParams {
   vdcId: string;
 }
 
-class CreateVmBody {
+export class CreateVmBody {
   'root:InstantiateVmTemplateParams': InstantiateVmTemplateParams;
 }
 

@@ -6,5 +6,4 @@ export interface GetDhcpDto extends EndpointOptionsInterface {
 
 interface GetDhcpUrlParams {
   networkId: string;
-  bindingId: string;
 }

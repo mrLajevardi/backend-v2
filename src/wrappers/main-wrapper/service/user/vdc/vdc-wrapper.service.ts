@@ -73,7 +73,7 @@ export class VdcWrapperService {
     authToken: string,
     vdcId: string,
     namedDiskProperties: any,
-  ): any {
+  ) {
     const query: any = await this.vcloudQuery(authToken, {
       type: 'orgVdcStorageProfile',
       format: 'records',

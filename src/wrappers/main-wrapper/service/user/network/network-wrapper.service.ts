@@ -198,7 +198,7 @@ export class NetworkWrapperService {
         },
       };
     }
-    const request:X = {
+    const request = {
       description: config.description,
       name: config.name,
       networkType: config.networkType,

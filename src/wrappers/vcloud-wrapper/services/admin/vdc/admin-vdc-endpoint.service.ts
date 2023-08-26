@@ -5,7 +5,7 @@ import { DeleteVdcDto } from './dto/delete-vdc.dto';
 import { DisableVdcDto } from './dto/disable-vdc.dto';
 import { EnableVdcDto } from './dto/enable-vdc.dto';
 import { UpdateNetworkProfileDto } from './dto/update-network-profile.dto';
-import { UpdateVdcBody, UpdateVdcDto } from './dto/update-vdc.dto';
+import { UpdateVdcDto } from './dto/update-vdc.dto';
 import { UpdateVdcStorageProfileDto } from './dto/update-vdc-storage-profile.dto';
 
 @Injectable()

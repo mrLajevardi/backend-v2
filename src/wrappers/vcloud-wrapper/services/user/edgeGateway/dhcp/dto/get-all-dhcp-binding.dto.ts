@@ -11,5 +11,5 @@ interface GetAllDhcpBindingsUrlParams {
 
 interface GetAllDhcpBindingsParams {
   pageSize: number;
-  curser: string;
+  cursor: string;
 }

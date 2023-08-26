@@ -24,7 +24,7 @@ export class TasksEndpointService {
     return {
       method: 'get',
       resource: `/api/task/${options.urlParams.taskId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',

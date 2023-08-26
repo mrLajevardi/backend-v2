@@ -2,7 +2,7 @@ import { EndpointOptionsInterface } from 'src/wrappers/interfaces/endpoint.inter
 
 export interface CreateVmSnapshotDto extends EndpointOptionsInterface {
   urlParams: CreateVmSnapshotUrlParams;
-  body: CreateVmSnapshotBody;
+  body: string;
 }
 
 export interface CreateVmSnapshotUrlParams {
