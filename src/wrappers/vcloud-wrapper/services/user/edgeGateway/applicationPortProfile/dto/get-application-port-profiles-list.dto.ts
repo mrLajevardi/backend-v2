@@ -5,7 +5,7 @@ export interface GetApplicationPortProfilesListDto
   params: GetApplicationPortProfilesParams;
 }
 
-interface GetApplicationPortProfilesParams {
+export class GetApplicationPortProfilesParams {
   page: number;
   pageSize: number;
   filter: string;

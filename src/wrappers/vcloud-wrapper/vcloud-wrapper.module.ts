@@ -22,7 +22,8 @@ import { VcloudWrapperInterface } from './interface/vcloud-wrapper.interface';
     {
       provide: 'VCLOUD_WRAPPER',
       useFactory: (...wrappers: Provider[]): VcloudWrapperInterface => {
-        let wrappersList: VcloudWrapperInterface;
+        const wrappersList: VcloudWrapperInterface =
+          {} as VcloudWrapperInterface;
         Object.assign(wrappersList, ...wrappers);
         return wrappersList;
       },

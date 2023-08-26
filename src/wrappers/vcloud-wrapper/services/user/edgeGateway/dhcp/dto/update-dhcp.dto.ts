@@ -11,9 +11,19 @@ export class UpdateDhcpBody {
   leaseTime: number;
   enabled: boolean;
   dnsServers: string[];
-  dhcpPools: object;
+  dhcpPools: DhcpPool[];
 }
 
 export interface UpdateDhcpUrlParams {
   networkId: string;
+}
+
+export class DhcpPool {
+  enabled: boolean;
+  ipRange: IpRange;
+}
+
+class IpRange {
+  startAddress: string;
+  endAddress: string;
 }

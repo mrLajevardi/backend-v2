@@ -7,7 +7,3 @@ export interface CreateApplicationPortProfileInterface {
   orgId: string;
   applicationPorts: ApplicationPorts[];
 }
-
-export interface CreateApplicationPortProfileDto {
-  __vcloudTask: string;
-}
