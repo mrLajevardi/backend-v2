@@ -65,7 +65,7 @@ interface EdgeGateway {
       };
       backingId: string;
     };
-    secondaryEdgeCluster: null | any; // Define the type if available
+    secondaryEdgeCluster: null; // Define the type if available
   };
 }
 

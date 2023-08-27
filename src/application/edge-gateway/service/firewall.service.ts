@@ -148,6 +148,7 @@ export class FirewallService {
       ruleId,
       props['edgeName'],
     );
+    return firewall;
     const filteredFirewall = {
       id: firewall.id,
       name: firewall.name,

@@ -28,12 +28,12 @@ export class Wrapper<T> {
   /**
    * endpoint object created by endpoint methods
    */
-  public async request<U>(
+  public async request<U, Header = any>(
     endpoint: EndpointInterface,
-  ): Promise<AxiosResponse<U>> {
+  ): Promise<AxiosResponse<U, Header>> {
     try {
       const additionalConfig = endpoint?.additionalConfig || {};
-      const request: AxiosResponse<U> = await axios.request({
+      const request: AxiosResponse<U, Header> = await axios.request({
         url: endpoint.resource,
         httpsAgent: this.httpsAgent,
         method: endpoint.method,

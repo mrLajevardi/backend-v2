@@ -3,6 +3,10 @@ import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vclou
 import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
 import { isEmpty } from 'lodash';
 import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { GetFirewallListDto } from './dto/get-firewall-list.dto';
+import { UpdateFirewallBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/update-firewall.dto';
+import { GetFirewallDto } from './dto/get-firewall.dto';
 
 @Injectable()
 export class FirewallWrapperService {
@@ -10,14 +14,12 @@ export class FirewallWrapperService {
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
   ) {}
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} ruleId
-   * @param {String} edgeName
-   */
-  async deleteFirewall(authToken, ruleId, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async deleteFirewall(
+    authToken: string,
+    ruleId: string,
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {
@@ -41,16 +43,14 @@ export class FirewallWrapperService {
       }),
     );
     return Promise.resolve({
-      __vcloudTask: firewall.headers['location'],
+      __vcloudTask: firewall.headers.location,
     });
   }
-  /**
-   * get a list of firewall rules
-   * @param {String} authToken
-   * @param {String} edgeName
-   */
-  async getFirewallList(authToken, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async getFirewallList(
+    authToken: string,
+    edgeName: string,
+  ): Promise<GetFirewallListDto> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {
@@ -62,24 +62,22 @@ export class FirewallWrapperService {
     const endpoint = 'FirewallEndpointService.getFirewallListEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const firewall = await this.vcloudWrapperService.request(
-      wrapper({
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-        urlParams: { gatewayId },
-      }),
-    );
+    const firewall =
+      await this.vcloudWrapperService.request<GetFirewallListDto>(
+        wrapper({
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          urlParams: { gatewayId },
+        }),
+      );
     return Promise.resolve(firewall.data);
   }
-  /**
-   * get a single firewall rule
-   * @param {String} authToken
-   * @param {String} ruleId
-   * @param {String} edgeName
-   * @return {Promise}
-   */
-  async getSingleFirewall(authToken, ruleId, edgeName) {
+  async getSingleFirewall(
+    authToken: string,
+    ruleId: string,
+    edgeName: string,
+  ): Promise<GetFirewallDto> {
     const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
@@ -97,29 +95,27 @@ export class FirewallWrapperService {
     const endpoint = 'FirewallEndpointService.getFirewallEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const firewall: any = await this.vcloudWrapperService.request(
-      wrapper({
-        headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: {
-          gatewayId,
-          ruleId,
-        },
-      }),
-    );
+    const firewall: any =
+      await this.vcloudWrapperService.request<GetFirewallDto>(
+        wrapper({
+          headers: { Authorization: `Bearer ${authToken}` },
+          urlParams: {
+            gatewayId,
+            ruleId,
+          },
+        }),
+      );
     if (ruleId === '') {
       return Promise.resolve(firewall.data.defaultRules[0]);
     }
     return Promise.resolve(firewall.data);
   }
-  /**
-   * update all firewall rules
-   * @param {String} authToken
-   * @param {Object} config
-   * @param {String} edgeName
-   * @return {Promise}
-   */
-  async updateFirewallList(authToken, config, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async updateFirewallList(
+    authToken: string,
+    config: UpdateFirewallBody[],
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {
@@ -145,16 +141,13 @@ export class FirewallWrapperService {
       __vcloudTask: firewall.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} ruleId
-   * @param {Object} config
-   * @param {String} edgeName
-   * @return {Promise}
-   */
-  async updateSingleFirewall(authToken, ruleId, config, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async updateSingleFirewall(
+    authToken: string,
+    ruleId: string,
+    config: UpdateFirewallBody,
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {

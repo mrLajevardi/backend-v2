@@ -9,7 +9,7 @@ export interface GetDnsForwarderDto {
   enabled: boolean;
   listenerIp: string;
   defaultForwarderZone: ForwarderZone;
-  conditionalForwarderZones: null | any; // Define the type if available
+  conditionalForwarderZones: null; // Define the type if available
   version: Version;
   snatRuleExternalIpAddress: string;
   snatRuleEnabled: boolean;
