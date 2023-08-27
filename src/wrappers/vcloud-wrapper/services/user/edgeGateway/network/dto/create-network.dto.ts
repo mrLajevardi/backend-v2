@@ -8,10 +8,14 @@ export class CreateNetworkBody {
   name: string;
   networkType: string;
   subnets: Subnets;
-  connection: object;
+  connection: Connection;
   ownerRef: OwnerRef;
 }
 
+class Connection {
+  connectionType: string;
+  connectionTypeValue: string;
+}
 export class OwnerRef {
   id: string;
 }
