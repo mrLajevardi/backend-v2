@@ -21,13 +21,11 @@ import { VerifyOauthDto } from '../dto/verify-oauth.dto';
 import { AccessTokenDto } from '../dto/access-token.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
-import { DecodedPhone } from '../dto/decoded-phone.dto';
 import { OtpService } from '../../security-tools/otp.service';
-import { first, isEmpty, last, split } from 'lodash';
+import { isEmpty } from 'lodash';
 import { CreateUserDto } from 'src/application/base/crud/user-table/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/infrastructure/database/entities/User';
-import { OAuth2Client } from 'google-auth-library';
 import { stringify } from 'querystring';
 
 @Injectable()
