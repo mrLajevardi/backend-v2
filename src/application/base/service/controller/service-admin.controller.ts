@@ -45,7 +45,7 @@ import { UpdateConfigsDto } from '../../crud/configs-table/dto/update-configs.dt
 export class ServiceAdminController {
   constructor(private readonly service: ServiceAdminService) {}
 
-  @Delete('/all')
+  @Delete('/all/:serviceCount')
   @ApiParam({
     name: 'serviceCount',
     type: 'number',
@@ -315,6 +315,12 @@ export class ServiceAdminController {
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
   ): Promise<{ transaction: Transactions[]; totalRecords: number }> {
+    if (!page) {
+      page = 0;
+    }
+    if (!pageSize) {
+      pageSize = 10;
+    }
     return await this.service.getTransactions(
       page,
       pageSize,

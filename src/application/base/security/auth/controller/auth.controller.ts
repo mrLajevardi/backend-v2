@@ -13,6 +13,7 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -43,6 +44,7 @@ import { AccessTokenDto } from '../dto/access-token.dto';
 import { UserPayload } from '../dto/user-payload.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -66,12 +68,10 @@ export class AuthController {
   async sendOtp(
     @Param() dto: PhoneNumberDto,
   ): Promise<{ phoneNumber: string; hash: string }> {
-    const hash: string = await this.authService.login.generateOtp(
-      dto.phoneNumber,
-    );
+    const otp = await this.authService.login.generateOtp(dto.phoneNumber);
     return {
       phoneNumber: dto.phoneNumber,
-      hash: hash,
+      hash: otp.hash,
     };
   }
 
@@ -118,27 +118,36 @@ export class AuthController {
   }
 
   @Public()
-  @Post('github')
-  @ApiBody({ type: GithubLoginDto })
+  @Get('github')
+  @ApiQuery({ type: GithubLoginDto })
   @UseGuards(GithubAuthGuard)
   async githubLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
   }
 
   @Public()
-  @Post('linkedin')
-  @ApiBody({ type: LinkedInLoginDto })
+  @Get('linkedin')
+  @ApiQuery({ type: LinkedInLoginDto })
   @UseGuards(LinkedInAuthGuard)
   async linkedInLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
   }
 
   @Public()
-  @Post('google')
-  @ApiBody({ type: GoogleLoginDto })
-  @UseGuards(GoogleAuthGuard)
+  @Get('google')
+  @ApiQuery({ type: GoogleLoginDto })
+  @UseGuards(AuthGuard('google'))
   async googleLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
+  }
+
+  @Public()
+  @Get('googleUrl')
+  getGoogleUrl(): { consentUrl: string } {
+    const consentURL = this.authService.oath.getGoogleConsentURL();
+    return {
+      consentUrl: consentURL,
+    };
   }
 
   @Post('/loginAsUser')

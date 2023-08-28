@@ -3,40 +3,14 @@ import { AiController } from './ai.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { AiService } from './ai.service';
 import { UserService } from '../base/user/service/user.service';
-import { DiscountsService } from '../base/service/services/discounts.service';
-import { TransactionsService } from '../base/transactions/transactions.service';
-import { CreateServiceService } from '../base/service/services/create-service.service';
-import { ServiceChecksService } from '../base/service/services/service-checks.service';
-import { QualityPlansService } from '../base/crud/quality-plans/quality-plans.service';
-import { InvoicesService } from '../base/invoice/service/invoices.service';
-import { ServiceItemsSumService } from '../base/crud/service-items-sum/service-items-sum.service';
-import { InvoicesChecksService } from '../base/invoice/service/invoices-checks.service';
-import { CostCalculationService } from '../base/invoice/service/cost-calculation.service';
-import { VgpuService } from '../vgpu/vgpu.service';
-import { SessionsService } from '../base/sessions/sessions.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
-import { InvoiceDiscountsTableService } from '../base/crud/invoice-discounts-table/invoice-discounts-table.service';
-import { InvoiceItemsTableService } from '../base/crud/invoice-items-table/invoice-items-table.service';
-import { InvoicePlansTableService } from '../base/crud/invoice-plans-table/invoice-plans-table.service';
-import { InvoicePropertiesTableService } from '../base/crud/invoice-properties-table/invoice-properties-table.service';
 import { ItemTypesTableService } from '../base/crud/item-types-table/item-types-table.service';
 import { PlansTableService } from '../base/crud/plans-table/plans-table.service';
 import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
-import { ServiceItemsTableService } from '../base/crud/service-items-table/service-items-table.service';
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ServiceTypesTableService } from '../base/crud/service-types-table/service-types-table.service';
 import { SettingTableService } from '../base/crud/setting-table/setting-table.service';
 import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-table.service';
-import { DiscountsTableService } from '../base/crud/discounts-table/discounts-table.service';
-import { PlansQueryService } from '../base/crud/plans-table/plans-query.service';
-import { ServiceInstancesStoredProcedureService } from '../base/crud/service-instances-table/service-instances-stored-procedure.service';
-import { SessionsTableService } from '../base/crud/sessions-table/sessions-table.service';
-import { TransactionsTableService } from '../base/crud/transactions-table/transactions-table.service';
-import { UserTableService } from '../base/crud/user-table/user-table.service';
-import { ServiceService } from '../base/service/services/service.service';
-import { InvoicesTableService } from '../base/crud/invoices-table/invoices-table.service';
-import { AitransactionsLogsStoredProcedureService } from '../base/crud/aitransactions-logs-table/aitransactions-logs-stored-procedure.service';
-import { PayAsYouGoService } from '../base/pay-as-you-go/pay-as-you-go.service';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 import { CreateAITransactionsLogsDto } from '../base/crud/aitransactions-logs-table/dto/create-aitransactions-logs.dto';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
@@ -283,11 +257,11 @@ describe('AiController', () => {
         serviceInstanceId,
         page,
         pageSize,
-        {
-          user: {
-            userId: 597,
-          },
-        },
+        // {
+        //   user: {
+        //     userId: 597,
+        //   },
+        // },
       );
 
       expect(result.aiTransactionsLogs).toEqual([]);

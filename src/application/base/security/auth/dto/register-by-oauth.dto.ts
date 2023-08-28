@@ -1,38 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class RegisterByOauthDto {
-  id?: number;
-
   @ApiProperty()
+  @IsString()
   emailToken: string;
 
   @ApiProperty()
-  pjwt: string;
+  @IsOptional()
+  @IsString()
+  password?: string;
 
   @ApiProperty()
-  username: string;
-
-  @ApiProperty()
-  password: string;
-
-  @ApiProperty()
-  vdcPassword: string;
-
-  @ApiProperty()
-  name: string;
-
-  @ApiProperty()
-  family: string;
-
-  @ApiProperty()
+  @IsString()
   phoneNumber: string;
 
   @ApiProperty()
+  @IsString()
+  otpCode: string;
+
+  @ApiProperty()
+  @IsString()
+  otpHash: string;
+
+  @ApiProperty()
+  @IsBoolean()
   active: boolean;
 
   @ApiProperty()
-  phoneVerified: boolean;
-
-  @ApiProperty()
+  @IsBoolean()
   acceptTermsOfService: boolean;
 }

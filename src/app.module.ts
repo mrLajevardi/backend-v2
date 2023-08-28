@@ -34,11 +34,16 @@ import { SecurityToolsModule } from './application/base/security/security-tools/
 import { GroupModule } from './application/base/group/group.module';
 import { PayAsYouGoModule } from './application/base/pay-as-you-go/pay-as-you-go.module';
 import { ServicePropertiesModule } from './application/base/service-properties/service-properties.module';
+import { VcloudWrapper } from './wrappers/vcloudWrapper/vcloudWrapper';
 import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
 import { RavenInterceptor, RavenModule } from 'nest-raven';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
+import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
+import { BullModule as BullMQModule } from '@nestjs/bullmq';
+import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 @Module({
   imports: [
@@ -48,6 +53,12 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     }),
     BullModule.forRoot({
       redis: {
+        host: 'localhost',
+        port: 6379,
+      },
+    }),
+    BullMQModule.forRoot({
+      connection: {
         host: 'localhost',
         port: 6379,
       },
@@ -81,7 +92,11 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     GroupModule,
     PayAsYouGoModule,
     ServicePropertiesModule,
+    VcloudWrapper,
+    MainWrapperModule,
     RobotModule,
+    TaskManagerModule,
+    UvdeskWrapperModule,
   ],
   controllers: [AppController],
   providers: [

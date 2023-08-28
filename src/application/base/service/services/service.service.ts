@@ -467,15 +467,20 @@ export class ServiceService {
 
   async getServices(
     options: SessionRequest,
+    typeId?: string,
     id?: string,
   ): Promise<GetServicesReturnDto[]> {
     const {
       user: { userId },
     } = options;
+    let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
+    if (typeId) {
+      serviceTypeIds = [typeId];
+    }
     const where: any = {
-      userId,
+      userId: userId,
       isDeleted: false,
-      serviceTypeId: In(['vdc', 'vgpu', 'aradAi']),
+      serviceTypeId: In(serviceTypeIds),
     };
     if (id) {
       where.id = id;
@@ -484,6 +489,7 @@ export class ServiceService {
       where,
       relations: ['serviceItems'],
     });
+    console.log(services);
     const extendedServiceList = services.map((service) => {
       const expired =
         new Date(service.expireDate).getTime() < new Date().getTime();

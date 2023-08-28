@@ -19,15 +19,17 @@ export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedIn') {
     req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
   ): Promise<void> {
     try {
-      if (!req || !req.body) {
+      if (!req || !req.query) {
         this.error(new ForbiddenException());
       }
 
-      if (!req.body.code) {
+      if (!req.query.code) {
         this.error(new ForbiddenException('no code provided'));
       }
 
-      this.success(this.oauthService.verifyLinkedinOauth(req.body.code));
+      this.success(
+        this.oauthService.verifyLinkedinOauth(req.query.code.toString()),
+      );
     } catch (error) {
       this.error(error);
     }

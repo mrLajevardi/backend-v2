@@ -73,6 +73,11 @@ export class ServiceController {
   // create new item
   @ApiOperation({ summary: 'get services of a user' })
   @ApiQuery({ name: 'id', required: false })
+  @ApiQuery({
+    name: 'serviceTypeId',
+    required: false,
+    description: ' vdc, aradAi, vgpu',
+  })
   @ApiResponse({
     status: 200,
     description: 'user services have been fetched successfully',
@@ -80,9 +85,10 @@ export class ServiceController {
   @Get()
   async getServices(
     @Request() options: SessionRequest,
+    @Query('serviceTypeId') typeId?: string,
     @Query('id') id?: string,
   ): Promise<GetServicesReturnDto[]> {
-    return this.serviceService.getServices(options, id);
+    return this.serviceService.getServices(options, typeId, id);
     // await this.invoicesTable.create(dto);
   }
 
