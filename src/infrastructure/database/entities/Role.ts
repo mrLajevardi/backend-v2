@@ -18,14 +18,14 @@ export class Role {
   @Column('datetime', {
     name: 'created',
     nullable: true,
-    default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
   })
   created: Date | null;
 
   @Column('datetime', {
     name: 'modified',
     nullable: true,
-    default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
   })
   modified: Date | null;
 

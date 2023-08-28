@@ -1,4 +1,13 @@
-import { Controller, Get, Post, UseGuards, Request, Req, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Request,
+  Req,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LocalAuthGuard } from './application/base/security/auth/guard/local-auth.guard';
@@ -32,11 +41,9 @@ export class AppController {
   //   return this.appService.getHello();
   // }
 
-
   @Get()
   @Public()
-  getHello(
-  ): string {
+  getHello(): string {
     return this.appService.getHello();
   }
 

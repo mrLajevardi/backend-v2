@@ -16,9 +16,15 @@ export class Setting {
   @Column(isTestingEnv() ? 'text' : 'ntext', { name: 'Value', nullable: true })
   value: string | null;
 
-  @Column('datetime', { name: 'InsertTime', default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()' })
+  @Column('datetime', {
+    name: 'InsertTime',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
+  })
   insertTime: Date;
 
-  @Column('datetime', { name: 'UpdateTime', default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()' })
+  @Column('datetime', {
+    name: 'UpdateTime',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
+  })
   updateTime: Date;
 }

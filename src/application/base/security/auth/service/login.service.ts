@@ -20,26 +20,31 @@ export class LoginService {
   ) {}
 
   // generates a phone otp and return the hash
-  async generateOtp(phoneNumber: string, sendSMS : boolean = true ): Promise<{otp: string,hash: string}> {
+  async generateOtp(
+    phoneNumber: string,
+    sendSMS = true,
+  ): Promise<{ otp: string; hash: string }> {
     const otpGenerated = this.otpService.otpGenerator(phoneNumber);
-    if (!otpGenerated){
-      throw new OtpErrorException()
+    if (!otpGenerated) {
+      throw new OtpErrorException();
     }
     console.log(otpGenerated);
     try {
-      if (sendSMS){
-        await this.notificationService.sms.sendSMS(phoneNumber, otpGenerated.otp);
+      if (sendSMS) {
+        await this.notificationService.sms.sendSMS(
+          phoneNumber,
+          otpGenerated.otp,
+        );
       }
     } catch (error) {
       return null;
     }
 
-    if (!sendSMS){
-      return {otp: null, hash: otpGenerated.hash}; 
-    }else{
-      return {otp: otpGenerated.otp,hash: otpGenerated.hash}
+    if (!sendSMS) {
+      return { otp: null, hash: otpGenerated.hash };
+    } else {
+      return { otp: otpGenerated.otp, hash: otpGenerated.hash };
     }
-
   }
 
   // Validate user performs using Local.strategy

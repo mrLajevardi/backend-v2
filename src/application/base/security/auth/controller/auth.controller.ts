@@ -68,9 +68,7 @@ export class AuthController {
   async sendOtp(
     @Param() dto: PhoneNumberDto,
   ): Promise<{ phoneNumber: string; hash: string }> {
-    const otp = await this.authService.login.generateOtp(
-      dto.phoneNumber,
-    );
+    const otp = await this.authService.login.generateOtp(dto.phoneNumber);
     return {
       phoneNumber: dto.phoneNumber,
       hash: otp.hash,
@@ -135,7 +133,6 @@ export class AuthController {
     return req.user;
   }
 
-  
   @Public()
   @Get('google')
   @ApiQuery({ type: GoogleLoginDto })
@@ -146,13 +143,12 @@ export class AuthController {
 
   @Public()
   @Get('googleUrl')
-  getGoogleUrl() : {consentUrl:string} {
+  getGoogleUrl(): { consentUrl: string } {
     const consentURL = this.authService.oath.getGoogleConsentURL();
     return {
-      "consentUrl": consentURL
-    }
+      consentUrl: consentURL,
+    };
   }
-
 
   @Post('/loginAsUser')
   @ApiOperation({ summary: 'login admin as a user' })

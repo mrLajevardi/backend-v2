@@ -4,7 +4,7 @@ import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 export class RegisterByOauthDto {
   @ApiProperty()
   @IsString()
-  emailToken: string; 
+  emailToken: string;
 
   @ApiProperty()
   @IsOptional()
@@ -13,11 +13,11 @@ export class RegisterByOauthDto {
 
   @ApiProperty()
   @IsString()
-  phoneNumber: string; 
+  phoneNumber: string;
 
   @ApiProperty()
   @IsString()
-  otpCode: string; 
+  otpCode: string;
 
   @ApiProperty()
   @IsString()

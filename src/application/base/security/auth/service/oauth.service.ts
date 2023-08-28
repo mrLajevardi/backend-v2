@@ -2,33 +2,33 @@ import {
   ForbiddenException,
   Injectable,
   UnauthorizedException,
-} from "@nestjs/common";
-import axios from "axios";
-import * as https from "https";
-import { UserTableService } from "src/application/base/crud/user-table/user-table.service";
-import { BadRequestException } from "src/infrastructure/exceptions/bad-request.exception";
-import { DisabledUserException } from "src/infrastructure/exceptions/disabled-user.exception";
-import { InvalidPhoneTokenException } from "src/infrastructure/exceptions/invalid-phone-token.exception";
+} from '@nestjs/common';
+import axios from 'axios';
+import * as https from 'https';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
+import { DisabledUserException } from 'src/infrastructure/exceptions/disabled-user.exception';
+import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invalid-phone-token.exception';
 import {
   encryptPassword,
   generatePassword,
-} from "src/infrastructure/helpers/helpers";
-import { RoleMappingTableService } from "src/application/base/crud/role-mapping-table/role-mapping-table.service";
-import { RegisterByOauthDto } from "../dto/register-by-oauth.dto";
-import { LoginService } from "./login.service";
-import { OauthResponseDto } from "../dto/oauth-response.dto";
-import { VerifyOauthDto } from "../dto/verify-oauth.dto";
-import { AccessTokenDto } from "../dto/access-token.dto";
-import { SessionRequest } from "src/infrastructure/types/session-request.type";
-import { InvalidEmailTokenException } from "src/infrastructure/exceptions/invalid-email-token.exception";
-import { DecodedPhone } from "../dto/decoded-phone.dto";
-import { OtpService } from "../../security-tools/otp.service";
-import { first, isEmpty, last, split } from "lodash";
-import { CreateUserDto } from "src/application/base/crud/user-table/dto/create-user.dto";
-import { JwtService } from "@nestjs/jwt";
-import { User } from "src/infrastructure/database/entities/User";
-import { OAuth2Client } from "google-auth-library";
-import { stringify } from "querystring";
+} from 'src/infrastructure/helpers/helpers';
+import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
+import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
+import { LoginService } from './login.service';
+import { OauthResponseDto } from '../dto/oauth-response.dto';
+import { VerifyOauthDto } from '../dto/verify-oauth.dto';
+import { AccessTokenDto } from '../dto/access-token.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
+import { DecodedPhone } from '../dto/decoded-phone.dto';
+import { OtpService } from '../../security-tools/otp.service';
+import { first, isEmpty, last, split } from 'lodash';
+import { CreateUserDto } from 'src/application/base/crud/user-table/dto/create-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { User } from 'src/infrastructure/database/entities/User';
+import { OAuth2Client } from 'google-auth-library';
+import { stringify } from 'querystring';
 
 @Injectable()
 export class OauthService {
@@ -36,43 +36,42 @@ export class OauthService {
     private readonly userTable: UserTableService,
     private readonly loginService: LoginService,
     private readonly otpService: OtpService,
-    private readonly emailJwtService: JwtService
+    private readonly emailJwtService: JwtService,
   ) {}
 
-  getGoogleConsentURL(){
+  getGoogleConsentURL() {
     const clientID = process.env.GOOGLE_CLIENT_ID;
     const redirectURI = process.env.GOOGLE_REDIRECT_URI;
     const scope = 'profile email';
     const state = '123'; // You can generate and manage this value
-  
+
     return `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
-  
   }
   async googleOauth(code: string): Promise<OauthResponseDto> {
     let email: string;
     let error: Error;
-    let verified = false;
+    const verified = false;
     try {
       const postData = stringify({
         code: code,
         client_id: process.env.GOOGLE_CLIENT_ID,
         client_secret: process.env.GOOGLE_CLIENT_SECRET,
         redirect_uri: process.env.GOOGLE_REDIRECT_URI,
-        grant_type: "authorization_code",
+        grant_type: 'authorization_code',
       });
 
       const response = await axios.post(
-        "https://oauth2.googleapis.com/token",
+        'https://oauth2.googleapis.com/token',
         postData,
         {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            'Content-Type': 'application/x-www-form-urlencoded',
           },
-        }
+        },
       );
 
       const accessToken = response.data.access_token;
-      console.log("Access token:", accessToken);
+      console.log('Access token:', accessToken);
 
       // const httpsAgent = new https.Agent({
       //   rejectUnauthorized: false,
@@ -92,7 +91,7 @@ export class OauthService {
       //   verified = true;
     } catch (err) {
       console.log(err.message);
-      error = new BadRequestException("bad request", err);
+      error = new BadRequestException('bad request', err);
     }
     return {
       error,
@@ -113,7 +112,7 @@ export class OauthService {
 
     try {
       const checkCode = await axios.post(
-        "https://github.com/login/oauth/access_token",
+        'https://github.com/login/oauth/access_token',
         {
           client_id: process.env.GITHUB_CLIENT_ID,
           client_secret: process.env.GITHUB_CLIENT_SECRET,
@@ -122,9 +121,9 @@ export class OauthService {
         {
           httpsAgent,
           headers: {
-            Accept: "application/json",
+            Accept: 'application/json',
           },
-        }
+        },
       );
       if (checkCode.data.error) {
         error = new BadRequestException();
@@ -135,22 +134,22 @@ export class OauthService {
       const checkEmail = await axios.get(`https://api.github.com/user`, {
         httpsAgent,
         headers: {
-          Accept: "application/json",
+          Accept: 'application/json',
           Authorization: `Bearer ${accessToken}`,
         },
       });
       console.log(checkEmail.data);
       if (!checkEmail.data.email) {
         error = new BadRequestException();
-        error.message = "NO_EMAIL_REGISTERED";
+        error.message = 'NO_EMAIL_REGISTERED';
       }
       email = checkEmail.data.email;
       verified = true;
 
       if (!isEmpty(checkEmail.data.name)) {
-        const nameParts = checkEmail.data.name.split(" ");
-        firstname = nameParts[0] || "";
-        lastname = nameParts.slice(1).join(" ");
+        const nameParts = checkEmail.data.name.split(' ');
+        firstname = nameParts[0] || '';
+        lastname = nameParts.slice(1).join(' ');
       }
     } catch (err) {
       console.log(err.message);
@@ -176,48 +175,48 @@ export class OauthService {
     });
     try {
       const checkCode = await axios.post(
-        "https://www.linkedin.com/oauth/v2/accessToken",
+        'https://www.linkedin.com/oauth/v2/accessToken',
         null,
         {
           httpsAgent,
           headers: {
-            Accept: "application/json",
+            Accept: 'application/json',
           },
           params: {
-            grant_type: "authorization_code",
+            grant_type: 'authorization_code',
             client_id: process.env.LINKEDIN_CLIENT_ID,
             client_secret: process.env.LINKEDIN_CLIENT_SECRET,
             code: code,
-            redirect_uri: "https://panel.aradcloud.ir/authentication/login",
+            redirect_uri: 'https://panel.aradcloud.ir/authentication/login',
           },
-        }
+        },
       );
       console.log(checkCode.data);
       const accessToken = checkCode.data.access_token;
       const profileResponse = await axios.get(
-        "https://api.linkedin.com/v2/me",
+        'https://api.linkedin.com/v2/me',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const userProfile = profileResponse.data;
       firstName = userProfile.localizedFirstName;
       lastName = userProfile.localizedLastName;
 
       const emailResponse = await axios.get(
-        "https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))",
+        'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))',
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
-      userEmail = emailResponse.data.elements[0]["handle~"].emailAddress;
+      userEmail = emailResponse.data.elements[0]['handle~'].emailAddress;
       if (!userEmail) {
         error = new BadRequestException();
-        error.message = "NO_EMAIL_REGISTERED";
+        error.message = 'NO_EMAIL_REGISTERED';
       }
       verified = true;
     } catch (err) {
@@ -234,12 +233,12 @@ export class OauthService {
   }
 
   async verifyGoogleOauth(
-    token: string
+    token: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
     const check = await this.googleOauth(token);
     const { email, firstname, lastname, error } = check;
 
-    console.log(email, "😉");
+    console.log(email, '😉');
     if (error) {
       throw new UnauthorizedException();
     }
@@ -269,7 +268,7 @@ export class OauthService {
   }
 
   async verifyLinkedinOauth(
-    code: string
+    code: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
     const check = await this.linkedinOauth(code);
     const { email, firstname, lastname, error } = check;
@@ -302,7 +301,7 @@ export class OauthService {
   }
 
   async verifyGithubOauth(
-    code: string
+    code: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
     const check = await this.githubOauth(code);
     const { email, error } = check;
@@ -330,21 +329,28 @@ export class OauthService {
     return this.loginService.getLoginToken(user.id);
   }
 
-
-  decodeEmailToken(emailToken: string): {email: string, firstname: string, lastname: string, emailVerified: boolean}{
+  decodeEmailToken(emailToken: string): {
+    email: string;
+    firstname: string;
+    lastname: string;
+    emailVerified: boolean;
+  } {
     const encodedData = this.emailJwtService.decode(emailToken);
-    const email = encodedData["email"] as string ;
-    const firstname = encodedData["firstname"] as string;
-    const lastname = encodedData["lastname"] as string ;
+    const email = encodedData['email'] as string;
+    const firstname = encodedData['firstname'] as string;
+    const lastname = encodedData['lastname'] as string;
     const emailVerified = this.emailJwtService.verify(emailToken);
     return {
-      email,firstname,lastname,emailVerified
-    }
+      email,
+      firstname,
+      lastname,
+      emailVerified,
+    };
   }
 
   async registerByOauth(
     options: SessionRequest,
-    data: RegisterByOauthDto
+    data: RegisterByOauthDto,
   ): Promise<AccessTokenDto> {
     const phoneNumber = data.phoneNumber;
     const phoneHash = data.otpHash;
@@ -352,7 +358,7 @@ export class OauthService {
     const phoneVerified = this.otpService.otpVerifier(
       phoneNumber,
       otpCode,
-      phoneHash
+      phoneHash,
     );
 
     if (!phoneVerified) {
@@ -364,10 +370,12 @@ export class OauthService {
       },
     });
     if (!data.emailToken) {
-      return Promise.reject(new BadRequestException("no email token"));
+      return Promise.reject(new BadRequestException('no email token'));
     }
 
-    const {email,firstname,lastname,emailVerified} = this.decodeEmailToken(data.emailToken);
+    const { email, firstname, lastname, emailVerified } = this.decodeEmailToken(
+      data.emailToken,
+    );
 
     if (!emailVerified) {
       throw new InvalidEmailTokenException();
@@ -381,7 +389,7 @@ export class OauthService {
 
     // email already in use
     if (findEmail) {
-      return Promise.reject(new BadRequestException("email already in use"));
+      return Promise.reject(new BadRequestException('email already in use'));
     }
 
     if (user) {
@@ -394,7 +402,7 @@ export class OauthService {
           name: firstname,
           family: lastname,
           phoneNumber: phoneNumber,
-        }
+        },
       );
       if (!user.active) {
         return Promise.reject(new ForbiddenException());
@@ -403,13 +411,15 @@ export class OauthService {
       return this.loginService.getLoginToken(user.id);
     }
 
-    let newUser: CreateUserDto = new User();
+    const newUser: CreateUserDto = new User();
     newUser.username = `U-${phoneNumber}`;
-    const password = data.password ? encryptPassword(data.password) : generatePassword();
+    const password = data.password
+      ? encryptPassword(data.password)
+      : generatePassword();
     newUser.password = await encryptPassword(data.password);
     newUser.vdcPassword = data.password;
-    newUser.name = firstname || "کاربر";
-    newUser.family = lastname || "گرامی";
+    newUser.name = firstname || 'کاربر';
+    newUser.family = lastname || 'گرامی';
     newUser.phoneNumber = phoneNumber;
     newUser.email = email;
     newUser.active = data.active;

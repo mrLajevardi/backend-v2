@@ -27,7 +27,9 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
         this.error(new ForbiddenException('Github: no code provided'));
       }
 
-      this.success(this.oauthService.verifyGithubOauth(req.query.code.toString()));
+      this.success(
+        this.oauthService.verifyGithubOauth(req.query.code.toString()),
+      );
     } catch (error) {
       this.error(error);
     }

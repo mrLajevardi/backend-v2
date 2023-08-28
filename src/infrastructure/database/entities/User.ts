@@ -65,14 +65,14 @@ export class User {
   @Column('datetime', {
     name: 'createDate',
     nullable: true,
-    default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
   })
   createDate: Date | null;
 
   @Column('datetime', {
     name: 'updateDate',
     nullable: true,
-    default: () => isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
   })
   updateDate: Date | null;
 
