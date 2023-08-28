@@ -23,7 +23,7 @@ export class LoginService {
   async generateOtp(
     phoneNumber: string,
     sendSMS = true,
-  ): Promise<{ otp: string; hash: string } > {
+  ): Promise<{ otp: string; hash: string }> {
     const otpGenerated = this.otpService.otpGenerator(phoneNumber);
     if (!otpGenerated) {
       throw new OtpErrorException();
