@@ -1,59 +1,82 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
-import { UserModule } from './application/base/user/user.module';
-import { VastModule } from './application/vast/vast.module';
-import { AuthModule } from './application/base/security/auth/auth.module';
-import { DatabaseModule } from './infrastructure/database/database.module';
-import { ConfigModule } from '@nestjs/config';
-import { AiModule } from './application/ai/ai.module';
-import { TasksModule } from './application/base/tasks/tasks.module';
-import { TransactionsModule } from './application/base/transactions/transactions.module';
-import { AbilityModule } from './application/base/security/ability/ability.module';
-import { BullModule, BullQueueEvents } from '@nestjs/bull';
-import { VdcModule } from './application/vdc/vdc.module';
-import { NetworkService } from './application/vdc/service/network.service';
-import { CrudModule } from './application/base/crud/crud.module';
-import { SessionsModule } from './application/base/sessions/sessions.module';
-import { OrganizationModule } from './application/base/organization/organization.module';
-import { VgpuModule } from './application/vgpu/vgpu.module';
-import { ApplicationPortProfileService } from './application/edge-gateway/service/application-port-profile.service';
-import { NatModule } from './application/nat/nat.module';
-import { NetworksModule } from './application/networks/networks.module';
-import { LoggerModule } from './infrastructure/logger/logger.module';
-import { ServiceModule } from './application/base/service/service.module';
-import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
-import { VmModule } from './application/vm/vm.module';
-import { NotificationModule } from './application/base/notification/notification.module';
-import { OtpService } from './application/base/security/security-tools/otp.service';
-import { TicketModule } from './application/base/ticket/ticket.module';
-import { OauthService } from './application/base/security/auth/service/oauth.service';
-import { SecurityToolsModule } from './application/base/security/security-tools/security-tools.module';
-import { GroupModule } from './application/base/group/group.module';
-import { PayAsYouGoModule } from './application/base/pay-as-you-go/pay-as-you-go.module';
-import { ServicePropertiesModule } from './application/base/service-properties/service-properties.module';
-import { VcloudWrapper } from './wrappers/vcloudWrapper/vcloudWrapper';
-import { RobotModule } from './application/robot/robot.module';
-import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
-import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
-import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
-import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
-import { BullModule as BullMQModule } from '@nestjs/bullmq';
-import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import {Module} from '@nestjs/common';
+import {AppController} from './app.controller';
+import {AppService} from './app.service';
+import {APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
+import {JwtAuthGuard} from './application/base/security/auth/guard/jwt-auth.guard';
+import {UserModule} from './application/base/user/user.module';
+import {VastModule} from './application/vast/vast.module';
+import {AuthModule} from './application/base/security/auth/auth.module';
+import {DatabaseModule} from './infrastructure/database/database.module';
+import {ConfigModule} from '@nestjs/config';
+import {AiModule} from './application/ai/ai.module';
+import {TasksModule} from './application/base/tasks/tasks.module';
+import {TransactionsModule} from './application/base/transactions/transactions.module';
+import {AbilityModule} from './application/base/security/ability/ability.module';
+import {BullModule} from '@nestjs/bull';
+import {VdcModule} from './application/vdc/vdc.module';
+import {NetworkService} from './application/vdc/service/network.service';
+import {CrudModule} from './application/base/crud/crud.module';
+import {SessionsModule} from './application/base/sessions/sessions.module';
+import {OrganizationModule} from './application/base/organization/organization.module';
+import {VgpuModule} from './application/vgpu/vgpu.module';
+import {ApplicationPortProfileService} from './application/edge-gateway/service/application-port-profile.service';
+import {NatModule} from './application/nat/nat.module';
+import {NetworksModule} from './application/networks/networks.module';
+import {LoggerModule} from './infrastructure/logger/logger.module';
+import {ServiceModule} from './application/base/service/service.module';
+import {EdgeGatewayModule} from './application/edge-gateway/edge-gateway.module';
+import {VmModule} from './application/vm/vm.module';
+import {NotificationModule} from './application/base/notification/notification.module';
+import {TicketModule} from './application/base/ticket/ticket.module';
+import {SecurityToolsModule} from './application/base/security/security-tools/security-tools.module';
+import {GroupModule} from './application/base/group/group.module';
+import {PayAsYouGoModule} from './application/base/pay-as-you-go/pay-as-you-go.module';
+import {ServicePropertiesModule} from './application/base/service-properties/service-properties.module';
+import {VcloudWrapper} from './wrappers/vcloudWrapper/vcloudWrapper';
+import {RobotModule} from './application/robot/robot.module';
+import {PoliciesGuard} from './application/base/security/ability/guards/policies.guard';
+import {RolesGuard} from './application/base/security/ability/guards/roles.guard';
+import {MainWrapperModule} from './wrappers/main-wrapper/main-wrapper.module';
+import {TaskManagerModule} from './application/base/task-manager/task-manager.module';
+import {BullModule as BullMQModule} from '@nestjs/bullmq';
+import {UvdeskWrapperModule} from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import {SentryModule} from "@ntegral/nestjs-sentry";
+import {LogLevel} from "@sentry/types";
+import {RavenInterceptor, RavenModule} from "nest-raven";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    RavenModule,
+
     BullModule.forRoot({
       redis: {
         host: 'localhost',
         port: 6379,
       },
     }),
+
+    // SentryModule.forRoot({
+    //   // dsn: 'sentry_io_dsn',
+    //   // debug: true | false,
+    //   // environment: 'dev' | 'production' | 'some_environment',
+    //   // // release: 'some_release',| null, // must create a release in sentry.io dashboard
+    //   // logLevel: LogLevel.Debug, //based on sentry.io loglevel //
+    //   debug: true,
+    //   release: null,
+    //   dsn:'https://ee742f74e227daa8c634dee6ad5ecd07@sen.aradcloud.com/6',
+    //   logLevel: LogLevel.Error,
+    //   environment: 'production',
+    //   tracesSampleRate: 1.0,
+    //   beforeSend(event, hint): any {
+    //       console.dir(event, {depth: null});
+    //       return event;
+    //   },
+    // // }),
+    // }),
+
     BullMQModule.forRoot({
       connection: {
         host: 'localhost',
@@ -102,6 +125,10 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useValue: new RavenInterceptor(),
+    // },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
