@@ -7,6 +7,7 @@ import { User } from 'src/infrastructure/database/entities/User';
 import { isEmpty } from 'lodash';
 import { OtpService } from '../../security-tools/otp.service';
 import { AccessTokenDto } from '../dto/access-token.dto';
+import { OtpErrorException } from 'src/infrastructure/exceptions/otp-error-exception';
 
 @Injectable()
 export class LoginService {
@@ -19,19 +20,27 @@ export class LoginService {
   ) {}
 
   // generates a phone otp and return the hash
-  async generateOtp(phoneNumber: string): Promise<string | null> {
-    let hash = null;
-
+  async generateOtp(
+    phoneNumber: string,
+    sendSMS = true,
+  ): Promise<{ otp: string; hash: string }> {
     const otpGenerated = this.otpService.otpGenerator(phoneNumber);
-    hash = otpGenerated.hash;
+    if (!otpGenerated) {
+      throw new OtpErrorException();
+    }
     console.log(otpGenerated);
     try {
-      await this.notificationService.sms.sendSMS(phoneNumber, otpGenerated.otp);
+      if (sendSMS) {
+        await this.notificationService.sms.sendSMS(
+          phoneNumber,
+          otpGenerated.otp,
+        );
+      }
     } catch (error) {
       return null;
     }
 
-    return hash;
+    return { otp: otpGenerated.otp, hash: otpGenerated.hash };
   }
 
   // Validate user performs using Local.strategy
