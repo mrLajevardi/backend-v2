@@ -19,15 +19,15 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
     req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
   ): Promise<void> {
     try {
-      if (!req || !req.body) {
+      if (!req || !req.query) {
         this.error(new ForbiddenException());
       }
 
-      if (!req.body.code) {
+      if (!req.query.code) {
         this.error(new ForbiddenException('Github: no code provided'));
       }
 
-      this.success(this.oauthService.verifyGithubOauth(req.body.code));
+      this.success(this.oauthService.verifyGithubOauth(req.query.code.toString()));
     } catch (error) {
       this.error(error);
     }

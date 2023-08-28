@@ -7,6 +7,7 @@ import { User } from 'src/infrastructure/database/entities/User';
 import { isEmpty } from 'lodash';
 import { OtpService } from '../../security-tools/otp.service';
 import { AccessTokenDto } from '../dto/access-token.dto';
+import { OtpErrorException } from 'src/infrastructure/exceptions/otp-error-exception';
 
 @Injectable()
 export class LoginService {
@@ -20,10 +21,10 @@ export class LoginService {
 
   // generates a phone otp and return the hash
   async generateOtp(phoneNumber: string, sendSMS : boolean = true ): Promise<{otp: string,hash: string}> {
-    let hash = null;
-
     const otpGenerated = this.otpService.otpGenerator(phoneNumber);
-    hash = otpGenerated.hash;
+    if (!otpGenerated){
+      throw new OtpErrorException()
+    }
     console.log(otpGenerated);
     try {
       if (sendSMS){
@@ -33,10 +34,10 @@ export class LoginService {
       return null;
     }
 
-    if (sendSMS){
-      return hash; 
+    if (!sendSMS){
+      return {otp: null, hash: otpGenerated.hash}; 
     }else{
-      return {otp: otpGenerated.otp,hash}
+      return {otp: otpGenerated.otp,hash: otpGenerated.hash}
     }
 
   }

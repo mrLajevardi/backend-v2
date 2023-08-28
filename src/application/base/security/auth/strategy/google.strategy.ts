@@ -23,8 +23,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
   async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
     // You can access the user's Google profile information here
     // Call done() with the user or false if authentication fails
-    console.log('validating');
-    console.log(profile);
     const email = profile.emails[0].value; 
     const user = await this.userTable.findOne({
       where: {

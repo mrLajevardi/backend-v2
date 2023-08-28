@@ -83,7 +83,6 @@ describe("AuthController", () => {
       const req = { user: userPayload } as any;
 
       const result = await controller.googleLogin(req);
-
       expect(result).toEqual(userPayload);
     });
   });

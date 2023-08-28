@@ -13,6 +13,7 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -119,16 +120,16 @@ export class AuthController {
   }
 
   @Public()
-  @Post('github')
-  @ApiBody({ type: GithubLoginDto })
+  @Get('github')
+  @ApiQuery({ type: GithubLoginDto })
   @UseGuards(GithubAuthGuard)
   async githubLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
   }
 
   @Public()
-  @Post('linkedin')
-  @ApiBody({ type: LinkedInLoginDto })
+  @Get('linkedin')
+  @ApiQuery({ type: LinkedInLoginDto })
   @UseGuards(LinkedInAuthGuard)
   async linkedInLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
@@ -137,7 +138,7 @@ export class AuthController {
   
   @Public()
   @Get('google')
-  @ApiBody({ type: GoogleLoginDto })
+  @ApiQuery({ type: GoogleLoginDto })
   @UseGuards(AuthGuard('google'))
   async googleLogin(@Request() req: SessionRequest): Promise<UserPayload> {
     return req.user;
