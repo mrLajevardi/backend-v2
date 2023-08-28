@@ -37,6 +37,7 @@ export class UserAdminService {
     orgName: true,
     acceptTermsOfService: true,
     phoneVerified: true,
+    active: true,
   };
 
   constructor(
@@ -135,7 +136,8 @@ export class UserAdminService {
   }
 
   async getUsers(
-    role: string,
+    // role: string,
+    active: boolean,
     page: number,
     pageSize: number,
     name: string,
@@ -151,9 +153,10 @@ export class UserAdminService {
       ? {}
       : {
           username: username ? Like(`%${username}%`) : undefined,
+          active: active,
           name: name ? Like(`%${name}%`) : undefined,
           family: family ? Like(`%${family}%`) : undefined,
-          roleId: role,
+          // roleId: role,
         };
     if (!isEmpty(pageSize)) {
       limit = pageSize;

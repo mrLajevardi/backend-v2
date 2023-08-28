@@ -6,13 +6,57 @@ import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.e
 import { In } from 'typeorm';
 import { getStringListOfAbilities } from '../ability.factory';
 import { GetAllAclsDto } from '../dto/get-all-acls.dto';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { User } from 'src/infrastructure/database/entities/User';
 
 @Injectable()
 export class AbilityAdminService {
-  constructor(private readonly aclTable: ACLTableService) {}
+  constructor(
+    private readonly aclTable: ACLTableService,
+    private readonly userTable: UserTableService,
+  ) {}
 
   getListOfModels(): string[] {
     return getStringListOfAbilities();
+  }
+
+  async getUsersWithPredefinedRole(role: string): Promise<User[]> {
+    const aclEntries = await this.aclTable.find({
+      select: ['principalId'],
+      where: {
+        model: role,
+        principalType: 'User',
+        permission: 'can',
+      },
+    });
+    const userIds = aclEntries.map((entry) => entry.principalId);
+
+    // Remove duplicate user IDs
+    const uniqueUserIds = Array.from(new Set(userIds));
+
+    // Fetch users with the unique user IDs
+    let users = await this.userTable.find({
+      where: {
+        id: In(uniqueUserIds),
+      },
+    });
+
+    const hardcodeAdmins = JSON.parse(process.env.SUPER_ADMINS || '[]');
+    if ((role = PredefinedRoles.SuperAdminRole)) {
+      const hardcodedAdminUsers = await this.userTable.find({
+        where: {
+          username: In(hardcodeAdmins),
+        },
+      });
+      users = users.concat(hardcodedAdminUsers);
+    }
+
+    users = users.filter(
+      (user, index, self) =>
+        index === self.findIndex((u) => u.username === user.username),
+    );
+
+    return users;
   }
 
   async getAllPredefinedRoles(userId: number): Promise<string[]> {

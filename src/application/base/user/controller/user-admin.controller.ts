@@ -135,10 +135,16 @@ export class UserAdminController {
   }
 
   @ApiOperation({ summary: 'Get all users by admin' })
+  // @ApiQuery({
+  //   name: 'role',
+  //   type: String,
+  //   description: 'Filter users by role',
+  //   required: false,
+  // })
   @ApiQuery({
-    name: 'role',
+    name: 'active',
     type: String,
-    description: 'Filter users by role',
+    description: 'Filter users by active or not active ',
     required: false,
   })
   @ApiQuery({
@@ -177,7 +183,8 @@ export class UserAdminController {
   })
   @Get()
   async getAllUsersByAdmin(
-    @Query('role') role?: string,
+    // @Query('role') role?: string,
+    @Query('active') active?: boolean,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
     @Query('name') name?: string,
@@ -185,7 +192,8 @@ export class UserAdminController {
     @Query('family') family?: string,
   ): Promise<PaginationReturnDto<User>> {
     const users = await this.userAdminService.getUsers(
-      role,
+      // role,
+      active,
       page,
       pageSize,
       name,

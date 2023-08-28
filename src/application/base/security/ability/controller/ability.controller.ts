@@ -35,6 +35,7 @@ import { Action } from '../enum/action.enum';
 import { DeleteOptions } from 'typeorm';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { GetAllAclsDto } from '../dto/get-all-acls.dto';
+import { User } from '@sentry/node';
 
 @ApiTags('Ability')
 @Controller('ability')
@@ -64,6 +65,17 @@ export class AbilityController {
     return await this.abilityAdminService.getAllPredefinedRoles(
       options.user.userId,
     );
+  }
+
+  @Get('/predefined-roles/users')
+  @ApiResponse({ status: 200, type: PredefinedRoleDto, isArray: true })
+  @ApiOperation({ summary: 'returns all predefined roles for the user' })
+  @ApiQuery({ name: 'role', type: 'string' })
+  async getUsersWithPredefinedRole(
+    @Request() options: SessionRequest,
+    @Query('role') role,
+  ): Promise<User[]> {
+    return await this.abilityAdminService.getUsersWithPredefinedRole(role);
   }
 
   @Public()
