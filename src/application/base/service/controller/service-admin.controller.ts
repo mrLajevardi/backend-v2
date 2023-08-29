@@ -36,6 +36,7 @@ import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceIn
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { ItemTypeWithConsumption } from '../types/item-type-with-consumption.type';
 import { UpdateConfigsDto } from '../../crud/configs-table/dto/update-configs.dto';
+import { TransactionsReturnDto } from '../dto/return/transactions-return.dto';
 
 @ApiTags('Services-admin')
 @Controller('admin/services')
@@ -314,9 +315,9 @@ export class ServiceAdminController {
     @Query('ServiceID') ServiceID?: string,
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
-  ): Promise<{ transaction: Transactions[]; totalRecords: number }> {
+  ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
     if (!page) {
-      page = 0;
+      page = 1;
     }
     if (!pageSize) {
       pageSize = 10;
