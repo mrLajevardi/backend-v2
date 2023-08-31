@@ -40,16 +40,12 @@ import {MainWrapperModule} from './wrappers/main-wrapper/main-wrapper.module';
 import {TaskManagerModule} from './application/base/task-manager/task-manager.module';
 import {BullModule as BullMQModule} from '@nestjs/bullmq';
 import {UvdeskWrapperModule} from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
-import {SentryModule} from "@ntegral/nestjs-sentry";
-import {LogLevel} from "@sentry/types";
-import {RavenInterceptor, RavenModule} from "nest-raven";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    RavenModule,
 
     BullModule.forRoot({
       redis: {

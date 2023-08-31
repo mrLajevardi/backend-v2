@@ -12,49 +12,24 @@ import { CheckPolicies } from './application/base/security/ability/decorators/ch
 import { PureAbility } from '@casl/ability';
 import { Action } from './application/base/security/ability/enum/action.enum';
 // import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
+import { SentryInterceptor } from './infrastructure/Interceptors/SentryInterceptor';
 import { PredefinedRoles } from './application/base/security/ability/enum/predefined-enum.type';
 import { Roles } from './application/base/security/ability/decorators/roles.decorator';
-import { InjectSentry, SentryService } from '@ntegral/nestjs-sentry';
-import { Breadcrumb, Scope, Severity } from '@sentry/node';
-import * as Sentry from '@sentry/node';
-import {RavenInterceptor} from "nest-raven";
 
 
+@UseInterceptors(SentryInterceptor) // This is a test to make sure that sentry is okay !!
 @Controller()
 export class AppController {
   constructor(
-      // @InjectSentry() private readonly client: SentryService,
     private readonly appService: AppService,
     private readonly systemSettingsService: SystemSettingsTableService,
-  ) {
-    // const breadcrumb: Breadcrumb = {
-    //   type: 'sample',
-    //   level: Severity.Info,
-    //   category: 'custom',
-    //   event_id: '1',
-    //   message: 'Generic breadcrumb message',
-    // };
-    // // client.addBreadcrumb(breadcrumb);
-    // client.debug('App Controller loaded');
-    // const scope = new Scope();
-    // scope.setTag('example', 'sampleTag');
-  }
+  ) {}
 
-  @UseInterceptors(new RavenInterceptor())
   @Get()
   @Public()
   getHello(): string {
 
-    // this.client.debug('App Controller loaded');
-    //
-    // this.client.error('App Controller loaded');
-    //
-    // this.client.warn('App Controller loaded');
-    //
-    // this.client.verbose('App Controller loaded');
 
-    // Sentry.captureException(new Error("Salam !!!"))
-    // throw new Error('Internal server error');
     return this.appService.getHello();
   }
 
