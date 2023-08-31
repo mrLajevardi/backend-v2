@@ -12,7 +12,7 @@ import { CheckPolicies } from './application/base/security/ability/decorators/ch
 import { PureAbility } from '@casl/ability';
 import { Action } from './application/base/security/ability/enum/action.enum';
 // import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
-import { SentryInterceptor } from './infrastructure/Interceptors/SentryInterceptor';
+import { SentryInterceptor } from './infrastructure/logger/Interceptors/SentryInterceptor';
 import { PredefinedRoles } from './application/base/security/ability/enum/predefined-enum.type';
 import { Roles } from './application/base/security/ability/decorators/roles.decorator';
 
