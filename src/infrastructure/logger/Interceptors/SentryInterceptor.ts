@@ -15,7 +15,7 @@ export class SentryInterceptor implements NestInterceptor {
       tap(null, (exception) => {
 
         Sentry.captureException(exception);
-        Sentry.captureMessage("This message is sent by interceptor !!")
+        // Sentry.captureMessage("This message is sent by interceptor !!")
         console.log('Sentry initialized:', Sentry.getCurrentHub().getClient());
       }),
     );

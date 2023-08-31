@@ -1,4 +1,10 @@
-import {Controller, Get, Post, UseGuards, Request,  UseInterceptors} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Request,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LocalAuthGuard } from './application/base/security/auth/guard/local-auth.guard';
@@ -16,7 +22,6 @@ import { SentryInterceptor } from './infrastructure/logger/Interceptors/SentryIn
 import { PredefinedRoles } from './application/base/security/ability/enum/predefined-enum.type';
 import { Roles } from './application/base/security/ability/decorators/roles.decorator';
 
-
 @UseInterceptors(SentryInterceptor) // This is a test to make sure that sentry is okay !!
 @Controller()
 export class AppController {
@@ -28,8 +33,7 @@ export class AppController {
   @Get()
   @Public()
   getHello(): string {
-
-
+    throw new Error("lastVersion  !!! ")
     return this.appService.getHello();
   }
 
