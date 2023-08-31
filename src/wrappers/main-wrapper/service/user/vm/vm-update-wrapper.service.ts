@@ -1,15 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { Builder } from 'xml2js';
-import { isEmpty, isNil } from 'lodash';
+import { isEmpty } from 'lodash';
 import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
-import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
-import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
 import { VmGetWrapperService } from './vm-get-wrapper.service';
-import {
-  UpdateGuestCustomizationBody,
-  UpdateGuestCustomizationDto,
-} from 'src/wrappers/vcloud-wrapper/services/user/vm/dto/update-guest-customazation-dto';
+import { UpdateGuestCustomizationBody } from 'src/wrappers/vcloud-wrapper/services/user/vm/dto/update-guest-customazation-dto';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 @Injectable()
 export class VmUpdateWrapperService {
   constructor(
@@ -24,7 +20,12 @@ export class VmUpdateWrapperService {
    * @param {Object} diskSettings user disk settings
    * @return {Promise}
    */
-  async updateDiskSection(authToken, vmId, diskSettings, vdcId) {
+  async updateDiskSection(
+    authToken: string,
+    vmId: string,
+    diskSettings,
+    vdcId: string,
+  ): Promise<VcloudTask> {
     const vmInfo = await this.vmGetWrapperService.getVApp(authToken, vmId);
     const vmInfoData: any = vmInfo.data;
     const controllers = await this.calcBusCombination(
@@ -75,7 +76,6 @@ export class VmUpdateWrapperService {
           }
         });
         section.diskSection.diskSettings = updatedDiskSettings;
-        console.log(updatedDiskSettings, '❤️❤️❤️');
       }
     });
     const endpoint = 'VmEndpointService.updateVmEndpoint';

@@ -8,12 +8,13 @@ import { ConfigService } from '@nestjs/config';
 export class VcloudWrapperService extends Wrapper<VcloudWrapperInterface> {
   constructor(
     @Inject('VCLOUD_WRAPPER')
-    private readonly vcloudWrapper: VcloudWrapperInterface,
+    public readonly vcloudWrapper: VcloudWrapperInterface,
     private configService: ConfigService,
   ) {
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
     });
+    console.log(vcloudWrapper, '🍳');
     super(
       httpsAgent,
       vcloudWrapper,

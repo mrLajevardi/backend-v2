@@ -7,6 +7,10 @@ import { GetNsxtEdgeClustersDto } from './dto/get-nsxt-edge-cluster.dto';
 
 @Injectable()
 export class AdminEdgeGatewayEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'AdminEdgeGatewayEndpointService';
+  }
   createEdgeGatewayEndpoint(options: CreateEdgeGatewayDto): EndpointInterface {
     return {
       method: 'post',

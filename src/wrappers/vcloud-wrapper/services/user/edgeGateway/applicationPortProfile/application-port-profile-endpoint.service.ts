@@ -8,6 +8,11 @@ import { GetApplicationPortProfilesListDto } from './dto/get-application-port-pr
 
 @Injectable()
 export class ApplicationPortProfileEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'ApplicationPortProfileEndpointService';
+  }
+
   createApplicationPortProfilesEndpoint(
     options: CreateApplicationPortProfilesDto,
   ): EndpointInterface {

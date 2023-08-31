@@ -10,6 +10,10 @@ import { UpdateVdcStorageProfileDto } from './dto/update-vdc-storage-profile.dto
 
 @Injectable()
 export class AdminVdcEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'AdminVdcEndpointService';
+  }
   createVdcEndpoint(options: CreateVdcDto): EndpointInterface {
     return {
       method: 'post',

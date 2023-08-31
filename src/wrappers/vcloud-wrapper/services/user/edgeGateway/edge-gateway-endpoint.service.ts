@@ -8,6 +8,11 @@ import { UpdateDnsForwarderDto } from './dto/update-dns-forwarder.dto';
 
 @Injectable()
 export class EdgeGatewayEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'EdgeGatewayEndpointService';
+  }
+
   getDhcpForwarderEndpoint(options: GetDhcpForwarderDto): EndpointInterface {
     return {
       method: 'get',

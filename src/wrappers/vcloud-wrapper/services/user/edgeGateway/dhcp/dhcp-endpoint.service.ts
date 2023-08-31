@@ -11,6 +11,11 @@ import { GetDhcpDto } from './dto/get-dhcp.dto';
 
 @Injectable()
 export class DhcpEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'DhcpEndpointService';
+  }
+
   createDhcpBindingEndpoint(options: CreateDhcpBindingDto): EndpointInterface {
     return {
       method: 'post',

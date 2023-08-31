@@ -12,6 +12,10 @@ import { VcloudQueryDto } from './dto/vcloud-query.dto';
 
 @Injectable()
 export class VdcEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'VdcEndpointService';
+  }
   attachNamedDisk(options: AttachNamedDiskOptionsDto): EndpointInterface {
     return {
       method: 'post',

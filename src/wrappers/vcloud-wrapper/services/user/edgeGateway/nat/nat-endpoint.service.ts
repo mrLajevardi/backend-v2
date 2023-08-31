@@ -8,6 +8,10 @@ import { GetNatListDto } from './dto/get-nat-list.dto';
 
 @Injectable()
 export class NatEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'NatEndpointService';
+  }
   createNatEndpoint(options: CreateNatDto): EndpointInterface {
     return {
       method: 'post',

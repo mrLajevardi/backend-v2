@@ -34,6 +34,10 @@ import { UpdateNetworkSectionDto } from './dto/update-network-section.dto';
 
 @Injectable()
 export class VmEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'VmEndpointService';
+  }
   acquireVmTicketEndpoint(options: AcquireVmTicketDto): EndpointInterface {
     return {
       method: 'post',

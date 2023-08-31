@@ -7,6 +7,10 @@ import { CreateUserDto } from './dto/create-user.dtop';
 
 @Injectable()
 export class AdminUserEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'AdminUserEndpointService';
+  }
   createProviderSessionEndpoint(
     options: EndpointOptionsInterface,
   ): EndpointInterface {

@@ -9,6 +9,10 @@ import { UpdateNetworkDto } from './dto/update-network.dto';
 
 @Injectable()
 export class NetworkEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'NetworkEndpointService';
+  }
   createNetworkEndpoint(options: CreateNetworkDto): EndpointInterface {
     return {
       method: 'post',

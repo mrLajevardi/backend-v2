@@ -8,6 +8,11 @@ import { GetIpSetsListDto } from './dto/get-ip-sets-list.dto';
 
 @Injectable()
 export class IpSetsEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'IpSetsEndpointService';
+  }
+
   createIpSetsEndpoint(options: CreateIpSetsDto): EndpointInterface {
     return {
       method: 'post',

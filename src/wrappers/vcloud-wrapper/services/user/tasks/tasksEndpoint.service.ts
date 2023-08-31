@@ -6,6 +6,11 @@ import { GetTaskListDto } from './dto/get-task-list.dto';
 
 @Injectable()
 export class TasksEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'TasksEndpointService';
+  }
+
   cancelTaskEndpoint(options: CancelTaskDto): EndpointInterface {
     return {
       method: 'post',

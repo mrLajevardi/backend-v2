@@ -1,7 +1,6 @@
 import { WrapperErrorException } from 'src/infrastructure/exceptions/wrapper-error.exception';
 import * as lodash from 'lodash';
 import axios, { AxiosResponse } from 'axios';
-import { isNil } from 'lodash';
 import { EndpointInterface } from './interfaces/endpoint.interface';
 
 export class Wrapper<T> {

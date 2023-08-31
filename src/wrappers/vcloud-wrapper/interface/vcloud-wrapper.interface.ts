@@ -1,3 +1,4 @@
+import { Provider } from '@nestjs/common';
 import { AdminEdgeGatewayEndpointService } from '../services/admin/edgeGateway/admin-edge-gateway-endpoint.service';
 import { AdminOrgEndpointService } from '../services/admin/org/admin-org-endpoint.service';
 import { AdminUserEndpointService } from '../services/admin/user/admin-user-endpoint.service';
@@ -28,4 +29,8 @@ export interface VcloudWrapperInterface {
   AdminEdgeGatewayEndpointService: AdminEdgeGatewayEndpointService;
   AdminUserEndpointService: AdminUserEndpointService;
   AdminOrgEndpointService: AdminOrgEndpointService;
+}
+
+export interface WrapperProvider {
+  name: 'string';
 }

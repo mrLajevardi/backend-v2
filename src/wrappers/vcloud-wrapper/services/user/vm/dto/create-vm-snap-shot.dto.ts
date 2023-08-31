@@ -16,7 +16,7 @@ export class CreateVmSnapshotBody {
 class CreateSnapshotParams {
   $: CreateSnapshotParamsMetadata;
 }
-class CreateSnapshotParamsMetadata {
+export class CreateSnapshotParamsMetadata {
   'xmlns:root': string;
   memory: boolean;
   quiesce: boolean;

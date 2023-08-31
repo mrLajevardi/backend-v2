@@ -1,24 +1,20 @@
-import { BadGatewayException, Injectable } from '@nestjs/common';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { Builder } from 'xml2js';
-import { isEmpty, isNil } from 'lodash';
+import { isEmpty } from 'lodash';
 import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
-import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
-import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
 import { Stream } from 'stream';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { UploadFileDto, UploadFileReturnDto } from './dto/upload-file.dto';
+import { Injectable } from '@nestjs/common';
+import { AxiosResponse } from 'axios';
+import { PartialUploadHeaders } from './dto/partial-upload.dto';
 @Injectable()
 export class VmWrapperService {
   constructor(
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly vdcWrapperService: VdcWrapperService,
   ) {}
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async acquireVappTicket(authToken, vAppId) {
+  async acquireVappTicket(authToken: string, vAppId: string) {
     const endpoint = 'VmEndpointService.acquireVmTicketEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
@@ -30,13 +26,7 @@ export class VmWrapperService {
     );
     return ticket;
   }
-  /**
-   * powerOn vm and force recustomization
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async deployVApp(authToken, vAppId) {
+  async deployVApp(authToken: string, vAppId: string): Promise<VcloudTask> {
     const request = {
       'root:DeployVAppParams': {
         $: {
@@ -61,13 +51,10 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   * discards suspend state if vm's state is suspend
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async discardSuspendedStatevApp(authToken, vAppId) {
+  async discardSuspendedStateVApp(
+    authToken: string,
+    vAppId: string,
+  ): Promise<VcloudTask> {
     const endpoint = 'VmEndpointService.discardSuspendVmEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
@@ -81,25 +68,14 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-
-  /**
-   * insert or eject a media from vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @param {Boolean} insert determines if a media should be inserted
-   * @param {String} mediaName
-   * @param {String} mediaHref
-   * @param {String} mediaId
-   * @return {Promise}
-   */
   async insertOrEjectVappMedia(
-    authToken,
-    vAppId,
-    insert,
-    mediaName = null,
-    mediaHref = null,
-    mediaId = null,
-  ) {
+    authToken: string,
+    vAppId: string,
+    insert: boolean,
+    mediaName: string | null = null,
+    mediaHref: string | null = null,
+    mediaId: string | null = null,
+  ): Promise<VcloudTask> {
     const request = {
       'root:MediaInsertOrEjectParams': {
         $: {
@@ -137,13 +113,7 @@ export class VmWrapperService {
       __vcloudTask: response.headers['location'],
     });
   }
-  /**
-   * discards suspend state if vm's state is suspend
-   * @param {String} authToken
-   * @param {String} vmId
-   * @return {Promise}
-   */
-  async installVmTools(authToken, vmId) {
+  async installVmTools(authToken: string, vmId: string): Promise<VcloudTask> {
     const endpoint = 'VmEndpointService.installVmToolsEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
@@ -291,12 +261,12 @@ export class VmWrapperService {
    * @param {String} config.sourceName
    */
   async instantiateVmFromTemplateAdmin(
-    authToken,
-    vdcId,
+    authToken: string,
+    vdcId: string,
     config,
-    computePolicyId,
+    computePolicyId: string,
   ) {
-    const formatedVdcId = vdcId.split(':').slice(-1);
+    const formatedVdcId = vdcId.split(':').slice(-1)[0];
     const query: any = await this.vdcWrapperService.vcloudQuery(authToken, {
       type: 'adminOrgVdcStorageProfile',
       format: 'records',
@@ -387,26 +357,29 @@ export class VmWrapperService {
       __vcloudTask: createdVm.headers['location'],
     });
   }
-  /**
-   * get a single vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async partialUpload(authToken, fullAddress, data: Stream, header) {
+  async partialUpload(
+    authToken: string,
+    fullAddress: string,
+    data: Stream,
+    header: PartialUploadHeaders,
+  ): Promise<void> {
     const endpoint = 'VmEndpointService.partialUploadEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const file = await this.vcloudWrapperService.request(
+    await this.vcloudWrapperService.request(
       wrapper({
         urlParams: { fullAddress },
         headers: { Authorization: `Bearer ${authToken}`, ...header },
         body: data,
       }),
     );
-    return file;
   }
-  postAnswer = async (authToken, vmId, questionId, choiceId) => {
+  async postAnswer(
+    authToken: string,
+    vmId: string,
+    questionId: string,
+    choiceId: string,
+  ): Promise<VcloudTask> {
     const endpoint = 'VmEndpointService.answerEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
@@ -423,14 +396,8 @@ export class VmWrapperService {
     return Promise.resolve({
       __vcloudTask: answer.headers['location'],
     });
-  };
-  /**
-   * powerOn vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async powerOnvApp(authToken, vAppId) {
+  }
+  async powerOnvApp(authToken: string, vAppId: string): Promise<VcloudTask> {
     const options = {
       urlParams: { vmId: vAppId },
       headers: { Authorization: `Bearer ${authToken}` },
@@ -443,13 +410,7 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   * reset vm
-   * @param {String} authToken
-   * @param {String} vmId
-   * @return {Promise}
-   */
-  async rebootVm(authToken, vmId) {
+  async rebootVm(authToken: string, vmId: string): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { vmId },
@@ -462,14 +423,7 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @param {String} vAppAction
-   * @return {Promise}
-   */
-  async removeSnapShot(authToken, vAppId) {
+  async removeSnapShot(authToken: string, vAppId: string): Promise<VcloudTask> {
     const options = {
       urlParams: { vmId: vAppId },
       headers: { Authorization: `Bearer ${authToken}` },
@@ -482,13 +436,7 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   * reset vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async resetvApp(authToken, vAppId) {
+  async resetvApp(authToken: string, vAppId: string): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { vmId: vAppId },
@@ -501,14 +449,7 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @param {String} vAppAction
-   * @return {Promise}
-   */
-  async revertSnapShot(authToken, vAppId) {
+  async revertSnapShot(authToken: string, vAppId: string): Promise<VcloudTask> {
     const options = {
       urlParams: { vmId: vAppId },
       headers: { Authorization: `Bearer ${authToken}` },
@@ -521,13 +462,7 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   * suspend vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async suspendVapp(authToken, vAppId) {
+  async suspendVapp(authToken: string, vAppId: string): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { vmId: vAppId },
@@ -540,14 +475,11 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   * take resources from vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @param {String} vAppAction suspend, powerOff, shutdown(shutdown guest)
-   * @return {Promise}
-   */
-  async undeployvApp(authToken, vAppId, vAppAction) {
+  async undeployvApp(
+    authToken: string,
+    vAppId: string,
+    vAppAction: string, // suspend, powerOff, shutdown(shutdown guest)
+  ): Promise<VcloudTask> {
     const request = {
       'root:UndeployVAppParams': {
         $: {
@@ -572,23 +504,22 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   * get a single vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async uploadFile(authToken, catalogId, data) {
+  async uploadFile(
+    authToken: string,
+    catalogId: string,
+    data: UploadFileDto,
+  ): Promise<AxiosResponse<UploadFileReturnDto>> {
     const endpoint = 'VmEndpointService.uploadFileEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const response = await this.vcloudWrapperService.request(
-      wrapper({
-        urlParams: { catalogId },
-        headers: { Authorization: `Bearer ${authToken}` },
-        body: data,
-      }),
-    );
+    const response =
+      await this.vcloudWrapperService.request<UploadFileReturnDto>(
+        wrapper({
+          urlParams: { catalogId },
+          headers: { Authorization: `Bearer ${authToken}` },
+          body: data,
+        }),
+      );
     return response;
   }
 }

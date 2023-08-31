@@ -8,6 +8,11 @@ import { UpdateFirewallListDto } from './dto/update-firewall-list.dto';
 
 @Injectable()
 export class FirewallEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'FirewallEndpointService';
+  }
+
   deleteFirewallEndpoint(options: DeleteFirewallDto): EndpointInterface {
     return {
       method: 'delete',

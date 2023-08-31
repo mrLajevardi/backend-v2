@@ -7,6 +7,10 @@ import { GetOrgDto } from './dto/get-org.dto';
 
 @Injectable()
 export class AdminOrgEndpointService {
+  name: string;
+  constructor() {
+    this.name = 'AdminOrgEndpointService';
+  }
   createOrgCatalogEndpoint(options: CreateOrgCatalogDto): EndpointInterface {
     return {
       method: 'post',
