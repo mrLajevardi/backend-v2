@@ -33,7 +33,6 @@ export class AppController {
   @Get()
   @Public()
   getHello(): string {
-    throw new Error("lastVersion  !!! ")
     return this.appService.getHello();
   }
 
