@@ -50,13 +50,13 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
     }),
     BullModule.forRoot({
       redis: {
-        host: 'localhost',
+        host: 'cache',
         port: 6379,
       },
     }),
     BullMQModule.forRoot({
       connection: {
-        host: 'localhost',
+        host: 'cache',
         port: 6379,
       },
     }),
