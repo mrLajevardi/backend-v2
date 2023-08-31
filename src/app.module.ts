@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
 import {AppController} from './app.controller';
 import {AppService} from './app.service';
-import {APP_GUARD, APP_INTERCEPTOR} from '@nestjs/core';
+import {APP_GUARD} from '@nestjs/core';
 import {JwtAuthGuard} from './application/base/security/auth/guard/jwt-auth.guard';
 import {UserModule} from './application/base/user/user.module';
 import {VastModule} from './application/vast/vast.module';
@@ -54,25 +54,6 @@ import {UvdeskWrapperModule} from './wrappers/uvdesk-wrapper/uvdesk-wrapper.modu
       },
     }),
 
-    // SentryModule.forRoot({
-    //   // dsn: 'sentry_io_dsn',
-    //   // debug: true | false,
-    //   // environment: 'dev' | 'production' | 'some_environment',
-    //   // // release: 'some_release',| null, // must create a release in sentry.io dashboard
-    //   // logLevel: LogLevel.Debug, //based on sentry.io loglevel //
-    //   debug: true,
-    //   release: null,
-    //   dsn:'https://ee742f74e227daa8c634dee6ad5ecd07@sen.aradcloud.com/6',
-    //   logLevel: LogLevel.Error,
-    //   environment: 'production',
-    //   tracesSampleRate: 1.0,
-    //   beforeSend(event, hint): any {
-    //       console.dir(event, {depth: null});
-    //       return event;
-    //   },
-    // // }),
-    // }),
-
     BullMQModule.forRoot({
       connection: {
         host: 'localhost',
@@ -121,10 +102,7 @@ import {UvdeskWrapperModule} from './wrappers/uvdesk-wrapper/uvdesk-wrapper.modu
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
-    // {
-    //   provide: APP_INTERCEPTOR,
-    //   useValue: new RavenInterceptor(),
-    // },
+
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
