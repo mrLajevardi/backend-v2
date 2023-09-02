@@ -1,11 +1,19 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { Builder } from 'xml2js';
-import { isEmpty, isNil } from 'lodash';
+import { isEmpty } from 'lodash';
 import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
-import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
-import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
 import { VmGetWrapperService } from './vm-get-wrapper.service';
+import { UpdateGuestCustomizationBody } from 'src/wrappers/vcloud-wrapper/services/user/vm/dto/update-guest-customazation-dto';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import {
+  Combinations,
+  DiskAdaptor,
+  GetHardDiskControllersDto,
+  UpdateDiskSectionDto,
+} from './dto/update-disk-section.dto';
+import { NetworkConnection } from 'src/wrappers/vcloud-wrapper/services/user/vm/dto/update-network-section.dto';
+import { UpdateVmDto } from './dto/update-vm.dto';
 @Injectable()
 export class VmUpdateWrapperService {
   constructor(
@@ -13,14 +21,12 @@ export class VmUpdateWrapperService {
     private readonly vdcWrapperService: VdcWrapperService,
     private readonly vmGetWrapperService: VmGetWrapperService,
   ) {}
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vmId
-   * @param {Object} diskSettings user disk settings
-   * @return {Promise}
-   */
-  async updateDiskSection(authToken, vmId, diskSettings, vdcId) {
+  async updateDiskSection(
+    authToken: string,
+    vmId: string,
+    diskSettings: UpdateDiskSectionDto[],
+    vdcId: string,
+  ): Promise<VcloudTask> {
     const vmInfo = await this.vmGetWrapperService.getVApp(authToken, vmId);
     const vmInfoData: any = vmInfo.data;
     const controllers = await this.calcBusCombination(
@@ -47,12 +53,8 @@ export class VmUpdateWrapperService {
         });
         diskSettings.forEach((settings) => {
           let targetAdaptor = settings.adapterType;
-          if (
-            targetAdaptor == '3' ||
-            targetAdaptor == '5' ||
-            targetAdaptor == 2
-          ) {
-            targetAdaptor = '4';
+          if (targetAdaptor == 3 || targetAdaptor == 5 || targetAdaptor == 2) {
+            targetAdaptor = 4;
           }
           if (settings.diskId === null) {
             console.log(targetAdaptor, controllers, '👌👌');
@@ -71,7 +73,6 @@ export class VmUpdateWrapperService {
           }
         });
         section.diskSection.diskSettings = updatedDiskSettings;
-        console.log(updatedDiskSettings, '❤️❤️❤️');
       }
     });
     const endpoint = 'VmEndpointService.updateVmEndpoint';
@@ -88,7 +89,11 @@ export class VmUpdateWrapperService {
       __vcloudTask: diskSection.headers['location'],
     });
   }
-  private async calcBusCombination(settings, authToken, vdcId) {
+  private async calcBusCombination(
+    settings: UpdateDiskSectionDto[],
+    authToken: string,
+    vdcId: string,
+  ): Promise<Combinations> {
     const combinations = {
       '4': [],
       '6': [],
@@ -105,7 +110,7 @@ export class VmUpdateWrapperService {
     settings.forEach((setting) => {
       let adaptor = setting.adapterType;
       if (adaptor == 3 || adaptor == 5 || adaptor == 2) {
-        adaptor = '4';
+        adaptor = 4;
       }
       if (setting.diskId === null) {
         console.log(adaptor, '💀');
@@ -114,7 +119,7 @@ export class VmUpdateWrapperService {
         oldCombinations[adaptor].push(setting);
       }
     });
-    let bus;
+    let bus: DiskAdaptor;
     let element = null;
     for (const key in combinations) {
       element = combinations[key];
@@ -229,16 +234,18 @@ export class VmUpdateWrapperService {
         i++;
       }
     }
-    console.log(combinations, '💀💀💀');
     return combinations;
   }
-  private async getHardDiskControllers(authToken, vdcId) {
-    const hardwareInfo: any = await this.vdcWrapperService.getHardwareInfo(
+  private async getHardDiskControllers(
+    authToken: string,
+    vdcId: string,
+  ): Promise<GetHardDiskControllersDto> {
+    const hardwareInfo = await this.vdcWrapperService.getHardwareInfo(
       authToken,
       vdcId,
     );
     console.log(hardwareInfo);
-    const adaptors = {};
+    let adaptors: GetHardDiskControllersDto;
     hardwareInfo.hardDiskAdapter.forEach((adaptor) => {
       const busNumberRanges = adaptor.busNumberRanges.range.map((range) => {
         return {
@@ -261,7 +268,7 @@ export class VmUpdateWrapperService {
         unitNumberRanges,
       };
     });
-    const controllers = {};
+    const controllers: GetHardDiskControllersDto = {};
     Object.keys(adaptors).forEach((key) => {
       controllers[adaptors[key].legacyId] = adaptors[key];
     });
@@ -274,25 +281,14 @@ export class VmUpdateWrapperService {
    * @param {Object} config
    * @return {Promise}
    */
-  async updateGuestCustomization(authToken, vmId, config) {
+  async updateGuestCustomization(
+    authToken: string,
+    vmId: string,
+    config: Omit<UpdateGuestCustomizationBody, '_type'>,
+  ): Promise<VcloudTask> {
     const requestBody = {
       _type: 'GuestCustomizationSectionType',
-      enabled: config.enabled,
-      changeSid: config.changeSid,
-      joinDomainEnabled: config.joinDomainEnabled,
-      useOrgSettings: config.useOrgSettings,
-      domainName: config.domainName,
-      domainUserName: config.domainUserName,
-      domainUserPassword: config.domainUserPassword,
-      machineObjectOU: config.machineObjectOU,
-      adminPasswordEnabled: config.adminPasswordEnabled,
-      adminPasswordAuto: config.adminPasswordAuto,
-      adminPassword: config.adminPassword,
-      adminAutoLogonEnabled: config.adminAutoLogonEnabled,
-      adminAutoLogonCount: config.adminAutoLogonCount,
-      resetPasswordRequired: config.resetPasswordRequired,
-      customizationScript: config.customizationScript,
-      computerName: config.computerName,
+      ...config,
     };
     const endpoint = 'VmEndpointService.updateGuestCustomizationEndpoint';
     const wrapper =
@@ -308,7 +304,11 @@ export class VmUpdateWrapperService {
       __vcloudTask: guestCustomizationSection.headers['location'],
     });
   }
-  async updateMedia(authToken, mediaId, name) {
+  async updateMedia(
+    authToken: string,
+    mediaId: string,
+    name: string,
+  ): Promise<VcloudTask> {
     const request = {
       name,
     };
@@ -325,21 +325,12 @@ export class VmUpdateWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
- *
- * @param {String} authToken
- * @param {String} vmId
- * @param {Object} networks
- * @param {Number} primaryNetworkConnectionIndex
- index of primary network connection in networks array
- * @return {Promise}
- */
   async updateNetworkSection(
-    authToken,
-    vmId,
-    networks,
-    primaryNetworkConnectionIndex,
-  ) {
+    authToken: string,
+    vmId: string,
+    networks: NetworkConnection[],
+    primaryNetworkConnectionIndex: number,
+  ): Promise<VcloudTask> {
     networks = networks.map((network) => {
       return {
         ...network,
@@ -369,7 +360,12 @@ export class VmUpdateWrapperService {
       __vcloudTask: networkSection.headers['location'],
     });
   }
-  async updateVAppTemplate(authToken, templateId, name, description) {
+  async updateVAppTemplate(
+    authToken: string,
+    templateId: string,
+    name: string,
+    description: string,
+  ): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { templateId },
@@ -386,33 +382,12 @@ export class VmUpdateWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vdcId
-   * @param {Object} config
-   * @param {String} vAppId
-   * @param {String} config.name
-   * @param {String} config.computerName
-   * @param {Number} config.cpuNumber
-   * @param {Number} config.coreNumber
-   * @param {Number} config.ram
-   * @param {Number} config.storage
-   * @param {String} config.osType
-   * @param {String} config.adaptorType
-   * @param {String} config.osType
-   * @param {String} config.mediaName
-   * @param {String} config.mediaHref
-   * @param {number} config.primaryNetworkIndex
-   * @param {Boolean} config.powerOn
-   * @param {Array<Object>} config.networks
-   * @param {String} config.networks.allocationMode
-   * @param {String} config.networks.networkAdaptorType
-   * @param {String} config.networks.ipAddress
-   * @param {String} config.networks.networkName
-   * @param {String} config.networks.isConnected
-   */
-  async updateVm(authToken, vdcId, config, vAppId) {
+  async updateVm(
+    authToken: string,
+    vdcId: string,
+    config: UpdateVmDto,
+    vAppId: string,
+  ): Promise<void> {
     const computePolicy: any = await this.vdcWrapperService.getVdcComputePolicy(
       authToken,
       vdcId,
@@ -516,11 +491,11 @@ export class VmUpdateWrapperService {
       headers: { Authorization: `Bearer ${authToken}` },
       body: xml,
     };
-    const endpoint = 'VmEndpointService.updateNetworkSectionEndpoint';
+    const endpoint = 'VmEndpointService.updateVmEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const createdVm = await this.vcloudWrapperService.request(wrapper(options));
-    return Promise.resolve(createdVm.data);
+    await this.vcloudWrapperService.request(wrapper(options));
+    return;
   }
   /**
    * compute part in vcloud panel
@@ -535,15 +510,15 @@ export class VmUpdateWrapperService {
    * @return {Promise<Object>}
    */
   async updateVmComputeSection(
-    authToken,
-    vmId,
-    numCpus,
-    numCoresPerSocket,
-    memory,
-    memoryHotAddEnabled,
-    cpuHotAddEnabled,
-    nestedHypervisorEnabled,
-  ) {
+    authToken: string,
+    vmId: string,
+    numCpus: number,
+    numCoresPerSocket: number,
+    memory: number,
+    memoryHotAddEnabled: boolean,
+    cpuHotAddEnabled: boolean,
+    nestedHypervisorEnabled: boolean,
+  ): Promise<VcloudTask> {
     const vmInfo: any = await this.vmGetWrapperService.getVApp(authToken, vmId);
     const vmInfoData = vmInfo.data;
     vmInfoData.section.forEach((section) => {
@@ -572,28 +547,16 @@ export class VmUpdateWrapperService {
       __vcloudTask: computeSection.headers['location'],
     });
   }
-  /**
-   * general section in panel
-   * @param {String} authToken
-   * @param {String} vmId
-   * @param {String} name
-   * @param {String} computerName
-   * @param {String} description
-   * @param {String} osType
-   * @param {Number} bootDelay
-   * @param {Boolean} enterBIOSSetup
-   * @return {Promise<Object>}
-   */
   async updateVmGeneralSection(
-    authToken,
-    vmId,
-    name,
-    computerName,
-    description,
-    osType,
-    bootDelay,
-    enterBIOSSetup,
-  ) {
+    authToken: string,
+    vmId: string,
+    name: string,
+    computerName: string,
+    description: string,
+    osType: string,
+    bootDelay: number,
+    enterBIOSSetup: boolean,
+  ): Promise<VcloudTask> {
     const vmInfo: any = await this.vmGetWrapperService.getVApp(authToken, vmId);
     const vmInfoData = vmInfo.data;
     // change name
@@ -628,24 +591,5 @@ export class VmUpdateWrapperService {
     return Promise.resolve({
       __vcloudTask: generalSection.headers['location'],
     });
-  }
-  /**
-   * get a single vm
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @return {Promise}
-   */
-  async uploadFile(authToken, catalogId, data) {
-    const endpoint = 'VmEndpointService.updateNetworkSectionEndpoint';
-    const wrapper =
-      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const response = await this.vcloudWrapperService.request(
-      wrapper({
-        urlParams: { catalogId },
-        headers: { Authorization: `Bearer ${authToken}` },
-        body: data,
-      }),
-    );
-    return response;
   }
 }

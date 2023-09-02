@@ -1,7 +1,6 @@
 import { WrapperErrorException } from 'src/infrastructure/exceptions/wrapper-error.exception';
 import * as lodash from 'lodash';
 import axios, { AxiosResponse } from 'axios';
-import { isNil } from 'lodash';
 import { EndpointInterface } from './interfaces/endpoint.interface';
 
 export class Wrapper<T> {
@@ -28,12 +27,12 @@ export class Wrapper<T> {
   /**
    * endpoint object created by endpoint methods
    */
-  public async request<U>(
+  public async request<U, Header = any>(
     endpoint: EndpointInterface,
-  ): Promise<AxiosResponse<U>> {
+  ): Promise<AxiosResponse<U, Header>> {
     try {
       const additionalConfig = endpoint?.additionalConfig || {};
-      const request: AxiosResponse<U> = await axios.request({
+      const request: AxiosResponse<U, Header> = await axios.request({
         url: endpoint.resource,
         httpsAgent: this.httpsAgent,
         method: endpoint.method,

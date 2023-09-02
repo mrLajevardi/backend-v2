@@ -16,6 +16,7 @@ import { AdminEdgeGatewayEndpointService } from '../services/admin/edgeGateway/a
 import { AdminUserEndpointService } from '../services/admin/user/admin-user-endpoint.service';
 import { AdminOrgEndpointService } from '../services/admin/org/admin-org-endpoint.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { VcloudWrapperInterface } from '../interface/vcloud-wrapper.interface';
 describe('VcloudWrapperService', () => {
   let service: VcloudWrapperService;
 
@@ -25,14 +26,9 @@ describe('VcloudWrapperService', () => {
       providers: [
         {
           provide: 'VCLOUD_WRAPPER',
-          useFactory: (...wrappers: Provider[]) => {
-            let wrappersList = {};
-            for (const wrapper of wrappers) {
-              wrappersList = {
-                ...wrappersList,
-                wrapper,
-              };
-            }
+          useFactory: (...wrappers: Provider[]): VcloudWrapperInterface => {
+            let wrappersList: VcloudWrapperInterface;
+            Object.assign(wrappersList, ...wrappers);
             return wrappersList;
           },
           inject: [

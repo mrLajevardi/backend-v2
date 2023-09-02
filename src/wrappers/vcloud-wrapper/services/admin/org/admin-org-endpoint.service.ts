@@ -1,8 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { CreateOrgCatalogDto } from './dto/create-org-catalog.dto';
+import { CreateOrgDto } from './dto/create-org.dto';
+import { DeleteOrgCatalogDto } from './dto/delete-org-catalog.dto';
+import { GetOrgDto } from './dto/get-org.dto';
 
 @Injectable()
 export class AdminOrgEndpointService {
-  createOrgCatalogEndpoint(options?: any) {
+  name: string;
+  constructor() {
+    this.name = 'AdminOrgEndpointService';
+  }
+  createOrgCatalogEndpoint(options: CreateOrgCatalogDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/admin/org/${options.urlParams.orgId}/catalogs`,
@@ -15,7 +24,7 @@ export class AdminOrgEndpointService {
       },
     };
   }
-  createOrgEndpoint(options?: any) {
+  createOrgEndpoint(options: CreateOrgDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/orgs`,
@@ -27,7 +36,7 @@ export class AdminOrgEndpointService {
       },
     };
   }
-  deleteOrgCatalogEndpoint(options?: any) {
+  deleteOrgCatalogEndpoint(options: DeleteOrgCatalogDto): EndpointInterface {
     return {
       method: 'delete',
       resource: `/api/admin/catalog/${options.urlParams.catalogId}?recursive=true&force=true`,
@@ -40,7 +49,7 @@ export class AdminOrgEndpointService {
       },
     };
   }
-  getOrgEndpoint(options?: any) {
+  getOrgEndpoint(options: GetOrgDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/orgs`,

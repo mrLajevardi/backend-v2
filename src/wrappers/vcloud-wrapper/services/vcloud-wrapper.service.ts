@@ -2,19 +2,19 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Wrapper } from 'src/wrappers/newWrapper';
 import { VcloudWrapperInterface } from '../interface/vcloud-wrapper.interface';
 import * as https from 'https';
-import * as _ from 'lodash';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class VcloudWrapperService extends Wrapper<VcloudWrapperInterface> {
   constructor(
     @Inject('VCLOUD_WRAPPER')
-    private readonly vcloudWrapper: VcloudWrapperInterface,
+    public readonly vcloudWrapper: VcloudWrapperInterface,
     private configService: ConfigService,
   ) {
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
     });
+    console.log(vcloudWrapper, '🍳');
     super(
       httpsAgent,
       vcloudWrapper,
