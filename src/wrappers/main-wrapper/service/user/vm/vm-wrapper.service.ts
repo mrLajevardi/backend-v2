@@ -8,17 +8,26 @@ import { UploadFileDto, UploadFileReturnDto } from './dto/upload-file.dto';
 import { Injectable } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
 import { PartialUploadHeaders } from './dto/partial-upload.dto';
+import {
+  InstantiateVmTemplateDto,
+  OrgVdcStorageProfileQuery,
+} from './dto/instatiate-vm-from-template.dto';
+import { AdminOrgVdcStorageProfileQuery } from './dto/instantiate-vm-from.templates-admin.dto';
+import { AcquireTicketDto } from './dto/acquire-vm-ticket.dto';
 @Injectable()
 export class VmWrapperService {
   constructor(
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly vdcWrapperService: VdcWrapperService,
   ) {}
-  async acquireVappTicket(authToken: string, vAppId: string) {
+  async acquireVappTicket(
+    authToken: string,
+    vAppId: string,
+  ): Promise<AxiosResponse<AcquireTicketDto>> {
     const endpoint = 'VmEndpointService.acquireVmTicketEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const ticket = await this.vcloudWrapperService.request(
+    const ticket = await this.vcloudWrapperService.request<AcquireTicketDto>(
       wrapper({
         headers: { Authorization: `Bearer ${authToken}` },
         urlParams: { vmId: vAppId },
@@ -127,40 +136,30 @@ export class VmWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vdcId
-   * @param {Object} config
-   * @param {String} config.name
-   * @param {String} config.computerName
-   * @param {Boolean} config.primaryNetworkIndex
-   * @param {Boolean} config.powerOn
-   * @param {Array<Object>} config.networks
-   * @param {String} config.networks.allocationMode
-   * @param {String} config.networks.networkAdaptorType
-   * @param {String} config.networks.ipAddress
-   * @param {String} config.networks.networkName
-   * @param {String} config.sourceHref
-   * @param {String} config.sourceId
-   * @param {String} config.sourceName
-   */
-  async instantiateVmFromTemplate(authToken, vdcId, config) {
-    const formatedVdcId = vdcId.split(':').slice(-1);
-    const computePolicy: any = await this.vdcWrapperService.getVdcComputePolicy(
+  async instantiateVmFromTemplate(
+    authToken: string,
+    vdcId: string,
+    config: InstantiateVmTemplateDto,
+  ): Promise<VcloudTask> {
+    const formattedVdcId = vdcId.split(':').slice(-1)[0];
+    const computePolicy = await this.vdcWrapperService.getVdcComputePolicy(
       authToken,
       vdcId,
     );
     const computePolicyId = computePolicy.values[0].id;
-    const query: any = await this.vdcWrapperService.vcloudQuery(authToken, {
-      type: 'orgVdcStorageProfile',
-      format: 'records',
-      page: 1,
-      pageSize: 128,
-      filterEncoded: true,
-      links: true,
-      filter: `vdc==${vdcId}`,
-    });
+    const query =
+      await this.vdcWrapperService.vcloudQuery<OrgVdcStorageProfileQuery>(
+        authToken,
+        {
+          type: 'orgVdcStorageProfile',
+          format: 'records',
+          page: 1,
+          pageSize: 128,
+          filterEncoded: true,
+          links: true,
+          filter: `vdc==${vdcId}`,
+        },
+      );
     const vdcStorageProfileLink = query.data.record[0].href;
     const networks = [];
     if (!isEmpty(config.networks)) {
@@ -232,7 +231,7 @@ export class VmWrapperService {
     const options = {
       body: xmlRequest,
       headers: { Authorization: `Bearer ${authToken}` },
-      urlParams: { vdcId: formatedVdcId },
+      urlParams: { vdcId: formattedVdcId },
     };
     const endpoint = 'VmEndpointService.instantiateVmFromTemplateEndpoint';
     const wrapper =
@@ -263,19 +262,23 @@ export class VmWrapperService {
   async instantiateVmFromTemplateAdmin(
     authToken: string,
     vdcId: string,
-    config,
+    config: InstantiateVmTemplateDto,
     computePolicyId: string,
-  ) {
-    const formatedVdcId = vdcId.split(':').slice(-1)[0];
-    const query: any = await this.vdcWrapperService.vcloudQuery(authToken, {
-      type: 'adminOrgVdcStorageProfile',
-      format: 'records',
-      page: 1,
-      pageSize: 128,
-      filterEncoded: true,
-      links: true,
-      filter: `vdc==${vdcId}`,
-    });
+  ): Promise<VcloudTask> {
+    const formattedVdcId = vdcId.split(':').slice(-1)[0];
+    const query =
+      await this.vdcWrapperService.vcloudQuery<AdminOrgVdcStorageProfileQuery>(
+        authToken,
+        {
+          type: 'adminOrgVdcStorageProfile',
+          format: 'records',
+          page: 1,
+          pageSize: 128,
+          filterEncoded: true,
+          links: true,
+          filter: `vdc==${vdcId}`,
+        },
+      );
     const vdcStorageProfileLink = query.data.record[0].href;
     const networks = [];
     if (!isEmpty(config.networks)) {
@@ -347,7 +350,7 @@ export class VmWrapperService {
     const options = {
       body: xmlRequest,
       headers: { Authorization: `Bearer ${authToken}` },
-      urlParams: { vdcId: formatedVdcId },
+      urlParams: { vdcId: formattedVdcId },
     };
     const endpoint = 'VmEndpointService.instantiateVmFromTemplateEndpoint';
     const wrapper =

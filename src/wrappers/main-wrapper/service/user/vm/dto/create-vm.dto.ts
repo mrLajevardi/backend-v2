@@ -16,7 +16,7 @@ export class CreateVmDto {
   description: string;
 }
 
-class Networks {
+export class Networks {
   networkName: string;
   ipAddress: string;
   isConnected: boolean;

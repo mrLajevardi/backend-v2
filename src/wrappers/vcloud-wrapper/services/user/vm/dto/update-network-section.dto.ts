@@ -15,7 +15,7 @@ export class UpdateNetworkSectionBody {
   networkConnection: NetworkConnection[];
 }
 
-class NetworkConnection {
+export class NetworkConnection {
   ipType: string;
   secondaryIpAddress: string | null;
   secondaryIpType: string | null;
