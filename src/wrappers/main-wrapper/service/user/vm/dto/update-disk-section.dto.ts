@@ -1,7 +1,5 @@
 import {
-  HardDiskAdapter,
   ID,
-  Range,
   ReservedBusUnitNumber,
 } from '../../vdc/dto/get-hard-disk-adaptors.dto';
 
