@@ -14,7 +14,6 @@ export class VcloudWrapperService extends Wrapper<VcloudWrapperInterface> {
     const httpsAgent = new https.Agent({
       rejectUnauthorized: false,
     });
-    console.log(vcloudWrapper, '🍳');
     super(
       httpsAgent,
       vcloudWrapper,

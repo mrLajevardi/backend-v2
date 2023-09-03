@@ -20,7 +20,6 @@ export class VdcService {
     private readonly servicePropertiesService: ServicePropertiesService,
     // @Inject(forwardRef(() => servicePropertiesService))
     // private readonly servicePropertiesService: servicePropertiesService,
-    private readonly vmCreateWrapperService: VmCreateWrapperService,
     private readonly loggerService: LoggerService,
   ) {}
 
