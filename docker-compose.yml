@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports: 
+      - "1433:1433"
+    expose:
+      - "1433"
+    environment:
+      MSSQL_SA_PASSWORD_FILE: /run/secrets/sa_password
+      ACCEPT_EULA: Y
+    volumes:
+      - sqlserver-files:/var/opt/mssql
+    secrets:
+      - sa_password
+  redis: 
+    image: redis
+    ports:
+      - "6379:6379"
+    expose:
+      - "6379"
+secrets:
+  sa_password:
+    file: sa_password.txt
+
+volumes:
+  sqlserver-files:
+    name: sqlserver-files

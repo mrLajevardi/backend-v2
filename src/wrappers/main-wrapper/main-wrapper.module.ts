@@ -14,6 +14,10 @@ import { AdminOrgWrapperService } from './service/admin/org/admin-org-wrapper.se
 import { AdminUserWrapperService } from './service/admin/user/admin-user-wrapper.service';
 import { AdminVdcWrapperService } from './service/admin/vdc/admin-vdc-wrapper.service';
 import { VcloudWrapperModule } from '../vcloud-wrapper/vcloud-wrapper.module';
+import { VmCreateWrapperService } from './service/user/vm/vm-create-wrapper.service';
+import { VmDeleteWrapperService } from './service/user/vm/vm-delete-wrapper.service';
+import { VmGetWrapperService } from './service/user/vm/vm-get-wrapper.service';
+import { VmUpdateWrapperService } from './service/user/vm/vm-update-wrapper.service';
 @Module({
   imports: [VcloudWrapperModule],
   providers: [
@@ -27,6 +31,30 @@ import { VcloudWrapperModule } from '../vcloud-wrapper/vcloud-wrapper.module';
     TaskWrapperService,
     VdcWrapperService,
     VmWrapperService,
+    VmCreateWrapperService,
+    VmDeleteWrapperService,
+    VmGetWrapperService,
+    VmUpdateWrapperService,
+    AdminEdgeGatewayWrapperService,
+    AdminOrgWrapperService,
+    AdminUserWrapperService,
+    AdminVdcWrapperService,
+  ],
+  exports: [
+    ApplicationPortProfileWrapperService,
+    DhcpWrapperService,
+    EdgeGatewayWrapperService,
+    FirewallWrapperService,
+    IpSetsWrapperService,
+    NatWrapperService,
+    NetworkWrapperService,
+    TaskWrapperService,
+    VdcWrapperService,
+    VmWrapperService,
+    VmCreateWrapperService,
+    VmDeleteWrapperService,
+    VmGetWrapperService,
+    VmUpdateWrapperService,
     AdminEdgeGatewayWrapperService,
     AdminOrgWrapperService,
     AdminUserWrapperService,

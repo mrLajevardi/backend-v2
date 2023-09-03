@@ -1,19 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import { getIPRange } from 'get-ip-range';
 import { isNil } from 'lodash';
+import { CreateEdgeGatewayBody } from 'src/wrappers/vcloud-wrapper/services/admin/edgeGateway/dto/create-edge-gateway.dto';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
+import { GetExternalNetworksDto } from './dto/get-external-networks.dto';
+import {
+  GetAvailableIPAddressesDto,
+  Value,
+} from './dto/get-available-ip-addresses.dto';
+import { CreateEdgeConfig, CreateEdgeDto } from './dto/create-edge.dto';
+import { GetEdgeClusterDto } from './dto/get-edge-cluster.dto';
 
 @Injectable()
 export class AdminEdgeGatewayWrapperService {
   constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
-  /**
-   * get external networks from vcloud this method is used to find uplink id
-   * @param {String} authToken
-   * @param {Number} page
-   * @param {Number} pageSize
-   * @return {Promise} return data of external networks
-   */
-  async getExternalNetworks(authToken, page = 1, pageSize = 25) {
+  async getExternalNetworks(
+    authToken: string,
+    page = 1,
+    pageSize = 25,
+  ): Promise<GetExternalNetworksDto> {
     const options = {
       params: {
         page,
@@ -27,17 +32,16 @@ export class AdminEdgeGatewayWrapperService {
       'AdminEdgeGatewayEndpointService.getExternalNetworksEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const externalNetworks: any = await this.vcloudWrapperService.request(
-      wrapper(options),
-    );
+    const externalNetworks =
+      await this.vcloudWrapperService.request<GetExternalNetworksDto>(
+        wrapper(options),
+      );
     return Promise.resolve(externalNetworks.data);
   }
-  /**
-   * get available ip addresses from vcloud
-   * @param {String} externalNetworkId
-   * @param {String} authToken
-   */
-  async getAvailableIpAddresses(externalNetworkId, authToken) {
+  async getAvailableIpAddresses(
+    externalNetworkId: string,
+    authToken: string,
+  ): Promise<Value[]> {
     const options = {
       urlParams: {
         externalNetworkId,
@@ -50,8 +54,10 @@ export class AdminEdgeGatewayWrapperService {
       'AdminEdgeGatewayEndpointService.getAvailableIpAddressesEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const availableIpAddressesList: any =
-      await this.vcloudWrapperService.request(wrapper(options));
+    const availableIpAddressesList =
+      await this.vcloudWrapperService.request<GetAvailableIPAddressesDto>(
+        wrapper(options),
+      );
     return Promise.resolve(
       availableIpAddressesList.data.values[0]?.ipRanges?.values,
     );
@@ -64,18 +70,19 @@ export class AdminEdgeGatewayWrapperService {
    * @param {Number} pageSize
    * @return {Promise}
    */
-  private async findExternalNetwork(authToken, page = 1, pageSize = 25) {
+  private async findExternalNetwork(
+    authToken: string,
+    page = 1,
+    pageSize = 25,
+  ): Promise<GetExternalNetworksDto> {
     const network = await this.getExternalNetworks(authToken, page, pageSize);
     return Promise.resolve(network);
   }
-  /**
-   * check if theres is enough remaining ip and allocate ip to user
-   * @param {String} externalNetworkId uplink id
-   * @param {String} authToken
-   * @param {Number} userIpCount
-   * @return {Promise<Array>} list of allocated ips to user
-   */
-  private async ipAllocation(externalNetworkId, authToken, userIpCount) {
+  private async ipAllocation(
+    externalNetworkId: string,
+    authToken: string,
+    userIpCount: number,
+  ): Promise<Value[]> {
     const availableIp = await this.getAvailableIpAddresses(
       externalNetworkId,
       authToken,
@@ -106,16 +113,7 @@ export class AdminEdgeGatewayWrapperService {
     }
     return Promise.resolve(allocatedIPAddresses);
   }
-  /**
-   * create edge gateway for user
-   * @param {Object} config
-   * @param {String} config.name required
-   * @param {String} config.vdcId required
-   * @param {String} config.authToken required
-   * @param {String} config.userIpCount number of user ip addresses
-   * @return {Promise}
-   */
-  async createEdge(config) {
+  async createEdge(config: CreateEdgeConfig): Promise<CreateEdgeDto> {
     const network = await this.findExternalNetwork(config.authToken);
     const networkValue = network.values[0];
     const ipRange = await this.ipAllocation(
@@ -123,7 +121,7 @@ export class AdminEdgeGatewayWrapperService {
       config.authToken,
       config.userIpCount,
     );
-    const request = {
+    const request: CreateEdgeGatewayBody = {
       name: config.name,
       description: '',
       ownerRef: {
@@ -173,12 +171,7 @@ export class AdminEdgeGatewayWrapperService {
       __vcloudTask: edgeGateway.headers['location'],
     });
   }
-  /**
-   * get available ip addresses from vcloud
-   * @param {String} externalNetworkId
-   * @param {String} authToken
-   */
-  async getEdgeCluster(vdcId, authToken) {
+  async getEdgeCluster(vdcId: string, authToken: string): Promise<string> {
     const options = {
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -193,9 +186,10 @@ export class AdminEdgeGatewayWrapperService {
       'AdminEdgeGatewayEndpointService.getNsxtEdgeClustersEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const edgeClusters: any = await this.vcloudWrapperService.request(
-      wrapper(options),
-    );
+    const edgeClusters =
+      await this.vcloudWrapperService.request<GetEdgeClusterDto>(
+        wrapper(options),
+      );
     return Promise.resolve(edgeClusters.data.values[0]?.id);
   }
 }

@@ -5,6 +5,10 @@ import { isEmpty, isNil } from 'lodash';
 import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
 import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
 import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
+import { SnapShotsProperties } from './dto/create-snap-shot.dto';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { CreateVmDto } from './dto/create-vm.dto';
+import { CheckCatalogDto } from './dto/chcek-catalog.dto';
 @Injectable()
 export class VmCreateWrapperService {
   constructor(
@@ -12,14 +16,11 @@ export class VmCreateWrapperService {
     private readonly vdcWrapperService: VdcWrapperService,
     private readonly adminOrgWrapperService: AdminOrgWrapperService,
   ) {}
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vAppId
-   * @param {Object} snapShotProperties
-   * @return {Promise}
-   */
-  async createSnapShot(authToken, vAppId, snapShotProperties) {
+  async createSnapShot(
+    authToken: string,
+    vAppId: string,
+    snapShotProperties: SnapShotsProperties,
+  ): Promise<VcloudTask> {
     const request = {
       'root:CreateSnapshotParams': {
         $: {
@@ -50,16 +51,13 @@ export class VmCreateWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} description
-   * @param {String} name
-   * @param {String} orgId
-   * @param {String} containerId
-   * @return {Promise}
-   */
-  async createTemplate(authToken, description, name, orgId, containerId) {
+  async createTemplate(
+    authToken: string,
+    description: string,
+    name: string,
+    orgId: string,
+    containerId: string,
+  ): Promise<VcloudTask> {
     const check = await this.checkCatalog(authToken);
     let catalogId = check;
     if (isNil(check)) {
@@ -93,32 +91,12 @@ export class VmCreateWrapperService {
       __vcloudTask: template.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} vdcId
-   * @param {Object} config
-   * @param {String} config.name
-   * @param {String} config.computerName
-   * @param {Number} config.cpuNumber
-   * @param {Number} config.coreNumber
-   * @param {Number} config.ram
-   * @param {Number} config.storage
-   * @param {String} config.osType
-   * @param {String} config.osType
-   * @param {String} config.mediaName
-   * @param {String} config.mediaHref
-   * @param {number} config.primaryNetworkIndex
-   * @param {Boolean} config.powerOn
-   * @param {Array<Object>} config.networks
-   * @param {String} config.networks.allocationMode
-   * @param {String} config.networks.networkAdaptorType
-   * @param {String} config.networks.ipAddress
-   * @param {String} config.networks.networkName
-   * @param {String} config.networks.isConnected
-   */
-  async createVm(authToken, vdcId, config) {
-    const formattedVdcId = vdcId.split(':').slice(-1);
+  async createVm(
+    authToken: string,
+    vdcId: string,
+    config: CreateVmDto,
+  ): Promise<VcloudTask> {
+    const formattedVdcId = vdcId.split(':').slice(-1)[0];
     const computePolicy: any = await this.vdcWrapperService.getVdcComputePolicy(
       authToken,
       vdcId,
@@ -247,12 +225,7 @@ export class VmCreateWrapperService {
       __vcloudTask: createdVm.headers['location'],
     });
   }
-  /**
-   * checks if user-catalog exists
-   * @param {String} authToken
-   * @return {Promise}
-   */
-  private async checkCatalog(authToken) {
+  private async checkCatalog(authToken: string): Promise<string> {
     const catalogName = 'user-catalog';
     const queryOptions = {
       type: 'catalog',
@@ -261,10 +234,11 @@ export class VmCreateWrapperService {
       sortAsc: 'name',
       filter: `name==${catalogName}`,
     };
-    const catalogsList: any = await this.vdcWrapperService.vcloudQuery(
-      authToken,
-      queryOptions,
-    );
+    const catalogsList =
+      await this.vdcWrapperService.vcloudQuery<CheckCatalogDto>(
+        authToken,
+        queryOptions,
+      );
     let catalogId = null;
     const catalogRecord = catalogsList?.data?.record;
     if (!isNil(catalogRecord) && catalogRecord[0]?.name === catalogName) {

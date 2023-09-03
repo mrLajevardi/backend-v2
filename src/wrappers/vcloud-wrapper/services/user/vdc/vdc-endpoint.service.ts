@@ -1,11 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { AttachNamedDiskOptionsDto } from './dto/attach-named-disk.dto';
+import { CreateNamedDiskOptionsDto } from './dto/create-named-disk.dto';
+import { DetachNamedDiskOptionsDto } from './dto/detach-named-disk.dto';
+import { GetHardwareInfoOptionsDto } from './dto/get-hardware-info.dto';
+import { GetVdcComputePolicyDto } from './dto/get-vdc-compute-policy.dto';
+import { VmAttachedNamedDiskDto } from './dto/vm-attached-named-disk.dto';
+import { RemoveNamedDiskDto } from './dto/remove-named-disk.dto';
+import { UpdateNamedDiskDto } from './dto/update-named-disk.dto';
+import { VcloudQueryDto } from './dto/vcloud-query.dto';
 
 @Injectable()
 export class VdcEndpointService {
-  attachNamedDisk(options?: any) {
+  name: string;
+  constructor() {
+    this.name = 'VdcEndpointService';
+  }
+  attachNamedDisk(options: AttachNamedDiskOptionsDto): EndpointInterface {
     return {
       method: 'post',
-      resource: `/api/vApp/${options.urlParams.vmID}/disk/action/attach`,
+      resource: `/api/vApp/${options.urlParams.vmId}/disk/action/attach`,
       params: {},
       body: options.body,
       headers: {
@@ -15,7 +29,7 @@ export class VdcEndpointService {
       },
     };
   }
-  createNamedDisk(options?: any) {
+  createNamedDisk(options: CreateNamedDiskOptionsDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vdc/${options.urlParams.vdcId}/disk`,
@@ -28,10 +42,10 @@ export class VdcEndpointService {
       },
     };
   }
-  detachNamedDisk(options?: any) {
+  detachNamedDisk(options: DetachNamedDiskOptionsDto): EndpointInterface {
     return {
       method: 'post',
-      resource: `/api/vApp/${options.urlParams.vmID}/disk/action/detach`,
+      resource: `/api/vApp/${options.urlParams.vmId}/disk/action/detach`,
       params: {},
       body: options.body,
       headers: {
@@ -41,11 +55,13 @@ export class VdcEndpointService {
       },
     };
   }
-  getHardwareInfoEndpoint(options?: any) {
+  getHardwareInfoEndpoint(
+    options: GetHardwareInfoOptionsDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/vdc/${options.urlParams.vdcId}/hwv/vmx-19`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         'Content-Type': 'application/* +json;',
@@ -54,7 +70,9 @@ export class VdcEndpointService {
       },
     };
   }
-  getVdcComputePolicyEndpoint(options?: any) {
+  getVdcComputePolicyEndpoint(
+    options: GetVdcComputePolicyDto,
+  ): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/2.0.0/vdcs/${options.urlParams.vdcId}/computePolicies`,
@@ -67,10 +85,10 @@ export class VdcEndpointService {
       },
     };
   }
-  vmAttachedNamedDisk(options?: any) {
+  vmAttachedNamedDisk(options: VmAttachedNamedDiskDto): EndpointInterface {
     return {
       method: 'get',
-      resource: `/api/disk/${options.urlParams.nameDiskID}/attachedVms`,
+      resource: `/api/disk/${options.urlParams.namedDiskId}/attachedVms`,
       params: {},
       body: null,
       headers: {
@@ -80,10 +98,10 @@ export class VdcEndpointService {
       },
     };
   }
-  removeNamedDisk(options?: any) {
+  removeNamedDisk(options: RemoveNamedDiskDto): EndpointInterface {
     return {
       method: 'delete',
-      resource: `/api/disk/${options.urlParams.nameDiskID}`,
+      resource: `/api/disk/${options.urlParams.namedDiskId}`,
       params: {},
       body: null,
       headers: {
@@ -93,10 +111,10 @@ export class VdcEndpointService {
       },
     };
   }
-  updateNamedDisk(options?: any) {
+  updateNamedDisk(options: UpdateNamedDiskDto): EndpointInterface {
     return {
       method: 'put',
-      resource: `/api/disk/${options.urlParams.nameDiskID}`,
+      resource: `/api/disk/${options.urlParams.namedDiskId}`,
       params: {},
       body: options.body,
       headers: {
@@ -106,7 +124,7 @@ export class VdcEndpointService {
       },
     };
   }
-  vcloudQueryEndpoint(options?: any) {
+  vcloudQueryEndpoint(options: VcloudQueryDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/query`,

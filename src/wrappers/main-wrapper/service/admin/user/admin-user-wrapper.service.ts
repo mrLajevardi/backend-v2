@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
+import { SessionDto } from './dto/session.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class AdminUserWrapperService {
@@ -14,7 +16,7 @@ export class AdminUserWrapperService {
    * @param {string} config.username
    * @param {string} config.password
    */
-  async createUser(config) {
+  async createUser(config: CreateUserDto): Promise<void> {
     const vcloudQueryOptions = {
       headers: {
         'x-vcloud-authorization': config.orgName,
@@ -56,7 +58,7 @@ export class AdminUserWrapperService {
       telephone: null,
       im: null,
     };
-    const formattedOrgId = config.orgId.split(':').slice(-1);
+    const formattedOrgId = config.orgId.split(':').slice(-1)[0];
     const options = {
       headers: { Authorization: `Bearer ${config.authToken}` },
       body: requestBody,
@@ -65,25 +67,14 @@ export class AdminUserWrapperService {
     const userEndpoint = 'AdminUserEndpointService.createUserEndpoint';
     const userWrapper =
       this.vcloudWrapperService.getWrapper<typeof userEndpoint>(userEndpoint);
-    const response: any = await this.vcloudWrapperService.request(
-      userWrapper(options),
-    );
-    return Promise.resolve(response.data);
+    await this.vcloudWrapperService.request(userWrapper(options));
   }
-  /**
-   * base session
-   * @param {String} username
-   * @param {String} password
-   * @param {String} orgName
-   * @param {Boolean} isProvider
-   * @return {Promise}
-   */
   async session(
     username: string,
     password: string,
     orgName: string,
     isProvider = false,
-  ): Promise<any> {
+  ): Promise<SessionDto> {
     // convert username@organization:password to base64
     const basicAuth = Buffer.from(
       `${username}@${orgName}:${password}`,
@@ -116,34 +107,18 @@ export class AdminUserWrapperService {
       token: sessionToken,
     });
   }
-
-  /**
-   * provider session
-   * @param {String} username
-   * @param {String} password
-   * @param {String} orgName
-   * @return {Promise}
-   */
   async providerSession(
     username: string,
     password: string,
     orgName: string,
-  ): Promise<any> {
+  ): Promise<SessionDto> {
     return await this.session(username, password, orgName, true);
   }
-
-  /**
-   * user login
-   * @param {String} username
-   * @param {String} password
-   * @param {String} orgName
-   * @return {Promise}
-   */
   async userSession(
     username: string,
     password: string,
     orgName: string,
-  ): Promise<any> {
+  ): Promise<SessionDto> {
     return await this.session(username, password, orgName);
   }
 }

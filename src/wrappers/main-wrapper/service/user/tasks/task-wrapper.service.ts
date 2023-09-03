@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
-import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
 export class TaskWrapperService {
   constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
-  async cancelTask(authToken, taskId) {
+  async cancelTask(authToken: string, taskId: string): Promise<void> {
     const endpoint = 'TasksEndpointService.cancelTaskEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
@@ -17,7 +17,7 @@ export class TaskWrapperService {
     );
     return;
   }
-  async getTask(authToken, taskId) {
+  async getTask(authToken: string, taskId: string): Promise<AxiosResponse> {
     const endpoint = 'TasksEndpointService.getTaskEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);

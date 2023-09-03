@@ -14,9 +14,11 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { NetworkService } from './service/network.service';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 import { AbilityModule } from '../base/security/ability/ability.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 @Module({
   imports: [
+    MainWrapperModule,
     DatabaseModule,
     CrudModule,
     LoggerModule,
