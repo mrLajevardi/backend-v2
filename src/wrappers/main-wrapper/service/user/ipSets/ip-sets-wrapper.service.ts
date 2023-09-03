@@ -3,6 +3,9 @@ import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vclou
 import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
 import { isEmpty } from 'lodash';
 import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { GetIpSetsListDto } from './dto/get-ip-sets-list.dto';
+import { GetIpSetsDto } from './dto/get-ip-sets.dto';
 
 @Injectable()
 export class IpSetsWrapperService {
@@ -10,17 +13,14 @@ export class IpSetsWrapperService {
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
   ) {}
-  /**
-   * create ip set
-   * @param {String} authToken
-   * @param {String} description
-   * @param {String} name
-   * @param {Array} ipAddresses
-   * @param {String} edgeName
-   * @return {Promise}
-   */
-  async createIPSet(authToken, description, name, ipAddresses, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async createIPSet(
+    authToken: string,
+    description: string,
+    name: string,
+    ipAddresses: string[],
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {
@@ -50,12 +50,7 @@ export class IpSetsWrapperService {
       __vcloudTask: response.headers['location'],
     });
   }
-  /**
-   * @param {String} authToken
-   * @param {String} ipSetId
-   * @return {Promise}
-   */
-  async deleteIPSet(authToken, ipSetId) {
+  async deleteIPSet(authToken: string, ipSetId: string): Promise<VcloudTask> {
     const options = {
       urlParams: { ipSetId },
       headers: { Authorization: `Bearer ${authToken}` },
@@ -68,15 +63,13 @@ export class IpSetsWrapperService {
       __vcloudTask: response.headers['location'],
     });
   }
-  /**
-   * @param {String} authToken
-   * @param {Number} page
-   * @param {Number} pageSize
-   * @param {String} edgeName
-   * @param {String} filter
-   * @return {Promise}
-   */
-  async getIPSetsList(authToken, page, pageSize, edgeName, filter = '') {
+  async getIPSetsList(
+    authToken: string,
+    page: number,
+    pageSize: number,
+    edgeName: string,
+    filter = '',
+  ): Promise<GetIpSetsListDto> {
     const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
@@ -89,7 +82,7 @@ export class IpSetsWrapperService {
     const endpoint = 'IpSetsEndpointService.getIpSetsListEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const response = await this.vcloudWrapperService.request(
+    const response = await this.vcloudWrapperService.request<GetIpSetsListDto>(
       wrapper({
         params: {
           page,
@@ -102,17 +95,14 @@ export class IpSetsWrapperService {
     );
     return Promise.resolve(response.data);
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} ipSetId
-   * @return {Promise}
-   */
-  async getSingleIPSet(authToken, ipSetId) {
+  async getSingleIPSet(
+    authToken: string,
+    ipSetId: string,
+  ): Promise<GetIpSetsDto> {
     const endpoint = 'IpSetsEndpointService.getIpSetsEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const ipSet = await this.vcloudWrapperService.request(
+    const ipSet = await this.vcloudWrapperService.request<GetIpSetsDto>(
       wrapper({
         headers: { Authorization: `Bearer ${authToken}` },
         urlParams: { ipSetId },
@@ -120,25 +110,15 @@ export class IpSetsWrapperService {
     );
     return Promise.resolve(ipSet.data);
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} description
-   * @param {String} name
-   * @param {String} ipAddresses
-   * @param {String} ipSetId
-   * @param {String} edgeName
-   * @return {Promise}
-   */
   async updateIPSet(
-    authToken,
-    description,
-    name,
-    ipAddresses,
-    ipSetId,
-    edgeName,
-  ) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+    authToken: string,
+    description: string,
+    name: string,
+    ipAddresses: string[],
+    ipSetId: string,
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {

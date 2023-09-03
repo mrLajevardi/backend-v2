@@ -1,45 +1,56 @@
 import { Injectable } from '@nestjs/common';
+import { DeleteFirewallDto } from './dto/delete-firewall.dto';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { GetFirewallDto } from './dto/get-firewall.dto';
+import { GetFirewallListDto } from './dto/get-firewall-list.dto';
+import { UpdateFirewallDto } from './dto/update-firewall.dto';
+import { UpdateFirewallListDto } from './dto/update-firewall-list.dto';
 
 @Injectable()
 export class FirewallEndpointService {
-  deleteFirewallEndpoint(options?: any) {
+  name: string;
+  constructor() {
+    this.name = 'FirewallEndpointService';
+  }
+
+  deleteFirewallEndpoint(options: DeleteFirewallDto): EndpointInterface {
     return {
       method: 'delete',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules/${options.urlParams.ruleId}`,
       params: {},
-      body: options.body,
+      body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
         ...options.headers,
       },
     };
   }
-  getFirewallEndpoint(options?: any) {
+  getFirewallEndpoint(options: GetFirewallDto): EndpointInterface {
     return {
       method: 'get',
       // eslint-disable-next-line max-len
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules/${options.urlParams.ruleId}`,
-      params: options.params,
-      body: options.body,
+      params: {},
+      body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
         ...options.headers,
       },
     };
   }
-  getFirewallListEndpoint(options?: any) {
+  getFirewallListEndpoint(options: GetFirewallListDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules`,
-      params: options.params,
-      body: options.body,
+      params: {},
+      body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
         ...options.headers,
       },
     };
   }
-  updateFirewallEndpoint(options?: any) {
+  updateFirewallEndpoint(options: UpdateFirewallDto): EndpointInterface {
     return {
       method: 'put',
       // eslint-disable-next-line max-len
@@ -52,7 +63,9 @@ export class FirewallEndpointService {
       },
     };
   }
-  updateFirewallListEndpoint(options?: any) {
+  updateFirewallListEndpoint(
+    options: UpdateFirewallListDto,
+  ): EndpointInterface {
     return {
       method: 'put',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules`,

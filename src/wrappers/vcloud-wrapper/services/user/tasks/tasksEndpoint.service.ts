@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import {
-  EndpointInterface,
-  EndpointOptionsInterface,
-} from 'src/wrappers/interfaces/endpoint.interface';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { CancelTaskDto } from './dto/cancel-task.dto';
+import { GetTaskDto } from './dto/get-task.dto';
+import { GetTaskListDto } from './dto/get-task-list.dto';
 
 @Injectable()
 export class TasksEndpointService {
-  cancelTaskEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  name: string;
+  constructor() {
+    this.name = 'TasksEndpointService';
+  }
+
+  cancelTaskEndpoint(options: CancelTaskDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/task/${options.urlParams.taskId}/action/cancel`,
@@ -20,11 +25,11 @@ export class TasksEndpointService {
     };
   }
 
-  getTaskEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  getTaskEndpoint(options: GetTaskDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/task/${options.urlParams.taskId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
@@ -34,7 +39,7 @@ export class TasksEndpointService {
     };
   }
 
-  getTaskListEndpoint(options: EndpointOptionsInterface): EndpointInterface {
+  getTaskListEndpoint(options: GetTaskListDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/api/query`,

@@ -3,6 +3,10 @@ import { isEmpty } from 'lodash';
 import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { CreateNetworkDto } from './dto/create-network.dto';
+import { GetNetworkListDto } from './dto/get-network-list.dto';
+import { GetIpUsageNetworkDto } from './dto/get-ip-usage-network.dto';
 
 @Injectable()
 export class NetworkWrapperService {
@@ -10,33 +14,20 @@ export class NetworkWrapperService {
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
   ) {}
-  /**
-   * @param {Object} config
-   * @param {String} edgeName
-   * @param {String} config.name
-   * @param {String} config.gateway
-   * @param {String} config.dnsServer1
-   * @param {String} config.dnsServer2
-   * @param {String} config.dnsSuffix
-   * @param {String} config.vdcId
-   * @param {String} config.connectionTypeValue
-   * @param {String} config.connectionType
-   * @param {Object} config.ipRanges
-   * @param {Array}  config.ipRanges.values
-   * @param {Number} config.prefixLength
-   * @param {String} config.authToken
-   * @param {String} config.networkType
-   * @return {Promise}
-   */
-  async createNetwork(config, edgeName = null) {
-    let gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async createNetwork(
+    config: CreateNetworkDto,
+    edgeName: string | null = null,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       config.authToken,
     );
     if (isEmpty(gateway.values[0])) {
       return Promise.reject(new NoIpIsAssignedException());
     }
-    gateway = gateway.values.filter((value) => value.name === edgeName);
-    const gatewayId = gateway[0].id;
+    const targetGateway = gateway.values.filter(
+      (value) => value.name === edgeName,
+    );
+    const gatewayId = targetGateway[0].id;
     let connection = null;
     if (config.networkType !== 'ISOLATED') {
       connection = {
@@ -85,13 +76,10 @@ export class NetworkWrapperService {
       __vcloudTask: createdNetwork.headers['location'],
     });
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} networkId
-   * @return {Promise}
-   */
-  async deleteNetwork(authToken, networkId) {
+  async deleteNetwork(
+    authToken: string,
+    networkId: string,
+  ): Promise<VcloudTask> {
     const options = {
       params: {
         force: true,
@@ -109,16 +97,12 @@ export class NetworkWrapperService {
       __vcloudTask: deletedNetwork.headers['location'],
     });
   }
-  /**
-   * get a list of networks
-   * to get a single network use filter eg: id==<networkId>
-   * @param {String} authToken
-   * @param {Number} page
-   * @param {Number} pageSize
-   * @param {Number} filter
-   * @return {Promise}
-   */
-  async getIPUsageNetwrok(authToken, page = 1, pageSize = 25, networkId) {
+  async getIPUsageNetwork(
+    authToken: string,
+    page = 1,
+    pageSize = 25,
+    networkId: string,
+  ): Promise<GetIpUsageNetworkDto> {
     const params = {
       page,
       pageSize,
@@ -126,25 +110,22 @@ export class NetworkWrapperService {
     const endpoint = 'NetworkEndpointService.getNetworkIPUsageListEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const networks = await this.vcloudWrapperService.request(
-      wrapper({
-        headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: { networkId },
-        params,
-      }),
-    );
+    const networks =
+      await this.vcloudWrapperService.request<GetIpUsageNetworkDto>(
+        wrapper({
+          headers: { Authorization: `Bearer ${authToken}` },
+          urlParams: { networkId },
+          params,
+        }),
+      );
     return Promise.resolve(networks.data);
   }
-  /**
-   * get a list of networks
-   * to get a single network use filter eg: id==<networkId>
-   * @param {String} authToken
-   * @param {Number} page
-   * @param {Number} pageSize
-   * @param {Number} filter
-   * @return {Promise}
-   */
-  async getNetwork(authToken, page = 1, pageSize = 25, filter = '') {
+  async getNetwork(
+    authToken: string,
+    page = 1,
+    pageSize = 25,
+    filter = '',
+  ): Promise<GetNetworkListDto> {
     const params = {
       page,
       pageSize,
@@ -154,7 +135,7 @@ export class NetworkWrapperService {
     const endpoint = 'NetworkEndpointService.getNetworkListEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const networks = await this.vcloudWrapperService.request(
+    const networks = await this.vcloudWrapperService.request<GetNetworkListDto>(
       wrapper({
         params,
         headers: { Authorization: `Bearer ${authToken}` },
@@ -162,26 +143,11 @@ export class NetworkWrapperService {
     );
     return Promise.resolve(networks.data);
   }
-  /**
-   * update network
-   * @param {Object} config
-   * @param {String} networkId
-   * @param {String} edgeName
-   * @param {String} config.name
-   * @param {String} config.gateway
-   * @param {String} config.dnsServer1
-   * @param {String} config.dnsServer2
-   * @param {String} config.dnsSuffix
-   * @param {String} config.vdcId
-   * @param {String} config.connectionTypeValue
-   * @param {String} config.connectionType
-   * @param {Object} config.ipRanges
-   * @param {Array}  config.ipRanges.values
-   * @param {Number} config.prefixLength
-   * @param {String} config.authToken
-   * @param {String} config.networkType
-   */
-  async updateNetwork(config, networkId, edgeName) {
+  async updateNetwork(
+    config: CreateNetworkDto,
+    networkId: string,
+    edgeName: string,
+  ): Promise<VcloudTask> {
     const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
       config.authToken,
     );

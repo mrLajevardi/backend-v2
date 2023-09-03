@@ -2,17 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
+import { GetEdgeGatewayDto } from './dto/get-edgegateway.dto';
+import { GetDhcpForwarderDto } from './dto/get-dhcp-forwarder.dto';
+import { GetDnsForwarderDto } from './dto/get-dns-forwarder.dto';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { UpdateDnsForwarderConfig } from './dto/update-dns-forwarder.dto';
 
 @Injectable()
 export class EdgeGatewayWrapperService {
   constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
-  /**
-   * @param {String} authToken
-   * @param {Number} page
-   * @param {Number} pageSize
-   * @return {Promise}
-   */
-  async getEdgeGateway(authToken, page = 1, pageSize = 25) {
+  async getEdgeGateway(
+    authToken: string,
+    page = 1,
+    pageSize = 25,
+  ): Promise<GetEdgeGatewayDto> {
     const options = {
       params: {
         page,
@@ -23,22 +26,17 @@ export class EdgeGatewayWrapperService {
     const endpoint = 'EdgeGatewayEndpointService.getEdgeGatewayEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const edgeGateways = await this.vcloudWrapperService.request(
-      wrapper(options),
-    );
+    const edgeGateways =
+      await this.vcloudWrapperService.request<GetEdgeGatewayDto>(
+        wrapper(options),
+      );
     return Promise.resolve(edgeGateways.data);
   }
-
-  /**
-   * get dns forwarder lists
-   * @param {String} authToken
-   * @param {String} edgeName
-   * @return {Promise}
-   */
-
-  async getDhcpForwarder(authToken, edgeName) {
-    const gateway: any = await this.getEdgeGateway(authToken);
-
+  async getDhcpForwarder(
+    authToken: string,
+    edgeName: string,
+  ): Promise<GetDhcpForwarderDto> {
+    const gateway = await this.getEdgeGateway(authToken);
     if (isEmpty(gateway.values[0])) {
       return Promise.reject(new NoIpIsAssignedException());
     }
@@ -48,22 +46,19 @@ export class EdgeGatewayWrapperService {
     const endpoint = 'EdgeGatewayEndpointService.getDhcpForwarderEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const dhcpForwarder = await this.vcloudWrapperService.request(
-      wrapper({
-        headers: { Authorization: `Bearer ${authToken}` },
-        urlParams: { gatewayId },
-      }),
-    );
+    const dhcpForwarder =
+      await this.vcloudWrapperService.request<GetDhcpForwarderDto>(
+        wrapper({
+          headers: { Authorization: `Bearer ${authToken}` },
+          urlParams: { gatewayId },
+        }),
+      );
     return Promise.resolve(dhcpForwarder.data);
   }
-  /**
-   * get dns forwarder lists
-   * @param {String} authToken
-   * @param {String} edgeName
-   * @return {Promise}
-   */
-
-  async getDnsForwarder(authToken, edgeName) {
+  async getDnsForwarder(
+    authToken: string,
+    edgeName: string,
+  ): Promise<GetDnsForwarderDto> {
     const gateway: any = await this.getEdgeGateway(authToken);
 
     if (isEmpty(gateway.values[0])) {
@@ -75,7 +70,7 @@ export class EdgeGatewayWrapperService {
     const endpoint = 'EdgeGatewayEndpointService.getDnsForwarderEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const dns = await this.vcloudWrapperService.request(
+    const dns = await this.vcloudWrapperService.request<GetDnsForwarderDto>(
       wrapper({
         headers: { Authorization: `Bearer ${authToken}` },
         urlParams: { gatewayId },
@@ -83,22 +78,14 @@ export class EdgeGatewayWrapperService {
     );
     return Promise.resolve(dns.data);
   }
-  /**
-   * @param {Array} dhcpServers
-   * @param {Boolean} enabled
-   * @param {object} version
-   * @param {string} edgeName
-   * @param {string} authToken
-   * @return {Promise}
-   */
   async updateDhcpForwarder(
-    dhcpServers,
-    enabled,
-    version,
-    edgeName,
-    authToken,
-  ) {
-    const gateway: any = await this.getEdgeGateway(authToken);
+    dhcpServers: string[],
+    enabled: boolean,
+    version: number,
+    edgeName: string,
+    authToken: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.getEdgeGateway(authToken);
     const gatewayId = gateway.values.filter(
       (value) => value.name === edgeName,
     )[0].id;
@@ -124,17 +111,10 @@ export class EdgeGatewayWrapperService {
       __vcloudTask: dhcpForwarder.headers['location'],
     });
   }
-  /**
- * update dns forwarder
- * @param {Object} config
- * @param {Boolean} config.enabled
- * @param {Array} config.upstreamServers
- * @param {String} config.displayName
- * @param {String} config.authToken
-//  * @param {String} config.ruleId
- * @param {String} edgeName edgeGateway name
- */
-  async updateDnsForwarder(config, edgeName) {
+  async updateDnsForwarder(
+    config: UpdateDnsForwarderConfig,
+    edgeName: string,
+  ): Promise<VcloudTask> {
     const gateway: any = await this.getEdgeGateway(config.authToken);
     const gatewayId = gateway.values.filter(
       (value) => value.name === edgeName,

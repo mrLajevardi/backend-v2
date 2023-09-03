@@ -1,4 +1,4 @@
-import { Module, Provider } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { VmEndpointService } from './services/user/vm/vm-endpoint.service';
 import { VdcEndpointService } from './services/user/vdc/vdc-endpoint.service';
 import { TasksEndpointService } from './services/user/tasks/tasksEndpoint.service';
@@ -15,19 +15,21 @@ import { AdminUserEndpointService } from './services/admin/user/admin-user-endpo
 import { AdminOrgEndpointService } from './services/admin/org/admin-org-endpoint.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { VcloudWrapperService } from './services/vcloud-wrapper.service';
+import {
+  VcloudWrapperInterface,
+  WrapperProvider,
+} from './interface/vcloud-wrapper.interface';
 @Module({
   imports: [ConfigModule],
   providers: [
     {
       provide: 'VCLOUD_WRAPPER',
-      useFactory: (...wrappers: Provider[]) => {
-        let wrappersList = {};
-        for (const wrapper of wrappers) {
-          wrappersList = {
-            ...wrappersList,
-            wrapper,
-          };
-        }
+      useFactory: (...wrappers: WrapperProvider[]): VcloudWrapperInterface => {
+        const wrappersList: VcloudWrapperInterface =
+          {} as VcloudWrapperInterface;
+        wrappers.forEach((wrapper) => {
+          wrappersList[wrapper.name] = wrapper;
+        });
         return wrappersList;
       },
       inject: [

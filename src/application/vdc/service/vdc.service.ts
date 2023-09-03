@@ -7,6 +7,7 @@ import { ServicePropertiesTableService } from 'src/application/base/crud/service
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { VmCreateWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-create-wrapper.service';
 import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { ExtendedOptionsDto } from 'src/infrastructure/dto/extended-options.dto';
