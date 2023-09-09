@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/node';
 import * as process from 'process';
 import { SentryFilter } from './infrastructure/exceptions/sentry-exception-filter';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     origin: '*',
@@ -20,8 +20,6 @@ async function bootstrap() {
     dsn: process.env.DSN_SENTRY,
     debug: true,
   });
-
-
 
   const config = new DocumentBuilder()
     .setTitle('Arad API')
