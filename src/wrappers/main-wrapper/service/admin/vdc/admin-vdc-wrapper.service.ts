@@ -2,6 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { AdminEdgeGatewayWrapperService } from '../edgeGateway/admin-edge-gateway-wrapper.service';
+import { CreateVdcConfig, CreateVdcDto } from './dto/create-vdc.dto';
+import { AxiosResponse } from 'axios';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { UpdateVdcComputePolicyDto } from './dto/update-vdc-compute-policy.dto';
+import { UpdateVdcStoragePolicyDto } from './dto/update-vdc-storage-policy.dto';
+import { AdminOrgVdcStorageProfileQuery } from '../../user/vm/dto/instantiate-vm-from.templates-admin.dto';
 
 @Injectable()
 export class AdminVdcWrapperService {
@@ -25,12 +31,15 @@ export class AdminVdcWrapperService {
    * @param {Number} config.ResourceGuaranteedMemory
    * @return {Promise}
    */
-  async createVdc(config, orgId) {
+  async createVdc(
+    config: CreateVdcConfig,
+    orgId: string,
+  ): Promise<CreateVdcDto> {
     const vdcConfig = vcdConfig.admin.vdc;
-    orgId = orgId.split(':').slice(-1);
+    orgId = orgId.split(':').slice(-1)[0];
     const cores = config.cores;
     const vCpuInMhz = config.vCpuInMhz;
-    const cpuLimit = parseInt(cores) * parseInt(vCpuInMhz);
+    const cpuLimit = cores * vCpuInMhz;
     const request = {
       name: config.name,
       description: null,
@@ -53,25 +62,25 @@ export class AdminVdcWrapperService {
       //isThinProvision: false,
       isElastic: false,
       vCpuInMhz: config.vCpuInMhz,
-      resourceGuaranteedCpu: config.ResourceGuaranteedCpu,
-      resourceGuaranteedMemory: config.ResourceGuaranteedMemory,
+      resourceGuaranteedCpu: config.resourceGuaranteedCpu,
+      resourceGuaranteedMemory: config.resourceGuaranteedMemory,
       providerVdcReference: {
-        href: config.ProviderVdcReference.href,
-        name: config.ProviderVdcReference.name,
+        href: config.providerVdcReference.href,
+        name: config.providerVdcReference.name,
       },
       vmQuota: config.vm,
       networkPoolReference: {
-        name: config.NetworkPoolReference.name,
-        href: config.NetworkPoolReference.href,
+        name: config.networkPoolReference.name,
+        href: config.networkPoolReference.href,
       },
-      networkQuota: config.NetworkQuota,
+      networkQuota: config.networkQuota,
       vdcStorageProfile: [
         {
           ...vdcConfig.VdcStorageProfileParams,
           limit: config.storage * 1024,
           providerVdcStorageProfile: {
-            href: config.VdcStorageProfileParams.providerVdcStorageProfile.href,
-            name: config.VdcStorageProfileParams.providerVdcStorageProfile.name,
+            href: config.vdcStorageProfileParams.providerVdcStorageProfile.href,
+            name: config.vdcStorageProfileParams.providerVdcStorageProfile.name,
           },
         },
       ],
@@ -92,14 +101,9 @@ export class AdminVdcWrapperService {
       __vcloudTask: vdc.headers['location'],
     });
   }
-  /**
-   * @param {String} session
-   * @param {String} vdcId
-   * @return {void}
-   */
-  async deleteVdc(session, vdcId) {
+  async deleteVdc(session: string, vdcId: string): Promise<AxiosResponse> {
     // convert from urn:vcloud:org:vdcId -> vdcId
-    vdcId = vdcId.split(':').slice(-1);
+    vdcId = vdcId.split(':').slice(-1)[0];
 
     const options = {
       headers: { Authorization: `Bearer ${session}` },
@@ -110,14 +114,9 @@ export class AdminVdcWrapperService {
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
     return await this.vcloudWrapperService.request(wrapper(options));
   }
-  /**
-   * @param {String} session
-   * @param {String} vdcId
-   * @return {void}
-   */
-  async disableVdc(session, vdcId) {
+  async disableVdc(session: string, vdcId: string): Promise<AxiosResponse> {
     // convert from urn:vcloud:org:vdcId -> vdcId
-    vdcId = vdcId.split(':').slice(-1);
+    vdcId = vdcId.split(':').slice(-1)[0];
 
     const options = {
       headers: { Authorization: `Bearer ${session}` },
@@ -128,18 +127,13 @@ export class AdminVdcWrapperService {
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
     return await this.vcloudWrapperService.request(wrapper(options));
   }
-  /**
-
-   * @param {String} vdcId
-   */
-  async enableVdc(vdcId, session) {
+  async enableVdc(vdcId: string, session: string): Promise<void> {
     // convert from urn:vcloud:org:vdcId -> vdcId
-    vdcId = vdcId.split(':').slice(-1);
+    vdcId = vdcId.split(':').slice(-1)[0];
 
     const options = {
       headers: { Authorization: `Bearer ${session}` },
       urlParams: { vdcId: vdcId },
-      body: null,
     };
     const endpoint = 'AdminVdcEndpointService.enableVdcEndpoint';
     const wrapper =
@@ -150,7 +144,10 @@ export class AdminVdcWrapperService {
    * @param {String} vdcId
    * @param {String} session
    */
-  async updateNetworkProfile(vdcId, session) {
+  async updateNetworkProfile(
+    vdcId: string,
+    session: string,
+  ): Promise<VcloudTask> {
     const edgeClusterId =
       await this.adminEdgeGatewayWrapperService.getEdgeCluster(vdcId, session);
     const options = {
@@ -191,14 +188,17 @@ export class AdminVdcWrapperService {
    * @param {String} config.providerVdcReference number of vm
    * @return {void}
    */
-  async updateVdc(config, vdcId) {
+  async updateVdc(
+    config: UpdateVdcComputePolicyDto,
+    vdcId: string,
+  ): Promise<void> {
     const vdcConfig = vcdConfig.admin.vdc;
     // convert from urn:vcloud:org:vdcId -> vdcId
-    vdcId = vdcId.split(':').slice(-1);
+    vdcId = vdcId.split(':').slice(-1)[0];
     const cores = config.cores;
     const vCpuInMhz: any = vdcConfig.VCpuInMhz;
-    const cpuAllocation = parseInt(cores) * parseInt(vCpuInMhz);
-    const cpuLimit = parseInt(config.prevCores) * parseInt(vCpuInMhz);
+    const cpuAllocation = cores * parseInt(vCpuInMhz);
+    const cpuLimit = cpuAllocation;
     const request = {
       type: 'application/vnd.vmware.admin.vdc+json',
       id: vdcId,
@@ -213,7 +213,7 @@ export class AdminVdcWrapperService {
         memory: {
           ...vdcConfig.ComputeCapacity.Memory,
           allocated: config.ram * 1024,
-          limit: config.prevRam * 1024,
+          limit: config.ram * 1024,
         },
       },
       providerVdcReference: config.providerVdcReference,
@@ -231,18 +231,10 @@ export class AdminVdcWrapperService {
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
     await this.vcloudWrapperService.request(wrapper(options));
   }
-  /**
-   * @param {Object} config config for updating vdc
-   * @param {String} vdcId
-   * @param {Object} config.providerVdcStorageProfile link to an storage policy
-   * @param {String} config.name name of storage profile
-   * @param {Number} config.storage hard disk capacity
-   * @param {Boolean} config.default if storage profile is default or not
-   * @param {String} config.units unit of hard disk eg: GB, MB
-   * @param {String} config.authToken provider auth token
-   * @return {Promise}
-   */
-  async updateVdcStorageProfile(config, vdcId) {
+  async updateVdcStorageProfile(
+    config: UpdateVdcStoragePolicyDto,
+    vdcId: string,
+  ): Promise<void> {
     const queryOptions = {
       headers: { Authorization: `Bearer ${config.authToken}` },
       params: {
@@ -256,9 +248,10 @@ export class AdminVdcWrapperService {
     const queryEndpoint = 'VdcEndpointService.vcloudQueryEndpoint';
     const queryWrapper =
       this.vcloudWrapperService.getWrapper<typeof queryEndpoint>(queryEndpoint);
-    const storageProfile: any = await this.vcloudWrapperService.request(
-      queryWrapper(queryOptions),
-    );
+    const storageProfile =
+      await this.vcloudWrapperService.request<AdminOrgVdcStorageProfileQuery>(
+        queryWrapper(queryOptions),
+      );
     const storageProfileLink = storageProfile.data.record[0].href;
     const request = {
       name: config.name,
@@ -270,15 +263,15 @@ export class AdminVdcWrapperService {
     };
     const options = {
       headers: { Authorization: `Bearer ${config.authToken}` },
-      fullUrl: storageProfileLink,
+      urlParams: {
+        fullUrl: storageProfileLink,
+      },
       body: request,
     };
     const endpoint = 'AdminVdcEndpointService.updateVdcStorageProfileEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const updatedVdc = await this.vcloudWrapperService.request(
-      wrapper(options),
-    );
-    return Promise.resolve(updatedVdc.data);
+    await this.vcloudWrapperService.request(wrapper(options));
+    return;
   }
 }

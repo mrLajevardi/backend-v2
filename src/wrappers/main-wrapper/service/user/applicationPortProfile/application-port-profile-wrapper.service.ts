@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreateApplicationPortProfileInterface,
-  CreateApplicationPortProfileDto,
-} from './interface/createApplicationPortProfile.interface';
+import { CreateApplicationPortProfileInterface } from './interface/createApplicationPortProfile.interface';
 import { VcloudWrapperService } from '../../../../vcloud-wrapper/services/vcloud-wrapper.service';
-import { DeleteApplicationPortProfileDto } from './interface/deleteApplicationPortProfile.interface';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { GetApplicationPortProfilesParams } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/applicationPortProfile/dto/get-application-port-profiles-list.dto';
+import { GetApplicationPortProfileListDto } from './dto/get-application-port-profile-list.dto';
+import { AxiosResponse } from 'axios';
+import { GetApplicationPortProfileDto } from './dto/get-application-port-profile.dto';
+import { UpdateApplicationPortProfileConfig } from './dto/update-application-port-profile.dto';
 
 @Injectable()
 export class ApplicationPortProfileWrapperService {
@@ -12,7 +14,7 @@ export class ApplicationPortProfileWrapperService {
   async createApplicationPortProfile(
     authToken: string,
     config: CreateApplicationPortProfileInterface,
-  ): Promise<CreateApplicationPortProfileDto> {
+  ): Promise<VcloudTask> {
     const requestBody = {
       name: config.name,
       description: config.description,
@@ -41,7 +43,7 @@ export class ApplicationPortProfileWrapperService {
   async deleteApplicationPortProfile(
     authToken: string,
     applicationId: string,
-  ): Promise<DeleteApplicationPortProfileDto> {
+  ): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { applicationId },
@@ -57,31 +59,29 @@ export class ApplicationPortProfileWrapperService {
       __vcloudTask: applicationPortProfile.headers['location'],
     });
   }
-  /**
-   * @param {String} authToken
-   * @param {String} params
-   * @return {Promise}
-   */
-  async getApplicationPortProfiles(authToken, params) {
+
+  async getApplicationPortProfiles(
+    authToken: string,
+    params: GetApplicationPortProfilesParams,
+  ): Promise<AxiosResponse<GetApplicationPortProfileListDto, any>> {
     const endpoint =
       'ApplicationPortProfileEndpointService.getApplicationPortProfilesListEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const applicationPortProfile = await this.vcloudWrapperService.request(
-      wrapper({
-        headers: { Authorization: `Bearer ${authToken}` },
-        params,
-      }),
-    );
+    const applicationPortProfile =
+      await this.vcloudWrapperService.request<GetApplicationPortProfileListDto>(
+        wrapper({
+          headers: { Authorization: `Bearer ${authToken}` },
+          params,
+        }),
+      );
     return applicationPortProfile;
   }
-  /**
-   *
-   * @param {String} authToken
-   * @param {String} applicationId
-   * @return {Promise}
-   */
-  async getSingleApplicationPortProfile(authToken, applicationId) {
+
+  async getSingleApplicationPortProfile(
+    authToken: string,
+    applicationId: string,
+  ): Promise<GetApplicationPortProfileDto> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { applicationId },
@@ -90,23 +90,17 @@ export class ApplicationPortProfileWrapperService {
       'ApplicationPortProfileEndpointService.getApplicationPortProfileEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const applicationPortProfile = await this.vcloudWrapperService.request(
-      wrapper(options),
-    );
+    const applicationPortProfile =
+      await this.vcloudWrapperService.request<GetApplicationPortProfileDto>(
+        wrapper(options),
+      );
     return Promise.resolve(applicationPortProfile.data);
   }
-  /**
-   * @param {String} authToken
-   * @param {String} applicationId
-   * @param {Object} config
-   * @param {Object} config.description
-   * @param {Object} config.name
-   * @param {Object} config.vdcId
-   * @param {Object} config.orgId
-   * @param {Object} config.applicationPorts
-   * @return {Promise}
-   */
-  async updateApplicationPortProfile(authToken, applicationId, config) {
+  async updateApplicationPortProfile(
+    authToken: string,
+    applicationId: string,
+    config: UpdateApplicationPortProfileConfig,
+  ): Promise<VcloudTask> {
     const requestBody = {
       name: config.name,
       description: config.description,

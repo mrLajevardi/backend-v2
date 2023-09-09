@@ -3,6 +3,12 @@ import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vclou
 import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
 import { isEmpty } from 'lodash';
 import { NoIpIsAssignedException } from 'src/infrastructure/exceptions/no-ip-is-assigned.exception';
+import { CreateNatRuleConfig } from './dto/create-nat-rule.dto';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
+import { GetNatRuleListDto } from './dto/get-nat-rule-list.dto';
+import { AxiosResponse } from 'axios';
+import { GetNatRuleDto } from './dto/get-nat-rule.dto';
+import { UpdateNatRuleConfig } from './dto/update-nat-rule.dto';
 
 @Injectable()
 export class NatWrapperService {
@@ -26,8 +32,11 @@ export class NatWrapperService {
    * @param {String} config.type
    * @param {String} config.enabled
    */
-  async createNatRule(config, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async createNatRule(
+    config: CreateNatRuleConfig,
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       config.authToken,
     );
     if (isEmpty(gateway.values[0])) {
@@ -64,14 +73,12 @@ export class NatWrapperService {
       __vcloudTask: nat.headers['location'],
     });
   }
-  /**
-   * @param {Object} authToken
-   * @param {String} ruleId,
-   * @param {String} edgeName,
-   * @return {Promise}
-   */
-  async deleteNatRule(authToken, ruleId, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async deleteNatRule(
+    authToken: string,
+    ruleId: string,
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     const gatewayId = gateway.values.filter(
@@ -96,15 +103,12 @@ export class NatWrapperService {
       __vcloudTask: deletedNat.headers['location'],
     });
   }
-  /**
-   * get a single nat rule
-   * @param {String} authToken
-   * @param {String} ruleId
-   * @param {String} edgeName edgeGateway name
-   * @return {Promise}
-   */
-  async getNatRule(authToken, ruleId, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async getNatRule(
+    authToken: string,
+    ruleId: string,
+    edgeName: string,
+  ): Promise<GetNatRuleDto> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {
@@ -123,19 +127,18 @@ export class NatWrapperService {
     const endpoint = 'NatEndpointService.getNatEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const natRule = await this.vcloudWrapperService.request(wrapper(options));
+    const natRule = await this.vcloudWrapperService.request<GetNatRuleDto>(
+      wrapper(options),
+    );
     return Promise.resolve(natRule.data);
   }
-  /**
-   * get a list of nats
-   * @param {String} authToken
-   * @param {Number} pageSize
-   * @param {String} cursor
-   * @param {String} edgeName
-   * @return {Promise}
-   */
-  async getNatRuleList(authToken, pageSize = 1, cursor = '', edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+  async getNatRuleList(
+    authToken: string,
+    pageSize = 1,
+    cursor = '',
+    edgeName: string,
+  ): Promise<AxiosResponse<GetNatRuleListDto>> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
     );
     if (isEmpty(gateway.values[0])) {
@@ -151,7 +154,7 @@ export class NatWrapperService {
     const endpoint = 'NatEndpointService.getNatListEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    const natRules = await this.vcloudWrapperService.request(
+    const natRules = await this.vcloudWrapperService.request<GetNatRuleListDto>(
       wrapper({
         params,
         headers: { Authorization: `Bearer ${authToken}` },
@@ -160,23 +163,12 @@ export class NatWrapperService {
     );
     return Promise.resolve(natRules);
   }
-  /**
-   * update nat rule
-   * @param {Object} config
-   * @param {String} config.authToken
-   * @param {String} config.ruleId
-   * @param {String} config.name
-   * @param {String} config.dnatExternalPort
-   * @param {String} config.externalAddresses
-   * @param {String} config.internalAddresses
-   * @param {String} config.internalPort
-   * @param {String} config.snatDestinationAddresses
-   * @param {Object} config.applicationPortProfile
-   * @param {String} config.type
-   * @param {String} edgeName edgeGateway name
-   */
-  async updateNatRule(config, edgeName) {
-    const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
+
+  async updateNatRule(
+    config: UpdateNatRuleConfig,
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       config.authToken,
     );
     const gatewayId = gateway.values.filter(

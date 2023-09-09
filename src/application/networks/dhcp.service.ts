@@ -204,6 +204,7 @@ export class DhcpService {
       networkId,
       bindingId,
     );
+    return dhcpBinding;
     const filteredDhcpBindings = {
       id: dhcpBinding.id,
       name: dhcpBinding.name,
