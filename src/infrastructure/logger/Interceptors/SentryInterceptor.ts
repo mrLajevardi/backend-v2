@@ -13,7 +13,6 @@ export class SentryInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       tap(null, (exception) => {
-
         Sentry.captureException(exception);
         // Sentry.captureMessage("This message is sent by interceptor !!")
         console.log('Sentry initialized:', Sentry.getCurrentHub().getClient());
