@@ -1,8 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { CreateNatDto } from './dto/create-nat.dto';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { DeleteNatDto } from './dto/delete-nat.dto';
+import { UpdateNatDto } from './dto/update-nat.dto';
+import { GetNatDto } from './dto/get-nat.dto';
+import { GetNatListDto } from './dto/get-nat-list.dto';
 
 @Injectable()
 export class NatEndpointService {
-  createNatEndpoint(options?: any) {
+  name: string;
+  constructor() {
+    this.name = 'NatEndpointService';
+  }
+  createNatEndpoint(options: CreateNatDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules`,
@@ -15,10 +25,9 @@ export class NatEndpointService {
       },
     };
   }
-  deleteNatEndpoint(options?: any) {
+  deleteNatEndpoint(options: DeleteNatDto): EndpointInterface {
     return {
       method: 'delete',
-      // eslint-disable-next-line max-len
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules/${options.urlParams.natId}`,
       params: {},
       body: null,
@@ -29,12 +38,11 @@ export class NatEndpointService {
       },
     };
   }
-  getNatEndpoint(options?: any) {
+  getNatEndpoint(options: GetNatDto): EndpointInterface {
     return {
       method: 'get',
-      // eslint-disable-next-line max-len
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules/${options.urlParams.natId}`,
-      params: options.params,
+      params: {},
       body: null,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
@@ -43,7 +51,7 @@ export class NatEndpointService {
       },
     };
   }
-  getNatListEndpoint(options?: any) {
+  getNatListEndpoint(options: GetNatListDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules`,
@@ -56,10 +64,9 @@ export class NatEndpointService {
       },
     };
   }
-  updateNatEndpoint(options?: any) {
+  updateNatEndpoint(options: UpdateNatDto): EndpointInterface {
     return {
       method: 'put',
-      // eslint-disable-next-line max-len
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/nat/rules/${options.urlParams.natId}`,
       params: {},
       body: options.body,

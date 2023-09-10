@@ -7,6 +7,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { CrudModule } from '../base/crud/crud.module';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     ServicePropertiesModule,
     SessionsModule,
     CrudModule,
+    MainWrapperModule,
   ],
   controllers: [VmController],
   providers: [VmService],

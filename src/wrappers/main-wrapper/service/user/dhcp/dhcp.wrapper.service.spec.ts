@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DhcpWrapperService } from './dhcp-wrapper.service';
-import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { EdgeGatewayWrapperService } from '../edgeGateway/edge-gateway-wrapper.service';
 import { VcloudWrapperModule } from 'src/wrappers/vcloud-wrapper/vcloud-wrapper.module';
 

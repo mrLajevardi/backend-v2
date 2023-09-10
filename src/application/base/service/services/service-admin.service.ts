@@ -36,6 +36,7 @@ import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { UpdateConfigsDto } from '../../crud/configs-table/dto/update-configs.dto';
 import { FindOptionsWhere, ILike, Like, Not } from 'typeorm';
 import { ItemTypeWithConsumption } from '../types/item-type-with-consumption.type';
+import { TransactionsReturnDto } from '../dto/return/transactions-return.dto';
 
 @Injectable()
 export class ServiceAdminService {
@@ -577,7 +578,7 @@ export class ServiceAdminService {
     ServiceID: string,
     startDateTime: Date,
     endDateTime: Date,
-  ): Promise<{ transaction: Transactions[]; totalRecords: number }> {
+  ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
     if (pageSize > 128) {
       return Promise.reject(new BadRequestException());
     }
@@ -618,13 +619,32 @@ export class ServiceAdminService {
       order: {
         id: 'DESC',
       },
+      relations: ['user'],
       // relations: ["users"],
     });
     const withoutPagination = await this.transactionsTable.find({
       where,
+      relations: ['user'],
     });
+
+    // filter returned user fields
+    const transactionsWithSelectedFields = transaction.map((tx) => {
+      const selectedUserFields = {
+        id: tx.user.id,
+        name: tx.user.name,
+        family: tx.user.family,
+        active: tx.user.active,
+        // Include other user fields you want
+      };
+
+      return {
+        ...tx,
+        user: selectedUserFields,
+      };
+    });
+
     const totalRecords = withoutPagination.length;
-    const data = { transaction, totalRecords };
+    const data = { transaction: transactionsWithSelectedFields, totalRecords };
     if (!transaction) {
       return Promise.reject(new ForbiddenException());
     }

@@ -1,0 +1,55 @@
+version: "3"
+services:
+
+  cache:
+    image: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    expose:
+      - "6379"
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1444:1433"
+    expose:
+      - "1444"
+    environment:
+      MSSQL_SA_PASSWORD_FILE: /run/secrets/sa_password
+#      MSSQL_SA_PASSWORD: 'U5h]J7Aj$AY-'
+      ACCEPT_EULA: Y
+    volumes:
+      - sqlserver-files:/var/opt/mssql
+    secrets:
+      - sa_password
+
+#  nestjs-api:
+#    image: nestjs-api
+#    env_file:
+#      - .env
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - db
+#      - cache
+
+  nestjs-api:
+#    image: nestjs-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - cache
+
+volumes:
+  sqlserver-files:
+    name: sqlserver-files
+secrets:
+  sa_password:
+    file: sa_password.txt

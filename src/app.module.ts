@@ -36,6 +36,8 @@ import { VcloudWrapper } from './wrappers/vcloudWrapper/vcloudWrapper';
 import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
+import { RavenInterceptor, RavenModule } from 'nest-raven';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
 import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
 import { BullModule as BullMQModule } from '@nestjs/bullmq';
@@ -43,20 +45,21 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
 
 @Module({
   imports: [
+    RavenModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
     BullModule.forRoot({
       redis: {
-        host: 'localhost',
+        host: 'cache',
         port: 6379,
       },
     }),
 
     BullMQModule.forRoot({
       connection: {
-        host: 'localhost',
+        host: 'cache',
         port: 6379,
       },
     }),
@@ -110,6 +113,10 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
     {
       provide: APP_GUARD,
       useClass: PoliciesGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useValue: new RavenInterceptor(),
     },
     NetworkService,
     ApplicationPortProfileService,

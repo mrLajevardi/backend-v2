@@ -31,6 +31,13 @@ export class AppController {
     private readonly systemSettingsService: SystemSettingsTableService,
   ) {}
 
+  // @Get()
+  // @Public()
+  // getHello(
+  // ): string {
+  //   return this.appService.getHello();
+  // }
+
   @Get()
   @Public()
   getHello(): string {

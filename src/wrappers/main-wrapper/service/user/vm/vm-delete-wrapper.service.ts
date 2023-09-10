@@ -1,18 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Builder } from 'xml2js';
-import { isEmpty, isNil } from 'lodash';
-import { VdcWrapperService } from '../vdc/vdc-wrapper.service';
-import { AdminOrgWrapperService } from '../../admin/org/admin-org-wrapper.service';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
+import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 @Injectable()
 export class VmDeleteWrapperService {
   constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
-  /**
-   * delete media by given id
-   * @param {String} authToken
-   * @param {String} mediaId
-   */
-  async deleteMedia(authToken, mediaId) {
+  async deleteMedia(authToken: string, mediaId: string): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { mediaId },
@@ -32,7 +24,10 @@ export class VmDeleteWrapperService {
    * @param {String} authToken
    * @param {String} mediaId
    */
-  async deleteTemplate(authToken, templateId) {
+  async deleteTemplate(
+    authToken: string,
+    templateId: string,
+  ): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { templateId },
@@ -47,12 +42,7 @@ export class VmDeleteWrapperService {
       __vcloudTask: deletedTemplate.headers['location'],
     });
   }
-  /**
-   * delete vm by given id
-   * @param {String} authToken
-   * @param {String} vAppId
-   */
-  async deletevApp(authToken, vAppId) {
+  async deleteVApp(authToken: string, vAppId: string): Promise<VcloudTask> {
     const options = {
       headers: { Authorization: `Bearer ${authToken}` },
       urlParams: { vmId: vAppId },
