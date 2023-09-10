@@ -74,7 +74,7 @@ export class AbilityController {
   async getUsersWithPredefinedRole(
     @Request() options: SessionRequest,
     @Query('role') role,
-  ): Promise<User[]> {
+  ) {
     return await this.abilityAdminService.getUsersWithPredefinedRole(role);
   }
 

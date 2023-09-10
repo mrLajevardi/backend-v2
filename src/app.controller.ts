@@ -1,32 +1,29 @@
 import {
   Controller,
   Get,
-  Post,
   UseGuards,
   Request,
-  Req,
-  Param,
-  Query,
+  // UseInterceptors,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ApiBearerAuth, ApiBody, ApiResponse } from '@nestjs/swagger';
-import { LocalAuthGuard } from './application/base/security/auth/guard/local-auth.guard';
+import { ApiBearerAuth, /*ApiBody*/ ApiResponse } from '@nestjs/swagger';
+// import { LocalAuthGuard } from './application/base/security/auth/guard/local-auth.guard';
 import { Public } from './application/base/security/auth/decorators/ispublic.decorator';
 import { ApiOperation } from '@nestjs/swagger';
-import { AuthService } from './application/base/security/auth/service/auth.service';
-import { LoginDto } from './application/base/security/auth/dto/login.dto';
+// import { AuthService } from './application/base/security/auth/service/auth.service';
+// import { LoginDto } from './application/base/security/auth/dto/login.dto';
 import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
 import { SystemSettingsTableService } from './application/base/crud/system-settings-table/system-settings-table.service';
 import { CheckPolicies } from './application/base/security/ability/decorators/check-policies.decorator';
 import { PureAbility } from '@casl/ability';
 import { Action } from './application/base/security/ability/enum/action.enum';
-import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
+// import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
+// import { SentryInterceptor } from './infrastructure/logger/Interceptors/SentryInterceptor';
 import { PredefinedRoles } from './application/base/security/ability/enum/predefined-enum.type';
 import { Roles } from './application/base/security/ability/decorators/roles.decorator';
-import { GoogleAuthGuard } from './application/base/security/auth/guard/google-auth.guard';
-import { GoogleLoginDto } from './application/base/security/auth/dto/google-login.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { SystemSettings } from './infrastructure/database/entities/SystemSettings';
 
+// @UseInterceptors(SentryInterceptor) // This is a test to make sure that sentry is okay !!
 @Controller()
 export class AppController {
   constructor(
@@ -64,7 +61,7 @@ export class AppController {
     ability.can(Action.Manage, PredefinedRoles.AdminRole),
   )
   @Get('systemSettings')
-  getSystemSettings() {
+  getSystemSettings(): Promise<SystemSettings[]> {
     return this.systemSettingsService.find();
   }
 }

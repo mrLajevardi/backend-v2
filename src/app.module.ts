@@ -12,7 +12,7 @@ import { AiModule } from './application/ai/ai.module';
 import { TasksModule } from './application/base/tasks/tasks.module';
 import { TransactionsModule } from './application/base/transactions/transactions.module';
 import { AbilityModule } from './application/base/security/ability/ability.module';
-import { BullModule, BullQueueEvents } from '@nestjs/bull';
+import { BullModule } from '@nestjs/bull';
 import { VdcModule } from './application/vdc/vdc.module';
 import { NetworkService } from './application/vdc/service/network.service';
 import { CrudModule } from './application/base/crud/crud.module';
@@ -27,9 +27,7 @@ import { ServiceModule } from './application/base/service/service.module';
 import { EdgeGatewayModule } from './application/edge-gateway/edge-gateway.module';
 import { VmModule } from './application/vm/vm.module';
 import { NotificationModule } from './application/base/notification/notification.module';
-import { OtpService } from './application/base/security/security-tools/otp.service';
 import { TicketModule } from './application/base/ticket/ticket.module';
-import { OauthService } from './application/base/security/auth/service/oauth.service';
 import { SecurityToolsModule } from './application/base/security/security-tools/security-tools.module';
 import { GroupModule } from './application/base/group/group.module';
 import { PayAsYouGoModule } from './application/base/pay-as-you-go/pay-as-you-go.module';
@@ -38,8 +36,8 @@ import { VcloudWrapper } from './wrappers/vcloudWrapper/vcloudWrapper';
 import { RobotModule } from './application/robot/robot.module';
 import { PoliciesGuard } from './application/base/security/ability/guards/policies.guard';
 import { RolesGuard } from './application/base/security/ability/guards/roles.guard';
-import { RavenInterceptor, RavenModule } from 'nest-raven';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+// import { RavenInterceptor, RavenModule } from 'nest-raven';
+// import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
 import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
 import { BullModule as BullMQModule } from '@nestjs/bullmq';
@@ -47,19 +45,21 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
 
 @Module({
   imports: [
-    RavenModule,
+    // RavenModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
     BullModule.forRoot({
       redis: {
-        host: 'cache',
+        host: '127.0.0.1',
         port: 6379,
       },
     }),
+
     BullMQModule.forRoot({
       connection: {
-        host: 'cache',
+        host: '127.0.0.1',
         port: 6379,
       },
     }),
@@ -105,6 +105,7 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
+
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
@@ -112,10 +113,6 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
     {
       provide: APP_GUARD,
       useClass: PoliciesGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useValue: new RavenInterceptor(),
     },
     NetworkService,
     ApplicationPortProfileService,
