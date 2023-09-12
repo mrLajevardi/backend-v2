@@ -42,6 +42,7 @@ import { MainWrapperModule } from './wrappers/main-wrapper/main-wrapper.module';
 import { TaskManagerModule } from './application/base/task-manager/task-manager.module';
 import { BullModule as BullMQModule } from '@nestjs/bullmq';
 import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { DatacenterModule } from './application/base/datacenter/datacenter.module';
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.mo
     RobotModule,
     TaskManagerModule,
     UvdeskWrapperModule,
+    DatacenterModule,
   ],
   controllers: [AppController],
   providers: [
