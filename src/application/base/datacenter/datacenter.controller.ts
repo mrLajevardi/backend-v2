@@ -27,8 +27,7 @@ export class DatacenterController {
   @ApiOperation({
     summary: 'Get All Enabled Datacenters With Their Gens ',
   })
-  async getDatacenterWithGens():
-  Promise<DatacenterConfigGenResultDto[]> {
+  async getDatacenterWithGens(): Promise<DatacenterConfigGenResultDto[]> {
     const result = await this.service.GetDatacenterConfigWithGen();
     return result;
   }
@@ -47,7 +46,6 @@ export class DatacenterController {
     description: 'DatacenterId about a specify Datacenter',
   })
   async getDatacenterItemsConfig(
-
     @Param('DatacenterId') DatacenterId: string,
     @Param('GenId') GenId: string,
   ): Promise<DatacenterConfigGenItemsResultDto[]> {
