@@ -1,1 +1,3 @@
-export class BaseService {}
+import { IBaseService } from './IBaseService';
+
+export class BaseService implements IBaseService {}
