@@ -7,7 +7,6 @@ export class DatacenterConfigGenItemsStepsResultDto extends BaseResultDto {
   PrincipleType: number;
   Minimum: number;
   Maximum: number;
-  // Coefficient: number;
   Rulls: string; // Can Be a Costume Json to Specify Others Setting like ==> Min , Max , Range
   constructor(
     ItemTypeName: string,
