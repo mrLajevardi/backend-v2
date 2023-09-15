@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { DatacenterService } from './service/datacenter.service';
 import { DatacenterController } from './datacenter.controller';
-import { IDatacenterService } from './interface/IDatacenter.service';
+import { DatabaseModule } from '../../../infrastructure/database/database.module';
+import { CrudModule } from '../crud/crud.module';
+import { DatacenterTableModule } from '../crud/datacenter-table/datacenter-table.module';
 @Module({
-  imports: [],
+  imports: [DatabaseModule, CrudModule, DatacenterTableModule],
   providers: [
     {
       provide: 'IDatacenterService',
