@@ -5,15 +5,20 @@ import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
+import { DatacentersDto } from '../dto/datacenters.dto';
+import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import { SessionsService } from '../../sessions/sessions.service';
 
 @Injectable()
-export class DatacenterService implements IDatacenterService, BaseService {
-  constructor(private readonly datacenterTable: DataCenterTableService) {}
-  GetDatacenterConfigWithGen(): Promise<DatacenterConfigGenResultDto[]> {
-    // Temp
-    const mocks: DatacenterConfigGenResultDto[] =
-      DatacenterConfigGenResultDto.GenerateDatacenterConfigGenResultDtoMock();
-    return Promise.resolve(mocks);
+export class DatacenterServices implements BaseService {
+  constructor(
+    private readonly datacenterTable: DataCenterTableService,
+    private readonly adminVdcWrapperService: AdminVdcWrapperService,
+    private readonly sessionsService: SessionsService,
+  ) {}
+  getDatacenterConfigWithGen(): Promise<DatacentersDto[]> {
+    const adminSession = await this.sessionsService.createAdminSession();
+    const providersSessionList = await this.adminVdcWrapperService;
   }
 
   async GetDatacenterConfigWithGenItems(
