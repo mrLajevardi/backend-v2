@@ -111,7 +111,7 @@ export class AdminVdcEndpointService {
     };
   }
 
-  getProviderVdcs(options: GetProviderVdcsDto): EndpointInterface {
+  getProviderVdcsEndpoint(options: GetProviderVdcsDto): EndpointInterface {
     return {
       method: 'get',
       resource: `/cloudapi/1.0.0/providerVdcs`,

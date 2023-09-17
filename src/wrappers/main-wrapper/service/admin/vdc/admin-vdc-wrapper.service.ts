@@ -8,6 +8,7 @@ import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 import { UpdateVdcComputePolicyDto } from './dto/update-vdc-compute-policy.dto';
 import { UpdateVdcStoragePolicyDto } from './dto/update-vdc-storage-policy.dto';
 import { AdminOrgVdcStorageProfileQuery } from '../../user/vm/dto/instantiate-vm-from.templates-admin.dto';
+import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
 
 @Injectable()
 export class AdminVdcWrapperService {
@@ -273,5 +274,28 @@ export class AdminVdcWrapperService {
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
     await this.vcloudWrapperService.request(wrapper(options));
     return;
+  }
+
+  async getProviderVdcs(
+    authToken: string,
+    page: number,
+    pageSize: number,
+  ): Promise<GetProviderVdcsDto> {
+    const endpoint = 'AdminVdcEndpointService.getProviderVdcsEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const providerVdcsList =
+      await this.vcloudWrapperService.request<GetProviderVdcsDto>(
+        wrapper({
+          params: {
+            page,
+            pageSize,
+          },
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }),
+      );
+    return providerVdcsList.data;
   }
 }
