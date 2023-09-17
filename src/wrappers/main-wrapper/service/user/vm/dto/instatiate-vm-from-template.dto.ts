@@ -1,15 +1,41 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Networks } from './create-vm.dto';
 
-export class InstantiateVmTemplateDto {
+export class CreateVmFromTemplate {
+  @ApiProperty({ type: [Networks] })
   networks: Networks[];
+
+  @ApiProperty({
+    type: String,
+    description: 'source template name',
+    example: 'template-1',
+  })
   sourceName: string;
-  sourceHref: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'template id',
+    example: 'vappTemplate-15c606aa-b4b1-45ca-b4c5-867cf59184cf',
+  })
   sourceId: string;
+
+  @ApiProperty({ type: String, example: 'vm-1', description: 'vm name' })
   name: string;
+
+  @ApiProperty({ type: Boolean })
   powerOn: boolean;
+
+  @ApiProperty({ type: String, example: 'vm number 1' })
   description: string;
+
+  @ApiProperty({ type: Number })
   primaryNetworkIndex: number;
+
+  @ApiProperty({ type: String, example: 'vm-1' })
   computerName: string;
+}
+export class InstantiateVmTemplateDto extends CreateVmFromTemplate {
+  sourceHref: string;
 }
 
 export interface OrgVdcStorageProfileQuery {

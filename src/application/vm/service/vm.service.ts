@@ -14,6 +14,12 @@ import { userPartialUpload } from 'src/wrappers/mainWrapper/user/vm/partialUploa
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { ExtendedOptionsDto } from 'src/infrastructure/dto/extended-options.dto';
+import { AcquireVappTicketReturnDto } from '../dto/acquire-ticket.dot';
+import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
+import { VmCreateWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-create-wrapper.service';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { CreateVmFromTemplate } from 'src/wrappers/main-wrapper/service/user/vm/dto/instatiate-vm-from-template.dto';
 
 @Injectable()
 export class VmService {
@@ -24,9 +30,15 @@ export class VmService {
     private readonly organizationTableService: OrganizationTableService,
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
+    private readonly vmWrapperService: VmWrapperService,
+    private readonly vmCreateWrapperService: VmCreateWrapperService,
   ) {}
 
-  async acquireVMTicket(options, vdcInstanceId, vAppId) {
+  async acquireVMTicket(
+    options: ExtendedOptionsDto,
+    vdcInstanceId: string,
+    vAppId: string,
+  ): Promise<AcquireVappTicketReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -37,18 +49,21 @@ export class VmService {
       props.orgId,
     );
     console.log(vdcInstanceId, vAppId);
-    const ticket = await mainWrapper.user.vm.acquireVappTicket(session, vAppId);
+    const ticket = await this.vmWrapperService.acquireVappTicket(
+      session,
+      vdcInstanceId,
+    );
     return Promise.resolve({
       ticket: ticket.data.ticket || null,
     });
   }
 
   async createTemplate(
-    options,
+    options: ExtendedOptionsDto,
     serviceInstanceId: string,
     containerId: string,
     data: CreateTemplateDto,
-  ) {
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTableService.findOne({
       where: {
@@ -63,7 +78,7 @@ export class VmService {
       },
     });
     const session = await this.sessionsServices.checkUserSession(userId, orgId);
-    const template = await mainWrapper.user.vm.createTemplate(
+    const template = await this.vmCreateWrapperService.createTemplate(
       session,
       data.description,
       data.name,
@@ -76,14 +91,18 @@ export class VmService {
       {
         _object: template.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals },
+      {},
     );
     return Promise.resolve({
       taskId: template.__vcloudTask.split('task/')[1],
     });
   }
 
-  async createVMFromTemplate(options, data, vdcInstanceId) {
+  async createVMFromTemplate(
+    options: ExtendedOptionsDto,
+    data: CreateVmFromTemplate,
+    vdcInstanceId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -93,22 +112,15 @@ export class VmService {
       userId,
       props.orgId,
     );
-    const sourceHref =
-      vcdConfig.baseUrl + '/api/vAppTemplate/' + data.templateId;
-    const createdVm = await mainWrapper.user.vm.instantiateVmFromTemplate(
+    const sourceHref = vcdConfig.baseUrl + '/api/vAppTemplate/' + data.sourceId;
+    const instantiateVmFromTemplateConfig = {
+      ...data,
+      sourceHref,
+    };
+    const createdVm = await this.vmWrapperService.instantiateVmFromTemplate(
       session,
-      props.vdcId,
-      {
-        computerName: data.computerName,
-        name: data.name,
-        primaryNetworkIndex: data.primaryNetwork,
-        networks: data.networks,
-        powerOn: data.powerOn,
-        description: data.description,
-        sourceHref: sourceHref,
-        sourceId: data.templateId,
-        sourceName: data.templateName,
-      },
+      vdcInstanceId,
+      instantiateVmFromTemplateConfig,
     );
     await this.loggerService.info(
       'vm',
@@ -116,7 +128,7 @@ export class VmService {
       {
         _object: createdVm.__vcloudTask.split('task/')[1],
       },
-      { ...options.locals },
+      { ...options },
     );
     return Promise.resolve({
       taskId: createdVm.__vcloudTask.split('task/')[1],

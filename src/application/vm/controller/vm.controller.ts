@@ -5,7 +5,6 @@ import {
   Post,
   Query,
   Request,
-  UseFilters,
   Delete,
   Put,
   Headers,
@@ -21,7 +20,10 @@ import {
 } from '@nestjs/swagger';
 import { VmService } from '../service/vm.service';
 import { CreateTemplateDto } from '../dto/create-template.dto';
-import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
+import { AcquireVappTicketReturnDto } from '../dto/acquire-ticket.dot';
+import { ExtendedOptionsDto } from 'src/infrastructure/dto/extended-options.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { CreateVmFromTemplate } from 'src/wrappers/main-wrapper/service/user/vm/dto/instatiate-vm-from-template.dto';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -31,37 +33,37 @@ export class VmController {
   constructor(private readonly vmService: VmService) {}
 
   @Post('/:serviceInstanceId/:vmId/acquireVMTicket')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Get vm console ticket' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
-  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiParam({ name: 'vmId', description: 'VM ID' })
   @ApiResponse({
     status: 201,
-    description: 'acquire vm tickets',
-    type: 'any',
+    description: 'Console Ticket',
+    type: AcquireVappTicketReturnDto,
   })
   async acquireVMTicket(
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: ExtendedOptionsDto,
+  ): Promise<AcquireVappTicketReturnDto> {
     return this.vmService.acquireVMTicket(options, serviceInstanceId, vmId);
   }
 
   @Post('/:serviceInstanceId/:containerId/template')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Create template from a vm ' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'containerId', description: 'container id of a vm' })
   @ApiResponse({
     status: 201,
-    description: 'create template from vm',
-    type: 'any',
+    description: `Operation's Task ID`,
+    type: TaskReturnDto,
   })
   async createTemplate(
     @Param('containerId') containerId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Request() options,
+    @Request() options: ExtendedOptionsDto,
     @Body() data: CreateTemplateDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.createTemplate(
       options,
       serviceInstanceId,
@@ -71,16 +73,16 @@ export class VmController {
   }
 
   @Post('/:serviceInstanceId/fromTemplate')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Create VM From a Template' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
     status: 201,
-    description: 'create a vm from template',
-    type: 'object',
+    description: `Operation's Task ID`,
+    type: TaskReturnDto,
   })
   async createVMFromTemplate(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Request() options,
+    @Request() options: ExtendedOptionsDto,
     @Body() data: CreateVmFromTemplate,
   ): Promise<any> {
     return this.vmService.createVMFromTemplate(
@@ -91,18 +93,18 @@ export class VmController {
   }
 
   @Post('/:serviceInstanceId')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Creates a new VM' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
     status: 201,
-    description: 'create a vm from template',
-    type: 'object',
+    description: `Operation's Task ID`,
+    type: TaskReturnDto,
   })
   async createVm(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Request() options,
+    @Request() options: ExtendedOptionsDto,
     @Body() data: CreateVmFromTemplate,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.createVm(options, data, serviceInstanceId);
   }
 
