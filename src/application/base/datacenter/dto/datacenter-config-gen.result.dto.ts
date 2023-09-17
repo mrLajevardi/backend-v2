@@ -19,6 +19,7 @@ export class DatacenterConfigGenResultDto extends BaseResultDto {
         new DatacenterConfigGenResultDto(
           faker.string.uuid(),
           faker.person.fullName(),
+
           ['G1', 'G2', 'G3'],
         );
       fakes.push(dto);
