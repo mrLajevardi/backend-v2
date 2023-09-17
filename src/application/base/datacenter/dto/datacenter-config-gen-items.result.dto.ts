@@ -1,4 +1,3 @@
-
 export class DatacenterConfigGenItemsResultDto {
   Id: number;
   ItemTypeName: string;
@@ -33,6 +32,4 @@ export class DatacenterConfigGenItemsResultDto {
     this.Id = Id;
     this.SubItems = [];
   }
-
-
 }
