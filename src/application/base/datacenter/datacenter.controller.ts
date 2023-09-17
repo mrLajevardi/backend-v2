@@ -60,13 +60,12 @@ export class DatacenterController {
   @ApiQuery({
     name: 'serviceTypeId',
     type: String,
-    description: 'DatacenterId about a specify Datacenter',
     required: false,
   })
   async getDatacenterItemsConfig(
     @Param('datacenterId') datacenterId: string,
     @Param('genId') genId: string,
-    @Query('ServiceTypeId') serviceTypeId?: string,
+    @Query('serviceTypeId') serviceTypeId?: string,
   ): Promise<DatacenterConfigGenItemsResultDto[]> {
     const result: DatacenterConfigGenItemsResultDto[] =
       await this.service.GetDatacenterConfigWithGenItems(
