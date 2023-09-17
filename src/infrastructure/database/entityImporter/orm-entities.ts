@@ -47,6 +47,7 @@ import { ServiceItemsSum } from '../entities/views/service-items-sum';
 import { InvoiceItemList } from '../entities/views/invoice-item-list';
 import { ServicePlans } from '../entities/ServicePlans';
 import { ServiceReports } from '../entities/views/service-reports';
+import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
   //Views
@@ -76,6 +77,7 @@ export const dbEntities = [
   Configs,
   Discounts,
   ItemTypes,
+  ItemTypesConfig,
   Plans,
   ServiceTypes,
   // VDC Schema
