@@ -5,69 +5,47 @@ import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
+import { FindManyOptions } from 'typeorm';
+import { ItemTypesConfig } from '../../../../infrastructure/database/entities/ItemTypesConfig';
+import { DatacenterFactoryService } from './datacenter.factory.service';
 
 @Injectable()
 export class DatacenterService implements IDatacenterService, BaseService {
-  constructor(private readonly datacenterTable: DataCenterTableService) {}
+  constructor(
+    private readonly dataCenterTableService: DataCenterTableService,
+    private readonly datacenterServiceFactory: DatacenterFactoryService,
+  ) {}
   GetDatacenterConfigWithGen(): Promise<DatacenterConfigGenResultDto[]> {
     // Temp
     const mocks: DatacenterConfigGenResultDto[] =
       DatacenterConfigGenResultDto.GenerateDatacenterConfigGenResultDtoMock();
+
     return Promise.resolve(mocks);
   }
 
   async GetDatacenterConfigWithGenItems(
     query: DatacenterConfigGenItemsQueryDto,
   ): Promise<DatacenterConfigGenItemsResultDto[]> {
-    // const mocks: DatacenterConfigGenItemsResultDto[] =
-    // DatacenterConfigGenItemsResultDto.GenerateDatacenterConfigGenItemsResultDtoMock();
-    const models: DatacenterConfigGenItemsResultDto[] = [];
-    const res = await this.datacenterTable.findBy(query.GenId, '');
-    res.forEach((d) => {
-      models.push(
-        new DatacenterConfigGenItemsResultDto(
-          d.id,
-          d.title,
-          d.price,
-          d.percent,
-          d.min,
-          d.max,
-          d.unit,
-          d.parentId,
-        ),
-      );
-    });
+    const option: FindManyOptions<ItemTypesConfig> =
+      this.datacenterServiceFactory.GetFindOptionBy(query);
 
-    const fres = this.Tree(models, 0);
-    return Promise.resolve(fres);
-    // return fres;
-  }
+    const regexPatternGeneration = /^G\d+$/;
 
-  Tree(
-    ItemTypesConfig: DatacenterConfigGenItemsResultDto[],
-    parentId: number,
-    res: DatacenterConfigGenItemsResultDto[] = [],
-  ): DatacenterConfigGenItemsResultDto[] {
-    // const res: DatacenterConfigGenItemsResultDto[] = [];
-    const parents = ItemTypesConfig.filter((d) => d.ParentId == parentId);
+    const configs: ItemTypesConfig[] = await this.dataCenterTableService.find(
+      option,
+    );
 
-    if (parents != null && parents.length > 0) {
-      parents.forEach((e) => {
-        const res2 = this.Tree(ItemTypesConfig, e.Id, e.SubItems);
-        // if (childs != null && childs.length>0){
-        //   childs.forEach(q=>{
-        //     const sub = this.Tree(childs,q.parentId);
-        //
-        //   })
-        // }
-        if (res2 != null && res2.length > 0) {
-          e.SubItems.concat(res2);
-        }
-        res.push(e);
-      });
-    }
-    // res.concat(parents);
+    const models: DatacenterConfigGenItemsResultDto[] =
+      this.datacenterServiceFactory.GetDtoModelConfigItemDto(configs);
 
-    return res;
+    const tree: DatacenterConfigGenItemsResultDto[] =
+      this.datacenterServiceFactory.CreateItemTypeConfigTree(models, 0);
+
+    this.datacenterServiceFactory.GetDatacenterConfigSearched(
+      tree,
+      query,
+      regexPatternGeneration,
+    );
+    return Promise.resolve(tree);
   }
 }

@@ -18,6 +18,9 @@ export class ItemTypes {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
+  @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
+  datacenterName: string | null;
+
   @Column('nvarchar', { name: 'Title' })
   title: string;
 

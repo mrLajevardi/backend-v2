@@ -1,17 +1,16 @@
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Body, Controller, Get, Inject, Param, Req, Res } from '@nestjs/common';
+import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
-import { DatacenterService } from './service/datacenter.service';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
-import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-import { Response } from 'express';
+
 import { IDatacenterService } from './interface/IDatacenter.service';
 
 @ApiTags('Datacenter')
@@ -32,26 +31,41 @@ export class DatacenterController {
     return result;
   }
 
-  @Get('/:datacenterId/:genId/configs')
+  @Get('/configs/:datacenterId/:genId/')
+  @ApiResponse({
+    type: [DatacenterConfigGenItemsResultDto],
+  })
   @ApiOperation({
     summary: 'Return All DatacenterItems with their Configs',
   })
   @ApiParam({
-    name: 'GenId',
+    name: 'genId',
+    type: String,
     description:
       'GenerationId that is about generation of a specify Datacenter',
   })
   @ApiParam({
-    name: 'DatacenterId',
+    name: 'datacenterId',
+    type: String,
     description: 'DatacenterId about a specify Datacenter',
   })
+  @ApiQuery({
+    name: 'serviceTypeId',
+    type: String,
+    required: false,
+  })
   async getDatacenterItemsConfig(
-    @Param('DatacenterId') DatacenterId: string,
-    @Param('GenId') GenId: string,
+    @Param('datacenterId') datacenterId: string,
+    @Param('genId') genId: string,
+    @Query('serviceTypeId') serviceTypeId?: string,
   ): Promise<DatacenterConfigGenItemsResultDto[]> {
     const result: DatacenterConfigGenItemsResultDto[] =
       await this.service.GetDatacenterConfigWithGenItems(
-        new DatacenterConfigGenItemsQueryDto(DatacenterId, GenId),
+        new DatacenterConfigGenItemsQueryDto(
+          datacenterId,
+          genId,
+          serviceTypeId,
+        ),
       );
     return result;
   }

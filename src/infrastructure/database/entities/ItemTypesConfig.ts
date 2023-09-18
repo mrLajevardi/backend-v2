@@ -1,11 +1,14 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 
-@Index('PK__ItemType__3214EC27D43301C5', ['id'], { unique: true })
+@Index('PK__ItemType', ['id'], { unique: true })
 @Entity('ItemTypesConfig', { schema: 'services' })
 export class ItemTypesConfig {
   @Column('int', { primary: true, name: 'ID' })
   id: number;
+
+  @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
+  datacenterName: string | null;
 
   @Column('nvarchar', { name: 'Title' })
   title: string;
