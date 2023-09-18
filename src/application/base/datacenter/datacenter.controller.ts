@@ -1,27 +1,16 @@
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  Param,
-  Query,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
-import { DatacenterService } from './service/datacenter.service';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
-import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-import { Response } from 'express';
+
 import { IDatacenterService } from './interface/IDatacenter.service';
 
 @ApiTags('Datacenter')
@@ -43,6 +32,9 @@ export class DatacenterController {
   }
 
   @Get('/configs/:datacenterId/:genId/')
+  @ApiResponse({
+    type: [DatacenterConfigGenItemsResultDto],
+  })
   @ApiOperation({
     summary: 'Return All DatacenterItems with their Configs',
   })

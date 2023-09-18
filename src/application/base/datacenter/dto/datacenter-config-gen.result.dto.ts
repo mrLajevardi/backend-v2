@@ -1,16 +1,24 @@
 import { BaseResultDto } from '../../../../infrastructure/dto/base.result.dto';
 import { faker } from '@faker-js/faker';
+import { ApiProperty } from '@nestjs/swagger';
 export class DatacenterConfigGenResultDto extends BaseResultDto {
+  @ApiProperty({ type: String })
+  id: string;
+
+  @ApiProperty({ type: String })
+  name: string;
+
+  @ApiProperty({ type: [String] })
+  Gens: string[];
+
   constructor(id: string, name: string, Gens: string[]) {
     super();
     this.id = id;
+
     this.name = name;
+
     this.Gens = Gens;
   }
-
-  id: string;
-  name: string;
-  Gens: string[];
 
   static GenerateDatacenterConfigGenResultDtoMock(): DatacenterConfigGenResultDto[] {
     const fakes: DatacenterConfigGenResultDto[] = [];

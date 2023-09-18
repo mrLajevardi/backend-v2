@@ -4,6 +4,7 @@ import { DatacenterController } from './datacenter.controller';
 import { DatabaseModule } from '../../../infrastructure/database/database.module';
 import { CrudModule } from '../crud/crud.module';
 import { DatacenterTableModule } from '../crud/datacenter-table/datacenter-table.module';
+import { DatacenterFactoryService } from './service/datacenter.factory.service';
 @Module({
   imports: [DatabaseModule, CrudModule, DatacenterTableModule],
   providers: [
@@ -11,6 +12,7 @@ import { DatacenterTableModule } from '../crud/datacenter-table/datacenter-table
       provide: 'IDatacenterService',
       useClass: DatacenterService,
     },
+    DatacenterFactoryService,
   ],
   controllers: [DatacenterController],
 })
