@@ -16,9 +16,10 @@ import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
 @Injectable()
 export class DatacenterService implements BaseService {
   constructor(
-    private readonly datacenterTable: DataCenterTableService,
+    private readonly dataCenterTableService: DataCenterTableService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
     private readonly sessionsService: SessionsService,
+    private readonly datacenterServiceFactory: DatacenterFactoryService,
   ) {}
 
   public findTargetMetadata(

@@ -11,6 +11,7 @@ import { mockProviderVdcs } from '../mock/providers-vdcs.mock';
 import { GetProviderVdcsMetadataDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs-metadata.dto';
 import { SessionsService } from '../../sessions/sessions.service';
 import { cloneDeep } from 'lodash';
+import { DatacenterFactoryService } from './datacenter.factory.service';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
@@ -50,6 +51,7 @@ describe('DatacenterService', () => {
       imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
       providers: [
         DatacenterService,
+        DatacenterFactoryService,
         {
           provide: AdminVdcWrapperService,
           useValue: createWrapperMockService(
@@ -140,6 +142,7 @@ describe('DatacenterService', () => {
         imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
         providers: [
           DatacenterService,
+          DatacenterFactoryService,
           {
             provide: AdminVdcWrapperService,
             useValue: createWrapperMockService(
@@ -166,6 +169,7 @@ describe('DatacenterService', () => {
         imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
         providers: [
           DatacenterService,
+          DatacenterFactoryService,
           {
             provide: AdminVdcWrapperService,
             useValue: createWrapperMockService(
@@ -191,6 +195,7 @@ describe('DatacenterService', () => {
         imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
         providers: [
           DatacenterService,
+          DatacenterFactoryService,
           {
             provide: AdminVdcWrapperService,
             useValue: createWrapperMockService(
