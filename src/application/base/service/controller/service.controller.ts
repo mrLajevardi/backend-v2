@@ -30,6 +30,7 @@ import { Discounts } from 'src/infrastructure/database/entities/Discounts';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
 import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
+import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -89,6 +90,27 @@ export class ServiceController {
     @Query('id') id?: string,
   ): Promise<GetServicesReturnDto[]> {
     return this.serviceService.getServices(options, typeId, id);
+    // await this.invoicesTable.create(dto);
+  }
+
+  @ApiOperation({ summary: 'get services with Items for a user' })
+  @ApiQuery({ name: 'id', required: false })
+  @ApiQuery({
+    name: 'serviceTypeId',
+    required: false,
+    description: ' vdc, aradAi, vgpu',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'user services have been fetched successfully',
+  })
+  @Get('withItems')
+  async getServicesWithItems(
+    @Request() options: SessionRequest,
+    @Query('serviceTypeId') typeId?: string,
+    @Query('id') id?: string,
+  ): Promise<GetAllVdcServiceWithItemsResultDto[]> {
+    return this.serviceService.getServicesWithItems(options, typeId, id);
     // await this.invoicesTable.create(dto);
   }
 

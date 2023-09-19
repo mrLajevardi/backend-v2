@@ -31,6 +31,7 @@ import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes'
 import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
 import { ZarinpalVerifyReturnDto } from '../dto/return/zarinpal-verify.dto';
 import { GetServicesReturnDto } from '../dto/return/get-services.dto';
+import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
 
 @Injectable()
 export class ServiceService {
@@ -463,6 +464,16 @@ export class ServiceService {
       dto.itemTypeCode = items[item].code;
       await this.serviceItemsTable.create(dto);
     }
+  }
+
+  async getServicesWithItems(
+    options: SessionRequest,
+    typeId?: string,
+    id?: string,
+  ): Promise<GetAllVdcServiceWithItemsResultDto[]> {
+    //mock
+    const res = GetAllVdcServiceWithItemsResultDto.getMock();
+    return res;
   }
 
   async getServices(
