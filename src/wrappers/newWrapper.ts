@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { EndpointInterface } from './interfaces/endpoint.interface';
 
 export class Wrapper<T> {
-  static baseUrl: string;
+  baseUrl: string;
   /**
    * initialize endpoints object
    */
@@ -13,7 +13,7 @@ export class Wrapper<T> {
   errHandling: any;
 
   constructor(httpsAgent: object, endpoints: T, baseURL: string) {
-    Wrapper.baseUrl = baseURL;
+    this.baseUrl = baseURL;
     this.httpsAgent = httpsAgent;
     this.endPoints = endpoints;
   }
@@ -37,7 +37,7 @@ export class Wrapper<T> {
         httpsAgent: this.httpsAgent,
         method: endpoint.method,
         headers: endpoint.headers,
-        baseURL: Wrapper.baseUrl,
+        baseURL: this.baseUrl,
         params: endpoint.params,
         data: endpoint.body || null,
         maxContentLength: Infinity,
