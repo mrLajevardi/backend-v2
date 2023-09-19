@@ -1,34 +1,38 @@
 import {
   ApiBearerAuth,
-  ApiBody,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Body, Controller, Get, Inject, Param, Req, Res } from '@nestjs/common';
+import { Controller, Get, Inject, Param } from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
-import { DatacenterService } from './service/datacenter.service';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
-import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-import { Response } from 'express';
-import { IDatacenterService } from './interface/IDatacenter.service';
+import { DatacenterService } from './service/datacenter.service';
+import { BaseDatacenterService } from './interface/datacenter.interface';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class DatacenterController {
   constructor(
-    @Inject('IDatacenterService')
-    private readonly service: IDatacenterService,
+    @Inject('DatacenterService')
+    private readonly service: BaseDatacenterService,
+    private readonly datacenterService: DatacenterService,
   ) {}
 
   @Get()
   @ApiOperation({
     summary: 'Get All Enabled Datacenters With Their Gens ',
   })
+  @ApiResponse({
+    status: 200,
+    description: 'All Enabled Datacenters With Their Gens',
+    type: [DatacenterConfigGenResultDto],
+  })
   async getDatacenterWithGens(): Promise<DatacenterConfigGenResultDto[]> {
-    const result = await this.service.GetDatacenterConfigWithGen();
+    const result = await this.datacenterService.getDatacenterConfigWithGen();
     return result;
   }
 

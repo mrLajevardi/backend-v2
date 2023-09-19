@@ -18,7 +18,7 @@ export interface Value {
   description: string;
   isEnabled: boolean;
   maxSupportedHwVersion: string;
-  creationStatus: string;
+  creationStatus?: string;
   nsxTManager: NsxTManager;
   vimServer: NsxTManager;
 }

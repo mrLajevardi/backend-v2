@@ -9,6 +9,8 @@ import { UpdateVdcComputePolicyDto } from './dto/update-vdc-compute-policy.dto';
 import { UpdateVdcStoragePolicyDto } from './dto/update-vdc-storage-policy.dto';
 import { AdminOrgVdcStorageProfileQuery } from '../../user/vm/dto/instantiate-vm-from.templates-admin.dto';
 import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
+import { GetProviderVdcsParams } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/get-provider-vdcs.dto';
+import { GetProviderVdcsMetadataDto } from './dto/get-provider-vdcs-metadata.dto';
 
 @Injectable()
 export class AdminVdcWrapperService {
@@ -278,8 +280,7 @@ export class AdminVdcWrapperService {
 
   async getProviderVdcs(
     authToken: string,
-    page: number,
-    pageSize: number,
+    params: GetProviderVdcsParams,
   ): Promise<GetProviderVdcsDto> {
     const endpoint = 'AdminVdcEndpointService.getProviderVdcsEndpoint';
     const wrapper =
@@ -287,9 +288,28 @@ export class AdminVdcWrapperService {
     const providerVdcsList =
       await this.vcloudWrapperService.request<GetProviderVdcsDto>(
         wrapper({
-          params: {
-            page,
-            pageSize,
+          params,
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }),
+      );
+    return providerVdcsList.data;
+  }
+
+  async getProviderVdcMetadata(
+    authToken: string,
+    providerVdcId: string,
+  ): Promise<GetProviderVdcsMetadataDto> {
+    const endpoint = 'AdminVdcEndpointService.getProviderVdcsMetaDataEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const formattedId = providerVdcId.split('providervdc:').slice(-1)[0];
+    const providerVdcsList =
+      await this.vcloudWrapperService.request<GetProviderVdcsMetadataDto>(
+        wrapper({
+          urlParams: {
+            providerVdcId: formattedId,
           },
           headers: {
             Authorization: `Bearer ${authToken}`,

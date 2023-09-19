@@ -8,6 +8,7 @@ import { UpdateNetworkProfileDto } from './dto/update-network-profile.dto';
 import { UpdateVdcDto } from './dto/update-vdc.dto';
 import { UpdateVdcStorageProfileDto } from './dto/update-vdc-storage-profile.dto';
 import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
+import { GetProviderVdcMetadataDto } from './dto/get-provider-vdc-metadata.dto';
 
 @Injectable()
 export class AdminVdcEndpointService {
@@ -120,6 +121,21 @@ export class AdminVdcEndpointService {
       headers: {
         Accept: 'application/json;version=36.3',
         'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    };
+  }
+
+  getProviderVdcsMetaDataEndpoint(
+    options: GetProviderVdcMetadataDto,
+  ): EndpointInterface {
+    return {
+      method: 'get',
+      resource: `/api/admin/providervdc/${options.urlParams.providerVdcId}/metadata`,
+      params: null,
+      body: null,
+      headers: {
+        Accept: 'application/*+json;version=36.3',
         ...options.headers,
       },
     };
