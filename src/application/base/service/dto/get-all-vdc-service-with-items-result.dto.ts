@@ -66,7 +66,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     for (let i = 0; i < count; i++) {
       res.push(
         new GetAllVdcServiceWithItemsResultDto(
-          faker.string.uuid(),
+          `SERVICE_MOCK_${i}`,
           faker.number.int({ min: 1, max: 5 }),
           faker.number.int({ min: 0, max: 1 }) === 0,
           faker.string.sample(),
