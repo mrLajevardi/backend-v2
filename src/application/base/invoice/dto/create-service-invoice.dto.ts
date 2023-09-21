@@ -2,55 +2,55 @@ import {
   IsNumber,
   IsString,
   IsArray,
-  Min,
-  Max,
   Matches,
   ValidateIf,
-  IsOptional,
+  IsEnum,
+  ValidateNested,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-export class InvoiceItemsDto {
-  @IsString()
-  @ApiProperty()
-  itemCode: string;
+import { Type } from 'class-transformer';
 
+export enum ServicePlanTypes {
+  STATIC = 'static',
+  PAYG = 'pyag',
+}
+
+export enum InvoiceTypes {
+  UPDATE = 'update',
+  Create = 'create',
+  EXTEND = 'extend',
+}
+export class InvoiceItemsDto {
   @IsNumber()
-  @ApiProperty()
-  quantity: number;
+  @ApiProperty({
+    type: Number,
+    example: 22,
+  })
+  itemTypeId: number;
+
+  @IsString()
+  @ApiProperty({
+    type: String,
+  })
+  value: string;
 }
 
 export class CreateServiceInvoiceDto {
-  @IsArray()
-  @IsString({
-    each: true,
+  @IsEnum(InvoiceTypes)
+  @ApiProperty({
+    type: String,
+    example: 'create',
+    enum: InvoiceTypes,
   })
-  @ApiProperty()
-  plans: string[];
-
-  @IsNumber()
-  @Min(0)
-  @Max(2)
-  @ApiProperty()
-  type: number;
-
-  @IsString()
-  @ApiProperty()
-  serviceTypeId: string;
-
-  @IsNumber()
-  @ApiProperty()
-  @Min(1)
-  duration: number;
-
-  @IsString()
-  @ApiProperty()
-  name: string;
+  type: InvoiceTypes;
 
   @ApiProperty({
     type: [InvoiceItemsDto],
   })
   @IsArray()
-  items: InvoiceItemsDto[];
+  @Type(() => InvoiceItemsDto)
+  @ValidateNested({ each: true })
+  itemsTypes: InvoiceItemsDto[];
 
   @IsString()
   @Matches(
@@ -62,13 +62,10 @@ export class CreateServiceInvoiceDto {
   @ApiProperty()
   serviceInstanceId: string;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  pcName?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  pcPassword?: string;
+  @ApiProperty({
+    type: ServicePlanTypes,
+    enum: ServicePlanTypes,
+  })
+  @IsEnum(ServicePlanTypes)
+  servicePlanTypes: ServicePlanTypes;
 }

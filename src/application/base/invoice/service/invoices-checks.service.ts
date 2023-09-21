@@ -17,6 +17,7 @@ export class InvoicesChecksService {
     private readonly serviceInstancesTable: ServiceInstancesTableService,
   ) {}
 
+  /**
   async checkPlanCondition(
     data: string[],
     serviceId: string,
@@ -121,4 +122,5 @@ export class InvoicesChecksService {
     }
     return true;
   }
+  */
 }

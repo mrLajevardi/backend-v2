@@ -55,7 +55,10 @@ export class InvoicesService {
     private readonly servicePlansTableService: ServicePlansTableService,
   ) {}
 
-  // Create invoice items
+  async createInvoice(): Promise<InvoiceIdDto> {
+    return InvoiceIdDto.generateMock();
+  }
+  /**
   async createInvoiceItems(
     invoiceID: number,
     items: ItemTypes[],
@@ -152,10 +155,10 @@ export class InvoicesService {
       data.plans = prevPlans;
       calculatePlanCost = false;
     }
-    /**
-     checks if service is expired or not and overwrite items and plans
-     with existing service's items and plans
-    */
+    
+     //checks if service is expired or not and overwrite items and plans
+     //with existing service's items and plans
+
     if (type === 1) {
       const isExpired = await this.checkServiceIsExpired(serviceInstanceId);
       if (!isExpired) {
@@ -412,5 +415,6 @@ export class InvoicesService {
       prevPlans,
       newDuration,
     };
-  }
+  } 
+  */
 }

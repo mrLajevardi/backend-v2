@@ -58,7 +58,7 @@ export class InvoicesController {
     @Body() dto: CreateServiceInvoiceDto,
     @Request() options: SessionRequest,
   ): Promise<any> {
-    return this.invoiceService.createInvoice(dto, options);
+    return this.invoiceService.createInvoice();
     // await this.invoicesTable.create(dto);
   }
 
