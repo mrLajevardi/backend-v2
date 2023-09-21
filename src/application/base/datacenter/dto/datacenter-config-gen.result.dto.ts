@@ -1,38 +1,41 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseResultDto } from '../../../../infrastructure/dto/base.result.dto';
 import { faker } from '@faker-js/faker';
+import { VcloudMetadata } from '../interface/datacenter.interface';
 class DatacenterGenerations {
   @ApiProperty({
     type: String,
-    example: 'Amin-G1',
+    example: 'g1',
   })
-  name: string;
+  name: VcloudMetadata;
 
   @ApiProperty({
     type: String,
-    example: 'UUID',
+    example: 'urn:vcloud:providervdc:a5946545-eaee-4475-970b-35ecb54a0e9b',
   })
   id: string;
 }
 export class DatacenterConfigGenResultDto extends BaseResultDto {
   @ApiProperty({
     type: String,
-    example: 'Amin',
+    example: 'amin',
   })
-  name: string;
+  datacenter: VcloudMetadata;
 
   @ApiProperty({
     type: [DatacenterGenerations],
-    examples: [
-      { name: 'G1', id: 'UUID' },
-      { name: 'G2', id: 'UUID' },
-    ],
   })
   gens: DatacenterGenerations[];
 
-  constructor(name: string, gens: DatacenterGenerations[]) {
+  @ApiProperty({
+    type: String,
+    example: 'امین',
+  })
+  title: VcloudMetadata;
+
+  constructor(datacenter: string, gens: DatacenterGenerations[]) {
     super();
-    this.name = name;
+    this.datacenter = datacenter;
     this.gens = gens;
   }
 

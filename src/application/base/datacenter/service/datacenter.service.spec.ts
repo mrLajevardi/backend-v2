@@ -12,11 +12,24 @@ import { GetProviderVdcsMetadataDto } from 'src/wrappers/main-wrapper/service/ad
 import { SessionsService } from '../../sessions/sessions.service';
 import { cloneDeep } from 'lodash';
 import { DatacenterFactoryService } from './datacenter.factory.service';
+import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
+import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
 
   let module: TestingModule;
+  function datacenterMetadataMockFactory(
+    datacenter: string | null,
+    generation: string | null,
+    title: string | null,
+  ): FoundDatacenterMetadata {
+    return {
+      datacenter,
+      generation,
+      datacenterTitle: title,
+    };
+  }
   function createWrapperMockService(
     mockProviderVdcs: GetProviderVdcsDto,
     mockDatacenterMetadata: GetProviderVdcsMetadataDto,
@@ -77,10 +90,7 @@ describe('DatacenterService', () => {
   describe('findTargetMetadata', () => {
     it('should return a correct object', async () => {
       const targetMetadata = service.findTargetMetadata(mockDatacenterMetadata);
-      const correctObject = {
-        datacenterName: 'Amin',
-        generation: 'G1',
-      };
+      const correctObject = datacenterMetadataMockFactory('amin', 'g1', 'امین');
       expect(targetMetadata).toStrictEqual(correctObject);
     });
 
@@ -89,10 +99,7 @@ describe('DatacenterService', () => {
       wrongMock.metadataEntry[0].key = 'datacenterr';
       console.log(mockDatacenterMetadata.metadataEntry[0]);
       const targetMetadata = service.findTargetMetadata(wrongMock);
-      const correctObject = {
-        datacenterName: null,
-        generation: 'G1',
-      };
+      const correctObject = datacenterMetadataMockFactory(null, 'g1', 'امین');
       expect(targetMetadata).toStrictEqual(correctObject);
     });
 
@@ -100,10 +107,7 @@ describe('DatacenterService', () => {
       const wrongMock = cloneDeep(mockDatacenterMetadata);
       wrongMock.metadataEntry = [];
       const targetMetadata = service.findTargetMetadata(wrongMock);
-      const correctObject = {
-        datacenterName: null,
-        generation: null,
-      };
+      const correctObject = datacenterMetadataMockFactory(null, null, null);
       expect(targetMetadata).toStrictEqual(correctObject);
     });
 
@@ -111,10 +115,7 @@ describe('DatacenterService', () => {
       const wrongMock = cloneDeep(mockDatacenterMetadata);
       wrongMock.metadataEntry = [];
       const targetMetadata = service.findTargetMetadata(wrongMock);
-      const correctObject = {
-        datacenterName: 'Amin',
-        generation: 'G1',
-      };
+      const correctObject = datacenterMetadataMockFactory('amin', 'g1', 'امین');
       expect(targetMetadata).not.toStrictEqual(correctObject);
     });
   });
@@ -122,13 +123,14 @@ describe('DatacenterService', () => {
   describe('getDatacenterConfigWithGen', () => {
     it('should return correct result with correct providerVdcList and metadata', async () => {
       const result = await service.getDatacenterConfigWithGen();
-      const correctResult = [
+      const correctResult: DatacenterConfigGenResultDto[] = [
         {
-          name: 'Amin',
+          datacenter: 'amin',
+          title: 'امین',
           gens: [
             {
-              name: 'G1',
-              id: 'urn:vcloud:providervdc:a5946545-eaee-4475-970b-35ecb54a0e9b',
+              name: 'g1',
+              id: mockProviderVdcs.values[0].id,
             },
           ],
         },

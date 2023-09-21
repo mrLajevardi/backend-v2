@@ -12,6 +12,7 @@ import { Value } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provi
 import { GetProviderVdcsMetadataDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs-metadata.dto';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
+import { trim } from 'lodash';
 
 @Injectable()
 export class DatacenterService implements BaseService {
@@ -25,15 +26,33 @@ export class DatacenterService implements BaseService {
   public findTargetMetadata(
     metadata: GetProviderVdcsMetadataDto,
   ): FoundDatacenterMetadata {
-    const targetMetadata = {
-      datacenterName: null,
+    const targetMetadata: FoundDatacenterMetadata = {
+      datacenter: null,
       generation: null,
+      datacenterTitle: null,
     };
     for (const value of metadata.metadataEntry) {
-      if (value.key === 'datacenter') {
-        targetMetadata.datacenterName = value.typedValue.value;
-      } else if (value.key === 'generation') {
-        targetMetadata.generation = value.typedValue.value;
+      const key = value.key;
+      const metadataValue =
+        value.typedValue._type === 'MetadataStringValue'
+          ? trim(value.typedValue.value.toString()).toLowerCase()
+          : value.typedValue.value;
+      if (value.key === 'enabled' && !value.typedValue.value) {
+        return {
+          datacenter: null,
+          generation: null,
+          datacenterTitle: null,
+        };
+      }
+      switch (key) {
+        case 'generation':
+          targetMetadata.generation = metadataValue;
+          break;
+        case 'datacenter':
+          targetMetadata.datacenter = metadataValue;
+          break;
+        case 'datacenterTitle':
+          targetMetadata.datacenterTitle = metadataValue;
       }
     }
     return targetMetadata;
@@ -52,11 +71,14 @@ export class DatacenterService implements BaseService {
       params,
     );
     const { values } = providerVdcsList;
-    const providerVdcsFilteredData: Pick<Value, 'id' | 'isEnabled'>[] =
-      values.map((value) => {
+    const providerVdcsFilteredData: Pick<Value, 'id'>[] = values.map(
+      (value) => {
         const { id, isEnabled } = value;
-        return { id, isEnabled };
-      });
+        if (isEnabled) {
+          return { id };
+        }
+      },
+    );
     const datacenterConfigs: DatacenterConfigGenResultDto[] = [];
     for (const providerVdc of providerVdcsFilteredData) {
       const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
@@ -64,20 +86,20 @@ export class DatacenterService implements BaseService {
         providerVdc.id,
       );
       const targetMetadata = this.findTargetMetadata(metadata);
-      console.log(targetMetadata, metadata);
-      if (targetMetadata.datacenterName === null) {
+      if (targetMetadata.datacenter === null) {
         continue;
       }
       const targetConfig = datacenterConfigs.find((value) => {
-        return value.name === targetMetadata.datacenterName;
+        return value.datacenter === targetMetadata.datacenter;
       });
       const newGen = {
         name: targetMetadata.generation,
         id: providerVdc.id,
       };
       if (!targetConfig) {
-        const config = {
-          name: targetMetadata.datacenterName,
+        const config: DatacenterConfigGenResultDto = {
+          datacenter: targetMetadata.datacenter,
+          title: targetMetadata.datacenterTitle,
           gens: [newGen],
         };
         datacenterConfigs.push(config);
