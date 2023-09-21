@@ -20,7 +20,6 @@ export class DatacenterController {
   constructor(
     @Inject('DatacenterService')
     private readonly service: BaseDatacenterService,
-    private readonly datacenterService: DatacenterService,
   ) {}
 
   @Get()
@@ -33,7 +32,7 @@ export class DatacenterController {
     type: [DatacenterConfigGenResultDto],
   })
   async getDatacenterWithGens(): Promise<DatacenterConfigGenResultDto[]> {
-    const result = await this.datacenterService.getDatacenterConfigWithGen();
+    const result = await this.service.getDatacenterConfigWithGen();
     return result;
   }
 

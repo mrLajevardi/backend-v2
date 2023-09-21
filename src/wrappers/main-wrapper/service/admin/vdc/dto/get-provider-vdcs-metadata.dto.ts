@@ -33,5 +33,5 @@ export interface MetadataEntry {
 
 export interface TypedValue {
   _type: string;
-  value: string;
+  value: string | boolean | number;
 }

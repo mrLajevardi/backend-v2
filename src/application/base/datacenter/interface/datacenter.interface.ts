@@ -11,7 +11,9 @@ export interface BaseDatacenterService extends IBaseService {
   ): Promise<DatacenterConfigGenItemsResultDto[]>;
 }
 
+export type VcloudMetadata = string | number | boolean;
 export interface FoundDatacenterMetadata {
-  generation: string | null;
-  datacenterName: string | null;
+  generation: VcloudMetadata | null;
+  datacenter: VcloudMetadata | null;
+  datacenterTitle: VcloudMetadata | null;
 }
