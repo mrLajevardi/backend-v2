@@ -29,7 +29,7 @@ export class DatacenterService implements IDatacenterService, BaseService {
     const option: FindManyOptions<ItemTypesConfig> =
       this.datacenterServiceFactory.GetFindOptionBy(query);
 
-    const regexPatternGeneration = /^G\d+$/;
+    const regexPatternGeneration = /^g\d+$/;
 
     const configs: ItemTypesConfig[] = await this.dataCenterTableService.find(
       option,
