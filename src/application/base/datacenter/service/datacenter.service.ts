@@ -94,7 +94,7 @@ export class DatacenterService implements BaseService {
     const option: FindManyOptions<ItemTypesConfig> =
       this.datacenterServiceFactory.GetFindOptionBy(query);
 
-    const regexPatternGeneration = /^g\d+$/;
+    const regexPatternGeneration = /^g[1-4]$/i;
 
     const configs: ItemTypesConfig[] = await this.dataCenterTableService.find(
       option,
