@@ -38,10 +38,10 @@ export class DatacenterService implements IDatacenterService, BaseService {
     const models: DatacenterConfigGenItemsResultDto[] =
       this.datacenterServiceFactory.GetDtoModelConfigItemDto(configs);
 
-    const tree: DatacenterConfigGenItemsResultDto[] =
+    let tree: DatacenterConfigGenItemsResultDto[] =
       this.datacenterServiceFactory.CreateItemTypeConfigTree(models, 0);
 
-    this.datacenterServiceFactory.GetDatacenterConfigSearched(
+    tree = this.datacenterServiceFactory.GetDatacenterConfigSearched(
       tree,
       query,
       regexPatternGeneration,
