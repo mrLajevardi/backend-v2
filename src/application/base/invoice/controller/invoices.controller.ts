@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   Request,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,15 +21,16 @@ import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { BaseInvoiceService } from '../interface/invoice.interface';
 
 @ApiTags('Invoices')
 @Controller('invoices')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class InvoicesController {
   constructor(
-    private readonly service: InvoicesService,
+    @Inject('InvoiceService')
+    private readonly invoiceService: BaseInvoiceService,
     private readonly invoicesTable: InvoicesTableService,
-    private readonly invoiceService: InvoicesService,
   ) {}
 
   // Find an item by id
@@ -58,8 +60,7 @@ export class InvoicesController {
     @Body() dto: CreateServiceInvoiceDto,
     @Request() options: SessionRequest,
   ): Promise<any> {
-    return this.invoiceService.createInvoice();
-    // await this.invoicesTable.create(dto);
+    return this.invoiceService.createVdcInvoice(dto, options);
   }
 
   // update an existing item

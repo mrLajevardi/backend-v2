@@ -14,7 +14,15 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
     // VgpuModule
     forwardRef(() => VgpuModule),
   ],
-  providers: [InvoicesService, InvoicesChecksService, CostCalculationService],
+  providers: [
+    InvoicesService,
+    InvoicesChecksService,
+    CostCalculationService,
+    {
+      provide: 'InvoiceService',
+      useClass: InvoicesService,
+    },
+  ],
   controllers: [InvoicesController],
   exports: [InvoicesService],
 })

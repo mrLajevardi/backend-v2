@@ -55,7 +55,7 @@ export class InvoicesService {
     private readonly servicePlansTableService: ServicePlansTableService,
   ) {}
 
-  async createInvoice(): Promise<InvoiceIdDto> {
+  async createVdcInvoice(): Promise<InvoiceIdDto> {
     return InvoiceIdDto.generateMock();
   }
   /**
