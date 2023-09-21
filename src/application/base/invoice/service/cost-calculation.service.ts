@@ -26,7 +26,6 @@ export class CostCalculationService {
   //     this.plansRatioForInvoice(plans, data);
   //   return totalCost;
   // }
-
   // itemsCost(
   //   items: ItemTypes[],
   //   data: CreateServiceInvoiceDto,
@@ -46,7 +45,6 @@ export class CostCalculationService {
   //   itemTotalCost *= data.duration || 1;
   //   return itemTotalCost;
   // }
-
   // plansCost(
   //   plans: Plans[],
   //   data: CreateServiceInvoiceDto,
@@ -66,7 +64,6 @@ export class CostCalculationService {
   //   planTotalCost *= data.duration || 1;
   //   return planTotalCost;
   // }
-
   // plansRatioForInvoice(plans: Plans[], data: CreateServiceInvoiceDto): number {
   //   let planTotalRatio = 1;
   //   let additionRatio;
@@ -80,7 +77,6 @@ export class CostCalculationService {
   //   });
   //   return planTotalRatio;
   // }
-
   // plansRatioForItems(plans: Plans[], data: CreateServiceInvoiceDto): number {
   //   let planTotalRatio = 1;
   //   let additionRatio;
