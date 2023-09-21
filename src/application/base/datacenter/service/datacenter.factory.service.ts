@@ -84,7 +84,7 @@ export class DatacenterFactoryService {
     return (tree = tree.filter(
       (datacenterConfig) =>
         (datacenterConfig.ItemTypeName.toLowerCase().includes(
-          'G'.toLowerCase(),
+          'g'.toLowerCase(),
         ) &&
           datacenterConfig.ItemTypeName.trim().toLowerCase() ==
             query.GenId.toLowerCase()) ||
