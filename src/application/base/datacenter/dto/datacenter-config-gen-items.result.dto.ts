@@ -2,37 +2,37 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class DatacenterConfigGenItemsResultDto {
   @ApiProperty({ type: Number })
-  Id: number;
+  id: number;
 
   @ApiProperty({ type: String })
-  ItemTypeName: string;
+  itemTypeName: string;
 
   @ApiProperty({ type: String })
-  ServiceTypeName: string;
+  serviceTypeName: string;
 
   @ApiProperty({ type: Number })
-  ParentId: number;
+  parentId: number;
 
   @ApiProperty({ type: Number })
-  Price: number;
+  price: number;
 
   @ApiProperty({ type: Number })
-  Percent: number;
+  percent: number;
 
   @ApiProperty({ type: Number })
-  PrincipleType: number;
+  principleType: number;
 
   @ApiProperty({ type: Number })
-  Minimum: number;
+  minimum: number;
 
   @ApiProperty({ type: Number })
-  Maximum: number;
+  maximum: number;
 
   @ApiProperty({ type: String })
-  Unit: string;
+  unit: string;
 
   @ApiProperty({ type: [DatacenterConfigGenItemsResultDto] })
-  SubItems: DatacenterConfigGenItemsResultDto[] = [];
+  subItems: DatacenterConfigGenItemsResultDto[] = [];
   constructor(
     Id: number,
     ItemTypeName: string,
@@ -44,15 +44,15 @@ export class DatacenterConfigGenItemsResultDto {
     Unit: string,
     ParentId: number,
   ) {
-    this.ItemTypeName = ItemTypeName;
-    this.ServiceTypeName = ServiceTypeName;
-    this.Price = Price;
-    this.Percent = Percent;
-    this.Minimum = Minimum;
-    this.Maximum = Maximum;
-    this.Unit = Unit;
-    this.ParentId = ParentId;
-    this.Id = Id;
-    this.SubItems = [];
+    this.itemTypeName = ItemTypeName;
+    this.serviceTypeName = ServiceTypeName;
+    this.price = Price;
+    this.percent = Percent;
+    this.minimum = Minimum;
+    this.maximum = Maximum;
+    this.unit = Unit;
+    this.parentId = ParentId;
+    this.id = Id;
+    this.subItems = [];
   }
 }
