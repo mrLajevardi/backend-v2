@@ -24,5 +24,6 @@ import { SessionsModule } from '../sessions/sessions.module';
     DatacenterFactoryService,
   ],
   controllers: [DatacenterController],
+  exports: [DatacenterService],
 })
 export class DatacenterModule {}

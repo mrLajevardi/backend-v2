@@ -11,14 +11,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export enum ServicePlanTypes {
-  STATIC = 'static',
-  PAYG = 'pyag',
+  States = 'static',
+  Pyag = 'pyag',
 }
 
 export enum InvoiceTypes {
-  UPDATE = 'update',
+  Update = 'update',
   Create = 'create',
-  EXTEND = 'extend',
+  Extend = 'extend',
 }
 export class InvoiceItemsDto {
   @IsNumber()

@@ -43,8 +43,7 @@ export class ItemTypes {
   @Column('int', { name: 'Min', nullable: true })
   minPerRequest: number | null;
 
-  //TODO: change Rull to rule
-  @Column('nvarchar', { name: 'Rull', nullable: true })
+  @Column('nvarchar', { name: 'Rule', nullable: true })
   rule: string | null;
 
   @Column('int', { name: 'ParentId', nullable: true })
