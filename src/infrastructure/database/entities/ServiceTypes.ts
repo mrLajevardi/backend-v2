@@ -2,7 +2,6 @@ import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { Configs } from './Configs';
 import { Discounts } from './Discounts';
 import { ItemTypes } from './ItemTypes';
-import { ItemTypesConfig } from './ItemTypesConfig';
 import { ServiceInstances } from './ServiceInstances';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
@@ -14,6 +13,9 @@ export class ServiceTypes {
 
   @Column('nvarchar', { name: 'Title' })
   title: string;
+
+  @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
+  datacenterName: string | null;
 
   @Column('float', { name: 'BaseFee', precision: 53 })
   baseFee: number;
@@ -39,9 +41,6 @@ export class ServiceTypes {
   @Column('varchar', { name: 'PAYGScript', nullable: true, length: 255 })
   paygScript: string | null;
 
-  @Column('nvarchar', { name: 'DataCenterName', nullable: true, length: 50 })
-  dataCenterName: string | null;
-
   @Column('datetime', { name: 'CreateDate', nullable: true })
   createDate: Date | null;
 
@@ -58,10 +57,5 @@ export class ServiceTypes {
     () => ServiceInstances,
     (serviceInstances) => serviceInstances.serviceType,
   )
-  @OneToMany(
-    () => ItemTypesConfig,
-    (itemTypesConfig) => itemTypesConfig.serviceType,
-  )
-  itemTypesConfigs: ItemTypesConfig[];
   serviceInstances: ServiceInstances[];
 }
