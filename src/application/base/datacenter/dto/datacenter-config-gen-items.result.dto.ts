@@ -31,6 +31,9 @@ export class DatacenterConfigGenItemsResultDto {
   @ApiProperty({ type: String })
   unit: string;
 
+  @ApiProperty({ type: Number })
+  step: number;
+
   @ApiProperty({ type: [DatacenterConfigGenItemsResultDto] })
   subItems: DatacenterConfigGenItemsResultDto[] = [];
   constructor(
@@ -43,6 +46,7 @@ export class DatacenterConfigGenItemsResultDto {
     Maximum: number,
     Unit: string,
     ParentId: number,
+    Step: number,
   ) {
     this.itemTypeName = ItemTypeName;
     this.serviceTypeName = ServiceTypeName;
@@ -54,5 +58,6 @@ export class DatacenterConfigGenItemsResultDto {
     this.parentId = ParentId;
     this.id = Id;
     this.subItems = [];
+    this.step = Step;
   }
 }

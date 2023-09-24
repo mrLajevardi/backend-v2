@@ -33,22 +33,19 @@ export class DatacenterFactoryService {
   public CreateItemTypeConfigTree(
     ItemTypesConfig: DatacenterConfigGenItemsResultDto[],
     parentId: number,
-    res: DatacenterConfigGenItemsResultDto[] = [],
+    subItems: DatacenterConfigGenItemsResultDto[] = [],
   ): DatacenterConfigGenItemsResultDto[] {
     const parents = ItemTypesConfig.filter((d) => d.parentId == parentId);
+    parents.forEach((e: DatacenterConfigGenItemsResultDto): void => {
+      const res2: DatacenterConfigGenItemsResultDto[] =
+        this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
 
-    if (parents != null && parents.length > 0) {
-      parents.forEach((e: DatacenterConfigGenItemsResultDto): void => {
-        // if ()
-        const res2: DatacenterConfigGenItemsResultDto[] =
-          this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
-        if (res2 !== null && res2.length > 0) {
-          e.subItems.concat(res2);
-        }
-        res.push(e);
-      });
-    }
-    return res;
+      e.subItems.concat(res2);
+
+      subItems.push(e);
+    });
+
+    return subItems;
   }
 
   public GetDtoModelConfigItemDto(
@@ -67,6 +64,7 @@ export class DatacenterFactoryService {
           itemTypeConfig.maxPerRequest,
           itemTypeConfig.unit,
           itemTypeConfig.parentId,
+          itemTypeConfig.step,
         ),
       );
     });
