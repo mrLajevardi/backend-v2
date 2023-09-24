@@ -39,14 +39,14 @@ export class DatacenterFactoryService {
     parentId: number,
     res: DatacenterConfigGenItemsResultDto[] = [],
   ): DatacenterConfigGenItemsResultDto[] {
-    const parents = ItemTypesConfig.filter((d) => d.ParentId == parentId);
+    const parents = ItemTypesConfig.filter((d) => d.parentId == parentId);
 
     if (parents != null && parents.length > 0) {
       parents.forEach((e: DatacenterConfigGenItemsResultDto): void => {
         const res2: DatacenterConfigGenItemsResultDto[] =
-          this.CreateItemTypeConfigTree(ItemTypesConfig, e.Id, e.SubItems);
+          this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
         if (res2 != null && res2.length > 0) {
-          e.SubItems.concat(res2);
+          e.subItems.concat(res2);
         }
         res.push(e);
       });
@@ -83,12 +83,12 @@ export class DatacenterFactoryService {
   ): DatacenterConfigGenItemsResultDto[] {
     return (tree = tree.filter(
       (datacenterConfig) =>
-        (datacenterConfig.ItemTypeName.toLowerCase().includes(
-          'g'.toLowerCase(),
-        ) &&
-          datacenterConfig.ItemTypeName.trim().toLowerCase() ==
+        (datacenterConfig.itemTypeName
+          .toLowerCase()
+          .includes('g'.toLowerCase()) &&
+          datacenterConfig.itemTypeName.trim().toLowerCase() ==
             query.GenId.toLowerCase()) ||
-        !regexPattern.test(datacenterConfig.ItemTypeName),
+        !regexPattern.test(datacenterConfig.itemTypeName),
     ));
   }
 }
