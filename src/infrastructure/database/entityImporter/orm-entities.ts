@@ -101,4 +101,5 @@ export const dbEntities = [
   Tickets,
   Transactions,
   ServiceReports,
+  ServiceItems,
 ];

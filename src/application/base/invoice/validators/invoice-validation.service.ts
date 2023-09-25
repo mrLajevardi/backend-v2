@@ -7,9 +7,12 @@ import { ItemTypesTableService } from '../../crud/item-types-table/item-types-ta
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { DatacenterService } from '../../datacenter/service/datacenter.service';
-import { isNil } from 'lodash';
+import { groupBy, isNil, keyBy } from 'lodash';
 import { InvoiceItemLimits } from '../enum/invoice-item-limits.enum';
 import { In } from 'typeorm';
+import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 
 @Injectable()
 export class InvoiceValidationService {
@@ -17,8 +20,9 @@ export class InvoiceValidationService {
     private readonly itemTypesTableService: ItemTypesTableService,
     private readonly serviceItemsSumService: ServiceItemsSumService,
     private readonly datacenterService: DatacenterService,
+    private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
   ) {}
-  async validateVdcInvoice(invoice: CreateServiceInvoiceDto): Promise<void> {
+  async validateInvoice(invoice: CreateServiceInvoiceDto): Promise<void> {
     let lastParent: string;
     for (const invoiceItem of invoice.itemsTypes) {
       const targetInvoiceItem = await this.itemTypesTableService.findById(
@@ -56,8 +60,6 @@ export class InvoiceValidationService {
     }
   }
 
-  // async checkDiskValidator(itemType): Promise<void> {}
-
   async checkDatacenterState(datacenterName: string): Promise<void> {
     const availableDatacenters =
       await this.datacenterService.getDatacenterConfigWithGen();
@@ -69,7 +71,8 @@ export class InvoiceValidationService {
     }
   }
 
-  async compareWithVdcDefaultService(
+  async compareWithDefaultService(
+    serviceTypeId: string,
     invoiceItems: InvoiceItemsDto[],
   ): Promise<void> {
     for (const invoiceItem of invoiceItems) {
@@ -77,11 +80,50 @@ export class InvoiceValidationService {
         invoiceItem.itemTypeId,
       );
       const parents = targetItem.hierarchy.split(',');
-      const parentsItems = await this.itemTypesTableService.find({
+      const parentsItems = await this.serviceItemTypesTreeService.find({
         where: {
-          id: In(parents),
+          id: In(parents.slice(0, 2)),
         },
       });
+      const mappedParentItems = keyBy(parentsItems, 'level');
+
+      //checks if first parent and second parent matches with default service
+      const firstParentSearch = await this.serviceItemTypesTreeService.findOne({
+        where: {
+          serviceTypes: { id: serviceTypeId, dataCenterName: null },
+          level: 0,
+          code: mappedParentItems['0'].code,
+        },
+      });
+      const secondParentSearch = await this.serviceItemTypesTreeService.findOne(
+        {
+          where: {
+            serviceTypes: { id: 'vdc', dataCenterName: null },
+            level: 1,
+            code: mappedParentItems['1'].code,
+          },
+        },
+      );
+      if (isNil(secondParentSearch) || isNil(firstParentSearch)) {
+        throw new BadRequestException();
+      }
+      if (parentsItems['1'].code === 'disk') {
+        const thirdParentsSearch = await this.serviceItemTypesTreeService.find({
+          where: {
+            serviceTypes: { id: 'vdc', dataCenterName: null },
+            parentId: secondParentSearch.id,
+            level: 2,
+          },
+        });
+        thirdParentsSearch.forEach((defaultParent) => {
+          const matched = mappedParentItems['2'].find(
+            (parent) => parent.code === defaultParent.code,
+          );
+          if (!matched) {
+            throw new BadRequestException();
+          }
+        });
+      }
     }
   }
 
