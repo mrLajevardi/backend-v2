@@ -34,6 +34,9 @@ export class DatacenterConfigGenItemsResultDto {
   @ApiProperty({ type: Number })
   step: number;
 
+  @ApiProperty({ type: Boolean })
+  enabled: boolean;
+
   @ApiProperty({ type: [DatacenterConfigGenItemsResultDto] })
   subItems: DatacenterConfigGenItemsResultDto[] = [];
   constructor(
@@ -47,6 +50,7 @@ export class DatacenterConfigGenItemsResultDto {
     Unit: string,
     ParentId: number,
     Step: number,
+    Enabled: boolean,
   ) {
     this.itemTypeName = ItemTypeName;
     this.serviceTypeName = ServiceTypeName;
@@ -59,5 +63,6 @@ export class DatacenterConfigGenItemsResultDto {
     this.id = Id;
     this.subItems = [];
     this.step = Step;
+    this.enabled = Enabled;
   }
 }
