@@ -10,6 +10,8 @@ import { ServiceTypes } from './ServiceTypes';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { InvoiceItems } from './InvoiceItems';
 import { ServiceItems } from './ServiceItems';
+import { AiTransactionsLogs } from './AiTransactionsLogs';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
@@ -35,12 +37,10 @@ export class ItemTypes {
   @Column('varchar', { name: 'Code', nullable: true, length: 255 })
   code: string | null;
 
-  //TODO: change to original one
-  @Column('int', { name: 'Max', nullable: true })
+  @Column('int', { name: 'MaxPerRequest', nullable: true })
   maxPerRequest: number | null;
 
-  //TODO: change to original one
-  @Column('int', { name: 'Min', nullable: true })
+  @Column('int', { name: 'MinPerRequest', nullable: true })
   minPerRequest: number | null;
 
   @Column('nvarchar', { name: 'Rule', nullable: true })
@@ -75,12 +75,37 @@ export class ItemTypes {
   @Column('varchar', { name: 'ServiceTypeID', length: 50 })
   serviceTypeId: string;
 
+  @Column('datetime', {
+    name: 'CreateDate',
+    nullable: true,
+    // default: () => 'getdate()',
+  })
+  createDate: Date | null;
+
+  @Column('int', { name: 'Percent', nullable: true })
+  percent: number | null;
+
+  @Column('tinyint', { name: 'PrinciplePrice', nullable: true })
+  principlePrice: number | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'Required',
+    nullable: true,
+  })
+  required: boolean | null;
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.itemType,
   )
   aiTransactionsLogs: AiTransactionsLogs[];
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'Enabled',
+    nullable: true,
+  })
+  enabled: boolean | null;
 
+  @Column('int', { name: 'Step', nullable: true })
+  step: number | null;
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
   invoiceItems: InvoiceItems[];
 

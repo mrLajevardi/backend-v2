@@ -4,7 +4,7 @@ import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
 import { FindManyOptions } from 'typeorm';
-import { ItemTypesConfig } from '../../../../infrastructure/database/entities/ItemTypesConfig';
+// import { ItemTypesConfig } from '../../../../infrastructure/database/entities/ItemTypesConfig';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -13,6 +13,7 @@ import { GetProviderVdcsMetadataDto } from 'src/wrappers/main-wrapper/service/ad
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
 import { trim } from 'lodash';
+import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 
 @Injectable()
 export class DatacenterService implements BaseService {
@@ -113,14 +114,12 @@ export class DatacenterService implements BaseService {
   async GetDatacenterConfigWithGenItems(
     query: DatacenterConfigGenItemsQueryDto,
   ): Promise<DatacenterConfigGenItemsResultDto[]> {
-    const option: FindManyOptions<ItemTypesConfig> =
+    const option: FindManyOptions<ItemTypes> =
       this.datacenterServiceFactory.GetFindOptionBy(query);
 
-    const regexPatternGeneration = /^g\d+$/;
+    const regexPatternGeneration = /^g[1-4]$/i;
 
-    const configs: ItemTypesConfig[] = await this.dataCenterTableService.find(
-      option,
-    );
+    const configs: ItemTypes[] = await this.dataCenterTableService.find(option);
 
     const models: DatacenterConfigGenItemsResultDto[] =
       this.datacenterServiceFactory.GetDtoModelConfigItemDto(configs);

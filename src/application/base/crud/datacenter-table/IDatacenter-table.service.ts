@@ -1,8 +1,8 @@
 import { IBaseService } from '../../../../infrastructure/service/IBaseService';
-import { ItemTypesConfig } from '../../../../infrastructure/database/entities/ItemTypesConfig';
 import { FindManyOptions, FindOneOptions } from 'typeorm';
+import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 
 export interface IDatacenterTableService extends IBaseService {
-  findOne(option: FindOneOptions<ItemTypesConfig>): Promise<ItemTypesConfig>;
-  find(option: FindManyOptions<ItemTypesConfig>): Promise<ItemTypesConfig[]>;
+  findOne(option: FindOneOptions<ItemTypes>): Promise<ItemTypes>;
+  find(option: FindManyOptions<ItemTypes>): Promise<ItemTypes[]>;
 }

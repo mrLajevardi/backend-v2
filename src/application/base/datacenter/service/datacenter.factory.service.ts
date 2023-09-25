@@ -1,32 +1,28 @@
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { FindManyOptions, Like } from 'typeorm';
-import { ItemTypesConfig } from '../../../../infrastructure/database/entities/ItemTypesConfig';
+// import { ItemTypesConfig } from '../../../../infrastructure/database/entities/ItemTypesConfig';
 import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
+import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 
 @Injectable()
 export class DatacenterFactoryService {
   public GetFindOptionBy(
     query: DatacenterConfigGenItemsQueryDto,
-  ): FindManyOptions<ItemTypesConfig> {
-    const option: FindManyOptions<ItemTypesConfig> = {};
+  ): FindManyOptions<ItemTypes> {
+    const option: FindManyOptions<ItemTypes> = {};
     option.where = {};
     if (
       query.DataCenterId != undefined &&
       query.DataCenterId.trim().length > 0
     ) {
-      // option.where.datacenterName = query.DataCenterId;
       option.where.datacenterName = Like(`${query.DataCenterId.toLowerCase()}`);
-      // option.where.datacenterName = query.DataCenterId;
     }
     option.relations = { serviceType: true };
     if (
       query.ServiceTypeId !== undefined &&
       query.ServiceTypeId.trim().length > 0
     ) {
-      // option.where.datacenterName = Like(`%${query.DataCenterId}%`);
-
-      // option.where.serviceType = { id: Like(`%${query.ServiceTypeId}`) };
       option.where.serviceType = {
         id: Like(`${query.ServiceTypeId.toLowerCase()}`),
       };
@@ -37,25 +33,23 @@ export class DatacenterFactoryService {
   public CreateItemTypeConfigTree(
     ItemTypesConfig: DatacenterConfigGenItemsResultDto[],
     parentId: number,
-    res: DatacenterConfigGenItemsResultDto[] = [],
+    subItems: DatacenterConfigGenItemsResultDto[] = [],
   ): DatacenterConfigGenItemsResultDto[] {
-    const parents = ItemTypesConfig.filter((d) => d.ParentId == parentId);
+    const parents = ItemTypesConfig.filter((d) => d.parentId == parentId);
+    parents.forEach((e: DatacenterConfigGenItemsResultDto): void => {
+      const res2: DatacenterConfigGenItemsResultDto[] =
+        this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
 
-    if (parents != null && parents.length > 0) {
-      parents.forEach((e: DatacenterConfigGenItemsResultDto): void => {
-        const res2: DatacenterConfigGenItemsResultDto[] =
-          this.CreateItemTypeConfigTree(ItemTypesConfig, e.Id, e.SubItems);
-        if (res2 != null && res2.length > 0) {
-          e.SubItems.concat(res2);
-        }
-        res.push(e);
-      });
-    }
-    return res;
+      e.subItems.concat(res2);
+
+      subItems.push(e);
+    });
+
+    return subItems;
   }
 
   public GetDtoModelConfigItemDto(
-    configs: ItemTypesConfig[],
+    configs: ItemTypes[],
   ): DatacenterConfigGenItemsResultDto[] {
     const res: DatacenterConfigGenItemsResultDto[] = [];
     configs.forEach((itemTypeConfig): void => {
@@ -64,12 +58,13 @@ export class DatacenterFactoryService {
           itemTypeConfig.id,
           itemTypeConfig.title,
           itemTypeConfig.serviceType.id,
-          itemTypeConfig.price,
+          itemTypeConfig.fee,
           itemTypeConfig.percent,
-          itemTypeConfig.min,
-          itemTypeConfig.max,
+          itemTypeConfig.minPerRequest,
+          itemTypeConfig.maxPerRequest,
           itemTypeConfig.unit,
           itemTypeConfig.parentId,
+          itemTypeConfig.step,
         ),
       );
     });
@@ -83,12 +78,12 @@ export class DatacenterFactoryService {
   ): DatacenterConfigGenItemsResultDto[] {
     return (tree = tree.filter(
       (datacenterConfig) =>
-        (datacenterConfig.ItemTypeName.toLowerCase().includes(
-          'G'.toLowerCase(),
-        ) &&
-          datacenterConfig.ItemTypeName.trim().toLowerCase() ==
+        (datacenterConfig.itemTypeName
+          .toLowerCase()
+          .includes('g'.toLowerCase()) &&
+          datacenterConfig.itemTypeName.trim().toLowerCase() ==
             query.GenId.toLowerCase()) ||
-        !regexPattern.test(datacenterConfig.ItemTypeName),
+        !regexPattern.test(datacenterConfig.itemTypeName),
     ));
   }
 }
