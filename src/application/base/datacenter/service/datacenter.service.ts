@@ -117,8 +117,6 @@ export class DatacenterService implements BaseService {
     const option: FindManyOptions<ItemTypes> =
       this.datacenterServiceFactory.GetFindOptionBy(query);
 
-    const regexPatternGeneration = /^g[1-4]$/i;
-
     const configs: ItemTypes[] = await this.dataCenterTableService.find(option);
 
     const models: DatacenterConfigGenItemsResultDto[] =
@@ -130,7 +128,6 @@ export class DatacenterService implements BaseService {
     tree = this.datacenterServiceFactory.GetDatacenterConfigSearched(
       tree,
       query,
-      regexPatternGeneration,
     );
     return Promise.resolve(tree);
   }

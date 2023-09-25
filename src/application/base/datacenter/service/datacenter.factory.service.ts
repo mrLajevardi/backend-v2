@@ -1,6 +1,6 @@
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { FindManyOptions, FindOptionsWhere, IsNull, Like } from 'typeorm';
-// import { ItemTypesConfig } from '../../../../infrastructure/database/entities/ItemTypesConfig';
+
 import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
@@ -96,7 +96,6 @@ export class DatacenterFactoryService {
   public GetDatacenterConfigSearched(
     tree: DatacenterConfigGenItemsResultDto[],
     query: DatacenterConfigGenItemsQueryDto,
-    regexPattern: RegExp,
   ): DatacenterConfigGenItemsResultDto[] {
     const generationName = 'generation';
     tree.forEach((config) => {
@@ -110,15 +109,5 @@ export class DatacenterFactoryService {
     });
 
     return tree;
-
-    // return (tree = tree.filter(
-    //   (datacenterConfig) =>
-    //     (datacenterConfig.itemTypeName
-    //       .toLowerCase()
-    //       .includes('g'.toLowerCase()) &&
-    //       datacenterConfig.itemTypeName.trim().toLowerCase() ==
-    //         query.GenId.toLowerCase()) ||
-    //     !regexPattern.test(datacenterConfig.itemTypeName),
-    // ));
   }
 }
