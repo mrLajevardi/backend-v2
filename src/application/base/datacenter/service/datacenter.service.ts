@@ -11,12 +11,15 @@ import { SessionsService } from '../../sessions/sessions.service';
 import { Value } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs.dto';
 import { GetProviderVdcsMetadataDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs-metadata.dto';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
-import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
+import {
+  BaseDatacenterService,
+  FoundDatacenterMetadata,
+} from '../interface/datacenter.interface';
 import { trim } from 'lodash';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 
 @Injectable()
-export class DatacenterService implements BaseService {
+export class DatacenterService implements BaseDatacenterService, BaseService {
   constructor(
     private readonly dataCenterTableService: DataCenterTableService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,

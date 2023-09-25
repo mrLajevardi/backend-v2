@@ -20,6 +20,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
 import { AbilityModule } from '../security/ability/ability.module';
+import { VdcModule } from '../../vdc/vdc.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AbilityModule } from '../security/ability/ability.module';
     UserModule,
     PaymentModule,
     InvoicesModule,
+    VdcModule,
     TasksModule,
     VgpuModule,
     AbilityModule,

@@ -32,6 +32,9 @@ import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dt
 import { ZarinpalVerifyReturnDto } from '../dto/return/zarinpal-verify.dto';
 import { GetServicesReturnDto } from '../dto/return/get-services.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
+import { VdcService } from '../../../vdc/service/vdc.service';
+import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+import { ServiceItemDto } from '../dto/service-item.dto';
 
 @Injectable()
 export class ServiceService {
@@ -53,6 +56,7 @@ export class ServiceService {
     private readonly usersTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly serviceTypesTable: ServiceTypesTableService,
+    private readonly vdcService: VdcService,
   ) {}
 
   async increaseServiceResources(
@@ -472,7 +476,43 @@ export class ServiceService {
     id?: string,
   ): Promise<GetAllVdcServiceWithItemsResultDto[]> {
     //mock
+
     const res = GetAllVdcServiceWithItemsResultDto.getMock();
+    //get all services with out Items
+    const allServicesInstances = await this.getServices(options, typeId, id);
+
+    for (const serviceInstance of allServicesInstances) {
+      //DaysLeft,ticketSent,ServicePlanType ==> TODO ==> Getting All Them
+      const vdcItems = await this.vdcService.getVdc(
+        options,
+        serviceInstance.id,
+      );
+
+      console.log(vdcItems);
+
+      const model: GetAllVdcServiceWithItemsResultDto =
+        new GetAllVdcServiceWithItemsResultDto(
+          serviceInstance.id,
+          serviceInstance.status,
+          serviceInstance.isDeleted,
+          serviceInstance.name,
+          serviceInstance.serviceType.id,
+          [],
+          serviceInstance.expired,
+          0,
+          false,
+          ServicePlanTypeEnum.Static,
+        );
+
+      //Cpu , Ram , Disk , Vm
+      const modelItem: ServiceItemDto[] = [];
+      const serviceItem = new ServiceItemDto('CPU', 0, 0);
+      const memoryUsageProperty = 'memoryUsedMB';
+      const memoryQuantityProperty = 'memoryAllocationMB';
+      vdcItems.records[memoryUsageProperty];
+      modelItem.push(serviceItem);
+    }
+
     return res;
   }
 

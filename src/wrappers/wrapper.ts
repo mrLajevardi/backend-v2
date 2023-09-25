@@ -65,7 +65,7 @@ export class Wrapper {
       console.dir(err);
       return Promise.reject(
         new WrapperErrorException(
-          err.response.status,
+          err.response?.status,
           err.response?.data?.message,
           err.stack,
           err.response?.data?.minorErrorCode,

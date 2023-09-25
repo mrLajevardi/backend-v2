@@ -7,7 +7,7 @@ import { ServicePropertiesTableService } from 'src/application/base/crud/service
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
-import { VmCreateWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-create-wrapper.service';
+import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 
 @Injectable()
 export class VdcService {
@@ -18,6 +18,7 @@ export class VdcService {
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly configTable: ConfigsTableService,
     private readonly servicePropertiesService: ServicePropertiesService,
+    private readonly vdcWrapperService: VdcWrapperService,
     // @Inject(forwardRef(() => servicePropertiesService))
     // private readonly servicePropertiesService: servicePropertiesService,
     private readonly loggerService: LoggerService,
@@ -380,7 +381,10 @@ export class VdcService {
    * @param {String} vdcInstanceId
    * @return {Promise}
    */
-  async getVdc(options, vdcInstanceId) {
+  async getVdc(
+    options,
+    vdcInstanceId,
+  ): Promise<{ instanceId: any; records: any }> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -389,7 +393,7 @@ export class VdcService {
       userId,
       props['orgId'],
     );
-    const vdcData = await mainWrapper.user.vdc.vcloudQuery(session, {
+    const vdcData = await this.vdcWrapperService.vcloudQuery<object>(session, {
       type: 'orgVdc',
       format: 'records',
       page: 1,
@@ -398,7 +402,7 @@ export class VdcService {
     });
     return Promise.resolve({
       instanceId: vdcInstanceId,
-      records: vdcData.data.record,
+      records: vdcData.data,
     });
   }
 

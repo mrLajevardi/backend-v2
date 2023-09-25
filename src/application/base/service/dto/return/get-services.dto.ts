@@ -2,4 +2,5 @@ import { CreateServiceInstancesDto } from '../../../crud/service-instances-table
 
 export class GetServicesReturnDto extends CreateServiceInstancesDto {
   expired: boolean;
+  id: string;
 }
