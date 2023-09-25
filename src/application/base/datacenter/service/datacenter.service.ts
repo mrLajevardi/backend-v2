@@ -129,6 +129,7 @@ export class DatacenterService implements BaseService {
       tree,
       query,
     );
+
     return Promise.resolve(tree);
   }
 }

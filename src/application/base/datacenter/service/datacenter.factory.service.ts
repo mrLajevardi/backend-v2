@@ -97,6 +97,13 @@ export class DatacenterFactoryService {
     tree: DatacenterConfigGenItemsResultDto[],
     query: DatacenterConfigGenItemsQueryDto,
   ): DatacenterConfigGenItemsResultDto[] {
+    if (
+      query.DataCenterId != undefined &&
+      query.DataCenterId.trim().length > 0
+    ) {
+      return tree;
+    }
+
     const generationName = 'generation';
     tree.forEach((config) => {
       if (config.itemTypeName.toLowerCase() == generationName) {
