@@ -38,8 +38,8 @@ export class DatacenterController {
     return result;
   }
 
+  @Get('/configs/:datacenterId/')
   @Public()
-  @Get('/configs/:datacenterId/:genId/')
   @ApiResponse({
     type: [DatacenterConfigGenItemsResultDto],
   })
@@ -47,15 +47,16 @@ export class DatacenterController {
     summary: 'Return All DatacenterItems with their Configs',
   })
   @ApiParam({
+    name: 'datacenterId',
+    type: String,
+    description: 'DatacenterId about a specify Datacenter',
+  })
+  @ApiQuery({
     name: 'genId',
     type: String,
     description:
       'GenerationId that is about generation of a specify Datacenter',
-  })
-  @ApiParam({
-    name: 'datacenterId',
-    type: String,
-    description: 'DatacenterId about a specify Datacenter',
+    required: false,
   })
   @ApiQuery({
     name: 'serviceTypeId',
@@ -64,7 +65,7 @@ export class DatacenterController {
   })
   async getDatacenterItemsConfig(
     @Param('datacenterId') datacenterId: string,
-    @Param('genId') genId: string,
+    @Query('genId') genId: string,
     @Query('serviceTypeId') serviceTypeId?: string,
   ): Promise<DatacenterConfigGenItemsResultDto[]> {
     const result: DatacenterConfigGenItemsResultDto[] =
