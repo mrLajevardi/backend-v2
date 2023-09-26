@@ -14,11 +14,14 @@ import { VdcParentType } from '../interface/vdc-item-parent-type.interface';
 
 @Injectable()
 export class InvoiceValidationService {
+  vdcCode: string;
   constructor(
     private readonly serviceItemsSumService: ServiceItemsSumService,
     private readonly datacenterService: DatacenterService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
-  ) {}
+  ) {
+    this.vdcCode = 'vdc';
+  }
 
   async vdcInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
     const itemParentType = new VdcParentType();
@@ -47,7 +50,7 @@ export class InvoiceValidationService {
       }
     }
     // check items with default vdc service items
-    await this.compareWithVdcDefaultService('vdc', itemParentType);
+    await this.compareWithVdcDefaultService(itemParentType);
 
     // checks if an item has different parents
     this.checkItemsHasSameParents(itemParentType);
@@ -106,14 +109,11 @@ export class InvoiceValidationService {
     }
   }
 
-  async compareWithVdcDefaultService(
-    serviceTypeId: string,
-    parentTypes: VdcParentType,
-  ): Promise<void> {
+  async compareVdcDefaultGeneration(generaionsList: string[]): Promise<void> {
     // generation child item eg: G1
     let targetGeneration = null;
     let generationHierarchyList = [];
-    for (const generation of parentTypes.generation) {
+    for (const generation of generaionsList) {
       const hierarchy = generation.split('_');
       targetGeneration = targetGeneration ? targetGeneration : hierarchy[1];
       hierarchy.forEach((value) => {
@@ -137,7 +137,7 @@ export class InvoiceValidationService {
       await this.serviceItemTypesTreeService.find({
         where: {
           required: true,
-          serviceTypes: { id: serviceTypeId },
+          serviceTypes: { id: this.vdcCode },
           datacenterName: null,
           codeHierarchy: And(
             Like(`${generationItem.codeHierarchy}%`),
@@ -149,6 +149,12 @@ export class InvoiceValidationService {
       console.log(requiredGenerationItemsNotProvided);
       throw new BadRequestException(`required generation items not provided`);
     }
+  }
+  async compareWithVdcDefaultService(
+    parentTypes: VdcParentType,
+  ): Promise<void> {
+    // generation items
+    await this.compareVdcDefaultGeneration(parentTypes.generation);
     // other items
     const otherItems = [].concat(
       parentTypes.guaranty,
@@ -157,7 +163,7 @@ export class InvoiceValidationService {
     );
     let otherItemsHierarchyList = [];
     for (const otherItem of otherItems) {
-      const hierarchy = otherItem.split('_');
+      const hierarchy: string[] = otherItem.split('_');
       hierarchy.forEach((value) => {
         otherItemsHierarchyList.push(parseInt(value));
       });
@@ -171,15 +177,16 @@ export class InvoiceValidationService {
     const otherItemsParentCodes = otherItemsParentsList.map(
       (parent) => parent.codeHierarchy,
     );
+    const generationCode = 'generation';
     const requiredOtherItemsNotProvided =
       await this.serviceItemTypesTreeService.find({
         where: {
           required: true,
-          serviceTypes: { id: serviceTypeId },
+          serviceTypes: { id: this.vdcCode },
           datacenterName: null,
           codeHierarchy: And(
             Not(In(otherItemsParentCodes)),
-            Not(Like(`generation%`)),
+            Not(Like(`${generationCode}%`)),
           ),
         },
       });
