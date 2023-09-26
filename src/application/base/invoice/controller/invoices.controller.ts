@@ -16,7 +16,6 @@ import {
   ApiBearerAuth,
 } from '@nestjs/swagger';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
-import { InvoicesService } from '../service/invoices.service';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';

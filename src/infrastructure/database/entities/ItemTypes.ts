@@ -7,7 +7,6 @@ import {
   OneToMany,
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
-import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { InvoiceItems } from './InvoiceItems';
 import { ServiceItems } from './ServiceItems';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
@@ -52,7 +51,6 @@ export class ItemTypes {
   @Column('datetime', {
     name: 'CreateDate',
     nullable: true,
-    default: () => 'getdate()',
   })
   createDate: Date | null;
 
@@ -61,9 +59,6 @@ export class ItemTypes {
 
   @Column('tinyint', { name: 'PrinciplePrice', nullable: true })
   principlePrice: number | null;
-
-  @Column('nvarchar', { name: 'Hierarchy', nullable: true, length: 50 })
-  hierarchy: string | null;
 
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes, {
     onDelete: 'CASCADE',
@@ -74,19 +69,6 @@ export class ItemTypes {
 
   @Column('varchar', { name: 'ServiceTypeID', length: 50 })
   serviceTypeId: string;
-
-  @Column('datetime', {
-    name: 'CreateDate',
-    nullable: true,
-    // default: () => 'getdate()',
-  })
-  createDate: Date | null;
-
-  @Column('int', { name: 'Percent', nullable: true })
-  percent: number | null;
-
-  @Column('tinyint', { name: 'PrinciplePrice', nullable: true })
-  principlePrice: number | null;
 
   @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'Required',

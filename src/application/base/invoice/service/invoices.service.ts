@@ -35,10 +35,12 @@ import { CreatedServicePlansAndItemsDto } from '../dto/created-plans-and-items.d
 import { PrevPlansAndNewDurationDto } from '../dto/prev-plans-and-new-duration.dto';
 import { CreateInvoicePlansPluralDto } from '../dto/create-invoice-plans-plural.dto';
 import { CreatePlansDto } from '../../crud/plans-table/dto/create-plans.dto';
+import { InvoiceValidationService } from '../validators/invoice-validation.service';
 
 @Injectable()
 export class InvoicesService {
   constructor(
+    private readonly validationService: InvoiceValidationService,
     private readonly invoicesTable: InvoicesTableService,
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly serviceTypesTable: ServiceTypesTableService,
@@ -55,7 +57,11 @@ export class InvoicesService {
     private readonly servicePlansTableService: ServicePlansTableService,
   ) {}
 
-  async createVdcInvoice(): Promise<InvoiceIdDto> {
+  async createVdcInvoice(
+    dto: CreateServiceInvoiceDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    await this.validationService.vdcInvoiceValidator(dto);
     return InvoiceIdDto.generateMock();
   }
   /**

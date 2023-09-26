@@ -7,6 +7,7 @@ import { InvoicesChecksService } from './service/invoices-checks.service';
 import { CrudModule } from '../crud/crud.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { DatacenterModule } from '../datacenter/datacenter.module';
+import { InvoiceValidationService } from './validators/invoice-validation.service';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { DatacenterModule } from '../datacenter/datacenter.module';
     InvoicesService,
     InvoicesChecksService,
     CostCalculationService,
+    InvoiceValidationService,
     {
       provide: 'InvoiceService',
       useClass: InvoicesService,

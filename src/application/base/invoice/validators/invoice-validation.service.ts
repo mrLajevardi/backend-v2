@@ -3,133 +3,218 @@ import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
 } from '../dto/create-service-invoice.dto';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { DatacenterService } from '../../datacenter/service/datacenter.service';
-import { groupBy, isNil, keyBy } from 'lodash';
+import { isNil } from 'lodash';
 import { InvoiceItemLimits } from '../enum/invoice-item-limits.enum';
-import { In } from 'typeorm';
-import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { And, In, Like, Not } from 'typeorm';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
+import { VdcParentType } from '../interface/vdc-item-parent-type.interface';
 
 @Injectable()
 export class InvoiceValidationService {
   constructor(
-    private readonly itemTypesTableService: ItemTypesTableService,
     private readonly serviceItemsSumService: ServiceItemsSumService,
     private readonly datacenterService: DatacenterService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
   ) {}
-  async validateInvoice(invoice: CreateServiceInvoiceDto): Promise<void> {
-    let lastParent: string;
+
+  async vdcInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
+    const itemParentType = new VdcParentType();
     for (const invoiceItem of invoice.itemsTypes) {
-      const targetInvoiceItem = await this.itemTypesTableService.findById(
+      await this.generalInvoiceValidator(invoiceItem);
+      const targetInvoiceItem = await this.serviceItemTypesTreeService.findById(
         invoiceItem.itemTypeId,
       );
-      if (!targetInvoiceItem) {
-        throw new BadRequestException();
+      // group items by first parent item type eg: generation, reservation, etc
+      const parents = targetInvoiceItem.hierarchy.split('_');
+      const firstParent = await this.serviceItemTypesTreeService.findById(
+        parseInt(parents[0]),
+      );
+      itemParentType[firstParent.code.toLowerCase()].push(
+        targetInvoiceItem.hierarchy,
+      );
+      // checks provider vdc status
+      if (firstParent.code.toLowerCase() === 'generation') {
+        const secondParent = await this.serviceItemTypesTreeService.findById(
+          parseInt(parents[1]),
+        );
+        await this.checkVdcDatacenterState(
+          targetInvoiceItem.datacenterName.toLowerCase(),
+          secondParent.code.toLowerCase(),
+        );
       }
-      // check item is the last child
-      const isParent = await this.itemTypesTableService.findOne({
-        where: {
-          parentId: targetInvoiceItem.id,
-        },
-      });
-      if (isParent) {
-        throw new BadRequestException();
-      }
-      // checks if parents are the same
-      const parents = targetInvoiceItem.hierarchy.split(',');
-      if (lastParent && parents[0] !== lastParent) {
-        throw new BadRequestException();
-      }
-
-      // checks only numeric items
-      if (!isNaN(parseFloat(invoiceItem.value))) {
-        // checks numeric item range
-        await this.checkNumericItemTypeValue(invoiceItem, targetInvoiceItem);
-      }
-
-      // checks item rule
-      this.checkItemTypeRule(invoiceItem, targetInvoiceItem);
-
-      // checks availability of datacenter
-      await this.checkDatacenterState(targetInvoiceItem.datacenterName);
     }
+    // check items with default vdc service items
+    await this.compareWithVdcDefaultService('vdc', itemParentType);
+
+    // checks if an item has different parents
+    this.checkItemsHasSameParents(itemParentType);
   }
 
-  async checkDatacenterState(datacenterName: string): Promise<void> {
+  async generalInvoiceValidator(invoiceItem: InvoiceItemsDto): Promise<void> {
+    const targetInvoiceItem = await this.serviceItemTypesTreeService.findById(
+      invoiceItem.itemTypeId,
+    );
+    //checks if itemType exists
+    if (!targetInvoiceItem) {
+      throw new BadRequestException(
+        `item [${invoiceItem.itemTypeId}] does not exist`,
+      );
+    }
+    // checks if item is enabled
+    if (!targetInvoiceItem.enabled) {
+      throw new BadRequestException(
+        `item [${invoiceItem.itemTypeId}] is not enabled`,
+      );
+    }
+    // check item is the last child
+    const isParent = await this.serviceItemTypesTreeService.findOne({
+      where: {
+        parentId: targetInvoiceItem.id,
+      },
+    });
+    if (isParent) {
+      throw new BadRequestException(
+        `item [${targetInvoiceItem.id}] is not last child`,
+      );
+    }
+    // checks only numeric items
+    if (!isNaN(parseFloat(invoiceItem.value))) {
+      // checks numeric item range
+      await this.checkNumericItemTypeValue(invoiceItem, targetInvoiceItem);
+    }
+    // checks item rule
+    this.checkItemTypeRule(invoiceItem, targetInvoiceItem);
+  }
+
+  async checkVdcDatacenterState(
+    datacenterName: string,
+    generationCode: string,
+  ): Promise<void> {
     const availableDatacenters =
       await this.datacenterService.getDatacenterConfigWithGen();
-    const targetDatacenter = availableDatacenters.find(
-      (dc) => dc.datacenter === datacenterName,
-    );
+    const targetDatacenter = availableDatacenters.find((dc) => {
+      return dc.datacenter === datacenterName;
+    });
     if (isNil(targetDatacenter)) {
-      throw new BadRequestException();
+      throw new BadRequestException(`datacenter is invalid`);
+    }
+    if (!(generationCode in targetDatacenter.gens)) {
+      throw new BadRequestException(`datacenter is invalid`);
     }
   }
 
-  async compareWithDefaultService(
+  async compareWithVdcDefaultService(
     serviceTypeId: string,
-    invoiceItems: InvoiceItemsDto[],
+    parentTypes: VdcParentType,
   ): Promise<void> {
-    for (const invoiceItem of invoiceItems) {
-      const targetItem = await this.itemTypesTableService.findById(
-        invoiceItem.itemTypeId,
-      );
-      const parents = targetItem.hierarchy.split(',');
-      const parentsItems = await this.serviceItemTypesTreeService.find({
+    // generation child item eg: G1
+    let targetGeneration = null;
+    let generationHierarchyList = [];
+    for (const generation of parentTypes.generation) {
+      const hierarchy = generation.split('_');
+      targetGeneration = targetGeneration ? targetGeneration : hierarchy[1];
+      hierarchy.forEach((value) => {
+        generationHierarchyList.push(parseInt(value));
+      });
+    }
+    // unique items
+    generationHierarchyList = [...new Set(generationHierarchyList)];
+    const generationParentsList = await this.serviceItemTypesTreeService.find({
+      where: {
+        id: In(generationHierarchyList),
+      },
+    });
+    const generationParentCodes = generationParentsList.map(
+      (parent) => parent.codeHierarchy,
+    );
+    const generationItem = await this.serviceItemTypesTreeService.findById(
+      parseInt(targetGeneration),
+    );
+    const requiredGenerationItemsNotProvided =
+      await this.serviceItemTypesTreeService.find({
         where: {
-          id: In(parents.slice(0, 2)),
+          required: true,
+          serviceTypes: { id: serviceTypeId },
+          datacenterName: null,
+          codeHierarchy: And(
+            Like(`${generationItem.codeHierarchy}%`),
+            Not(In(generationParentCodes)),
+          ),
         },
       });
-      const mappedParentItems = keyBy(parentsItems, 'level');
+    if (requiredGenerationItemsNotProvided.length > 0) {
+      console.log(requiredGenerationItemsNotProvided);
+      throw new BadRequestException(`required generation items not provided`);
+    }
+    // other items
+    const otherItems = [].concat(
+      parentTypes.guaranty,
+      parentTypes.reservation,
+      parentTypes.period,
+    );
+    let otherItemsHierarchyList = [];
+    for (const otherItem of otherItems) {
+      const hierarchy = otherItem.split('_');
+      hierarchy.forEach((value) => {
+        otherItemsHierarchyList.push(parseInt(value));
+      });
+    }
+    otherItemsHierarchyList = [...new Set(otherItemsHierarchyList)];
+    const otherItemsParentsList = await this.serviceItemTypesTreeService.find({
+      where: {
+        id: In(otherItemsHierarchyList),
+      },
+    });
+    const otherItemsParentCodes = otherItemsParentsList.map(
+      (parent) => parent.codeHierarchy,
+    );
+    const requiredOtherItemsNotProvided =
+      await this.serviceItemTypesTreeService.find({
+        where: {
+          required: true,
+          serviceTypes: { id: serviceTypeId },
+          datacenterName: null,
+          codeHierarchy: And(
+            Not(In(otherItemsParentCodes)),
+            Not(Like(`generation%`)),
+          ),
+        },
+      });
+    if (requiredOtherItemsNotProvided.length > 0) {
+      throw new BadRequestException(`required items not provided`);
+    }
+  }
 
-      //checks if first parent and second parent matches with default service
-      const firstParentSearch = await this.serviceItemTypesTreeService.findOne({
-        where: {
-          serviceTypes: { id: serviceTypeId, dataCenterName: null },
-          level: 0,
-          code: mappedParentItems['0'].code,
-        },
-      });
-      const secondParentSearch = await this.serviceItemTypesTreeService.findOne(
-        {
-          where: {
-            serviceTypes: { id: 'vdc', dataCenterName: null },
-            level: 1,
-            code: mappedParentItems['1'].code,
-          },
-        },
-      );
-      if (isNil(secondParentSearch) || isNil(firstParentSearch)) {
-        throw new BadRequestException();
-      }
-      if (parentsItems['1'].code === 'disk') {
-        const thirdParentsSearch = await this.serviceItemTypesTreeService.find({
-          where: {
-            serviceTypes: { id: 'vdc', dataCenterName: null },
-            parentId: secondParentSearch.id,
-            level: 2,
-          },
-        });
-        thirdParentsSearch.forEach((defaultParent) => {
-          const matched = mappedParentItems['2'].find(
-            (parent) => parent.code === defaultParent.code,
-          );
-          if (!matched) {
-            throw new BadRequestException();
+  checkItemsHasSameParents(itemParentType: VdcParentType): void {
+    for (const key in itemParentType) {
+      if (Object.prototype.hasOwnProperty.call(itemParentType, key)) {
+        const itemParent: string[] = itemParentType[key];
+        if (itemParent.length === 0) {
+          continue;
+        }
+        const firstItemParents = itemParent[0].split('_');
+        const itemHasDifferentParents = itemParent.find((value) => {
+          const hierarchy = value.split('_');
+          if (
+            hierarchy[0] !== firstItemParents[0] ||
+            hierarchy[1] !== firstItemParents[1]
+          ) {
+            return true;
           }
         });
+        if (itemHasDifferentParents) {
+          throw new BadRequestException('invalid items');
+        }
       }
     }
   }
-
   async checkNumericItemTypeValue(
     invoiceItemType: InvoiceItemsDto,
-    itemType: ItemTypes,
+    // selected item type based on given itemType id
+    itemType: ServiceItemTypesTree,
   ): Promise<void> {
     const checkMax =
       itemType.maxPerRequest !== InvoiceItemLimits.UnlimitedMinValue;
@@ -143,30 +228,45 @@ export class InvoiceValidationService {
 
     //check item type value min and max
     if (higherThanMax || lowerThanMin) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        `item [${itemType.id}] is not in correct range`,
+      );
     }
-
     // check if sum of items is more than maxAvailable
     const itemTypeSum = await this.serviceItemsSumService.findOne({
       where: {
-        id: itemType.serviceType.id,
+        id: itemType.serviceTypeId,
       },
     });
     if (
       checkMaxAvailable &&
       parsedValue + itemTypeSum.sum > itemType.maxAvailable
     ) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        `insufficient resources for item [${itemType.id}]`,
+      );
+    }
+
+    // checks if steps mod is zero
+    if (parseInt(invoiceItemType.value) % itemType.step !== 0) {
+      throw new BadRequestException(
+        `item [${itemType.id}] value is not compatible with items step config`,
+      );
     }
   }
 
   checkItemTypeRule(
     invoiceItemType: InvoiceItemsDto,
-    itemType: ItemTypes,
+    itemType: ServiceItemTypesTree,
   ): void {
+    if (!itemType.rule) {
+      return;
+    }
     const regexRule = new RegExp(itemType.rule);
     if (!invoiceItemType.value.match(regexRule)) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        `item [${itemType.id}] value does not match default rule for this item`,
+      );
     }
   }
 }
