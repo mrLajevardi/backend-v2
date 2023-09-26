@@ -37,3 +37,7 @@ lerna-debug.log*
 eslint-junit.xml
 .gitignore
 jest-junit.xml
+
+src/infrastructure/database/ormconfig.json
+
+src/infrastructure/database/tsconfig.json

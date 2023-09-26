@@ -1,20 +1,11 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
-import { ServiceTypes } from './ServiceTypes';
-import { InvoiceItems } from './InvoiceItems';
-import { ServiceItems } from './ServiceItems';
-import { AiTransactionsLogs } from './AiTransactionsLogs';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
-
-@Index('PK_ResourceTypes', ['id'], { unique: true })
-@Entity('ItemTypes', { schema: 'services' })
-export class ItemTypes {
+import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { ServiceTypes } from '../ServiceTypes';
+import { isTestingEnv } from '../../../helpers/helpers';
+@Entity({
+  schema: 'services',
+  name: 'ServiceItemTypesTree',
+})
+export class ServiceItemTypesTree {
   @Column('int', { primary: true, name: 'ID' })
   id: number;
 
@@ -36,10 +27,10 @@ export class ItemTypes {
   @Column('varchar', { name: 'Code', nullable: true, length: 255 })
   code: string | null;
 
-  @Column('int', { name: 'MaxPerRequest', nullable: true })
+  @Column('int', { name: 'Max', nullable: true })
   maxPerRequest: number | null;
 
-  @Column('int', { name: 'MinPerRequest', nullable: true })
+  @Column('int', { name: 'Min', nullable: true })
   minPerRequest: number | null;
 
   @Column('nvarchar', { name: 'Rule', nullable: true })
@@ -75,11 +66,6 @@ export class ItemTypes {
     nullable: true,
   })
   required: boolean | null;
-  @OneToMany(
-    () => AiTransactionsLogs,
-    (aiTransactionsLogs) => aiTransactionsLogs.itemType,
-  )
-  aiTransactionsLogs: AiTransactionsLogs[];
   @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'Enabled',
     nullable: true,
@@ -88,9 +74,17 @@ export class ItemTypes {
 
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;
-  @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
-  invoiceItems: InvoiceItems[];
 
-  @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
-  serviceItems: ServiceItems[];
+  @Column({ name: 'Level' })
+  level: number;
+
+  @Column('nvarchar', { name: 'Hierarchy', nullable: true, length: 50 })
+  hierarchy: string;
+
+  @Column('nvarchar', { name: 'CodeHierarchy', nullable: true, length: 150 })
+  codeHierarchy: string;
+
+  @ManyToOne(() => ServiceTypes)
+  @JoinColumn({ name: 'ServiceTypeID', referencedColumnName: 'id' })
+  serviceTypes: ServiceTypes;
 }

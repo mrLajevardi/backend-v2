@@ -47,6 +47,7 @@ import { ServiceItemsSum } from '../entities/views/service-items-sum';
 import { InvoiceItemList } from '../entities/views/invoice-item-list';
 import { ServicePlans } from '../entities/ServicePlans';
 import { ServiceReports } from '../entities/views/service-reports';
+import { ServiceItemTypesTree } from '../entities/views/service-item-types-tree';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -54,6 +55,7 @@ export const dbEntities = [
   QualityPlans,
   ServiceItemsSum,
   InvoiceItemList,
+  ServiceItemTypesTree,
   // Logs Schema
   DebugLog,
   InfoLog,
@@ -100,4 +102,5 @@ export const dbEntities = [
   Tickets,
   Transactions,
   ServiceReports,
+  ServiceItems,
 ];

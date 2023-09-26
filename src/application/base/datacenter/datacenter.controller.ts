@@ -12,6 +12,7 @@ import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-i
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
 import { DatacenterService } from './service/datacenter.service';
 import { BaseDatacenterService } from './interface/datacenter.interface';
+import { Public } from '../security/auth/decorators/ispublic.decorator';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -22,6 +23,7 @@ export class DatacenterController {
     private readonly service: BaseDatacenterService,
   ) {}
 
+  @Public()
   @Get()
   @ApiOperation({
     summary: 'Get All Enabled Datacenters With Their Gens ',
@@ -37,6 +39,7 @@ export class DatacenterController {
   }
 
   @Get('/configs/:datacenterId/')
+  @Public()
   @ApiResponse({
     type: [DatacenterConfigGenItemsResultDto],
   })
