@@ -18,4 +18,5 @@ export enum DiskItemCodes {
   Archive = 'archive',
   Vip = 'vip',
   Fast = 'fast',
+  Swap = 'swap',
 }
