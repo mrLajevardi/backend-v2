@@ -97,10 +97,7 @@ export class DatacenterFactoryService {
     tree: DatacenterConfigGenItemsResultDto[],
     query: DatacenterConfigGenItemsQueryDto,
   ): DatacenterConfigGenItemsResultDto[] {
-    if (
-      query.DataCenterId != undefined &&
-      query.DataCenterId.trim().length > 0
-    ) {
+    if (query.GenId == undefined || query.GenId.trim().length == 0) {
       return tree;
     }
 
