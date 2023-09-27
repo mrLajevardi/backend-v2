@@ -77,7 +77,7 @@ export class DatacenterFactoryService {
       res.push(
         new DatacenterConfigGenItemsResultDto(
           itemTypeConfig.id,
-          itemTypeConfig.title,
+          itemTypeConfig.code,
           itemTypeConfig.serviceType.id,
           itemTypeConfig.fee,
           itemTypeConfig.percent,
