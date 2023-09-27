@@ -26,6 +26,8 @@ import { ServicePlansTableService } from '../../crud/service-plans-table/service
 import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
+  InvoiceNumericTypes,
+  InvoiceTypes,
 } from '../dto/create-service-invoice.dto';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
@@ -36,6 +38,7 @@ import { PrevPlansAndNewDurationDto } from '../dto/prev-plans-and-new-duration.d
 import { CreateInvoicePlansPluralDto } from '../dto/create-invoice-plans-plural.dto';
 import { CreatePlansDto } from '../../crud/plans-table/dto/create-plans.dto';
 import { InvoiceValidationService } from '../validators/invoice-validation.service';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 
 @Injectable()
 export class InvoicesService {
@@ -64,67 +67,51 @@ export class InvoicesService {
     await this.validationService.vdcInvoiceValidator(dto);
     return InvoiceIdDto.generateMock();
   }
-  /**
   async createInvoiceItems(
-    invoiceID: number,
-    items: ItemTypes[],
-    data: InvoiceItemsDto[],
+    invoiceId: number,
+    invoiceItems: InvoiceItemsDto[],
   ): Promise<void> {
-    for (const item of items) {
-      const itemTitle = item.code;
-      const dto: CreateInvoiceItemsDto = {
-        itemId: item.id,
-        invoiceId: invoiceID,
-        quantity: null,
-        fee: item.fee,
-      };
-      for (const dataItem of data) {
-        if (dataItem.itemCode === itemTitle) {
-          dto.quantity = dataItem.quantity;
-          await this.invoiceItemsTable.create(dto);
-        }
-      }
+    for (const item of invoiceItems) {
+      const itemType = await this.itemTypesTable.findById(item.itemTypeId);
+      await this.invoiceItemsTable.create({
+        itemId: item.itemTypeId,
+        invoiceId: invoiceId,
+        quantity: item.itemTypeId,
+        fee: itemType.fee,
+      });
     }
   }
 
-  async createInvoiceProperties(
+  async createInvoice(
     data: CreateServiceInvoiceDto,
-    InvoiceID: number,
-    serviceType: string,
-  ): Promise<void> {
-    if (serviceType !== 'vgpu') {
-      return;
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    const { type, serviceInstanceId } = data;
+    let numericType = 0;
+    switch (type) {
+      case InvoiceTypes.Create:
+        numericType = InvoiceNumericTypes.Create;
+        break;
+      case InvoiceTypes.Upgrade:
+        numericType = InvoiceNumericTypes.Upgrade;
+        break;
+      case InvoiceTypes.Extend:
+        numericType = InvoiceNumericTypes.Extend;
+        break;
     }
-    const pcProp = {
-      pcName: data.pcName,
-      pcPassword: data.pcPassword,
-    };
-    if (isNil(data.pcName) || isNil(data.pcPassword)) {
-      return Promise.reject(new VgpuPcNamePassRequired());
-    }
-    for (const item of Object.keys(pcProp)) {
-      await this.invoicePropertiesTable.create({
-        invoiceId: InvoiceID,
-        propertyKey: item,
-        value: pcProp[item],
-      });
-    }
+    // const invoice = await
   }
 
-  // Create multiple invoice plans
-  async createInvoicePlans(dto: CreateInvoicePlansPluralDto): Promise<void> {
-    console.log(dto);
-    const plans: CreatePlansDto[] = dto.plans;
-    for (const plan of plans) {
-      await this.invoicePlansTable.create({
-        invoiceId: dto.invoiceId,
-        planCode: plan.code,
-        ratio: plan.additionRatio,
-        amount: plan.additionAmount,
-      });
-    }
+  async createStaticServiceInvoice(
+    data: CreateServiceInvoiceDto,
+    options: SessionRequest,
+    serviceType: ServiceTypes,
+    numericType: number,
+    numericServicePlanType: number
+  ): Promise<InvoiceIdDto> {
+    const invoiceCost = 
   }
-
+  /**
   async createInvoice(
     data: CreateServiceInvoiceDto,
     options: SessionRequest,

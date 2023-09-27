@@ -16,9 +16,15 @@ export enum ServicePlanTypes {
 }
 
 export enum InvoiceTypes {
-  Update = 'update',
+  Upgrade = 'upgrade',
   Create = 'create',
   Extend = 'extend',
+}
+
+export enum InvoiceNumericTypes {
+  Upgrade = 2,
+  Extend = 1,
+  Create = 0,
 }
 export class InvoiceItemsDto {
   @IsNumber()
@@ -56,8 +62,8 @@ export class CreateServiceInvoiceDto {
   @Matches(
     /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
   )
-  @ValidateIf((object, value) => {
-    return value !== null;
+  @ValidateIf((object) => {
+    return object.type !== InvoiceTypes.Create;
   })
   @ApiProperty()
   serviceInstanceId: string;
