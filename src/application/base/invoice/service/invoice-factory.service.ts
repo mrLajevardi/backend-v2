@@ -13,6 +13,7 @@ import { In } from 'typeorm';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import { InvoiceItemCost } from '../interface/invoice-item-cost.interface';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
+import { MappedItemTypes } from '../interface/mapped-item-types.interface';
 
 @Injectable()
 export class InvoiceFactoryService {
@@ -23,10 +24,17 @@ export class InvoiceFactoryService {
   async groupVdcItems(invoiceItems: InvoiceItemsDto[]): Promise<VdcItemGroup> {
     const vdcItemGroup: VdcItemGroup = {} as VdcItemGroup;
     const generationGroups = new VdcGenerationItems();
-    for (const invoiceItem of invoiceItems) {
-      const itemType = await this.serviceItemTypeTree.findById(
-        invoiceItem.itemTypeId,
-      );
+    const mappedItemTypes = new MappedItemTypes();
+    invoiceItems.forEach((invoiceItem) => {
+      mappedItemTypes.ItemTypesById[invoiceItem.itemTypeId] = invoiceItem;
+      mappedItemTypes.itemTypeIds.push(invoiceItem.itemTypeId);
+    });
+    const itemTypes = await this.serviceItemTypeTree.find({
+      where: {
+        id: In(mappedItemTypes.itemTypeIds),
+      },
+    });
+    for (const itemType of itemTypes) {
       const hierarchy = itemType.hierarchy.split('_');
       const parents = await this.serviceItemTypeTree.find({
         where: {
@@ -36,6 +44,7 @@ export class InvoiceFactoryService {
           level: 'ASC',
         },
       });
+      const invoiceItem = mappedItemTypes.ItemTypesById[itemType.id];
       const invoiceGroupItem = {
         ...itemType,
         value: invoiceItem.value,
@@ -63,6 +72,11 @@ export class InvoiceFactoryService {
           break;
       }
     }
+    // for (const invoiceItem of invoiceItems) {
+    //   const itemType = await this.serviceItemTypeTree.findById(
+    //     invoiceItem.itemTypeId,
+    //   );
+    // }
     vdcItemGroup.generation = generationGroups;
     return vdcItemGroup;
   }
