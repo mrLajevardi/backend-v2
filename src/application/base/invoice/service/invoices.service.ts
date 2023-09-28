@@ -35,10 +35,12 @@ import { CreatedServicePlansAndItemsDto } from '../dto/created-plans-and-items.d
 import { PrevPlansAndNewDurationDto } from '../dto/prev-plans-and-new-duration.dto';
 import { CreateInvoicePlansPluralDto } from '../dto/create-invoice-plans-plural.dto';
 import { CreatePlansDto } from '../../crud/plans-table/dto/create-plans.dto';
+import { InvoiceValidationService } from '../validators/invoice-validation.service';
 
 @Injectable()
 export class InvoicesService {
   constructor(
+    private readonly validationService: InvoiceValidationService,
     private readonly invoicesTable: InvoicesTableService,
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly serviceTypesTable: ServiceTypesTableService,
@@ -55,7 +57,14 @@ export class InvoicesService {
     private readonly servicePlansTableService: ServicePlansTableService,
   ) {}
 
-  // Create invoice items
+  async createVdcInvoice(
+    dto: CreateServiceInvoiceDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    await this.validationService.vdcInvoiceValidator(dto);
+    return InvoiceIdDto.generateMock();
+  }
+  /**
   async createInvoiceItems(
     invoiceID: number,
     items: ItemTypes[],
@@ -152,10 +161,10 @@ export class InvoicesService {
       data.plans = prevPlans;
       calculatePlanCost = false;
     }
-    /**
-     checks if service is expired or not and overwrite items and plans
-     with existing service's items and plans
-    */
+    
+     //checks if service is expired or not and overwrite items and plans
+     //with existing service's items and plans
+
     if (type === 1) {
       const isExpired = await this.checkServiceIsExpired(serviceInstanceId);
       if (!isExpired) {
@@ -412,5 +421,6 @@ export class InvoicesService {
       prevPlans,
       newDuration,
     };
-  }
+  } 
+  */
 }
