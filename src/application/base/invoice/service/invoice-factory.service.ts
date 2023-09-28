@@ -11,14 +11,18 @@ import {
 } from '../enum/item-type-codes.enum';
 import { In } from 'typeorm';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
+import { InvoiceItemCost } from '../interface/invoice-item-cost.interface';
+import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 
 @Injectable()
 export class InvoiceFactoryService {
   constructor(
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
+    private readonly invoiceItemTableService: InvoiceItemsTableService,
   ) {}
   async groupVdcItems(invoiceItems: InvoiceItemsDto[]): Promise<VdcItemGroup> {
     const vdcItemGroup: VdcItemGroup = {} as VdcItemGroup;
+    const generationGroups = new VdcGenerationItems();
     for (const invoiceItem of invoiceItems) {
       const itemType = await this.serviceItemTypeTree.findById(
         invoiceItem.itemTypeId,
@@ -32,34 +36,34 @@ export class InvoiceFactoryService {
           level: 'ASC',
         },
       });
+      const invoiceGroupItem = {
+        ...itemType,
+        value: invoiceItem.value,
+      };
       switch (parents[0].code) {
         case ItemTypeCodes.Period:
-          vdcItemGroup.period = {
-            ...itemType,
-            value: invoiceItem.value,
-          };
+          vdcItemGroup.period = invoiceGroupItem;
           break;
         case ItemTypeCodes.Generation:
-          vdcItemGroup.generation = this.groupVdcGenerationItems(
+          this.groupVdcGenerationItems(
             parents,
             invoiceItem,
             itemType,
+            generationGroups,
           );
           break;
         case ItemTypeCodes.CpuReservation:
-          vdcItemGroup.cpuReservation = {
-            ...itemType,
-            value: invoiceItem.value,
-          };
+          vdcItemGroup.cpuReservation = invoiceGroupItem;
           break;
         case ItemTypeCodes.MemoryReservation:
-          vdcItemGroup.memoryReservation = {
-            ...itemType,
-            value: invoiceItem.value,
-          };
+          vdcItemGroup.memoryReservation = invoiceGroupItem;
+          break;
+        case ItemTypeCodes.Guaranty:
+          vdcItemGroup.guaranty = invoiceGroupItem;
           break;
       }
     }
+    vdcItemGroup.generation = generationGroups;
     return vdcItemGroup;
   }
 
@@ -67,8 +71,8 @@ export class InvoiceFactoryService {
     parents: ServiceItemTypesTree[],
     invoiceItem: InvoiceItemsDto,
     itemType: ServiceItemTypesTree,
+    generationGroups: VdcGenerationItems,
   ): VdcGenerationItems {
-    const generationGroups: VdcGenerationItems = {} as VdcGenerationItems;
     for (const key in VdcGenerationItemCodes) {
       if (Object.prototype.hasOwnProperty.call(VdcGenerationItemCodes, key)) {
         const generationItemCode = VdcGenerationItemCodes[key];
@@ -76,7 +80,8 @@ export class InvoiceFactoryService {
           (parent) => parent.code === generationItemCode,
         );
         if (item) {
-          const lowerCaseKey = key.charAt(0).toLowerCase();
+          const lowerCaseKey =
+            key.charAt(0).toLowerCase() + key.slice(1, key.length);
           generationGroups[lowerCaseKey].push({
             ...itemType,
             value: invoiceItem.value,
@@ -85,5 +90,20 @@ export class InvoiceFactoryService {
       }
     }
     return generationGroups;
+  }
+
+  async createInvoiceItems(
+    invoiceId: number,
+    invoiceItems: InvoiceItemCost[],
+  ): Promise<void> {
+    for (const item of invoiceItems) {
+      await this.invoiceItemTableService.create({
+        itemId: item.id,
+        invoiceId: invoiceId,
+        quantity: 0,
+        value: item.value,
+        fee: item.cost || null,
+      });
+    }
   }
 }

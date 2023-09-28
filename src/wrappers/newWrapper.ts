@@ -44,10 +44,8 @@ export class Wrapper<T> {
         maxBodyLength: Infinity,
         ...additionalConfig,
       });
-      console.log(endpoint);
       return Promise.resolve(request);
     } catch (err) {
-      console.dir(err);
       return Promise.reject(
         new WrapperErrorException(
           err.response.status,

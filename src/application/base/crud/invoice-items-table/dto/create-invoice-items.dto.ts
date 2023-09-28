@@ -14,6 +14,8 @@ export class CreateInvoiceItemsDto {
   @ApiProperty()
   fee: number;
 
+  value?: string;
+
   @IsInt()
   @ApiProperty()
   itemId: number;

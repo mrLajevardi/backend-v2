@@ -19,15 +19,13 @@ export class CostCalculationService {
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly serviceItemTypeTreeService: ServiceItemTypesTreeService,
   ) {}
-  async calculateVdcStaticTypeInvoice(
-    invoice: CreateServiceInvoiceDto,
-  ): Promise<TotalInvoiceItemCosts> {
-    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
-      invoice.itemsTypes,
-    );
+
+  async calculateVdcGenerationItems(
+    groupedItems: VdcItemGroup,
+  ): Promise<Omit<TotalInvoiceItemCosts, 'totalCost'>> {
     const computeResources = {
       cpu: groupedItems.generation.cpu,
-      memory: groupedItems.generation.memory,
+      ram: groupedItems.generation.ram,
     };
     const computeResourceCosts = this.calculateComputeResourcesCosts(
       computeResources,
@@ -38,10 +36,10 @@ export class CostCalculationService {
     );
     const disksCosts = await this.calculateDisksCosts(
       groupedItems.generation.disk,
-      groupedItems.generation.memory[0],
+      groupedItems.generation.ram[0],
       groupedItems.generation.vm[0],
     );
-    const otherItems = [].concat(
+    const otherItems: InvoiceGroupItem[] = [].concat(
       groupedItems.generation.vm,
       groupedItems.generation.ip,
     );
@@ -56,20 +54,47 @@ export class CostCalculationService {
     itemsSum.forEach((item) => {
       totalCost += item.cost;
     });
+    // adding items that don't have cost
+    itemsSum = itemsSum.concat([
+      groupedItems.memoryReservation,
+      groupedItems.cpuReservation,
+      groupedItems.period,
+      groupedItems.guaranty,
+    ]);
     return {
       itemsSum,
-      totalCost,
+      itemsTotalCosts: totalCost,
+    };
+  }
+  async calculateVdcStaticTypeInvoice(
+    invoice: CreateServiceInvoiceDto,
+  ): Promise<TotalInvoiceItemCosts> {
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      invoice.itemsTypes,
+    );
+    const totalInvoiceItemCosts = await this.calculateVdcGenerationItems(
+      groupedItems,
+    );
+    const periodItem = groupedItems.period;
+    const itemsPeriodCost =
+      totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);
+    const discountValue = itemsPeriodCost * periodItem.percent;
+    const periodTotalCost = itemsPeriodCost + discountValue;
+    const supportCosts = groupedItems.guaranty.fee * parseInt(periodItem.value);
+    const invoiceTotalCosts = periodTotalCost + supportCosts;
+    return {
+      itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
+      itemsSum: totalInvoiceItemCosts.itemsSum,
+      totalCost: invoiceTotalCosts,
     };
   }
 
-  // async groupVdcItems ()
-
   calculateComputeResourcesCosts(
-    generationsItem: Pick<VdcGenerationItems, 'cpu' | 'memory'>,
+    generationsItem: Pick<VdcGenerationItems, 'cpu' | 'ram'>,
     reservations: Pick<VdcItemGroup, 'cpuReservation' | 'memoryReservation'>,
   ): InvoiceItemCost[] {
     const cpuItem = generationsItem.cpu[0];
-    const ramItem = generationsItem.memory[0];
+    const ramItem = generationsItem.ram[0];
     const cpuCost =
       cpuItem.fee *
       parseInt(cpuItem.value) *
@@ -124,86 +149,4 @@ export class CostCalculationService {
     }
     return otherItemCosts;
   }
-  // totalCosts(
-  //   serviceType: ServiceTypes,
-  //   data: CreateServiceInvoiceDto,
-  //   items: ItemTypes[],
-  //   options = {},
-  // ): number {
-  //   // console.log(
-  //   //   this.itemsCost(items, data, serviceType),
-  //   //   this.plansRatioForItems(plans, data),
-  //   //   this.plansRatioForInvoice(plans, data),
-  //   //   '🧂',
-  //   // );
-  //   const totalCost =
-  //     (this.itemsCost(items, data, serviceType) *
-  //       this.plansRatioForItems(plans, data) +
-  //       this.plansCost(plans, data, options)) *
-  //     this.plansRatioForInvoice(plans, data);
-  //   return totalCost;
-  // }
-  // itemsCost(
-  //   items: ItemTypes[],
-  //   data: CreateServiceInvoiceDto,
-  //   serviceType: ServiceTypes,
-  // ): number {
-  //   let itemTotalCost = 0;
-  //   if (!serviceType.isPayg) {
-  //     console.log('first');
-  //     items.forEach((element) => {
-  //       data.items.forEach((el) => {
-  //         if (el.itemCode == element.title) {
-  //           itemTotalCost += el.quantity * element.fee;
-  //         }
-  //       });
-  //     });
-  //   }
-  //   itemTotalCost *= data.duration || 1;
-  //   return itemTotalCost;
-  // }
-  // plansCost(
-  //   plans: Plans[],
-  //   data: CreateServiceInvoiceDto,
-  //   options: any = {},
-  // ): number {
-  //   if (!options?.calculatePlanCost) {
-  //     return 0;
-  //   }
-  //   let planTotalCost = 0;
-  //   plans.forEach((element) => {
-  //     data.plans.forEach((el) => {
-  //       if (element.code == el) {
-  //         planTotalCost += element.additionAmount;
-  //       }
-  //     });
-  //   });
-  //   planTotalCost *= data.duration || 1;
-  //   return planTotalCost;
-  // }
-  // plansRatioForInvoice(plans: Plans[], data: CreateServiceInvoiceDto): number {
-  //   let planTotalRatio = 1;
-  //   let additionRatio;
-  //   plans.forEach((element) => {
-  //     data.plans.forEach((el) => {
-  //       if (element.code == el && element.additionAmount == 0) {
-  //         additionRatio = 1 + element.additionRatio;
-  //         planTotalRatio *= additionRatio;
-  //       }
-  //     });
-  //   });
-  //   return planTotalRatio;
-  // }
-  // plansRatioForItems(plans: Plans[], data: CreateServiceInvoiceDto): number {
-  //   let planTotalRatio = 1;
-  //   let additionRatio;
-  //   plans.forEach((element) => {
-  //     data.plans.forEach((el) => {
-  //       if (element.code == el && element.additionAmount != 0) {
-  //         additionRatio = 1 + element.additionRatio;
-  //         planTotalRatio *= additionRatio;
-  //       }
-  //     });
-  //   });
-  //   return planTotalRatio;
 }

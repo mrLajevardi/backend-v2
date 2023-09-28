@@ -11,6 +11,7 @@ import { And, In, Like, Not } from 'typeorm';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import { VdcParentType } from '../interface/vdc-item-parent-type.interface';
+import { ItemTypeCodes } from '../enum/item-type-codes.enum';
 
 @Injectable()
 export class InvoiceValidationService {
@@ -35,9 +36,22 @@ export class InvoiceValidationService {
       const firstParent = await this.serviceItemTypesTreeService.findById(
         parseInt(parents[0]),
       );
-      itemParentType[firstParent.code.toLowerCase()].push(
-        targetInvoiceItem.hierarchy,
-      );
+      switch (firstParent.code) {
+        case ItemTypeCodes.Guaranty:
+          itemParentType.guaranty.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.Period:
+          itemParentType.period.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.Generation:
+          itemParentType.generation.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.CpuReservation:
+          itemParentType.cpuReservation.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.MemoryReservation:
+          itemParentType.memoryReservation.push(targetInvoiceItem.hierarchy);
+      }
       // checks provider vdc status
       if (firstParent.code.toLowerCase() === 'generation') {
         const secondParent = await this.serviceItemTypesTreeService.findById(
@@ -104,7 +118,10 @@ export class InvoiceValidationService {
     if (isNil(targetDatacenter)) {
       throw new BadRequestException(`datacenter is invalid`);
     }
-    if (!(generationCode in targetDatacenter.gens)) {
+    const generation = targetDatacenter.gens.find(
+      (value) => value.name === generationCode,
+    );
+    if (!generation) {
       throw new BadRequestException(`datacenter is invalid`);
     }
   }
@@ -146,7 +163,6 @@ export class InvoiceValidationService {
         },
       });
     if (requiredGenerationItemsNotProvided.length > 0) {
-      console.log(requiredGenerationItemsNotProvided);
       throw new BadRequestException(`required generation items not provided`);
     }
   }
@@ -158,7 +174,8 @@ export class InvoiceValidationService {
     // other items
     const otherItems = [].concat(
       parentTypes.guaranty,
-      parentTypes.reservation,
+      parentTypes.cpuReservation,
+      parentTypes.memoryReservation,
       parentTypes.period,
     );
     let otherItemsHierarchyList = [];

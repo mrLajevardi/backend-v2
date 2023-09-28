@@ -55,6 +55,9 @@ export class Invoices {
   @Column('int', { name: 'UserID' })
   userId: number;
 
+  @Column('tinyint', { name: 'ServicePlanType' })
+  servicePlanType: number;
+
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'ServiceInstanceID',
   })

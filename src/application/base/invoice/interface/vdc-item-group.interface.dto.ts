@@ -7,12 +7,21 @@ export interface VdcItemGroup {
   cpuReservation: InvoiceGroupItem;
   memoryReservation: InvoiceGroupItem;
   generation: VdcGenerationItems;
+  guaranty: InvoiceGroupItem;
 }
 
-export interface VdcGenerationItems {
+export class VdcGenerationItems {
   cpu: InvoiceGroupItem[];
-  memory: InvoiceGroupItem[];
+  ram: InvoiceGroupItem[];
   disk: InvoiceGroupItem[];
   ip: InvoiceGroupItem[];
   vm: InvoiceGroupItem[];
+
+  constructor() {
+    this.cpu = [];
+    this.ram = [];
+    this.disk = [];
+    this.ip = [];
+    this.vm = [];
+  }
 }

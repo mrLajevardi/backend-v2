@@ -25,6 +25,9 @@ export class InvoiceItems {
   @Column('int', { name: 'ItemID' })
   itemId: number;
 
+  @Column('nvarchar', { name: 'Value' })
+  value: string;
+
   @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.invoiceItems, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

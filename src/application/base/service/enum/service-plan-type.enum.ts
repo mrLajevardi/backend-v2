@@ -1,4 +1,4 @@
 export enum ServicePlanTypeEnum {
-  Static,
-  PAYG,
+  Static = 0,
+  Payg = 1,
 }

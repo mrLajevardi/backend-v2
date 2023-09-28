@@ -3,6 +3,7 @@ export enum ItemTypeCodes {
   Period = 'period',
   CpuReservation = 'reservation_cpu',
   MemoryReservation = 'reservation_ram',
+  Guaranty = 'guaranty',
 }
 
 export enum VdcGenerationItemCodes {
