@@ -8,6 +8,9 @@ export class DatacenterConfigGenItemsResultDto {
   itemTypeName: string;
 
   @ApiProperty({ type: String })
+  itemTypeCode: string;
+
+  @ApiProperty({ type: String })
   serviceTypeName: string;
 
   @ApiProperty({ type: Number })
@@ -42,6 +45,7 @@ export class DatacenterConfigGenItemsResultDto {
   constructor(
     Id: number,
     ItemTypeName: string,
+    ItemTypeCode: string,
     ServiceTypeName: string,
     Price: number,
     Percent: number,
@@ -53,6 +57,7 @@ export class DatacenterConfigGenItemsResultDto {
     Enabled: boolean,
   ) {
     this.itemTypeName = ItemTypeName;
+    this.itemTypeCode = ItemTypeCode;
     this.serviceTypeName = ServiceTypeName;
     this.price = Price;
     this.percent = Percent;
