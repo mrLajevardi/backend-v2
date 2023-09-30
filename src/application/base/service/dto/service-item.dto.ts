@@ -46,6 +46,15 @@ export class ServiceItemDto extends BaseResultDto {
         quantity,
       ),
     );
+
+    res.push(
+      new ServiceItemDto(
+        'VM',
+        faker.number.int({ min: 2, max: quantity - 3 }),
+        quantity,
+      ),
+    );
+
     return res;
   }
 }
