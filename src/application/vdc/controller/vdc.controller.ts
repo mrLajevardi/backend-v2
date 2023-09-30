@@ -33,6 +33,7 @@ import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
 import { vpcDetailsMock } from '../mock/vpc-details.mock';
 import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
+import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
 @ApiBearerAuth()
 @ApiTags('Vpc')
 // @UseFilters(new HttpExceptionFilter())
@@ -283,5 +284,17 @@ export class VdcController {
     serviceInstanceId: string,
   ): Promise<typeof vpcInternalSettingsMock> {
     return vpcInternalSettingsMock;
+  }
+
+  @Get('templates')
+  @ApiOperation({
+    summary: 'get templates list',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcTemplates(): Promise<typeof vpcTemplatesMock> {
+    return vpcTemplatesMock;
   }
 }
