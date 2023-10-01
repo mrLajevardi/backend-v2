@@ -5,7 +5,7 @@ import { ServiceItemDto } from './service-item.dto';
 import { faker } from '@faker-js/faker';
 
 export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
-  @ApiProperty({ type: Number })
+  @ApiProperty({ type: Number, description: 'ServiceInstanceId' })
   id: string;
 
   // @ApiProperty({  enum: ServiceStatusEnum ,})

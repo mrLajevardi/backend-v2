@@ -20,6 +20,10 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
 import { AbilityModule } from '../security/ability/ability.module';
+import { VdcModule } from '../../vdc/vdc.module';
+import { DatacenterModule } from '../datacenter/datacenter.module';
+import { SystemSettingsTableModule } from '../crud/system-settings-table/system-settings-table.module';
+import { ServiceServiceFactory } from './Factory/service.service.factory';
 
 @Module({
   imports: [
@@ -30,11 +34,14 @@ import { AbilityModule } from '../security/ability/ability.module';
     UserModule,
     PaymentModule,
     InvoicesModule,
+    VdcModule,
     TasksModule,
     VgpuModule,
     AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
+    DatacenterModule,
+    SystemSettingsTableModule,
   ],
   providers: [
     ServiceService,
@@ -44,6 +51,7 @@ import { AbilityModule } from '../security/ability/ability.module';
     ServiceChecksService,
     DeleteServiceService,
     ServiceAdminService,
+    ServiceServiceFactory,
   ],
   controllers: [ServiceController, ServiceAdminController],
   exports: [

@@ -31,6 +31,7 @@ import {
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
+import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { vpcDetailsMock } from '../mock/vpc-details.mock';
 import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
 import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
@@ -149,7 +150,7 @@ export class VdcController {
     options: any,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
-  ) {
+  ): Promise<GetOrgVdcResult> {
     return this.vdcService.getVdc(options, vdcInstanceId);
   }
 

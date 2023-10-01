@@ -15,6 +15,7 @@ import { NetworkService } from './service/network.service';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 import { AbilityModule } from '../base/security/ability/ability.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { VdcFactoryService } from './service/vdc.factory.service';
 
 @Module({
   imports: [
@@ -29,8 +30,20 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
     ServicePropertiesModule,
     AbilityModule,
   ],
-  providers: [VdcService, OrgService, EdgeService, NetworkService],
+  providers: [
+    VdcService,
+    OrgService,
+    EdgeService,
+    NetworkService,
+    VdcFactoryService,
+  ],
   controllers: [VdcController, VdcAdminController],
-  exports: [EdgeService, OrgService, VdcService, NetworkService],
+  exports: [
+    EdgeService,
+    OrgService,
+    VdcService,
+    NetworkService,
+    VdcFactoryService,
+  ],
 })
 export class VdcModule {}
