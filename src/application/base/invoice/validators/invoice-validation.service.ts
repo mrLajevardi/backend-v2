@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
@@ -11,13 +11,18 @@ import { And, In, Like, Not } from 'typeorm';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import { VdcParentType } from '../interface/vdc-item-parent-type.interface';
+import {
+  BASE_DATACENTER_SERVICE,
+  BaseDatacenterService,
+} from '../../datacenter/interface/datacenter.interface';
 
 @Injectable()
 export class InvoiceValidationService {
   vdcCode: string;
   constructor(
     private readonly serviceItemsSumService: ServiceItemsSumService,
-    private readonly datacenterService: DatacenterService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private readonly datacenterService: BaseDatacenterService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
   ) {
     this.vdcCode = 'vdc';

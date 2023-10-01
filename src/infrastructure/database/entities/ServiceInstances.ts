@@ -79,6 +79,15 @@ export class ServiceInstances {
   @Column('varchar', { name: 'ServiceTypeID', length: 50 })
   serviceTypeId: string;
 
+  @Column('tinyint', { name: 'ServicePlanType', nullable: true })
+  servicePlanType: number | null;
+
+  @Column('tinyint', {
+    name: 'RetryCount',
+    nullable: true,
+  })
+  retryCount: number | null;
+
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.serviceInstance,

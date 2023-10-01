@@ -11,7 +11,10 @@ import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
 import { DatacenterService } from './service/datacenter.service';
-import { BaseDatacenterService } from './interface/datacenter.interface';
+import {
+  BASE_DATACENTER_SERVICE,
+  BaseDatacenterService,
+} from './interface/datacenter.interface';
 import { Public } from '../security/auth/decorators/ispublic.decorator';
 
 @ApiTags('Datacenter')
@@ -19,7 +22,7 @@ import { Public } from '../security/auth/decorators/ispublic.decorator';
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class DatacenterController {
   constructor(
-    @Inject('DatacenterService')
+    @Inject(BASE_DATACENTER_SERVICE)
     private readonly service: BaseDatacenterService,
   ) {}
 

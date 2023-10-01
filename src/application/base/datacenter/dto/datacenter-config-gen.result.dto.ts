@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseResultDto } from '../../../../infrastructure/dto/base.result.dto';
 import { faker } from '@faker-js/faker';
-import { VcloudMetadata } from '../interface/datacenter.interface';
+import { VcloudMetadata } from '../type/vcloud-metadata.type';
+
 class DatacenterGenerations {
   @ApiProperty({
     type: String,

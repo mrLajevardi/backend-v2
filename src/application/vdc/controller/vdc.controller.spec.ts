@@ -11,6 +11,8 @@ import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { VdcFactoryService } from '../service/vdc.factory.service';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('VdcController', () => {
   let controller: VdcController;
@@ -27,8 +29,15 @@ describe('VdcController', () => {
         OrganizationModule,
         UserModule,
         ServicePropertiesModule,
+        MainWrapperModule,
       ],
-      providers: [VdcService, OrgService, EdgeService, NetworkService],
+      providers: [
+        VdcService,
+        OrgService,
+        EdgeService,
+        NetworkService,
+        VdcFactoryService,
+      ],
 
       controllers: [VdcController],
     }).compile();
