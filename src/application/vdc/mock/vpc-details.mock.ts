@@ -1,0 +1,30 @@
+export const vpcDetailsMock = {
+  datacenter: { name: 'amin', title: 'امین' },
+  cpu: { price: 1000, title: '', unit: 'Core', quantity: 10, usage: 6 },
+  vm: { price: 1000, title: '', unit: 'Server', quantity: 5, usage: 5 },
+  ram: { price: 1000, title: '', unit: 'MB', quantity: 2048, usage: 1024 },
+  disk: [
+    {
+      price: 25000,
+      title: 'archive',
+      unit: 'MB',
+      quantity: 102400,
+      usage: 1024,
+    },
+    {
+      price: 20000,
+      title: 'standard',
+      unit: 'MB',
+      quantity: 2048,
+      usage: 1024,
+    },
+  ],
+  guaranty: 'VIP',
+  daysLeft: 150,
+  ip: { price: 20000, title: '', unit: 'IP', quantity: 14 },
+  generation: 'G2',
+  finalPrice: 10000,
+  reservationRam: 0.25,
+  reservationCpu: 0.1,
+  servicePlanType: 0,
+};

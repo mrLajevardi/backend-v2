@@ -32,6 +32,9 @@ import {
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
+import { vpcDetailsMock } from '../mock/vpc-details.mock';
+import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
+import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
 @ApiBearerAuth()
 @ApiTags('Vpc')
 // @UseFilters(new HttpExceptionFilter())
@@ -223,10 +226,11 @@ export class VdcController {
   }
 
   @Get('invoice/:invoiceId/details')
+  @ApiOperation({ summary: 'get created invoice details' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   async getVdcInvoiceDetail(
-    @Param('serviceInstanceId')
-    serviceInstanceId: string,
+    @Param('invoiceId')
+    invoiceId: string,
   ) {
     return {
       datacenter: { name: 'amin', title: 'امین' },
@@ -250,5 +254,48 @@ export class VdcController {
       reservationRam: 25,
       reservationCpu: 25,
     };
+  }
+
+  @Get(':serviceInstanceId/details')
+  @ApiOperation({
+    summary: 'get details of vdc',
+    description: 'servicePlanTypes: \n0: static, 1: pay as you go',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcDetails(
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<typeof vpcDetailsMock> {
+    return vpcDetailsMock;
+  }
+
+  @Get(':serviceInstanceId/internalSettings')
+  @ApiOperation({
+    summary: 'get internal settings of vdc',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcInternalSettings(
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<typeof vpcInternalSettingsMock> {
+    return vpcInternalSettingsMock;
+  }
+
+  @Get('templates')
+  @ApiOperation({
+    summary: 'get templates list',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcTemplates(): Promise<typeof vpcTemplatesMock> {
+    return vpcTemplatesMock;
   }
 }
