@@ -47,6 +47,7 @@ export class GetVdcOrgVdcBuilderResult {
   private isFastProvisioned: boolean;
   private isVgpuEnabled: boolean;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
   static GetBuilder(): GetVdcOrgVdcBuilderResult {
@@ -174,6 +175,7 @@ export class OtherAttributeVdcOrgVdcBuilder {
   private taskStatus: string;
   private taskDetails: string;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
   static GetBuilder(): OtherAttributeVdcOrgVdcBuilder {
