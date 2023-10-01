@@ -20,6 +20,9 @@ import { ServiceModule } from 'src/application/base/service/service.module';
 import { VdcModule } from '../vdc.module';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { TasksModule } from 'src/application/base/tasks/tasks.module';
+import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { VcloudWrapperModule } from 'src/wrappers/vcloud-wrapper/vcloud-wrapper.module';
 
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
@@ -32,7 +35,7 @@ describe('VdcAdminController', () => {
         AbilityModule,
         CrudModule,
         LoggerModule,
-
+        VcloudWrapperModule,
         TasksModule,
         SessionsModule,
         OrganizationModule,
@@ -45,6 +48,7 @@ describe('VdcAdminController', () => {
         forwardRef(() => VgpuModule),
         ServiceModule,
         VdcModule,
+        MainWrapperModule
       ],
       providers: [
         VdcService,
@@ -53,6 +57,7 @@ describe('VdcAdminController', () => {
         NetworkService,
         TaskManagerService,
         VgpuDnatService,
+        VdcWrapperService
       ],
 
       controllers: [VdcAdminController],

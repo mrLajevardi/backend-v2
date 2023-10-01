@@ -15,6 +15,11 @@ import { TasksModule } from '../../tasks/tasks.module';
 import { ServiceAdminService } from '../services/service-admin.service';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { AbilityModule } from '../../security/ability/ability.module';
+import { VdcService } from 'src/application/vdc/service/vdc.service';
+import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -33,6 +38,8 @@ describe('ServiceController', () => {
         VgpuModule,
         UserModule,
         ServicePropertiesModule,
+        MainWrapperModule,
+        DatacenterModule
       ],
       providers: [
         ServiceAdminService,
@@ -40,6 +47,9 @@ describe('ServiceController', () => {
         ExtendServiceService,
         DeleteServiceService,
         CreateServiceService,
+        VdcService,
+        VdcFactoryService,
+        ServiceServiceFactory
       ],
       controllers: [ServiceController],
     }).compile();

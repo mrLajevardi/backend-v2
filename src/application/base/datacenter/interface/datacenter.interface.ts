@@ -2,6 +2,10 @@ import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.resul
 import { IBaseService } from '../../../../infrastructure/service/IBaseService';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
+import { GetProviderVdcsMetadataDto } from '../../../../wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs-metadata.dto';
+import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
+
+export const BASE_DATACENTER_SERVICE = 'BASE_DATACENTER_SERVICE';
 
 export interface BaseDatacenterService extends IBaseService {
   getDatacenterConfigWithGen(): Promise<DatacenterConfigGenResultDto[]>;
@@ -9,11 +13,13 @@ export interface BaseDatacenterService extends IBaseService {
   GetDatacenterConfigWithGenItems(
     query: DatacenterConfigGenItemsQueryDto,
   ): Promise<DatacenterConfigGenItemsResultDto[]>;
-}
 
-export type VcloudMetadata = string | number | boolean;
-export interface FoundDatacenterMetadata {
-  generation: VcloudMetadata | null;
-  datacenter: VcloudMetadata | null;
-  datacenterTitle: VcloudMetadata | null;
+  findTargetMetadata(
+    metadata: GetProviderVdcsMetadataDto,
+  ): FoundDatacenterMetadata;
+
+  getDatacenterMetadata(
+    datacenterName: string,
+    genId: string,
+  ): Promise<FoundDatacenterMetadata>;
 }

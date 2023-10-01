@@ -11,6 +11,11 @@ import { ExtendServiceService } from '../services/extend-service.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { AbilityModule } from '../../security/ability/ability.module';
+import { VdcService } from 'src/application/vdc/service/vdc.service';
+import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { DatacenterModule } from '../../datacenter/datacenter.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -27,8 +32,10 @@ describe('ServiceAdminService', () => {
         VgpuModule,
         PaymentModule,
         ServicePropertiesModule,
+        MainWrapperModule,
+        DatacenterModule
       ],
-      providers: [ServiceAdminService, ServiceService, ExtendServiceService],
+      providers: [ServiceAdminService, ServiceService, ExtendServiceService,VdcService,ServiceServiceFactory,VdcFactoryService],
     }).compile();
 
     service = module.get<ServiceAdminService>(ServiceAdminService);

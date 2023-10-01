@@ -27,6 +27,8 @@ import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { OrgService } from './org.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { VdcFactoryService } from './vdc.factory.service';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('NetworkService', () => {
   let service: NetworkService;
@@ -43,9 +45,10 @@ describe('NetworkService', () => {
         OrganizationModule,
         UserModule,
         ServiceModule,
+        MainWrapperModule,
         ServicePropertiesModule,
       ],
-      providers: [VdcService, OrgService, EdgeService, NetworkService],
+      providers: [VdcService, OrgService, EdgeService, NetworkService,VdcFactoryService],
     }).compile();
 
     service = module.get<NetworkService>(NetworkService);
