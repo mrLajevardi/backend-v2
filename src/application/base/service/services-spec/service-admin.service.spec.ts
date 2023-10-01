@@ -33,9 +33,16 @@ describe('ServiceAdminService', () => {
         PaymentModule,
         ServicePropertiesModule,
         MainWrapperModule,
-        DatacenterModule
+        DatacenterModule,
       ],
-      providers: [ServiceAdminService, ServiceService, ExtendServiceService,VdcService,ServiceServiceFactory,VdcFactoryService],
+      providers: [
+        ServiceAdminService,
+        ServiceService,
+        ExtendServiceService,
+        VdcService,
+        ServiceServiceFactory,
+        VdcFactoryService,
+      ],
     }).compile();
 
     service = module.get<ServiceAdminService>(ServiceAdminService);

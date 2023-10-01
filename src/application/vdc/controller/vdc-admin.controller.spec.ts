@@ -48,7 +48,7 @@ describe('VdcAdminController', () => {
         forwardRef(() => VgpuModule),
         ServiceModule,
         VdcModule,
-        MainWrapperModule
+        MainWrapperModule,
       ],
       providers: [
         VdcService,
@@ -57,7 +57,7 @@ describe('VdcAdminController', () => {
         NetworkService,
         TaskManagerService,
         VgpuDnatService,
-        VdcWrapperService
+        VdcWrapperService,
       ],
 
       controllers: [VdcAdminController],

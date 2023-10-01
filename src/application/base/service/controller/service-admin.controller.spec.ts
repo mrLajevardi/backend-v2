@@ -35,7 +35,7 @@ describe('ServiceAdminController', () => {
         VgpuModule,
         ServicePropertiesModule,
         MainWrapperModule,
-        DatacenterModule
+        DatacenterModule,
       ],
       providers: [
         ServiceAdminService,
@@ -44,8 +44,7 @@ describe('ServiceAdminController', () => {
         DeleteServiceService,
         VdcService,
         ServiceServiceFactory,
-        VdcFactoryService
-        
+        VdcFactoryService,
       ],
       controllers: [ServiceAdminController],
     }).compile();

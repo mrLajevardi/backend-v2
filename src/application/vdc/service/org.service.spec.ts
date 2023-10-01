@@ -45,9 +45,15 @@ describe('OrgService', () => {
         OrganizationModule,
         UserModule,
         ServicePropertiesModule,
-        MainWrapperModule
+        MainWrapperModule,
       ],
-      providers: [VdcService, OrgService, EdgeService, NetworkService,VdcFactoryService],
+      providers: [
+        VdcService,
+        OrgService,
+        EdgeService,
+        NetworkService,
+        VdcFactoryService,
+      ],
     }).compile();
 
     service = module.get<OrgService>(OrgService);

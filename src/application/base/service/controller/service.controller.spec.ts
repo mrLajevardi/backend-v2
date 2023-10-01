@@ -39,7 +39,7 @@ describe('ServiceController', () => {
         UserModule,
         ServicePropertiesModule,
         MainWrapperModule,
-        DatacenterModule
+        DatacenterModule,
       ],
       providers: [
         ServiceAdminService,
@@ -49,7 +49,7 @@ describe('ServiceController', () => {
         CreateServiceService,
         VdcService,
         VdcFactoryService,
-        ServiceServiceFactory
+        ServiceServiceFactory,
       ],
       controllers: [ServiceController],
     }).compile();

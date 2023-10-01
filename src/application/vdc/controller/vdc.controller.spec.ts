@@ -29,9 +29,15 @@ describe('VdcController', () => {
         OrganizationModule,
         UserModule,
         ServicePropertiesModule,
-        MainWrapperModule
+        MainWrapperModule,
       ],
-      providers: [VdcService, OrgService, EdgeService, NetworkService,VdcFactoryService],
+      providers: [
+        VdcService,
+        OrgService,
+        EdgeService,
+        NetworkService,
+        VdcFactoryService,
+      ],
 
       controllers: [VdcController],
     }).compile();

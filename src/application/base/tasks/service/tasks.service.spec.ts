@@ -39,14 +39,14 @@ describe('TasksService', () => {
         PaymentModule,
         ServicePropertiesModule,
         VdcModule,
-        DatacenterModule
+        DatacenterModule,
       ],
       providers: [
         TaskManagerService,
         TasksService,
         ServiceService,
         VgpuDnatService,
-        ServiceServiceFactory
+        ServiceServiceFactory,
       ],
     }).compile();
 

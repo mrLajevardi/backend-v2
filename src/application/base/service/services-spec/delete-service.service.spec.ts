@@ -50,7 +50,7 @@ describe('DeleteServiceService', () => {
         TransactionsModule,
         VdcModule,
         ServicePropertiesModule,
-        DatacenterModule
+        DatacenterModule,
       ],
       providers: [
         ServiceService,
@@ -64,7 +64,7 @@ describe('DeleteServiceService', () => {
         TasksService,
         NetworkService,
         VgpuDnatService,
-        ServiceServiceFactory
+        ServiceServiceFactory,
       ],
     }).compile();
 
