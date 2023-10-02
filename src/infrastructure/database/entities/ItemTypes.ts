@@ -36,10 +36,10 @@ export class ItemTypes {
   @Column('varchar', { name: 'Code', nullable: true, length: 255 })
   code: string | null;
 
-  @Column('int', { name: 'MaxPerRequest', nullable: true })
+  @Column('int', { name: 'Max', nullable: true })
   maxPerRequest: number | null;
 
-  @Column('int', { name: 'MinPerRequest', nullable: true })
+  @Column('int', { name: 'Min', nullable: true })
   minPerRequest: number | null;
 
   @Column('nvarchar', { name: 'Rule', nullable: true })

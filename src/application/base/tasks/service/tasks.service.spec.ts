@@ -15,6 +15,8 @@ import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { ServiceModule } from '../../service/service.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
+import { ServiceServiceFactory } from '../../service/Factory/service.service.factory';
+import { DatacenterModule } from '../../datacenter/datacenter.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -37,12 +39,14 @@ describe('TasksService', () => {
         PaymentModule,
         ServicePropertiesModule,
         VdcModule,
+        DatacenterModule,
       ],
       providers: [
         TaskManagerService,
         TasksService,
         ServiceService,
         VgpuDnatService,
+        ServiceServiceFactory,
       ],
     }).compile();
 

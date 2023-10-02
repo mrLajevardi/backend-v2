@@ -3,6 +3,9 @@ import { DatacenterController } from './datacenter.controller';
 import { DatacenterService } from './service/datacenter.service';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { mockProviderVdcs } from './mock/providers-vdcs.mock';
+import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
+import { DatacenterFactoryService } from './service/datacenter.factory.service';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('GroupController', () => {
   let controller: DatacenterController;
@@ -29,12 +32,13 @@ describe('GroupController', () => {
       },
     ];
     module = await Test.createTestingModule({
-      imports: [],
+      imports: [MainWrapperModule],
       providers: [
         {
-          provide: 'DatacenterService',
+          provide: BASE_DATACENTER_SERVICE,
           useValue: datacenterServiceMockFactory(datacenterConfigWithGenMock),
         },
+        DatacenterFactoryService,
       ],
       controllers: [DatacenterController],
     }).compile();

@@ -21,22 +21,21 @@ export class ServiceItemDto extends BaseResultDto {
 
   static GetMock(): ServiceItemDto[] {
     const res: ServiceItemDto[] = [];
-
     const quantity = faker.number.int({ min: 5, max: 32 });
 
     //const count = 5;
     res.push(
       new ServiceItemDto(
         'RAM',
-        faker.number.int({ min: 2, max: quantity - 3 }),
-        quantity,
+        faker.number.int({ min: 2, max: quantity - 3 }) * 1024,
+        quantity * 1024,
       ),
     );
     res.push(
       new ServiceItemDto(
         'DISK',
-        faker.number.int({ min: 2, max: quantity - 3 }),
-        quantity,
+        faker.number.int({ min: 2, max: quantity - 3 }) * 1024,
+        quantity * 1024,
       ),
     );
     res.push(
@@ -46,6 +45,15 @@ export class ServiceItemDto extends BaseResultDto {
         quantity,
       ),
     );
+
+    res.push(
+      new ServiceItemDto(
+        'VM',
+        faker.number.int({ min: 2, max: quantity - 3 }),
+        quantity,
+      ),
+    );
+
     return res;
   }
 }

@@ -31,6 +31,10 @@ import {
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
+import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
+import { vpcDetailsMock } from '../mock/vpc-details.mock';
+import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
+import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
 @ApiBearerAuth()
 @ApiTags('Vpc')
 // @UseFilters(new HttpExceptionFilter())
@@ -146,7 +150,7 @@ export class VdcController {
     options: any,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
-  ) {
+  ): Promise<GetOrgVdcResult> {
     return this.vdcService.getVdc(options, vdcInstanceId);
   }
 
@@ -219,5 +223,79 @@ export class VdcController {
       namedDiskId,
       data,
     );
+  }
+
+  @Get('invoice/:invoiceId/details')
+  @ApiOperation({ summary: 'get created invoice details' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  async getVdcInvoiceDetail(
+    @Param('invoiceId')
+    invoiceId: string,
+  ) {
+    return {
+      datacenter: { name: 'amin', title: 'امین' },
+      cpu: { price: 1000, title: '', unit: 'Core', quantity: 10 },
+      vm: { price: 1000, title: '', unit: 'Server', quantity: 5 },
+      ram: { price: 1000, title: '', unit: 'GB', quantity: 10 },
+      disk: [
+        {
+          price: 25000,
+          title: 'archive',
+          unit: 'GB',
+          quantity: 10,
+        },
+        { price: 20000, title: 'standard', unit: 'GB', quantity: 20 },
+      ],
+      guaranty: 'VIP',
+      period: 150,
+      ip: { price: 20000, title: '', unit: 'IP', quantity: 14 },
+      generation: 'G2',
+      finalPrice: 10000,
+      reservationRam: 25,
+      reservationCpu: 25,
+    };
+  }
+
+  @Get(':serviceInstanceId/details')
+  @ApiOperation({
+    summary: 'get details of vdc',
+    description: 'servicePlanTypes: \n0: static, 1: pay as you go',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcDetails(
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<typeof vpcDetailsMock> {
+    return vpcDetailsMock;
+  }
+
+  @Get(':serviceInstanceId/internalSettings')
+  @ApiOperation({
+    summary: 'get internal settings of vdc',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcInternalSettings(
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<typeof vpcInternalSettingsMock> {
+    return vpcInternalSettingsMock;
+  }
+
+  @Get('templates')
+  @ApiOperation({
+    summary: 'get templates list',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcTemplates(): Promise<typeof vpcTemplatesMock> {
+    return vpcTemplatesMock;
   }
 }

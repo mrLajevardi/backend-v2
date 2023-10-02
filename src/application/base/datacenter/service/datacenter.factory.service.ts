@@ -4,9 +4,23 @@ import { FindManyOptions, FindOptionsWhere, IsNull, Like } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
+import {
+  GetProviderVdcsDto,
+  Value,
+} from '../../../../wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs.dto';
+import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
+import { GetProviderVdcsMetadataDto } from '../../../../wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs-metadata.dto';
+import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
+import { trim } from 'lodash';
+import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
+import { AdminVdcWrapperService } from '../../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 
 @Injectable()
 export class DatacenterFactoryService {
+  constructor(
+    private readonly adminVdcWrapperService: AdminVdcWrapperService,
+  ) {}
+
   public GetFindOptionBy(
     query: DatacenterConfigGenItemsQueryDto,
   ): FindManyOptions<ItemTypes> {
@@ -78,6 +92,7 @@ export class DatacenterFactoryService {
         new DatacenterConfigGenItemsResultDto(
           itemTypeConfig.id,
           itemTypeConfig.title,
+          itemTypeConfig.code,
           itemTypeConfig.serviceType.id,
           itemTypeConfig.fee,
           itemTypeConfig.percent,
@@ -97,10 +112,7 @@ export class DatacenterFactoryService {
     tree: DatacenterConfigGenItemsResultDto[],
     query: DatacenterConfigGenItemsQueryDto,
   ): DatacenterConfigGenItemsResultDto[] {
-    if (
-      query.DataCenterId != undefined &&
-      query.DataCenterId.trim().length > 0
-    ) {
+    if (query.GenId == undefined || query.GenId.trim().length == 0) {
       return tree;
     }
 
@@ -116,5 +128,18 @@ export class DatacenterFactoryService {
     });
 
     return tree;
+  }
+
+  public getModelAllProviders(providerVdcsList: GetProviderVdcsDto) {
+    const { values } = providerVdcsList;
+    const providerVdcsFilteredData: Pick<Value, 'id'>[] = values.map(
+      (value) => {
+        const { id, isEnabled } = value;
+        if (isEnabled) {
+          return { id };
+        }
+      },
+    );
+    return providerVdcsFilteredData;
   }
 }

@@ -10,11 +10,15 @@ import {
   FindOptionsWhere,
   DeleteResult,
   UpdateResult,
+  Like,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { BaseServicePropertiesService } from './interfaces/service-properties.service.interface';
 
 @Injectable()
-export class ServicePropertiesTableService {
+export class ServicePropertiesTableService
+  implements BaseServicePropertiesService
+{
   constructor(
     @InjectRepository(ServiceProperties)
     private readonly repository: Repository<ServiceProperties>,
@@ -83,5 +87,24 @@ export class ServicePropertiesTableService {
     where: FindOptionsWhere<ServiceProperties>,
   ): Promise<DeleteResult> {
     return await this.repository.delete(where);
+  }
+
+  async getValueBy(
+    serviceInstanceId: string,
+    keyName: string,
+  ): Promise<string> {
+    const serviceProperties = await this.findOne({
+      where: {
+        serviceInstanceId: serviceInstanceId,
+        propertyKey: Like(`${keyName.toLowerCase()}`),
+      },
+      select: { value: true },
+    });
+
+    if (serviceProperties == null) {
+      return Promise.resolve('');
+    }
+
+    return Promise.resolve(serviceProperties.value);
   }
 }

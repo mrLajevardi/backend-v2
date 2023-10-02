@@ -7,6 +7,8 @@ import { DatacenterTableModule } from '../crud/datacenter-table/datacenter-table
 import { DatacenterFactoryService } from './service/datacenter.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { SessionsModule } from '../sessions/sessions.module';
+import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
+
 @Module({
   imports: [
     DatabaseModule,
@@ -16,14 +18,13 @@ import { SessionsModule } from '../sessions/sessions.module';
     SessionsModule,
   ],
   providers: [
-    DatacenterService,
     {
-      provide: 'DatacenterService',
+      provide: BASE_DATACENTER_SERVICE,
       useClass: DatacenterService,
     },
     DatacenterFactoryService,
   ],
   controllers: [DatacenterController],
-  exports: [DatacenterService],
+  exports: [BASE_DATACENTER_SERVICE],
 })
 export class DatacenterModule {}
