@@ -1,6 +1,7 @@
 export class VdcParentType {
   generation: string[];
-  reservation: string[];
+  cpuReservation: string[];
+  memoryReservation: string[];
   period: string[];
   guaranty: string[];
 
@@ -8,6 +9,7 @@ export class VdcParentType {
     this.generation = [];
     this.guaranty = [];
     this.period = [];
-    this.reservation = [];
+    this.cpuReservation = [];
+    this.memoryReservation = [];
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from 'src/application/base/crud/invoices-table/invoices-table.service';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
 import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
@@ -34,6 +35,7 @@ export class PaygInvoiceService {
           voided: false,
           //qualityPlan: null,
           type: 2,
+          servicePlanType: ServicePlanTypeEnum.Payg,
           endDateTime: targetTransaction.EndDate,
           serviceTypeId: service.serviceTypeId,
           name: null,

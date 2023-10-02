@@ -4,6 +4,7 @@ import { forwardRef } from '@nestjs/common';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CrudModule } from '../../crud/crud.module';
+import { InvoiceFactoryService } from './invoice-factory.service';
 
 describe('CostCalculationService', () => {
   let service: CostCalculationService;
@@ -13,7 +14,7 @@ describe('CostCalculationService', () => {
     module = await Test.createTestingModule({
       imports: [DatabaseModule, CrudModule, forwardRef(() => VgpuModule)],
 
-      providers: [CostCalculationService],
+      providers: [CostCalculationService, InvoiceFactoryService],
     }).compile();
 
     service = module.get<CostCalculationService>(CostCalculationService);

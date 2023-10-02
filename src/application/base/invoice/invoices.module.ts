@@ -8,6 +8,7 @@ import { CrudModule } from '../crud/crud.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { DatacenterModule } from '../datacenter/datacenter.module';
 import { InvoiceValidationService } from './validators/invoice-validation.service';
+import { InvoiceFactoryService } from './service/invoice-factory.service';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { InvoiceValidationService } from './validators/invoice-validation.servic
   providers: [
     InvoicesService,
     InvoicesChecksService,
+    InvoiceFactoryService,
     CostCalculationService,
     InvoiceValidationService,
     {
