@@ -1,8 +1,8 @@
 export enum ItemTypeCodes {
   Generation = 'generation',
   Period = 'period',
-  CpuReservation = 'reservation_cpu',
-  MemoryReservation = 'reservation_ram',
+  CpuReservation = 'reservationCpu',
+  MemoryReservation = 'reservationRam',
   Guaranty = 'guaranty',
 }
 
