@@ -10,7 +10,7 @@ import {
   InvoiceItemCost,
   TotalInvoiceItemCosts,
 } from '../interface/invoice-item-cost.interface';
-import { DiskItemCodes } from '../enum/item-type-codes.enum';
+import { DiskItemCodes } from '../../crud/item-types-table/enum/item-type-codes.enum';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 
 @Injectable()

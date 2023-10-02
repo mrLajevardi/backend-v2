@@ -8,7 +8,7 @@ import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/
 import {
   ItemTypeCodes,
   VdcGenerationItemCodes,
-} from '../enum/item-type-codes.enum';
+} from '../../crud/item-types-table/enum/item-type-codes.enum';
 import { In } from 'typeorm';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import { InvoiceItemCost } from '../interface/invoice-item-cost.interface';
@@ -35,21 +35,13 @@ export class InvoiceFactoryService {
       },
     });
     for (const itemType of itemTypes) {
-      const hierarchy = itemType.hierarchy.split('_');
-      const parents = await this.serviceItemTypeTree.find({
-        where: {
-          id: In(hierarchy),
-        },
-        order: {
-          level: 'ASC',
-        },
-      });
+      const parents = itemType.codeHierarchy.split('_');
       const invoiceItem = mappedItemTypes.ItemTypesById[itemType.id];
       const invoiceGroupItem = {
         ...itemType,
         value: invoiceItem.value,
       };
-      switch (parents[0].code) {
+      switch (parents[0]) {
         case ItemTypeCodes.Period:
           vdcItemGroup.period = invoiceGroupItem;
           break;
@@ -82,7 +74,7 @@ export class InvoiceFactoryService {
   }
 
   groupVdcGenerationItems(
-    parents: ServiceItemTypesTree[],
+    parents: string[],
     invoiceItem: InvoiceItemsDto,
     itemType: ServiceItemTypesTree,
     generationGroups: VdcGenerationItems,
@@ -90,9 +82,7 @@ export class InvoiceFactoryService {
     for (const key in VdcGenerationItemCodes) {
       if (Object.prototype.hasOwnProperty.call(VdcGenerationItemCodes, key)) {
         const generationItemCode = VdcGenerationItemCodes[key];
-        const item = parents.find(
-          (parent) => parent.code === generationItemCode,
-        );
+        const item = parents.find((parent) => parent === generationItemCode);
         if (item) {
           const lowerCaseKey =
             key.charAt(0).toLowerCase() + key.slice(1, key.length);
