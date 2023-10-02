@@ -51,13 +51,6 @@ export class ServiceItemTypesTree {
   @Column('tinyint', { name: 'PrinciplePrice', nullable: true })
   principlePrice: number | null;
 
-  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
-  serviceType: ServiceTypes;
-
   @Column('varchar', { name: 'ServiceTypeID', length: 50 })
   serviceTypeId: string;
 

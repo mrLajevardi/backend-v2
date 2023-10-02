@@ -34,6 +34,7 @@ export class InvoiceFactoryService {
         id: In(mappedItemTypes.itemTypeIds),
       },
     });
+    // serviceItemTypeTreeMock.push(itemTypes);
     for (const itemType of itemTypes) {
       const parents = itemType.codeHierarchy.split('_');
       const invoiceItem = mappedItemTypes.ItemTypesById[itemType.id];

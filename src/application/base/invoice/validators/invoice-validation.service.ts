@@ -1,10 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
 } from '../dto/create-service-invoice.dto';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
-import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { isNil } from 'lodash';
 import { InvoiceItemLimits } from '../enum/invoice-item-limits.enum';
 import { And, In, Like, Not } from 'typeorm';
@@ -16,6 +15,17 @@ import {
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
 import { ItemTypeCodes } from '../../crud/item-types-table/enum/item-type-codes.enum';
+import { ItemNotExistsException } from '../exception/item-not-exists.exception';
+import { ItemNotEnabledException } from '../exception/item-not-enabled.exception';
+import { ItemIsNotLastChildException } from '../exception/item-is-not-last-child.exception';
+import { InvalidDatacenterException } from '../exception/invalid-datacenter.exception';
+import { RequiredGenerationItemNotSatisfiedException } from '../exception/required-generation-item.exception';
+import { InvalidInvoiceItemsException } from '../exception/invalid-invoice-items.exception';
+import { NotInRangeException } from '../exception/not-in-range.exception';
+import { NotCompatibleWithStepException } from '../exception/not-compatible-step.exception';
+import { InsufficientResourceException } from '../exception/insufficient-resources.exception';
+import { NotCompatibleWithRuleException } from '../exception/not-compatible-with-rule.exception';
+import { RequiredItemNotSatisfiedException } from '../exception/required-items.exception';
 
 @Injectable()
 export class InvoiceValidationService {
@@ -81,13 +91,13 @@ export class InvoiceValidationService {
     );
     //checks if itemType exists
     if (!targetInvoiceItem) {
-      throw new BadRequestException(
+      throw new ItemNotExistsException(
         `item [${invoiceItem.itemTypeId}] does not exist`,
       );
     }
     // checks if item is enabled
     if (!targetInvoiceItem.enabled) {
-      throw new BadRequestException(
+      throw new ItemNotEnabledException(
         `item [${invoiceItem.itemTypeId}] is not enabled`,
       );
     }
@@ -98,7 +108,7 @@ export class InvoiceValidationService {
       },
     });
     if (isParent) {
-      throw new BadRequestException(
+      throw new ItemIsNotLastChildException(
         `item [${targetInvoiceItem.id}] is not last child`,
       );
     }
@@ -121,13 +131,13 @@ export class InvoiceValidationService {
       return dc.datacenter === datacenterName;
     });
     if (isNil(targetDatacenter)) {
-      throw new BadRequestException(`datacenter is invalid`);
+      throw new InvalidDatacenterException(`datacenter is invalid`);
     }
     const generation = targetDatacenter.gens.find(
       (value) => value.name === generationCode,
     );
     if (!generation) {
-      throw new BadRequestException(`datacenter is invalid`);
+      throw new InvalidDatacenterException(`datacenter is invalid`);
     }
   }
 
@@ -168,7 +178,9 @@ export class InvoiceValidationService {
         },
       });
     if (requiredGenerationItemsNotProvided.length > 0) {
-      throw new BadRequestException(`required generation items not provided`);
+      throw new RequiredGenerationItemNotSatisfiedException(
+        `required generation items not provided`,
+      );
     }
   }
   async compareWithVdcDefaultService(
@@ -213,7 +225,9 @@ export class InvoiceValidationService {
         },
       });
     if (requiredOtherItemsNotProvided.length > 0) {
-      throw new BadRequestException(`required items not provided`);
+      throw new RequiredItemNotSatisfiedException(
+        `required items not provided`,
+      );
     }
   }
 
@@ -235,7 +249,7 @@ export class InvoiceValidationService {
           }
         });
         if (itemHasDifferentParents) {
-          throw new BadRequestException('invalid items');
+          throw new InvalidInvoiceItemsException('invalid items');
         }
       }
     }
@@ -257,7 +271,7 @@ export class InvoiceValidationService {
 
     //check item type value min and max
     if (higherThanMax || lowerThanMin) {
-      throw new BadRequestException(
+      throw new NotInRangeException(
         `item [${itemType.id}] is not in correct range`,
       );
     }
@@ -271,14 +285,14 @@ export class InvoiceValidationService {
       checkMaxAvailable &&
       parsedValue + itemTypeSum.sum > itemType.maxAvailable
     ) {
-      throw new BadRequestException(
+      throw new InsufficientResourceException(
         `insufficient resources for item [${itemType.id}]`,
       );
     }
 
     // checks if steps mod is zero
     if (parseInt(invoiceItemType.value) % itemType.step !== 0) {
-      throw new BadRequestException(
+      throw new NotCompatibleWithStepException(
         `item [${itemType.id}] value is not compatible with items step config`,
       );
     }
@@ -293,7 +307,7 @@ export class InvoiceValidationService {
     }
     const regexRule = new RegExp(itemType.rule);
     if (!invoiceItemType.value.match(regexRule)) {
-      throw new BadRequestException(
+      throw new NotCompatibleWithRuleException(
         `item [${itemType.id}] value does not match default rule for this item`,
       );
     }
