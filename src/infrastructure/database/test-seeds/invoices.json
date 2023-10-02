@@ -14,7 +14,8 @@
       "endDateTime": 1679706473430,
       "type": 0,
       "name": "test",
-      "userId": 597
+      "userId": 597,
+      "servicePlanType": 0
     },
     {
       "id": 5919,
@@ -31,7 +32,8 @@
       "endDateTime": 1679828852680,
       "type": 0,
       "name": "majid",
-      "userId":597
+      "userId":597,
+      "servicePlanType": 0
     }
   ]
   

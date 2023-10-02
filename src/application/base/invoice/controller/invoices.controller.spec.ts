@@ -9,6 +9,7 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { CrudModule } from '../../crud/crud.module';
 import { InvoiceValidationService } from '../validators/invoice-validation.service';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { InvoiceFactoryService } from '../service/invoice-factory.service';
 
 describe('InvoicesController', () => {
   let controller: InvoicesController;
@@ -27,6 +28,7 @@ describe('InvoicesController', () => {
         InvoicesChecksService,
         InvoiceValidationService,
         CostCalculationService,
+        InvoiceFactoryService,
         {
           provide: 'InvoiceService',
           useClass: InvoicesService,

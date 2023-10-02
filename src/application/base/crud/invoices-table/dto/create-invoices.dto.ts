@@ -69,4 +69,6 @@ export class CreateInvoicesDto {
   @IsString()
   @ApiProperty()
   serviceInstanceId: string;
+
+  servicePlanType: number;
 }
