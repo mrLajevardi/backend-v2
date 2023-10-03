@@ -14,7 +14,6 @@ import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc
 @Injectable()
 export class VdcService {
   constructor(
-    // private readonly taskService: TasksService,
     private readonly sessionService: SessionsService,
     private readonly vdcFactoryService: VdcFactoryService,
     private readonly serviceInstanceTable: ServiceInstancesTableService,

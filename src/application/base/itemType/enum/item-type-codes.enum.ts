@@ -10,7 +10,7 @@ export enum VdcGenerationItemCodes {
   Cpu = 'cpu',
   Vm = 'vm',
   Ram = 'ram',
-  disk = 'disk',
+  Disk = 'disk',
   Ip = 'ip',
 }
 

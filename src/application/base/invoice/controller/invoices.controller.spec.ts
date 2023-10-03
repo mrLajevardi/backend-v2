@@ -10,6 +10,8 @@ import { CrudModule } from '../../crud/crud.module';
 import { InvoiceValidationService } from '../validators/invoice-validation.service';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoiceFactoryService } from '../service/invoice-factory.service';
+import { InvoiceFactoryVdcService } from '../service/invoice-factory-vdc.service';
+import { BASE_INVOICE_SERVICE } from '../interface/service/invoice.interface';
 
 describe('InvoicesController', () => {
   let controller: InvoicesController;
@@ -29,6 +31,11 @@ describe('InvoicesController', () => {
         InvoiceValidationService,
         CostCalculationService,
         InvoiceFactoryService,
+        InvoiceFactoryVdcService,
+        {
+          provide: BASE_INVOICE_SERVICE,
+          useClass: InvoicesService,
+        },
         {
           provide: 'InvoiceService',
           useClass: InvoicesService,

@@ -20,14 +20,17 @@ import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { BaseInvoiceService } from '../interface/invoice.interface';
+import {
+  BASE_INVOICE_SERVICE,
+  BaseInvoiceService,
+} from '../interface/service/invoice.interface';
 
 @ApiTags('Invoices')
 @Controller('invoices')
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class InvoicesController {
   constructor(
-    @Inject('InvoiceService')
+    @Inject(BASE_INVOICE_SERVICE)
     private readonly invoiceService: BaseInvoiceService,
     private readonly invoicesTable: InvoicesTableService,
   ) {}

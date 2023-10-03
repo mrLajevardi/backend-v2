@@ -28,6 +28,7 @@ import {
   Put,
   Headers,
   Body,
+  Inject,
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
@@ -35,12 +36,18 @@ import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc
 import { vpcDetailsMock } from '../mock/vpc-details.mock';
 import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
 import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
+import {
+  BASE_VDC_INVOICE_SERVICE,
+  BaseVdcInvoiceServiceInterface,
+} from '../interface/base-vdc-invoice-service.interface';
 @ApiBearerAuth()
 @ApiTags('Vpc')
 // @UseFilters(new HttpExceptionFilter())
 @Controller('vdc')
 export class VdcController {
   constructor(
+    @Inject(BASE_VDC_INVOICE_SERVICE)
+    private readonly baseVdcInvoiceService: BaseVdcInvoiceServiceInterface,
     // private readonly tasksService: TasksService,
     private readonly vdcService: VdcService,
   ) {}
@@ -227,33 +234,13 @@ export class VdcController {
 
   @Get('invoice/:invoiceId/details')
   @ApiOperation({ summary: 'get created invoice details' })
-  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'invoiceId', description: 'VDC instance ID' })
   async getVdcInvoiceDetail(
     @Param('invoiceId')
     invoiceId: string,
   ) {
-    return {
-      datacenter: { name: 'amin', title: 'امین' },
-      cpu: { price: 1000, title: '', unit: 'Core', quantity: 10 },
-      vm: { price: 1000, title: '', unit: 'Server', quantity: 5 },
-      ram: { price: 1000, title: '', unit: 'GB', quantity: 10 },
-      disk: [
-        {
-          price: 25000,
-          title: 'archive',
-          unit: 'GB',
-          quantity: 10,
-        },
-        { price: 20000, title: 'standard', unit: 'GB', quantity: 20 },
-      ],
-      guaranty: 'VIP',
-      period: 150,
-      ip: { price: 20000, title: '', unit: 'IP', quantity: 14 },
-      generation: 'G2',
-      finalPrice: 10000,
-      reservationRam: 25,
-      reservationCpu: 25,
-    };
+    const res = await this.baseVdcInvoiceService.getVdcInvoiceDetail(invoiceId);
+    return res;
   }
 
   @Get(':serviceInstanceId/details')
