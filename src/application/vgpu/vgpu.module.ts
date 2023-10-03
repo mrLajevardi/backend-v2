@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { VgpuService } from './vgpu.service';
 import { VgpuController } from './vgpu.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -15,7 +15,7 @@ import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
     DatabaseModule,
     JwtModule,
     SessionsModule,
-    TasksModule,
+    forwardRef(() => TasksModule),
     PayAsYouGoModule,
   ],
   providers: [VgpuService, JwtService, VgpuDnatService],

@@ -15,7 +15,7 @@ import {
   BASE_DATACENTER_SERVICE,
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
-import { ItemTypeCodes } from '../../crud/item-types-table/enum/item-type-codes.enum';
+import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
 
 @Injectable()
 export class InvoiceValidationService {

@@ -3,6 +3,7 @@ import * as nodemailer from 'nodemailer';
 import { MailOptions } from 'nodemailer/lib/json-transport';
 import { CreateLinkDto } from './dto/create-link.dto';
 import { JwtService } from '@nestjs/jwt';
+import * as process from 'process';
 
 @Injectable()
 export class EmailService {
@@ -11,7 +12,7 @@ export class EmailService {
 
   constructor() {
     const host = process.env.EMAIL_HOST;
-    const port = 25;
+    const port = parseInt(process.env.EMAIL_PORT);
     let auth = {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
