@@ -4,8 +4,10 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { InvoiceItems } from './InvoiceItems';
 import { User } from './User';
 import { ServiceInstances } from './ServiceInstances';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
@@ -18,6 +20,9 @@ export class Invoices {
 
   @Column('varchar', { name: 'ServiceTypeID', length: 50, default: () => "''" })
   serviceTypeId: string;
+
+  @Column('int', { name: 'UserID' })
+  userId: number;
 
   @Column('float', { name: 'RawAmount', precision: 53 })
   rawAmount: number;
@@ -52,8 +57,8 @@ export class Invoices {
   @Column('nvarchar', { name: 'Name', nullable: true, length: 50 })
   name: string | null;
 
-  @Column('int', { name: 'UserID' })
-  userId: number;
+  // @Column('tinyint', { name: 'ServicePlanType', nullable: true })
+  // servicePlanType: number | null;
 
   @Column('tinyint', { name: 'ServicePlanType' })
   servicePlanType: number;
@@ -63,6 +68,8 @@ export class Invoices {
   })
   serviceInstanceId: string;
 
+  @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
+  invoiceItems: InvoiceItems[];
   @ManyToOne(() => User, (user) => user.invoices, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

@@ -3,17 +3,25 @@ import {
   VdcGenerationItems,
   VdcItemGroup,
 } from '../interface/vdc-item-group.interface.dto';
-import { InvoiceItemsDto } from '../dto/create-service-invoice.dto';
+import {
+  CreateServiceInvoiceDto,
+  InvoiceItemsDto,
+} from '../dto/create-service-invoice.dto';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import {
   ItemTypeCodes,
   VdcGenerationItemCodes,
-} from '../../crud/item-types-table/enum/item-type-codes.enum';
+} from '../../itemType/enum/item-type-codes.enum';
 import { In } from 'typeorm';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
-import { InvoiceItemCost } from '../interface/invoice-item-cost.interface';
+import {
+  InvoiceItemCost,
+  TotalInvoiceItemCosts,
+} from '../interface/invoice-item-cost.interface';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 import { MappedItemTypes } from '../interface/mapped-item-types.interface';
+import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
+import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
 
 @Injectable()
 export class InvoiceFactoryService {
@@ -95,6 +103,33 @@ export class InvoiceFactoryService {
       }
     }
     return generationGroups;
+  }
+
+  async createInvoiceDto(
+    userId: number,
+    data: CreateServiceInvoiceDto,
+    invoiceCost: TotalInvoiceItemCosts,
+    groupedItems: VdcItemGroup,
+    serviceInstanceId: string,
+  ) {
+    const dto: CreateInvoicesDto = {
+      userId,
+      servicePlanType: data.servicePlanTypes,
+      rawAmount: invoiceCost.totalCost,
+      finalAmount: invoiceCost.totalCost,
+      type: data.type,
+      endDateTime: addMonths(new Date(), parseInt(groupedItems.period.value)),
+      dateTime: new Date(),
+      serviceTypeId: groupedItems.generation.ip[0].serviceTypeId,
+      name: 'invoice' + Math.floor(Math.random() * 100),
+      planAmount: 0,
+      planRatio: 0,
+      payed: false,
+      voided: false,
+      serviceInstanceId,
+      description: '',
+    };
+    return dto;
   }
 
   async createInvoiceItems(

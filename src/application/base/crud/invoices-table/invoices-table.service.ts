@@ -10,6 +10,7 @@ import {
   FindOptionsWhere,
   DeleteResult,
   UpdateResult,
+  SelectQueryBuilder,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -70,6 +71,10 @@ export class InvoicesTableService {
   // delete an Item
   async delete(id: number): Promise<DeleteResult> {
     return await this.repository.delete(id);
+  }
+
+  getQueryBuilder(): SelectQueryBuilder<Invoices> {
+    return this.repository.createQueryBuilder('Invoice');
   }
 
   // delete all items

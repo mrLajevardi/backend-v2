@@ -1,24 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { CostCalculationService } from './cost-calculation.service';
-import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
 import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { InvoiceIdDto } from '../dto/invoice-id.dto';
+
 import { InvoiceValidationService } from '../validators/invoice-validation.service';
 import { InvoiceFactoryService } from './invoice-factory.service';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 
+import { BaseInvoiceService } from '../interface/service/invoice.interface';
+import { VdcInvoiceDetailsResultDto } from '../../../vdc/dto/vdc-invoice-details.result.dto';
+import { InvoiceFactoryVdcService } from './invoice-factory-vdc.service';
+import { InvoiceDetailVdcModel } from '../interface/invoice-detail-vdc.interface';
+
 @Injectable()
-export class InvoicesService {
+export class InvoicesService implements BaseInvoiceService {
   constructor(
     private readonly validationService: InvoiceValidationService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly invoicesTable: InvoicesTableService,
     private readonly costCalculationService: CostCalculationService,
     private readonly transactionTable: TransactionsTableService,
+    private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
   ) {}
 
   async createVdcInvoice(
@@ -32,8 +37,47 @@ export class InvoicesService {
         options,
         dto.serviceInstanceId || null,
       );
+      return InvoiceIdDto.generateMock();
     }
-    // return InvoiceIdDto.generateMock();
+  }
+
+  async getVdcInvoiceDetails(
+    invoiceId: string,
+  ): Promise<VdcInvoiceDetailsResultDto> {
+    const res: VdcInvoiceDetailsResultDto = {};
+
+    //We should Join in this way == > Invoice --> InvoiceItem --> view.ServiceItemTypesTree
+    const vdcInvoiceDetailsModels =
+      await this.invoiceVdcFactory.getVdcInvoiceDetailModel(invoiceId);
+
+    const {
+      cpuModel,
+      ramModel,
+      diskModel,
+      ipModel,
+      vmModel,
+      generation,
+      reservationRam,
+      reservationCpu,
+      period,
+      guaranty,
+    } = this.invoiceVdcFactory.getVdcInvoiceDetailInfo(vdcInvoiceDetailsModels);
+
+    this.invoiceVdcFactory.fillRes(
+      res,
+      cpuModel as InvoiceDetailVdcModel,
+      ramModel as InvoiceDetailVdcModel,
+      diskModel as InvoiceDetailVdcModel[],
+      ipModel as InvoiceDetailVdcModel,
+      generation,
+      reservationCpu,
+      reservationRam,
+      vmModel as InvoiceDetailVdcModel,
+      guaranty,
+      period,
+    );
+
+    return res;
   }
 
   async createVdcStaticInvoice(
@@ -47,23 +91,14 @@ export class InvoicesService {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       data.itemsTypes,
     );
-    const dto: CreateInvoicesDto = {
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
       userId,
-      servicePlanType: data.servicePlanTypes,
-      rawAmount: invoiceCost.totalCost,
-      finalAmount: invoiceCost.totalCost,
-      type: data.type,
-      endDateTime: addMonths(new Date(), parseInt(groupedItems.period.value)),
-      dateTime: new Date(),
-      serviceTypeId: groupedItems.generation.ip[0].serviceTypeId,
-      name: 'invoice' + Math.floor(Math.random() * 100),
-      planAmount: 0,
-      planRatio: 0,
-      payed: false,
-      voided: false,
+      data,
+      invoiceCost,
+      groupedItems,
       serviceInstanceId,
-      description: '',
-    };
+    );
+
     const invoice = await this.invoicesTable.create(dto);
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,

@@ -10,6 +10,7 @@ import { TasksModule } from 'src/application/base/tasks/tasks.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { CheckServiceService } from './check-service.service';
 import { PaygInvoiceService } from './payg-invoice.service';
+import { forwardRef } from '@nestjs/common';
 import { VgpuPayAsYouGoService } from './vgpu-pay-as-you-go.service';
 
 describe('RobotService', () => {
@@ -21,7 +22,7 @@ describe('RobotService', () => {
         DatabaseModule,
         CrudModule,
         NotificationModule,
-        TasksModule,
+        forwardRef(() => TasksModule),
         ServicePropertiesModule,
         SessionsModule,
         LoggerModule,
