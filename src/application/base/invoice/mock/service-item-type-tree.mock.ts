@@ -1210,7 +1210,7 @@ export const serviceItemTypeTreeMock: Partial<ServiceItemTypesTree>[] = [
     maxPerRequest: 16,
     minPerRequest: 8,
     enabled: true,
-    step: null,
+    step: 1,
     required: null,
     rule: null,
     createDate: new Date(),
