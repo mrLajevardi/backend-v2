@@ -65,8 +65,8 @@ export class SessionsService {
    * @return {Promise}
    */
   async checkAdminSession(): Promise<string> {
-      const createdSession = await this.createAdminSession();
-      return Promise.resolve(createdSession.token);
+    const createdSession = await this.createAdminSession();
+    return Promise.resolve(createdSession.token);
   }
 
   /**
@@ -74,7 +74,7 @@ export class SessionsService {
    * @return {Promise}
    */
   async checkUserSession(userId: number, orgId: number): Promise<string> {
-      const createdSession = await this.createUserSession(orgId, userId);
-      return Promise.resolve(createdSession.token);
+    const createdSession = await this.createUserSession(orgId, userId);
+    return Promise.resolve(createdSession.token);
   }
 }
