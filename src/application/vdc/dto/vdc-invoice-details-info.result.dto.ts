@@ -9,10 +9,12 @@ export class VdcInvoiceDetailsInfoResultDto extends BaseResultDto {
     this.title = item.title;
     this.unit = item.unit;
     this.value = item.value.toString();
+    this.code = item.code;
   }
 
   price: number; // InvoiceItem
   title: string; //  Tree => Code
   unit: string; //  ? Static
   value: string; // InvoiceItem
+  code: string;
 }
