@@ -14,7 +14,6 @@ import {
   BASE_DATACENTER_SERVICE,
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
-import { ItemTypeCodes } from '../../crud/item-types-table/enum/item-type-codes.enum';
 import { ItemNotExistsException } from '../exception/item-not-exists.exception';
 import { ItemNotEnabledException } from '../exception/item-not-enabled.exception';
 import { ItemIsNotLastChildException } from '../exception/item-is-not-last-child.exception';
@@ -26,6 +25,8 @@ import { NotCompatibleWithStepException } from '../exception/not-compatible-step
 import { InsufficientResourceException } from '../exception/insufficient-resources.exception';
 import { NotCompatibleWithRuleException } from '../exception/not-compatible-with-rule.exception';
 import { RequiredItemNotSatisfiedException } from '../exception/required-items.exception';
+import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import { InvalidGenerationException } from '../exception/invalid-generation.exception';
 
 @Injectable()
 export class InvoiceValidationService {
@@ -137,7 +138,7 @@ export class InvoiceValidationService {
       (value) => value.name === generationCode,
     );
     if (!generation) {
-      throw new InvalidDatacenterException(`datacenter is invalid`);
+      throw new InvalidGenerationException(`invalid generation`);
     }
   }
 
