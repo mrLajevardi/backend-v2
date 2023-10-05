@@ -30,9 +30,10 @@ export class ServiceServiceFactory {
 
     //serviceInstance.expireDate return milisecond and for that we have to convert it days ===>miliSecondTime
 
-    const daysLeft =
-      (serviceInstance.expireDate.getTime() - new Date().getTime()) /
-      miliSecondTime;
+    const daysLeft = Math.floor(
+      ~~(serviceInstance.expireDate.getTime() - new Date().getTime()) /
+        miliSecondTime,
+    );
 
     //ExpiredDate
     const isExpired = daysLeft < 0;
@@ -76,12 +77,12 @@ export class ServiceServiceFactory {
     const model: GetAllVdcServiceWithItemsResultDto =
       new GetAllVdcServiceWithItemsResultDto(
         serviceInstance.id,
-        serviceInstance.status,
+        serviceInstance.status as ServiceStatusEnum,
         serviceInstance.isDeleted,
         serviceInstance.name,
         serviceInstance.serviceType.id,
         [],
-        isExpired,
+        // isExpired,
         daysLeft,
         isTicketSent,
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
@@ -89,7 +90,7 @@ export class ServiceServiceFactory {
 
     //Cpu , Ram , Disk , Vm
     const { serviceItemCpu, serviceItemRam, serviceItemDisk, serviceItemVM } =
-      this.createItemTypesforInstance(vdcItems, cpuSpeed);
+      this.createItemTypesForInstance(vdcItems, cpuSpeed);
 
     model.serviceItems.push(serviceItemCpu);
     model.serviceItems.push(serviceItemRam);
@@ -98,7 +99,7 @@ export class ServiceServiceFactory {
     return model;
   }
 
-  private createItemTypesforInstance(
+  private createItemTypesForInstance(
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
   ) {
