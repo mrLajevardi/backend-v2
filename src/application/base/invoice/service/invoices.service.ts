@@ -37,7 +37,6 @@ export class InvoicesService implements BaseInvoiceService {
         options,
         dto.serviceInstanceId || null,
       );
-      return InvoiceIdDto.generateMock();
     }
   }
 
@@ -91,7 +90,7 @@ export class InvoicesService implements BaseInvoiceService {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       data.itemsTypes,
     );
-    const dto = await this.invoiceFactoryService.createInvoiceDto(
+    const dto = this.invoiceFactoryService.createInvoiceDto(
       userId,
       data,
       invoiceCost,

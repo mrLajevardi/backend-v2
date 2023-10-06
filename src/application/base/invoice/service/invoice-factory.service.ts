@@ -105,13 +105,13 @@ export class InvoiceFactoryService {
     return generationGroups;
   }
 
-  async createInvoiceDto(
+  createInvoiceDto(
     userId: number,
     data: CreateServiceInvoiceDto,
     invoiceCost: TotalInvoiceItemCosts,
     groupedItems: VdcItemGroup,
-    serviceInstanceId: string,
-  ) {
+    serviceInstanceId: string | null,
+  ): CreateInvoicesDto {
     const dto: CreateInvoicesDto = {
       userId,
       servicePlanType: data.servicePlanTypes,
