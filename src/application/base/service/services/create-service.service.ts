@@ -42,6 +42,7 @@ export class CreateServiceService {
     options: SessionRequest,
     dto: CreateServiceDto,
   ): Promise<TaskReturnDto> {
+    console.log('🍘');
     const userId = options.user.userId;
     const { invoiceId } = dto;
     // find user invoice
@@ -52,6 +53,7 @@ export class CreateServiceService {
       },
     });
     if (invoice === null) {
+      console.log('🍘🍘', invoiceId, userId);
       throw new ForbiddenException();
     }
     // find user transaction
@@ -62,6 +64,7 @@ export class CreateServiceService {
       },
     });
     if (transaction === null) {
+      console.log('🍘🍘%');
       throw new ForbiddenException();
     }
     let serviceInstanceId = null;
@@ -108,6 +111,8 @@ export class CreateServiceService {
           invoice.serviceTypeId,
           transaction,
           invoice.name,
+          invoice.datacenterName,
+          invoice.servicePlanType,
         );
       serviceInstanceId = createdService.serviceInstanceId;
       // options.locals = {
@@ -125,7 +130,8 @@ export class CreateServiceService {
           serviceInstanceId,
         },
       );
-      if (invoice.serviceTypeId === 'vdc') {
+      console.log('🥖');
+      if (invoice.serviceTypeId === 'vdc' && false) {
         task = await this.tasksTableService.create({
           userId: userId,
           serviceInstanceId,

@@ -371,6 +371,8 @@ export class ServiceService {
           invoice.serviceTypeId,
           transaction,
           invoice.name,
+          invoice.datacenterName,
+          invoice.servicePlanType,
         );
       serviceInstanceId = createdService.serviceInstanceId;
       token = createdService['token'];

@@ -82,6 +82,12 @@ export class ServiceInstances {
   @Column('tinyint', { name: 'ServicePlanType', nullable: true })
   servicePlanType: number | null;
 
+  @Column('nvarchar', {
+    name: 'DatacenterName',
+    nullable: true,
+  })
+  datacenterName: string | null;
+
   @Column('tinyint', {
     name: 'RetryCount',
     nullable: true,
