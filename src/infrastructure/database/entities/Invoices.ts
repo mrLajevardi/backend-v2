@@ -21,7 +21,7 @@ export class Invoices {
   @Column('varchar', { name: 'ServiceTypeID', length: 50, default: () => "''" })
   serviceTypeId: string;
 
-  @Column('nvarchar', { name: 'DatacenterName', length: 50 })
+  @Column('nvarchar', { name: 'DatacenterName', length: 50, nullable: true })
   datacenterName: string | null;
 
   @Column('int', { name: 'UserID' })
