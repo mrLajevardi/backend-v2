@@ -19,6 +19,7 @@ import { VdcFactoryService } from './service/vdc.factory.service';
 import { InvoicesModule } from '../base/invoice/invoices.module';
 import { BASE_VDC_INVOICE_SERVICE } from './interface/base-vdc-invoice-service.interface';
 import { VdcInvoiceService } from './service/vdc-invoice.service';
+import { ServiceModule } from '../base/service/service.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { VdcInvoiceService } from './service/vdc-invoice.service';
     forwardRef(() => TasksModule),
     SessionsModule,
     forwardRef(() => InvoicesModule),
+    forwardRef(() => ServiceModule),
     OrganizationModule,
     UserModule,
     ServicePropertiesModule,

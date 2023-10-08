@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -52,6 +52,7 @@ export class ServiceService {
     private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly invoicesTable: InvoicesTableService,
+    @Inject(forwardRef(() => TaskManagerService))
     private readonly taskManagerService: TaskManagerService,
     private readonly transactionsTable: TransactionsTableService,
     private readonly tasksTable: TasksTableService,
@@ -66,6 +67,7 @@ export class ServiceService {
     private readonly usersTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly serviceTypesTable: ServiceTypesTableService,
+    @Inject(forwardRef(() => VdcService))
     private readonly vdcService: VdcService,
     private readonly serviceFactory: ServiceServiceFactory,
   ) {}

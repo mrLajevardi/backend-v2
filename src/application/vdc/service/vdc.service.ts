@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
@@ -10,6 +15,7 @@ import { ServicePropertiesService } from 'src/application/base/service-propertie
 import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 import { VdcFactoryService } from './vdc.factory.service';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
+import { ServiceService } from 'src/application/base/service/services/service.service';
 
 @Injectable()
 export class VdcService {
@@ -24,6 +30,8 @@ export class VdcService {
     // @Inject(forwardRef(() => servicePropertiesService))
     // private readonly servicePropertiesService: servicePropertiesService,
     private readonly loggerService: LoggerService,
+    @Inject(forwardRef(() => ServiceService))
+    private readonly serviceService: ServiceService,
   ) {}
 
   async createVdc(
