@@ -39,7 +39,11 @@ import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
 import {
   BASE_VDC_INVOICE_SERVICE,
   BaseVdcInvoiceServiceInterface,
-} from '../interface/base-vdc-invoice-service.interface';
+} from '../interface/service/base-vdc-invoice-service.interface';
+// import {
+//   BASE_VDC_INVOICE_SERVICE,
+//   BaseVdcInvoiceServiceInterface,
+// } from '../interface/base-vdc-invoice-service.interface';
 // import {
 //   BASE_VDC_INVOICE_SERVICE,
 //   BaseVdcInvoiceServiceInterface,

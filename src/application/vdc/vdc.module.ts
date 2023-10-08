@@ -17,8 +17,9 @@ import { AbilityModule } from '../base/security/ability/ability.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { VdcFactoryService } from './service/vdc.factory.service';
 import { InvoicesModule } from '../base/invoice/invoices.module';
-import { BASE_VDC_INVOICE_SERVICE } from './interface/base-vdc-invoice-service.interface';
+// import { BASE_VDC_INVOICE_SERVICE } from './interface/base-vdc-invoice-service.interface';
 import { VdcInvoiceService } from './service/vdc-invoice.service';
+import { BASE_VDC_INVOICE_SERVICE } from './interface/service/base-vdc-invoice-service.interface';
 
 @Module({
   imports: [
