@@ -12,7 +12,7 @@ import {
   InstantiateVmTemplateDto,
   OrgVdcStorageProfileQuery,
 } from './dto/instatiate-vm-from-template.dto';
-import { AdminOrgVdcStorageProfileQuery } from './dto/instantiate-vm-from.templates-admin.dto';
+import { AdminOrgVdcStorageProfileQuery } from '../vdc/dto/instantiate-vm-from.templates-admin.dto';
 import { AcquireTicketDto } from './dto/acquire-vm-ticket.dto';
 @Injectable()
 export class VmWrapperService {
