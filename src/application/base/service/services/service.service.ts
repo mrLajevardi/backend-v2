@@ -36,7 +36,7 @@ import { VdcService } from '../../../vdc/service/vdc.service';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { GetOrgVdcResult } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 
-@Injectable({ scope: Scope.TRANSIENT, durable: true })
+@Injectable()
 export class ServiceService {
   constructor(
     private readonly serviceItemsTable: ServiceItemsTableService,

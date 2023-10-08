@@ -24,6 +24,8 @@ import { VdcModule } from '../../vdc/vdc.module';
 import { DatacenterModule } from '../datacenter/datacenter.module';
 import { SystemSettingsTableModule } from '../crud/system-settings-table/system-settings-table.module';
 import { ServiceServiceFactory } from './Factory/service.service.factory';
+import { ServiceInstancesTableModule } from '../crud/service-instances-table/service-instances-table.module';
+import { ServiceItemsTableModule } from '../crud/service-items-table/service-items-table.module';
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { ServiceServiceFactory } from './Factory/service.service.factory';
     TransactionsModule,
     DatacenterModule,
     SystemSettingsTableModule,
+    ServiceItemsTableModule,
+    ServiceInstancesTableModule,
   ],
   providers: [
     ServiceService,

@@ -23,6 +23,7 @@ import { ServiceModule } from '../base/service/service.module';
 import { BASE_VDC_DETAIL_SERVICE } from './interface/service/base-vdc-detail-service.interface';
 import { VdcDetailService } from './service/vdc-detail.service';
 import { ServiceInstancesTableModule } from '../base/crud/service-instances-table/service-instances-table.module';
+import { ServiceItemModule } from '../base/service-item/service-item.module';
 
 @Module({
   imports: [
@@ -30,6 +31,9 @@ import { ServiceInstancesTableModule } from '../base/crud/service-instances-tabl
     DatabaseModule,
     CrudModule,
     LoggerModule,
+    forwardRef(() => ServiceModule),
+
+    // TasksModule,
     forwardRef(() => TasksModule),
     SessionsModule,
     forwardRef(() => InvoicesModule),
@@ -38,8 +42,7 @@ import { ServiceInstancesTableModule } from '../base/crud/service-instances-tabl
     ServicePropertiesModule,
     AbilityModule,
     // forwardRef(() => ServiceModule),
-
-    ServiceModule,
+    ServiceItemModule,
     ServiceInstancesTableModule,
   ],
   providers: [
