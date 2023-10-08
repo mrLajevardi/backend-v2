@@ -9,6 +9,7 @@ export class VdcInvoiceDetailsInfoResultDto extends BaseResultDto {
     this.title = item.title;
     this.unit = item.unit;
     this.value = item.value.toString();
+    this.usage = 0;
     this.code = item.code;
   }
 
@@ -16,5 +17,6 @@ export class VdcInvoiceDetailsInfoResultDto extends BaseResultDto {
   title: string; //  Tree => Code
   unit: string; //  ? Static
   value: string; // InvoiceItem
+  usage: number;
   code: string;
 }

@@ -13,7 +13,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 import { VdcFactoryService } from '../service/vdc.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
-import { BASE_VDC_INVOICE_SERVICE } from '../interface/base-vdc-invoice-service.interface';
+import { BASE_VDC_INVOICE_SERVICE } from '../interface/service/base-vdc-invoice-service.interface';
 import { VdcInvoiceService } from '../service/vdc-invoice.service';
 import { InvoicesModule } from 'src/application/base/invoice/invoices.module';
 
