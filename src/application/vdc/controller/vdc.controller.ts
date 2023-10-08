@@ -40,14 +40,6 @@ import {
   BASE_VDC_INVOICE_SERVICE,
   BaseVdcInvoiceServiceInterface,
 } from '../interface/service/base-vdc-invoice-service.interface';
-// import {
-//   BASE_VDC_INVOICE_SERVICE,
-//   BaseVdcInvoiceServiceInterface,
-// } from '../interface/base-vdc-invoice-service.interface';
-// import {
-//   BASE_VDC_INVOICE_SERVICE,
-//   BaseVdcInvoiceServiceInterface,
-// } from '../interface/service/base-vdc-invoice-service.interface';
 @ApiBearerAuth()
 @ApiTags('Vpc')
 // @UseFilters(new HttpExceptionFilter())
