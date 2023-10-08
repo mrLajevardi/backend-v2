@@ -1,5 +1,5 @@
-import { InjectQueue } from '@nestjs/bull';
-import { Queue } from 'bull';
+import { InjectQueue, Process, Processor } from '@nestjs/bull';
+import { Job, Queue } from 'bull';
 import { SessionsService } from '../../sessions/sessions.service';
 import { isEmpty } from 'lodash';
 import { VdcService } from 'src/application/vdc/service/vdc.service';
@@ -17,8 +17,6 @@ import { ServiceItemsTableService } from '../../crud/service-items-table/service
 import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { Processor, Process } from '@nestjs/bull';
-import { Job } from 'bull';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { In, Like } from 'typeorm';
 import axios from 'axios';
@@ -27,6 +25,7 @@ import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions
 import { TaskRunnerDto } from '../dto/task-runner.dto';
 import { UserPayload } from '../../security/auth/dto/user-payload.dto';
 
+// @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
 export class TaskManagerService {
   constructor(

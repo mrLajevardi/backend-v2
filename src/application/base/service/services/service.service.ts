@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -33,20 +33,10 @@ import { ZarinpalVerifyReturnDto } from '../dto/return/zarinpal-verify.dto';
 import { GetServicesReturnDto } from '../dto/return/get-services.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
 import { VdcService } from '../../../vdc/service/vdc.service';
-import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
-import { ServiceItemDto } from '../dto/service-item.dto';
-import {
-  BASE_DATACENTER_SERVICE,
-  BaseDatacenterService,
-} from '../../datacenter/interface/datacenter.interface';
-import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
-import {
-  BASE_SERVICE_PROPERTIES_SERVICE,
-  BaseServicePropertiesService,
-} from '../../crud/service-properties-table/interfaces/service-properties.service.interface';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { GetOrgVdcResult } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 
-@Injectable()
+@Injectable({ scope: Scope.TRANSIENT, durable: true })
 export class ServiceService {
   constructor(
     private readonly serviceItemsTable: ServiceItemsTableService,
@@ -485,7 +475,9 @@ export class ServiceService {
     options: SessionRequest,
     typeId?: string,
     id?: string,
-  ): Promise<GetAllVdcServiceWithItemsResultDto[]> {
+  ): Promise<
+    GetAllVdcServiceWithItemsResultDto[] | GetAllVdcServiceWithItemsResultDto
+  > {
     const res: GetAllVdcServiceWithItemsResultDto[] = [];
 
     const allServicesInstances = await this.getServices(options, typeId, id);
@@ -500,7 +492,7 @@ export class ServiceService {
           serviceInstance,
         );
 
-      const vdcItems = await this.vdcService.getVdc(
+      const vdcItems: GetOrgVdcResult = await this.vdcService.getVdc(
         options,
         serviceInstance.id,
       );

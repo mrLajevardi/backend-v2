@@ -18,16 +18,15 @@ export class InvoiceFactoryVdcService {
   ): Promise<InvoiceDetailVdcModel[]> {
     const serviceTypeWhere = 'vdc';
 
-    const InvoiceModels = await this.invoicesTable
+    const invoiceModels: any[] = [];
+
+    const invoiceModelsQueryBuilder = this.invoicesTable
       .getQueryBuilder()
       .select('Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime')
-      .where(
-        'Invoice.ID = :invoiceId AND Invoice.ServiceTypeID = :serviceTypeId ',
-        {
-          invoiceId: invoiceId,
-          serviceTypeId: serviceTypeWhere,
-        },
-      )
+      .where('Invoice.ServiceTypeID = :serviceTypeId ', {
+        // invoiceId: invoiceId,
+        serviceTypeId: serviceTypeWhere,
+      })
       .innerJoin(
         InvoiceItems,
         'InvoiceItem',
@@ -40,7 +39,9 @@ export class InvoiceFactoryVdcService {
       )
       .getRawMany();
 
-    return InvoiceModels.map((model) => {
+    // .getRawMany();
+
+    return invoiceModels.map((model) => {
       const res: InvoiceDetailVdcModel = {
         code: model.Code,
         value: model.Value,
@@ -82,13 +83,14 @@ export class InvoiceFactoryVdcService {
       );
     }
 
-    const tt = VdcGenerationItemCodes[vdcGenerationItemCodes];
     return vdcInvoiceModels.find((model) =>
       model.codeHierarchy.includes(vdcGenerationItemCodes.toLowerCase()),
     );
   }
 
   getVdcInvoiceDetailInfo(vdcInvoiceModels: InvoiceDetailVdcModel[]) {
+
+
     const cpuModel = this.getVdcInvoiceItemModel(
       vdcInvoiceModels,
       VdcGenerationItemCodes.Cpu,

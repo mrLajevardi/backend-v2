@@ -58,6 +58,10 @@ export class ServiceItemsTableService {
     return await this.repository.save(updateItem);
   }
 
+  getQueryBuilder() {
+    return this.repository.createQueryBuilder('ServiceItem');
+  }
+
   // update many items
   async updateAll(
     where: FindOptionsWhere<ServiceItems>,

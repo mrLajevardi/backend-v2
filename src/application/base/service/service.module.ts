@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ServiceService } from './services/service.service';
 import { CrudModule } from '../crud/crud.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -33,10 +33,15 @@ import { ServiceServiceFactory } from './Factory/service.service.factory';
     LoggerModule,
     UserModule,
     PaymentModule,
-    InvoicesModule,
-    VdcModule,
-    TasksModule,
-    VgpuModule,
+    forwardRef(() => InvoicesModule),
+    // forwardRef(() => TasksModule),
+    // forwardRef(() => TasksModule),
+    forwardRef(() => VdcModule),
+    forwardRef(() => VgpuModule),
+    // InvoicesModule,
+    // VdcModule,
+    forwardRef(() => TasksModule),
+    // VgpuModule,
     AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
