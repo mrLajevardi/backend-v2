@@ -17,9 +17,12 @@ import { AbilityModule } from '../base/security/ability/ability.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { VdcFactoryService } from './service/vdc.factory.service';
 import { InvoicesModule } from '../base/invoice/invoices.module';
-// import { BASE_VDC_INVOICE_SERVICE } from './interface/base-vdc-invoice-service.interface';
-import { VdcInvoiceService } from './service/vdc-invoice.service';
 import { BASE_VDC_INVOICE_SERVICE } from './interface/service/base-vdc-invoice-service.interface';
+import { VdcInvoiceService } from './service/vdc-invoice.service';
+import { ServiceModule } from '../base/service/service.module';
+import { BASE_VDC_DETAIL_SERVICE } from './interface/service/base-vdc-detail-service.interface';
+import { VdcDetailService } from './service/vdc-detail.service';
+import { ServiceInstancesTableModule } from '../base/crud/service-instances-table/service-instances-table.module';
 
 @Module({
   imports: [
@@ -34,6 +37,10 @@ import { BASE_VDC_INVOICE_SERVICE } from './interface/service/base-vdc-invoice-s
     UserModule,
     ServicePropertiesModule,
     AbilityModule,
+    // forwardRef(() => ServiceModule),
+
+    ServiceModule,
+    ServiceInstancesTableModule,
   ],
   providers: [
     VdcService,
@@ -45,6 +52,10 @@ import { BASE_VDC_INVOICE_SERVICE } from './interface/service/base-vdc-invoice-s
       provide: BASE_VDC_INVOICE_SERVICE,
       useClass: VdcInvoiceService,
     },
+    {
+      provide: BASE_VDC_DETAIL_SERVICE,
+      useClass: VdcDetailService,
+    },
   ],
   controllers: [VdcController, VdcAdminController],
   exports: [
@@ -54,6 +65,7 @@ import { BASE_VDC_INVOICE_SERVICE } from './interface/service/base-vdc-invoice-s
     NetworkService,
     VdcFactoryService,
     BASE_VDC_INVOICE_SERVICE,
+    BASE_VDC_DETAIL_SERVICE,
   ],
 })
 export class VdcModule {}
