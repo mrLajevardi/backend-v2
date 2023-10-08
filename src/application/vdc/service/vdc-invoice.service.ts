@@ -1,4 +1,4 @@
-import { BaseVdcInvoiceServiceInterface } from '../interface/base-vdc-invoice-service.interface';
+import { BaseVdcInvoiceServiceInterface } from '../interface/service/base-vdc-invoice-service.interface';
 
 import { Inject, Injectable } from '@nestjs/common';
 
@@ -18,4 +18,5 @@ export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
     const res = this.invoiceVdcService.getVdcInvoiceDetails(invoiceId);
     return Promise.resolve(res);
   }
+
 }
