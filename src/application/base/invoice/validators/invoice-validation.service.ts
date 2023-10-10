@@ -4,7 +4,6 @@ import {
   InvoiceItemsDto,
 } from '../dto/create-service-invoice.dto';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
-import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { isNil } from 'lodash';
 import { InvoiceItemLimits } from '../enum/invoice-item-limits.enum';
 import { And, In, Like, Not } from 'typeorm';
@@ -31,6 +30,8 @@ export class InvoiceValidationService {
 
   async vdcInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
     const itemParentType = new VdcParentType();
+    this.checkUniquenessOfItems(invoice.itemsTypes);
+    let datacenterChecked = false;
     for (const invoiceItem of invoice.itemsTypes) {
       await this.generalInvoiceValidator(invoiceItem);
       const targetInvoiceItem = await this.serviceItemTypesTreeService.findById(
@@ -58,7 +59,10 @@ export class InvoiceValidationService {
           itemParentType.memoryReservation.push(targetInvoiceItem.hierarchy);
       }
       // checks provider vdc status
-      if (firstParent.code.toLowerCase() === 'generation') {
+      if (
+        firstParent.code.toLowerCase() === 'generation' &&
+        !datacenterChecked
+      ) {
         const secondParent = await this.serviceItemTypesTreeService.findById(
           parseInt(parents[1]),
         );
@@ -66,6 +70,7 @@ export class InvoiceValidationService {
           targetInvoiceItem.datacenterName.toLowerCase(),
           secondParent.code.toLowerCase(),
         );
+        datacenterChecked = true;
       }
     }
     // check items with default vdc service items
@@ -284,6 +289,12 @@ export class InvoiceValidationService {
     }
   }
 
+  checkUniquenessOfItems(invoiceItemTypes: InvoiceItemsDto[]): void {
+    const itemIds = invoiceItemTypes.map((item) => item.itemTypeId);
+    if (itemIds.length !== new Set(itemIds).size) {
+      throw new BadRequestException('items not unique');
+    }
+  }
   checkItemTypeRule(
     invoiceItemType: InvoiceItemsDto,
     itemType: ServiceItemTypesTree,

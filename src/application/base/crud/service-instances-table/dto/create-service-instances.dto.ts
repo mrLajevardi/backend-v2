@@ -4,6 +4,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
@@ -78,4 +79,14 @@ export class CreateServiceInstancesDto {
   @IsDate()
   @ApiProperty()
   nextPayg?: Date;
+
+  @IsOptional()
+  @IsNumber()
+  @ValidateIf((object, value) => value !== null)
+  servicePlanType: number | null;
+
+  @IsOptional()
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  datacenterName: string | null;
 }

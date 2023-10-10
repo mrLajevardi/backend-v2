@@ -127,6 +127,7 @@ export class InvoiceFactoryService {
       voided: false,
       serviceInstanceId,
       description: '',
+      datacenterName: groupedItems.generation.vm[0].datacenterName,
     };
     return dto;
   }
