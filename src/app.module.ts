@@ -43,7 +43,7 @@ import { TaskManagerModule } from './application/base/task-manager/task-manager.
 import { BullModule as BullMQModule } from '@nestjs/bullmq';
 import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { DatacenterModule } from './application/base/datacenter/datacenter.module';
-import {ServiceItemModule} from "./application/base/service-item/service-item.module";
+import { ServiceItemModule } from './application/base/service-item/service-item.module';
 
 @Module({
   imports: [
