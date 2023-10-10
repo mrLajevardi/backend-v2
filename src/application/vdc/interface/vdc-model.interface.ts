@@ -10,4 +10,7 @@ export interface VdcModel extends InvoiceDetailVdcModel {
   title?: string;
   unit?: string;
   serviceName?: string;
+  status?: number;
+  daysLeft?: number;
+  servicePlanType?: number;
 }

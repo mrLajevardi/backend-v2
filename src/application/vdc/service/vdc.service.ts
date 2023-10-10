@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
@@ -10,18 +10,7 @@ import { ServicePropertiesService } from 'src/application/base/service-propertie
 import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 import { VdcFactoryService } from './vdc.factory.service';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
-import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
-import { ServiceService } from '../../base/service/services/service.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-all-vdc-service-with-items-result.dto';
-import {
-  BASE_SERVICE_ITEM_SERVICE,
-  BaseServiceItem,
-} from '../../base/service-item/interface/service/service-item.interface';
-import {
-  BASE_VDC_DETAIL_SERVICE,
-  BaseVdcDetailService,
-} from '../interface/service/base-vdc-detail-service.interface';
 
 @Injectable()
 export class VdcService {
@@ -33,14 +22,7 @@ export class VdcService {
     private readonly configTable: ConfigsTableService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly vdcWrapperService: VdcWrapperService,
-    // @Inject(forwardRef(() => servicePropertiesService))
-    // private readonly servicePropertiesService: servicePropertiesService,
     private readonly loggerService: LoggerService,
-    private readonly serviceService: ServiceService,
-    @Inject(BASE_SERVICE_ITEM_SERVICE)
-    private readonly serviceItemService: BaseServiceItem,
-    @Inject(BASE_VDC_DETAIL_SERVICE)
-    private readonly vdcDetailService: BaseVdcDetailService,
   ) {}
 
   async createVdc(
@@ -422,17 +404,7 @@ export class VdcService {
 
     const model = this.vdcFactoryService.getVdcOrgVdcModelResult(vdcData);
 
-    const test = await this.getNamedDisk(options, vdcInstanceId);
-
-    console.log('test ', test);
-    console.log('end test ');
-
     return Promise.resolve(model);
-
-    // return Promise.resolve({
-    //   instanceId: vdcInstanceId,
-    //   records: vdcData.data,
-    // });
   }
 
   async getVmAttachedToNamedDisk(options, vdcInstanceId, nameDiskID) {
@@ -511,52 +483,5 @@ export class VdcService {
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
-  }
-
-  async getVdcDetail(
-    option: SessionRequest,
-    serviceInstanceId: string,
-  ): Promise<VdcDetailsResultDto> {
-    /**
-     * getting model of vdc list -- select from tbl_ServiceInstance and join to ServiceItem and
-     * Select guarantyItemName from tbl_ItemTypeName -- calling storage details in main-wrapper
-     * -- bind disk to model of list vdc --
-     * create final model --
-     * done !!!
-     */
-
-    const modelVdc = (await this.serviceService.getServicesWithItems(
-      option,
-      'vdc',
-      serviceInstanceId,
-    )) as GetAllVdcServiceWithItemsResultDto;
-
-    const guarantyTitle = await this.serviceItemService.getGuarantyTitleBy(
-      serviceInstanceId,
-    );
-
-    const serviceproperties =
-      await this.servicePropertiesService.getAllServiceProperties(
-        serviceInstanceId,
-      );
-
-    //TODO --> How can I find vdcId with ServiceInstanceId
-    const vpcStorageDetail = await this.vdcDetailService.getStorageDetailVdc(
-      serviceproperties['vdcId'],
-      option,
-    );
-
-    const vdcDetailsResult = await this.vdcDetailService.getVdcDetail(
-      serviceInstanceId,
-    );
-    vdcDetailsResult.servicePlanType = modelVdc.servicePlanType;
-    vdcDetailsResult.serviceName = modelVdc.name;
-    vdcDetailsResult.daysLeft = modelVdc.daysLeft;
-    vdcDetailsResult.status = modelVdc.status;
-    vdcDetailsResult.disk = vpcStorageDetail;
-
-    vdcDetailsResult.guaranty.title = guarantyTitle;
-
-    return null;
   }
 }

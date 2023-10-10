@@ -193,7 +193,7 @@ export class InvoiceFactoryVdcService {
       name: vmModel.datacenterName,
     }; // TODO about DatacenterName and DatacenterTitle;
 
-    res.finalPrice = vmModel.finalAmount.toString();
+    res.finalPrice = ramModel.finalAmount?.toString();
 
     res.guaranty = { title: guaranty.title, value: guaranty.min };
 

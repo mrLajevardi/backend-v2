@@ -24,6 +24,7 @@ import { BASE_VDC_DETAIL_SERVICE } from './interface/service/base-vdc-detail-ser
 import { VdcDetailService } from './service/vdc-detail.service';
 import { ServiceInstancesTableModule } from '../base/crud/service-instances-table/service-instances-table.module';
 import { ServiceItemModule } from '../base/service-item/service-item.module';
+import { VdcDetailFactoryService } from './service/vdc-detail.factory.service';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ServiceItemModule } from '../base/service-item/service-item.module';
     EdgeService,
     NetworkService,
     VdcFactoryService,
+    VdcDetailFactoryService,
     {
       provide: BASE_VDC_INVOICE_SERVICE,
       useClass: VdcInvoiceService,

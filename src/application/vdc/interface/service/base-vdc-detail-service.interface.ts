@@ -7,9 +7,12 @@ import { VdcDetailsResultDto } from '../../dto/vdc-details.result.dto';
 export const BASE_VDC_DETAIL_SERVICE = 'BASE_VDC_DETAIL_SERVICE';
 export interface BaseVdcDetailService extends IBaseService {
   getStorageDetailVdc(
-    vdcId: string,
+    serviceInstanceId: string,
     options: SessionRequest,
   ): Promise<VdcInvoiceDetailsInfoResultDto[]>;
 
-  getVdcDetail(serviceInstanceId: string): Promise<VdcDetailsResultDto>;
+  getVdcDetail(
+    serviceInstanceId: string,
+    option: SessionRequest,
+  ): Promise<VdcDetailsResultDto>;
 }
