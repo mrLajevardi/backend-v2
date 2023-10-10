@@ -89,9 +89,6 @@ export class ServiceInstances {
   })
   retryCount: number | null;
 
-  @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
-  datacenterName: string | null;
-
   @Column('int', { name: 'DaysLeft', nullable: true })
   daysLeft: number | null;
 

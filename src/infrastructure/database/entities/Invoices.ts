@@ -71,9 +71,6 @@ export class Invoices {
   })
   serviceInstanceId: string;
 
-  @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
-  datacenterName: string | null;
-
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
   invoiceItems: InvoiceItems[];
   @ManyToOne(() => User, (user) => user.invoices, {
