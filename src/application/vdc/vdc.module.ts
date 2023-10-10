@@ -17,8 +17,14 @@ import { AbilityModule } from '../base/security/ability/ability.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { VdcFactoryService } from './service/vdc.factory.service';
 import { InvoicesModule } from '../base/invoice/invoices.module';
-import { BASE_VDC_INVOICE_SERVICE } from './interface/base-vdc-invoice-service.interface';
+import { BASE_VDC_INVOICE_SERVICE } from './interface/service/base-vdc-invoice-service.interface';
 import { VdcInvoiceService } from './service/vdc-invoice.service';
+import { ServiceModule } from '../base/service/service.module';
+import { BASE_VDC_DETAIL_SERVICE } from './interface/service/base-vdc-detail-service.interface';
+import { VdcDetailService } from './service/vdc-detail.service';
+import { ServiceInstancesTableModule } from '../base/crud/service-instances-table/service-instances-table.module';
+import { ServiceItemModule } from '../base/service-item/service-item.module';
+import { VdcDetailFactoryService } from './service/vdc-detail.factory.service';
 
 @Module({
   imports: [
@@ -26,6 +32,9 @@ import { VdcInvoiceService } from './service/vdc-invoice.service';
     DatabaseModule,
     CrudModule,
     LoggerModule,
+    forwardRef(() => ServiceModule),
+
+    // TasksModule,
     forwardRef(() => TasksModule),
     SessionsModule,
     forwardRef(() => InvoicesModule),
@@ -33,6 +42,9 @@ import { VdcInvoiceService } from './service/vdc-invoice.service';
     UserModule,
     ServicePropertiesModule,
     AbilityModule,
+    // forwardRef(() => ServiceModule),
+    ServiceItemModule,
+    ServiceInstancesTableModule,
   ],
   providers: [
     VdcService,
@@ -40,9 +52,14 @@ import { VdcInvoiceService } from './service/vdc-invoice.service';
     EdgeService,
     NetworkService,
     VdcFactoryService,
+    VdcDetailFactoryService,
     {
       provide: BASE_VDC_INVOICE_SERVICE,
       useClass: VdcInvoiceService,
+    },
+    {
+      provide: BASE_VDC_DETAIL_SERVICE,
+      useClass: VdcDetailService,
     },
   ],
   controllers: [VdcController, VdcAdminController],
@@ -53,6 +70,7 @@ import { VdcInvoiceService } from './service/vdc-invoice.service';
     NetworkService,
     VdcFactoryService,
     BASE_VDC_INVOICE_SERVICE,
+    BASE_VDC_DETAIL_SERVICE,
   ],
 })
 export class VdcModule {}

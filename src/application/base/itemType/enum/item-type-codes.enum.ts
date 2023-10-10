@@ -4,6 +4,10 @@ export enum ItemTypeCodes {
   CpuReservation = 'reservationCpu',
   MemoryReservation = 'reservationRam',
   Guaranty = 'guaranty',
+  CpuReservationItem = 'reservationPercentCpu',
+  MemoryReservationItem = 'reservationPercentRam',
+  GuarantyItem = 'guarantyItem',
+  PeriodItemItem = 'perioditem',
 }
 
 export enum VdcGenerationItemCodes {
@@ -20,4 +24,11 @@ export enum DiskItemCodes {
   Vip = 'vip',
   Fast = 'fast',
   Swap = 'swap',
+}
+
+//TODO Convert to
+export enum GuarantyCode {
+  Vip = 'حرفه ای ',
+  Base = 'پایه',
+  Practical = 'کاربردی',
 }

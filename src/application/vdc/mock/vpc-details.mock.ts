@@ -21,7 +21,7 @@ export const vpcDetailsMock = {
   ],
   guaranty: 'VIP',
   daysLeft: 150,
-  ip: { price: 20000, title: '', unit: 'IP', quantity: 14 },
+  ip: { price: 20000, title: '', unit: 'IP', quantity: 14, usage: 2 },
   generation: 'G2',
   finalPrice: 10000,
   reservationRam: 0.25,
