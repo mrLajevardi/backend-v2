@@ -128,6 +128,7 @@ export class CostCalculationService {
         const swapItem = await this.serviceItemTypeTreeService.findOne({
           where: {
             parentId: diskItem.parentId,
+            code: DiskItemCodes.Swap,
           },
         });
         diskItemCosts.push({

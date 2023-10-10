@@ -10,6 +10,9 @@ export class InvoiceItemList {
   @Column({ name: 'Quantity' })
   quantity: number;
 
+  @Column({ name: 'Value' })
+  value: string;
+
   @Column({ name: 'Fee' })
   fee: number;
 

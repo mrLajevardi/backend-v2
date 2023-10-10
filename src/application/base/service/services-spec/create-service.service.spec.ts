@@ -14,6 +14,7 @@ import { UserModule } from '../../user/user.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { DatacenterModule } from '../../datacenter/datacenter.module';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -24,6 +25,7 @@ describe('CreateServiceService', () => {
       imports: [
         CrudModule,
         DatabaseModule,
+        DatacenterModule,
         SessionsModule,
         PaymentModule,
         UserModule,

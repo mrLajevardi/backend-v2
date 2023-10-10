@@ -10,6 +10,9 @@ import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserModule } from '../../user/user.module';
 import { TasksModule } from '../../tasks/tasks.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
+import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
+import { DatacenterService } from '../../datacenter/service/datacenter.service';
+import { DatacenterModule } from '../../datacenter/datacenter.module';
 
 describe('ExtendServiceService', () => {
   let service: ExtendServiceService;
@@ -20,6 +23,7 @@ describe('ExtendServiceService', () => {
       imports: [
         CrudModule,
         DatabaseModule,
+        DatacenterModule,
         SessionsModule,
         UserModule,
         PaymentModule,
