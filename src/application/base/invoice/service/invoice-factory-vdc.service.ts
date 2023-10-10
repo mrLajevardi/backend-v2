@@ -18,15 +18,18 @@ export class InvoiceFactoryVdcService {
   ): Promise<InvoiceDetailVdcModel[]> {
     const serviceTypeWhere = 'vdc';
 
-    const invoiceModels: any[] = [];
+    // const invoiceModels: any[] = [];
 
-    const invoiceModelsQueryBuilder = this.invoicesTable
+    const invoiceModels = await this.invoicesTable
       .getQueryBuilder()
       .select('Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime')
-      .where('Invoice.ServiceTypeID = :serviceTypeId ', {
-        // invoiceId: invoiceId,
-        serviceTypeId: serviceTypeWhere,
-      })
+      .where(
+        'Invoice.ServiceTypeID = :serviceTypeId AND Invoice.ID= :invoiceId ',
+        {
+          invoiceId: invoiceId,
+          serviceTypeId: serviceTypeWhere,
+        },
+      )
       .innerJoin(
         InvoiceItems,
         'InvoiceItem',
