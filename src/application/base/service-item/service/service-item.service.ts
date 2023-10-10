@@ -1,10 +1,9 @@
 import { BaseService } from '../../../../infrastructure/service/BaseService';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { BaseServiceItem } from '../interface/service/service-item.interface';
-import { join } from 'lodash';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
-import {Injectable} from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ServiceItemService implements BaseService, BaseServiceItem {

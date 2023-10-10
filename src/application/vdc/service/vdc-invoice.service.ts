@@ -18,5 +18,4 @@ export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
     const res = this.invoiceVdcService.getVdcInvoiceDetails(invoiceId);
     return Promise.resolve(res);
   }
-
 }
