@@ -39,8 +39,6 @@ export class InvoiceFactoryVdcService {
       )
       .getRawMany();
 
-    // .getRawMany();
-
     return invoiceModels.map((model) => {
       const res: InvoiceDetailVdcModel = {
         code: model.Code,
@@ -89,8 +87,6 @@ export class InvoiceFactoryVdcService {
   }
 
   getVdcInvoiceDetailInfo(vdcInvoiceModels: InvoiceDetailVdcModel[]) {
-
-
     const cpuModel = this.getVdcInvoiceItemModel(
       vdcInvoiceModels,
       VdcGenerationItemCodes.Cpu,
