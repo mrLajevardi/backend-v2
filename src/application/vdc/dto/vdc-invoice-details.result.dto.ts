@@ -16,7 +16,7 @@ export class VdcInvoiceDetailsResultDto extends BaseResultDto {
   guaranty?: { title: string; value: number };
   period?: { title: string; value: number };
   generation?: string;
-  finalPrice?: string;
+  finalPrice?: number;
   reservationRam?: string;
   reservationCpu?: string;
 }
