@@ -60,7 +60,7 @@ export class InvoiceValidationService {
       }
       // checks provider vdc status
       if (
-        firstParent.code.toLowerCase() === 'generation' &&
+        firstParent.code.toLowerCase() === ItemTypeCodes.Generation &&
         !datacenterChecked
       ) {
         const secondParent = await this.serviceItemTypesTreeService.findById(
