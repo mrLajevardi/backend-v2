@@ -10,6 +10,7 @@ import { InvoiceItemsDto } from 'src/application/base/invoice/dto/create-service
 export class VdcFactoryService {
   getVdcOrgVdcModelResult(vdcData: any): GetOrgVdcResult {
     const record = vdcData.data.record[0];
+    if (record === undefined) return {};
     const modelBuilder: GetVdcOrgVdcBuilderResult =
       GetVdcOrgVdcBuilderResult.GetBuilder();
     modelBuilder.WithVdcName(record.name);

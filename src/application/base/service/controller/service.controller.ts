@@ -110,7 +110,11 @@ export class ServiceController {
     @Query('serviceTypeId') typeId?: string,
     @Query('id') id?: string,
   ): Promise<GetAllVdcServiceWithItemsResultDto[]> {
-    return this.serviceService.getServicesWithItems(options, typeId, id);
+    return (await this.serviceService.getServicesWithItems(
+      options,
+      typeId,
+      id,
+    )) as GetAllVdcServiceWithItemsResultDto[];
     // await this.invoicesTable.create(dto);
   }
 

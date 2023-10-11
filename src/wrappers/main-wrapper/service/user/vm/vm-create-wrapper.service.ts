@@ -9,6 +9,7 @@ import { SnapShotsProperties } from './dto/create-snap-shot.dto';
 import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 import { CreateVmDto } from './dto/create-vm.dto';
 import { CheckCatalogDto } from './dto/chcek-catalog.dto';
+import { StorageDetails } from './dto/storage-details.dto';
 @Injectable()
 export class VmCreateWrapperService {
   constructor(
@@ -102,15 +103,18 @@ export class VmCreateWrapperService {
       vdcId,
     );
     const computePolicyId = computePolicy.values[0].id;
-    const query: any = await this.vdcWrapperService.vcloudQuery(authToken, {
-      type: 'orgVdcStorageProfile',
-      format: 'records',
-      page: 1,
-      pageSize: 128,
-      filterEncoded: true,
-      links: true,
-      filter: `vdc==${vdcId}`,
-    });
+    const query: any = await this.vdcWrapperService.vcloudQuery<StorageDetails>(
+      authToken,
+      {
+        type: 'orgVdcStorageProfile',
+        format: 'records',
+        page: 1,
+        pageSize: 128,
+        filterEncoded: true,
+        links: true,
+        filter: `vdc==${vdcId}`,
+      },
+    );
     const vdcStorageProfileLink = query.data.record[0].href;
     const networks = [];
     const storage = [];
