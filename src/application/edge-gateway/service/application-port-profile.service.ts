@@ -6,6 +6,7 @@ import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isNil } from 'lodash';
 import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class ApplicationPortProfileService {
@@ -162,6 +163,8 @@ export class ApplicationPortProfileService {
     if (search) {
       filter = filter + `;(name==*${search}*)`;
     }
+
+    console.log(filter, '😊');
     const applicationPortProfiles =
       await mainWrapper.user.applicationPortProfile.getApplicationPortProfileList(
         session,
@@ -235,5 +238,34 @@ export class ApplicationPortProfileService {
     return Promise.resolve({
       taskId: application.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async getCountOfApplicationPort(
+    option: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<{ default: number; custom: number }> {
+    const customPortFilter = 'TENANT';
+    const systemPortFilter = 'SYSTEM';
+    const page = 1;
+    const pageSize = 1;
+    const systemPorts = await this.getApplicationPortProfiles(
+      option,
+      serviceInstanceId,
+      page,
+      pageSize,
+      `scope==${systemPortFilter}`,
+      '',
+    );
+
+    const costumePorts = await this.getApplicationPortProfiles(
+      option,
+      serviceInstanceId,
+      page,
+      pageSize,
+      `scope==${customPortFilter}`,
+      '',
+    );
+
+    return { default: systemPorts.total, custom: costumePorts.total };
   }
 }

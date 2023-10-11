@@ -25,6 +25,11 @@ import { VdcDetailService } from './service/vdc-detail.service';
 import { ServiceInstancesTableModule } from '../base/crud/service-instances-table/service-instances-table.module';
 import { ServiceItemModule } from '../base/service-item/service-item.module';
 import { VdcDetailFactoryService } from './service/vdc-detail.factory.service';
+import { VdcDetailFecadeService } from './service/vdc-detail.fecade.service';
+import { NetworksModule } from '../networks/networks.module';
+import { EdgeGatewayModule } from '../edge-gateway/edge-gateway.module';
+import { NatModule } from '../nat/nat.module';
+import { VmModule } from '../vm/vm.module';
 
 @Module({
   imports: [
@@ -32,6 +37,9 @@ import { VdcDetailFactoryService } from './service/vdc-detail.factory.service';
     DatabaseModule,
     CrudModule,
     LoggerModule,
+    EdgeGatewayModule,
+    NatModule,
+    VmModule,
     forwardRef(() => ServiceModule),
 
     // TasksModule,
@@ -43,6 +51,7 @@ import { VdcDetailFactoryService } from './service/vdc-detail.factory.service';
     ServicePropertiesModule,
     AbilityModule,
     // forwardRef(() => ServiceModule),
+    NetworksModule,
     ServiceItemModule,
     ServiceInstancesTableModule,
   ],
@@ -61,6 +70,7 @@ import { VdcDetailFactoryService } from './service/vdc-detail.factory.service';
       provide: BASE_VDC_DETAIL_SERVICE,
       useClass: VdcDetailService,
     },
+    VdcDetailFecadeService,
   ],
   controllers: [VdcController, VdcAdminController],
   exports: [

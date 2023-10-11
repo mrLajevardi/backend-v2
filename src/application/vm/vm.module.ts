@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { VmService } from './service/vm.service';
 import { VmController } from './controller/vm.controller';
-import { ServiceModule } from '../base/service/service.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
@@ -20,6 +19,6 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
   ],
   controllers: [VmController],
   providers: [VmService],
-  exports: [],
+  exports: [VmService],
 })
 export class VmModule {}
