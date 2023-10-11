@@ -26,6 +26,8 @@ import jwt from 'jsonwebtoken';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import { TaskRunnerDto } from '../dto/task-runner.dto';
 import { UserPayload } from '../../security/auth/dto/user-payload.dto';
+import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 
 @Processor('tasks2')
 export class TaskManagerService {
@@ -47,6 +49,8 @@ export class TaskManagerService {
     private readonly taskTable: TasksTableService,
     private readonly loggerService: LoggerService,
     private readonly vgpuDnatService: VgpuDnatService,
+    private readonly invoiceFactoryService: InvoiceFactoryService,
+    private readonly vdcFactoryService: VdcFactoryService,
   ) {}
 
   @Process()
@@ -438,22 +442,23 @@ export class TaskManagerService {
     customTaskId: string,
     requestOptions: object,
   ): Promise<void> {
-    //console.log('😙', serviceInstanceId, customTaskId, requestOptions);
     const service = await this.serviceInstancesTable.findById(
       serviceInstanceId,
     );
     console.log('createVDC for ', service.userId);
 
     const userId = service.userId;
-    const ServiceItems = await this.serviceItemsTable.find({
+    const serviceItems = await this.serviceItemsTable.find({
       where: {
         serviceInstanceId,
       },
     });
-    const data: object = {};
-    for (const item of ServiceItems) {
-      data[item.itemTypeCode] = item.quantity;
-    }
+    const data = await this.invoiceFactoryService.groupVdcItems(
+      this.vdcFactoryService.transformItems(serviceItems),
+    );
+    // for (const item of ServiceItems) {
+    //   data[item.itemTypeCode] = item.quantity;
+    // }
 
     console.log('checking org');
     const org = await this.orgService.checkOrg(userId);

@@ -10,6 +10,10 @@ import { ServicePropertiesService } from 'src/application/base/service-propertie
 import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 import { VdcFactoryService } from './vdc.factory.service';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
+import { DatacenterService } from 'src/application/base/datacenter/service/datacenter.service';
+import { VdcServiceProperties } from '../enum/vdc-service-properties.enum';
+import { VdcItemGroup } from 'src/application/base/invoice/interface/vdc-item-group.interface.dto';
+import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 
 @Injectable()
 export class VdcService {
@@ -21,9 +25,11 @@ export class VdcService {
     private readonly configTable: ConfigsTableService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly vdcWrapperService: VdcWrapperService,
+    private readonly datacenterService: DatacenterService,
     // @Inject(forwardRef(() => servicePropertiesService))
     // private readonly servicePropertiesService: servicePropertiesService,
     private readonly loggerService: LoggerService,
+    private readonly adminVdcWrapperService: AdminVdcWrapperService,
   ) {}
 
   async createVdc(
@@ -31,11 +37,11 @@ export class VdcService {
     orgId: number,
     vcloudOrgId: string,
     orgName: string,
-    data: object,
+    data: VdcItemGroup,
     serviceInstanceId: string,
   ) {
     const sessionToken = await this.sessionService.checkAdminSession();
-    console.log('find service ', '🍟');
+    console.log('session checked and created');
     const service = await this.serviceInstanceTable.findOne({
       where: {
         id: serviceInstanceId,
@@ -172,7 +178,7 @@ export class VdcService {
    * @return {Promise}
    */
   async initVdc(
-    data: object,
+    data: VdcItemGroup,
     sessionToken: string,
     vdcName: string,
     vcloudOrgId: string,
@@ -180,12 +186,12 @@ export class VdcService {
     serviceInstanceId: string,
   ) {
     console.log('init vdc');
-    const cpuSpeed = await this.configTable.findOne({
-      where: {
-        propertyKey: 'vCpuSpeed',
-        serviceTypeId: 'vdc',
-      },
-    });
+    const datacenterGenId = await this.servicePropertiesTable.getValueBy(
+      serviceInstanceId,
+      VdcServiceProperties.GenerationId,
+    );
+    const datacenterMetadata =
+      await this.datacenterService.getDatacenterMetadata('', datacenterGenId);
     const networkQuota = await this.configTable.findOne({
       where: {
         propertyKey: 'networkQuota',
@@ -193,20 +199,25 @@ export class VdcService {
       },
     });
     console.log('create vdc with wrapper with data: ', data);
-    const vdcInfo: any = await mainWrapper.admin.vdc.createVdc(
+    const providerVdcReferenceHref =
+      process.env.VCLOUD_BASE_URL + '/api/admin/providervdc/' + datacenterGenId;
+    const vdcInfo = await this.adminVdcWrapperService.createVdc(
       {
-        ProviderVdcReference: vcdConfig.admin.vdc.ProviderVdcReference,
-        VdcStorageProfileParams: vcdConfig.admin.vdc.VdcStorageProfileParams,
-        NetworkPoolReference: vcdConfig.admin.vdc.NetworkPoolReference,
-        ResourceGuaranteedMemory: vcdConfig.admin.vdc.ResourceGuaranteedMemory,
-        ResourceGuaranteedCpu: vcdConfig.admin.vdc.ResourceGuaranteedCpu,
-        cores: data['cpuCores'],
-        vCpuInMhz: cpuSpeed.value,
-        ram: data['ram'],
+        providerVdcReference: {
+          href: providerVdcReferenceHref,
+        },
+        // vdcStorageProfiles:
+        // vdcStorageProfileParams: vcdConfig.admin.vdc.VdcStorageProfileParams,
+        networkPoolReference: vcdConfig.admin.vdc.NetworkPoolReference,
+        resourceGuaranteedMemory: Number(data.memoryReservation),
+        resourceGuaranteedCpu: Number(data.cpuReservation),
+        cores: Number(data.generation.cpu[0].value),
+        vCpuInMhz: Number(datacenterMetadata.cpuSpeed),
+        ram: Number(data.generation.ram[0].value),
         storage: data['storage'],
         authToken: sessionToken,
         name: vdcName,
-        vm: data['vm'],
+        vm: Number(data.generation.vm[0].value),
         NetworkQuota: networkQuota.value,
       },
       vcloudOrgId,

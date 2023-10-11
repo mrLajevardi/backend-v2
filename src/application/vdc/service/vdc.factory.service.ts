@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { GetVdcOrgVdcBuilderResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.builder.result';
+import { InvoiceFactoryVdcService } from 'src/application/base/invoice/service/invoice-factory-vdc.service';
+import { ServiceItems } from 'src/infrastructure/database/entities/ServiceItems';
+import { InvoiceItemsDto } from 'src/application/base/invoice/dto/create-service-invoice.dto';
 
 @Injectable()
 export class VdcFactoryService {
@@ -25,5 +28,16 @@ export class VdcFactoryService {
     modelBuilder.WithNumberOfRunningVMs(record.numberOfRunningVMs);
     const model: GetOrgVdcResult = modelBuilder.Build();
     return model;
+  }
+
+  transformItems(serviceItems: ServiceItems[]): InvoiceItemsDto[] {
+    const transformedItems = serviceItems.map((item) => {
+      const invoiceItem: InvoiceItemsDto = {
+        itemTypeId: item.id,
+        value: item.value,
+      };
+      return invoiceItem;
+    });
+    return transformedItems;
   }
 }

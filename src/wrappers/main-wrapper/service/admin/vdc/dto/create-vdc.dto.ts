@@ -14,11 +14,12 @@ export class CreateVdcConfig {
   vm: number;
   networkQuota: number;
   storage: number;
-  vdcStorageProfileParams: VdcStorageProfileParams;
+  vdcStorageProfiles: VdcStorageProfileParams[];
+  // vdcStorageProfileParams: VdcStorageProfileParams;
 }
 export class Reference {
   href: string;
-  name: string;
+  name?: string;
 }
 
 class VdcStorageProfileParams {
