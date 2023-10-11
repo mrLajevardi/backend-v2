@@ -7,6 +7,9 @@ import { ServicePropertiesTableService } from '../../base/crud/service-propertie
 import { ApplicationPortProfileService } from './application-port-profile.service';
 import { FirewallService } from './firewall.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { IpSetsDto } from '../dto/ip-sets.dto';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
 
 @Injectable()
 export class EdgeGatewayService {
@@ -71,7 +74,7 @@ export class EdgeGatewayService {
     });
   }
 
-  async getDhcpForwarder(options, vdcInstanceId) {
+  async getDhcpForwarder(options, vdcInstanceId): Promise<DhcpForwarderDto> {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
@@ -131,7 +134,7 @@ export class EdgeGatewayService {
     pageSize = 25,
     filter = '',
     search,
-  ) {
+  ): Promise<IpSetsDto[]> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -304,5 +307,35 @@ export class EdgeGatewayService {
     return Promise.resolve({
       taskId: ipSets.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async getCountOfIpSet(
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<number> {
+    const page = 1;
+    const pageSize = 1;
+    let count = 0;
+
+    const res = (await this.getIPSetsList(
+      options,
+      vdcInstanceId,
+      page,
+      pageSize,
+      '',
+      '',
+    )) as any;
+
+    console.log(res);
+
+    count = res?.resultTotal;
+
+    //
+    // res.values.forEach((ipSet) => {
+    //   if (ipSet != undefined && ipSet.values != undefined)
+    //     count += ipSet.values.length;
+    // });
+
+    return count;
   }
 }

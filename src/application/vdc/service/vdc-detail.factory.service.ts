@@ -16,12 +16,15 @@ import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import { VdcModel } from '../interface/vdc-model.interface';
 import { InvoiceDetailVdcModel } from '../../base/invoice/interface/invoice-detail-vdc.interface';
 import { InvoiceFactoryVdcService } from '../../base/invoice/service/invoice-factory-vdc.service';
+import { VdcDetailFecadeService } from './vdc-detail.fecade.service';
+import { VdcDetailModel } from '../interface/vdc-detail-model.interface';
 
 @Injectable()
 export class VdcDetailFactoryService {
   constructor(
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
+    private readonly vdcDetailFecadeService: VdcDetailFecadeService,
   ) {}
 
   getVdcDetailItemModel(vdcModels: VdcModel[], res2: VdcDetailsResultDto) {
@@ -79,7 +82,69 @@ export class VdcDetailFactoryService {
     return vdcModels;
   }
 
-  async getVdcDetailModel(serviceInstanceId: string) {
+  async getStatusOfVdcItems(option: SessionRequest, serviceInstanceId: string) {
+    const countOfNetworks =
+      await this.vdcDetailFecadeService.NetworkService.getCountOfAllNetworks(
+        option,
+        serviceInstanceId,
+      );
+
+    //this does not have any totalsNumber
+    const countOfNat =
+      await this.vdcDetailFecadeService.NatService.getCountOfNatRules(
+        option,
+        serviceInstanceId,
+      );
+
+    const countOfFireWalls =
+      await this.vdcDetailFecadeService.FirewallService.getCountOfFireWall(
+        option,
+        serviceInstanceId,
+      );
+
+    const countOfIpSet =
+      await this.vdcDetailFecadeService.EdgeGatewayService.getCountOfIpSet(
+        option,
+        serviceInstanceId,
+      );
+    //TODO
+    const countOfApplicationPort =
+      await this.vdcDetailFecadeService.ApplicationPortProfileService.getCountOfApplicationPort(
+        option,
+        serviceInstanceId,
+      );
+
+    const countOfNamedDisk = (
+      await this.vdcDetailFecadeService.VdcService.getNamedDisk(
+        option,
+        serviceInstanceId,
+      )
+    ).length;
+    const countOfFiles =
+      await this.vdcDetailFecadeService.VmService.getCountOfFiles(
+        option,
+        serviceInstanceId,
+      );
+    const statusOfDhcpForwarderStatus = (
+      await this.vdcDetailFecadeService.EdgeGatewayService.getDhcpForwarder(
+        option,
+        serviceInstanceId,
+      )
+    ).enabled;
+    return {
+      countOfNetworks,
+      countOfNat,
+      countOfFireWalls,
+      countOfIpSet,
+      countOfApplicationPort,
+      countOfNamedDisk,
+      countOfFiles,
+      statusOfDhcpForwarderStatus,
+    };
+  }
+  async getVdcDetailModel(
+    serviceInstanceId: string,
+  ): Promise<VdcDetailModel[]> {
     const serviceTypeWhere = 'vdc';
     const servicesModels = await this.serviceInstanceTableService
       .getQueryBuilder()
@@ -108,6 +173,9 @@ export class VdcDetailFactoryService {
         'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max ',
       )
       .getRawMany();
-    return servicesModels;
+    const res = servicesModels.map((model) => {
+      return new VdcDetailModel(model);
+    });
+    return res;
   }
 }

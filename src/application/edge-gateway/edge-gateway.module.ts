@@ -25,6 +25,6 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     ApplicationPortProfileService,
     FirewallService,
   ],
-  exports: [EdgeGatewayService],
+  exports: [EdgeGatewayService, FirewallService, ApplicationPortProfileService],
 })
 export class EdgeGatewayModule {}
