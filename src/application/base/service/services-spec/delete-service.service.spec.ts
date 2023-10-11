@@ -23,6 +23,8 @@ import { NetworkService } from 'src/application/vdc/service/network.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { DatacenterModule } from '../../datacenter/datacenter.module';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -48,6 +50,7 @@ describe('DeleteServiceService', () => {
         TransactionsModule,
         VdcModule,
         ServicePropertiesModule,
+        DatacenterModule,
       ],
       providers: [
         ServiceService,
@@ -61,6 +64,7 @@ describe('DeleteServiceService', () => {
         TasksService,
         NetworkService,
         VgpuDnatService,
+        ServiceServiceFactory,
       ],
     }).compile();
 

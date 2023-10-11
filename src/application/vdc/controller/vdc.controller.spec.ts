@@ -11,6 +11,15 @@ import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { VdcFactoryService } from '../service/vdc.factory.service';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { BASE_VDC_INVOICE_SERVICE } from '../interface/service/base-vdc-invoice-service.interface';
+import { VdcInvoiceService } from '../service/vdc-invoice.service';
+import { InvoicesModule } from 'src/application/base/invoice/invoices.module';
+import { BASE_VDC_DETAIL_SERVICE } from '../interface/service/base-vdc-detail-service.interface';
+import { VdcDetailService } from '../service/vdc-detail.service';
+import { VdcDetailFactoryService } from '../service/vdc-detail.factory.service';
+import { ServiceItemModule } from '../../base/service-item/service-item.module';
 
 describe('VdcController', () => {
   let controller: VdcController;
@@ -27,8 +36,26 @@ describe('VdcController', () => {
         OrganizationModule,
         UserModule,
         ServicePropertiesModule,
+        MainWrapperModule,
+        InvoicesModule,
+        ServiceItemModule,
       ],
-      providers: [VdcService, OrgService, EdgeService, NetworkService],
+      providers: [
+        VdcService,
+        OrgService,
+        EdgeService,
+        NetworkService,
+        VdcFactoryService,
+        VdcDetailFactoryService,
+        {
+          provide: BASE_VDC_INVOICE_SERVICE,
+          useClass: VdcInvoiceService,
+        },
+        {
+          provide: BASE_VDC_DETAIL_SERVICE,
+          useClass: VdcDetailService,
+        },
+      ],
 
       controllers: [VdcController],
     }).compile();

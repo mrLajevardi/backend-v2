@@ -108,6 +108,8 @@ export class CreateServiceService {
           invoice.serviceTypeId,
           transaction,
           invoice.name,
+          invoice.datacenterName,
+          invoice.servicePlanType,
         );
       serviceInstanceId = createdService.serviceInstanceId;
       // options.locals = {
@@ -125,6 +127,7 @@ export class CreateServiceService {
           serviceInstanceId,
         },
       );
+      console.log('🥖');
       if (invoice.serviceTypeId === 'vdc') {
         task = await this.tasksTableService.create({
           userId: userId,

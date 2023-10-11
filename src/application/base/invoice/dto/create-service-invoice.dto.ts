@@ -6,19 +6,19 @@ import {
   ValidateIf,
   IsEnum,
   ValidateNested,
+  arrayMinSize,
+  ArrayMinSize,
+  IsObject,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
+import { InvoiceTypes } from '../enum/invoice-type.enum';
 
-export enum ServicePlanTypes {
-  States = 'static',
-  Pyag = 'pyag',
-}
-
-export enum InvoiceTypes {
-  Update = 'update',
-  Create = 'create',
-  Extend = 'extend',
+export enum InvoiceNumericTypes {
+  Upgrade = 2,
+  Extend = 1,
+  Create = 0,
 }
 export class InvoiceItemsDto {
   @IsNumber()
@@ -38,8 +38,8 @@ export class InvoiceItemsDto {
 export class CreateServiceInvoiceDto {
   @IsEnum(InvoiceTypes)
   @ApiProperty({
-    type: String,
-    example: 'create',
+    type: Number,
+    example: 0,
     enum: InvoiceTypes,
   })
   type: InvoiceTypes;
@@ -48,6 +48,7 @@ export class CreateServiceInvoiceDto {
     type: [InvoiceItemsDto],
   })
   @IsArray()
+  @IsObject({ each: true })
   @Type(() => InvoiceItemsDto)
   @ValidateNested({ each: true })
   itemsTypes: InvoiceItemsDto[];
@@ -56,16 +57,16 @@ export class CreateServiceInvoiceDto {
   @Matches(
     /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
   )
-  @ValidateIf((object, value) => {
-    return value !== null;
+  @ValidateIf((object) => {
+    return object.type !== InvoiceTypes.Create;
   })
   @ApiProperty()
   serviceInstanceId: string;
 
   @ApiProperty({
-    type: ServicePlanTypes,
-    enum: ServicePlanTypes,
+    type: ServicePlanTypeEnum,
+    enum: ServicePlanTypeEnum,
   })
-  @IsEnum(ServicePlanTypes)
-  servicePlanTypes: ServicePlanTypes;
+  @IsEnum(ServicePlanTypeEnum)
+  servicePlanTypes: ServicePlanTypeEnum;
 }

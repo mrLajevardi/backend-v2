@@ -1,12 +1,5 @@
-import {
-  BeforeInsert,
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { BeforeInsert, JoinColumn, ManyToOne } from 'typeorm';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { InfoLog } from './InfoLog';
 import { Invoices } from './Invoices';
@@ -18,6 +11,7 @@ import { Tickets } from './Tickets';
 import { randomUUID } from 'crypto';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
+@Index('index_zare_IsDeleted', ['isDeleted'], {})
 @Index('PK_ServiceInstances', ['id'], { unique: true })
 @Entity('ServiceInstances', { schema: 'user' })
 export class ServiceInstances {
@@ -29,6 +23,9 @@ export class ServiceInstances {
 
   @Column('int', { name: 'UserID' })
   userId: number;
+
+  @Column('varchar', { name: 'ServiceTypeID', length: 50 })
+  serviceTypeId: string;
 
   @Column('int', { name: 'Status', nullable: true })
   status: number | null;
@@ -76,8 +73,24 @@ export class ServiceInstances {
   @Column('datetime', { name: 'NextPAYG', nullable: true })
   nextPayg: Date | null;
 
-  @Column('varchar', { name: 'ServiceTypeID', length: 50 })
-  serviceTypeId: string;
+  @Column('tinyint', { name: 'ServicePlanType', nullable: true })
+  servicePlanType: number | null;
+
+  @Column('nvarchar', {
+    name: 'DatacenterName',
+    nullable: true,
+  })
+  datacenterName: string | null;
+
+  @Column('tinyint', {
+    name: 'RetryCount',
+    nullable: true,
+    default: () => '(0)',
+  })
+  retryCount: number | null;
+
+  @Column('int', { name: 'DaysLeft', nullable: true })
+  daysLeft: number | null;
 
   @OneToMany(
     () => AiTransactionsLogs,
@@ -100,6 +113,9 @@ export class ServiceInstances {
 
   @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.serviceInstance)
   serviceItems: ServiceItems[];
+
+  // @OneToMany(() => ServicePlans, (servicePlans) => servicePlans.serviceInstance)
+  // servicePlans: ServicePlans[];
 
   @OneToMany(
     () => ServiceProperties,

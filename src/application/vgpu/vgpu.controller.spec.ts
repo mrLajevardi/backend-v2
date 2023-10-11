@@ -7,6 +7,7 @@ import { SessionsModule } from '../base/sessions/sessions.module';
 import { TasksModule } from '../base/tasks/tasks.module';
 import { VgpuService } from './vgpu.service';
 import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
+import { forwardRef } from '@nestjs/common';
 
 describe('VgpuController', () => {
   let controller: VgpuController;
@@ -20,7 +21,7 @@ describe('VgpuController', () => {
         JwtModule,
         SessionsModule,
         PayAsYouGoModule,
-        TasksModule,
+        forwardRef(() => TasksModule),
       ],
       providers: [VgpuService],
       controllers: [VgpuController],

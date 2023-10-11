@@ -13,7 +13,8 @@ import { SessionsService } from '../../sessions/sessions.service';
 import { cloneDeep } from 'lodash';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
-import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
+import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
+// import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
@@ -23,11 +24,13 @@ describe('DatacenterService', () => {
     datacenter: string | null,
     generation: string | null,
     title: string | null,
+    cpuSpeed: string | null,
   ): FoundDatacenterMetadata {
     return {
       datacenter,
       generation,
       datacenterTitle: title,
+      cpuSpeed: cpuSpeed,
     };
   }
   function createWrapperMockService(
@@ -90,7 +93,12 @@ describe('DatacenterService', () => {
   describe('findTargetMetadata', () => {
     it('should return a correct object', async () => {
       const targetMetadata = service.findTargetMetadata(mockDatacenterMetadata);
-      const correctObject = datacenterMetadataMockFactory('amin', 'g1', 'امین');
+      const correctObject = datacenterMetadataMockFactory(
+        'amin',
+        'g1',
+        'امین',
+        '2000',
+      );
       expect(targetMetadata).toStrictEqual(correctObject);
     });
 
@@ -99,7 +107,12 @@ describe('DatacenterService', () => {
       wrongMock.metadataEntry[0].key = 'datacenterr';
       console.log(mockDatacenterMetadata.metadataEntry[0]);
       const targetMetadata = service.findTargetMetadata(wrongMock);
-      const correctObject = datacenterMetadataMockFactory(null, 'g1', 'امین');
+      const correctObject = datacenterMetadataMockFactory(
+        null,
+        'g1',
+        'امین',
+        '2000',
+      );
       expect(targetMetadata).toStrictEqual(correctObject);
     });
 
@@ -107,7 +120,12 @@ describe('DatacenterService', () => {
       const wrongMock = cloneDeep(mockDatacenterMetadata);
       wrongMock.metadataEntry = [];
       const targetMetadata = service.findTargetMetadata(wrongMock);
-      const correctObject = datacenterMetadataMockFactory(null, null, null);
+      const correctObject = datacenterMetadataMockFactory(
+        null,
+        null,
+        null,
+        null,
+      );
       expect(targetMetadata).toStrictEqual(correctObject);
     });
 
@@ -115,7 +133,12 @@ describe('DatacenterService', () => {
       const wrongMock = cloneDeep(mockDatacenterMetadata);
       wrongMock.metadataEntry = [];
       const targetMetadata = service.findTargetMetadata(wrongMock);
-      const correctObject = datacenterMetadataMockFactory('amin', 'g1', 'امین');
+      const correctObject = datacenterMetadataMockFactory(
+        'amin',
+        'g1',
+        'امین',
+        '2000',
+      );
       expect(targetMetadata).not.toStrictEqual(correctObject);
     });
   });

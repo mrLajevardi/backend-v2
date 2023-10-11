@@ -8,26 +8,31 @@ import { CrudModule } from '../crud/crud.module';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { DatacenterModule } from '../datacenter/datacenter.module';
 import { InvoiceValidationService } from './validators/invoice-validation.service';
+import { BASE_INVOICE_SERVICE } from './interface/service/invoice.interface';
+import { InvoiceFactoryService } from './service/invoice-factory.service';
+import { InvoiceFactoryVdcService } from './service/invoice-factory-vdc.service';
 
 @Module({
   imports: [
     DatabaseModule,
     CrudModule,
     DatacenterModule,
-    // VgpuModule
+    // VgpuModule,
     forwardRef(() => VgpuModule),
   ],
   providers: [
     InvoicesService,
     InvoicesChecksService,
+    InvoiceFactoryService,
     CostCalculationService,
+    InvoiceFactoryVdcService,
     InvoiceValidationService,
     {
-      provide: 'InvoiceService',
+      provide: BASE_INVOICE_SERVICE,
       useClass: InvoicesService,
     },
   ],
   controllers: [InvoicesController],
-  exports: [InvoicesService],
+  exports: [InvoicesService, BASE_INVOICE_SERVICE, InvoiceFactoryVdcService],
 })
 export class InvoicesModule {}

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
 
@@ -24,6 +24,16 @@ import { ServiceAiInfoDto } from '../dto/return/service-ai-info.dto';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+import { InvoiceItems } from 'src/infrastructure/database/entities/InvoiceItems';
+import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
+import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
+import {
+  BASE_DATACENTER_SERVICE,
+  BaseDatacenterService,
+} from '../../datacenter/interface/datacenter.interface';
 
 @Injectable()
 export class ExtendServiceService {
@@ -38,8 +48,11 @@ export class ExtendServiceService {
     private readonly sessionService: SessionsService,
     private readonly transactionTableService: TransactionsTableService,
     private readonly invoicesTableService: InvoicesTableService,
-    private readonly invoiceItemListService: InvoiceItemListService,
     private readonly invoicePlanTableService: InvoicePlansTableService,
+    private readonly invoiceItemsTableService: InvoiceItemsTableService,
+    private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private readonly datacenterService: BaseDatacenterService,
   ) {}
 
   async getAiServiceInfo(
@@ -98,20 +111,50 @@ export class ExtendServiceService {
 
   // create service items
   async createServiceItems(
-    serviceInstanceID: string,
-    items: ItemTypes[],
-    data: object,
+    invoiceItems: InvoiceItems[],
+    serviceInstanceId: string,
   ): Promise<void> {
-    for (const item of Object.keys(items)) {
-      const itemTitle = items[item].code;
-      // TODO just items of current user should be added
-      const itemQuantity = data[itemTitle] || 0;
-      const itemTypeId = items[item].id;
+    let addedGenId = false;
+    for (const invoiceItem of invoiceItems) {
+      if (!addedGenId) {
+        const genIdKey = 'genId';
+        const generationItem = await this.serviceItemTypeTree.findOne({
+          where: {
+            codeHierarchy: Like(`${ItemTypeCodes.Generation}%`),
+            id: invoiceItem.itemId,
+          },
+        });
+        const generationChild = await this.serviceItemTypeTree.findOne({
+          where: {
+            id: Number(generationItem.hierarchy.split('_')[1]),
+          },
+        });
+        const datacenterList =
+          await this.datacenterService.getDatacenterConfigWithGen();
+        const targetDc = datacenterList.find((dc) => {
+          return dc.datacenter === generationChild.datacenterName.toLowerCase();
+        });
+        console.log(
+          datacenterList,
+          targetDc,
+          generationChild.datacenterName.toLowerCase(),
+        );
+        const gen = targetDc.gens.find((gen) => {
+          return gen.name === generationChild.code;
+        });
+        await this.servicePropertiesTable.create({
+          serviceInstanceId,
+          propertyKey: genIdKey,
+          value: gen.id,
+        });
+        addedGenId = true;
+      }
       await this.serviceItemsTable.create({
-        serviceInstanceId: serviceInstanceID,
-        itemTypeId: itemTypeId,
-        quantity: itemQuantity,
-        itemTypeCode: items[item].code,
+        serviceInstanceId,
+        itemTypeId: invoiceItem.itemId,
+        quantity: 0,
+        value: invoiceItem.value,
+        itemTypeCode: '',
       });
     }
   }
@@ -122,6 +165,8 @@ export class ExtendServiceService {
     serviceTypeID: string,
     expireDate: Date,
     name = null,
+    datacenterName: string,
+    servicePlanType: number | null = null,
   ): Promise<string> {
     const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
       where: {
@@ -140,6 +185,8 @@ export class ExtendServiceService {
       expireDate: expireDate,
       index: index,
       name: name,
+      servicePlanType,
+      datacenterName,
     });
     return Promise.resolve(serivce.id);
   }
@@ -188,6 +235,8 @@ export class ExtendServiceService {
     serviceId: string,
     transaction: Transactions,
     name: string,
+    datacenterName: string | null = null,
+    servicePlanType: number,
   ): Promise<
     | { token: string; serviceInstanceId: string }
     | { scriptPath: string; serviceInstanceId: string }
@@ -196,7 +245,7 @@ export class ExtendServiceService {
     const userId = options.user.userId;
 
     const serviceType = await this.serviceTypeTable.findOne({
-      where: { id: serviceId },
+      where: { id: serviceId, datacenterName },
     });
     //check validity of serviceId
     if (isEmpty(serviceType)) {
@@ -208,22 +257,15 @@ export class ExtendServiceService {
       serviceId,
       expireDate,
       name,
+      datacenterName,
+      servicePlanType,
     );
-    const itemTypes = await this.itemTypesTable.find({
-      where: { serviceTypeId: serviceId },
-    });
-    const invoiceItemList = await this.invoiceItemListService.find({
+    const invoiceItems = await this.invoiceItemsTableService.find({
       where: {
-        invoiceId: transaction.invoiceId.toString(),
-        userId,
+        invoice: { id: transaction.invoiceId },
       },
     });
-    const itemTypeData = {};
-    invoiceItemList.forEach((element) => {
-      itemTypeData[element.code] = element.quantity;
-    });
-
-    await this.createServiceItems(serviceInstanceId, itemTypes, itemTypeData);
+    await this.createServiceItems(invoiceItems, serviceInstanceId);
     console.log('working');
     if (serviceId == 'aradAi') {
       // find user invoice

@@ -1,15 +1,19 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Invoices } from './Invoices';
 import { ItemTypes } from './ItemTypes';
 
-//@Index('PK_InvoiceItems', ['id'], { unique: true })
+@Index('PK_InvoiceItems', ['id'], { unique: true })
 @Entity('InvoiceItems', { schema: 'user' })
 export class InvoiceItems {
+  @Column('int', { name: 'ItemID' })
+  itemId: number;
   @Column('int', { name: 'InvoiceID' })
   invoiceId: number;
 
@@ -22,9 +26,12 @@ export class InvoiceItems {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
-  @Column('int', { name: 'ItemID' })
-  itemId: number;
+  @Column('nvarchar', { name: 'Value' })
+  value: string;
 
+  @ManyToOne(() => Invoices, (invoices) => invoices.invoiceItems)
+  @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
+  invoice: Invoices;
   @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.invoiceItems, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',

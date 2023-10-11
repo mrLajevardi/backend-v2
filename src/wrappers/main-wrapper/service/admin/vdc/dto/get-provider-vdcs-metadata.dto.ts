@@ -1,3 +1,5 @@
+import { MetaDataDatacenterEnum } from '../../../../../../application/base/datacenter/enum/meta-data-datacenter-enum';
+
 export interface GetProviderVdcsMetadataDto {
   otherAttributes: OtherAttributes;
   link: Link[];
@@ -26,7 +28,7 @@ export interface MetadataEntry {
   href: string;
   type: string;
   domain: null;
-  key: string;
+  key: MetaDataDatacenterEnum | string;
   typedValue: TypedValue;
   vCloudExtension: [];
 }

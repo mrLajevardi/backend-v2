@@ -1,23 +1,28 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
 } from '../dto/create-service-invoice.dto';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
-import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { isNil } from 'lodash';
 import { InvoiceItemLimits } from '../enum/invoice-item-limits.enum';
 import { And, In, Like, Not } from 'typeorm';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import { VdcParentType } from '../interface/vdc-item-parent-type.interface';
+import {
+  BASE_DATACENTER_SERVICE,
+  BaseDatacenterService,
+} from '../../datacenter/interface/datacenter.interface';
+import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
 
 @Injectable()
 export class InvoiceValidationService {
   vdcCode: string;
   constructor(
     private readonly serviceItemsSumService: ServiceItemsSumService,
-    private readonly datacenterService: DatacenterService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private readonly datacenterService: BaseDatacenterService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
   ) {
     this.vdcCode = 'vdc';
@@ -25,6 +30,8 @@ export class InvoiceValidationService {
 
   async vdcInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
     const itemParentType = new VdcParentType();
+    this.checkUniquenessOfItems(invoice.itemsTypes);
+    let datacenterChecked = false;
     for (const invoiceItem of invoice.itemsTypes) {
       await this.generalInvoiceValidator(invoiceItem);
       const targetInvoiceItem = await this.serviceItemTypesTreeService.findById(
@@ -35,11 +42,27 @@ export class InvoiceValidationService {
       const firstParent = await this.serviceItemTypesTreeService.findById(
         parseInt(parents[0]),
       );
-      itemParentType[firstParent.code.toLowerCase()].push(
-        targetInvoiceItem.hierarchy,
-      );
+      switch (firstParent.code) {
+        case ItemTypeCodes.Guaranty:
+          itemParentType.guaranty.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.Period:
+          itemParentType.period.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.Generation:
+          itemParentType.generation.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.CpuReservation:
+          itemParentType.cpuReservation.push(targetInvoiceItem.hierarchy);
+          break;
+        case ItemTypeCodes.MemoryReservation:
+          itemParentType.memoryReservation.push(targetInvoiceItem.hierarchy);
+      }
       // checks provider vdc status
-      if (firstParent.code.toLowerCase() === 'generation') {
+      if (
+        firstParent.code.toLowerCase() === 'generation' &&
+        !datacenterChecked
+      ) {
         const secondParent = await this.serviceItemTypesTreeService.findById(
           parseInt(parents[1]),
         );
@@ -47,6 +70,7 @@ export class InvoiceValidationService {
           targetInvoiceItem.datacenterName.toLowerCase(),
           secondParent.code.toLowerCase(),
         );
+        datacenterChecked = true;
       }
     }
     // check items with default vdc service items
@@ -104,7 +128,10 @@ export class InvoiceValidationService {
     if (isNil(targetDatacenter)) {
       throw new BadRequestException(`datacenter is invalid`);
     }
-    if (!(generationCode in targetDatacenter.gens)) {
+    const generation = targetDatacenter.gens.find(
+      (value) => value.name === generationCode,
+    );
+    if (!generation) {
       throw new BadRequestException(`datacenter is invalid`);
     }
   }
@@ -146,7 +173,6 @@ export class InvoiceValidationService {
         },
       });
     if (requiredGenerationItemsNotProvided.length > 0) {
-      console.log(requiredGenerationItemsNotProvided);
       throw new BadRequestException(`required generation items not provided`);
     }
   }
@@ -158,7 +184,8 @@ export class InvoiceValidationService {
     // other items
     const otherItems = [].concat(
       parentTypes.guaranty,
-      parentTypes.reservation,
+      parentTypes.cpuReservation,
+      parentTypes.memoryReservation,
       parentTypes.period,
     );
     let otherItemsHierarchyList = [];
@@ -262,6 +289,12 @@ export class InvoiceValidationService {
     }
   }
 
+  checkUniquenessOfItems(invoiceItemTypes: InvoiceItemsDto[]): void {
+    const itemIds = invoiceItemTypes.map((item) => item.itemTypeId);
+    if (itemIds.length !== new Set(itemIds).size) {
+      throw new BadRequestException('items not unique');
+    }
+  }
   checkItemTypeRule(
     invoiceItemType: InvoiceItemsDto,
     itemType: ServiceItemTypesTree,

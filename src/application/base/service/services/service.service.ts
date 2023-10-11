@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Scope } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -32,6 +32,9 @@ import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dt
 import { ZarinpalVerifyReturnDto } from '../dto/return/zarinpal-verify.dto';
 import { GetServicesReturnDto } from '../dto/return/get-services.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
+import { VdcService } from '../../../vdc/service/vdc.service';
+import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { GetOrgVdcResult } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 
 @Injectable()
 export class ServiceService {
@@ -53,6 +56,8 @@ export class ServiceService {
     private readonly usersTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly serviceTypesTable: ServiceTypesTableService,
+    private readonly vdcService: VdcService,
+    private readonly serviceFactory: ServiceServiceFactory,
   ) {}
 
   async increaseServiceResources(
@@ -356,6 +361,8 @@ export class ServiceService {
           invoice.serviceTypeId,
           transaction,
           invoice.name,
+          invoice.datacenterName,
+          invoice.servicePlanType,
         );
       serviceInstanceId = createdService.serviceInstanceId;
       token = createdService['token'];
@@ -470,9 +477,40 @@ export class ServiceService {
     options: SessionRequest,
     typeId?: string,
     id?: string,
-  ): Promise<GetAllVdcServiceWithItemsResultDto[]> {
-    //mock
-    const res = GetAllVdcServiceWithItemsResultDto.getMock();
+  ): Promise<
+    GetAllVdcServiceWithItemsResultDto[] | GetAllVdcServiceWithItemsResultDto
+  > {
+    const res: GetAllVdcServiceWithItemsResultDto[] = [];
+
+    const allServicesInstances = await this.getServices(options, typeId, id);
+
+    for (const serviceInstance of allServicesInstances) {
+      const cpuSpeed = (
+        await this.serviceFactory.getConfigServiceInstance(serviceInstance)
+      ).cpuSpeed;
+
+      const { daysLeft, isExpired, isTicketSent } =
+        await this.serviceFactory.getPropertiesOfServiceInstance(
+          serviceInstance,
+        );
+
+      const vdcItems: GetOrgVdcResult = await this.vdcService.getVdc(
+        options,
+        serviceInstance.id,
+      );
+
+      const model = this.serviceFactory.configModelServiceInstanceList(
+        serviceInstance,
+        isExpired,
+        daysLeft,
+        isTicketSent,
+        vdcItems,
+        cpuSpeed,
+      );
+
+      res.push(model);
+    }
+
     return res;
   }
 
@@ -498,15 +536,17 @@ export class ServiceService {
     }
     const services = await this.serviceInstancesTableService.find({
       where,
-      relations: ['serviceItems'],
+      relations: ['serviceItems', 'serviceType'],
     });
     console.log(services);
     const extendedServiceList = services.map((service) => {
       const expired =
-        new Date(service.expireDate).getTime() < new Date().getTime();
+        new Date(service.expireDate).getTime() <= new Date().getTime();
       return {
         ...service,
         expired: expired,
+        retryCount: service.retryCount,
+        daysLeft: service.daysLeft,
       };
     });
     return extendedServiceList;

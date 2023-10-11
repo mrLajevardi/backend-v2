@@ -2,44 +2,46 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
-import { CreateServiceService } from 'src/application/base/service/services/create-service.service';
-import { ServiceService } from 'src/application/base/service/services/service.service';
-import { SessionsService } from 'src/application/base/sessions/sessions.service';
-import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
-import { TasksService } from 'src/application/base/tasks/service/tasks.service';
-import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
-import { HttpExceptionFilter } from 'src/infrastructure/filters/http-exception.filter';
-import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Inject,
   Param,
   Post,
-  Query,
-  Request,
-  UseFilters,
-  Delete,
   Put,
-  Headers,
-  Body,
+  Request,
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
-import { vpcDetailsMock } from '../mock/vpc-details.mock';
+import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
 import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
+import {
+  BASE_VDC_INVOICE_SERVICE,
+  BaseVdcInvoiceServiceInterface,
+} from '../interface/service/base-vdc-invoice-service.interface';
+import {
+  BASE_VDC_DETAIL_SERVICE,
+  BaseVdcDetailService,
+} from '../interface/service/base-vdc-detail-service.interface';
+import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
+import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
+
 @ApiBearerAuth()
 @ApiTags('Vpc')
 // @UseFilters(new HttpExceptionFilter())
 @Controller('vdc')
 export class VdcController {
   constructor(
+    @Inject(BASE_VDC_INVOICE_SERVICE)
+    private readonly baseVdcInvoiceService: BaseVdcInvoiceServiceInterface,
+    @Inject(BASE_VDC_DETAIL_SERVICE)
+    private readonly baseVdcDetailService: BaseVdcDetailService,
     // private readonly tasksService: TasksService,
     private readonly vdcService: VdcService,
   ) {}
@@ -149,7 +151,7 @@ export class VdcController {
     options: any,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
-  ) {
+  ): Promise<GetOrgVdcResult> {
     return this.vdcService.getVdc(options, vdcInstanceId);
   }
 
@@ -226,33 +228,12 @@ export class VdcController {
 
   @Get('invoice/:invoiceId/details')
   @ApiOperation({ summary: 'get created invoice details' })
-  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'invoiceId', description: 'VDC instance ID' })
   async getVdcInvoiceDetail(
     @Param('invoiceId')
     invoiceId: string,
-  ) {
-    return {
-      datacenter: { name: 'amin', title: 'امین' },
-      cpu: { price: 1000, title: '', unit: 'Core', quantity: 10 },
-      vm: { price: 1000, title: '', unit: 'Server', quantity: 5 },
-      ram: { price: 1000, title: '', unit: 'GB', quantity: 10 },
-      disk: [
-        {
-          price: 25000,
-          title: 'archive',
-          unit: 'GB',
-          quantity: 10,
-        },
-        { price: 20000, title: 'standard', unit: 'GB', quantity: 20 },
-      ],
-      guaranty: 'VIP',
-      period: 150,
-      ip: { price: 20000, title: '', unit: 'IP', quantity: 14 },
-      generation: 'G2',
-      finalPrice: 10000,
-      reservationRam: 25,
-      reservationCpu: 25,
-    };
+  ): Promise<VdcInvoiceDetailsResultDto> {
+    return await this.baseVdcInvoiceService.getVdcInvoiceDetail(invoiceId);
   }
 
   @Get(':serviceInstanceId/details')
@@ -265,10 +246,12 @@ export class VdcController {
     name: 'serviceInstanceId',
   })
   async getVdcDetails(
+    @Request()
+    options: any,
     @Param('serviceInstanceId')
     serviceInstanceId: string,
-  ): Promise<typeof vpcDetailsMock> {
-    return vpcDetailsMock;
+  ): Promise<VdcDetailsResultDto> {
+    return this.baseVdcDetailService.getVdcDetail(serviceInstanceId, options);
   }
 
   @Get(':serviceInstanceId/internalSettings')

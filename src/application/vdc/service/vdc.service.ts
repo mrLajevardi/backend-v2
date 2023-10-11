@@ -7,19 +7,21 @@ import { ServicePropertiesTableService } from 'src/application/base/crud/service
 import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
-import { VmCreateWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-create-wrapper.service';
+import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
+import { VdcFactoryService } from './vdc.factory.service';
+import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class VdcService {
   constructor(
-    // private readonly taskService: TasksService,
     private readonly sessionService: SessionsService,
+    private readonly vdcFactoryService: VdcFactoryService,
     private readonly serviceInstanceTable: ServiceInstancesTableService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     private readonly configTable: ConfigsTableService,
     private readonly servicePropertiesService: ServicePropertiesService,
-    // @Inject(forwardRef(() => servicePropertiesService))
-    // private readonly servicePropertiesService: servicePropertiesService,
+    private readonly vdcWrapperService: VdcWrapperService,
     private readonly loggerService: LoggerService,
   ) {}
 
@@ -380,7 +382,10 @@ export class VdcService {
    * @param {String} vdcInstanceId
    * @return {Promise}
    */
-  async getVdc(options, vdcInstanceId) {
+  async getVdc(
+    options: SessionRequest,
+    vdcInstanceId,
+  ): Promise<GetOrgVdcResult> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -389,17 +394,17 @@ export class VdcService {
       userId,
       props['orgId'],
     );
-    const vdcData = await mainWrapper.user.vdc.vcloudQuery(session, {
+    const vdcData = await this.vdcWrapperService.vcloudQuery<any>(session, {
       type: 'orgVdc',
       format: 'records',
       page: 1,
       pageSize: 10,
       filter: `id==${props['vdcId']}`,
     });
-    return Promise.resolve({
-      instanceId: vdcInstanceId,
-      records: vdcData.data.record,
-    });
+
+    const model = this.vdcFactoryService.getVdcOrgVdcModelResult(vdcData);
+
+    return Promise.resolve(model);
   }
 
   async getVmAttachedToNamedDisk(options, vdcInstanceId, nameDiskID) {

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ServiceService } from './services/service.service';
 import { CrudModule } from '../crud/crud.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -20,6 +20,12 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
 import { AbilityModule } from '../security/ability/ability.module';
+import { VdcModule } from '../../vdc/vdc.module';
+import { DatacenterModule } from '../datacenter/datacenter.module';
+import { SystemSettingsTableModule } from '../crud/system-settings-table/system-settings-table.module';
+import { ServiceServiceFactory } from './Factory/service.service.factory';
+import { ServiceInstancesTableModule } from '../crud/service-instances-table/service-instances-table.module';
+import { ServiceItemsTableModule } from '../crud/service-items-table/service-items-table.module';
 
 @Module({
   imports: [
@@ -29,12 +35,22 @@ import { AbilityModule } from '../security/ability/ability.module';
     LoggerModule,
     UserModule,
     PaymentModule,
-    InvoicesModule,
-    TasksModule,
-    VgpuModule,
+    forwardRef(() => InvoicesModule),
+    // forwardRef(() => TasksModule),
+    // forwardRef(() => TasksModule),
+    forwardRef(() => VdcModule),
+    forwardRef(() => VgpuModule),
+    // InvoicesModule,
+    // VdcModule,
+    forwardRef(() => TasksModule),
+    // VgpuModule,
     AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
+    DatacenterModule,
+    SystemSettingsTableModule,
+    ServiceItemsTableModule,
+    ServiceInstancesTableModule,
   ],
   providers: [
     ServiceService,
@@ -44,6 +60,7 @@ import { AbilityModule } from '../security/ability/ability.module';
     ServiceChecksService,
     DeleteServiceService,
     ServiceAdminService,
+    ServiceServiceFactory,
   ],
   controllers: [ServiceController, ServiceAdminController],
   exports: [

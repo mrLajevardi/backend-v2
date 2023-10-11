@@ -8,6 +8,8 @@ import { VgpuModule } from 'src/application/vgpu/vgpu.module';
 import { CrudModule } from '../../crud/crud.module';
 import { InvoiceValidationService } from '../validators/invoice-validation.service';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { InvoiceFactoryService } from './invoice-factory.service';
+import { InvoiceFactoryVdcService } from './invoice-factory-vdc.service';
 
 describe('InvoicesService', () => {
   let service: InvoicesService;
@@ -26,6 +28,8 @@ describe('InvoicesService', () => {
         InvoicesChecksService,
         CostCalculationService,
         InvoiceValidationService,
+        InvoiceFactoryService,
+        InvoiceFactoryVdcService,
       ],
       exports: [InvoicesService, CostCalculationService, InvoicesChecksService],
     }).compile();

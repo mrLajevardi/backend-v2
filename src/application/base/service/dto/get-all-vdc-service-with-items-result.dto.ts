@@ -5,7 +5,7 @@ import { ServiceItemDto } from './service-item.dto';
 import { faker } from '@faker-js/faker';
 
 export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
-  @ApiProperty({ type: Number })
+  @ApiProperty({ type: Number, description: 'ServiceInstanceId' })
   id: string;
 
   // @ApiProperty({  enum: ServiceStatusEnum ,})
@@ -23,8 +23,8 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
   @ApiProperty({ type: Number })
   serviceItems: ServiceItemDto[];
 
-  @ApiProperty({ type: Boolean })
-  expired: boolean;
+  // @ApiProperty({ type: Boolean })
+  // expired: boolean;
 
   @ApiProperty({ type: Boolean })
   daysLeft: number;
@@ -42,7 +42,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     name: string,
     serviceTypeId: string,
     serviceItems: ServiceItemDto[],
-    expired: boolean,
+    // expired: boolean,
     daysLeft: number,
     ticketSent: boolean,
     servicePlanType: ServicePlanTypeEnum,
@@ -54,7 +54,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     this.name = name;
     this.serviceTypeId = serviceTypeId;
     this.serviceItems = serviceItems;
-    this.expired = expired;
+    // this.expired = expired;
     this.daysLeft = daysLeft;
     this.ticketSent = ticketSent;
     this.servicePlanType = servicePlanType;
@@ -72,7 +72,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
           faker.string.sample(),
           'vdc',
           ServiceItemDto.GetMock(),
-          faker.number.int({ min: 0, max: 1 }) === 0,
+          // faker.number.int({ min: 0, max: 1 }) === 0,
           faker.number.int({ min: 1, max: 90 }),
           faker.number.int({ min: 0, max: 1 }) === 0,
           faker.number.int({ min: 0, max: 1 }),
