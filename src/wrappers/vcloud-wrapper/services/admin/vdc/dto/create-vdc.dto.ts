@@ -1,4 +1,5 @@
 import { EndpointOptionsInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { VdcStorageProfileParams } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/create-vdc.dto';
 
 export interface CreateVdcDto extends EndpointOptionsInterface {
   urlParams: CreateVdcUrlParams;
@@ -24,7 +25,7 @@ export class CreateVdcBody {
   vmQuota: number;
   networkPoolReference: NetworkPoolReference;
   networkQuota: number;
-  vdcStorageProfile: VdcStorageProfile[];
+  vdcStorageProfile: VdcStorageProfileParams[];
   isThinProvision: boolean;
   usesFastProvisioning: boolean;
 }
@@ -47,14 +48,4 @@ class ProviderVdcReference {
 class NetworkPoolReference {
   name: string;
   href: string;
-}
-
-class VdcStorageProfile {
-  limit: number;
-  providerVdcStorageProfile: ProviderVdcStorageProfile;
-}
-
-class ProviderVdcStorageProfile {
-  href: string;
-  name: string;
 }

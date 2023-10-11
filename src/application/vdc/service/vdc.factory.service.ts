@@ -5,9 +5,16 @@ import { GetVdcOrgVdcBuilderResult } from '../../../wrappers/main-wrapper/servic
 import { InvoiceFactoryVdcService } from 'src/application/base/invoice/service/invoice-factory-vdc.service';
 import { ServiceItems } from 'src/infrastructure/database/entities/ServiceItems';
 import { InvoiceItemsDto } from 'src/application/base/invoice/dto/create-service-invoice.dto';
+import { StorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/storage-profile-dto';
+import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
+import { VdcStorageProfileParams } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/create-vdc.dto';
+import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-codes.enum';
+import { VdcUnits } from '../enum/vdc-units.enum';
+import { InvoiceGroupItem } from 'src/application/base/invoice/interface/vdc-item-group.interface.dto';
 
 @Injectable()
 export class VdcFactoryService {
+  constructor(private readonly vdcWrapperService: VdcWrapperService) {}
   getVdcOrgVdcModelResult(vdcData: any): GetOrgVdcResult {
     const record = vdcData.data.record[0];
     if (record === undefined) return {};
@@ -40,5 +47,41 @@ export class VdcFactoryService {
       return invoiceItem;
     });
     return transformedItems;
+  }
+
+  async getStorageProfiles(
+    authToken: string,
+    invoiceGroupItem: InvoiceGroupItem[],
+  ): Promise<VdcStorageProfileParams[]> {
+    const storageProfiles =
+      await this.vdcWrapperService.vcloudQuery<StorageProfilesDto>(authToken, {
+        type: 'storageProfile',
+        format: 'records',
+        page: 1,
+        pageSize: 15,
+        sortAsc: 'name',
+      });
+    const vdcStorageProfileParams: VdcStorageProfileParams[] = [];
+    for (const invoiceItem of invoiceGroupItem) {
+      for (const storageProfile of storageProfiles.data.records) {
+        if (invoiceItem.code === storageProfile.name) {
+          const isDefault =
+            storageProfile.name === DiskItemCodes.Standard ? true : false;
+          const storage: VdcStorageProfileParams = {
+            _default: isDefault,
+            default: isDefault,
+            enabled: true,
+            providerVdcStorageProfile: {
+              href: storageProfile.href,
+              name: storageProfile.name,
+            },
+            units: VdcUnits.StorageUnit,
+            limit: Number(invoiceItem.value),
+          };
+          vdcStorageProfileParams.push(storage);
+        }
+      }
+    }
+    return vdcStorageProfileParams;
   }
 }

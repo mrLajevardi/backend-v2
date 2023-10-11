@@ -23,7 +23,7 @@ export class UpdateVdcBody {
 
 class ProviderVdcReference {
   href: string;
-  name: string;
+  name?: string;
 }
 class ComputeCapacity {
   cpu: ComputeResource;

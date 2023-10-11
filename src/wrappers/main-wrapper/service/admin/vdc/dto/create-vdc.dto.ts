@@ -22,11 +22,12 @@ export class Reference {
   name?: string;
 }
 
-class VdcStorageProfileParams {
+export class VdcStorageProfileParams {
   default: boolean;
   _default: boolean;
   enabled: boolean;
   units: string;
+  limit: number;
   providerVdcStorageProfile: Reference;
 }
 export class CreateVdcDto extends VcloudTask {

@@ -26,6 +26,7 @@ import { TaskRunnerDto } from '../dto/task-runner.dto';
 import { UserPayload } from '../../security/auth/dto/user-payload.dto';
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { Inject, forwardRef } from '@nestjs/common';
 
 // @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
@@ -40,7 +41,6 @@ export class TaskManagerService {
     private readonly configsTable: ConfigsTableService,
     private readonly organizationTable: OrganizationTableService,
     private readonly userTable: UserTableService,
-
     private readonly edgeService: EdgeService,
     private readonly orgService: OrgService,
     private readonly networkService: NetworkService,
@@ -48,6 +48,7 @@ export class TaskManagerService {
     private readonly taskTable: TasksTableService,
     private readonly loggerService: LoggerService,
     private readonly vgpuDnatService: VgpuDnatService,
+    @Inject(forwardRef(() => InvoiceFactoryService))
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly vdcFactoryService: VdcFactoryService,
   ) {}

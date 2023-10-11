@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
@@ -11,10 +11,13 @@ import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/v
 import { VdcFactoryService } from './vdc.factory.service';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-import { DatacenterService } from 'src/application/base/datacenter/service/datacenter.service';
 import { VdcServiceProperties } from '../enum/vdc-service-properties.enum';
 import { VdcItemGroup } from 'src/application/base/invoice/interface/vdc-item-group.interface.dto';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import {
+  BASE_DATACENTER_SERVICE,
+  BaseDatacenterService,
+} from 'src/application/base/datacenter/interface/datacenter.interface';
 
 @Injectable()
 export class VdcService {
@@ -26,7 +29,8 @@ export class VdcService {
     private readonly configTable: ConfigsTableService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly vdcWrapperService: VdcWrapperService,
-    private readonly datacenterService: DatacenterService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private readonly datacenterService: BaseDatacenterService,
     private readonly loggerService: LoggerService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
   ) {}
@@ -200,13 +204,16 @@ export class VdcService {
     console.log('create vdc with wrapper with data: ', data);
     const providerVdcReferenceHref =
       process.env.VCLOUD_BASE_URL + '/api/admin/providervdc/' + datacenterGenId;
+    const vdcStorageProfiles = await this.vdcFactoryService.getStorageProfiles(
+      sessionToken,
+      data.generation.disk,
+    );
     const vdcInfo = await this.adminVdcWrapperService.createVdc(
       {
         providerVdcReference: {
           href: providerVdcReferenceHref,
         },
-        // vdcStorageProfiles:
-        // vdcStorageProfileParams: vcdConfig.admin.vdc.VdcStorageProfileParams,
+        vdcStorageProfiles,
         networkPoolReference: vcdConfig.admin.vdc.NetworkPoolReference,
         resourceGuaranteedMemory: Number(data.memoryReservation),
         resourceGuaranteedCpu: Number(data.cpuReservation),
@@ -217,7 +224,8 @@ export class VdcService {
         authToken: sessionToken,
         name: vdcName,
         vm: Number(data.generation.vm[0].value),
-        NetworkQuota: networkQuota.value,
+        networkQuota: Number(networkQuota.value),
+        isEnabled: true,
       },
       vcloudOrgId,
     );
@@ -232,7 +240,7 @@ export class VdcService {
     return Promise.resolve({
       id: vdcInfo.id,
       name: vdcName,
-      executionTime: vdcInfo.executionTime,
+      executionTime: 0,
       __vcloudTask: vdcInfo.__vcloudTask,
     });
   }

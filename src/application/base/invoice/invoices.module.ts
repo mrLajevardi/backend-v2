@@ -33,6 +33,11 @@ import { InvoiceFactoryVdcService } from './service/invoice-factory-vdc.service'
     },
   ],
   controllers: [InvoicesController],
-  exports: [InvoicesService, BASE_INVOICE_SERVICE, InvoiceFactoryVdcService],
+  exports: [
+    InvoicesService,
+    BASE_INVOICE_SERVICE,
+    InvoiceFactoryVdcService,
+    InvoiceFactoryService,
+  ],
 })
 export class InvoicesModule {}

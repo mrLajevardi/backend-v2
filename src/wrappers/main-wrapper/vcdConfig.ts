@@ -53,8 +53,9 @@ export const vcdConfig: any = {
       },
       NetworkQuota: 1000,
       nicQuota: 0,
-      isThinProvision: false,
+      isThinProvision: true,
       usesFastProvisioning: false,
+      includeMemoryOverhead: false,
     },
     users: {
       storedVmQuota: 0,

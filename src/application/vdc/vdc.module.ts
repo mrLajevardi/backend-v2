@@ -25,11 +25,14 @@ import { VdcDetailService } from './service/vdc-detail.service';
 import { ServiceInstancesTableModule } from '../base/crud/service-instances-table/service-instances-table.module';
 import { ServiceItemModule } from '../base/service-item/service-item.module';
 import { VdcDetailFactoryService } from './service/vdc-detail.factory.service';
+import { DatacenterModule } from '../base/datacenter/datacenter.module';
 
 @Module({
   imports: [
     MainWrapperModule,
     DatabaseModule,
+    DatacenterModule,
+    MainWrapperModule,
     CrudModule,
     LoggerModule,
     forwardRef(() => ServiceModule),
