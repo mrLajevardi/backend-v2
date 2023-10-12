@@ -22,7 +22,6 @@ import { LoginDto } from '../dto/login.dto';
 import { LocalAuthGuard } from '../guard/local-auth.guard';
 import { AuthService } from '../service/auth.service';
 import { OtpLoginDto } from '../dto/otp-login.dto';
-import { GoogleAuthGuard } from '../guard/google-auth.guard';
 import { GithubLoginDto } from '../dto/github-login.dto';
 import { LinkedInAuthGuard } from '../guard/linked-in-auth.guard';
 import { LinkedInLoginDto } from '../dto/linked-in-login.dto';
@@ -45,6 +44,8 @@ import { UserPayload } from '../dto/user-payload.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { OauthService } from '../service/oauth.service';
+import { VerifyOauthDto } from '../dto/verify-oauth.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -52,6 +53,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly oauthService: OauthService,
     private readonly securityTools: SecurityToolsService,
     private readonly userService: UserService,
   ) {}
@@ -121,24 +123,36 @@ export class AuthController {
   @Get('github')
   @ApiQuery({ type: GithubLoginDto })
   @UseGuards(GithubAuthGuard)
-  async githubLogin(@Request() req: SessionRequest): Promise<UserPayload> {
-    return req.user;
+  async githubLogin(
+    @Request() req: SessionRequest,
+    githubLoginDto: GithubLoginDto,
+  ): Promise<VerifyOauthDto | AccessTokenDto> {
+    return this.oauthService.verifyGithubOauth(githubLoginDto.code);
+    // return req.user;
   }
 
   @Public()
   @Get('linkedin')
   @ApiQuery({ type: LinkedInLoginDto })
   @UseGuards(LinkedInAuthGuard)
-  async linkedInLogin(@Request() req: SessionRequest): Promise<UserPayload> {
-    return req.user;
+  async linkedInLogin(
+    @Request() req: SessionRequest,
+    linkedInLoginDto: LinkedInLoginDto,
+  ): Promise<VerifyOauthDto | AccessTokenDto> {
+    return this.oauthService.verifyLinkedinOauth(linkedInLoginDto.code);
+    // return req.user;
   }
 
   @Public()
   @Get('google')
   @ApiQuery({ type: GoogleLoginDto })
   @UseGuards(AuthGuard('google'))
-  async googleLogin(@Request() req: SessionRequest): Promise<UserPayload> {
-    return req.user;
+  async googleLogin(
+    @Request() req: SessionRequest,
+    googleLoginDto: GoogleLoginDto,
+  ): Promise<VerifyOauthDto | AccessTokenDto> {
+    return this.oauthService.verifyGoogleOauth(googleLoginDto.code);
+    // return req.user;
   }
 
   @Public()
