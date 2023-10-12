@@ -113,7 +113,7 @@ export class InvoiceValidationService {
       await this.checkNumericItemTypeValue(invoiceItem, targetInvoiceItem);
     }
     // checks item rule
-    // this.checkItemTypeRule(invoiceItem, targetInvoiceItem);
+    this.checkItemTypeRule(invoiceItem, targetInvoiceItem);
   }
 
   async checkVdcDatacenterState(
