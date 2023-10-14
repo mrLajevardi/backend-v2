@@ -27,7 +27,7 @@ export class CostCalculationService {
       cpu: groupedItems.generation.cpu,
       ram: groupedItems.generation.ram,
     };
-    const computeResourceCosts = this.calculateComputeResourcesCosts(
+    const computeResourceCosts = await this.calculateComputeResourcesCosts(
       computeResources,
       {
         cpuReservation: groupedItems.cpuReservation,
@@ -89,19 +89,29 @@ export class CostCalculationService {
     };
   }
 
-  calculateComputeResourcesCosts(
+  async calculateComputeResourcesCosts(
     generationsItem: Pick<VdcGenerationItems, 'cpu' | 'ram'>,
     reservations: Pick<VdcItemGroup, 'cpuReservation' | 'memoryReservation'>,
-  ): InvoiceItemCost[] {
+  ): Promise<InvoiceItemCost[]> {
     const cpuItem = generationsItem.cpu[0];
+    const cpuParent = await this.serviceItemTypeTreeService.findOne({
+      where: {
+        id: generationsItem.cpu[0].parentId,
+      },
+    });
     const ramItem = generationsItem.ram[0];
+    const ramParent = await this.serviceItemTypeTreeService.findOne({
+      where: {
+        id: generationsItem.ram[0].parentId,
+      },
+    });
     const cpuCost =
-      cpuItem.fee *
+      cpuParent.fee *
       parseInt(cpuItem.value) *
       (cpuItem.percent + 1) *
       (reservations.cpuReservation.percent + 1);
     const ramCost =
-      ramItem.fee *
+      ramParent.fee *
       parseInt(ramItem.value) *
       (ramItem.percent + 1) *
       (reservations.memoryReservation.percent + 1);
