@@ -29,7 +29,7 @@ export class Templates {
   @Column('nvarchar', { name: 'Structure' })
   structure: string;
 
-  @Column(isTestingEnv ? 'boolean' : 'bit', {
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'Enabled',
     default: () => '(0)',
   })
@@ -38,7 +38,7 @@ export class Templates {
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
   datacenterName: string | null;
 
-  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', {
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'Guid',
     default: () => 'newsequentialid()',
   })
