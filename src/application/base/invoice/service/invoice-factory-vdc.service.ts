@@ -18,11 +18,13 @@ export class InvoiceFactoryVdcService {
   ): Promise<InvoiceDetailVdcModel[]> {
     const serviceTypeWhere = 'vdc';
 
-    const InvoiceModels = await this.invoicesTable
+    // const invoiceModels: any[] = [];
+
+    const invoiceModels = await this.invoicesTable
       .getQueryBuilder()
       .select('Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime')
       .where(
-        'Invoice.ID = :invoiceId AND Invoice.ServiceTypeID = :serviceTypeId ',
+        'Invoice.ServiceTypeID = :serviceTypeId AND Invoice.ID= :invoiceId ',
         {
           invoiceId: invoiceId,
           serviceTypeId: serviceTypeWhere,
@@ -40,7 +42,7 @@ export class InvoiceFactoryVdcService {
       )
       .getRawMany();
 
-    return InvoiceModels.map((model) => {
+    return invoiceModels.map((model) => {
       const res: InvoiceDetailVdcModel = {
         code: model.Code,
         value: model.Value,
@@ -83,7 +85,6 @@ export class InvoiceFactoryVdcService {
       );
     }
 
-    const tt = VdcGenerationItemCodes[vdcGenerationItemCodes];
     return vdcInvoiceModels.find((model) =>
       model.codeHierarchy.includes(vdcGenerationItemCodes.toLowerCase()),
     );
@@ -192,7 +193,7 @@ export class InvoiceFactoryVdcService {
       name: vmModel.datacenterName,
     }; // TODO about DatacenterName and DatacenterTitle;
 
-    res.finalPrice = vmModel.finalAmount.toString();
+    res.finalPrice = ramModel.finalAmount;
 
     res.rawAmount = ramModel.rawAmount;
 

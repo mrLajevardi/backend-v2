@@ -7,7 +7,7 @@ import { AxiosResponse } from 'axios';
 import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 import { UpdateVdcComputePolicyDto } from './dto/update-vdc-compute-policy.dto';
 import { UpdateVdcStoragePolicyDto } from './dto/update-vdc-storage-policy.dto';
-import { AdminOrgVdcStorageProfileQuery } from '../../user/vm/dto/instantiate-vm-from.templates-admin.dto';
+import { AdminOrgVdcStorageProfileQuery } from '../../user/vdc/dto/instantiate-vm-from.templates-admin.dto';
 import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
 import { GetProviderVdcsParams } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/get-provider-vdcs.dto';
 import { GetProviderVdcsMetadataDto } from './dto/get-provider-vdcs-metadata.dto';

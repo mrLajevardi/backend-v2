@@ -2,8 +2,9 @@ import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { Configs } from './Configs';
 import { Discounts } from './Discounts';
 import { ItemTypes } from './ItemTypes';
+import { Templates } from './Templates';
 import { ServiceInstances } from './ServiceInstances';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { isTestingEnv } from '../../helpers/helpers';
 
 @Index('PK_ServiceTypes', ['id'], { unique: true })
 @Entity('ServiceTypes', { schema: 'services' })
@@ -23,7 +24,7 @@ export class ServiceTypes {
   @Column('varchar', { name: 'CreateInstanceScript', length: 255 })
   createInstanceScript: string;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'VerifyInstance' })
+  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'VerifyInstance' })
   verifyInstance: boolean;
 
   @Column('int', { name: 'MaxAvailable' })
@@ -32,7 +33,7 @@ export class ServiceTypes {
   @Column('tinyint', { name: 'Type', default: () => '(0)' })
   type: number;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'IsPAYG' })
+  @Column(isTestingEnv ? 'boolean' : 'bit', { name: 'IsPAYG' })
   isPayg: boolean;
 
   @Column('time', { name: 'PAYGInterval', nullable: true })
@@ -52,6 +53,9 @@ export class ServiceTypes {
 
   @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceType)
   itemTypes: ItemTypes[];
+
+  @OneToMany(() => Templates, (templates) => templates.serviceType)
+  templates: Templates[];
 
   @OneToMany(
     () => ServiceInstances,

@@ -22,6 +22,9 @@ export class ServiceItems {
   @Column('varchar', { name: 'ItemTypeCode', nullable: true, length: 50 })
   itemTypeCode: string | null;
 
+  @Column('nvarchar', { name: 'Value', nullable: false, length: 50 })
+  value: string;
+
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'ServiceInstanceID',
   })

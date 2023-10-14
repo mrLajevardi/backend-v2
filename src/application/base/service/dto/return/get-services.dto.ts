@@ -3,4 +3,5 @@ import { CreateServiceInstancesDto } from '../../../crud/service-instances-table
 export class GetServicesReturnDto extends CreateServiceInstancesDto {
   id: string;
   retryCount: number;
+  daysLeft: number;
 }

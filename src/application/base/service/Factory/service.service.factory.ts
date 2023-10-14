@@ -30,10 +30,11 @@ export class ServiceServiceFactory {
 
     //serviceInstance.expireDate return milisecond and for that we have to convert it days ===>miliSecondTime
 
-    const daysLeft = Math.floor(
-      ~~(serviceInstance.expireDate.getTime() - new Date().getTime()) /
-        miliSecondTime,
-    );
+    // const daysLeft = Math.floor(
+    //   (serviceInstance.daysLeft.expireDate.getTime() - new Date().getTime()) /
+    //     miliSecondTime,
+    // );
+    const daysLeft = serviceInstance.daysLeft;
 
     //ExpiredDate
     const isExpired = daysLeft < 0;

@@ -48,6 +48,7 @@ import { InvoiceItemList } from '../entities/views/invoice-item-list';
 import { ServicePlans } from '../entities/ServicePlans';
 import { ServiceReports } from '../entities/views/service-reports';
 import { ServiceItemTypesTree } from '../entities/views/service-item-types-tree';
+import { Templates } from '../entities/Templates';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -81,7 +82,7 @@ export const dbEntities = [
   ItemTypes,
   Plans,
   ServiceTypes,
-  // VDC Schema
+  Templates,
   Organization,
   Sessions,
   Sysdiagrams,

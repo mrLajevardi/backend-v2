@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { NetworksService } from './networks.service';
 import { DhcpService } from './dhcp.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -16,7 +16,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     SessionsModule,
     CrudModule,
     ServicePropertiesModule,
-    ServiceModule,
+    forwardRef(() => ServiceModule),
   ],
   providers: [NetworksService, DhcpService],
   controllers: [NetworksController],

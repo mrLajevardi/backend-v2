@@ -12,6 +12,9 @@ export class CreateServiceItemsDto {
   itemTypeCode?: string;
 
   @IsString()
+  value?: string;
+
+  @IsString()
   @ApiProperty()
   serviceInstanceId: string;
 
