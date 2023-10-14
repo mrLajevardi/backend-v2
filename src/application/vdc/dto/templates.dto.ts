@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { InvoiceTypes } from 'src/application/base/invoice/enum/invoice-type.enum';
+import { Transform } from 'class-transformer';
+import { IsEnum, IsString } from 'class-validator';
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 
 export class TemplateItem {
   @ApiProperty({ type: String })
@@ -57,21 +59,13 @@ export class TemplateDatacenter {
   @ApiProperty({ type: String })
   title: string;
 }
-export class TemplatesDto {
-  @ApiProperty({ type: String })
-  name: string;
 
-  @ApiProperty({ type: TemplateDatacenter })
-  datacenter: TemplateDatacenter;
-
+export class TemplatesStructure {
   @ApiProperty({ type: TemplateItemsDto })
   items: TemplateItemsDto;
 
   @ApiProperty({ type: String })
   generation: string;
-
-  @ApiProperty({ type: String })
-  description: string;
 
   @ApiProperty({ type: Number })
   rawPrice: number;
@@ -79,6 +73,27 @@ export class TemplatesDto {
   @ApiProperty({ type: Number })
   finalPrice: number;
 
-  @ApiProperty({ type: InvoiceTypes, enum: InvoiceTypes })
-  servicePlanType: InvoiceTypes;
+  @ApiProperty({ type: TemplateDatacenter })
+  datacenter: TemplateDatacenter;
+}
+export class TemplatesDto extends TemplatesStructure {
+  @ApiProperty({ type: String })
+  name: string;
+
+  @ApiProperty({ type: String })
+  description: string;
+
+  @ApiProperty({ type: ServicePlanTypeEnum, enum: ServicePlanTypeEnum })
+  servicePlanType: ServicePlanTypeEnum;
+}
+
+export class templatesQueryParamsDto {
+  @ApiProperty({ type: ServicePlanTypeEnum, enum: ServicePlanTypeEnum })
+  @Transform((item) => Number(item.value))
+  @IsEnum(ServicePlanTypeEnum)
+  servicePlanType: ServicePlanTypeEnum;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  datacenterName: string;
 }

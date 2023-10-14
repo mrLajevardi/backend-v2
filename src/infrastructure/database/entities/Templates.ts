@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
-import { InvoiceTypes } from 'src/application/base/invoice/enum/invoice-type.enum';
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 
 @Entity('Templates', { schema: 'services' })
 export class Templates {
@@ -41,7 +41,7 @@ export class Templates {
   guid: string;
 
   @Column('tinyint', { name: 'ServicePlanType' })
-  servicePlanType: InvoiceTypes;
+  servicePlanType: ServicePlanTypeEnum;
 
   @Column('datetime', { name: 'ExpireDate' })
   expireDate: Date;

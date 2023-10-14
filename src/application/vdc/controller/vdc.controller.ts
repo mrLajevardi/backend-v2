@@ -2,6 +2,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -14,6 +15,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Request,
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
@@ -32,6 +34,8 @@ import {
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
 import { TemplatesTableService } from 'src/application/base/crud/templates/templates-table.service';
+import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
+import { TemplatesDto, templatesQueryParamsDto } from '../dto/templates.dto';
 // import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
 @ApiBearerAuth()
@@ -273,14 +277,16 @@ export class VdcController {
     return vpcInternalSettingsMock;
   }
 
-  @Get(':serviceInstances/templates')
-  // @Public()
   @ApiOperation({
     summary: 'get templates list',
   })
-  async getVdcTemplates(): Promise<typeof vpcTemplatesMock> {
-    console.log('🍚');
-    await this.r.create({} as any);
-    return vpcTemplatesMock;
+  @ApiResponse({ type: [TemplatesDto] })
+  @ApiParam({ name: 'serviceInstanceId' })
+  @Get(':serviceInstances/templates')
+  @Public()
+  async getVdcTemplates(
+    @Query() templatesQueryDto: templatesQueryParamsDto,
+  ): Promise<TemplatesDto[]> {
+    return this.vdcService.getTemplates(templatesQueryDto);
   }
 }

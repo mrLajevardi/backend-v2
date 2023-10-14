@@ -9,6 +9,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { InvoiceTypes } from 'src/application/base/invoice/enum/invoice-type.enum';
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 
 export class CreateTemplatesDto {
   @ApiProperty({ type: Date })
@@ -53,7 +54,7 @@ export class CreateTemplatesDto {
 
   @ApiProperty({ type: InvoiceTypes, enum: InvoiceTypes })
   @IsEnum(InvoiceTypes)
-  servicePlanType: InvoiceTypes;
+  servicePlanType: ServicePlanTypeEnum;
 
   @ApiProperty({ type: Date })
   expireDate: Date;
