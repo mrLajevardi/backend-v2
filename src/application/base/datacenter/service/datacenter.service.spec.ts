@@ -16,7 +16,6 @@ import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.resul
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 
 describe('DatacenterService', () => {
-
   let service: DatacenterService;
 
   let module: TestingModule;
@@ -94,7 +93,6 @@ describe('DatacenterService', () => {
     expect(service).toBeDefined();
   });
 
-
   describe('findTargetMetadata', () => {
     it('should return a correct object', async () => {
       const targetMetadata = service.findTargetMetadata(mockDatacenterMetadata);
@@ -147,7 +145,6 @@ describe('DatacenterService', () => {
       expect(targetMetadata).not.toStrictEqual(correctObject);
     });
   });
-
 
   describe('getDatacenterConfigWithGen', () => {
     it('should return correct result with correct providerVdcList and metadata', async () => {
