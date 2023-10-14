@@ -33,6 +33,7 @@ import {
 } from '../interface/service/base-vdc-detail-service.interface';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
+import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
 import { TemplatesTableService } from 'src/application/base/crud/templates/templates-table.service';
 import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 import { TemplatesDto, templatesQueryParamsDto } from '../dto/templates.dto';
@@ -271,10 +272,16 @@ export class VdcController {
     name: 'serviceInstanceId',
   })
   async getVdcInternalSettings(
+    @Request()
+    options: any,
     @Param('serviceInstanceId')
     serviceInstanceId: string,
-  ): Promise<typeof vpcInternalSettingsMock> {
-    return vpcInternalSettingsMock;
+  ): Promise<VdcDetailItemResultDto> {
+    return await this.baseVdcDetailService.getVdcDetailItems(
+      options,
+      serviceInstanceId,
+    );
+    // return vpcInternalSettingsMock;
   }
 
   @ApiOperation({

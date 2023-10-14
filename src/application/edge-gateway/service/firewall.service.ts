@@ -5,6 +5,7 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { FirewalListDto } from '../dto/firewall-list.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class FirewallService {
@@ -247,5 +248,22 @@ export class FirewallService {
     return Promise.resolve({
       taskId: firewall.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async getCountOfFireWall(
+    option: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<number> {
+    const res = await this.getFirewallList(option, vdcInstanceId);
+
+    let count = 0;
+
+    if (res.defaultRules != null) count += res.defaultRules.length;
+
+    if (res.systemRules != null) count += res.systemRules.length;
+
+    if (res.userDefinedRules != null) count += res.userDefinedRules.length;
+
+    return count;
   }
 }

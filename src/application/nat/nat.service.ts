@@ -4,6 +4,7 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { EdgeService } from '../vdc/service/edge.service';
 import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
+import { SessionRequest } from '../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class NatService {
@@ -247,5 +248,21 @@ export class NatService {
     return Promise.resolve({
       taskId: nat.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async getCountOfNatRules(
+    options: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<number> {
+    const pageSize = 1;
+    const page = 10000;
+    const natRules = (await this.getNatRules(
+      options,
+      serviceInstanceId,
+    )) as any[];
+
+    // console.log('💕', natRules);
+
+    return natRules.length;
   }
 }

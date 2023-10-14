@@ -14,6 +14,7 @@ import { userPartialUpload } from 'src/wrappers/mainWrapper/user/vm/partialUploa
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class VmService {
@@ -1656,5 +1657,21 @@ export class VmService {
       catalogId = catalogRecord[0].href.split('catalog/')[1];
     }
     return Promise.resolve(catalogId);
+  }
+
+  async getCountOfFiles(
+    option: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<number> {
+    const page = 1;
+    const pageSize = 1;
+
+    const res = await this.getCatalogMedias(
+      option,
+      serviceInstanceId,
+      page,
+      pageSize,
+    );
+    return res.total;
   }
 }

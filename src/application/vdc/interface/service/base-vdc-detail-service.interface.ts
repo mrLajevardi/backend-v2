@@ -3,6 +3,7 @@ import { AdminOrgVdcStorageProfileQuery } from '../../../../wrappers/main-wrappe
 import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
 import { VdcInvoiceDetailsInfoResultDto } from '../../dto/vdc-invoice-details-info.result.dto';
 import { VdcDetailsResultDto } from '../../dto/vdc-details.result.dto';
+import { VdcDetailItemResultDto } from '../../dto/vdc-detail-item.result.dto';
 
 export const BASE_VDC_DETAIL_SERVICE = 'BASE_VDC_DETAIL_SERVICE';
 export interface BaseVdcDetailService extends IBaseService {
@@ -15,4 +16,9 @@ export interface BaseVdcDetailService extends IBaseService {
     serviceInstanceId: string,
     option: SessionRequest,
   ): Promise<VdcDetailsResultDto>;
+
+  getVdcDetailItems(
+    option: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<VdcDetailItemResultDto>;
 }

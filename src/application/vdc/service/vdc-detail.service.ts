@@ -19,6 +19,8 @@ import {
   BaseServiceItem,
 } from '../../base/service-item/interface/service/service-item.interface';
 import { VdcDetailFactoryService } from './vdc-detail.factory.service';
+import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
+import { VdcDetailFecadeService } from './vdc-detail.fecade.service';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -99,5 +101,40 @@ export class VdcDetailService implements BaseVdcDetailService {
     res2.disk = await this.getStorageDetailVdc(serviceInstanceId, option);
 
     return res2;
+  }
+
+  async getVdcDetailItems(
+    option: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<VdcDetailItemResultDto> {
+    const {
+      countOfNetworks,
+      countOfNat,
+      countOfFireWalls,
+      countOfIpSet,
+      countOfApplicationPort,
+      countOfNamedDisk,
+      countOfFiles,
+      statusOfDhcpForwarderStatus,
+    } = await this.vdcDetailFactory.getStatusOfVdcItems(
+      option,
+      serviceInstanceId,
+    );
+
+    const res: VdcDetailItemResultDto = new VdcDetailItemResultDto(
+      countOfNetworks,
+      countOfNat,
+      countOfFireWalls,
+      countOfNamedDisk,
+      countOfIpSet,
+      statusOfDhcpForwarderStatus,
+      {
+        default: countOfApplicationPort.default,
+        custom: countOfApplicationPort.custom,
+      }, //TODO
+      countOfFiles,
+    );
+
+    return res;
   }
 }
