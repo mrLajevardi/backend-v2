@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
+import { isTestingEnv } from '../../helpers/helpers';
 
 @Entity('Templates', { schema: 'services' })
 export class Templates {
@@ -28,13 +29,16 @@ export class Templates {
   @Column('nvarchar', { name: 'Structure' })
   structure: string;
 
-  @Column('bit', { name: 'Enabled', default: () => '(0)' })
+  @Column(isTestingEnv ? 'boolean' : 'bit', {
+    name: 'Enabled',
+    default: () => '(0)',
+  })
   enabled: boolean;
 
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
   datacenterName: string | null;
 
-  @Column('uniqueidentifier', {
+  @Column(isTestingEnv ? 'text' : 'uniqueidentifier', {
     name: 'Guid',
     default: () => 'newsequentialid()',
   })

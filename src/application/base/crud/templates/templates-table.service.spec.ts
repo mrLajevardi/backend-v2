@@ -1,11 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TemplatesTableService } from './templates-table.service';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('TemplatesTableService', () => {
   let service: TemplatesTableService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [TemplatesTableService],
     }).compile();
 
