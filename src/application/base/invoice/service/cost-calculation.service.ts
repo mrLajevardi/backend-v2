@@ -66,6 +66,7 @@ export class CostCalculationService {
       itemsTotalCosts: totalCost,
     };
   }
+
   async calculateVdcStaticTypeInvoice(
     invoice: CreateServiceInvoiceDto,
   ): Promise<TotalInvoiceItemCosts> {

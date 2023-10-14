@@ -13,4 +13,5 @@ export class InvoiceDetailVdcModel {
   unit?: string;
   min?: number;
   max?: number;
+  price?: number;
 }
