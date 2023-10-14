@@ -197,8 +197,10 @@ export class UserService {
       return Promise.reject(new UnprocessableEntity());
     }
 
-    let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.user.username;
+    const zarinpalConfig: ZarinpalConfigDto = {
+      metadata: { email: '', mobile: '' },
+    };
+    zarinpalConfig.metadata.email = user.email;
     zarinpalConfig.metadata.mobile = user.phoneNumber;
 
     const paymentRequestData = { ...zarinpalConfig, amount };

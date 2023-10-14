@@ -11,7 +11,9 @@ export class OrgService {
   constructor(
     private readonly organizationTable: OrganizationTableService,
     private readonly organizationService: OrganizationService,
-  ) {}
+  ) {
+    
+  }
 
   async checkOrg(userId: number) {
     let org: Organization | InitOrgReturnDto;
