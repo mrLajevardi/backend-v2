@@ -29,6 +29,7 @@ import { OrgService } from './org.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 import { VdcFactoryService } from './vdc.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { DatacenterModule } from 'src/application/base/datacenter/datacenter.module';
 
 describe('EdgeService', () => {
   let service: EdgeService;
@@ -42,6 +43,7 @@ describe('EdgeService', () => {
         LoggerModule,
         //TasksModule,
         SessionsModule,
+        DatacenterModule,
         OrganizationModule,
         UserModule,
         ServicePropertiesModule,
