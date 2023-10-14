@@ -30,11 +30,14 @@ import { NetworksModule } from '../networks/networks.module';
 import { EdgeGatewayModule } from '../edge-gateway/edge-gateway.module';
 import { NatModule } from '../nat/nat.module';
 import { VmModule } from '../vm/vm.module';
+import { DatacenterModule } from '../base/datacenter/datacenter.module';
 
 @Module({
   imports: [
     MainWrapperModule,
     DatabaseModule,
+    DatacenterModule,
+    MainWrapperModule,
     CrudModule,
     LoggerModule,
     EdgeGatewayModule,

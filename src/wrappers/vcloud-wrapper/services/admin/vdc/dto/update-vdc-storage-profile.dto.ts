@@ -19,6 +19,6 @@ export class UpdateVdcStorageProfileBody {
 }
 
 class ProviderVdcStorageProfile {
-  name: string;
+  name?: string;
   href: string;
 }

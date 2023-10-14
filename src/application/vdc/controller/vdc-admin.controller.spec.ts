@@ -23,6 +23,8 @@ import { TasksModule } from 'src/application/base/tasks/tasks.module';
 import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { VcloudWrapperModule } from 'src/wrappers/vcloud-wrapper/vcloud-wrapper.module';
+import { DatacenterModule } from 'src/application/base/datacenter/datacenter.module';
+import { InvoicesModule } from 'src/application/base/invoice/invoices.module';
 
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
@@ -37,8 +39,10 @@ describe('VdcAdminController', () => {
         LoggerModule,
         VcloudWrapperModule,
         TasksModule,
+        InvoicesModule,
         SessionsModule,
         OrganizationModule,
+        DatacenterModule,
         UserModule,
         ServicePropertiesModule,
         BullModule.registerQueue({

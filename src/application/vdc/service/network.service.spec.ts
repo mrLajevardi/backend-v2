@@ -13,6 +13,7 @@ import { OrgService } from './org.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 import { VdcFactoryService } from './vdc.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { DatacenterModule } from 'src/application/base/datacenter/datacenter.module';
 
 describe('NetworkService', () => {
   let service: NetworkService;
@@ -27,6 +28,7 @@ describe('NetworkService', () => {
         //TasksModule,
         SessionsModule,
         OrganizationModule,
+        DatacenterModule,
         UserModule,
         ServiceModule,
         MainWrapperModule,

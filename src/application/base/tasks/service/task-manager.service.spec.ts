@@ -14,6 +14,7 @@ import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { ServicePropertiesService } from '../../service-properties/service-properties.service';
 import { ServiceModule } from '../../service/service.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -34,6 +35,7 @@ describe('TaskManagerService', () => {
         OrganizationModule,
         ServicePropertiesModule,
         ServiceModule,
+        InvoicesModule,
         VdcModule,
       ],
       providers: [

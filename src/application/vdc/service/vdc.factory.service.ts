@@ -2,9 +2,20 @@ import { Injectable } from '@nestjs/common';
 
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { GetVdcOrgVdcBuilderResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.builder.result';
+import { InvoiceFactoryVdcService } from 'src/application/base/invoice/service/invoice-factory-vdc.service';
+import { ServiceItems } from 'src/infrastructure/database/entities/ServiceItems';
+import { InvoiceItemsDto } from 'src/application/base/invoice/dto/create-service-invoice.dto';
+import { StorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/storage-profile-dto';
+import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
+import { VdcStorageProfileParams } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/create-vdc.dto';
+import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-codes.enum';
+import { VdcUnits } from '../enum/vdc-units.enum';
+import { InvoiceGroupItem } from 'src/application/base/invoice/interface/vdc-item-group.interface.dto';
+import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
 
 @Injectable()
 export class VdcFactoryService {
+  constructor(private readonly vdcWrapperService: VdcWrapperService) {}
   getVdcOrgVdcModelResult(vdcData: any): GetOrgVdcResult {
     const record = vdcData.data.record[0];
     if (record === undefined) return {};
@@ -26,5 +37,69 @@ export class VdcFactoryService {
     modelBuilder.WithNumberOfRunningVMs(record.numberOfRunningVMs);
     const model: GetOrgVdcResult = modelBuilder.Build();
     return model;
+  }
+
+  transformItems(serviceItems: ServiceItems[]): InvoiceItemsDto[] {
+    const transformedItems = serviceItems.map((item) => {
+      const invoiceItem: InvoiceItemsDto = {
+        itemTypeId: item.itemTypeId,
+        value: item.value,
+      };
+      return invoiceItem;
+    });
+    return transformedItems;
+  }
+
+  async getStorageProfiles(
+    authToken: string,
+    invoiceGroupItem: InvoiceGroupItem[],
+    genId: string,
+  ): Promise<VdcStorageProfileParams[]> {
+    const storageProfiles =
+      await this.vdcWrapperService.vcloudQuery<ProviderVdcStorageProfilesDto>(
+        authToken,
+        {
+          type: 'providerVdcStorageProfile',
+          format: 'records',
+          page: 1,
+          pageSize: 15,
+          sortAsc: 'name',
+          filter: `isEnabled==true;providerVdc==${genId}`,
+        },
+      );
+    const vdcStorageProfileParams: VdcStorageProfileParams[] = [];
+    const swapItem = invoiceGroupItem.find(
+      (item) => item.code === DiskItemCodes.Swap,
+    );
+    const standardItem = invoiceGroupItem.find(
+      (item) => item.code === DiskItemCodes.Standard,
+    );
+    const valueSum = Number(standardItem.value) + Number(swapItem.value);
+    standardItem.value = valueSum.toString();
+    invoiceGroupItem.splice(invoiceGroupItem.indexOf(swapItem), 1);
+    for (const invoiceItem of invoiceGroupItem) {
+      for (const storageProfile of storageProfiles.data.record) {
+        if (storageProfile.name.toLowerCase().includes(invoiceItem.code)) {
+          const isDefault = storageProfile.name
+            .toLowerCase()
+            .includes(DiskItemCodes.Standard)
+            ? true
+            : false;
+          const storage: VdcStorageProfileParams = {
+            _default: isDefault,
+            default: isDefault,
+            enabled: true,
+            providerVdcStorageProfile: {
+              href: storageProfile.href,
+              name: storageProfile.name,
+            },
+            units: VdcUnits.StorageUnit,
+            limit: Number(invoiceItem.value),
+          };
+          vdcStorageProfileParams.push(storage);
+        }
+      }
+    }
+    return vdcStorageProfileParams;
   }
 }

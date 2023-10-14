@@ -60,9 +60,7 @@ export class AdminVdcWrapperService {
           limit: config.ram * 1024,
         },
       },
-      includeMemoryOverhead: false,
-      //usesFastProvisioning: false,
-      //isThinProvision: false,
+      includeMemoryOverhead: vdcConfig.includeMemoryOverhead,
       isElastic: false,
       vCpuInMhz: config.vCpuInMhz,
       resourceGuaranteedCpu: config.resourceGuaranteedCpu,
@@ -77,16 +75,7 @@ export class AdminVdcWrapperService {
         href: config.networkPoolReference.href,
       },
       networkQuota: config.networkQuota,
-      vdcStorageProfile: [
-        {
-          ...vdcConfig.VdcStorageProfileParams,
-          limit: config.storage * 1024,
-          providerVdcStorageProfile: {
-            href: config.vdcStorageProfileParams.providerVdcStorageProfile.href,
-            name: config.vdcStorageProfileParams.providerVdcStorageProfile.name,
-          },
-        },
-      ],
+      vdcStorageProfile: config.vdcStorageProfiles,
       isThinProvision: vdcConfig.isThinProvision,
       usesFastProvisioning: vdcConfig.usesFastProvisioning,
     };

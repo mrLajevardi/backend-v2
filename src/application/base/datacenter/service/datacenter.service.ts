@@ -33,13 +33,6 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     genId: string,
   ): Promise<FoundDatacenterMetadata> {
     const adminToken: string = await this.sessionsService.checkAdminSession();
-
-    const allDatacenterConfigs = await this.getDatacenterConfigWithGen();
-
-    const filterDatacenter = allDatacenterConfigs.filter(
-      (datacenter) => datacenter.title === datacenterName,
-    );
-
     const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
       adminToken,
       genId,

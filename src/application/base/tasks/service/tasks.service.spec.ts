@@ -17,6 +17,7 @@ import { ServiceModule } from '../../service/service.module';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServiceServiceFactory } from '../../service/Factory/service.service.factory';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -30,6 +31,7 @@ describe('TasksService', () => {
           name: 'tasks2',
         }),
         LoggerModule,
+        InvoicesModule,
         // VdcModule,
         forwardRef(() => VgpuModule),
         CrudModule,
