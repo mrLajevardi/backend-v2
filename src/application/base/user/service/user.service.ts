@@ -33,6 +33,7 @@ import { ResetForgottenPasswordDto } from '../dto/reset-forgotten-password.dto';
 import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invalid-phone-token.exception';
 import { JwtService } from '@nestjs/jwt';
 import { MoreThanOneUserWithSameEmail } from 'src/infrastructure/exceptions/more-than-one-user-with-this-email.exception';
+import * as process from 'process';
 
 @Injectable()
 export class UserService {
@@ -197,9 +198,15 @@ export class UserService {
       return Promise.reject(new UnprocessableEntity());
     }
 
-    let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.user.username;
-    zarinpalConfig.metadata.mobile = user.phoneNumber;
+    const zarinpalConfig: ZarinpalConfigDto = {
+      email: user.email,
+      mobile: user.phoneNumber,
+      callback_url: process.env.ZARINPAL_CALLBACK_URL,
+      description: process.env.ZARINPAL_DESCRIPTION,
+      merchant_id: process.env.ZARINPAL_MERCHANT_ID,
+    };
+    // zarinpalConfig.metadata.email = user.email;
+    // zarinpalConfig.metadata.mobile = user.phoneNumber;
 
     const paymentRequestData = { ...zarinpalConfig, amount };
 

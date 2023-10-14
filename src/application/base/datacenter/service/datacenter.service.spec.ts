@@ -14,7 +14,6 @@ import { cloneDeep } from 'lodash';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
-// import { FoundDatacenterMetadata } from '../interface/datacenter.interface';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
@@ -57,11 +56,13 @@ describe('DatacenterService', () => {
     };
     return mockAdminWrapperService;
   }
+
   const mockSessionService: Partial<SessionsService> = {
     async checkAdminSession(): Promise<string> {
       return 'session';
     },
   };
+
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
@@ -83,6 +84,7 @@ describe('DatacenterService', () => {
     }).compile();
     service = module.get<DatacenterService>(DatacenterService);
   });
+
   afterEach(async () => {
     await module.close();
   });
@@ -90,6 +92,7 @@ describe('DatacenterService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
   describe('findTargetMetadata', () => {
     it('should return a correct object', async () => {
       const targetMetadata = service.findTargetMetadata(mockDatacenterMetadata);
