@@ -54,14 +54,14 @@ import { ServiceItemModule } from './application/base/service-item/service-item.
 
     BullModule.forRoot({
       redis: {
-        host: '127.0.0.1',
+        host: '172.20.34.34',
         port: 6379,
       },
     }),
 
     BullMQModule.forRoot({
       connection: {
-        host: '127.0.0.1',
+        host: '172.20.34.34',
         port: 6379,
       },
     }),
