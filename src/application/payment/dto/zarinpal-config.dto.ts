@@ -1,6 +1,7 @@
 export class ZarinpalConfigDto {
-  metadata: {
-    email: string;
-    mobile: string;
-  };
+  email: string;
+  mobile: string;
+  merchant_id: string;
+  callback_url: string;
+  description: string;
 }

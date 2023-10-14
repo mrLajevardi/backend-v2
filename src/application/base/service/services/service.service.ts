@@ -2,7 +2,7 @@ import { Injectable, Scope } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { In } from 'typeorm';
+import { FindManyOptions, FindOptionsWhere, In } from 'typeorm';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { isEmpty } from 'lodash';
@@ -241,8 +241,8 @@ export class ServiceService {
     });
 
     let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.user.username;
-    zarinpalConfig.metadata.mobile = user.phoneNumber;
+    zarinpalConfig.email = options.user.username;
+    zarinpalConfig.mobile = user.phoneNumber;
 
     const paymentRequestData = {
       ...zarinpalConfig,
@@ -482,7 +482,12 @@ export class ServiceService {
   > {
     const res: GetAllVdcServiceWithItemsResultDto[] = [];
 
-    const allServicesInstances = await this.getServices(options, typeId, id);
+    const allServicesInstances = await this.getServices(
+      options,
+      typeId,
+      id,
+      [3, 4, 5, 6],
+    );
 
     for (const serviceInstance of allServicesInstances) {
       const cpuSpeed = (
@@ -518,22 +523,37 @@ export class ServiceService {
     options: SessionRequest,
     typeId?: string,
     id?: string,
+    statuses?: number[],
   ): Promise<GetServicesReturnDto[]> {
     const {
       user: { userId },
     } = options;
     let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
+    let serviceStatus: number[] = [
+      3, 4, 5, 6,
+      // ServiceStatusEnum.Deleted,
+      // ServiceStatusEnum.Error,
+      // ServiceStatusEnum.DisabledByAdmin,
+      // ServiceStatusEnum.Success,
+      // ServiceStatusEnum.Expired,
+      // ServiceStatusEnum.Pending,
+    ];
     if (typeId) {
       serviceTypeIds = [typeId];
     }
-    const where: any = {
+    if (statuses) {
+      serviceStatus = statuses;
+    }
+    const where: FindOptionsWhere<ServiceInstances> = {
       userId: userId,
       isDeleted: false,
       serviceTypeId: In(serviceTypeIds),
+      status: In(serviceStatus),
     };
     if (id) {
       where.id = id;
     }
+
     const services = await this.serviceInstancesTableService.find({
       where,
       relations: ['serviceItems', 'serviceType'],

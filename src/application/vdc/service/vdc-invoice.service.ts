@@ -14,8 +14,15 @@ export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
     @Inject(BASE_INVOICE_SERVICE)
     private readonly invoiceVdcService: BaseInvoiceService,
   ) {}
+  getVdcPreFactor(invoiceId: string): Promise<VdcInvoiceDetailsResultDto> {
+    const res = this.getVdcInvoiceDetail(invoiceId);
+    console.log(res);
+
+    return res;
+  }
   getVdcInvoiceDetail(invoiceId: string): Promise<VdcInvoiceDetailsResultDto> {
     const res = this.invoiceVdcService.getVdcInvoiceDetails(invoiceId);
+
     return Promise.resolve(res);
   }
 }

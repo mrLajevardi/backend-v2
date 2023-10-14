@@ -245,6 +245,17 @@ export class VdcController {
     return await this.baseVdcInvoiceService.getVdcInvoiceDetail(invoiceId);
   }
 
+  @Get('invoice/:invoiceId/preFactor')
+  @ApiOperation({ summary: 'get pre factor PDF' })
+  @ApiParam({ name: 'invoiceId', description: 'Invoice ID' })
+  async getVdcPreFactor(
+    @Param('invoiceId')
+    invoiceId: string,
+  ) {
+    const res = await this.baseVdcInvoiceService.getVdcPreFactor(invoiceId);
+    return res;
+  }
+
   @Get(':serviceInstanceId/details')
   @ApiOperation({
     summary: 'get details of vdc',

@@ -13,10 +13,11 @@ export class VdcInvoiceDetailsResultDto extends BaseResultDto {
   ram?: VdcInvoiceDetailsInfoResultDto;
   vm?: VdcInvoiceDetailsInfoResultDto;
   ip?: VdcInvoiceDetailsInfoResultDto;
-  guaranty?: { title: string; value: number };
-  period?: { title: string; value: number };
+  guaranty?: VdcInvoiceDetailsInfoResultDto;
+  period?: VdcInvoiceDetailsInfoResultDto;
   generation?: string;
   finalPrice?: number;
   reservationRam?: string;
   reservationCpu?: string;
+  rawAmount?: number;
 }
