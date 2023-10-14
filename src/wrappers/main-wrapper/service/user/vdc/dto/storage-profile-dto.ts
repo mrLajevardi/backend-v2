@@ -7,7 +7,7 @@ export interface StorageProfilesDto {
   page: number;
   pageSize: number;
   total: number;
-  records: Records[];
+  record: Records[];
   vCloudExtension: any[];
 }
 

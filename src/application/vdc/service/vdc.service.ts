@@ -210,10 +210,13 @@ export class VdcService {
     });
     console.log('create vdc with wrapper with data: ', data);
     const providerVdcReferenceHref =
-      process.env.VCLOUD_BASE_URL + '/api/admin/providervdc/' + datacenterGenId;
+      process.env.VCLOUD_BASE_URL +
+      '/api/admin/providervdc/' +
+      datacenterGenId.split(':').slice(-1)[0];
     const vdcStorageProfiles = await this.vdcFactoryService.getStorageProfiles(
       sessionToken,
       data.generation.disk,
+      datacenterGenId.split(':').slice(-1)[0],
     );
     const vdcInfo = await this.adminVdcWrapperService.createVdc(
       {

@@ -11,6 +11,7 @@ import { VdcStorageProfileParams } from 'src/wrappers/main-wrapper/service/admin
 import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-codes.enum';
 import { VdcUnits } from '../enum/vdc-units.enum';
 import { InvoiceGroupItem } from 'src/application/base/invoice/interface/vdc-item-group.interface.dto';
+import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
 
 @Injectable()
 export class VdcFactoryService {
@@ -41,7 +42,7 @@ export class VdcFactoryService {
   transformItems(serviceItems: ServiceItems[]): InvoiceItemsDto[] {
     const transformedItems = serviceItems.map((item) => {
       const invoiceItem: InvoiceItemsDto = {
-        itemTypeId: item.id,
+        itemTypeId: item.itemTypeId,
         value: item.value,
       };
       return invoiceItem;
@@ -52,21 +53,38 @@ export class VdcFactoryService {
   async getStorageProfiles(
     authToken: string,
     invoiceGroupItem: InvoiceGroupItem[],
+    genId: string,
   ): Promise<VdcStorageProfileParams[]> {
     const storageProfiles =
-      await this.vdcWrapperService.vcloudQuery<StorageProfilesDto>(authToken, {
-        type: 'storageProfile',
-        format: 'records',
-        page: 1,
-        pageSize: 15,
-        sortAsc: 'name',
-      });
+      await this.vdcWrapperService.vcloudQuery<ProviderVdcStorageProfilesDto>(
+        authToken,
+        {
+          type: 'providerVdcStorageProfile',
+          format: 'records',
+          page: 1,
+          pageSize: 15,
+          sortAsc: 'name',
+          filter: `isEnabled==true;providerVdc==${genId}`,
+        },
+      );
     const vdcStorageProfileParams: VdcStorageProfileParams[] = [];
+    const swapItem = invoiceGroupItem.find(
+      (item) => item.code === DiskItemCodes.Swap,
+    );
+    const standardItem = invoiceGroupItem.find(
+      (item) => item.code === DiskItemCodes.Standard,
+    );
+    const valueSum = Number(standardItem.value) + Number(swapItem.value);
+    standardItem.value = valueSum.toString();
+    invoiceGroupItem.splice(invoiceGroupItem.indexOf(swapItem), 1);
     for (const invoiceItem of invoiceGroupItem) {
-      for (const storageProfile of storageProfiles.data.records) {
-        if (invoiceItem.code === storageProfile.name) {
-          const isDefault =
-            storageProfile.name === DiskItemCodes.Standard ? true : false;
+      for (const storageProfile of storageProfiles.data.record) {
+        if (storageProfile.name.toLowerCase().includes(invoiceItem.code)) {
+          const isDefault = storageProfile.name
+            .toLowerCase()
+            .includes(DiskItemCodes.Standard)
+            ? true
+            : false;
           const storage: VdcStorageProfileParams = {
             _default: isDefault,
             default: isDefault,

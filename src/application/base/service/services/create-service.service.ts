@@ -21,6 +21,8 @@ import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { Discounts } from 'src/infrastructure/database/entities/Discounts';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
+import { ServiceTypesEnum } from '../enum/service-types.enum';
 
 @Injectable()
 export class CreateServiceService {
@@ -127,8 +129,7 @@ export class CreateServiceService {
           serviceInstanceId,
         },
       );
-      console.log('🥖');
-      if (invoice.serviceTypeId === 'vdc') {
+      if (invoice.serviceTypeId === ServiceTypesEnum.Vdc) {
         task = await this.tasksTableService.create({
           userId: userId,
           serviceInstanceId,
@@ -138,7 +139,6 @@ export class CreateServiceService {
           endTime: null,
           status: 'running',
         });
-        console.log(taskId);
         await this.taskManagerService.addTask({
           serviceInstanceId,
           customTaskId: task.taskId,

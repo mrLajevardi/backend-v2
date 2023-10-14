@@ -339,18 +339,21 @@ export class TaskManagerService {
       },
       requestOptions,
     );
-    const ip = await this.serviceItemsTable.findOne({
+    const serviceItems = await this.serviceItemsTable.find({
       where: {
         serviceInstanceId,
-        itemTypeCode: 'ip',
       },
     });
+    const data = await this.invoiceFactoryService.groupVdcItems(
+      this.vdcFactoryService.transformItems(serviceItems),
+    );
+
     const org = await this.organizationTable.findOne({
       where: { userId },
     });
     const createdEdge = await this.edgeService.createEdge(
       props['vdcId'],
-      ip.quantity,
+      data.generation.ip[0].value,
       props['name'],
       serviceInstanceId,
       org.orgId,
