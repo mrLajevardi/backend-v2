@@ -11,6 +11,12 @@ import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/v
 import { VdcFactoryService } from './vdc.factory.service';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { TemplatesTableService } from 'src/application/base/crud/templates/templates-table.service';
+import {
+  TemplatesDto,
+  TemplatesStructure,
+  templatesQueryParamsDto,
+} from '../dto/templates.dto';
 
 @Injectable()
 export class VdcService {
@@ -23,6 +29,7 @@ export class VdcService {
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly vdcWrapperService: VdcWrapperService,
     private readonly loggerService: LoggerService,
+    private readonly templatesTableService: TemplatesTableService,
   ) {}
 
   async createVdc(
@@ -483,5 +490,31 @@ export class VdcService {
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async getTemplates(query: templatesQueryParamsDto): Promise<TemplatesDto[]> {
+    const serviceTypeId = 'vdc';
+    const templates = await this.templatesTableService.find({
+      where: {
+        servicePlanType: query.servicePlanType,
+        serviceType: { id: serviceTypeId },
+        datacenterName: query.datacenterName,
+        enabled: true,
+      },
+    });
+    const templatesList: TemplatesDto[] = [];
+    for (const template of templates) {
+      const { structure } = template;
+      console.log(structure);
+      const parsedStructure: TemplatesStructure = JSON.parse(structure);
+      const templateDto: TemplatesDto = {
+        ...parsedStructure,
+        name: template.name,
+        description: template.description,
+        servicePlanType: template.servicePlanType,
+      };
+      templatesList.push(templateDto);
+    }
+    return templatesList;
   }
 }
