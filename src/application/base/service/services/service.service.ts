@@ -241,8 +241,8 @@ export class ServiceService {
     });
 
     let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.user.username;
-    zarinpalConfig.metadata.mobile = user.phoneNumber;
+    zarinpalConfig.email = options.user.username;
+    zarinpalConfig.mobile = user.phoneNumber;
 
     const paymentRequestData = {
       ...zarinpalConfig,
