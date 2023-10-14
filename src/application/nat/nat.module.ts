@@ -17,6 +17,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     ServicePropertiesModule,
   ],
   providers: [NatService],
+  exports: [NatService],
   controllers: [NatController],
 })
 export class NatModule {}

@@ -20,6 +20,11 @@ import { BASE_VDC_DETAIL_SERVICE } from '../interface/service/base-vdc-detail-se
 import { VdcDetailService } from '../service/vdc-detail.service';
 import { VdcDetailFactoryService } from '../service/vdc-detail.factory.service';
 import { ServiceItemModule } from '../../base/service-item/service-item.module';
+import { VdcDetailFecadeService } from '../service/vdc-detail.fecade.service';
+import { NatModule } from 'src/application/nat/nat.module';
+import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
+import { VmModule } from 'src/application/vm/vm.module';
+import { NetworksModule } from 'src/application/networks/networks.module';
 
 describe('VdcController', () => {
   let controller: VdcController;
@@ -39,6 +44,10 @@ describe('VdcController', () => {
         MainWrapperModule,
         InvoicesModule,
         ServiceItemModule,
+        EdgeGatewayModule,
+        NatModule,
+        NetworksModule,
+        VmModule,
       ],
       providers: [
         VdcService,
@@ -55,6 +64,7 @@ describe('VdcController', () => {
           provide: BASE_VDC_DETAIL_SERVICE,
           useClass: VdcDetailService,
         },
+        VdcDetailFecadeService,
       ],
 
       controllers: [VdcController],

@@ -11,6 +11,7 @@ import { DhcpService } from './dhcp.service';
 import { InvalidIpParamException } from 'src/infrastructure/exceptions/invalid-ip-param.exceptionts';
 import { NetworkDto } from './dto/network.dto';
 import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
+import { SessionRequest } from '../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class NetworksService {
@@ -181,6 +182,23 @@ export class NetworksService {
     return Promise.resolve({
       taskId: network.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async getCountOfAllNetworks(
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<number> {
+    const pageSize = 1;
+    const page = 1;
+    const res = await this.getNetworks(
+      options,
+      vdcInstanceId,
+      page,
+      pageSize,
+      '',
+      '',
+    );
+    return res?.resultTotal;
   }
 
   async checkNetworkParams(data) {

@@ -46,6 +46,7 @@ export class Wrapper<T> {
       });
       return Promise.resolve(request);
     } catch (err) {
+      console.log(err);
       return Promise.reject(
         new WrapperErrorException(
           err.response.status,

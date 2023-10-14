@@ -41,6 +41,7 @@ import { ServicePlansTableModule } from './service-plans-table/service-plans-tab
 import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.module';
 import { ServiceReportsViewModule } from './service-reports-view/service-reports-view.module';
 import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-item-types-tree.module';
+import { TemplatesTableModule } from './templates/templates-table.module';
 
 @Module({
   imports: [
@@ -87,6 +88,7 @@ import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-it
     InvoiceItemListModule,
     ServiceReportsViewModule,
     ServiceItemTypesTreeModule,
+    TemplatesTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -132,6 +134,7 @@ import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-it
     InvoiceItemListModule,
     ServiceReportsViewModule,
     ServiceItemTypesTreeModule,
+    TemplatesTableModule,
   ],
 })
 export class CrudModule {}
