@@ -22,7 +22,7 @@ export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
   }
   getVdcInvoiceDetail(invoiceId: string): Promise<VdcInvoiceDetailsResultDto> {
     const res = this.invoiceVdcService.getVdcInvoiceDetails(invoiceId);
-    
+
     return Promise.resolve(res);
   }
 }

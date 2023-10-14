@@ -71,6 +71,7 @@ export class VdcDetailFactoryService {
         status: model.Status,
         daysLeft: model.DaysLeft,
         servicePlanType: model.ServicePlanType,
+        
       };
       return res;
     });

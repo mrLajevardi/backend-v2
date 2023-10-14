@@ -110,7 +110,7 @@ export class InvoiceFactoryService {
     invoiceCost: TotalInvoiceItemCosts,
     groupedItems: VdcItemGroup,
     serviceInstanceId: string,
-  ) {
+  ): Promise<CreateInvoicesDto> {
     const dto: CreateInvoicesDto = {
       userId,
       servicePlanType: data.servicePlanTypes,
