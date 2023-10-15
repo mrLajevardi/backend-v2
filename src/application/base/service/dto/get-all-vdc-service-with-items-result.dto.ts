@@ -24,8 +24,6 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
   @ApiProperty({ type: Number })
   serviceItems?: ServiceItemDto[];
 
-
-
   @ApiProperty({ type: Boolean })
   daysLeft?: number;
 
