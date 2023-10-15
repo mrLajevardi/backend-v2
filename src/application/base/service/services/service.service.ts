@@ -36,6 +36,7 @@ import { VdcService } from '../../../vdc/service/vdc.service';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { GetOrgVdcResult } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { ServiceStatusEnum } from '../enum/service-status.enum';
+import { VcloudMetadata } from '../../datacenter/type/vcloud-metadata.type';
 @Injectable()
 export class ServiceService {
   constructor(
@@ -483,7 +484,10 @@ export class ServiceService {
     const res: GetAllVdcServiceWithItemsResultDto[] = [];
 
     const allServicesInstances = await this.getServices(options, typeId, id);
-
+    let cpuSpeed: VcloudMetadata = 0,
+      daysLeft = 0,
+      isTicketSent = false,
+      vdcItems: GetOrgVdcResult = {};
     let model: GetAllVdcServiceWithItemsResultDto = {};
 
     await Promise.all(
@@ -492,40 +496,38 @@ export class ServiceService {
           serviceInstance.status != ServiceStatusEnum.Error &&
           serviceInstance.status != ServiceStatusEnum.Pending
         ) {
-          const cpuSpeed = (
+          cpuSpeed = (
             await this.serviceFactory.getConfigServiceInstance(serviceInstance)
           ).cpuSpeed;
 
-          const { daysLeft, isTicketSent } =
+          const info = ({ daysLeft, isTicketSent } =
             await this.serviceFactory.getPropertiesOfServiceInstance(
               serviceInstance,
-            );
+            ));
+          (daysLeft = info.daysLeft), (isTicketSent = info.isTicketSent);
 
-          const vdcItems: GetOrgVdcResult = await this.vdcService.getVdc(
-            options,
-            serviceInstance.id,
-          );
-
-          model = this.serviceFactory.configModelServiceInstanceList(
-            serviceInstance,
-            daysLeft,
-            isTicketSent,
-            vdcItems,
-            cpuSpeed,
-          );
-        } else {
-          model = this.serviceFactory.configModelServiceInstanceList(
-            serviceInstance,
-            0,
-            false,
-            {},
-            0,
-          );
+          vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
         }
-
+        // else {
+        //   model = this.serviceFactory.configModelServiceInstanceList(
+        //     serviceInstance,
+        //     0,
+        //     false,
+        //     {},
+        //     0,
+        //   );
+        // }
+        model = this.serviceFactory.configModelServiceInstanceList(
+          serviceInstance,
+          daysLeft,
+          isTicketSent,
+          vdcItems,
+          cpuSpeed,
+        );
         res.push(model);
       }),
     );
+    return res;
 
     // for (const serviceInstance of allServicesInstances) {
     //   if (
@@ -565,8 +567,6 @@ export class ServiceService {
     //
     //   res.push(model);
     // }
-
-    return res;
   }
 
   async getServices(
