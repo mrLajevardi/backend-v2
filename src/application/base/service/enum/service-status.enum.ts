@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-enum ServiceStatusEnum {
+export enum ServiceStatusEnum {
   Success = 3,
   Error = 2,
   DisabledByAdmin = 4,
