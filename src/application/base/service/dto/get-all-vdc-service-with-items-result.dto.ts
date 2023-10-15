@@ -6,34 +6,34 @@ import { faker } from '@faker-js/faker';
 
 export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
   @ApiProperty({ type: Number, description: 'ServiceInstanceId' })
-  id: string;
+  id?: string;
 
   // @ApiProperty({  enum: ServiceStatusEnum ,})
-  status: ServiceStatusEnum;
+  status?: ServiceStatusEnum;
 
   @ApiProperty({ type: Number })
-  isDeleted: boolean;
+  isDeleted?: boolean;
 
   @ApiProperty({ type: Number })
-  name: string;
+  name?: string;
 
   @ApiProperty({ type: Number })
-  serviceTypeId: string;
+  serviceTypeId?: string;
 
   @ApiProperty({ type: Number })
-  serviceItems: ServiceItemDto[];
+  serviceItems?: ServiceItemDto[];
 
   // @ApiProperty({ type: Boolean })
   // expired: boolean;
 
   @ApiProperty({ type: Boolean })
-  daysLeft: number;
+  daysLeft?: number;
 
   @ApiProperty({ type: Boolean })
-  ticketSent: boolean;
+  ticketSent?: boolean;
 
   // @ApiProperty({  enum: ServicePlanTypeEnum })
-  servicePlanType: ServicePlanTypeEnum;
+  servicePlanType?: ServicePlanTypeEnum;
 
   constructor(
     id: string,

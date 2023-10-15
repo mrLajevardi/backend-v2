@@ -1,7 +1,7 @@
 import { InvoiceDetailVdcModel } from '../../base/invoice/interface/invoice-detail-vdc.interface';
 
 export interface VdcModel extends InvoiceDetailVdcModel {
-  value?: number;
+  value?: string;
   itemID?: number;
   codeHierarchy?: string;
   parentCode?: string;
