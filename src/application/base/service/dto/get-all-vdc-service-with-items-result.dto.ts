@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
 import { ServiceItemDto } from './service-item.dto';
 import { faker } from '@faker-js/faker';
+import { ServiceStatusEnum } from '../enum/service-status.enum';
 
 export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
   @ApiProperty({ type: Number, description: 'ServiceInstanceId' })
