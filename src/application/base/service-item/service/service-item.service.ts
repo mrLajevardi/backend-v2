@@ -23,8 +23,8 @@ export class ServiceItemService implements BaseService, BaseServiceItem {
       })
       .select('It.Title');
 
-    const res = await queryBuilder.getRawOne<string>();
+    const res = await queryBuilder.getRawOne<{ Title: string }>();
 
-    return Promise.resolve(res);
+    return Promise.resolve(res.Title);
   }
 }
