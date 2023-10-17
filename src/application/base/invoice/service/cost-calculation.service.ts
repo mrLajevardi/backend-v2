@@ -68,7 +68,7 @@ export class CostCalculationService {
   }
 
   async calculateVdcStaticTypeInvoice(
-    invoice: CreateServiceInvoiceDto,
+    invoice: Partial<CreateServiceInvoiceDto>,
   ): Promise<TotalInvoiceItemCosts> {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       invoice.itemsTypes,

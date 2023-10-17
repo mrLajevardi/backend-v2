@@ -24,6 +24,11 @@ import {
   BASE_INVOICE_SERVICE,
   BaseInvoiceService,
 } from '../interface/service/invoice.interface';
+import {
+  VdcInvoiceCalculatorDto,
+  VdcInvoiceCalculatorResultDto,
+} from '../dto/vdc-invoice-calculator.dto';
+import { Public } from '../../security/auth/decorators/ispublic.decorator';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -88,5 +93,19 @@ export class InvoicesController {
   @Delete(':id')
   async delete(@Param('id') id: number): Promise<void> {
     await this.invoicesTable.delete(id);
+  }
+
+  @Public()
+  @ApiOperation({ summary: 'vdc invoice calculator' })
+  @ApiResponse({
+    status: 200,
+    description: '',
+    type: VdcInvoiceCalculatorResultDto,
+  })
+  @Post('/vdc/calculator')
+  vdcCalculator(
+    @Body() dto: VdcInvoiceCalculatorDto,
+  ): Promise<VdcInvoiceCalculatorResultDto> {
+    return this.invoiceService.vdcInvoiceCalculator(dto);
   }
 }

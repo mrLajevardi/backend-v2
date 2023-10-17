@@ -14,6 +14,10 @@ import { BaseInvoiceService } from '../interface/service/invoice.interface';
 import { VdcInvoiceDetailsResultDto } from '../../../vdc/dto/vdc-invoice-details.result.dto';
 import { InvoiceFactoryVdcService } from './invoice-factory-vdc.service';
 import { InvoiceDetailVdcModel } from '../interface/invoice-detail-vdc.interface';
+import {
+  VdcInvoiceCalculatorDto,
+  VdcInvoiceCalculatorResultDto,
+} from '../dto/vdc-invoice-calculator.dto';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -116,5 +120,18 @@ export class InvoicesService implements BaseInvoiceService {
       serviceInstanceId,
     });
     return { invoiceId: invoice.id };
+  }
+
+  async vdcInvoiceCalculator(
+    dto: VdcInvoiceCalculatorDto,
+  ): Promise<VdcInvoiceCalculatorResultDto> {
+    const calculatedCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(dto);
+    if (dto.servicePlanTypes === ServicePlanTypeEnum.Static) {
+      const resultDto: VdcInvoiceCalculatorResultDto = {
+        cost: calculatedCost.totalCost,
+      };
+      return resultDto;
+    }
   }
 }
