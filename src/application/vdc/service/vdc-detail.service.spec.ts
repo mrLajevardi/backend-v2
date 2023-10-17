@@ -43,7 +43,8 @@ describe('VdcDetailService', () => {
   let service: VdcDetailService;
   let module: TestingModule;
   const validServiceInstanceId = '3C0E83BA-7883-445F-9BC4-1EFCA602CC51';
-  const invalidServiceInstanceId = '3C0E83BA-7883-445F-9BC4-1EFCA602CC51';
+  const invalidServiceInstanceId =
+    '3C0E834546adsBA-7asdasd883-44asdasd5F-9BC4-1EFCA602CC51';
 
   function getValidVdcDetailsResultDto(): VdcDetailsResultDto {
     return {
