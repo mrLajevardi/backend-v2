@@ -34,7 +34,6 @@ export class VdcDetailService implements BaseVdcDetailService {
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
-    options: SessionRequest,
   ): Promise<VdcInvoiceDetailsInfoResultDto[]> {
     const res: VdcInvoiceDetailsInfoResultDto[] = [];
 
@@ -76,10 +75,11 @@ export class VdcDetailService implements BaseVdcDetailService {
     return Promise.resolve(res);
   }
 
-  async getVdcDetail(
-    serviceInstanceId: string,
-    option: SessionRequest,
-  ): Promise<VdcDetailsResultDto> {
+  async getVdcDetail(serviceInstanceId: string): Promise<VdcDetailsResultDto> {
+    if (serviceInstanceId) {
+      return {};
+    }
+
     const res2: VdcDetailsResultDto = {};
     const servicesModels = await this.vdcDetailFactory.getVdcDetailModel(
       serviceInstanceId,
@@ -98,7 +98,7 @@ export class VdcDetailService implements BaseVdcDetailService {
       serviceInstanceId,
     );
 
-    res2.disk = await this.getStorageDetailVdc(serviceInstanceId, option);
+    res2.disk = await this.getStorageDetailVdc(serviceInstanceId);
 
     return res2;
   }
@@ -107,6 +107,10 @@ export class VdcDetailService implements BaseVdcDetailService {
     option: SessionRequest,
     serviceInstanceId: string,
   ): Promise<VdcDetailItemResultDto> {
+    if (serviceInstanceId) {
+      return {};
+    }
+
     const {
       countOfNetworks,
       countOfNat,
