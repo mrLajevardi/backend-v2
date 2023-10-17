@@ -520,7 +520,7 @@ export class VdcService {
       where: {
         servicePlanType: query.servicePlanType,
         serviceType: { id: serviceTypeId },
-        datacenterName: query.datacenterName,
+        // datacenterName: query.datacenterName,
         enabled: true,
       },
     });

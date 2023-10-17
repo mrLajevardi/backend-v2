@@ -299,7 +299,7 @@ export class VdcController {
     summary: 'get templates list',
   })
   @ApiResponse({ type: [TemplatesDto] })
-  @ApiParam({ name: 'serviceInstanceId' })
+  // @ApiParam({ name: 'serviceInstanceId' })
   @Get(':serviceInstances/templates')
   @Public()
   async getVdcTemplates(
