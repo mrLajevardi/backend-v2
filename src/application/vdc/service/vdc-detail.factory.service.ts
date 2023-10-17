@@ -77,6 +77,13 @@ export class VdcDetailFactoryService {
       };
       return res;
     });
+    if (
+      vdcModels === null ||
+      vdcModels === undefined ||
+      vdcModels.length == 0
+    ) {
+      return [];
+    }
     res2.serviceName = vdcModels[0].serviceName;
     res2.daysLeft = vdcModels[0].daysLeft;
     res2.status = vdcModels[0].status;

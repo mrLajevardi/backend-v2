@@ -159,12 +159,9 @@ describe('VdcDetailFactoryService', () => {
 
     const model = await service.fillVdcDetailModel(vdcDetailModels, res);
 
-    expect(res).toHaveProperty('serviceName', undefined);
     expect(res.daysLeft).toBeUndefined();
+    expect(res.serviceName).toBeUndefined();
     expect(res.status).toBeUndefined();
     expect(res.servicePlanType).toBe(undefined);
-
-    // expect(model.length).toBeGreaterThan(0);
-    // expect(model.length).toBe(vdcDetailModels.length);
   });
 });
