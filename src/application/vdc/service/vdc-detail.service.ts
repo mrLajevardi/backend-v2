@@ -76,7 +76,7 @@ export class VdcDetailService implements BaseVdcDetailService {
   }
 
   async getVdcDetail(serviceInstanceId: string): Promise<VdcDetailsResultDto> {
-    if (serviceInstanceId) {
+    if (!serviceInstanceId) {
       return {};
     }
 
@@ -107,7 +107,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     option: SessionRequest,
     serviceInstanceId: string,
   ): Promise<VdcDetailItemResultDto> {
-    if (serviceInstanceId) {
+    if (!serviceInstanceId) {
       return {};
     }
 
