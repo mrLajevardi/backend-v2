@@ -45,6 +45,13 @@ export class OauthService {
 
     return `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
   }
+
+  getLinkedInUrl() {
+    const clientID = process.env.LINKEDIN_CLIENT_ID;
+    const redirectURI = process.env.LINKEDIN_REDIRECT_URI;
+    const scope = 'r_liteprofile r_emailaddress';
+    return `https://www.linkedin.com/oauth/v2/authorization?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code`;
+  }
   async googleOauth(code: string): Promise<OauthResponseDto> {
     let email: string;
     let error: Error;
