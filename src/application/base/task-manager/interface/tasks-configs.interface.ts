@@ -1,6 +1,7 @@
-import { TaskInterface } from './task.interface';
+import { TasksEnum } from '../enum/tasks.enum';
+import { BaseTask } from './base-task.interface';
 
-export interface TasksConfigsInterface {
-  taskName: string;
-  steps: Array<any>;
+export interface TasksConfig<T extends string> {
+  taskName: TasksEnum;
+  steps: T[];
 }

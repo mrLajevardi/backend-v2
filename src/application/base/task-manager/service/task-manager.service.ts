@@ -3,7 +3,7 @@ import {
   Inject,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { TaskInterface } from '../interface/task.interface';
+import { TaskInterface } from '../interface/base-task.interface';
 import { Task1Service } from '../tasks/increaseVdcResources/task1.service';
 import { TasksSchemaInterface } from '../interface/tasks-schema.interface';
 import {

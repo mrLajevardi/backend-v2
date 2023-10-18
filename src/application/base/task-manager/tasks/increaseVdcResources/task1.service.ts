@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TaskInterface } from '../../interface/task.interface';
+import { TaskInterface } from '../../interface/base-task.interface';
 import { Job } from 'bullmq';
 @Injectable()
 export class Task1Service implements TaskInterface {
