@@ -173,6 +173,15 @@ export class AuthController {
     };
   }
 
+  @Public()
+  @Get('gitHUbUrl')
+  getGitHUbUrl(): { consentUrl: string } {
+    const consentURL = this.authService.oath.getGitHubUrl();
+    return {
+      consentUrl: consentURL,
+    };
+  }
+
   @Post('/loginAsUser')
   @ApiOperation({ summary: 'login admin as a user' })
   @ApiBody({ type: LoginAsUserDto })
