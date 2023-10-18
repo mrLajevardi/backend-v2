@@ -163,5 +163,6 @@ describe('VdcDetailFactoryService', () => {
     expect(res.serviceName).toBeUndefined();
     expect(res.status).toBeUndefined();
     expect(res.servicePlanType).toBe(undefined);
+    expect(model).toHaveLength(0);
   });
 });

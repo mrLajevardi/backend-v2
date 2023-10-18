@@ -164,6 +164,15 @@ export class AuthController {
     };
   }
 
+  @Public()
+  @Get('linkedInUrl')
+  getLinkedInUrl(): { consentUrl: string } {
+    const consentURL = this.authService.oath.getLinkedInUrl();
+    return {
+      consentUrl: consentURL,
+    };
+  }
+
   @Post('/loginAsUser')
   @ApiOperation({ summary: 'login admin as a user' })
   @ApiBody({ type: LoginAsUserDto })
