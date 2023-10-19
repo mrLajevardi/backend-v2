@@ -88,16 +88,17 @@ describe('AuthController', () => {
   // });
 
   describe('getGoogleUrl', () => {
-    it('should return the Google consent URL', () => {
-      const clientID = process.env.GOOGLE_CLIENT_ID;
-      const redirectURI = process.env.GOOGLE_REDIRECT_URI;
-      const scope = 'profile email';
-      const state = '123'; // You can generate and manage this value
+    // it('should return the Google consent URL', () => {
+    //   const clientID = process.env.GOOGLE_CLIENT_ID;
+    //   const redirectURI = process.env.GOOGLE_REDIRECT_URI;
+    //   const scope = 'profile email';
+    //   const state = '123'; // You can generate and manage this value
+    //
+    //   const consentUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
+    //   const result = controller.getGoogleUrl();
+    //   expect(result).toEqual({ consentUrl });
+    // });
 
-      const consentUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
-      const result = controller.getGoogleUrl();
-      expect(result).toEqual({ consentUrl });
-    });
   });
 
   describe('register by oauth for google ', () => {

@@ -149,9 +149,8 @@ export class AuthController {
   // @UseGuards(AuthGuard('google'))
   async googleLogin(
     @Param('code')
-    code: any,
+    code: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
-    console.log('asdasdad');
     return this.oauthService.verifyGoogleOauth(code);
     // return req.user;
   }
