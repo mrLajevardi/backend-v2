@@ -41,7 +41,7 @@ export class OauthService {
     const clientID = process.env.GOOGLE_CLIENT_ID;
     const redirectURI = process.env.GOOGLE_REDIRECT_URI;
     const scope = 'profile email';
-    const state = '123'; // You can generate and manage this value
+    const state = '1'; // You can generate and manage this value
 
     return `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
   }
@@ -50,17 +50,21 @@ export class OauthService {
     const clientID = process.env.LINKEDIN_CLIENT_ID;
     const redirectURI = process.env.LINKEDIN_REDIRECT_URI;
     const scope = 'r_liteprofile r_emailaddress';
-    return `https://www.linkedin.com/oauth/v2/authorization?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code`;
+    const state = '2'; // You can generate and manage this value
+
+    return `https://www.linkedin.com/oauth/v2/authorization?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
   }
 
   getGitHubUrl() {
     const clientID = process.env.GITHUB_CLIENT_ID;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+    const state = '3'; // You can generate and manage this value
+
     // const redirectURI = process.env.LINKEDIN_REDIRECT_URI;
     // const scope = 'r_liteprofile r_emailaddress';
     // `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}`;
 
-    return `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}`;
+    return `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}&state=${state}`;
   }
   async googleOauth(code: string): Promise<OauthResponseDto> {
     let email: string;
