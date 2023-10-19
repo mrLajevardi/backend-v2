@@ -98,7 +98,6 @@ describe('AuthController', () => {
     //   const result = controller.getGoogleUrl();
     //   expect(result).toEqual({ consentUrl });
     // });
-
   });
 
   describe('register by oauth for google ', () => {
