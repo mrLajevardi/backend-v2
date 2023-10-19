@@ -13,7 +13,6 @@ import {
   encryptPassword,
   generatePassword,
 } from 'src/infrastructure/helpers/helpers';
-import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
 import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
 import { LoginService } from './login.service';
 import { OauthResponseDto } from '../dto/oauth-response.dto';
@@ -27,6 +26,7 @@ import { CreateUserDto } from 'src/application/base/crud/user-table/dto/create-u
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/infrastructure/database/entities/User';
 import { stringify } from 'querystring';
+import { UserOauthLoginGoogleDto } from '../dto/user-oauth-login-google.dto';
 
 @Injectable()
 export class OauthService {
@@ -252,31 +252,27 @@ export class OauthService {
   }
 
   async verifyGoogleOauth(
-    token: string,
+    userOauth: UserOauthLoginGoogleDto,
+    // token: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
     console.log('slalam');
-    const check = await this.googleOauth(token);
-    const { email, firstname, lastname, error } = check;
+    // const check = await this.googleOauth(token);
+    // const { email, firstname, lastname, error } = check;
 
-    console.log(email, '😉');
-    if (error) {
-      throw new UnauthorizedException();
-    }
+    console.log(userOauth.accessToken, '😉');
+    // if (error) {
+    //   throw new UnauthorizedException();
+    // }
     const user = await this.userTable.findOne({
       where: {
-        email: email,
+        email: userOauth.email,
       },
     });
     if (!user) {
-      const payload = {
-        email,
-        firstname,
-        lastname,
-      };
-      const token = this.emailJwtService.sign(payload);
+      const token = this.emailJwtService.sign(userOauth);
       return Promise.resolve({
         userExists: false,
-        token: token,
+        emailToken: token,
       });
     }
     if (!user.active) {
@@ -310,7 +306,7 @@ export class OauthService {
       const token = this.emailJwtService.sign(payload);
       return Promise.resolve({
         userExists: false,
-        token: token,
+        emailToken: token,
       });
     }
     if (!user.active) {
@@ -340,7 +336,7 @@ export class OauthService {
       const token = this.emailJwtService.sign(payload);
       return Promise.resolve({
         userExists: false,
-        token: token,
+        emailToken: token,
       });
     }
     if (!user.active) {

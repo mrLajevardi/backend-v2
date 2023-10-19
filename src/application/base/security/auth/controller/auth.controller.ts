@@ -7,6 +7,8 @@ import {
   Res,
   Body,
   Param,
+  Query,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -46,6 +48,8 @@ import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { OauthService } from '../service/oauth.service';
 import { VerifyOauthDto } from '../dto/verify-oauth.dto';
+import { GoogleStrategy } from '../strategy/google.strategy';
+import { GoogleOAuthGuard } from '../guard/google.auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -142,16 +146,27 @@ export class AuthController {
     return this.oauthService.verifyLinkedinOauth(linkedInLoginDto.code);
     // return req.user;
   }
+  // @Public()
+  // @Get('googleUrlll')
+  // @UseGuards(GoogleOAuthGuard)
+  // // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // async googleAuth(@Request() req) {}
 
   @Public()
-  @Get('google/:code')
-  @ApiParam({ name: 'code', description: 'oauth code' })
+  @Get('redirect-google')
+  @UseGuards(GoogleOAuthGuard)
+  googleAuthRedirect(@Request() req) {
+    return req;
+  }
+
+  @Public()
+  // @Get('google')
+  //  @ApiQuery({ type: String, name: 'code' })
+  @Get('google')
+  @UseGuards(GoogleOAuthGuard)
   // @UseGuards(AuthGuard('google'))
-  async googleLogin(
-    @Param('code')
-    code: string,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
-    return this.oauthService.verifyGoogleOauth(code);
+  async googleLogin(@Request() req): Promise<VerifyOauthDto | AccessTokenDto> {
+    return this.oauthService.verifyGoogleOauth(req.user, '');
     // return req.user;
   }
 
