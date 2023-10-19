@@ -144,14 +144,15 @@ export class AuthController {
   }
 
   @Public()
-  @Get('google')
-  @ApiQuery({ type: GoogleLoginDto })
-  @UseGuards(AuthGuard('google'))
+  @Get('google/:code')
+  @ApiParam({ name: 'code', description: 'oauth code' })
+  // @UseGuards(AuthGuard('google'))
   async googleLogin(
-    @Request() req: SessionRequest,
-    googleLoginDto: GoogleLoginDto,
+    @Param('code')
+    code: any,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
-    return this.oauthService.verifyGoogleOauth(googleLoginDto.code);
+    console.log('asdasdad');
+    return this.oauthService.verifyGoogleOauth(code);
     // return req.user;
   }
 

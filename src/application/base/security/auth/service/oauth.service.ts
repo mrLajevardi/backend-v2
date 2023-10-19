@@ -250,6 +250,7 @@ export class OauthService {
   async verifyGoogleOauth(
     token: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
+    console.log('slalam');
     const check = await this.googleOauth(token);
     const { email, firstname, lastname, error } = check;
 
