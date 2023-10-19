@@ -16,6 +16,7 @@ import { PayAsYouGoModule } from '../pay-as-you-go/pay-as-you-go.module';
 import { TaskAdminController } from './controller/task-admin.controller';
 import { TaskAdminService } from './service/task-admin.service';
 import { AbilityModule } from '../security/ability/ability.module';
+import { InvoicesModule } from '../invoice/invoices.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AbilityModule } from '../security/ability/ability.module';
     LoggerModule,
     // VdcModule,
     forwardRef(() => VdcModule),
+    forwardRef(() => InvoicesModule),
     CrudModule,
     SessionsModule,
     OrganizationModule,

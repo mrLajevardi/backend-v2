@@ -109,46 +109,45 @@ export class ExtendServiceService {
     return ServiceAiInfo;
   }
 
+  async addGenIdToServiceProperties(
+    invoiceItems: InvoiceItems[],
+    serviceInstanceId: string,
+  ): Promise<void> {
+    for (const invoiceItem of invoiceItems) {
+      const genIdKey = 'genId';
+      const generationItem = await this.serviceItemTypeTree.findOne({
+        where: {
+          codeHierarchy: Like(`${ItemTypeCodes.Generation}%`),
+          id: invoiceItem.itemId,
+        },
+      });
+      const generationChild = await this.serviceItemTypeTree.findOne({
+        where: {
+          id: Number(generationItem.hierarchy.split('_')[1]),
+        },
+      });
+      const datacenterList =
+        await this.datacenterService.getDatacenterConfigWithGen();
+      const targetDc = datacenterList.find((dc) => {
+        return dc.datacenter === generationChild.datacenterName.toLowerCase();
+      });
+      const gen = targetDc.gens.find((gen) => {
+        return gen.name === generationChild.code;
+      });
+      await this.servicePropertiesTable.create({
+        serviceInstanceId,
+        propertyKey: genIdKey,
+        value: gen.id,
+      });
+      break;
+    }
+  }
   // create service items
   async createServiceItems(
     invoiceItems: InvoiceItems[],
     serviceInstanceId: string,
   ): Promise<void> {
-    let addedGenId = false;
     for (const invoiceItem of invoiceItems) {
-      if (!addedGenId) {
-        const genIdKey = 'genId';
-        const generationItem = await this.serviceItemTypeTree.findOne({
-          where: {
-            codeHierarchy: Like(`${ItemTypeCodes.Generation}%`),
-            id: invoiceItem.itemId,
-          },
-        });
-        const generationChild = await this.serviceItemTypeTree.findOne({
-          where: {
-            id: Number(generationItem.hierarchy.split('_')[1]),
-          },
-        });
-        const datacenterList =
-          await this.datacenterService.getDatacenterConfigWithGen();
-        const targetDc = datacenterList.find((dc) => {
-          return dc.datacenter === generationChild.datacenterName.toLowerCase();
-        });
-        console.log(
-          datacenterList,
-          targetDc,
-          generationChild.datacenterName.toLowerCase(),
-        );
-        const gen = targetDc.gens.find((gen) => {
-          return gen.name === generationChild.code;
-        });
-        await this.servicePropertiesTable.create({
-          serviceInstanceId,
-          propertyKey: genIdKey,
-          value: gen.id,
-        });
-        addedGenId = true;
-      }
       await this.serviceItemsTable.create({
         serviceInstanceId,
         itemTypeId: invoiceItem.itemId,
@@ -266,6 +265,7 @@ export class ExtendServiceService {
       },
     });
     await this.createServiceItems(invoiceItems, serviceInstanceId);
+    await this.addGenIdToServiceProperties(invoiceItems, serviceInstanceId);
     console.log('working');
     if (serviceId == 'aradAi') {
       // find user invoice

@@ -45,6 +45,23 @@ export class OauthService {
 
     return `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
   }
+
+  getLinkedInUrl() {
+    const clientID = process.env.LINKEDIN_CLIENT_ID;
+    const redirectURI = process.env.LINKEDIN_REDIRECT_URI;
+    const scope = 'r_liteprofile r_emailaddress';
+    return `https://www.linkedin.com/oauth/v2/authorization?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code`;
+  }
+
+  getGitHubUrl() {
+    const clientID = process.env.GITHUB_CLIENT_ID;
+    const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+    // const redirectURI = process.env.LINKEDIN_REDIRECT_URI;
+    // const scope = 'r_liteprofile r_emailaddress';
+    // `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}`;
+
+    return `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}`;
+  }
   async googleOauth(code: string): Promise<OauthResponseDto> {
     let email: string;
     let error: Error;

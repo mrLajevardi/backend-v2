@@ -89,7 +89,12 @@ export class ServiceInstances {
   })
   retryCount: number | null;
 
-  @Column('int', { name: 'DaysLeft', nullable: true })
+  @Column({
+    name: 'DaysLeft',
+    nullable: true,
+    insert: false,
+    readonly: true,
+  })
   daysLeft: number | null;
 
   @OneToMany(

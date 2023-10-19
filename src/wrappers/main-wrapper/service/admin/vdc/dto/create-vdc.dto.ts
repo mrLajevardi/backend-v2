@@ -14,18 +14,20 @@ export class CreateVdcConfig {
   vm: number;
   networkQuota: number;
   storage: number;
-  vdcStorageProfileParams: VdcStorageProfileParams;
+  vdcStorageProfiles: VdcStorageProfileParams[];
+  // vdcStorageProfileParams: VdcStorageProfileParams;
 }
 export class Reference {
   href: string;
-  name: string;
+  name?: string;
 }
 
-class VdcStorageProfileParams {
+export class VdcStorageProfileParams {
   default: boolean;
   _default: boolean;
   enabled: boolean;
   units: string;
+  limit: number;
   providerVdcStorageProfile: Reference;
 }
 export class CreateVdcDto extends VcloudTask {

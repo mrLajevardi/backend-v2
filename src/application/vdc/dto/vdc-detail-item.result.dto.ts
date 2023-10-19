@@ -19,6 +19,7 @@ export class VdcDetailItemResultDto extends BaseResultDto {
     this.dhcpForwarding = dhcpForwarding;
     this.applicationPortProfiles = applicationPortProfiles;
     this.media = media;
+    this.natRules = natRules;
   }
   networks?: number;
   natRules?: number;

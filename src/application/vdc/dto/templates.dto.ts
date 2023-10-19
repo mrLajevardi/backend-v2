@@ -99,7 +99,7 @@ export class templatesQueryParamsDto {
   @IsEnum(ServicePlanTypeEnum)
   servicePlanType: ServicePlanTypeEnum;
 
-  @ApiProperty({ type: String })
-  @IsString()
-  datacenterName: string;
+  // @ApiProperty({ type: String })
+  // @IsString()
+  // datacenterName: string;
 }

@@ -25,6 +25,7 @@ import { NatModule } from 'src/application/nat/nat.module';
 import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
 import { VmModule } from 'src/application/vm/vm.module';
 import { NetworksModule } from 'src/application/networks/networks.module';
+import { DatacenterModule } from 'src/application/base/datacenter/datacenter.module';
 
 describe('VdcController', () => {
   let controller: VdcController;
@@ -38,6 +39,7 @@ describe('VdcController', () => {
         LoggerModule,
         //TasksModule,
         SessionsModule,
+        DatacenterModule,
         OrganizationModule,
         UserModule,
         ServicePropertiesModule,

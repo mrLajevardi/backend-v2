@@ -4,4 +4,5 @@ import { VdcInvoiceDetailsResultDto } from '../../dto/vdc-invoice-details.result
 export const BASE_VDC_INVOICE_SERVICE = 'BASE_VDC_INVOICE_SERVICE';
 export interface BaseVdcInvoiceServiceInterface extends IBaseService {
   getVdcInvoiceDetail(invoiceId: string): Promise<VdcInvoiceDetailsResultDto>;
+  getVdcPreFactor(invoiceId: string): Promise<VdcInvoiceDetailsResultDto>;
 }

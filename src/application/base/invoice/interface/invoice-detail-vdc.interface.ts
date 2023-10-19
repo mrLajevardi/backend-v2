@@ -2,7 +2,7 @@ export class InvoiceDetailVdcModel {
   rawAmount?: number;
   finalAmount?: number;
   dateTime?: Date;
-  value?: number;
+  value?: string;
   itemID?: number;
   fee?: number;
   codeHierarchy?: string;
@@ -13,4 +13,5 @@ export class InvoiceDetailVdcModel {
   unit?: string;
   min?: number;
   max?: number;
+  price?: number;
 }

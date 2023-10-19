@@ -38,7 +38,7 @@ export class InvoiceFactoryVdcService {
       .addSelect('InvoiceItem.Value , InvoiceItem.ItemID , InvoiceItem.Fee ')
       .innerJoin(ServiceItemTypesTree, 'SIT', 'SIT.ID = InvoiceItem.ItemID')
       .addSelect(
-        'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max ',
+        'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max , SIT.Price ',
       )
       .getRawMany();
 
@@ -58,6 +58,7 @@ export class InvoiceFactoryVdcService {
         unit: model.Unit,
         max: model.Max,
         min: model.Min,
+        price: model.Price,
       };
 
       return res;
@@ -194,8 +195,11 @@ export class InvoiceFactoryVdcService {
 
     res.finalPrice = ramModel.finalAmount;
 
-    res.guaranty = { title: guaranty.title, value: guaranty.min };
+    res.rawAmount = ramModel.rawAmount;
 
-    res.period = { title: period.title, value: period.min };
+    res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
+    res.period = new VdcInvoiceDetailsInfoResultDto(period);
+
+    // res.period = { title: period.title, value: period.min };
   }
 }

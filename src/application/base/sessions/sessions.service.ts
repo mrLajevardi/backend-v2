@@ -9,7 +9,6 @@ import { log } from 'console';
 @Injectable()
 export class SessionsService {
   constructor(
-    private readonly sessionTable: SessionsTableService,
     private readonly userTable: UserTableService,
     private readonly organizationTable: OrganizationTableService,
   ) {}

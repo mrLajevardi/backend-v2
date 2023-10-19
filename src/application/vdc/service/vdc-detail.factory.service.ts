@@ -56,24 +56,34 @@ export class VdcDetailFactoryService {
     );
   }
 
-  fillVdcDetailModel(servicesModels: any[], res2: VdcDetailsResultDto) {
+  fillVdcDetailModel(
+    servicesModels: VdcDetailModel[],
+    res2: VdcDetailsResultDto,
+  ) {
     const vdcModels = servicesModels.map((model) => {
       const res: VdcModel = {
-        code: model.Code,
-        value: model.Value,
-        codeHierarchy: model.CodeHierarchy,
-        title: model.Title,
-        datacenterName: model.DatacenterName,
-        itemID: model.ItemID,
+        code: model.code,
+        value: model.value,
+        codeHierarchy: model.codeHierarchy,
+        title: model.title,
+        datacenterName: model.datacenterName,
+        itemID: model.itemTypeId,
         parentCode: '',
-        unit: model.Unit,
-        serviceName: model.Name,
-        status: model.Status,
-        daysLeft: model.DaysLeft,
-        servicePlanType: model.ServicePlanType,
+        unit: model.unit,
+        serviceName: model.name,
+        status: model.status,
+        daysLeft: model.daysLeft,
+        servicePlanType: model.servicePlanType,
       };
       return res;
     });
+    if (
+      vdcModels === null ||
+      vdcModels === undefined ||
+      vdcModels.length == 0
+    ) {
+      return [];
+    }
     res2.serviceName = vdcModels[0].serviceName;
     res2.daysLeft = vdcModels[0].daysLeft;
     res2.status = vdcModels[0].status;

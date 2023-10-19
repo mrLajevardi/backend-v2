@@ -1,8 +1,8 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { In } from 'typeorm';
+import { FindOptionsWhere, In } from 'typeorm';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { isEmpty } from 'lodash';
@@ -35,7 +35,8 @@ import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-w
 import { VdcService } from '../../../vdc/service/vdc.service';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { GetOrgVdcResult } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
-
+import { ServiceStatusEnum } from '../enum/service-status.enum';
+import { VcloudMetadata } from '../../datacenter/type/vcloud-metadata.type';
 @Injectable()
 export class ServiceService {
   constructor(
@@ -241,8 +242,8 @@ export class ServiceService {
     });
 
     let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.metadata.email = options.user.username;
-    zarinpalConfig.metadata.mobile = user.phoneNumber;
+    zarinpalConfig.email = options.user.username;
+    zarinpalConfig.mobile = user.phoneNumber;
 
     const paymentRequestData = {
       ...zarinpalConfig,
@@ -483,57 +484,126 @@ export class ServiceService {
     const res: GetAllVdcServiceWithItemsResultDto[] = [];
 
     const allServicesInstances = await this.getServices(options, typeId, id);
+    let cpuSpeed: VcloudMetadata = 0,
+      daysLeft = 0,
+      isTicketSent = false,
+      vdcItems: GetOrgVdcResult = {};
+    let model: GetAllVdcServiceWithItemsResultDto = {};
 
-    for (const serviceInstance of allServicesInstances) {
-      const cpuSpeed = (
-        await this.serviceFactory.getConfigServiceInstance(serviceInstance)
-      ).cpuSpeed;
+    await Promise.all(
+      allServicesInstances.map(async (serviceInstance) => {
+        if (
+          serviceInstance.status != ServiceStatusEnum.Error &&
+          serviceInstance.status != ServiceStatusEnum.Pending
+        ) {
+          cpuSpeed = (
+            await this.serviceFactory.getConfigServiceInstance(serviceInstance)
+          ).cpuSpeed;
 
-      const { daysLeft, isExpired, isTicketSent } =
-        await this.serviceFactory.getPropertiesOfServiceInstance(
+          const info = ({ daysLeft, isTicketSent } =
+            await this.serviceFactory.getPropertiesOfServiceInstance(
+              serviceInstance,
+            ));
+          (daysLeft = info.daysLeft), (isTicketSent = info.isTicketSent);
+
+          vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
+        }
+        // else {
+        //   model = this.serviceFactory.configModelServiceInstanceList(
+        //     serviceInstance,
+        //     0,
+        //     false,
+        //     {},
+        //     0,
+        //   );
+        // }
+        model = this.serviceFactory.configModelServiceInstanceList(
           serviceInstance,
+          daysLeft,
+          isTicketSent,
+          vdcItems,
+          cpuSpeed,
         );
-
-      const vdcItems: GetOrgVdcResult = await this.vdcService.getVdc(
-        options,
-        serviceInstance.id,
-      );
-
-      const model = this.serviceFactory.configModelServiceInstanceList(
-        serviceInstance,
-        isExpired,
-        daysLeft,
-        isTicketSent,
-        vdcItems,
-        cpuSpeed,
-      );
-
-      res.push(model);
-    }
-
+        res.push(model);
+      }),
+    );
     return res;
+
+    // for (const serviceInstance of allServicesInstances) {
+    //   if (
+    //     serviceInstance.status != ServiceStatusEnum.Error &&
+    //     serviceInstance.status != ServiceStatusEnum.Pending
+    //   ) {
+    //     const cpuSpeed = (
+    //       await this.serviceFactory.getConfigServiceInstance(serviceInstance)
+    //     ).cpuSpeed;
+    //
+    //     const { daysLeft, isTicketSent } =
+    //       await this.serviceFactory.getPropertiesOfServiceInstance(
+    //         serviceInstance,
+    //       );
+    //
+    //     const vdcItems: GetOrgVdcResult = await this.vdcService.getVdc(
+    //       options,
+    //       serviceInstance.id,
+    //     );
+    //
+    //     model = this.serviceFactory.configModelServiceInstanceList(
+    //       serviceInstance,
+    //       daysLeft,
+    //       isTicketSent,
+    //       vdcItems,
+    //       cpuSpeed,
+    //     );
+    //   } else {
+    //     model = this.serviceFactory.configModelServiceInstanceList(
+    //       serviceInstance,
+    //       0,
+    //       false,
+    //       {},
+    //       0,
+    //     );
+    //   }
+    //
+    //   res.push(model);
+    // }
   }
 
   async getServices(
     options: SessionRequest,
     typeId?: string,
     id?: string,
+    statuses?: ServiceStatusEnum[],
   ): Promise<GetServicesReturnDto[]> {
     const {
       user: { userId },
     } = options;
     let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
+    let serviceStatus: ServiceStatusEnum[] = [
+      // 3, 4, 5, 6,
+      ServiceStatusEnum.Deleted,
+      ServiceStatusEnum.Error,
+      ServiceStatusEnum.DisabledByAdmin,
+      ServiceStatusEnum.Success,
+      ServiceStatusEnum.Expired,
+      ServiceStatusEnum.Pending,
+    ];
     if (typeId) {
       serviceTypeIds = [typeId];
     }
-    const where: any = {
+    if (statuses) {
+      serviceStatus = statuses;
+    }
+    const where: FindOptionsWhere<ServiceInstances> = {
       userId: userId,
       isDeleted: false,
       serviceTypeId: In(serviceTypeIds),
+      status: In(serviceStatus),
     };
     if (id) {
       where.id = id;
     }
+
     const services = await this.serviceInstancesTableService.find({
       where,
       relations: ['serviceItems', 'serviceType'],

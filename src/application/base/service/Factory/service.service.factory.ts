@@ -13,6 +13,7 @@ import {
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { ServiceStatusEnum } from '../enum/service-status.enum';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -26,18 +27,9 @@ export class ServiceServiceFactory {
   public async getPropertiesOfServiceInstance(
     serviceInstance: GetServicesReturnDto,
   ) {
-    const miliSecondTime = 86400000;
-
-    //serviceInstance.expireDate return milisecond and for that we have to convert it days ===>miliSecondTime
-
-    // const daysLeft = Math.floor(
-    //   (serviceInstance.daysLeft.expireDate.getTime() - new Date().getTime()) /
-    //     miliSecondTime,
-    // );
     const daysLeft = serviceInstance.daysLeft;
 
     //ExpiredDate
-    const isExpired = daysLeft < 0;
 
     //Ticket Sent
 
@@ -49,7 +41,7 @@ export class ServiceServiceFactory {
 
     const isTicketSent =
       Number(errorCountRate.trim()) <= serviceInstance.retryCount;
-    return { daysLeft, isExpired, isTicketSent };
+    return { daysLeft, isTicketSent };
   }
 
   public async getConfigServiceInstance(serviceInstance: GetServicesReturnDto) {
@@ -69,7 +61,6 @@ export class ServiceServiceFactory {
 
   public configModelServiceInstanceList(
     serviceInstance: GetServicesReturnDto,
-    isExpired: boolean,
     daysLeft: number,
     isTicketSent: boolean,
     vdcItems: GetOrgVdcResult,
@@ -83,7 +74,6 @@ export class ServiceServiceFactory {
         serviceInstance.name,
         serviceInstance.serviceType.id,
         [],
-        // isExpired,
         daysLeft,
         isTicketSent,
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
@@ -100,7 +90,7 @@ export class ServiceServiceFactory {
     return model;
   }
 
-  private createItemTypesForInstance(
+  public createItemTypesForInstance(
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
   ) {
