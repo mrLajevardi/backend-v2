@@ -15,6 +15,11 @@ export class CreateInvoicesDto {
   @IsOptional()
   id?: number;
 
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  templateId?: string;
+
   @IsString()
   @ApiProperty()
   serviceTypeId?: string;

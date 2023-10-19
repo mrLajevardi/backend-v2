@@ -6,8 +6,6 @@ import {
   ValidateIf,
   IsEnum,
   ValidateNested,
-  arrayMinSize,
-  ArrayMinSize,
   IsObject,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -51,13 +49,14 @@ export class CreateServiceInvoiceDto {
   @IsObject({ each: true })
   @Type(() => InvoiceItemsDto)
   @ValidateNested({ each: true })
+  @ValidateIf((object: CreateServiceInvoiceDto) => object.templateId === null)
   itemsTypes: InvoiceItemsDto[];
 
   @IsString()
   @Matches(
     /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/,
   )
-  @ValidateIf((object) => {
+  @ValidateIf((object: CreateServiceInvoiceDto) => {
     return object.type !== InvoiceTypes.Create;
   })
   @ApiProperty()
@@ -69,4 +68,11 @@ export class CreateServiceInvoiceDto {
   })
   @IsEnum(ServicePlanTypeEnum)
   servicePlanTypes: ServicePlanTypeEnum;
+
+  @ApiProperty({
+    type: String,
+  })
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  templateId: string;
 }
