@@ -16,6 +16,10 @@ export class CreateTemplatesDto {
   @IsDate()
   createDate: Date;
 
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  isDefault: boolean;
+
   @ApiProperty({ type: Date })
   @IsDate()
   lastEditDate: Date;
