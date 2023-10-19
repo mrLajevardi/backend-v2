@@ -112,7 +112,7 @@ export class InvoiceFactoryService {
     serviceInstanceId: string,
   ): Promise<CreateInvoicesDto> {
     const dto: CreateInvoicesDto = {
-      userId,
+      userId: Number(userId),
       servicePlanType: data.servicePlanTypes,
       rawAmount: invoiceCost.totalCost,
       finalAmount: invoiceCost.totalCost,
@@ -128,8 +128,9 @@ export class InvoiceFactoryService {
       serviceInstanceId,
       description: '',
       datacenterName: groupedItems.generation.vm[0].datacenterName,
+      templateId: data.templateId,
     };
-    data.templateId ? (dto.templateId = data.templateId) : null;
+    // data.templateId ? (dto.templateId = data.templateId) : null;
     return dto;
   }
 
@@ -173,14 +174,14 @@ export class InvoiceFactoryService {
                 for (const item of diskItem) {
                   const invoiceItem: InvoiceItemsDto = {
                     itemTypeId: item.id,
-                    value: item.value,
+                    value: item.value.toString(),
                   };
                   invoiceItems.push(invoiceItem);
                 }
               } else {
                 const invoiceItem: InvoiceItemsDto = {
                   itemTypeId: generationItem.id,
-                  value: generationItem.value,
+                  value: generationItem.value.toString(),
                 };
                 invoiceItems.push(invoiceItem);
               }
@@ -190,7 +191,7 @@ export class InvoiceFactoryService {
           const templateItem: TemplateItem = templateItems[key];
           const invoiceItem: InvoiceItemsDto = {
             itemTypeId: templateItem.id,
-            value: templateItem.value,
+            value: templateItem.value.toString(),
           };
           invoiceItems.push(invoiceItem);
         }

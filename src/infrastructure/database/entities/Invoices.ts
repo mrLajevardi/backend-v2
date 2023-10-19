@@ -95,4 +95,10 @@ export class Invoices {
   })
   @JoinColumn([{ name: 'TemplateID', referencedColumnName: 'guid' }])
   templates: Templates;
+
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'TemplateID',
+    nullable: true,
+  })
+  templateId: string;
 }
