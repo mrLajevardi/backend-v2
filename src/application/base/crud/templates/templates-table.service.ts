@@ -21,8 +21,8 @@ export class TemplatesTableService {
   ) {}
 
   // Find One Item by its ID
-  async findById(id: number): Promise<Templates> {
-    const template = await this.repository.findOne({ where: { id: id } });
+  async findById(guid: string): Promise<Templates> {
+    const template = await this.repository.findOne({ where: { guid } });
     return template;
   }
 
@@ -46,8 +46,8 @@ export class TemplatesTableService {
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateTemplatesDto): Promise<Templates> {
-    const item = await this.findById(id);
+  async update(guid: string, dto: UpdateTemplatesDto): Promise<Templates> {
+    const item = await this.findById(guid);
     const updateItem: Partial<Templates> = Object.assign(item, dto);
     return await this.repository.save(updateItem);
   }

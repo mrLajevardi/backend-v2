@@ -35,6 +35,12 @@ export class Templates {
   })
   enabled: boolean;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsDefault',
+    default: () => '(0)',
+  })
+  isDefault: boolean;
+
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
   datacenterName: string | null;
 

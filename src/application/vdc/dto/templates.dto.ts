@@ -78,6 +78,9 @@ export class TemplatesStructure {
 }
 export class TemplatesDto extends TemplatesStructure {
   @ApiProperty({ type: String })
+  guid: string;
+
+  @ApiProperty({ type: String })
   name: string;
 
   @ApiProperty({ type: String })
@@ -85,6 +88,9 @@ export class TemplatesDto extends TemplatesStructure {
 
   @ApiProperty({ type: ServicePlanTypeEnum, enum: ServicePlanTypeEnum })
   servicePlanType: ServicePlanTypeEnum;
+
+  @ApiProperty({ type: Boolean })
+  isDefault: boolean;
 }
 
 export class templatesQueryParamsDto {

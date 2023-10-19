@@ -508,7 +508,9 @@ export class VdcService {
       console.log(structure);
       const parsedStructure: TemplatesStructure = JSON.parse(structure);
       const templateDto: TemplatesDto = {
+        guid: template.guid,
         ...parsedStructure,
+        isDefault: template.isDefault,
         name: template.name,
         description: template.description,
         servicePlanType: template.servicePlanType,
