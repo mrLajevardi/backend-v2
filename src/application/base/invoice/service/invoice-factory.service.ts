@@ -22,6 +22,11 @@ import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice
 import { MappedItemTypes } from '../interface/mapped-item-types.interface';
 import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
 import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
+import {
+  TemplateGenerationItemsDto,
+  TemplateItem,
+  TemplatesStructure,
+} from 'src/application/vdc/dto/templates.dto';
 
 @Injectable()
 export class InvoiceFactoryService {
@@ -72,11 +77,6 @@ export class InvoiceFactoryService {
           break;
       }
     }
-    // for (const invoiceItem of invoiceItems) {
-    //   const itemType = await this.serviceItemTypeTree.findById(
-    //     invoiceItem.itemTypeId,
-    //   );
-    // }
     vdcItemGroup.generation = generationGroups;
     return vdcItemGroup;
   }
@@ -112,7 +112,7 @@ export class InvoiceFactoryService {
     serviceInstanceId: string,
   ): Promise<CreateInvoicesDto> {
     const dto: CreateInvoicesDto = {
-      userId,
+      userId: Number(userId),
       servicePlanType: data.servicePlanTypes,
       rawAmount: invoiceCost.totalCost,
       finalAmount: invoiceCost.totalCost,
@@ -128,7 +128,9 @@ export class InvoiceFactoryService {
       serviceInstanceId,
       description: '',
       datacenterName: groupedItems.generation.vm[0].datacenterName,
+      templateId: data.templateId,
     };
+    // data.templateId ? (dto.templateId = data.templateId) : null;
     return dto;
   }
 
@@ -145,5 +147,56 @@ export class InvoiceFactoryService {
         fee: item.cost || null,
       });
     }
+  }
+
+  convertTemplateToInvoiceItems(
+    templateStructure: TemplatesStructure,
+  ): InvoiceItemsDto[] {
+    const templateItems = templateStructure.items;
+    const generation = 'generation';
+    const invoiceItems: InvoiceItemsDto[] = [];
+    for (const key in templateItems) {
+      if (Object.prototype.hasOwnProperty.call(templateStructure.items, key)) {
+        if (key === generation) {
+          const generationItems: TemplateGenerationItemsDto =
+            templateItems[key];
+          for (const generationKey in generationItems) {
+            if (
+              Object.prototype.hasOwnProperty.call(
+                generationItems,
+                generationKey,
+              )
+            ) {
+              const generationItem: TemplateItem =
+                generationItems[generationKey];
+              if (generationKey === VdcGenerationItemCodes.Disk) {
+                const diskItem: TemplateItem[] = generationItems[generationKey];
+                for (const item of diskItem) {
+                  const invoiceItem: InvoiceItemsDto = {
+                    itemTypeId: item.id,
+                    value: item.value.toString(),
+                  };
+                  invoiceItems.push(invoiceItem);
+                }
+              } else {
+                const invoiceItem: InvoiceItemsDto = {
+                  itemTypeId: generationItem.id,
+                  value: generationItem.value.toString(),
+                };
+                invoiceItems.push(invoiceItem);
+              }
+            }
+          }
+        } else {
+          const templateItem: TemplateItem = templateItems[key];
+          const invoiceItem: InvoiceItemsDto = {
+            itemTypeId: templateItem.id,
+            value: templateItem.value.toString(),
+          };
+          invoiceItems.push(invoiceItem);
+        }
+      }
+    }
+    return invoiceItems;
   }
 }
