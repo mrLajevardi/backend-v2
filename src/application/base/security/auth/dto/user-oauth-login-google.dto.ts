@@ -1,8 +1,3 @@
-export class UserOauthLoginGoogleDto {
-  email: string;
-  firstName: string;
-  lastName: string;
-  picture: string;
-  accessToken: string;
-  refreshToken: string;
-}
+import { UserOauthLoginDto } from './user-oauth-login.dto';
+
+export class UserOauthLoginGoogleDto extends UserOauthLoginDto {}

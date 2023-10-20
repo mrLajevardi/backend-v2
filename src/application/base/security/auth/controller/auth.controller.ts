@@ -50,6 +50,10 @@ import { OauthService } from '../service/oauth.service';
 import { VerifyOauthDto } from '../dto/verify-oauth.dto';
 import { GoogleStrategy } from '../strategy/google.strategy';
 import { GoogleOAuthGuard } from '../guard/google.auth.guard';
+import {
+  // LinkedinAuthGuard,
+  LinkedinGuardAuth,
+} from '../guard/linkedin.auth.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -125,38 +129,26 @@ export class AuthController {
 
   @Public()
   @Get('github')
-  @ApiQuery({ type: GithubLoginDto })
+  // @ApiQuery({ type: GithubLoginDto })
   @UseGuards(GithubAuthGuard)
   async githubLogin(
     @Request() req: SessionRequest,
-    githubLoginDto: GithubLoginDto,
+    // githubLoginDto: GithubLoginDto,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
-    return this.oauthService.verifyGithubOauth(githubLoginDto.code);
+    // return this.oauthService.verifyGithubOauth(githubLoginDto.code);
+    return this.oauthService.verifyGithubOauth(req);
     // return req.user;
   }
 
   @Public()
   @Get('linkedin')
-  @ApiQuery({ type: LinkedInLoginDto })
-  @UseGuards(LinkedInAuthGuard)
+  // @ApiQuery({ type: LinkedInLoginDto })
+  @UseGuards(LinkedinGuardAuth)
   async linkedInLogin(
-    @Request() req: SessionRequest,
-    linkedInLoginDto: LinkedInLoginDto,
+    @Request() req,
+    // linkedInLoginDto: LinkedInLoginDto,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
-    return this.oauthService.verifyLinkedinOauth(linkedInLoginDto.code);
-    // return req.user;
-  }
-  // @Public()
-  // @Get('googleUrlll')
-  // @UseGuards(GoogleOAuthGuard)
-  // // eslint-disable-next-line @typescript-eslint/no-empty-function
-  // async googleAuth(@Request() req) {}
-
-  @Public()
-  @Get('redirect-google')
-  @UseGuards(GoogleOAuthGuard)
-  googleAuthRedirect(@Request() req) {
-    return req;
+    return this.oauthService.verifyLinkedinOauth(req);
   }
 
   @Public()
@@ -166,7 +158,7 @@ export class AuthController {
   @UseGuards(GoogleOAuthGuard)
   // @UseGuards(AuthGuard('google'))
   async googleLogin(@Request() req): Promise<VerifyOauthDto | AccessTokenDto> {
-    return this.oauthService.verifyGoogleOauth(req.user, '');
+    return this.oauthService.verifyGoogleOauth(req.user);
     // return req.user;
   }
 

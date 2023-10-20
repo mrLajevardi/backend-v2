@@ -284,10 +284,11 @@ export class OauthService {
   }
 
   async verifyLinkedinOauth(
-    code: string,
+    req: any,
+    // code: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
-    const check = await this.linkedinOauth(code);
-    const { email, firstname, lastname, error } = check;
+    // const check = await this.linkedinOauth(code);
+    const { email, firstName, lastName, error } = req.user;
     if (error) {
       return Promise.reject(error);
     }
@@ -299,8 +300,8 @@ export class OauthService {
     if (!user) {
       const payload = {
         email,
-        firstname,
-        lastname,
+        firstName,
+        lastName,
       };
 
       const token = this.emailJwtService.sign(payload);
@@ -317,10 +318,11 @@ export class OauthService {
   }
 
   async verifyGithubOauth(
-    code: string,
+    req: any,
+    // code: string,
   ): Promise<VerifyOauthDto | AccessTokenDto> {
-    const check = await this.githubOauth(code);
-    const { email, error } = check;
+    // const check = await this.githubOauth(code);
+    const { email, error } = req.user;
     if (error) {
       return Promise.reject(error);
     }

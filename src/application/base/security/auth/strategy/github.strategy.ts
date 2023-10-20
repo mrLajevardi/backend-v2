@@ -1,37 +1,31 @@
-import { Injectable } from '@nestjs/common';
-import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy } from 'passport-strategy';
-import { Request } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import { OauthService } from '../service/oauth.service';
+import { Strategy, VerifyCallback } from 'passport-github';
+import { Injectable } from '@nestjs/common';
+import { OauthServiceFactory } from '../service/oauth.service.factory';
+import { UserOauthLoginGithubDto } from '../dto/user-oauth-login-github.dto';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
-  constructor(private readonly oauthService: OauthService) {
-    super();
+  constructor() {
+    super({
+      clientID: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackURL: 'http://localhost:3000/auth/github',
+      scope: ['public_profile'],
+    });
   }
-
-  // The validation that will be checked before
-  // any endpoint protected with jwt-auth guard
-  async authenticate(
-    req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>,
-  ): Promise<void> {
-    try {
-      if (!req || !req.query) {
-        this.error(new ForbiddenException());
-      }
-
-      if (!req.query.code) {
-        this.error(new ForbiddenException('Github: no code provided'));
-      }
-
-      this.success(
-        this.oauthService.verifyGithubOauth(req.query.code.toString()),
+  async validate(
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: VerifyCallback,
+  ): Promise<any> {
+    const userOauth: UserOauthLoginGithubDto =
+      OauthServiceFactory.getProfileUserOauthStrategy(
+        accessToken,
+        refreshToken,
+        profile,
       );
-    } catch (error) {
-      this.error(error);
-    }
+    done(null, userOauth);
   }
 }
