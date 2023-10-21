@@ -22,12 +22,18 @@ import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice
 import { MappedItemTypes } from '../interface/mapped-item-types.interface';
 import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
 import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { CostCalculationService } from './cost-calculation.service';
 
 @Injectable()
 export class InvoiceFactoryService {
   constructor(
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
     private readonly invoiceItemTableService: InvoiceItemsTableService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
+    private readonly vdcFactoryService: VdcFactoryService,
+    private readonly costCalculationsService: CostCalculationService,
   ) {}
   async groupVdcItems(invoiceItems: InvoiceItemsDto[]): Promise<VdcItemGroup> {
     const vdcItemGroup: VdcItemGroup = {} as VdcItemGroup;
@@ -145,5 +151,22 @@ export class InvoiceFactoryService {
         fee: item.cost || null,
       });
     }
+  }
+
+  async calculateCurrentServiceInvoice(
+    serviceInstanceId: string,
+  ): Promise<TotalInvoiceItemCosts> {
+    const serviceItems = await this.serviceItemsTableService.find({
+      where: {
+        serviceInstanceId,
+      },
+    });
+    const transformedItems =
+      this.vdcFactoryService.transformItems(serviceItems);
+    const invoiceCost =
+      await this.costCalculationsService.calculateVdcStaticTypeInvoice({
+        itemsTypes: transformedItems,
+      });
+    return invoiceCost;
   }
 }

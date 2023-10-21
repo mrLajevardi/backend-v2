@@ -17,6 +17,7 @@ import { InvoiceFactoryVdcService } from './service/invoice-factory-vdc.service'
     DatabaseModule,
     CrudModule,
     DatacenterModule,
+
     // VgpuModule,
     forwardRef(() => VgpuModule),
   ],

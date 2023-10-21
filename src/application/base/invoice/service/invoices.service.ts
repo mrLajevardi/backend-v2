@@ -18,6 +18,7 @@ import {
   VdcInvoiceCalculatorDto,
   VdcInvoiceCalculatorResultDto,
 } from '../dto/vdc-invoice-calculator.dto';
+import { InvoiceTypes } from '../enum/invoice-type.enum';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -36,11 +37,13 @@ export class InvoicesService implements BaseInvoiceService {
   ): Promise<InvoiceIdDto> {
     await this.validationService.vdcInvoiceValidator(dto);
     if (dto.servicePlanTypes === ServicePlanTypeEnum.Static) {
-      return this.createVdcStaticInvoice(
-        dto,
-        options,
-        dto.serviceInstanceId || null,
-      );
+      switch (dto.type) {
+        case InvoiceTypes.Create:
+          return this.createVdcStaticInvoice(dto, options, null);
+        case InvoiceTypes.Upgrade:
+          return this.upgradeVdcStaticInvoice(options, dto);
+      }
+
       return InvoiceIdDto.generateMock();
     }
   }
@@ -133,5 +136,38 @@ export class InvoicesService implements BaseInvoiceService {
       };
       return resultDto;
     }
+  }
+
+  async upgradeVdcStaticInvoice(
+    options: SessionRequest,
+    data: CreateServiceInvoiceDto,
+  ): Promise<InvoiceIdDto> {
+    const userId = options.user.userId;
+    const invoiceCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
+    const currentInvoice =
+      await this.invoiceFactoryService.calculateCurrentServiceInvoice(
+        data.serviceInstanceId,
+      );
+    invoiceCost.totalCost = invoiceCost.totalCost - currentInvoice.totalCost;
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      data.itemsTypes,
+    );
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      userId,
+      data,
+      invoiceCost,
+      groupedItems,
+      data.serviceInstanceId,
+    );
+
+    const invoice = await this.invoicesTable.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      invoice.id,
+      invoiceCost.itemsSum,
+    );
+    return {
+      invoiceId: invoice.id,
+    };
   }
 }
