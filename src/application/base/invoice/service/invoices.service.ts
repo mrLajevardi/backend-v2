@@ -18,6 +18,11 @@ import {
   VdcInvoiceCalculatorDto,
   VdcInvoiceCalculatorResultDto,
 } from '../dto/vdc-invoice-calculator.dto';
+import { TemplatesTableService } from '../../crud/templates/templates-table.service';
+import {
+  TemplatesDto,
+  TemplatesStructure,
+} from 'src/application/vdc/dto/templates.dto';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 
 @Injectable()
@@ -29,6 +34,7 @@ export class InvoicesService implements BaseInvoiceService {
     private readonly costCalculationService: CostCalculationService,
     private readonly transactionTable: TransactionsTableService,
     private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
+    private readonly templateTableService: TemplatesTableService,
   ) {}
 
   async createVdcInvoice(
@@ -93,6 +99,9 @@ export class InvoicesService implements BaseInvoiceService {
     serviceInstanceId: string | null,
   ): Promise<InvoiceIdDto> {
     const userId = options.user.userId;
+    if (data.templateId) {
+      return this.createStaticInvoiceByTemplate(data, userId);
+    }
     const invoiceCost =
       await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
@@ -105,23 +114,11 @@ export class InvoicesService implements BaseInvoiceService {
       groupedItems,
       serviceInstanceId,
     );
-
     const invoice = await this.invoicesTable.create(dto);
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,
       invoiceCost.itemsSum,
     );
-    await this.transactionTable.create({
-      userId: userId.toString(),
-      dateTime: new Date(),
-      paymentType: 0,
-      paymentToken: '-',
-      isApproved: false,
-      value: invoiceCost.totalCost,
-      invoiceId: invoice.id,
-      description: 'vdc',
-      serviceInstanceId,
-    });
     return { invoiceId: invoice.id };
   }
 
@@ -136,6 +133,41 @@ export class InvoicesService implements BaseInvoiceService {
       };
       return resultDto;
     }
+  }
+
+  async createStaticInvoiceByTemplate(
+    data: CreateServiceInvoiceDto,
+    userId: number,
+  ): Promise<InvoiceIdDto> {
+    const template = await this.templateTableService.findById(data.templateId);
+    const templateStructure: TemplatesStructure = JSON.parse(
+      template.structure,
+    );
+    const invoiceItems =
+      this.invoiceFactoryService.convertTemplateToInvoiceItems(
+        templateStructure,
+      );
+    data.itemsTypes = invoiceItems;
+    const invoiceCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
+    // changed totalCost to template cost
+    invoiceCost.totalCost = templateStructure.finalPrice;
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      data.itemsTypes,
+    );
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      userId,
+      data,
+      invoiceCost,
+      groupedItems,
+      data.serviceInstanceId || null,
+    );
+    const invoice = await this.invoicesTable.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      invoice.id,
+      invoiceCost.itemsSum,
+    );
+    return { invoiceId: invoice.id };
   }
 
   async upgradeVdcStaticInvoice(

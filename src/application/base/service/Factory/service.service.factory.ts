@@ -107,7 +107,7 @@ export class ServiceServiceFactory {
     );
 
     const serviceItemDisk = new ServiceItemDto(
-      'Disk',
+      'DISK',
       vdcItems.storageUsedMB,
       vdcItems.storageLimitMB,
     );

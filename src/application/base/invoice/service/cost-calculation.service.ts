@@ -95,6 +95,7 @@ export class CostCalculationService {
     reservations: Pick<VdcItemGroup, 'cpuReservation' | 'memoryReservation'>,
   ): Promise<InvoiceItemCost[]> {
     const cpuItem = generationsItem.cpu[0];
+    console.log(generationsItem.cpu[0].parentId, '🥖');
     const cpuParent = await this.serviceItemTypeTreeService.findOne({
       where: {
         id: generationsItem.cpu[0].parentId,

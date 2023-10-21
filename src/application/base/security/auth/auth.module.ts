@@ -10,8 +10,8 @@ import { OtpService } from '../security-tools/otp.service';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { OtpStrategy } from './strategy/otp.strategy';
 import { GoogleStrategy } from './strategy/google.strategy';
-import { LinkedInStrategy } from './strategy/linked-in.strategy';
-import { GithubStrategy } from './strategy/github.strategy';
+
+// import { GithubStrategy } from './strategy/github-strategy';
 import { OauthService } from './service/oauth.service';
 import { PassportModule } from '@nestjs/passport';
 import { LoginService } from './service/login.service';
@@ -20,6 +20,9 @@ import { SecurityToolsModule } from '../security-tools/security-tools.module';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { RobotStrategy } from './strategy/robot.strategy';
 import { AbilityModule } from '../ability/ability.module';
+import { LinkedinStrategy } from './strategy/linkedin.strategy';
+import { OauthServiceFactory } from './service/oauth.service.factory';
+import { GithubStrategy } from './strategy/github.strategy';
 
 @Module({
   imports: [
@@ -39,13 +42,15 @@ import { AbilityModule } from '../ability/ability.module';
   ],
   controllers: [AuthController],
   providers: [
+    OauthServiceFactory,
     OauthService,
     OtpService,
     LocalStrategy,
     JwtStrategy,
     OtpStrategy,
     GoogleStrategy,
-    LinkedInStrategy,
+    // LinkedInStrategy,
+    LinkedinStrategy,
     GithubStrategy,
     RobotStrategy,
     AuthService,

@@ -13,7 +13,6 @@ import {
   encryptPassword,
   generatePassword,
 } from 'src/infrastructure/helpers/helpers';
-import { RoleMappingTableService } from 'src/application/base/crud/role-mapping-table/role-mapping-table.service';
 import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
 import { LoginService } from './login.service';
 import { OauthResponseDto } from '../dto/oauth-response.dto';
@@ -27,6 +26,7 @@ import { CreateUserDto } from 'src/application/base/crud/user-table/dto/create-u
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/infrastructure/database/entities/User';
 import { stringify } from 'querystring';
+import { UserOauthLoginGoogleDto } from '../dto/user-oauth-login-google.dto';
 
 @Injectable()
 export class OauthService {
@@ -41,7 +41,7 @@ export class OauthService {
     const clientID = process.env.GOOGLE_CLIENT_ID;
     const redirectURI = process.env.GOOGLE_REDIRECT_URI;
     const scope = 'profile email';
-    const state = '123'; // You can generate and manage this value
+    const state = '1'; // You can generate and manage this value
 
     return `https://accounts.google.com/o/oauth2/auth?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
   }
@@ -50,17 +50,21 @@ export class OauthService {
     const clientID = process.env.LINKEDIN_CLIENT_ID;
     const redirectURI = process.env.LINKEDIN_REDIRECT_URI;
     const scope = 'r_liteprofile r_emailaddress';
-    return `https://www.linkedin.com/oauth/v2/authorization?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code`;
+    const state = '2'; // You can generate and manage this value
+
+    return `https://www.linkedin.com/oauth/v2/authorization?client_id=${clientID}&redirect_uri=${redirectURI}&scope=${scope}&response_type=code&state=${state}`;
   }
 
   getGitHubUrl() {
     const clientID = process.env.GITHUB_CLIENT_ID;
     const clientSecret = process.env.GITHUB_CLIENT_SECRET;
+    const state = '3'; // You can generate and manage this value
+
     // const redirectURI = process.env.LINKEDIN_REDIRECT_URI;
     // const scope = 'r_liteprofile r_emailaddress';
     // `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}`;
 
-    return `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}`;
+    return `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}&state=${state}`;
   }
   async googleOauth(code: string): Promise<OauthResponseDto> {
     let email: string;
@@ -247,46 +251,59 @@ export class OauthService {
     };
   }
 
-  async verifyGoogleOauth(
-    token: string,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
-    const check = await this.googleOauth(token);
-    const { email, firstname, lastname, error } = check;
-
-    console.log(email, '😉');
-    if (error) {
-      throw new UnauthorizedException();
+  private createModelOauthLogin(
+    emailToken: string,
+    userExist: boolean,
+    accessToken: string,
+  ): VerifyOauthDto {
+    const res: VerifyOauthDto = {};
+    res.userExists = userExist;
+    if (res.userExists === false) {
+      res.emailToken = emailToken;
+      res.access_token = '';
+    } else {
+      res.emailToken = '';
+      res.access_token = accessToken;
     }
+    return res;
+  }
+
+  async verifyGoogleOauth(
+    userOauth: UserOauthLoginGoogleDto,
+    // token: string,
+  ): Promise<VerifyOauthDto> {
+    // const check = await this.googleOauth(token);
+    // const { email, firstname, lastname, error } = check;
+    let emailToken = '';
+    let accessToken = '';
+    console.log(userOauth.accessToken, '😉');
+    // if (error) {
+    //   throw new UnauthorizedException();
+    // }
     const user = await this.userTable.findOne({
       where: {
-        email: email,
+        email: userOauth.email,
       },
     });
     if (!user) {
-      const payload = {
-        email,
-        firstname,
-        lastname,
-      };
-      const token = this.emailJwtService.sign(payload);
-      return Promise.resolve({
-        userExists: false,
-        token: token,
-      });
+      emailToken = this.emailJwtService.sign(userOauth);
+      return Promise.resolve(this.createModelOauthLogin(emailToken, false, ''));
     }
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
-    //const ttl = process.env.USER_OPTIONS_TTL;
 
-    return this.loginService.getLoginToken(user.id);
+    accessToken = (await this.loginService.getLoginToken(user.id)).access_token;
+
+    return Promise.resolve(this.createModelOauthLogin('', true, accessToken));
   }
 
   async verifyLinkedinOauth(
-    code: string,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
-    const check = await this.linkedinOauth(code);
-    const { email, firstname, lastname, error } = check;
+    req: any,
+    // code: string,
+  ): Promise<VerifyOauthDto> {
+    // const check = await this.linkedinOauth(code);
+    const { email, firstName, lastName, error } = req.user;
     if (error) {
       return Promise.reject(error);
     }
@@ -298,28 +315,30 @@ export class OauthService {
     if (!user) {
       const payload = {
         email,
-        firstname,
-        lastname,
+        firstName,
+        lastName,
       };
 
       const token = this.emailJwtService.sign(payload);
-      return Promise.resolve({
-        userExists: false,
-        token: token,
-      });
+
+      return Promise.resolve(this.createModelOauthLogin(token, false, ''));
     }
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
 
-    return this.loginService.getLoginToken(user.id);
+    const accessToken = (await this.loginService.getLoginToken(user.id))
+      .access_token;
+
+    return Promise.resolve(this.createModelOauthLogin('', true, accessToken));
   }
 
   async verifyGithubOauth(
-    code: string,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
-    const check = await this.githubOauth(code);
-    const { email, error } = check;
+    req: any,
+    // code: string,
+  ): Promise<VerifyOauthDto> {
+    // const check = await this.githubOauth(code);
+    const { email, error } = req.user;
     if (error) {
       return Promise.reject(error);
     }
@@ -333,15 +352,22 @@ export class OauthService {
         email,
       };
       const token = this.emailJwtService.sign(payload);
-      return Promise.resolve({
-        userExists: false,
-        token: token,
-      });
+
+      return Promise.resolve(this.createModelOauthLogin(token, false, ''));
+
+      // return Promise.resolve({
+      //   userExists: false,
+      //   emailToken: token,
+      // });
     }
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
-    return this.loginService.getLoginToken(user.id);
+    // return this.loginService.getLoginToken(user.id);
+    const accessToken = (await this.loginService.getLoginToken(user.id))
+      .access_token;
+
+    return Promise.resolve(this.createModelOauthLogin('', true, accessToken));
   }
 
   decodeEmailToken(emailToken: string): {

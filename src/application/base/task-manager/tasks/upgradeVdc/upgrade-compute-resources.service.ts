@@ -18,7 +18,9 @@ export class UpgradeVdcService implements BaseTask<UpgradeVdcStepsEnum> {
   ) {
     this.stepName = UpgradeVdcStepsEnum.UpgradeComputeResources;
   }
-  execute(job: Job<any, any, string>): void {}
+  execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
+    return this.increaseComputeResources(job);
+  }
 
   async increaseComputeResources(
     job: Job<TaskDataType, any, TasksEnum>,
@@ -39,7 +41,7 @@ export class UpgradeVdcService implements BaseTask<UpgradeVdcStepsEnum> {
       },
     });
     const targetItemIds = targetItems.map((item) => {
-      return item.ID;
+      return item.id;
     });
     const invoiceItems = await app.models.InvoiceItems.find({
       where: {

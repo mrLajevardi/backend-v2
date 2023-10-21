@@ -1,4 +1,5 @@
 export class VerifyOauthDto {
-  userExists: boolean;
-  token: string;
+  userExists?: boolean;
+  emailToken?: string;
+  access_token?: string;
 }

@@ -1,7 +1,15 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 import { isTestingEnv } from '../../helpers/helpers';
+import { Invoices } from './Invoices';
 
 @Entity('Templates', { schema: 'services' })
 export class Templates {
@@ -35,6 +43,12 @@ export class Templates {
   })
   enabled: boolean;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsDefault',
+    default: () => '(0)',
+  })
+  isDefault: boolean;
+
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
   datacenterName: string | null;
 
@@ -53,4 +67,7 @@ export class Templates {
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)
   @JoinColumn([{ name: 'ServiceTypeId', referencedColumnName: 'id' }])
   serviceType: ServiceTypes;
+
+  @OneToMany(() => Invoices, (invoice) => invoice.templates)
+  invoices: Invoices;
 }

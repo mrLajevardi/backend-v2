@@ -1,4 +1,4 @@
-import { IsInt, IsNumber } from 'class-validator';
+import { IsInt, IsNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateInvoiceItemsDto {
@@ -14,6 +14,8 @@ export class CreateInvoiceItemsDto {
   @ApiProperty()
   fee: number;
 
+  @IsString()
+  @ApiProperty({ type: String })
   value?: string;
 
   @IsInt()

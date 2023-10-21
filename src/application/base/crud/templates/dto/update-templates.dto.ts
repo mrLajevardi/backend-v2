@@ -54,4 +54,8 @@ export class UpdateTemplatesDto {
 
   @ApiProperty({ type: Date })
   expireDate: Date;
+
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  isDefault: boolean;
 }

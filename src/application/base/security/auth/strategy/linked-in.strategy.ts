@@ -27,9 +27,9 @@ export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedIn') {
         this.error(new ForbiddenException('no code provided'));
       }
 
-      this.success(
-        this.oauthService.verifyLinkedinOauth(req.query.code.toString()),
-      );
+      // this.success(
+      //   this.oauthService.verifyLinkedinOauth(null, req.query.code.toString()),
+      // );
     } catch (error) {
       this.error(error);
     }

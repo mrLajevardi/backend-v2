@@ -11,6 +11,7 @@ import { InvoiceItems } from './InvoiceItems';
 import { User } from './User';
 import { ServiceInstances } from './ServiceInstances';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { Templates } from './Templates';
 
 @Index('PK_Invoices', ['id'], { unique: true })
 @Entity('Invoices', { schema: 'user' })
@@ -87,4 +88,17 @@ export class Invoices {
   )
   @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
+
+  @ManyToOne(() => Templates, (template) => template.invoices, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn([{ name: 'TemplateID', referencedColumnName: 'guid' }])
+  templates: Templates;
+
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'TemplateID',
+    nullable: true,
+  })
+  templateId: string;
 }
