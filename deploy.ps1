@@ -4,4 +4,5 @@ Remove-Item -Path $path -Recurse -Force
 $working_directory = Get-Location
 $path = "C:\arad-v2"
 Copy-Item -Path ".\*" -Destination $path -Recurse
+Copy-Item -Path "C:\configs\.env" $path
 cd C:\arad-v2;npm install;npm run build;npm run pm2:reload
