@@ -177,7 +177,7 @@ export class UserService {
   async creditIncrement(
     options: SessionRequest,
     data: CreditIncrementDto,
-    invoiceId?: number | null = null,
+    invoiceId: number | null = null,
   ): Promise<string> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);

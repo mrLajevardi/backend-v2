@@ -23,6 +23,8 @@ import {
   TemplatesDto,
   TemplatesStructure,
 } from 'src/application/vdc/dto/templates.dto';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
+import { IsNull, Not } from 'typeorm';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -165,5 +167,18 @@ export class InvoicesService implements BaseInvoiceService {
       invoiceCost.itemsSum,
     );
     return { invoiceId: invoice.id };
+  }
+
+  async getTransaction(
+    options: SessionRequest,
+    authorityCode: string,
+  ): Promise<Transactions> {
+    return this.transactionTable.findOne({
+      where: {
+        paymentToken: authorityCode,
+        invoiceId: Not(IsNull()),
+        userId: options.user.userId,
+      },
+    });
   }
 }
