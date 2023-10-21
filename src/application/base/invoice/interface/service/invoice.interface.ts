@@ -6,6 +6,7 @@ import {
   VdcInvoiceCalculatorDto,
   VdcInvoiceCalculatorResultDto,
 } from '../../dto/vdc-invoice-calculator.dto';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 
 export const BASE_INVOICE_SERVICE = 'BASE_INVOICE_SERVICE';
 
@@ -20,4 +21,9 @@ export interface BaseInvoiceService {
   vdcInvoiceCalculator(
     dto: VdcInvoiceCalculatorDto,
   ): Promise<VdcInvoiceCalculatorResultDto>;
+
+  getTransaction(
+    options: SessionRequest,
+    authorityCode: string,
+  ): Promise<Transactions>;
 }

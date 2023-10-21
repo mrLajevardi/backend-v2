@@ -18,6 +18,7 @@ import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServiceServiceFactory } from '../../service/Factory/service.service.factory';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
+import { UserModule } from '../../user/user.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -42,6 +43,7 @@ describe('TasksService', () => {
         ServicePropertiesModule,
         VdcModule,
         DatacenterModule,
+        UserModule,
       ],
       providers: [
         TaskManagerService,

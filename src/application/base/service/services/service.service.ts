@@ -37,6 +37,8 @@ import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { GetOrgVdcResult } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import { ServiceStatusEnum } from '../enum/service-status.enum';
 import { VcloudMetadata } from '../../datacenter/type/vcloud-metadata.type';
+import { UserService } from '../../user/service/user.service';
+import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
 @Injectable()
 export class ServiceService {
   constructor(
@@ -59,6 +61,7 @@ export class ServiceService {
     private readonly serviceTypesTable: ServiceTypesTableService,
     private readonly vdcService: VdcService,
     private readonly serviceFactory: ServiceServiceFactory,
+    private readonly userService: UserService,
   ) {}
 
   async increaseServiceResources(
@@ -220,7 +223,8 @@ export class ServiceService {
 
   async getZarinpalAuthority(
     options: SessionRequest,
-    invoiceId: number = null,
+    invoiceId: number,
+    dto: CreditIncrementDto,
   ): Promise<string> {
     const userId = options.user.userId;
     // find user invoice
@@ -233,41 +237,7 @@ export class ServiceService {
     if (invoice === null) {
       return Promise.reject(new ForbiddenException());
     }
-
-    // find user info
-    const user = await this.usersTable.findOne({
-      where: {
-        id: userId,
-      },
-    });
-
-    let zarinpalConfig: ZarinpalConfigDto;
-    zarinpalConfig.email = options.user.username;
-    zarinpalConfig.mobile = user.phoneNumber;
-
-    const paymentRequestData = {
-      ...zarinpalConfig,
-      amount: invoice.finalAmount,
-    };
-    const authorityCode = await this.paymentService.zarinpal.paymentRequest(
-      paymentRequestData,
-    );
-
-    if (authorityCode) {
-      this.transactionsTable.updateAll(
-        {
-          invoiceId: invoiceId,
-          userId: userId,
-          isApproved: false,
-        },
-        {
-          paymentToken: authorityCode,
-        },
-      );
-    }
-    return Promise.resolve(
-      'https://www.zarinpal.com/pg/StartPay/' + authorityCode,
-    );
+    return this.userService.creditIncrement(options, dto, invoiceId);
   }
 
   async updateServiceInfo(

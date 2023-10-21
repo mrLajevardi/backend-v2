@@ -14,6 +14,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
@@ -29,6 +30,8 @@ import {
   VdcInvoiceCalculatorResultDto,
 } from '../dto/vdc-invoice-calculator.dto';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
+import { getTransactionsDto } from '../../crud/transactions-table/dto/get-transactions.dto';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -107,5 +110,20 @@ export class InvoicesController {
     @Body() dto: VdcInvoiceCalculatorDto,
   ): Promise<VdcInvoiceCalculatorResultDto> {
     return this.invoiceService.vdcInvoiceCalculator(dto);
+  }
+
+  @ApiOperation({ summary: 'get transaction' })
+  @ApiParam({ type: String, name: 'authorityCode' })
+  @ApiResponse({ type: getTransactionsDto })
+  @Get('/transactions/:authorityCode')
+  async getTransaction(
+    @Request() options: SessionRequest,
+    @Param('authorityCode') authorityCode: string,
+  ): Promise<Transactions> {
+    const transaction = await this.invoiceService.getTransaction(
+      options,
+      authorityCode,
+    );
+    return transaction;
   }
 }
