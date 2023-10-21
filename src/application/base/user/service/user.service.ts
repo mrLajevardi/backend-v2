@@ -177,6 +177,7 @@ export class UserService {
   async creditIncrement(
     options: SessionRequest,
     data: CreditIncrementDto,
+    invoiceId?: number | null = null,
   ): Promise<string> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
@@ -213,13 +214,12 @@ export class UserService {
     const authorityCode = await this.paymentService.zarinpal.paymentRequest(
       paymentRequestData,
     );
-
     if (authorityCode) {
       const transactionsDto: CreateTransactionsDto = {
         userId: user.id.toString(),
         dateTime: new Date(),
         value: amount,
-        invoiceId: null,
+        invoiceId,
         description: 'INC',
         paymentType: 1,
         paymentToken: authorityCode,
