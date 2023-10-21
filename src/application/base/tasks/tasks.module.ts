@@ -17,6 +17,7 @@ import { TaskAdminController } from './controller/task-admin.controller';
 import { TaskAdminService } from './service/task-admin.service';
 import { AbilityModule } from '../security/ability/ability.module';
 import { InvoicesModule } from '../invoice/invoices.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [

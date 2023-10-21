@@ -23,6 +23,8 @@ import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 import { ServiceTypesEnum } from '../enum/service-types.enum';
+import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
+import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 
 @Injectable()
 export class CreateServiceService {
@@ -56,16 +58,6 @@ export class CreateServiceService {
     if (invoice === null) {
       throw new ForbiddenException();
     }
-    // find user transaction
-    const transaction = await this.transactionTableService.findOne({
-      where: {
-        invoiceId,
-        userId,
-      },
-    });
-    if (transaction === null) {
-      throw new ForbiddenException();
-    }
     let serviceInstanceId = null;
     let task = null;
     let taskId = null;
@@ -76,18 +68,35 @@ export class CreateServiceService {
         token: null,
       });
     }
+    const transaction = await this.transactionTableService.create({
+      dateTime: new Date(),
+      description: '',
+      invoiceId: invoice.id,
+      isApproved: null,
+      value: -invoice.finalAmount,
+      paymentToken: null,
+      paymentType: PaymentTypes.PayByCredit,
+      serviceInstanceId: null,
+      userId: options.user.userId.toString(),
+    });
     // invoice is not paid
     const checkCredit = await this.userService.checkUserCredit(
-      transaction.value,
+      invoice.finalAmount,
       userId,
       options,
       invoice.serviceTypeId,
     );
     if (!checkCredit) {
+      this.transactionTableService.update(transaction.id, {
+        isApproved: false,
+      });
       throw new NotEnoughCreditException();
     }
+    this.transactionTableService.update(transaction.id, {
+      isApproved: true,
+    });
     // extend last user service instance
-    if (checkCredit && !transaction.isApproved && invoice.type === 1) {
+    if (checkCredit && invoice.type === InvoiceTypes.Extend) {
       const extendedService =
         await this.extendService.extendServiceInstanceAndToken(
           options,
@@ -101,7 +110,7 @@ export class CreateServiceService {
     }
 
     // creating new service instance
-    if (checkCredit && !transaction.isApproved && invoice.type === 0) {
+    if (checkCredit && invoice.type === InvoiceTypes.Create) {
       // make user service instance
       const createdService =
         await this.extendService.createServiceInstanceAndToken(
@@ -184,7 +193,7 @@ export class CreateServiceService {
       this.InvoiceTableService.updateAll(
         {
           userId: userId,
-          id: transaction.invoiceId,
+          id: invoice.id,
         },
         {
           payed: true,

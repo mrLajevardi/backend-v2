@@ -31,6 +31,7 @@ import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
 import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
+import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -197,38 +198,20 @@ export class ServiceController {
     return await this.service.getServicePlans();
   }
 
-  @Get('/verifyAuthority/:authorityCode')
-  @ApiOperation({ summary: 'Verify Zarinpal Authority code' })
-  @ApiResponse({
-    status: 200,
-    description: 'Verification result',
-    type: Object,
-  }) // Adjust the type as needed
-  @ApiParam({
-    name: 'authorityCode',
-    type: String,
-    description: 'Zarinpal Authority code',
-  })
-  async verifyZarinpalAuthority(
-    @Req() options: SessionRequest,
-    @Param('authorityCode') authorityCode: string,
-  ): Promise<any> {
-    return this.service.verifyZarinpalAuthority(options, authorityCode);
-  }
-
   @Get('/zarinpalAuthority/:invoiceId')
   @ApiOperation({ summary: 'Get Zarinpal Authority code' })
   @ApiResponse({
     status: 200,
     description: 'Zarinpal Authority URL',
     type: String,
-  }) // Adjust the type as needed
+  })
   @ApiParam({ name: 'invoiceId', type: String, description: 'Invoice ID' })
   async getZarinpalAuthority(
     @Req() options: SessionRequest,
     @Param('invoiceId') invoiceId: number,
+    @Body() dto: CreditIncrementDto,
   ): Promise<string> {
-    return await this.service.getZarinpalAuthority(options, invoiceId);
+    return await this.service.getZarinpalAuthority(options, invoiceId, dto);
   }
 
   @Get('serviceTypes')

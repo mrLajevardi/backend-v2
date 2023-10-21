@@ -12,6 +12,7 @@ import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoiceFactoryService } from '../service/invoice-factory.service';
 import { InvoiceFactoryVdcService } from '../service/invoice-factory-vdc.service';
 import { BASE_INVOICE_SERVICE } from '../interface/service/invoice.interface';
+import { UserModule } from '../../user/user.module';
 
 describe('InvoicesController', () => {
   let controller: InvoicesController;
@@ -23,6 +24,7 @@ describe('InvoicesController', () => {
         DatabaseModule,
         DatacenterModule,
         CrudModule,
+        UserModule,
         forwardRef(() => VgpuModule),
       ],
       providers: [
