@@ -1,4 +1,11 @@
-import { IsInt, IsNumber, IsString, IsBoolean, IsDate } from 'class-validator';
+import {
+  IsInt,
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsDate,
+  IsOptional,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateInvoicesDto {
@@ -13,6 +20,11 @@ export class UpdateInvoicesDto {
   @IsNumber()
   @ApiProperty()
   rawAmount?: number;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  templateId?: string;
 
   @IsNumber()
   @ApiProperty()

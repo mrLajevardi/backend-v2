@@ -29,6 +29,9 @@ export class InvoiceValidationService {
   }
 
   async vdcInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
+    if (invoice.templateId) {
+      return;
+    }
     const itemParentType = new VdcParentType();
     this.checkUniquenessOfItems(invoice.itemsTypes);
     let datacenterChecked = false;
