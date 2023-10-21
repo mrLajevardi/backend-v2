@@ -251,14 +251,31 @@ export class OauthService {
     };
   }
 
+  private createModelOauthLogin(
+    emailToken: string,
+    userExist: boolean,
+    accessToken: string,
+  ): VerifyOauthDto {
+    const res: VerifyOauthDto = {};
+    res.userExists = userExist;
+    if (res.userExists === false) {
+      res.emailToken = emailToken;
+      res.access_token = '';
+    } else {
+      res.emailToken = '';
+      res.access_token = accessToken;
+    }
+    return res;
+  }
+
   async verifyGoogleOauth(
     userOauth: UserOauthLoginGoogleDto,
     // token: string,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
-    console.log('slalam');
+  ): Promise<VerifyOauthDto> {
     // const check = await this.googleOauth(token);
     // const { email, firstname, lastname, error } = check;
-
+    let emailToken = '';
+    let accessToken = '';
     console.log(userOauth.accessToken, '😉');
     // if (error) {
     //   throw new UnauthorizedException();
@@ -269,24 +286,22 @@ export class OauthService {
       },
     });
     if (!user) {
-      const token = this.emailJwtService.sign(userOauth);
-      return Promise.resolve({
-        userExists: false,
-        emailToken: token,
-      });
+      emailToken = this.emailJwtService.sign(userOauth);
+      return Promise.resolve(this.createModelOauthLogin(emailToken, false, ''));
     }
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
-    //const ttl = process.env.USER_OPTIONS_TTL;
 
-    return this.loginService.getLoginToken(user.id);
+    accessToken = (await this.loginService.getLoginToken(user.id)).access_token;
+
+    return Promise.resolve(this.createModelOauthLogin('', true, accessToken));
   }
 
   async verifyLinkedinOauth(
     req: any,
     // code: string,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
+  ): Promise<VerifyOauthDto> {
     // const check = await this.linkedinOauth(code);
     const { email, firstName, lastName, error } = req.user;
     if (error) {
@@ -305,22 +320,23 @@ export class OauthService {
       };
 
       const token = this.emailJwtService.sign(payload);
-      return Promise.resolve({
-        userExists: false,
-        emailToken: token,
-      });
+
+      return Promise.resolve(this.createModelOauthLogin(token, false, ''));
     }
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
 
-    return this.loginService.getLoginToken(user.id);
+    const accessToken = (await this.loginService.getLoginToken(user.id))
+      .access_token;
+
+    return Promise.resolve(this.createModelOauthLogin('', true, accessToken));
   }
 
   async verifyGithubOauth(
     req: any,
     // code: string,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
+  ): Promise<VerifyOauthDto> {
     // const check = await this.githubOauth(code);
     const { email, error } = req.user;
     if (error) {
@@ -336,15 +352,22 @@ export class OauthService {
         email,
       };
       const token = this.emailJwtService.sign(payload);
-      return Promise.resolve({
-        userExists: false,
-        emailToken: token,
-      });
+
+      return Promise.resolve(this.createModelOauthLogin(token, false, ''));
+
+      // return Promise.resolve({
+      //   userExists: false,
+      //   emailToken: token,
+      // });
     }
     if (!user.active) {
       return Promise.reject(new DisabledUserException());
     }
-    return this.loginService.getLoginToken(user.id);
+    // return this.loginService.getLoginToken(user.id);
+    const accessToken = (await this.loginService.getLoginToken(user.id))
+      .access_token;
+
+    return Promise.resolve(this.createModelOauthLogin('', true, accessToken));
   }
 
   decodeEmailToken(emailToken: string): {
