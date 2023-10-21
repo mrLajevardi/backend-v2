@@ -11,12 +11,14 @@ import { InvoiceValidationService } from './validators/invoice-validation.servic
 import { BASE_INVOICE_SERVICE } from './interface/service/invoice.interface';
 import { InvoiceFactoryService } from './service/invoice-factory.service';
 import { InvoiceFactoryVdcService } from './service/invoice-factory-vdc.service';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     DatabaseModule,
     CrudModule,
     DatacenterModule,
+    UserModule,
     // VgpuModule,
     forwardRef(() => VgpuModule),
   ],

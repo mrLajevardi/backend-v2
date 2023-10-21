@@ -10,6 +10,7 @@ import { InvoiceValidationService } from '../validators/invoice-validation.servi
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoiceFactoryService } from './invoice-factory.service';
 import { InvoiceFactoryVdcService } from './invoice-factory-vdc.service';
+import { UserModule } from '../../user/user.module';
 
 describe('InvoicesService', () => {
   let service: InvoicesService;
@@ -21,6 +22,7 @@ describe('InvoicesService', () => {
         DatabaseModule,
         DatacenterModule,
         CrudModule,
+        UserModule,
         forwardRef(() => VgpuModule),
       ],
       providers: [
