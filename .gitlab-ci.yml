@@ -53,7 +53,7 @@ lint-test-job:
       junit: eslint-junit.xml
     expire_in: 1 day
 
-deploy-job:      # This job runs in the deploy stage.
+develop server deploy job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   only:
     - develop
@@ -61,3 +61,13 @@ deploy-job:      # This job runs in the deploy stage.
   dependencies: []
   script:
     - .\deploy.ps1
+
+test server deploy job:
+  stage: deploy
+  tags: 
+   - release
+  only:
+    - release
+  dependencies: []
+  script: 
+    - sh ./deploy.sh
