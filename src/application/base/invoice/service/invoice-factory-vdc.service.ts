@@ -22,7 +22,9 @@ export class InvoiceFactoryVdcService {
 
     const invoiceModels = await this.invoicesTable
       .getQueryBuilder()
-      .select('Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime')
+      .select(
+        'Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime , Invoice.TemplateID',
+      )
       .where(
         'Invoice.ServiceTypeID = :serviceTypeId AND Invoice.ID= :invoiceId ',
         {
@@ -59,6 +61,7 @@ export class InvoiceFactoryVdcService {
         max: model.Max,
         min: model.Min,
         price: model.Price,
+        templateId: model.TemplateID,
       };
 
       return res;
@@ -198,7 +201,10 @@ export class InvoiceFactoryVdcService {
     res.rawAmount = ramModel.rawAmount;
 
     res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
+
     res.period = new VdcInvoiceDetailsInfoResultDto(period);
+
+    res.templateId = ramModel.templateId;
 
     // res.period = { title: period.title, value: period.min };
   }

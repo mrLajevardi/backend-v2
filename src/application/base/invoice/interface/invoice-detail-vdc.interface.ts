@@ -14,4 +14,5 @@ export class InvoiceDetailVdcModel {
   min?: number;
   max?: number;
   price?: number;
+  templateId?: string;
 }

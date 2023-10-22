@@ -20,4 +20,5 @@ export class VdcInvoiceDetailsResultDto extends BaseResultDto {
   reservationRam?: string;
   reservationCpu?: string;
   rawAmount?: number;
+  templateId?: string;
 }
