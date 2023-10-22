@@ -70,4 +70,4 @@ test server deploy job:
     - release
   dependencies: []
   script: 
-    - sh ./deploy.sh
+    - sh deploy.sh
