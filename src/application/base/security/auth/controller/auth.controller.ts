@@ -134,7 +134,7 @@ export class AuthController {
   async githubLogin(
     @Request() req: SessionRequest,
     // githubLoginDto: GithubLoginDto,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
+  ): Promise<VerifyOauthDto> {
     // return this.oauthService.verifyGithubOauth(githubLoginDto.code);
     return this.oauthService.verifyGithubOauth(req);
     // return req.user;
@@ -147,7 +147,7 @@ export class AuthController {
   async linkedInLogin(
     @Request() req,
     // linkedInLoginDto: LinkedInLoginDto,
-  ): Promise<VerifyOauthDto | AccessTokenDto> {
+  ): Promise<VerifyOauthDto> {
     return this.oauthService.verifyLinkedinOauth(req);
   }
 
@@ -157,7 +157,7 @@ export class AuthController {
   @Get('google')
   @UseGuards(GoogleOAuthGuard)
   // @UseGuards(AuthGuard('google'))
-  async googleLogin(@Request() req): Promise<VerifyOauthDto | AccessTokenDto> {
+  async googleLogin(@Request() req): Promise<VerifyOauthDto> {
     return this.oauthService.verifyGoogleOauth(req.user);
     // return req.user;
   }

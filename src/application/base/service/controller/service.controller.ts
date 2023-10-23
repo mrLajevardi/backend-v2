@@ -198,7 +198,7 @@ export class ServiceController {
     return await this.service.getServicePlans();
   }
 
-  @Get('/zarinpalAuthority/:invoiceId')
+  @Post('/zarinpalAuthority/:invoiceId')
   @ApiOperation({ summary: 'Get Zarinpal Authority code' })
   @ApiResponse({
     status: 200,
