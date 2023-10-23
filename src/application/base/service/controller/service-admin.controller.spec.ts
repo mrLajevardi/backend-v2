@@ -18,6 +18,7 @@ import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { UserModule } from '../../user/user.module';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -36,6 +37,7 @@ describe('ServiceAdminController', () => {
         ServicePropertiesModule,
         MainWrapperModule,
         DatacenterModule,
+        UserModule,
       ],
       providers: [
         ServiceAdminService,
