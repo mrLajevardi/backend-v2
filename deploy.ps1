@@ -10,6 +10,7 @@ $bak_path = "C:\arad-v2.bak\*"
 pm2 stop arad-v2.bak
 Remove-Item -Path $bak_path -Recurse -Force
 $bak_path = "C:\arad-v2.bak"
+cd $working_directory
 Copy-Item -Path ".\*" -Destination $bak_path -Recurse
 Copy-Item -Path "C:\configs\.env" $bak_path
 cd $bak_path;npm install;npm run build;pm2 reload arad-v2.bak
