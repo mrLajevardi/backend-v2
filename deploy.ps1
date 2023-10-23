@@ -15,3 +15,4 @@ Remove-Item -Path $bak_path -Recurse -Force
 $bak_path = "C:\arad-v2.bak"
 Copy-Item -Path ".\*" -Destination $bak_path -Recurse
 Copy-Item -Path "C:\configs\.env" $bak_path
+cd $bak_path;npm run build
