@@ -18,6 +18,12 @@ export enum VdcGenerationItemCodes {
   Ip = 'ip',
 }
 
+export enum VdcGenerationItemUnit {
+  Cpu = 'core',
+  Ram = 'gb',
+  Disk = 'gb',
+}
+
 export enum DiskItemCodes {
   Standard = 'standard',
   Archive = 'archive',
@@ -26,7 +32,7 @@ export enum DiskItemCodes {
   Swap = 'swap',
 }
 
-//TODO Convert to
+//TODO Convert to English
 export enum GuarantyCode {
   Vip = 'حرفه ای ',
   Base = 'پایه',

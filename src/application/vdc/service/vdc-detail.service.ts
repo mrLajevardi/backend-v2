@@ -6,7 +6,11 @@ import { SessionsService } from '../../base/sessions/sessions.service';
 import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 import { ServicePropertiesService } from '../../base/service-properties/service-properties.service';
 import { VdcInvoiceDetailsInfoResultDto } from '../dto/vdc-invoice-details-info.result.dto';
-import { VdcGenerationItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
+import {
+  ItemTypeCodes,
+  VdcGenerationItemCodes,
+  VdcGenerationItemUnit,
+} from '../../base/itemType/enum/item-type-codes.enum';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import { ServiceInstancesTableService } from '../../base/crud/service-instances-table/service-instances-table.service';
 import { ServiceItemTypesTree } from '../../../infrastructure/database/entities/views/service-item-types-tree';
@@ -21,6 +25,8 @@ import {
 import { VdcDetailFactoryService } from './vdc-detail.factory.service';
 import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
 import { VdcDetailFecadeService } from './vdc-detail.fecade.service';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
+import { VdcItemLimitQueryDto } from '../dto/vdc-item-limit.query.dto';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -140,5 +146,23 @@ export class VdcDetailService implements BaseVdcDetailService {
     );
 
     return res;
+  }
+
+  async getVdcItemLimit(
+    serviceInstanceId: string,
+  ): Promise<VdcItemLimitResultDto> {
+    if (!serviceInstanceId) return {};
+    const query: VdcItemLimitQueryDto = {
+      ramCode: VdcGenerationItemCodes.Ram,
+      cpuCode: VdcGenerationItemCodes.Cpu,
+      diskCode: VdcGenerationItemCodes.Disk,
+      ramUnit: VdcGenerationItemUnit.Ram,
+      cpuUnit: VdcGenerationItemUnit.Cpu,
+      diskUnit: VdcGenerationItemUnit.Disk,
+      serviceInstanceId: serviceInstanceId,
+    };
+    const model = await this.vdcDetailFactory.getVdcItemLimit(query);
+
+    return model;
   }
 }

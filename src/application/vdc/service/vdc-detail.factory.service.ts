@@ -18,6 +18,9 @@ import { InvoiceDetailVdcModel } from '../../base/invoice/interface/invoice-deta
 import { InvoiceFactoryVdcService } from '../../base/invoice/service/invoice-factory-vdc.service';
 import { VdcDetailFecadeService } from './vdc-detail.fecade.service';
 import { VdcDetailModel } from '../interface/vdc-detail-model.interface';
+import { VdcItemLimitQueryDto } from '../dto/vdc-item-limit.query.dto';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
+import { ServiceItemsTableService } from '../../base/crud/service-items-table/service-items-table.service';
 
 @Injectable()
 export class VdcDetailFactoryService {
@@ -25,6 +28,7 @@ export class VdcDetailFactoryService {
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
     private readonly vdcDetailFecadeService: VdcDetailFecadeService,
+    private readonly serviceItemTableService: ServiceItemsTableService,
   ) {}
 
   getVdcDetailItemModel(vdcModels: VdcModel[], res2: VdcDetailsResultDto) {
@@ -186,6 +190,45 @@ export class VdcDetailFactoryService {
     const res = servicesModels.map((model) => {
       return new VdcDetailModel(model);
     });
+    return res;
+  }
+
+  async getVdcItemLimit(
+    query: VdcItemLimitQueryDto,
+  ): Promise<VdcItemLimitResultDto> {
+    const model = await this.serviceItemTableService
+      .getQueryBuilder()
+
+      .innerJoin(ServiceItemTypesTree, 'SIT', 'SIT.ID = ServiceItem.ItemTypeId')
+      .select(
+        'SIT.[MAX] as Max,SIT.Title,SIT.Code, SIT.Unit , SIT.CodeHierarchy',
+      )
+      .where('ServiceItem.ServiceInstanceID = :serviceInstanceId', {
+        serviceInstanceId: query.serviceInstanceId,
+      })
+      .andWhere(
+        ` ((CodeHierarchy LIKE N'%${query.cpuCode}%' and Unit LIKE N'%${query.cpuUnit}%') OR
+      (CodeHierarchy LIKE N'%${query.ramCode}%' and Unit LIKE N'%${query.ramUnit}%') OR
+      (CodeHierarchy LIKE N'%${query.diskCode}%' and Unit LIKE N'%${query.diskUnit}%'and code Not Like N'%Swap%'))
+      `,
+      )
+      .getRawMany();
+    const res: VdcItemLimitResultDto = {
+      cpuInfo: {
+        maxCpuCores: model.find((item) =>
+          (item.CodeHierarchy as string).includes(query.cpuCode),
+        ).Max,
+        cpuCoreCountable: [],
+      },
+      diskType: model
+        .filter((item) =>
+          (item.CodeHierarchy as string).includes(query.diskCode),
+        )
+        .map((item) => item.Title as string),
+      maxRam: model.find((item) =>
+        (item.CodeHierarchy as string).includes(query.ramCode),
+      ).Max,
+    };
     return res;
   }
 }

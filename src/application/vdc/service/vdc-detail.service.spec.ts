@@ -34,10 +34,14 @@ import { NetworksModule } from '../../networks/networks.module';
 import { ServiceItemModule } from '../../base/service-item/service-item.module';
 import { AxiosError } from 'axios';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
-import { VdcGenerationItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
+import {
+  DiskItemCodes,
+  VdcGenerationItemCodes,
+} from '../../base/itemType/enum/item-type-codes.enum';
 import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.enum';
 import { ServiceStatusEnum } from '../../base/service/enum/service-status.enum';
 import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
 
 describe('VdcDetailService', () => {
   let service: VdcDetailService;
@@ -302,5 +306,88 @@ describe('VdcDetailService', () => {
     expect(model.natRules).toBe(res.natRules);
     expect(model.applicationPortProfiles).toBe(res.applicationPortProfiles);
     expect(myMock).toHaveBeenCalled();
+  });
+
+  it('should return vdc items limit with valid service instance id', async () => {
+    const validRes: VdcItemLimitResultDto = {
+      cpuInfo: { cpuCoreCountable: [1, 2, 4], maxCpuCores: 4 },
+      maxRam: 16,
+      diskType: [
+        DiskItemCodes.Archive,
+        DiskItemCodes.Vip,
+        DiskItemCodes.Standard,
+      ],
+    };
+    const myMock = jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId) => {
+        if (serviceInstanceId === validServiceInstanceId) {
+          return Promise.resolve(validRes);
+        }
+      });
+    const res = await service.getVdcItemLimit(validServiceInstanceId);
+    expect(res).not.toBeNull();
+    expect(res.maxRam).toBeGreaterThan(15);
+    expect(res.cpuInfo.maxCpuCores).toBeGreaterThan(2);
+    expect(res.cpuInfo.cpuCoreCountable.length).toBeGreaterThan(0);
+    expect(res.diskType.includes(DiskItemCodes.Standard)).toBe(true);
+    expect(res.diskType.includes(DiskItemCodes.Vip)).toBe(true);
+  });
+
+  it('should return null with invalid service instance id  ', async () => {
+    jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId) => {
+        if (serviceInstanceId === invalidServiceInstanceId) {
+          return Promise.resolve({});
+        }
+      });
+
+    const model = await service.getVdcItemLimit(invalidServiceInstanceId);
+
+    expect(model.cpuInfo).toBeUndefined();
+    expect(model.diskType).toBeUndefined();
+    expect(model.maxRam).toBeUndefined();
+  });
+
+  it('should return at least one disk type with valid service instance id ', async () => {
+    const validRes: VdcItemLimitResultDto = {
+      diskType: [DiskItemCodes.Standard],
+    };
+
+    jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId) => {
+        if (serviceInstanceId === validServiceInstanceId) {
+          return Promise.resolve(validRes);
+        }
+      });
+
+    const model = await service.getVdcItemLimit(validServiceInstanceId);
+
+    expect(model.diskType.length).toBeGreaterThan(0);
+    expect(model.diskType.includes(DiskItemCodes.Standard)).toBe(true);
+  });
+
+  it('should return two  disk type with a vdc that has two disk type ', async () => {
+    const validRes: VdcItemLimitResultDto = {
+      diskType: [DiskItemCodes.Standard, DiskItemCodes.Archive],
+    };
+
+    jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId) => {
+        if (serviceInstanceId === validServiceInstanceId) {
+          return Promise.resolve(validRes);
+        }
+      });
+
+    const model = await service.getVdcItemLimit(validServiceInstanceId);
+
+    expect(model.diskType.length).toBe(2);
+    expect(
+      model.diskType.includes(DiskItemCodes.Standard) &&
+        model.diskType.includes(DiskItemCodes.Archive),
+    ).toBe(true);
   });
 });
