@@ -7,14 +7,29 @@ import { TaskDataType } from '../../interface/task-data-type.interface';
 import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
 import { InvoiceFactoryService } from 'src/application/base/invoice/service/invoice-factory.service';
 import { ServiceItemsTableService } from 'src/application/base/crud/service-items-table/service-items-table.service';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { SessionsService } from 'src/application/base/sessions/sessions.service';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
+import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
+import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
+import { ServiceTypesEnum } from 'src/application/base/service/enum/service-types.enum';
+import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import { AllocationModel } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/update-vdc-compute-policy.dto';
+import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
 
 @Injectable()
-export class UpgradeVdcService implements BaseTask<UpgradeVdcStepsEnum> {
+export class UpgradeVdcComputeResourcesService
+  implements BaseTask<UpgradeVdcStepsEnum>
+{
   stepName: UpgradeVdcStepsEnum;
   constructor(
-    private readonly tasksTableService: TasksTableService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly serviceItemsTableService: ServiceItemsTableService,
+    private readonly vdcFactoryService: VdcFactoryService,
+    private readonly sessionService: SessionsService,
+    private readonly serviceProperties: ServicePropertiesService,
+    private readonly configsService: ConfigsTableService,
+    private readonly adminVdcWrapperService: AdminVdcWrapperService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.UpgradeComputeResources;
   }
@@ -26,90 +41,56 @@ export class UpgradeVdcService implements BaseTask<UpgradeVdcStepsEnum> {
     job: Job<TaskDataType, any, TasksEnum>,
   ): Promise<void> {
     const {
-      data: { serviceInstanceId, taskId },
+      data: { serviceInstanceId },
     } = job;
-    const task = await this.tasksTableService.findById(taskId);
-    const { userId } = task;
-    const loggerOptions = {
-      userId,
-      serviceInstanceId,
-    };
-    const args = JSON.parse(task.arguments);
-    const targetItems = await this.serviceItemsTableService.find({
+    const serviceItems = await this.serviceItemsTableService.find({
       where: {
-        serv,
+        serviceInstanceId,
       },
     });
-    const targetItemIds = targetItems.map((item) => {
-      return item.id;
-    });
-    const invoiceItems = await app.models.InvoiceItems.find({
-      where: {
-        and: [
-          { ItemID: { inq: targetItemIds } },
-          { InvoiceID: args.invoiceId },
-        ],
-      },
-    });
-    console.log({ invoiceItems });
-    if (invoiceItems.length === 0) {
-      return;
-    }
-    const serviceItems = await app.models.ServiceItems.find({
-      where: {
-        and: [
-          { ItemTypeCode: { inq: ['vm', 'cpuCores', 'ram'] } },
-          { ServiceInstanceID: serviceInstanceId },
-        ],
-      },
-    });
-    console.log({ serviceItems });
-    const serviceItemsKeys = {};
-    for (const serviceItem of serviceItems) {
-      serviceItemsKeys[serviceItem.ItemTypeCode] = serviceItem;
-    }
-    const createSession = new CheckSession(app, null);
-    const adminSession = await createSession.checkAdminSession();
-    const props = await getAllServiceProperties(
-      job.data.serviceInstanceId,
-      app,
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      this.vdcFactoryService.transformItems(serviceItems),
     );
-    const networkQuota = await app.models.Configs.findOne({
+    const props =
+      await this.serviceProperties.getAllServiceProperties<VdcProperties>(
+        serviceInstanceId,
+      );
+    const adminSession = await this.sessionService.checkAdminSession();
+    const networkQuota = await this.configsService.findOne({
       where: {
-        and: [{ PropertyKey: 'networkQuota' }, { ServiceTypeID: 'vdc' }],
+        propertyKey: 'networkQuota',
+        serviceTypeId: ServiceTypesEnum.Vdc,
       },
     });
-    const { __vcloudTask } = await mainWrapper.admin.vdc.updateVdc(
+    const providerVdcReferenceHref =
+      process.env.VCLOUD_BASE_URL +
+      '/api/admin/providervdc/' +
+      props.genId.split(':').slice(-1)[0];
+    const { __vcloudTask } = await this.adminVdcWrapperService.updateVdc(
       {
-        cores: serviceItemsKeys.cpuCores.Quantity,
-        ram: serviceItemsKeys.ram.Quantity,
+        cores: Number(groupedItems.generation.cpu[0].value),
+        ram: Number(groupedItems.generation.ram[0].value),
         name: props.name,
         authToken: adminSession,
-        vm: serviceItemsKeys.vm.Quantity,
-        networkQuota: networkQuota.Value,
-        nicQuota: vcdConfig.admin.vdc.nicQuota,
-        providerVdcReference: vcdConfig.admin.vdc.ProviderVdcReference,
-        ResourceGuaranteedMemory: vcdConfig.admin.vdc.ResourceGuaranteedMemory,
-        ResourceGuaranteedCpu: vcdConfig.admin.vdc.ResourceGuaranteedCpu,
+        vm: Number(groupedItems.generation.vm[0].value),
+        networkQuota: Number(networkQuota.value),
+        nicQuota: 0,
+        providerVdcReference: {
+          href: providerVdcReferenceHref,
+        },
+        resourceGuaranteedMemory: Number(groupedItems.memoryReservation.value),
+        resourceGuaranteedCpu: Number(groupedItems.cpuReservation.value),
+        allocationModel: AllocationModel.FLEX,
       },
       props.vdcId,
     );
-    console.log(__vcloudTask, '😴');
     const checkTaskFilter = `href==${__vcloudTask}`;
-    await checkVdcTask(
+    await this.vdcFactoryService.checkVdcTask(
       adminSession,
       checkTaskFilter,
-      'task',
+      TaskQueryTypes.Task,
       1500,
       'increaseComputeResourcesTask',
-    );
-    await logger.info(
-      'vdc',
-      'increaseComputeResources',
-      {
-        _object: loggerOptions.serviceInstanceId,
-      },
-      loggerOptions,
     );
   }
 }
