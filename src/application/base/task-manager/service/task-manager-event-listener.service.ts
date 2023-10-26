@@ -24,6 +24,7 @@ export class TaskManagerEventListenerService extends QueueEventsHost {
       await this.taskManagerService.taskQueue.getJob(job.jobId);
     await this.tasksTableService.update(jobDetails.data.taskId, {
       status: TasksStatusEnum.Error,
+      details: job.failedReason,
     });
   }
 

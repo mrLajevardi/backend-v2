@@ -205,17 +205,37 @@ export class CreateServiceService {
       );
     }
     if (checkCredit && invoice.type === 2) {
-      const task = await this.newTaskManagerService.createFlow(
-        TasksEnum.UpgradeVdc,
+      const service = await this.serviceInstancesTable.findById(
         invoice.serviceInstanceId,
       );
-      taskId = task.taskId;
+      await this.extendService.upgradeService(
+        invoice.serviceInstanceId,
+        invoiceId,
+      );
+      if (service.serviceTypeId === ServiceTypesEnum.Vdc) {
+        const task = await this.newTaskManagerService.createFlow(
+          TasksEnum.UpgradeVdc,
+          invoice.serviceInstanceId,
+        );
+        taskId = task.taskId;
+      }
     }
+    this.InvoiceTableService.updateAll(
+      {
+        userId: userId,
+        id: invoice.id,
+      },
+      {
+        payed: true,
+        serviceInstanceId: invoice.serviceInstanceId,
+      },
+    );
     return Promise.resolve({
       id: serviceInstanceId,
       taskId: taskId,
       token: null,
     });
+    // update user invoice
   }
   async repairService(
     options: SessionRequest,

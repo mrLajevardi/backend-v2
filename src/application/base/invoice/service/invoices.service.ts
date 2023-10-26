@@ -195,6 +195,7 @@ export class InvoicesService implements BaseInvoiceService {
       groupedItems,
       data.serviceInstanceId,
     );
+    console.log(dto);
 
     const invoice = await this.invoicesTable.create(dto);
     await this.invoiceFactoryService.createInvoiceItems(
