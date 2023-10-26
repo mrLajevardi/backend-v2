@@ -20,7 +20,9 @@ import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/servic
 import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
 
 @Injectable()
-export class IncreaseNumberOfIps implements BaseTask<UpgradeVdcStepsEnum> {
+export class IncreaseNumberOfIpsService
+  implements BaseTask<UpgradeVdcStepsEnum>
+{
   stepName: UpgradeVdcStepsEnum;
   constructor(
     private readonly invoiceFactoryService: InvoiceFactoryService,
@@ -82,19 +84,23 @@ export class IncreaseNumberOfIps implements BaseTask<UpgradeVdcStepsEnum> {
       },
     });
     const assignedIpList = this.convertIpRangeToIpObject(assignedIps);
-    const { __vcloudTask, ipRange: newIpRange } =
-      await this.adminEdgeGatewayWrapperService.updateEdge(
-        {
-          name: props.edgeName,
-          authToken: adminSession,
-          alreadyAssignedIpCounts: assignedIps.length,
-          alreadyAssignedIpList: assignedIpList,
-          userIpCount: Number(groupedItems.generation.ip[0]),
-          vdcId: props.vdcId,
-        },
-        edgeId,
-        primaryIp,
-      );
+    if (Number(groupedItems.generation.ip[0].value) === assignedIpList.length) {
+      return;
+    }
+    const u = await this.adminEdgeGatewayWrapperService.updateEdge(
+      {
+        name: props.edgeName,
+        authToken: adminSession,
+        alreadyAssignedIpCounts: assignedIps.length,
+        alreadyAssignedIpList: assignedIpList,
+        userIpCount: Number(groupedItems.generation.ip[0]),
+        vdcId: props.vdcId,
+      },
+      edgeId,
+      primaryIp,
+    );
+    console.log(u);
+    const { __vcloudTask, ipRange: newIpRange } = u;
     const checkTaskFilter = `href==${__vcloudTask}`;
     await this.vdcFactoryService.checkVdcTask(
       adminSession,

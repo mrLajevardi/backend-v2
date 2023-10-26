@@ -13,7 +13,7 @@ import { TransactionsTableService } from '../../crud/transactions-table/transact
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { ExtendServiceService } from './extend-service.service';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
-import { TaskManagerService } from '../../tasks/service/task-manager.service';
+import { TaskManagerService as oldTaskManager } from '../../tasks/service/task-manager.service';
 import { VgpuService } from 'src/application/vgpu/vgpu.service';
 import { CreateServiceDto } from '../dto/create-service.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
@@ -25,6 +25,8 @@ import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes'
 import { ServiceTypesEnum } from '../enum/service-types.enum';
 import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
+import { TaskManagerService } from '../../task-manager/service/task-manager.service';
+import { TasksEnum } from '../../task-manager/enum/tasks.enum';
 
 @Injectable()
 export class CreateServiceService {
@@ -35,11 +37,12 @@ export class CreateServiceService {
     private readonly InvoiceTableService: InvoicesTableService,
     private readonly extendService: ExtendServiceService,
     private readonly tasksTableService: TasksTableService,
-    private readonly taskManagerService: TaskManagerService,
+    private readonly taskManagerService: oldTaskManager,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly vgpuService: VgpuService,
     private readonly discountsTable: DiscountsTableService,
     private readonly itemTypesTable: ItemTypesTableService,
+    private readonly newTaskManagerService: TaskManagerService,
   ) {}
 
   async createService(
@@ -200,26 +203,13 @@ export class CreateServiceService {
           serviceInstanceId: serviceInstanceId,
         },
       );
-    } else if (checkCredit && !transaction.isApproved && invoice.type === 2) {
-      // const service = await increaseServiceResources(app, options, invoice);
-      // serviceInstanceId = service.ID;
-      // const args = {
-      //   invoiceId: invoice.ID,
-      // };
-      // const stringifiedArgs = JSON.stringify(args);
-      // if (service.ServiceTypeID == 'vdc') {
-      //   const task = await taskManager.createFlow(
-      //     'increaseVdcResources',
-      //     service.ID,
-      //     stringifiedArgs,
-      //   );
-      //   taskId = task.TaskID;
-      // }
-      // await createExtendService.approveTransactionAndInvoice(
-      //   app,
-      //   invoice,
-      //   transaction,
-      // );
+    }
+    if (checkCredit && invoice.type === 2) {
+      const task = await this.newTaskManagerService.createFlow(
+        TasksEnum.UpgradeVdc,
+        invoice.serviceInstanceId,
+      );
+      taskId = task.taskId;
     }
     return Promise.resolve({
       id: serviceInstanceId,

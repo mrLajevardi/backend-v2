@@ -36,9 +36,6 @@ export class InvoiceFactoryService {
   constructor(
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
     private readonly invoiceItemTableService: InvoiceItemsTableService,
-    private readonly serviceItemsTableService: ServiceItemsTableService,
-    private readonly vdcFactoryService: VdcFactoryService,
-    private readonly costCalculationsService: CostCalculationService,
   ) {}
   async groupVdcItems(invoiceItems: InvoiceItemsDto[]): Promise<VdcItemGroup> {
     const vdcItemGroup: VdcItemGroup = {} as VdcItemGroup;
@@ -204,22 +201,5 @@ export class InvoiceFactoryService {
       }
     }
     return invoiceItems;
-  }
-
-  async calculateCurrentServiceInvoice(
-    serviceInstanceId: string,
-  ): Promise<TotalInvoiceItemCosts> {
-    const serviceItems = await this.serviceItemsTableService.find({
-      where: {
-        serviceInstanceId,
-      },
-    });
-    const transformedItems =
-      this.vdcFactoryService.transformItems(serviceItems);
-    const invoiceCost =
-      await this.costCalculationsService.calculateVdcStaticTypeInvoice({
-        itemsTypes: transformedItems,
-      });
-    return invoiceCost;
   }
 }

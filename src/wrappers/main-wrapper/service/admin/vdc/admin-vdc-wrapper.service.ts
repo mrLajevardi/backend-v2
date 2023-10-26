@@ -199,12 +199,12 @@ export class AdminVdcWrapperService {
       allocationModel: vdcConfig.AllocationModel,
       computeCapacity: {
         cpu: {
-          unit: VdcUnits.CpuUnit,
+          units: VdcUnits.CpuUnit,
           allocated: cpuAllocation,
           limit: cpuLimit,
         },
         memory: {
-          unit: VdcUnits.RamUnit,
+          units: VdcUnits.RamUnit,
           allocated: config.ram * 1024,
           limit: config.ram * 1024,
         },
@@ -213,6 +213,8 @@ export class AdminVdcWrapperService {
       vmQuota: config.vm,
       nicQuota: config.nicQuota,
       networkQuota: config.networkQuota,
+      resourceGuaranteedCpu: config.resourceGuaranteedCpu,
+      resourceGuaranteedMemory: config.resourceGuaranteedMemory,
     };
     const options = {
       headers: { Authorization: `Bearer ${config.authToken}` },

@@ -1,7 +1,7 @@
 import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
 
 export interface EndpointInterface {
-  method: Method;
+  method: string;
   resource: string;
   params: object;
   body: object | string;

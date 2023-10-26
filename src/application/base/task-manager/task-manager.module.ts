@@ -1,31 +1,49 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TaskManagerService } from './service/task-manager.service';
 import { taskFactory } from './taskFactory';
-import { Task1Service } from './tasks/increaseVdcResources/task1.service';
-import { IncreaseVdcResourceTaskService } from './tasks/increaseVdcResources/increaseVdcResourceTask.service';
 import { BullModule } from '@nestjs/bullmq';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CrudModule } from '../crud/crud.module';
+import { FlowProducers, QueueNames } from './enum/queue-names.enum';
+import { UpgradeVdcService } from './tasks/upgradeVdc/upgrade-vdc.service';
+import { IncreaseNumberOfIpsService } from './tasks/upgradeVdc/increase-number-of-ips.service';
+import { UpgradeVdcComputeResourcesService } from './tasks/upgradeVdc/upgrade-compute-resources.service';
+import { UpgradeDiskResourcesService } from './tasks/upgradeVdc/upgrade-disk-resource.service';
+import { InvoicesModule } from '../invoice/invoices.module';
+import { VdcModule } from 'src/application/vdc/vdc.module';
+import { SessionsModule } from '../sessions/sessions.module';
+import { ServicePropertiesModule } from '../service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { TaskManagerEventListenerService } from './service/task-manager-event-listener.service';
 @Module({
   imports: [
     BullModule.registerQueue({
-      name: 'newTasks',
+      name: QueueNames.NewTaskManager,
     }),
     BullModule.registerFlowProducer({
-      name: 'newTasksFlowProducer',
+      name: FlowProducers.NewTaskManagerFlow,
     }),
     DatabaseModule,
     CrudModule,
+    forwardRef(() => InvoicesModule),
+    forwardRef(() => VdcModule),
+    SessionsModule,
+    ServicePropertiesModule,
+    MainWrapperModule,
   ],
   providers: [
+    TaskManagerEventListenerService,
     TaskManagerService,
+    UpgradeVdcService,
     {
       provide: 'TASK_MANAGER_TASKS',
       useFactory: taskFactory,
-      inject: [IncreaseVdcResourceTaskService],
+      inject: [UpgradeVdcService],
     },
-    Task1Service,
-    IncreaseVdcResourceTaskService,
+    IncreaseNumberOfIpsService,
+    UpgradeVdcComputeResourcesService,
+    UpgradeDiskResourcesService,
   ],
+  exports: [TaskManagerService],
 })
 export class TaskManagerModule {}

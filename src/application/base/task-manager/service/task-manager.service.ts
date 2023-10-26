@@ -1,11 +1,4 @@
-import {
-  Injectable,
-  Inject,
-  InternalServerErrorException,
-} from '@nestjs/common';
-import { TaskInterface } from '../interface/base-task.interface';
-import { Task1Service } from '../tasks/increaseVdcResources/task1.service';
-import { TasksSchemaInterface } from '../interface/tasks-schema.interface';
+import { Inject, InternalServerErrorException } from '@nestjs/common';
 import {
   InjectQueue,
   Processor,
@@ -14,20 +7,22 @@ import {
 } from '@nestjs/bullmq';
 import { FlowJob, FlowProducer, Job, Queue } from 'bullmq';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
-import { TasksConfigsInterface } from '../interface/tasks-configs.interface';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { Tasks } from 'src/infrastructure/database/entities/Tasks';
+import { TasksEnum } from '../enum/tasks.enum';
+import { TasksSchema } from '../interface/tasks-schema.interface';
+import { FlowProducers, QueueNames } from '../enum/queue-names.enum';
 
 @Processor('newTask', {
   concurrency: 50,
 })
 export class TaskManagerService extends WorkerHost {
   constructor(
-    @InjectQueue('newTasks')
-    private taskQueue: Queue,
+    @InjectQueue(QueueNames.NewTaskManager)
+    public taskQueue: Queue,
     @Inject('TASK_MANAGER_TASKS')
-    private taskManagerTasks: TasksSchemaInterface,
-    @InjectFlowProducer('newTasksFlowProducer')
+    public taskManagerTasks: TasksSchema,
+    @InjectFlowProducer(FlowProducers.NewTaskManagerFlow)
     private newTaskFlowProducer: FlowProducer,
     private readonly tasksTableService: TasksTableService,
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
@@ -43,15 +38,8 @@ export class TaskManagerService extends WorkerHost {
     if (task.status === 'success' || job.data.type !== 'step') {
       return;
     }
-    const targetTask: TasksConfigsInterface =
-      this.taskManagerTasks[task.operation];
-    const steps: TaskInterface[] = targetTask.steps;
-    // console.log(
-    //   steps.indexOf(task.currentStep),
-    //   task.CurrentStep,
-    //   steps.indexOf(job.name),
-    //   job.name,
-    // );
+    const targetTask = this.taskManagerTasks[task.operation];
+    const steps = targetTask.steps;
     let currentStepIndex: number;
     let currentJobIndex: number;
     for (const step of steps) {
@@ -68,14 +56,13 @@ export class TaskManagerService extends WorkerHost {
     if (currentStepIndex < currentJobIndex) {
       return;
     }
-    const targetStep: TaskInterface = steps[currentJobIndex];
-    await targetStep.execute(job);
+    await steps[currentJobIndex].execute(job);
     return;
   }
 
   private async initTask(
-    operation,
-    serviceInstanceId,
+    operation: TasksEnum,
+    serviceInstanceId: string,
     args = null,
   ): Promise<Tasks> {
     if (!serviceInstanceId) {
@@ -88,7 +75,6 @@ export class TaskManagerService extends WorkerHost {
     if (!service || !taskFound) {
       throw new InternalServerErrorException();
     }
-    const steps: TaskInterface[] = this.newTaskFlowProducer[operation].steps;
     const task = await this.tasksTableService.create({
       userId: service.userId,
       serviceInstanceId: serviceInstanceId,
@@ -99,23 +85,21 @@ export class TaskManagerService extends WorkerHost {
       status: 'running',
       arguments: args,
       stepCounts: 0,
-      currentStep: steps[steps.length - 1].stepName,
+      currentStep: taskFound.steps[taskFound.steps.length - 1].stepName,
     });
     return task;
   }
 
   async createFlow(
-    taskName: string,
+    taskName: TasksEnum,
     serviceInstanceId: string,
     args: Record<string, never> | null = null,
     options = {},
   ): Promise<Tasks> {
     const task = await this.initTask(taskName, serviceInstanceId, args);
     const { taskId } = task;
-    const flowProducer = new FlowProducer();
-    const queueName = 'newTasks';
-    const targetTaskConfig: TasksConfigsInterface =
-      this.taskManagerTasks[taskName];
+    const queueName = QueueNames.NewTaskManager;
+    const targetTaskConfig = this.taskManagerTasks[taskName];
     const flow: FlowJob = {
       name: taskName,
       data: {
@@ -127,7 +111,7 @@ export class TaskManagerService extends WorkerHost {
     let lastChildRef: FlowJob = flow;
     for (const step in targetTaskConfig.steps) {
       const lastChild = {
-        name: step,
+        name: targetTaskConfig.steps[step].stepName,
         queueName,
         data: {
           type: 'step',
@@ -140,7 +124,7 @@ export class TaskManagerService extends WorkerHost {
       lastChildRef.children = [lastChild];
       lastChildRef = lastChild;
     }
-    await flowProducer.add(flow);
+    await this.newTaskFlowProducer.add(flow);
     return task;
   }
 }

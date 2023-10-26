@@ -12,6 +12,7 @@ import { BASE_INVOICE_SERVICE } from './interface/service/invoice.interface';
 import { InvoiceFactoryService } from './service/invoice-factory.service';
 import { InvoiceFactoryVdcService } from './service/invoice-factory-vdc.service';
 import { UserModule } from '../user/user.module';
+import { VdcModule } from 'src/application/vdc/vdc.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UserModule } from '../user/user.module';
     CrudModule,
     DatacenterModule,
     UserModule,
+    VdcModule,
     // VgpuModule,
     forwardRef(() => VgpuModule),
   ],

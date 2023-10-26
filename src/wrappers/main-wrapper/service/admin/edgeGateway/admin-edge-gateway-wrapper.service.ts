@@ -257,6 +257,7 @@ export class AdminEdgeGatewayWrapperService {
       'AdminEdgeGatewayEndpointService.updateEdgeGatewayEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    console.log('🥖🥖🥖🥖');
     const edgeGateway =
       await this.vcloudWrapperService.request<GetEdgeClusterDto>(
         wrapper(options),

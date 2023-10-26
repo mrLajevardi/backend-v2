@@ -19,13 +19,13 @@ import {
   VdcInvoiceCalculatorResultDto,
 } from '../dto/vdc-invoice-calculator.dto';
 import { TemplatesTableService } from '../../crud/templates/templates-table.service';
-import {
-  TemplatesDto,
-  TemplatesStructure,
-} from 'src/application/vdc/dto/templates.dto';
+import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { IsNull, Not } from 'typeorm';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
+import { TotalInvoiceItemCosts } from '../interface/invoice-item-cost.interface';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -37,6 +37,8 @@ export class InvoicesService implements BaseInvoiceService {
     private readonly transactionTable: TransactionsTableService,
     private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
     private readonly templateTableService: TemplatesTableService,
+    private readonly vdcFactoryService: VdcFactoryService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
   ) {}
 
   async createVdcInvoice(
@@ -179,10 +181,9 @@ export class InvoicesService implements BaseInvoiceService {
     const userId = options.user.userId;
     const invoiceCost =
       await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
-    const currentInvoice =
-      await this.invoiceFactoryService.calculateCurrentServiceInvoice(
-        data.serviceInstanceId,
-      );
+    const currentInvoice = await this.calculateCurrentServiceInvoice(
+      data.serviceInstanceId,
+    );
     invoiceCost.totalCost = invoiceCost.totalCost - currentInvoice.totalCost;
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       data.itemsTypes,
@@ -216,5 +217,22 @@ export class InvoicesService implements BaseInvoiceService {
         userId: options.user.userId,
       },
     });
+  }
+
+  async calculateCurrentServiceInvoice(
+    serviceInstanceId: string,
+  ): Promise<TotalInvoiceItemCosts> {
+    const serviceItems = await this.serviceItemsTableService.find({
+      where: {
+        serviceInstanceId,
+      },
+    });
+    const transformedItems =
+      this.vdcFactoryService.transformItems(serviceItems);
+    const invoiceCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice({
+        itemsTypes: transformedItems,
+      });
+    return invoiceCost;
   }
 }
