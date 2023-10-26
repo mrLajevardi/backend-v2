@@ -4,22 +4,20 @@ import { UpgradeVdcStepsEnum } from './enum/upgrade-vdc-steps.enum';
 import { Job } from 'bullmq';
 import { TaskDataType } from '../../interface/task-data-type.interface';
 import { TasksEnum } from '../../enum/tasks.enum';
-import { UpgradeVdcArguments } from './interface/upgrade-vdc-arguments.interface';
 import { InvoiceFactoryService } from 'src/application/base/invoice/service/invoice-factory.service';
 import { ServiceItemsTableService } from 'src/application/base/crud/service-items-table/service-items-table.service';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
-import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
 import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
 import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
-import { ServiceTypesEnum } from 'src/application/base/service/enum/service-types.enum';
 import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
 import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
 import { IpRangeObject } from './interface/ip-range-object.interface';
 import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
 import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
+import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
 
 @Injectable()
 export class IncreaseNumberOfIps implements BaseTask<UpgradeVdcStepsEnum> {
@@ -31,21 +29,24 @@ export class IncreaseNumberOfIps implements BaseTask<UpgradeVdcStepsEnum> {
     private readonly sessionService: SessionsService,
     private readonly serviceProperties: ServicePropertiesService,
     private readonly servicePropertiesTableService: ServicePropertiesTableService,
-    private readonly configsService: ConfigsTableService,
     private readonly adminEdgeGatewayWrapperService: AdminEdgeGatewayWrapperService,
+    private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
     private readonly tasksTableService: TasksTableService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.IncreaseNumberOfIps;
   }
 
-  execute(job: Job<TaskDataType, any, TasksEnum>) {}
+  execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
+    return this.increaseNumberOfIps(job);
+  }
 
   async increaseNumberOfIps(
     job: Job<TaskDataType, any, TasksEnum>,
   ): Promise<void> {
     const {
-      data: { serviceInstanceId },
+      data: { serviceInstanceId, taskId },
     } = job;
+    const task = await this.tasksTableService.findById(taskId);
     const serviceItems = await this.serviceItemsTableService.find({
       where: {
         serviceInstanceId,
@@ -58,15 +59,13 @@ export class IncreaseNumberOfIps implements BaseTask<UpgradeVdcStepsEnum> {
       await this.serviceProperties.getAllServiceProperties<VdcProperties>(
         serviceInstanceId,
       );
+    const userSession = await this.sessionService.checkUserSession(
+      task.userId,
+      props.orgId,
+    );
     const adminSession = await this.sessionService.checkAdminSession();
-    const networkQuota = await this.configsService.findOne({
-      where: {
-        propertyKey: 'networkQuota',
-        serviceTypeId: ServiceTypesEnum.Vdc,
-      },
-    });
     const filter = `name==${props.edgeName}`;
-    const currentGateway = await mainWrapper.user.edgeGateway.getEdgeGateway(
+    const currentGateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       userSession,
       1,
       1,
@@ -90,7 +89,7 @@ export class IncreaseNumberOfIps implements BaseTask<UpgradeVdcStepsEnum> {
           authToken: adminSession,
           alreadyAssignedIpCounts: assignedIps.length,
           alreadyAssignedIpList: assignedIpList,
-          userIpCount: groupedItems.generation.ip[0],
+          userIpCount: Number(groupedItems.generation.ip[0]),
           vdcId: props.vdcId,
         },
         edgeId,

@@ -4,6 +4,7 @@ import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
 import { GetAvailableIpAddressesDto } from './dto/get-available-ip-addresses.dto';
 import { GetExternalNetworksDto } from './dto/get-external-networks.dto';
 import { GetNsxtEdgeClustersDto } from './dto/get-nsxt-edge-cluster.dto';
+import { UpdateEdgeGatewayDto } from './dto/update-edge-gateway.dto';
 
 @Injectable()
 export class AdminEdgeGatewayEndpointService {
@@ -62,6 +63,20 @@ export class AdminEdgeGatewayEndpointService {
       resource: `/cloudapi/1.0.0/nsxTResources/edgeClusters`,
       params: options.params,
       body: null,
+      headers: {
+        Accept: 'application/json;version=38.0.0-alpha',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    };
+  }
+
+  updateEdgeGatewayEndpoint(options: UpdateEdgeGatewayDto): EndpointInterface {
+    return {
+      method: 'put',
+      resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.edgeId}`,
+      params: {},
+      body: options.body,
       headers: {
         Accept: 'application/json;version=38.0.0-alpha',
         'Content-Type': 'application/json',
