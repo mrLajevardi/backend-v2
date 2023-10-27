@@ -32,6 +32,7 @@ import {
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { getTransactionsDto } from '../../crud/transactions-table/dto/get-transactions.dto';
+import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -68,6 +69,20 @@ export class InvoicesController {
   @Post()
   async create(
     @Body() dto: CreateServiceInvoiceDto,
+    @Request() options: SessionRequest,
+  ): Promise<any> {
+    return this.invoiceService.createVdcInvoice(dto, options);
+  }
+
+  // create new item
+  @ApiOperation({ summary: 'Create a new item' })
+  @ApiResponse({
+    status: 201,
+    description: 'The item has been successfully created',
+  })
+  @Put('/upgrade')
+  async upgradeAndExtend(
+    @Body() dto: UpgradeAndExtendDto,
     @Request() options: SessionRequest,
   ): Promise<any> {
     return this.invoiceService.createVdcInvoice(dto, options);

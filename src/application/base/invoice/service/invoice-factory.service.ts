@@ -202,4 +202,10 @@ export class InvoiceFactoryService {
     }
     return invoiceItems;
   }
+
+  async checkVdcUpdateType(groupedItems: VdcItemGroup, invoiceItems: InvoiceItemsDto[]) {
+    if (groupedItems.period === null) {
+      return 
+    }
+  }
 }

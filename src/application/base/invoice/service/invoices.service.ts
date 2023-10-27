@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { CostCalculationService } from './cost-calculation.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
+import {
+  CreateServiceInvoiceDto,
+  InvoiceItemsDto,
+} from '../dto/create-service-invoice.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { InvoiceIdDto } from '../dto/invoice-id.dto';
 
@@ -26,6 +29,11 @@ import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { TotalInvoiceItemCosts } from '../interface/invoice-item-cost.interface';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import {
+  VdcGenerationItems,
+  VdcItemGroup,
+} from '../interface/vdc-item-group.interface.dto';
+import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -50,11 +58,37 @@ export class InvoicesService implements BaseInvoiceService {
       switch (dto.type) {
         case InvoiceTypes.Create:
           return this.createVdcStaticInvoice(dto, options, null);
-        case InvoiceTypes.Upgrade:
-          return this.upgradeVdcStaticInvoice(options, dto);
       }
 
       return InvoiceIdDto.generateMock();
+    }
+  }
+
+  async upgradeAndExtendService(invoice: UpgradeAndExtendDto, options) {
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      invoice.itemsTypes,
+    );
+    const checkGenerationNotExists = Object.values(
+      groupedItems.generation,
+    ).some((value: VdcGenerationItems[]) => {
+      value.length === 0;
+    });
+    if (!checkGenerationNotExists && groupedItems.period) {
+      await this.extendService(
+        invoice.serviceInstanceId,
+        groupedItems.period,
+        options,
+      );
+      return this.upgradeVdcStaticInvoice(options, invoice); // TODO
+    }
+    if (groupedItems.period) {
+      return this.extendService(
+        invoice.serviceInstanceId,
+        groupedItems.period,
+        options,
+      );
+    } else if (!checkGenerationNotExists) {
+      return this.upgradeVdcStaticInvoice(options, invoice);
     }
   }
 
@@ -176,22 +210,35 @@ export class InvoicesService implements BaseInvoiceService {
 
   async upgradeVdcStaticInvoice(
     options: SessionRequest,
-    data: CreateServiceInvoiceDto,
+    data: UpgradeAndExtendDto,
   ): Promise<InvoiceIdDto> {
     const userId = options.user.userId;
-    const invoiceCost =
-      await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
-    const currentInvoice = await this.calculateCurrentServiceInvoice(
-      data.serviceInstanceId,
-    );
-    invoiceCost.totalCost = invoiceCost.totalCost - currentInvoice.totalCost;
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       data.itemsTypes,
     );
+    const serviceItems = await this.serviceItemsTableService.find({
+      where: {
+        serviceInstanceId: data.serviceInstanceId,
+      },
+    });
+    const transformedItems =
+      this.vdcFactoryService.transformItems(serviceItems);
+    const finalInvoiceCost =
+      await this.costCalculationService.calculateRemainingPeriod(
+        transformedItems,
+        data.itemsTypes,
+        groupedItems,
+        12,
+      );
+    const convertedInvoice: CreateServiceInvoiceDto = {
+      ...data,
+      templateId: null,
+      type: InvoiceTypes.Upgrade,
+    };
     const dto = await this.invoiceFactoryService.createInvoiceDto(
       userId,
-      data,
-      invoiceCost,
+      convertedInvoice,
+      finalInvoiceCost,
       groupedItems,
       data.serviceInstanceId,
     );
@@ -200,7 +247,7 @@ export class InvoicesService implements BaseInvoiceService {
     const invoice = await this.invoicesTable.create(dto);
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,
-      invoiceCost.itemsSum,
+      finalInvoiceCost.itemsSum,
     );
     return {
       invoiceId: invoice.id,
@@ -220,20 +267,61 @@ export class InvoicesService implements BaseInvoiceService {
     });
   }
 
-  async calculateCurrentServiceInvoice(
+  async extendService(
     serviceInstanceId: string,
-  ): Promise<TotalInvoiceItemCosts> {
+    periodItem: VdcItemGroup['period'],
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
     const serviceItems = await this.serviceItemsTableService.find({
       where: {
         serviceInstanceId,
       },
     });
+    const lastInvoice = await this.invoicesTable.findOne({
+      where: {
+        serviceInstanceId,
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+
     const transformedItems =
       this.vdcFactoryService.transformItems(serviceItems);
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      transformedItems,
+    );
+    const newItems = transformedItems.map((item) => {
+      if (item.itemTypeId === groupedItems.period.id) {
+        return {
+          itemTypeId: periodItem.id,
+          value: periodItem.value,
+        };
+      }
+      return item;
+    });
+    const invoice: CreateServiceInvoiceDto = {
+      itemsTypes: newItems,
+      serviceInstanceId,
+      servicePlanTypes: lastInvoice.servicePlanType,
+      templateId: null,
+      type: InvoiceTypes.Extend,
+    };
+
     const invoiceCost =
-      await this.costCalculationService.calculateVdcStaticTypeInvoice({
-        itemsTypes: transformedItems,
-      });
-    return invoiceCost;
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(invoice);
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      options.user.userId,
+      invoice,
+      invoiceCost,
+      groupedItems,
+      serviceInstanceId,
+    );
+    const createdInvoice = await this.invoicesTable.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      createdInvoice.id,
+      invoiceCost.itemsSum,
+    );
+    return { invoiceId: createdInvoice.id };
   }
 }
