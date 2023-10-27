@@ -4,8 +4,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CrudModule } from '../../crud/crud.module';
 import { taskFactory } from '../taskFactory';
-import { IncreaseVdcResourceTaskService } from '../tasks/increaseVdcResources/increaseVdcResourceTask.service';
-import { Task1Service } from '../tasks/increaseVdcResources/task1.service';
+import { FlowProducers, QueueNames } from '../enum/queue-names.enum';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -14,10 +13,10 @@ describe('TaskManagerService', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         BullModule.registerQueue({
-          name: 'newTasks',
+          name: QueueNames.NewTaskManager,
         }),
         BullModule.registerFlowProducer({
-          name: 'newTasksFlowProducer',
+          name: FlowProducers.NewTaskManagerFlow,
         }),
         DatabaseModule,
         CrudModule,
@@ -27,10 +26,8 @@ describe('TaskManagerService', () => {
         {
           provide: 'TASK_MANAGER_TASKS',
           useFactory: taskFactory,
-          inject: [IncreaseVdcResourceTaskService],
+          inject: [],
         },
-        Task1Service,
-        IncreaseVdcResourceTaskService,
       ],
     }).compile();
 

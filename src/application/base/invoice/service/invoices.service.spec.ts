@@ -11,6 +11,7 @@ import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoiceFactoryService } from './invoice-factory.service';
 import { InvoiceFactoryVdcService } from './invoice-factory-vdc.service';
 import { UserModule } from '../../user/user.module';
+import { VdcModule } from 'src/application/vdc/vdc.module';
 
 describe('InvoicesService', () => {
   let service: InvoicesService;
@@ -23,6 +24,7 @@ describe('InvoicesService', () => {
         DatacenterModule,
         CrudModule,
         UserModule,
+        VdcModule,
         forwardRef(() => VgpuModule),
       ],
       providers: [

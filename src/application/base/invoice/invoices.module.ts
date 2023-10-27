@@ -20,7 +20,7 @@ import { VdcModule } from 'src/application/vdc/vdc.module';
     CrudModule,
     DatacenterModule,
     UserModule,
-    VdcModule,
+    forwardRef(() => VdcModule),
     // VgpuModule,
     forwardRef(() => VgpuModule),
   ],
