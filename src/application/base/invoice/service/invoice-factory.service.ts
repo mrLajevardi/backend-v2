@@ -113,6 +113,8 @@ export class InvoiceFactoryService {
     invoiceCost: TotalInvoiceItemCosts,
     groupedItems: VdcItemGroup,
     serviceInstanceId: string,
+    remainingDays: number,
+    date: Date,
   ): Promise<CreateInvoicesDto> {
     const dto: CreateInvoicesDto = {
       userId: Number(userId),
@@ -120,7 +122,7 @@ export class InvoiceFactoryService {
       rawAmount: invoiceCost.totalCost,
       finalAmount: invoiceCost.totalCost,
       type: data.type,
-      endDateTime: addMonths(new Date(), parseInt(groupedItems.period.value)),
+      endDateTime: addMonths(date, remainingDays),
       dateTime: new Date(),
       serviceTypeId: groupedItems.generation.ip[0].serviceTypeId,
       name: 'invoice' + Math.floor(Math.random() * 100),
@@ -201,11 +203,5 @@ export class InvoiceFactoryService {
       }
     }
     return invoiceItems;
-  }
-
-  async checkVdcUpdateType(groupedItems: VdcItemGroup, invoiceItems: InvoiceItemsDto[]) {
-    if (groupedItems.period === null) {
-      return 
-    }
   }
 }

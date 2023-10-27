@@ -100,6 +100,7 @@ export class CostCalculationService {
     currentInvoiceItems: InvoiceItemsDto[],
     newInvoice: InvoiceItemsDto[],
     groupedItems: VdcItemGroup,
+    groupedOldItems: VdcItemGroup,
     remainingDays: number,
   ): Promise<TotalInvoiceItemCosts> {
     const currentInvoiceCost = await this.calculateVdcStaticTypeInvoice(
@@ -109,7 +110,8 @@ export class CostCalculationService {
       { applyPeriodPercent: false },
     );
     currentInvoiceCost.totalCost =
-      currentInvoiceCost.totalCost / (30 * Number(groupedItems.period.value));
+      currentInvoiceCost.totalCost /
+      (30 * Number(groupedOldItems.period.value));
     const newInvoiceCost = await this.calculateVdcStaticTypeInvoice(
       {
         itemsTypes: newInvoice,

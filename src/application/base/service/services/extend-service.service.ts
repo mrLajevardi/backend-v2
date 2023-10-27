@@ -319,7 +319,7 @@ export class ExtendServiceService {
   ): Promise<{ serviceInstanceId: string }> {
     //const token = null;
     const userId = options.user.userId;
-    const serviceInstanceId = invoice.serviceInstance.id;
+    const serviceInstanceId = invoice.serviceInstanceId;
 
     const oldSerivce = await this.serviceInstancesTable.findOne({
       where: {

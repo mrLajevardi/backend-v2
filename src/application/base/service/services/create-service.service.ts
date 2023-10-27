@@ -105,13 +105,42 @@ export class CreateServiceService {
           options,
           invoice,
         );
+      await this.extendService.upgradeService(
+        invoice.serviceInstanceId,
+        invoiceId,
+      );
       serviceInstanceId = extendedService.serviceInstanceId;
       await this.extendService.approveTransactionAndInvoice(
         invoice,
         transaction,
       );
     }
-
+    if (checkCredit && invoice.type === InvoiceTypes.UpgradeAndExtend) {
+      const extendedService =
+        await this.extendService.extendServiceInstanceAndToken(
+          options,
+          invoice,
+        );
+      serviceInstanceId = extendedService.serviceInstanceId;
+      const service = await this.serviceInstancesTable.findById(
+        invoice.serviceInstanceId,
+      );
+      await this.extendService.upgradeService(
+        invoice.serviceInstanceId,
+        invoiceId,
+      );
+      if (service.serviceTypeId === ServiceTypesEnum.Vdc) {
+        const task = await this.newTaskManagerService.createFlow(
+          TasksEnum.UpgradeVdc,
+          invoice.serviceInstanceId,
+        );
+        taskId = task.taskId;
+      }
+      await this.extendService.approveTransactionAndInvoice(
+        invoice,
+        transaction,
+      );
+    }
     // creating new service instance
     if (checkCredit && invoice.type === InvoiceTypes.Create) {
       // make user service instance
@@ -204,7 +233,7 @@ export class CreateServiceService {
         },
       );
     }
-    if (checkCredit && invoice.type === 2) {
+    if (checkCredit && invoice.type === InvoiceTypes.Upgrade) {
       const service = await this.serviceInstancesTable.findById(
         invoice.serviceInstanceId,
       );

@@ -85,7 +85,7 @@ export class InvoicesController {
     @Body() dto: UpgradeAndExtendDto,
     @Request() options: SessionRequest,
   ): Promise<any> {
-    return this.invoiceService.createVdcInvoice(dto, options);
+    return this.invoiceService.upgradeAndExtendInvoice(dto, options);
   }
 
   // update an existing item
