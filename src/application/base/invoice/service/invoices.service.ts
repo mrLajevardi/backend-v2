@@ -235,9 +235,26 @@ export class InvoicesService implements BaseInvoiceService {
     const groupedOldItems = await this.invoiceFactoryService.groupVdcItems(
       transformedItems,
     );
+    const swapItem = groupedOldItems.generation.disk.find(
+      (item) => item.code === DiskItemCodes.Swap,
+    );
+    const swapItemIndex = transformedItems.findIndex((item) => {
+      if (item.itemTypeId === swapItem.id) {
+        groupedOldItems.generation.disk.splice(
+          groupedOldItems.generation.disk.indexOf(swapItem),
+          1,
+        );
+        return item;
+      }
+    });
+    transformedItems.splice(swapItemIndex, 1);
     if (groupedItems.period) {
       invoiceType = InvoiceTypes.UpgradeAndExtend;
       remainingDays = Number(groupedItems.period.value) * 30 + remainingDays;
+      await this.validationService.checkExtendVdcInvoice(
+        groupedItems.period,
+        service,
+      );
     } else {
       groupedItems.period = groupedOldItems.period;
       data.itemsTypes.push({
@@ -245,6 +262,9 @@ export class InvoicesService implements BaseInvoiceService {
         value: groupedItems.period.value,
       });
     }
+
+    // check upgrade vdc
+    await this.validationService.checkUpgradeVdc(data, service);
     const finalInvoiceCost =
       await this.costCalculationService.calculateRemainingPeriod(
         transformedItems,
@@ -298,6 +318,7 @@ export class InvoicesService implements BaseInvoiceService {
     const service = await this.serviceInstanceTableService.findById(
       serviceInstanceId,
     );
+    await this.validationService.checkExtendVdcInvoice(periodItem, service);
     const date =
       new Date().getTime() >= new Date(service.expireDate).getTime()
         ? new Date()
