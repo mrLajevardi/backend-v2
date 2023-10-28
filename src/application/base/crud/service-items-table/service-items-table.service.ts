@@ -12,6 +12,11 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
+import {
+  JoinServiceItemsAndServiceItemsTypeTreeModelDto,
+  JoinServiceItemsAndServiceItemsTypeTreeReturnType,
+} from './dto/join-service-item-and-service-items-tree.dto';
 
 @Injectable()
 export class ServiceItemsTableService {
@@ -80,5 +85,34 @@ export class ServiceItemsTableService {
     where: FindOptionsWhere<ServiceItems>,
   ): Promise<DeleteResult> {
     return await this.repository.delete(where);
+  }
+
+  async joinServiceItemsAndServiceItemsTypeTree(
+    serviceInstanceId: string,
+  ): Promise<
+    Omit<JoinServiceItemsAndServiceItemsTypeTreeReturnType, 'build'>[]
+  > {
+    const queryBuilder = this.repository.createQueryBuilder('ServiceItems');
+    const result: JoinServiceItemsAndServiceItemsTypeTreeModelDto[] =
+      await queryBuilder
+        .select(
+          'ServiceItems.ID as ServiceItemsID, ServiceItems.ItemTypeID, ServiceItems.ServiceInstanceID, ServiceItems.Value',
+        )
+        .where('ServiceItems.ServiceInstanceID = :serviceInstanceId', {
+          serviceInstanceId,
+        })
+        .innerJoin(
+          ServiceItemTypesTree,
+          'ServiceItemsTree',
+          'ServiceItemsTree.ID = ServiceItems.ItemTypeID',
+        )
+        .addSelect('ServiceItemsTree.CodeHierarchy')
+        .printSql()
+        .getRawMany();
+    const transformedResult: JoinServiceItemsAndServiceItemsTypeTreeReturnType[] =
+      result.map((value) =>
+        new JoinServiceItemsAndServiceItemsTypeTreeReturnType(value).build(),
+      );
+    return transformedResult;
   }
 }

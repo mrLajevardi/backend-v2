@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
+import {
+  CreateServiceInvoiceDto,
+  InvoiceItemsDto,
+} from '../dto/create-service-invoice.dto';
 import {
   InvoiceGroupItem,
   VdcGenerationItems,
@@ -12,6 +15,7 @@ import {
 } from '../interface/invoice-item-cost.interface';
 import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import { CalculateOptions } from '../interface/calculate-options.interface';
 
 @Injectable()
 export class CostCalculationService {
@@ -69,6 +73,7 @@ export class CostCalculationService {
 
   async calculateVdcStaticTypeInvoice(
     invoice: Partial<CreateServiceInvoiceDto>,
+    options: CalculateOptions = { applyPeriodPercent: true },
   ): Promise<TotalInvoiceItemCosts> {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       invoice.itemsTypes,
@@ -80,7 +85,9 @@ export class CostCalculationService {
     const itemsPeriodCost =
       totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);
     const discountValue = itemsPeriodCost * periodItem.percent;
-    const periodTotalCost = itemsPeriodCost + discountValue;
+    const periodTotalCost = options.applyPeriodPercent
+      ? itemsPeriodCost + discountValue
+      : 0;
     const supportCosts = groupedItems.guaranty.fee * parseInt(periodItem.value);
     const invoiceTotalCosts = periodTotalCost + supportCosts;
     return {
@@ -89,7 +96,36 @@ export class CostCalculationService {
       totalCost: invoiceTotalCosts,
     };
   }
-
+  async calculateRemainingPeriod(
+    currentInvoiceItems: InvoiceItemsDto[],
+    newInvoice: InvoiceItemsDto[],
+    groupedItems: VdcItemGroup,
+    groupedOldItems: VdcItemGroup,
+    remainingDays: number,
+  ): Promise<TotalInvoiceItemCosts> {
+    const currentInvoiceCost = await this.calculateVdcStaticTypeInvoice(
+      {
+        itemsTypes: currentInvoiceItems,
+      },
+      { applyPeriodPercent: false },
+    );
+    currentInvoiceCost.totalCost =
+      currentInvoiceCost.totalCost /
+      (30 * Number(groupedOldItems.period.value));
+    const newInvoiceCost = await this.calculateVdcStaticTypeInvoice(
+      {
+        itemsTypes: newInvoice,
+      },
+      {
+        applyPeriodPercent: false,
+      },
+    );
+    newInvoiceCost.totalCost =
+      newInvoiceCost.totalCost / (30 * Number(groupedItems.period.value));
+    newInvoiceCost.totalCost =
+      (newInvoiceCost.totalCost - currentInvoiceCost.totalCost) * remainingDays;
+    return newInvoiceCost;
+  }
   async calculateComputeResourcesCosts(
     generationsItem: Pick<VdcGenerationItems, 'cpu' | 'ram'>,
     reservations: Pick<VdcItemGroup, 'cpuReservation' | 'memoryReservation'>,

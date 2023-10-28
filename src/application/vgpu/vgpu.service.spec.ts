@@ -6,6 +6,7 @@ import { CrudModule } from '../base/crud/crud.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { TasksModule } from '../base/tasks/tasks.module';
 import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
+import { forwardRef } from '@nestjs/common';
 
 /// test instance 28697f62-a319-4e22-af49-075c34a14bb2
 
@@ -21,7 +22,7 @@ describe('VgpuService', () => {
         JwtModule,
         SessionsModule,
         PayAsYouGoModule,
-        TasksModule,
+        forwardRef(() => TasksModule),
       ],
       providers: [VgpuService, JwtService],
     }).compile();

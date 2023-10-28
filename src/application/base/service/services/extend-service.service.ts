@@ -34,6 +34,7 @@ import {
   BASE_DATACENTER_SERVICE,
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
+import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
 
 @Injectable()
 export class ExtendServiceService {
@@ -318,7 +319,7 @@ export class ExtendServiceService {
   ): Promise<{ serviceInstanceId: string }> {
     //const token = null;
     const userId = options.user.userId;
-    const serviceInstanceId = invoice.serviceInstance.id;
+    const serviceInstanceId = invoice.serviceInstanceId;
 
     const oldSerivce = await this.serviceInstancesTable.findOne({
       where: {
@@ -372,5 +373,25 @@ export class ExtendServiceService {
         payed: true,
       },
     );
+  }
+
+  async upgradeService(
+    serviceInstanceId: string,
+    invoiceId: number,
+  ): Promise<void> {
+    const invoiceItems = await this.invoiceItemsTableService.find({
+      where: {
+        invoiceId,
+      },
+    });
+    await this.serviceItemsTable.deleteAll({
+      serviceInstanceId,
+    });
+    await this.createServiceItems(invoiceItems, serviceInstanceId);
+    await this.servicePropertiesTable.deleteAll({
+      propertyKey: VdcServiceProperties.GenerationId,
+      serviceInstanceId,
+    });
+    await this.addGenIdToServiceProperties(invoiceItems, serviceInstanceId);
   }
 }

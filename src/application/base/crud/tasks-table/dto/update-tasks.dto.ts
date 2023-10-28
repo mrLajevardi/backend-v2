@@ -47,7 +47,7 @@ export class UpdateTasksDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  currrentStep?: string | null;
+  currentStep?: string | null;
 
   @IsNumber()
   @ApiProperty()

@@ -7,13 +7,13 @@ export class ServicePropertiesService {
     private readonly servicePropertiesTable: ServicePropertiesTableService,
   ) {}
 
-  async getAllServiceProperties(serviceId: string): Promise<object> {
+  async getAllServiceProperties<T = object>(serviceId: string): Promise<T> {
     const ServiceProperties = await this.servicePropertiesTable.find({
       where: {
         serviceInstanceId: serviceId,
       },
     });
-    const props = {};
+    const props: T = {} as T;
     for (const prop of ServiceProperties) {
       props[prop.propertyKey] = prop.value;
     }
