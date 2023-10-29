@@ -34,10 +34,15 @@ import { NetworksModule } from '../../networks/networks.module';
 import { ServiceItemModule } from '../../base/service-item/service-item.module';
 import { AxiosError } from 'axios';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
-import { VdcGenerationItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
+import {
+  DiskItemCodes,
+  VdcGenerationItemCodes,
+} from '../../base/itemType/enum/item-type-codes.enum';
 import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.enum';
 import { ServiceStatusEnum } from '../../base/service/enum/service-status.enum';
 import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
+import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dto';
 
 describe('VdcDetailService', () => {
   let service: VdcDetailService;
@@ -137,12 +142,22 @@ describe('VdcDetailService', () => {
   });
 
   it('should return a storage detail with valid instance id', async () => {
-    const res: VdcInvoiceDetailsInfoResultDto[] = [
+    const res: VdcStoragesDetailResultDto[] = [
       {
-        unit: 'GB',
-        code: 'Disk',
-        price: 1000,
-        value: '1000',
+        id: '',
+        value: 1000,
+        usage: 258,
+        title: 'disk',
+      },
+      {
+        id: '',
+        value: 1000,
+        usage: 258,
+        title: 'disk',
+      },
+      {
+        id: '',
+        value: 1000,
         usage: 258,
         title: 'disk',
       },
@@ -166,30 +181,22 @@ describe('VdcDetailService', () => {
   });
 
   it('should return some some storage detail with valid instance id', async () => {
-    const res: VdcInvoiceDetailsInfoResultDto[] = [
+    const res: VdcStoragesDetailResultDto[] = [
       {
-        unit: 'GB',
-        code: 'Disk',
-        price: 1000,
-        value: '1000',
+        id: '',
+        value: 1000,
         usage: 258,
         title: 'disk',
       },
-
       {
-        unit: 'GB',
-        code: 'Disk2',
-        price: 1000,
-        value: '1000',
+        id: '',
+        value: 1000,
         usage: 258,
         title: 'disk',
       },
-
       {
-        unit: 'GB',
-        code: 'Disk3',
-        price: 1000,
-        value: '1000',
+        id: '',
+        value: 1000,
         usage: 258,
         title: 'disk',
       },
@@ -302,5 +309,101 @@ describe('VdcDetailService', () => {
     expect(model.natRules).toBe(res.natRules);
     expect(model.applicationPortProfiles).toBe(res.applicationPortProfiles);
     expect(myMock).toHaveBeenCalled();
+  });
+
+  it('should return vdc items limit with valid service instance id', async () => {
+    const validRes: VdcItemLimitResultDto = {
+      cpuInfo: { max: 4 },
+      ramInfo: { max: 16 },
+      diskInfo: [
+        { name: DiskItemCodes.Archive },
+        { name: DiskItemCodes.Fast },
+        { name: DiskItemCodes.Swap },
+        { name: DiskItemCodes.Standard },
+        { name: DiskItemCodes.Vip },
+      ],
+    };
+    const myMock = jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId) => {
+        if (serviceInstanceId === validServiceInstanceId) {
+          return Promise.resolve(validRes);
+        }
+      });
+    const res = await service.getVdcItemLimit(validServiceInstanceId, null);
+    expect(res).not.toBeNull();
+    expect(res.ramInfo.max).toBeGreaterThan(15);
+    expect(res.cpuInfo.max).toBeGreaterThan(2);
+    // expect(res.cpuInfo.cpuCoreCountable.length).toBeGreaterThan(0);
+    expect(
+      res.diskInfo.map((disk) => disk.name).includes(DiskItemCodes.Standard),
+    ).toBe(true);
+    expect(
+      res.diskInfo.map((disk) => disk.name).includes(DiskItemCodes.Vip),
+    ).toBe(true);
+  });
+
+  it('should return null with invalid service instance id  ', async () => {
+    jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId) => {
+        if (serviceInstanceId === invalidServiceInstanceId) {
+          return Promise.resolve({});
+        }
+      });
+
+    const model = await service.getVdcItemLimit(invalidServiceInstanceId, null);
+
+    expect(model.cpuInfo).toBeUndefined();
+    expect(model.diskInfo).toBeUndefined();
+    expect(model.ramInfo).toBeUndefined();
+  });
+
+  it('should return at least one disk type with valid service instance id ', async () => {
+    const validRes: VdcItemLimitResultDto = {
+      diskInfo: [{ name: DiskItemCodes.Standard }],
+    };
+
+    jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId, option) => {
+        if (serviceInstanceId === validServiceInstanceId) {
+          return Promise.resolve(validRes);
+        }
+      });
+
+    const model = await service.getVdcItemLimit(validServiceInstanceId, null);
+
+    expect(model.diskInfo.length).toBeGreaterThan(0);
+    expect(
+      model.diskInfo.map((disk) => disk.name).includes(DiskItemCodes.Standard),
+    ).toBe(true);
+  });
+
+  it('should return two  disk type with a vdc that has two disk type ', async () => {
+    const validRes: VdcItemLimitResultDto = {
+      diskInfo: [
+        { name: DiskItemCodes.Standard, id: '' },
+        { name: DiskItemCodes.Archive, id: '' },
+      ],
+    };
+
+    jest
+      .spyOn(service, 'getVdcItemLimit')
+      .mockImplementation((serviceInstanceId) => {
+        if (serviceInstanceId === validServiceInstanceId) {
+          return Promise.resolve(validRes);
+        }
+      });
+
+    const model = await service.getVdcItemLimit(validServiceInstanceId, null);
+
+    expect(model.diskInfo.length).toBe(2);
+    expect(
+      model.diskInfo
+        .map((disk) => disk.name)
+        .includes(DiskItemCodes.Standard) &&
+        model.diskInfo.map((disk) => disk.name).includes(DiskItemCodes.Archive),
+    ).toBe(true);
   });
 });

@@ -1,15 +1,7 @@
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-import { GetServicesReturnDto } from '../../base/service/dto/return/get-services.dto';
-import { In } from 'typeorm';
+
 import { Injectable } from '@nestjs/common';
 import { ServiceInstancesTableService } from '../../base/crud/service-instances-table/service-instances-table.service';
-import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-all-vdc-service-with-items-result.dto';
-import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
-import { ServiceServiceFactory } from '../../base/service/Factory/service.service.factory';
-import { ServicePropertiesService } from '../../base/service-properties/service-properties.service';
-import { SessionsService } from '../../base/sessions/sessions.service';
-import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
-import { VdcFactoryService } from './vdc.factory.service';
 import { ServiceItems } from '../../../infrastructure/database/entities/ServiceItems';
 import { ServiceItemTypesTree } from '../../../infrastructure/database/entities/views/service-item-types-tree';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
@@ -18,6 +10,13 @@ import { InvoiceDetailVdcModel } from '../../base/invoice/interface/invoice-deta
 import { InvoiceFactoryVdcService } from '../../base/invoice/service/invoice-factory-vdc.service';
 import { VdcDetailFecadeService } from './vdc-detail.fecade.service';
 import { VdcDetailModel } from '../interface/vdc-detail-model.interface';
+import {
+  DiskTypeItemLimitInfo,
+  VdcItemLimitResultDto,
+} from '../dto/vdc-Item-limit.result.dto';
+import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dto';
+import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
+import { VmService } from '../../vm/service/vm.service';
 
 @Injectable()
 export class VdcDetailFactoryService {
@@ -25,6 +24,7 @@ export class VdcDetailFactoryService {
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
     private readonly vdcDetailFecadeService: VdcDetailFecadeService,
+    private readonly vmService: VmService,
   ) {}
 
   getVdcDetailItemModel(vdcModels: VdcModel[], res2: VdcDetailsResultDto) {
@@ -187,5 +187,65 @@ export class VdcDetailFactoryService {
       return new VdcDetailModel(model);
     });
     return res;
+  }
+  fillModelVdcItemLimit(
+    model: VdcItemLimitResultDto,
+    vdcDetail: VdcDetailsResultDto,
+    cpuCoreUsageVmOffs: number,
+    ramUsageVmOffs: number,
+    diskItemsModel: VdcStoragesDetailResultDto[],
+  ) {
+    model.cpuInfo.max = Number(vdcDetail.cpu.value);
+
+    model.cpuInfo.maxUsableWithOnVMs =
+      Number(vdcDetail.cpu.value) - Number(vdcDetail.cpu.usage);
+
+    model.cpuInfo.maxUsableWithOffVMs =
+      Number(vdcDetail.cpu.value) - cpuCoreUsageVmOffs;
+    model.cpuInfo.maxUsableWithOffAndOnVMs =
+      Number(vdcDetail.cpu.value) -
+      (cpuCoreUsageVmOffs + Number(vdcDetail.cpu.usage));
+
+    //////////////////////////////////////////////////
+    model.ramInfo.max = Number(vdcDetail.ram.value);
+
+    model.ramInfo.maxUsableWithOnVMs =
+      Number(vdcDetail.ram.value) - Number(vdcDetail.ram.usage);
+
+    model.ramInfo.maxUsableWithOffVMs =
+      Number(vdcDetail.ram.value) - ramUsageVmOffs;
+
+    model.ramInfo.maxUsableWithOffAndOnVMs =
+      Number(vdcDetail.ram.value) -
+      (cpuCoreUsageVmOffs + Number(vdcDetail.ram.usage));
+
+    model.diskInfo = diskItemsModel.map((storage) => {
+      return {
+        name: storage.title,
+        id: storage.id,
+      } as DiskTypeItemLimitInfo;
+    });
+  }
+
+  async calcComputeVdcItemByVms(
+    option: Request & {
+      user: UserPayload;
+    },
+    serviceInstanceId: string,
+  ) {
+    const vmFilters = 'status==POWERED_OFF';
+    const vmOffs = await this.vmService.getAllUserVm(
+      option,
+      serviceInstanceId,
+      vmFilters,
+      '',
+    );
+    let ramUsageVmOffs = 0;
+    let cpuCoreUsageVmOffs = 0;
+    vmOffs.values.map((vm) => {
+      ramUsageVmOffs += vm.memory;
+      cpuCoreUsageVmOffs += vm.cpu;
+    });
+    return { ramUsageVmOffs, cpuCoreUsageVmOffs };
   }
 }

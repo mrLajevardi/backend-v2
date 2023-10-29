@@ -15,6 +15,7 @@ import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { NetworksService } from '../../networks/networks.service';
 
 @Injectable()
 export class VmService {
@@ -25,6 +26,7 @@ export class VmService {
     private readonly organizationTableService: OrganizationTableService,
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
+    private readonly networkService: NetworksService,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId) {
@@ -365,7 +367,7 @@ export class VmService {
       filter,
     });
     const vmValues = [];
-    vmList.data.record.forEach((recordItem) => {
+    for (const recordItem of vmList.data.record) {
       const id = recordItem.href.split('vApp/')[1];
       const name = recordItem.name;
       const os = recordItem.guestOs;
@@ -374,6 +376,9 @@ export class VmService {
       const memory = recordItem.memoryMB;
       const status = recordItem.status;
       const containerId = recordItem.container.split('vApp/')[1];
+      const countOfNetworks = (
+        await this.networkService.getNetworks(options, id, 1, 1, '', '')
+      ).resultTotal;
       vmValues.push({
         id,
         name,
@@ -384,8 +389,9 @@ export class VmService {
         status,
         containerId,
         snapshot: recordItem.snapshot,
+        countOfNetworks,
       });
-    });
+    }
     const data = {
       total: vmList.data.total,
       pageSize: vmList.data.pageSize,

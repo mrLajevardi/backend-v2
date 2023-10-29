@@ -37,6 +37,8 @@ import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
 import { TemplatesTableService } from 'src/application/base/crud/templates/templates-table.service';
 import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 import { TemplatesDto, templatesQueryParamsDto } from '../dto/templates.dto';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 // import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
 @ApiBearerAuth()
@@ -306,5 +308,23 @@ export class VdcController {
     @Query() templatesQueryDto: templatesQueryParamsDto,
   ): Promise<TemplatesDto[]> {
     return this.vdcService.getTemplates(templatesQueryDto);
+  }
+
+  @Get(':serviceInstanceId/limitItems')
+  // @Public()
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcItemLimit(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<VdcItemLimitResultDto> {
+    return this.baseVdcDetailService.getVdcItemLimit(
+      serviceInstanceId,
+      options,
+    );
   }
 }

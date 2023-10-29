@@ -54,7 +54,9 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
     ServicePropertiesModule,
     AbilityModule,
     // forwardRef(() => ServiceModule),
-    NetworksModule,
+    forwardRef(() => NetworksModule),
+
+    // NetworksModule,
     ServiceItemModule,
     ServiceInstancesTableModule,
   ],
