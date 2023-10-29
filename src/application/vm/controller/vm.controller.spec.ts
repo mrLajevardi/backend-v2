@@ -21,7 +21,7 @@ describe('VmController', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
-       forwardRef(()=> NetworksModule) ,
+        forwardRef(() => NetworksModule),
       ],
       providers: [VmService],
       controllers: [VmController],

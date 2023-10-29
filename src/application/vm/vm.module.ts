@@ -17,7 +17,7 @@ import { NetworksModule } from '../networks/networks.module';
     SessionsModule,
     CrudModule,
     MainWrapperModule,
-    forwardRef(()=>NetworksModule) ,
+    forwardRef(() => NetworksModule),
   ],
   controllers: [VmController],
   providers: [VmService],
