@@ -203,7 +203,7 @@ export class TaskManagerService {
     });
   }
 
-  async checkVdcVms(
+  async disableVms(
     serviceInstanceId: string,
     customTaskId: string,
     requestOptions: object,
@@ -262,7 +262,7 @@ export class TaskManagerService {
           id: serviceInstanceId,
         },
         {
-          isDeleted: true,
+          isDisabled: true,
         },
       );
       await this.taskTable.updateAll(
@@ -805,7 +805,7 @@ export class TaskManagerService {
     let vcloudTask = null;
     const userId = service.userId;
     const user = await this.userTable.findById(userId);
-    const vdcName = user?.username + '_org_vdc_' + service.index;
+    const vdcName = user?.username.toLowerCase() + '_org_vdc_' + service.index;
 
     const session = await this.sessionService.checkAdminSession();
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
@@ -1052,7 +1052,7 @@ export class TaskManagerService {
       },
       {
         // true
-        isDisabled: 1,
+        isDisabled: true,
       },
     );
     await this.serviceInstancesTable.updateAll(
@@ -1170,7 +1170,7 @@ export class TaskManagerService {
       },
       {
         //false
-        isDisabled: 0,
+        isDisabled: false,
         status: 3,
       },
     );

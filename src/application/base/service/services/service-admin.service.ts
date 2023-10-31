@@ -282,7 +282,7 @@ export class ServiceAdminService {
       },
       {
         status: 3,
-        isDisabled: 0, // false
+        isDisabled: false, // false
       },
     );
     if (serviceType === 'vdc') {

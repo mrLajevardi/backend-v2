@@ -8,7 +8,6 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
-
 export class CreateServiceInstancesDto {
   @ApiProperty()
   userId: number;
@@ -58,7 +57,7 @@ export class CreateServiceInstancesDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty()
-  isDisabled?: number;
+  isDisabled?: boolean;
 
   @IsOptional()
   @IsString()
