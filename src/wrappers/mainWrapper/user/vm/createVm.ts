@@ -3,6 +3,7 @@ import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import * as process from 'process';
 /**
  *
  * @param {String} authToken
@@ -31,16 +32,18 @@ export async function userCreateVm(authToken, vdcId, config) {
   const formattedVdcId = vdcId.split(':').slice(-1);
   const computePolicy = await userGetVdcComputePolicy(authToken, vdcId);
   const computePolicyId = computePolicy.values[0].id;
-  const query = await vcloudQuery(authToken, {
-    type: 'orgVdcStorageProfile',
-    format: 'records',
-    page: 1,
-    pageSize: 128,
-    filterEncoded: true,
-    links: true,
-    filter: `vdc==${vdcId}`,
-  });
-  const vdcStorageProfileLink = query.data.record[0].href;
+  // const query = await vcloudQuery(authToken, {
+  //   type: 'orgVdcStorageProfile',
+  //   format: 'records',
+  //   page: 1,
+  //   pageSize: 128,
+  //   filterEncoded: true,
+  //   links: true,
+  //   filter: `vdc==${vdcId}`,
+  // });
+  // const vdcStorageProfileLink = query.data.record[0].href;
+  // https://labvpc.aradcloud.com/api/vdcStorageProfile/4e66b449-ee0d-46fd-8983-3667f056d25f
+  const vdcStorageProfileLink = `${process.env.VCLOUD_BASE_URL}/api/vdcStorageProfile/`;
   const networks = [];
   const storage = [];
   if (!isEmpty(config.networks)) {
@@ -61,12 +64,13 @@ export async function userCreateVm(authToken, vdcId, config) {
     { busNumber: 0, unitNumber: 1 },
     { busNumber: 0, unitNumber: 2 },
     { busNumber: 0, unitNumber: 3 },
-    { busNumber: 0, unitNumber: 4 },
-    { busNumber: 0, unitNumber: 5 },
-    { busNumber: 0, unitNumber: 6 },
-    { busNumber: 1, unitNumber: 0 },
-    { busNumber: 1, unitNumber: 1 },
-    { busNumber: 1, unitNumber: 1 },
+    //
+    // { busNumber: 0, unitNumber: 4 },
+    // { busNumber: 0, unitNumber: 5 },
+    // { busNumber: 0, unitNumber: 6 },
+    // { busNumber: 1, unitNumber: 0 },
+    // { busNumber: 1, unitNumber: 1 },
+    // { busNumber: 1, unitNumber: 1 },
   ];
   config.storage.forEach((storageElem, index) => {
     const storageObj = {
@@ -77,7 +81,7 @@ export async function userCreateVm(authToken, vdcId, config) {
       'root:ThinProvisioned': 'true',
       'root:StorageProfile': {
         $: {
-          href: vdcStorageProfileLink,
+          href: `${vdcStorageProfileLink}/${storageElem.policyId}`,
           type: 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
         },
       },

@@ -16,6 +16,10 @@ import { CreateTemplateDto } from '../dto/create-template.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 import { NetworksService } from '../../networks/networks.service';
+import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
+import { groupBy } from '../../../infrastructure/utils/extensions/array.extensions';
+import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
+import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
 
 @Injectable()
 export class VmService {
@@ -127,6 +131,10 @@ export class VmService {
   }
 
   async createVm(options, data, serviceInstanceId) {
+    if ((data.storage as []).length > 4) {
+      return new ExceedEnoughDiskCountException();
+    }
+
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -377,8 +385,8 @@ export class VmService {
       const status = recordItem.status;
       const containerId = recordItem.container.split('vApp/')[1];
       const countOfNetworks = (
-        await this.networkService.getNetworks(options, id, 1, 1, '', '')
-      ).resultTotal;
+        await this.getVmNetworkSection(options, serviceInstanceId, id)
+      ).networkConnections.length;
       vmValues.push({
         id,
         name,
@@ -531,6 +539,7 @@ export class VmService {
       props.vdcId,
     );
     const data = [];
+
     vmSpecSection.diskSection.diskSettings.forEach((settings) => {
       const targetAdaptor = hardwareInfo.hardDiskAdapter.find(
         (diskAdaptor) => diskAdaptor.legacyId == settings.adapterType,
@@ -1410,6 +1419,18 @@ export class VmService {
   }
 
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
+    const res = groupBy(data, (setting) => (setting as any).adapterType);
+    for (const key in res) {
+      const length = (DiskBusUnitBusNumberSpace[key] as []).length;
+
+      const list = res[key] as [];
+      if (list.length > length) {
+        return new ExceedEnoughDiskCountException(
+          `You can not create more than ${length} items for busType ${key}`,
+        );
+      }
+    }
+
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
