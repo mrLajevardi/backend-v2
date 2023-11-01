@@ -9,6 +9,7 @@ import { SessionsService } from 'src/application/base/sessions/sessions.service'
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { User } from 'src/infrastructure/database/entities/User';
+import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
 
 @Injectable()
 export class CheckServiceService {
@@ -109,6 +110,9 @@ export class CheckServiceService {
             await this.servicePropertiesServicee.getAllServiceProperties(
               service.id,
             );
+          await this.serviceInstancesTable.update(service.id, {
+            status: ServiceStatusEnum.Disabled,
+          });
           const session = await this.sessionService.checkAdminSession();
           await mainWrapper.admin.vdc.disableVdc(session, props['vdcId']);
           await this.taskManagerService.addTask({
