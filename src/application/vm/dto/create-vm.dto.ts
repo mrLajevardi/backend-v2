@@ -6,9 +6,9 @@ type Network = {
   networkName: string;
 };
 
-type Storage = { sizeMb: number };
+type Storage = { sizeMb: number; policyId: string };
 
-export class CreateVmTest {
+export class CreateVm {
   computerName: string;
   name: string;
   coreNumber: number;

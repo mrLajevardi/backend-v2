@@ -20,6 +20,8 @@ import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk
 import { groupBy } from '../../../infrastructure/utils/extensions/array.extensions';
 import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
 import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
+import { CreateVm } from '../dto/create-vm.dto';
+import { SnapShotDetails } from '../dto/snap-shot-details.dto';
 
 @Injectable()
 export class VmService {
@@ -130,7 +132,7 @@ export class VmService {
     });
   }
 
-  async createVm(options, data, serviceInstanceId) {
+  async createVm(options, data: CreateVm, serviceInstanceId: string) {
     if ((data.storage as []).length > 4) {
       return new ExceedEnoughDiskCountException();
     }
@@ -568,7 +570,11 @@ export class VmService {
     return Promise.resolve(data);
   }
 
-  async getSnapShotDetails(options, serviceInstanceId, vmId) {
+  async getSnapShotDetails(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    vmId: string,
+  ): Promise<SnapShotDetails> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -580,9 +586,14 @@ export class VmService {
     );
     const vm = await mainWrapper.user.vm.getVapp(session, vmId);
 
+    const snapshotSection = vm.data.section.filter(
+      (d) => d._type == 'SnapshotSectionType',
+    )[0];
+
+    // SnapshotSectionType
     const snapShotInf: SnapShotDetails = {
-      snapShotTime: vm.data.SnapshotSection.Snapshot.created,
-      snapShotSize: vm.data.SnapshotSection.Snapshot.size,
+      snapShotTime: snapshotSection.snapshot.created,
+      snapShotSize: snapshotSection.snapshot.size,
     };
 
     return Promise.resolve(snapShotInf);

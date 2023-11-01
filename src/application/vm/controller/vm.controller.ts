@@ -22,7 +22,7 @@ import {
 import { VmService } from '../service/vm.service';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
-import { CreateVmTest } from '../dto/create-vm.dto';
+import { CreateVm } from '../dto/create-vm.dto';
 import { SnapShotDetails } from '../dto/snap-shot-details.dto';
 
 @ApiTags('VM')
@@ -103,7 +103,7 @@ export class VmController {
   async createVm(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-    @Body() data: CreateVmTest,
+    @Body() data: CreateVm,
   ): Promise<any> {
     return this.vmService.createVm(options, data, serviceInstanceId);
   }
@@ -330,7 +330,7 @@ export class VmController {
     return this.vmService.getVmGeneralSection(options, serviceInstanceId, vmId);
   }
 
-  @Get('/:serviceInstanceId/:vmId/snapshotdetails')
+  @Get('/:serviceInstanceId/:vmId/snapshotDetails')
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'vmId', description: 'vm id' })
   @ApiResponse({

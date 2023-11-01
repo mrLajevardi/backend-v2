@@ -4,6 +4,7 @@ import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 import * as process from 'process';
+import { CreateVm } from '../../../../application/vm/dto/create-vm.dto';
 /**
  *
  * @param {String} authToken
@@ -28,7 +29,11 @@ import * as process from 'process';
  * @param {String} config.networks.networkName
  * @param {String} config.networks.isConnected
  */
-export async function userCreateVm(authToken, vdcId, config) {
+export async function userCreateVm(
+  authToken: string,
+  vdcId: string,
+  config: CreateVm,
+) {
   const formattedVdcId = vdcId.split(':').slice(-1);
   const computePolicy = await userGetVdcComputePolicy(authToken, vdcId);
   const computePolicyId = computePolicy.values[0].id;
