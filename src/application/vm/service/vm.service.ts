@@ -374,6 +374,9 @@ export class VmService {
       type: 'vm',
       filter,
     });
+
+    console.log(vmList);
+
     const vmValues = [];
     for (const recordItem of vmList.data.record) {
       const id = recordItem.href.split('vApp/')[1];
@@ -563,6 +566,26 @@ export class VmService {
       data.push(diskSection);
     });
     return Promise.resolve(data);
+  }
+
+  async getSnapShotDetails(options, serviceInstanceId, vmId) {
+    const userId = options.user.userId;
+    const props: any =
+      await this.servicePropertiesService.getAllServiceProperties(
+        serviceInstanceId,
+      );
+    const session = await this.sessionsServices.checkUserSession(
+      userId,
+      props.orgId,
+    );
+    const vm = await mainWrapper.user.vm.getVapp(session, vmId);
+
+    const snapShotInf: SnapShotDetails = {
+      snapShotTime: vm.data.SnapshotSection.Snapshot.created,
+      snapShotSize: vm.data.SnapshotSection.Snapshot.size,
+    };
+
+    return Promise.resolve(snapShotInf);
   }
 
   async getVmGeneralSection(options, serviceInstanceId, vmId) {
