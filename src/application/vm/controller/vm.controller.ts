@@ -22,6 +22,8 @@ import {
 import { VmService } from '../service/vm.service';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
+import { CreateVm } from '../dto/create-vm.dto';
+import { SnapShotDetails } from '../dto/snap-shot-details.dto';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -101,7 +103,7 @@ export class VmController {
   async createVm(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-    @Body() data: CreateVmFromTemplate,
+    @Body() data: CreateVm,
   ): Promise<any> {
     return this.vmService.createVm(options, data, serviceInstanceId);
   }
@@ -326,6 +328,22 @@ export class VmController {
     @Request() options,
   ): Promise<any> {
     return this.vmService.getVmGeneralSection(options, serviceInstanceId, vmId);
+  }
+
+  @Get('/:serviceInstanceId/:vmId/snapshotDetails')
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiResponse({
+    status: 201,
+    description: 'acquire vm tickets',
+    type: 'object',
+  })
+  async getSnapShotDetails(
+    @Param('serviceInstanceId') serviceInstanceId: string,
+    @Param('vmId') vmId: string,
+    @Request() options,
+  ): Promise<SnapShotDetails> {
+    return this.vmService.getSnapShotDetails(options, serviceInstanceId, vmId);
   }
 
   @Get('/:serviceInstanceId/getHardwareInfo')

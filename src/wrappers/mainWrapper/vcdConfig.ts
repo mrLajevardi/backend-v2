@@ -5,6 +5,9 @@ export const vcdConfig = {
       connectionType: 'INTERNAL',
       connectionTypeValue: 'INTERNAL',
     },
+    storageProfile: {
+      name: 'vdcStorageProfile',
+    },
   },
   admin: {
     org: {
