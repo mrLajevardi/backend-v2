@@ -9,6 +9,7 @@ import { SessionsService } from 'src/application/base/sessions/sessions.service'
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { User } from 'src/infrastructure/database/entities/User';
+import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
 
 @Injectable()
 export class CheckServiceService {
@@ -37,7 +38,7 @@ export class CheckServiceService {
       const date = new Date(
         new Date().getTime() + warningsProp.daysAfterNow * 24 * 60 * 60 * 1000,
       );
-      let data: any[] = await this.serviceInstancesTable.enabledServices([
+      let data = await this.serviceInstancesTable.enabledServices([
         date,
         'vdc',
       ]);
@@ -46,16 +47,19 @@ export class CheckServiceService {
         console.log('tes', { data, date });
       }
       for (const service of data) {
-        if (service.WarningSent < warningsProp.index) {
+        if (service.warningSent < warningsProp.index) {
           await this.serviceInstancesTable.updateAll(
             {
-              id: service.ID,
+              id: service.id,
             },
             {
-              warningSent: parseInt(service.WarningSent) + 1,
+              warningSent: service.warningSent + 1,
             },
           );
           const user: User = await this.userTable.findById(service.userId);
+          if (!user.email) {
+            return;
+          }
           const options =
             this.notificationService.emailContents.serviceExpirationWarning(
               warningsProp.message,
@@ -79,14 +83,14 @@ export class CheckServiceService {
       );
       if (warningsProp.code === 'deleteService') {
         console.log('hello');
-        const data: any = await this.serviceInstancesTable.disabledServices([
+        const data = await this.serviceInstancesTable.disabledServices([
           date,
           'vdc',
         ]);
         for (const service of data) {
           // console.log(service);
           await this.taskManagerService.addTask({
-            serviceInstanceId: service.ID,
+            serviceInstanceId: service.id,
             customTaskId: null,
             requestOptions: {},
             vcloudTask: null,
@@ -96,21 +100,23 @@ export class CheckServiceService {
         }
       } else if (warningsProp.code === 'disableService') {
         console.log('first');
-        const data: any =
-          await this.serviceInstancesTable.enabledServiceExtended([
-            date,
-            'vdc',
-          ]);
+        const data = await this.serviceInstancesTable.enabledServiceExtended([
+          date,
+          'vdc',
+        ]);
         // console.log({ data, date });
         for (const service of data) {
           const props =
             await this.servicePropertiesServicee.getAllServiceProperties(
-              service.ID,
+              service.id,
             );
+          await this.serviceInstancesTable.update(service.id, {
+            status: ServiceStatusEnum.Disabled,
+          });
           const session = await this.sessionService.checkAdminSession();
           await mainWrapper.admin.vdc.disableVdc(session, props['vdcId']);
           await this.taskManagerService.addTask({
-            serviceInstanceId: service.ID,
+            serviceInstanceId: service.id,
             customTaskId: null,
             requestOptions: {},
             vcloudTask: null,

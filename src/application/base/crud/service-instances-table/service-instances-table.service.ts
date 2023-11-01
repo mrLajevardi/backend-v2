@@ -13,6 +13,10 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import {
+  ServiceInstanceModel,
+  ServiceInstancesDto,
+} from './dto/service-instances.dto';
 
 @Injectable()
 export class ServiceInstancesTableService {
@@ -35,20 +39,41 @@ export class ServiceInstancesTableService {
     return this.repository.createQueryBuilder('serviceInstances');
   }
 
-  async enabledServices(params: any[]): Promise<any> {
-    return await this.repository.query(this.enabledServiceSql, params);
+  async enabledServices(params: any[]): Promise<ServiceInstances[]> {
+    const result: ServiceInstanceModel[] = await this.repository.query(
+      this.enabledServiceSql,
+      params,
+    );
+    const formattedResult: ServiceInstances[] = result.map((item) =>
+      new ServiceInstancesDto(item).build(),
+    );
+    return formattedResult;
   }
 
-  async disabledServices(params: any[]): Promise<any> {
-    return await this.repository.query(this.disabledServiceSql, params);
+  async disabledServices(params: any[]): Promise<ServiceInstances[]> {
+    const result: ServiceInstanceModel[] = await this.repository.query(
+      this.disabledServiceSql,
+      params,
+    );
+    const formattedResult: ServiceInstances[] = result.map((item) =>
+      new ServiceInstancesDto(item).build(),
+    );
+    return formattedResult;
   }
 
   async expiredServices(params: any[]): Promise<any> {
     return await this.repository.query(this.expiredServicesSql, params);
   }
 
-  async enabledServiceExtended(params: any[]): Promise<any> {
-    return await this.repository.query(this.enabledServiceExtendedSql, params);
+  async enabledServiceExtended(params: any[]): Promise<ServiceInstances[]> {
+    const result: ServiceInstanceModel[] = await this.repository.query(
+      this.enabledServiceExtendedSql,
+      params,
+    );
+    const formattedResult: ServiceInstances[] = result.map((item) =>
+      new ServiceInstancesDto(item).build(),
+    );
+    return formattedResult;
   }
 
   // Find One Item by its ID

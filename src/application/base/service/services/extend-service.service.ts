@@ -222,7 +222,7 @@ export class ExtendServiceService {
         lastUpdateDate: new Date(),
         expireDate: expireDate,
         warningSent: 0,
-        isDisabled: 0,
+        isDisabled: false,
       },
     );
 
