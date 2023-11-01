@@ -15,6 +15,11 @@ import { ServiceTypesEnum } from 'src/application/base/service/enum/service-type
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { AllocationModel } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/update-vdc-compute-policy.dto';
 import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
+import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
+import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 
 @Injectable()
 export class UpgradeVdcComputeResourcesService
@@ -29,11 +34,30 @@ export class UpgradeVdcComputeResourcesService
     private readonly serviceProperties: ServicePropertiesService,
     private readonly configsService: ConfigsTableService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
+    private readonly serviceInstanceTableService: ServiceInstancesTableService,
+    private readonly userService: UserTableService,
+    private readonly ticketingWrapperService: TicketingWrapperService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.UpgradeComputeResources;
   }
-  execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
-    return this.increaseComputeResources(job);
+  async execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
+    try {
+      await this.increaseComputeResources(job);
+    } catch (err) {
+      const service = await this.serviceInstanceTableService.findById(
+        job.data.serviceInstanceId,
+      );
+      const user = await this.userService.findById(service.userId);
+      await this.ticketingWrapperService.createTicket(
+        'ارتقا منابع محاسباتی با مشکل مواجه شد',
+        ActAsTypeEnum.User,
+        null,
+        user.name,
+        'تیکت اتوماتیک',
+        user.username,
+      );
+      return Promise.reject(err);
+    }
   }
 
   async increaseComputeResources(

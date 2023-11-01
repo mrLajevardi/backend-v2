@@ -18,6 +18,11 @@ import { IpRangeObject } from './interface/ip-range-object.interface';
 import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
 import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
 import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
+import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 
 @Injectable()
 export class IncreaseNumberOfIpsService
@@ -33,13 +38,33 @@ export class IncreaseNumberOfIpsService
     private readonly servicePropertiesTableService: ServicePropertiesTableService,
     private readonly adminEdgeGatewayWrapperService: AdminEdgeGatewayWrapperService,
     private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
+    private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly tasksTableService: TasksTableService,
+    private readonly ticketingWrapperService: TicketingWrapperService,
+    private readonly userService: UserTableService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.IncreaseNumberOfIps;
   }
 
-  execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
-    return this.increaseNumberOfIps(job);
+  async execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
+    try {
+      await this.increaseNumberOfIps(job);
+    } catch (err) {
+      const service = await this.serviceInstanceTableService.findById(
+        job.data.serviceInstanceId,
+      );
+      const user = await this.userService.findById(service.userId);
+      await this.ticketingWrapperService.createTicket(
+        'افزایش تعداد ایپی های کاربر به خطا خورد',
+        ActAsTypeEnum.User,
+        null,
+        user.name,
+        'تیکت اتوماتیک',
+        user.username,
+      );
+      console.log(err);
+      return Promise.reject(err);
+    }
   }
 
   async increaseNumberOfIps(
@@ -87,20 +112,19 @@ export class IncreaseNumberOfIpsService
     if (Number(groupedItems.generation.ip[0].value) === assignedIpList.length) {
       return;
     }
-    const u = await this.adminEdgeGatewayWrapperService.updateEdge(
+    const response = await this.adminEdgeGatewayWrapperService.updateEdge(
       {
         name: props.edgeName,
         authToken: adminSession,
         alreadyAssignedIpCounts: assignedIps.length,
         alreadyAssignedIpList: assignedIpList,
-        userIpCount: Number(groupedItems.generation.ip[0]),
+        userIpCount: Number(groupedItems.generation.ip[0].value),
         vdcId: props.vdcId,
       },
       edgeId,
       primaryIp,
     );
-    console.log(u);
-    const { __vcloudTask, ipRange: newIpRange } = u;
+    const { __vcloudTask, ipRange: newIpRange } = response;
     const checkTaskFilter = `href==${__vcloudTask}`;
     await this.vdcFactoryService.checkVdcTask(
       adminSession,

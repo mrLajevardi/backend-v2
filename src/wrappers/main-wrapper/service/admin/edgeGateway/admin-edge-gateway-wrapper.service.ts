@@ -106,10 +106,12 @@ export class AdminEdgeGatewayWrapperService {
         });
         ipAddresses.shift();
         remainingIp--;
-      } else {
+      } else if (availableIp.length >= index + 2) {
         index++;
         ipRange = availableIp[index];
         ipAddresses = getIPRange(ipRange.startAddress, ipRange.endAddress);
+      } else {
+        break;
       }
     }
     if (allocatedIPAddresses.length < userIpCount) {
