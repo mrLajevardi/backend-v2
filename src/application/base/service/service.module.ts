@@ -26,6 +26,7 @@ import { SystemSettingsTableModule } from '../crud/system-settings-table/system-
 import { ServiceServiceFactory } from './Factory/service.service.factory';
 import { ServiceInstancesTableModule } from '../crud/service-instances-table/service-instances-table.module';
 import { ServiceItemsTableModule } from '../crud/service-items-table/service-items-table.module';
+import { TaskManagerModule } from '../task-manager/task-manager.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ServiceItemsTableModule } from '../crud/service-items-table/service-ite
     SystemSettingsTableModule,
     ServiceItemsTableModule,
     ServiceInstancesTableModule,
+    TaskManagerModule,
   ],
   providers: [
     ServiceService,

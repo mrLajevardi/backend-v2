@@ -57,7 +57,7 @@ export class UpdateServiceInstancesDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty()
-  isDisabled?: number;
+  isDisabled?: boolean;
 
   @IsOptional()
   @IsString()

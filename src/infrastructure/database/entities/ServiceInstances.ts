@@ -59,7 +59,7 @@ export class ServiceInstances {
     nullable: true,
     default: () => '(0)',
   })
-  isDisabled: number | null;
+  isDisabled: boolean | null;
 
   @Column('nvarchar', { name: 'Name', nullable: true, length: 50 })
   name: string | null;

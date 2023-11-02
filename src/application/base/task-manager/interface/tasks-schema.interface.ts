@@ -1,5 +1,5 @@
-import { TasksConfigsInterface } from './tasks-configs.interface';
+import { TasksConfig } from './tasks-configs.interface';
 
-export interface TasksSchemaInterface {
-  [key: string]: TasksConfigsInterface;
+export interface TasksSchema {
+  [key: string]: TasksConfig<string>;
 }

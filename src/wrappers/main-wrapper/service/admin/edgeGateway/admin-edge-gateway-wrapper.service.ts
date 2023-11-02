@@ -10,6 +10,10 @@ import {
 } from './dto/get-available-ip-addresses.dto';
 import { CreateEdgeConfig, CreateEdgeDto } from './dto/create-edge.dto';
 import { GetEdgeClusterDto } from './dto/get-edge-cluster.dto';
+import {
+  UpdateEdgeGatewayCoReturnType,
+  UpdateEdgeGatewayConfigDto,
+} from './dto/update-edge.dto';
 
 @Injectable()
 export class AdminEdgeGatewayWrapperService {
@@ -191,5 +195,77 @@ export class AdminEdgeGatewayWrapperService {
         wrapper(options),
       );
     return Promise.resolve(edgeClusters.data.values[0]?.id);
+  }
+
+  async updateEdge(
+    config: UpdateEdgeGatewayConfigDto,
+    edgeId: string,
+    currentPrimaryIp: string,
+  ): Promise<UpdateEdgeGatewayCoReturnType> {
+    const network = await this.findExternalNetwork(config.authToken);
+    const networkValue = network.values[0];
+    let ipRange = await this.ipAllocation(
+      networkValue.id,
+      config.authToken,
+      config.userIpCount,
+    );
+    const newIpRange = ipRange;
+    ipRange = ipRange.concat(config.alreadyAssignedIpList);
+    const request = {
+      name: config.name,
+      description: '',
+      ownerRef: {
+        id: config.vdcId,
+      },
+      edgeGatewayUplinks: [
+        {
+          uplinkId: networkValue.id,
+          uplinkName: networkValue.name,
+          subnets: {
+            values: [
+              {
+                gateway: networkValue.subnets.values[0].gateway,
+                prefixLength: networkValue.subnets.values[0].prefixLength,
+                dnsSuffix: null,
+                dnsServer1: '',
+                dnsServer2: '',
+                ipRanges: {
+                  values: ipRange,
+                },
+                primaryIp: currentPrimaryIp,
+                enabled: true,
+                totalIpCount:
+                  config.userIpCount + config.alreadyAssignedIpCounts,
+                usedIpCount: null,
+              },
+            ],
+          },
+          dedicated: false,
+        },
+      ],
+    };
+    const options = {
+      headers: {
+        Authorization: `Bearer ${config.authToken}`,
+      },
+      body: request,
+      urlParams: {
+        edgeId,
+      },
+    };
+    const endpoint =
+      'AdminEdgeGatewayEndpointService.updateEdgeGatewayEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    console.log('🥖🥖🥖🥖');
+    const edgeGateway =
+      await this.vcloudWrapperService.request<GetEdgeClusterDto>(
+        wrapper(options),
+      );
+    return {
+      name: config.name,
+      ipRange: newIpRange,
+      __vcloudTask: edgeGateway.headers.location,
+    };
   }
 }

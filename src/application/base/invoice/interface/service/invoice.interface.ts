@@ -7,6 +7,7 @@ import {
   VdcInvoiceCalculatorResultDto,
 } from '../../dto/vdc-invoice-calculator.dto';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
+import { UpgradeAndExtendDto } from '../../dto/upgrade-and-extend.dto';
 
 export const BASE_INVOICE_SERVICE = 'BASE_INVOICE_SERVICE';
 
@@ -26,4 +27,9 @@ export interface BaseInvoiceService {
     options: SessionRequest,
     authorityCode: string,
   ): Promise<Transactions>;
+
+  upgradeAndExtendInvoice(
+    invoice: UpgradeAndExtendDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto>;
 }

@@ -27,6 +27,9 @@ import {
   TemplateItem,
   TemplatesStructure,
 } from 'src/application/vdc/dto/templates.dto';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { CostCalculationService } from './cost-calculation.service';
 
 @Injectable()
 export class InvoiceFactoryService {
@@ -110,6 +113,8 @@ export class InvoiceFactoryService {
     invoiceCost: TotalInvoiceItemCosts,
     groupedItems: VdcItemGroup,
     serviceInstanceId: string,
+    remainingDays: number,
+    date: Date,
   ): Promise<CreateInvoicesDto> {
     const dto: CreateInvoicesDto = {
       userId: Number(userId),
@@ -117,7 +122,7 @@ export class InvoiceFactoryService {
       rawAmount: invoiceCost.totalCost,
       finalAmount: invoiceCost.totalCost,
       type: data.type,
-      endDateTime: addMonths(new Date(), parseInt(groupedItems.period.value)),
+      endDateTime: addMonths(date, remainingDays),
       dateTime: new Date(),
       serviceTypeId: groupedItems.generation.ip[0].serviceTypeId,
       name: 'invoice' + Math.floor(Math.random() * 100),

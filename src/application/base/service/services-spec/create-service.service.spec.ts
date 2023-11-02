@@ -15,6 +15,7 @@ import { PaymentModule } from 'src/application/payment/payment.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { TaskManagerModule } from '../../task-manager/task-manager.module';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -28,6 +29,7 @@ describe('CreateServiceService', () => {
         DatacenterModule,
         SessionsModule,
         PaymentModule,
+        TaskManagerModule,
         UserModule,
         InvoicesModule,
         TasksModule,

@@ -26,6 +26,7 @@ import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
+import { TaskManagerModule } from '../../task-manager/task-manager.module';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -53,6 +54,7 @@ describe('DeleteServiceService', () => {
         VdcModule,
         ServicePropertiesModule,
         DatacenterModule,
+        TaskManagerModule,
       ],
       providers: [
         ServiceService,
