@@ -10,6 +10,11 @@ import { ServicePropertiesService } from 'src/application/base/service-propertie
 import { IpSetsDto } from '../dto/ip-sets.dto';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
+import { IpSetsWrapperService } from 'src/wrappers/main-wrapper/service/user/ipSets/ip-sets-wrapper.service';
+import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { IPSetDto, UpdateIpSetsDto } from '../dto/ip-set.dto';
+import { GetIpSetsListQueryDto, IPSetListDto } from '../dto/ip-set-list.dto';
 
 @Injectable()
 export class EdgeGatewayService {
@@ -19,55 +24,53 @@ export class EdgeGatewayService {
     private readonly sessionService: SessionsService,
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     readonly applicationPortProfile: ApplicationPortProfileService,
+    private readonly ipSetsWrapperService: IpSetsWrapperService,
     readonly firewall: FirewallService,
   ) {}
 
-  async createIPSet(options, vdcInstanceId, data) {
+  async createIPSet(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    data: IPSetDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props.orgId),
     );
-    const ipSets = await mainWrapper.user.ipSets.createIPSet(
+    const ipSets = await this.ipSetsWrapperService.createIPSet(
       session,
       data.description,
       data.name,
       data.ipList,
-      props['edgeName'],
-    );
-    await this.logger.info(
-      'ipSets',
-      'createIpSets',
-      {
-        _object: ipSets.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
+      props.edgeName,
     );
     return Promise.resolve({
       taskId: ipSets.__vcloudTask.split('task/')[1],
     });
   }
 
-  async deleteIPSet(options, vdcInstanceId, ipSetId) {
+  async deleteIPSet(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    ipSetId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props.orgId),
     );
-    const ipSets = await mainWrapper.user.ipSets.deleteIPSet(session, ipSetId);
-    await this.logger.info(
-      'ipSets',
-      'deleteIpSets',
-      {
-        _object: ipSets.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
+    const ipSets = await this.ipSetsWrapperService.deleteIPSet(
+      session,
+      ipSetId,
     );
     return Promise.resolve({
       taskId: ipSets.__vcloudTask.split('task/')[1],
@@ -128,28 +131,28 @@ export class EdgeGatewayService {
   }
 
   async getIPSetsList(
-    options,
-    vdcInstanceId,
-    page = 1,
-    pageSize = 25,
-    filter = '',
-    search,
-  ): Promise<IpSetsDto[]> {
+    options: SessionRequest,
+    vdcInstanceId: string,
+    query: GetIpSetsListQueryDto,
+  ): Promise<IpSetsDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const { page, pageSize, search } = query;
+    let { filter } = query;
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props.orgId),
     );
-    if (filter !== '') {
+    if (filter) {
       filter = ';' + filter;
     }
     if (search) {
       filter = filter + `;(name==*${search}*)`;
     }
-    const ipSetsList = await mainWrapper.user.ipSets.getIPSetsList(
+    const ipSetsList = await this.ipSetsWrapperService.getIPSetsList(
       session,
       page,
       pageSize,
@@ -158,7 +161,7 @@ export class EdgeGatewayService {
     );
     const filteredIPSetList = [];
     for (const ipSet of ipSetsList.values) {
-      const ipSetCompleteInfo = await mainWrapper.user.ipSets.getSingleIPSet(
+      const ipSetCompleteInfo = await this.ipSetsWrapperService.getSingleIPSet(
         session,
         ipSet.id,
       );
@@ -175,19 +178,24 @@ export class EdgeGatewayService {
       values: filteredIPSetList,
     };
     delete data.associations;
-    return Promise.resolve(data);
+    return data;
   }
 
-  async getSingleIPSet(options, vdcInstanceId, ipSetId) {
+  async getSingleIPSet(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    ipSetId: string,
+  ): Promise<IPSetListDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const ipSet = await mainWrapper.user.ipSets.getSingleIPSet(
+    const ipSet = await this.ipSetsWrapperService.getSingleIPSet(
       session,
       ipSetId,
     );
@@ -279,30 +287,28 @@ export class EdgeGatewayService {
     });
   }
 
-  async updateIPSet(options, vdcInstanceId, ipSetId, data) {
+  async updateIPSet(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    ipSetId: string,
+    data: UpdateIpSetsDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const ipSets = await mainWrapper.user.ipSets.updateIPSet(
+    const ipSets = await this.ipSetsWrapperService.updateIPSet(
       session,
       data.description,
       data.name,
       data.ipList,
       ipSetId,
       props['edgeName'],
-    );
-    await this.logger.info(
-      'ipSets',
-      'updateIpSets',
-      {
-        _object: ipSets.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
     );
     return Promise.resolve({
       taskId: ipSets.__vcloudTask.split('task/')[1],
@@ -313,29 +319,18 @@ export class EdgeGatewayService {
     options: SessionRequest,
     vdcInstanceId: string,
   ): Promise<number> {
-    const page = 1;
-    const pageSize = 1;
+    const query = {
+      page: 1,
+      pageSize: 1,
+    };
     let count = 0;
-
-    const res = (await this.getIPSetsList(
-      options,
-      vdcInstanceId,
-      page,
-      pageSize,
-      '',
-      '',
-    )) as any;
-
-    console.log(res);
-
-    count = res?.resultTotal;
-
+    const res = await this.getIPSetsList(options, vdcInstanceId, query);
+    count = res.resultTotal;
     //
     // res.values.forEach((ipSet) => {
     //   if (ipSet != undefined && ipSet.values != undefined)
     //     count += ipSet.values.length;
     // });
-
     return count;
   }
 }
