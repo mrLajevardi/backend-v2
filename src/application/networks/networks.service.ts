@@ -144,16 +144,13 @@ export class NetworksService {
       options.user.userId,
       Number(props.orgId),
     );
-    const network = await mainWrapper.user.network.updateNetwork(
+    const network = await this.networkWrapperService.updateNetwork(
       {
         name: data.name,
         authToken: session,
         dnsServer1: data.dnsServer1,
         dnsServer2: data.dnsServer2,
         dnsSuffix: data.dnsSuffix,
-        ipRanges: {
-          values: [],
-        },
         description: data.description,
         gateway: data.gateway,
         prefixLength: data.prefixLength,
