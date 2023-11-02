@@ -17,7 +17,6 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FirewallDto } from '../dto/firewall.dto';
 import { CreateApplicationPortProfileDto } from '../dto/create-application-port-profile.dto';
 import { IPSetDto, UpdateIpSetsDto } from '../dto/ip-set.dto';
 import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
@@ -27,10 +26,11 @@ import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
 import { UpdateFirewallDto } from '../dto/update-firewall.dto';
 import { EdgeGatewayService } from '../service/edge-gateway.service';
 import { SingleApplicationPortProfileDto } from '../dto/single-application-port-profile.dto';
-import { FirewalListDto } from '../dto/firewall-list.dto';
+import { FirewallListDto } from '../dto/firewall-list.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { GetIpSetsListQueryDto } from '../dto/ip-set-list.dto';
+import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
@@ -42,8 +42,8 @@ export class EdgeGatewayController {
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   async addToFirewallList(
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Body() data: FirewallDto,
-    @Request() options,
+    @Body() data: FirewallListItemDto,
+    @Request() options: SessionRequest,
   ): Promise<any> {
     return await this.service.firewall.addToFirewallList(
       options,
@@ -201,11 +201,12 @@ export class EdgeGatewayController {
   @Get('/:vdcInstanceId/firewalls')
   @ApiOperation({ summary: 'Get a list of firewalls' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: FirewallListDto })
   async getFirewallList(
-    @Request() options,
+    @Request() options: SessionRequest,
 
     @Param('vdcInstanceId') vdcInstanceId: string,
-  ): Promise<FirewalListDto> {
+  ): Promise<FirewallListDto> {
     return await this.service.firewall.getFirewallList(options, vdcInstanceId);
   }
 
@@ -226,11 +227,10 @@ export class EdgeGatewayController {
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'firewallId', description: 'Firewall ID' })
   async getSingleFirewall(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('firewallId') firewallId: string,
-  ): Promise<FirewallDto> {
+  ): Promise<FirewallListItemDto> {
     return await this.service.firewall.getSingleFirewall(
       options,
       vdcInstanceId,
@@ -255,8 +255,7 @@ export class EdgeGatewayController {
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'applicationId', description: 'Application ID' })
   async updateApplicationPortProfile(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
     @Body() data: CreateApplicationPortProfileDto,
@@ -298,12 +297,12 @@ export class EdgeGatewayController {
   @Put('/:vdcInstanceId/firewalls')
   @ApiOperation({ summary: 'Update a list of firewalls' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateFirewallList(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Body() data: UpdateFirewallDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return await this.service.firewall.updateFirewallList(
       options,
       vdcInstanceId,
@@ -334,12 +333,13 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Update a single firewall' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'firewallId', description: 'Firewall ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateSingleFirewall(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('firewallId') firewallId: string,
-    @Body() data: FirewallDto,
-  ): Promise<any> {
+    @Body() data: FirewallListItemDto,
+  ): Promise<TaskReturnDto> {
     return await this.service.firewall.updateSingleFirewall(
       options,
       vdcInstanceId,
