@@ -1,3 +1,5 @@
+import { NetworkStatusEnum } from '../enum/network-status.enum';
+
 export interface GetNetworkListDto {
   resultTotal: number;
   pageCount: number;
@@ -34,7 +36,7 @@ interface NetworkDetail {
   isDefaultNetwork: boolean | null;
   shared: boolean;
   enableDualSubnetNetwork: boolean;
-  status: string;
+  status: NetworkStatusEnum;
   lastTaskFailureMessage: null | string;
   guestVlanTaggingAllowed: boolean;
   retainNicResources: boolean;

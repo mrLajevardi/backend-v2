@@ -1,11 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsArray, IsOptional } from 'class-validator';
 import { NetworkSubnetsDto } from './network-subnets.dto';
+import { NetworkStatusEnum } from 'src/wrappers/main-wrapper/service/user/network/enum/network-status.enum';
 
 export class GetNetworksDto {
   @ApiProperty({ type: String })
   @IsString()
   id: string;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  name: string;
 
   @ApiProperty({ type: [NetworkSubnetsDto] })
   @IsArray()
@@ -20,4 +25,7 @@ export class GetNetworksDto {
   @IsOptional()
   @IsString()
   description: string;
+
+  @ApiProperty({ type: NetworkStatusEnum, enum: NetworkStatusEnum })
+  status: NetworkStatusEnum;
 }

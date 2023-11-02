@@ -1,92 +1,79 @@
 import { Injectable } from '@nestjs/common';
-import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
-import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
-import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
-import { ServiceChecksService } from '../base/service/services/service-checks.service';
-import validator from 'validator';
 import { DhcpService } from './dhcp.service';
-import { InvalidIpParamException } from 'src/infrastructure/exceptions/invalid-ip-param.exceptionts';
 import { NetworkDto } from './dto/network.dto';
 import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
 import { SessionRequest } from '../../infrastructure/types/session-request.type';
+import { NetworkWrapperService } from 'src/wrappers/main-wrapper/service/user/network/network-wrapper.service';
+import {
+  GetNetworkListDto,
+  GetNetworkListQueryDto,
+} from './dto/get-network-list.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { VdcProperties } from '../vdc/interface/vdc-properties.interface';
 
 @Injectable()
 export class NetworksService {
   constructor(
-    private readonly logger: LoggerService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
-    private readonly servicePropertiesTable: ServicePropertiesTableService,
-    private readonly serviceChecksService: ServiceChecksService,
+    private readonly networkWrapperService: NetworkWrapperService,
     readonly dhcp: DhcpService,
   ) {}
 
-  async createNetwork(data: any, options, vdcInstanceId) {
-    await this.checkNetworkParams(data);
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+  async createNetwork(
+    data: NetworkDto,
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<TaskReturnDto> {
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props.orgId),
     );
-    console.log(props);
-    const network = await mainWrapper.user.network.createNetwork(
+    const network = await this.networkWrapperService.createNetwork(
       {
         name: data.name,
         authToken: session,
         dnsServer1: data.dnsServer1,
         dnsServer2: data.dnsServer2,
         dnsSuffix: data.dnsSuffix,
-        ipRanges: {
-          values: data.ipRanges,
-        },
         description: data.description,
         gateway: data.gateway,
         prefixLength: data.prefixLength,
-        vdcId: props['vdcId'],
+        vdcId: props.vdcId,
         networkType: data.networkType,
         connectionType: vcdConfig.user.network.connectionType,
         connectionTypeValue: vcdConfig.user.network.connectionTypeValue,
       },
-      props['edgeName'],
+      props.edgeName,
     );
-    console.log('dfdfsdxxxx');
-    // await this.logger.info(
-    //   'network',
-    //   'createNetwork',
-    //   {
-    //     _object: network.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
     return Promise.resolve({
       taskId: network.__vcloudTask.split('task/')[1],
     });
   }
 
-  async deleteNetwork(options, vdcInstanceId, networkId) {
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+  async deleteNetwork(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    networkId: string,
+  ): Promise<TaskReturnDto> {
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props.orgId),
     );
     const network = await mainWrapper.user.network.deleteNetwork(
       session,
       networkId,
-    );
-    await this.logger.info(
-      'network',
-      'deleteNetwork',
-      {
-        _object: network.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
     );
     return Promise.resolve({
       taskId: network.__vcloudTask.split('task/')[1],
@@ -94,29 +81,29 @@ export class NetworksService {
   }
 
   async getNetworks(
-    options,
-    vdcInstanceId,
-    page,
-    pageSize,
-    filter = '',
-    search,
-  ) {
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    options: SessionRequest,
+    vdcInstanceId: string,
+    query: GetNetworkListQueryDto,
+  ): Promise<GetNetworkListDto> {
+    const { page, pageSize, search } = query;
+    let filter = query.filter;
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props.orgId),
     );
-    if (filter !== '') {
-      filter = `((ownerRef.id==${props['vdcId']}));` + `${filter}`;
+    if (filter) {
+      filter = `((ownerRef.id==${props.vdcId}));` + `${filter}`;
     } else {
-      filter = `((ownerRef.id==${props['vdcId']}))`;
+      filter = `((ownerRef.id==${props.vdcId}))`;
     }
     if (search) {
       filter = filter + `;(name==*${search}*)`;
     }
-    const networks = await mainWrapper.user.network.getNetwork(
+    const networks = await this.networkWrapperService.getNetwork(
       session,
       page,
       pageSize,
@@ -127,28 +114,35 @@ export class NetworksService {
       networksList.push({
         id: network.id,
         name: network.name,
-        subnets: network?.subnets?.values || null,
-        networkType: network?.networkType || null,
-        description: network?.description,
+        subnets: network.subnets,
+        networkType: network.networkType,
+        description: network.description,
+        status: network.status,
       });
     });
     const data = {
-      ...networks,
+      page: networks.page,
+      pageSize: networks.pageSize,
+      pageCount: networks.pageCount,
+      resultTotal: networks.resultTotal,
       values: networksList,
     };
-    delete data.associations;
     return Promise.resolve(data);
   }
 
-  async updateNetwork(data, options, vdcInstanceId, networkId) {
-    await this.checkNetworkParams(data);
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    console.log(props);
+  async updateNetwork(
+    data: NetworkDto,
+    options: SessionRequest,
+    vdcInstanceId: string,
+    networkId: string,
+  ): Promise<TaskReturnDto> {
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props.orgId),
     );
     const network = await mainWrapper.user.network.updateNetwork(
       {
@@ -158,26 +152,18 @@ export class NetworksService {
         dnsServer2: data.dnsServer2,
         dnsSuffix: data.dnsSuffix,
         ipRanges: {
-          values: data.ipRanges,
+          values: [],
         },
         description: data.description,
         gateway: data.gateway,
         prefixLength: data.prefixLength,
-        vdcId: props['vdcId'],
+        vdcId: props.vdcId,
         networkType: data.networkType,
         connectionType: vcdConfig.user.network.connectionType,
         connectionTypeValue: vcdConfig.user.network.connectionTypeValue,
       },
       networkId,
-      props['edgeName'],
-    );
-    await this.logger.info(
-      'network',
-      'updateNetwork',
-      {
-        _object: network.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
+      props.edgeName,
     );
     return Promise.resolve({
       taskId: network.__vcloudTask.split('task/')[1],
@@ -188,34 +174,11 @@ export class NetworksService {
     options: SessionRequest,
     vdcInstanceId: string,
   ): Promise<number> {
-    const pageSize = 1;
-    const page = 1;
-    const res = await this.getNetworks(
-      options,
-      vdcInstanceId,
-      page,
-      pageSize,
-      '',
-      '',
-    );
-    return res?.resultTotal;
-  }
-
-  async checkNetworkParams(data) {
-    // if (!this.serviceChecksService.checkNetworkType(data.networkType)) {
-    //   const error = new InvalidServiceParamsException();
-    //   console.log('1');
-
-    //   return Promise.reject(error);
-    // }
-    // const ipParams = ['gateway', 'dnsServer1', 'dnsServer2'];
-    // for (const ipParam of ipParams) {
-    //   console.log(data, '🍳');
-    //   if (!validator.isIP(data[ipParam]) && data[ipParam].length !== 0) {
-    //     const err = new InvalidIpParamException();
-    //     return Promise.reject(err);
-    //   }
-    // }
-    return Promise.resolve(true);
+    const query = {
+      pageSize: 1,
+      page: 1,
+    };
+    const res = await this.getNetworks(options, vdcInstanceId, query);
+    return res.resultTotal;
   }
 }

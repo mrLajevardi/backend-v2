@@ -1,13 +1,6 @@
-import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsNumber,
-  IsString,
-  Matches,
-  ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsString, Matches } from 'class-validator';
+import { NetworksTypesEnum } from 'src/wrappers/main-wrapper/service/user/network/enum/network-types.enum';
 
 export class IPRangeDto {
   @ApiProperty({ type: String })
@@ -37,13 +30,6 @@ export class NetworkDto {
   @IsString()
   dnsSuffix?: string;
 
-  @ApiProperty({ type: [IPRangeDto] })
-  @IsArray()
-  @ValidateNested({ each: false })
-  @Type(() => IPRangeDto)
-  @Optional()
-  ipRanges: IPRangeDto[];
-
   @ApiProperty({ type: String })
   @IsString()
   description: string;
@@ -56,9 +42,9 @@ export class NetworkDto {
   @IsNumber()
   prefixLength: number;
 
-  @ApiProperty({ type: String })
-  @IsString()
-  networkType: string;
+  @ApiProperty({ type: NetworksTypesEnum, enum: NetworksTypesEnum })
+  @IsEnum(NetworksTypesEnum)
+  networkType: NetworksTypesEnum;
 
   @ApiProperty()
   @IsString()

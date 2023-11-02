@@ -12,7 +12,7 @@ export class CreateNetworkBody {
   ownerRef: OwnerRef;
 }
 
-class Connection {
+export class Connection {
   connectionType: string;
   connectionTypeValue: string;
 }
