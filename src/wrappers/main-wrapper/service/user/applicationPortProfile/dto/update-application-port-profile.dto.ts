@@ -1,3 +1,5 @@
+import { ApplicationPortsProtocols } from '../enum/application-ports-protocols.enum';
+
 export class UpdateApplicationPortProfileConfig {
   name: string;
   description: string;
@@ -6,6 +8,6 @@ export class UpdateApplicationPortProfileConfig {
   vdcId: string;
 }
 export class ApplicationPorts {
-  protocol: string;
+  protocol: ApplicationPortsProtocols;
   destinationPorts: number[];
 }

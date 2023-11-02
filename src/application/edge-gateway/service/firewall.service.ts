@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
-import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { FirewallListDto } from '../dto/firewall-list.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
@@ -115,7 +114,7 @@ export class FirewallService {
       userId,
       Number(props['orgId']),
     );
-    const firewallList = await mainWrapper.user.firewall.getFirewallList(
+    const firewallList = await this.firewallWrapperService.getFirewallList(
       session,
       props['edgeName'],
     );
