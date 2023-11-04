@@ -190,7 +190,7 @@ describe('NetworksService', () => {
         .spyOn(networkWrapperService, 'getNetwork')
         .mockImplementation(async () => generateNetworkMock());
 
-      // const 
+      // const
     });
   });
 });
