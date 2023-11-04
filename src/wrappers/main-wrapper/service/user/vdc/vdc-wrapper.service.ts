@@ -83,17 +83,8 @@ export class VdcWrapperService {
     vdcId: string,
     namedDiskProperties: NamedDiskProperties,
   ): Promise<VcloudTask> {
-    const query: any = await this.vcloudQuery(authToken, {
-      type: 'orgVdcStorageProfile',
-      format: 'records',
-      page: 1,
-      pageSize: 128,
-      filterEncoded: true,
-      links: true,
-      filter: `vdc==${vdcId}`,
-    });
-    const vdcStorageProfileLink = query.data.record[0].href;
     const formattedVdcId = vdcId.split(':').slice(-1)[0];
+    const vdcStorageProfileLink = namedDiskProperties.storageProfileId;
     const request: CreateNamedDiskBody = {
       'root:DiskCreateParams': {
         $: {

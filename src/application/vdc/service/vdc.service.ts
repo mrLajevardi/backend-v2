@@ -301,7 +301,7 @@ export class VdcService {
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
   }
-  async createNamedDisk(options, vdcInstanceId, data) {
+  async createNamedDisk(options: SessionRequest, vdcInstanceId: string, data) {
     const userId = options.user.userId;
     const { busType } = data;
     if (busType != 20) {
@@ -314,7 +314,7 @@ export class VdcService {
       userId,
       props['orgId'],
     );
-    const namedDisk = await mainWrapper.user.vdc.createNamedDisk(
+    const namedDisk = await this.vdcWrapperService.createNamedDisk(
       session,
       props['vdcId'],
       data,
