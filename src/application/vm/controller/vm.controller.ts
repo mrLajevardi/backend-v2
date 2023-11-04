@@ -24,6 +24,10 @@ import { CreateTemplateDto } from '../dto/create-template.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
 import { CreateVm } from '../dto/create-vm.dto';
 import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { VmList } from '../dto/get-all-user-vm.dto';
+import { VmTemplateList } from '../dto/templates.dto';
+import { VmDiskSection } from '../dto/disk-section.dto';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -84,7 +88,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
     @Body() data: CreateVmFromTemplate,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.createVMFromTemplate(
       options,
       data,
@@ -104,7 +108,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
     @Body() data: CreateVm,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.createVm(options, data, serviceInstanceId);
   }
 
@@ -122,7 +126,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Body() data: CreateVmFromTemplate,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.createVmSnapShot(
       options,
       serviceInstanceId,
@@ -178,7 +182,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.deleteVm(options, serviceInstanceId, vmId);
   }
 
@@ -248,7 +252,7 @@ export class VmController {
     @Query('filter') filter: string,
     @Query('search') search: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmList> {
     return this.vmService.getAllUserVm(
       options,
       serviceInstanceId,
@@ -268,7 +272,7 @@ export class VmController {
   async getAllUserVmTemplates(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmTemplateList[]> {
     return this.vmService.getAllUserVmTemplates(options, serviceInstanceId);
   }
 
@@ -309,7 +313,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('vmId') vmId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmDiskSection[]> {
     return this.vmService.getVmDiskSection(options, serviceInstanceId, vmId);
   }
 

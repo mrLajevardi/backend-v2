@@ -15,13 +15,19 @@ import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { VmList } from '../dto/get-all-user-vm.dto';
+import { VmTemplateList } from '../dto/templates.dto';
+import { VmDiskSection } from '../dto/disk-section.dto';
 import { NetworksService } from '../../networks/networks.service';
 import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
 import { groupBy } from '../../../infrastructure/utils/extensions/array.extensions';
 import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
 import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
 import { CreateVm } from '../dto/create-vm.dto';
-import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+
 
 @Injectable()
 export class VmService {
@@ -92,7 +98,7 @@ export class VmService {
     });
   }
 
-  async createVMFromTemplate(options, data, vdcInstanceId) {
+  async createVMFromTemplate(options, data:CreateVmFromTemplate, vdcInstanceId:string):Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -132,11 +138,10 @@ export class VmService {
     });
   }
 
-  async createVm(options, data: CreateVm, serviceInstanceId: string) {
+  async createVm(options, data:CreateVm, serviceInstanceId:string):Promise<TaskReturnDto | any > {
     if ((data.storage as []).length > 4) {
       return new ExceedEnoughDiskCountException();
     }
-
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -191,7 +196,7 @@ export class VmService {
     });
   }
 
-  async createVmSnapShot(options, serviceInstanceId, vAppId, data) {
+  async createVmSnapShot(options, serviceInstanceId:string, vAppId:string, data:CreateVmFromTemplate):Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTableService.findOne({
       where: {
@@ -270,7 +275,7 @@ export class VmService {
     });
   }
 
-  async deleteVm(options, serviceInstanceId, vAppId) {
+  async deleteVm(options, serviceInstanceId:string, vAppId:string):Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -354,7 +359,7 @@ export class VmService {
     });
   }
 
-  async getAllUserVm(options, serviceInstanceId, filter = '', search) {
+  async getAllUserVm(options, serviceInstanceId: string, filter = '', search=''):Promise<VmList> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -415,7 +420,7 @@ export class VmService {
     return Promise.resolve(data);
   }
 
-  async getAllUserVmTemplates(options, serviceInstanceId) {
+  async getAllUserVmTemplates(options, serviceInstanceId: string):Promise<VmTemplateList[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -519,7 +524,7 @@ export class VmService {
     });
   }
 
-  async getVmDiskSection(options, serviceInstanceId, vmId) {
+  async getVmDiskSection(options, serviceInstanceId: string, vmId: string):Promise<VmDiskSection[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -544,7 +549,6 @@ export class VmService {
       props.vdcId,
     );
     const data = [];
-
     vmSpecSection.diskSection.diskSettings.forEach((settings) => {
       const targetAdaptor = hardwareInfo.hardDiskAdapter.find(
         (diskAdaptor) => diskAdaptor.legacyId == settings.adapterType,
@@ -590,7 +594,6 @@ export class VmService {
       (d) => d._type == 'SnapshotSectionType',
     )[0];
 
-    // SnapshotSectionType
     const snapShotInf: SnapShotDetails = {
       snapShotTime: snapshotSection.snapshot.created,
       snapShotSize: snapshotSection.snapshot.size,
@@ -1453,6 +1456,7 @@ export class VmService {
   }
 
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
+
     const res = groupBy(data, (setting) => (setting as any).adapterType);
     for (const key in res) {
       const length = (DiskBusUnitBusNumberSpace[key] as []).length;
