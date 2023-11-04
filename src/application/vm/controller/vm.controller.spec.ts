@@ -7,6 +7,10 @@ import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { VmService } from '../service/vm.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { NetworksModule } from '../../networks/networks.module';
+import { forwardRef } from '@nestjs/common';
+import { VmDetailService } from '../service/vm-detail.service';
+import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
 describe('VmController', () => {
   let controller: VmController;
 
@@ -19,8 +23,10 @@ describe('VmController', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
+        MainWrapperModule,
+        forwardRef(() => NetworksModule),
       ],
-      providers: [VmService],
+      providers: [VmService, VmDetailService],
       controllers: [VmController],
     }).compile();
 

@@ -6,21 +6,25 @@ import { SessionsService } from '../../base/sessions/sessions.service';
 import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 import { ServicePropertiesService } from '../../base/service-properties/service-properties.service';
 import { VdcInvoiceDetailsInfoResultDto } from '../dto/vdc-invoice-details-info.result.dto';
-import { VdcGenerationItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
+import {
+  VdcGenerationItemCodes,
+  VdcGenerationItemUnit,
+} from '../../base/itemType/enum/item-type-codes.enum';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
-import { ServiceInstancesTableService } from '../../base/crud/service-instances-table/service-instances-table.service';
-import { ServiceItemTypesTree } from '../../../infrastructure/database/entities/views/service-item-types-tree';
-import { ServiceItems } from '../../../infrastructure/database/entities/ServiceItems';
-import { VdcModel } from '../interface/vdc-model.interface';
-import { InvoiceDetailVdcModel } from '../../base/invoice/interface/invoice-detail-vdc.interface';
-import { InvoiceFactoryVdcService } from '../../base/invoice/service/invoice-factory-vdc.service';
 import {
   BASE_SERVICE_ITEM_SERVICE,
   BaseServiceItem,
 } from '../../base/service-item/interface/service/service-item.interface';
 import { VdcDetailFactoryService } from './vdc-detail.factory.service';
 import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
-import { VdcDetailFecadeService } from './vdc-detail.fecade.service';
+import {
+  DiskTypeItemLimitInfo,
+  VdcItemLimitResultDto,
+} from '../dto/vdc-Item-limit.result.dto';
+import { VdcItemLimitQueryDto } from '../dto/vdc-item-limit.query.dto';
+import { VmService } from '../../vm/service/vm.service';
+import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dto';
+import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -34,8 +38,8 @@ export class VdcDetailService implements BaseVdcDetailService {
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
-  ): Promise<VdcInvoiceDetailsInfoResultDto[]> {
-    const res: VdcInvoiceDetailsInfoResultDto[] = [];
+  ): Promise<VdcStoragesDetailResultDto[]> {
+    const res: VdcStoragesDetailResultDto[] = [];
 
     // const userId = options.user.userId; //TODO Check With Ali !!!!
     const props = await this.servicePropertiesService.getAllServiceProperties(
@@ -62,13 +66,16 @@ export class VdcDetailService implements BaseVdcDetailService {
       );
 
     vdcData.data.record.forEach((disk) => {
+      const splitHref = disk.href.split('/');
+      const diskId = splitHref[splitHref.length - 1];
       res.push({
         title: disk.name,
         usage: disk.storageUsedMB,
-        value: disk.storageLimitMB.toString(),
-        code: VdcGenerationItemCodes.Disk,
-        price: 0,
-        unit: 'MB',
+        value: disk.storageLimitMB,
+        // code: VdcGenerationItemCodes.Disk,
+        // price: 0,
+        // unit: 'MB',
+        id: diskId,
       });
     });
 
@@ -97,8 +104,18 @@ export class VdcDetailService implements BaseVdcDetailService {
     res2.guaranty.title = await this.serviceItemService.getGuarantyTitleBy(
       serviceInstanceId,
     );
-
-    res2.disk = await this.getStorageDetailVdc(serviceInstanceId);
+    res2.disk = (await this.getStorageDetailVdc(serviceInstanceId)).map(
+      (storage) => {
+        return {
+          title: storage.title,
+          usage: storage.usage,
+          value: storage.value.toString(),
+          code: VdcGenerationItemCodes.Disk,
+          price: 0,
+          unit: 'MB',
+        } as VdcInvoiceDetailsInfoResultDto;
+      },
+    );
 
     return res2;
   }
@@ -140,5 +157,30 @@ export class VdcDetailService implements BaseVdcDetailService {
     );
 
     return res;
+  }
+
+  async getVdcItemLimit(
+    serviceInstanceId: string,
+    option: SessionRequest,
+  ): Promise<VdcItemLimitResultDto> {
+    if (!serviceInstanceId) return {};
+
+    const model: VdcItemLimitResultDto = new VdcItemLimitResultDto({}, {}, []);
+    const { ramUsageVmOffs, cpuCoreUsageVmOffs } =
+      await this.vdcDetailFactory.calcComputeVdcItemByVms(
+        option,
+        serviceInstanceId,
+      );
+    const vdcDetail = await this.getVdcDetail(serviceInstanceId);
+    const diskInfoModel = await this.getStorageDetailVdc(serviceInstanceId);
+    this.vdcDetailFactory.fillModelVdcItemLimit(
+      model,
+      vdcDetail,
+      cpuCoreUsageVmOffs,
+      ramUsageVmOffs,
+      diskInfoModel,
+    );
+
+    return model;
   }
 }

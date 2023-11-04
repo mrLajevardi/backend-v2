@@ -14,7 +14,16 @@ import {
   BASE_DATACENTER_SERVICE,
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
-import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import {
+  DiskItemCodes,
+  ItemTypeCodes,
+  VdcGenerationItemCodes,
+} from '../../itemType/enum/item-type-codes.enum';
+import { VdcItemGroup } from '../interface/vdc-item-group.interface.dto';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
+import { InvoiceTypes } from '../enum/invoice-type.enum';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 
 @Injectable()
 export class InvoiceValidationService {
@@ -24,6 +33,7 @@ export class InvoiceValidationService {
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
   ) {
     this.vdcCode = 'vdc';
   }
@@ -207,7 +217,7 @@ export class InvoiceValidationService {
     const otherItemsParentCodes = otherItemsParentsList.map(
       (parent) => parent.codeHierarchy,
     );
-    const generationCode = 'generation';
+    const generationCode = ItemTypeCodes.Generation;
     const requiredOtherItemsNotProvided =
       await this.serviceItemTypesTreeService.find({
         where: {
@@ -310,6 +320,101 @@ export class InvoiceValidationService {
       throw new BadRequestException(
         `item [${itemType.id}] value does not match default rule for this item`,
       );
+    }
+  }
+
+  async checkExtendVdcInvoice(
+    periodItem: VdcItemGroup['period'],
+    service: ServiceInstances,
+  ): Promise<void> {
+    await this.checkNumericItemTypeValue(
+      {
+        itemTypeId: periodItem.id,
+        value: periodItem.value,
+      },
+      periodItem,
+    );
+    if (service.daysLeft > 7) {
+      throw new BadRequestException(
+        'cannot extend service because service is not expired yet',
+      );
+    }
+
+    if (periodItem.datacenterName !== service.datacenterName) {
+      throw new BadRequestException('invalid period item');
+    }
+  }
+
+  async checkUpgradeVdc(
+    invoice: UpgradeAndExtendDto,
+    service: ServiceInstances,
+  ): Promise<void> {
+    await this.vdcInvoiceValidator({
+      ...invoice,
+      templateId: null,
+      type: InvoiceTypes.Upgrade,
+    });
+    // serviceItem --> serviceItemTypeTree --> compare hierarchy_code except cpu & ram; cannot decrease any item value;
+    const serviceItems =
+      await this.serviceItemsTableService.joinServiceItemsAndServiceItemsTypeTree(
+        service.id,
+      );
+    for (const serviceItem of serviceItems) {
+      const hierarchy = serviceItem.codeHierarchy.split('_').slice(-2);
+      let itemFound =
+        serviceItem.codeHierarchy.split('_')[0] === ItemTypeCodes.Generation
+          ? false
+          : true;
+      if (hierarchy[1] === DiskItemCodes.Swap) {
+        itemFound = true;
+      }
+      for (const invoiceItem of invoice.itemsTypes) {
+        const serviceItemTree = await this.serviceItemTypesTreeService.findById(
+          invoiceItem.itemTypeId,
+        );
+        const invoiceItemHierarchy = serviceItemTree.codeHierarchy
+          .split('_')
+          .slice(-2);
+        const computeItem =
+          hierarchy[1] === invoiceItemHierarchy[1] &&
+          (invoiceItemHierarchy[0] === VdcGenerationItemCodes.Cpu ||
+            invoiceItemHierarchy[0] === VdcGenerationItemCodes.Ram) &&
+          invoiceItemHierarchy[0] === hierarchy[0];
+        if (hierarchy[1] === invoiceItemHierarchy[1] || computeItem) {
+          itemFound = true;
+          if (
+            Number(serviceItem.value) > Number(invoiceItem.value) &&
+            serviceItemTree.codeHierarchy !== ItemTypeCodes.Period
+          ) {
+            throw new BadRequestException('cannot decrease value');
+          }
+
+          if (serviceItemTree.datacenterName !== service.datacenterName) {
+            throw new BadRequestException('datacenter does not match');
+          }
+
+          if (
+            serviceItemTree.codeHierarchy.split('_')[0] ===
+            ItemTypeCodes.Generation
+          ) {
+            const invoiceItemGenerationNumber = serviceItemTree.codeHierarchy
+              .split('_')[1]
+              .split('g')[1];
+            const serviceItemGenerationNumber = serviceItem.codeHierarchy
+              .split('_')[1]
+              .split('g')[1];
+            if (
+              Number(invoiceItemGenerationNumber) <
+              Number(serviceItemGenerationNumber)
+            ) {
+              throw new BadRequestException('downgrade is not possible');
+            }
+          }
+        }
+      }
+      if (!itemFound) {
+        throw new BadRequestException('cannot remove previous items');
+      }
     }
   }
 }

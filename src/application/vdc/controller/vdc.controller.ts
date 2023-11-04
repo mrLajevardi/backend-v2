@@ -2,7 +2,6 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -21,8 +20,6 @@ import {
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
-import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
-import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
 import {
   BASE_VDC_INVOICE_SERVICE,
   BaseVdcInvoiceServiceInterface,
@@ -37,11 +34,11 @@ import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
 import { TemplatesTableService } from 'src/application/base/crud/templates/templates-table.service';
 import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 import { TemplatesDto, templatesQueryParamsDto } from '../dto/templates.dto';
-// import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 
 @ApiBearerAuth()
 @ApiTags('Vpc')
-// @UseFilters(new HttpExceptionFilter())
 @Controller('vdc')
 export class VdcController {
   constructor(
@@ -306,5 +303,23 @@ export class VdcController {
     @Query() templatesQueryDto: templatesQueryParamsDto,
   ): Promise<TemplatesDto[]> {
     return this.vdcService.getTemplates(templatesQueryDto);
+  }
+
+  @Get(':serviceInstanceId/limitItems')
+  // @Public()
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcItemLimit(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<VdcItemLimitResultDto> {
+    return this.baseVdcDetailService.getVdcItemLimit(
+      serviceInstanceId,
+      options,
+    );
   }
 }

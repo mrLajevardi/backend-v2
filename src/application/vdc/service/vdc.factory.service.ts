@@ -12,6 +12,10 @@ import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-code
 import { VdcUnits } from '../enum/vdc-units.enum';
 import { InvoiceGroupItem } from 'src/application/base/invoice/interface/vdc-item-group.interface.dto';
 import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
+import { TasksListDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/task-list.dto';
+import { AxiosResponse } from 'axios';
+import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
+import { TasksEnum } from 'src/application/base/task-manager/enum/tasks.enum';
 
 @Injectable()
 export class VdcFactoryService {
@@ -101,5 +105,43 @@ export class VdcFactoryService {
       }
     }
     return vdcStorageProfileParams;
+  }
+
+  checkVdcTask(
+    session: string,
+    filter: string,
+    taskType: TaskQueryTypes,
+    interval: number,
+    taskName: string,
+  ): Promise<AxiosResponse<TasksListDto>> {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      const checkIntervalFun = async (): Promise<void> => {
+        try {
+          const task = await this.vdcWrapperService.vcloudQuery<TasksListDto>(
+            session,
+            {
+              type: taskType,
+              page: 1,
+              pageSize: 30,
+              sortDesc: 'startDate',
+              filter,
+            },
+          );
+          if (task.data.record[0].status === 'error') {
+            clearInterval(checkInterval);
+            reject(new Error(`vdc task [${taskName}] failed`));
+          } else if (task.data.record[0].status === 'success') {
+            clearInterval(checkInterval);
+            resolve(task);
+          }
+        } catch (err) {
+          clearInterval(checkInterval);
+          reject(err);
+        }
+      };
+      const checkInterval = setInterval(checkIntervalFun, interval);
+      await checkIntervalFun();
+    });
   }
 }

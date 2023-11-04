@@ -1,7 +1,17 @@
-npm run pm2:stop
 $path = "C:\arad-v2\*"
-Remove-Item -Path $path -Recurse -Force
 $working_directory = Get-Location
+$pm2_proccess = 'arad-v2-bak'
+npm run pm2:stop
+Remove-Item -Path $path -Recurse -Force
 $path = "C:\arad-v2"
 Copy-Item -Path ".\*" -Destination $path -Recurse
-cd C:\arad-v2;npm install;npm run build;npm run pm2:reload
+Copy-Item -Path "C:\configs\.env" $path
+cd $path;npm install;npm run build;npm run pm2:reload
+$bak_path = "C:\arad-v2.bak\*"
+pm2 stop $pm2_proccess
+Remove-Item -Path $bak_path -Recurse -Force
+$bak_path = "C:\arad-v2.bak"
+cd $working_directory
+Copy-Item -Path ".\*" -Destination $bak_path -Recurse
+Copy-Item -Path "C:\configs\.env" $bak_path
+cd $bak_path;npm install;npm run build;pm2 reload $pm2_proccess

@@ -455,7 +455,7 @@ export class ServiceService {
 
     const allServicesInstances = await this.getServices(options, typeId, id);
     let cpuSpeed: VcloudMetadata = 0,
-      daysLeft = 0,
+      // daysLeft = 0,
       isTicketSent = false,
       vdcItems: GetOrgVdcResult = {};
     let model: GetAllVdcServiceWithItemsResultDto = {};
@@ -470,26 +470,19 @@ export class ServiceService {
             await this.serviceFactory.getConfigServiceInstance(serviceInstance)
           ).cpuSpeed;
 
-          const info = ({ daysLeft, isTicketSent } =
+          const info = ({ isTicketSent } =
             await this.serviceFactory.getPropertiesOfServiceInstance(
               serviceInstance,
             ));
-          (daysLeft = info.daysLeft), (isTicketSent = info.isTicketSent);
+          // (daysLeft = info.daysLeft),
+          isTicketSent = info.isTicketSent;
 
           vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
         }
-        // else {
-        //   model = this.serviceFactory.configModelServiceInstanceList(
-        //     serviceInstance,
-        //     0,
-        //     false,
-        //     {},
-        //     0,
-        //   );
-        // }
+
         model = this.serviceFactory.configModelServiceInstanceList(
           serviceInstance,
-          daysLeft,
+          // daysLeft,
           isTicketSent,
           vdcItems,
           cpuSpeed,
@@ -498,45 +491,6 @@ export class ServiceService {
       }),
     );
     return res;
-
-    // for (const serviceInstance of allServicesInstances) {
-    //   if (
-    //     serviceInstance.status != ServiceStatusEnum.Error &&
-    //     serviceInstance.status != ServiceStatusEnum.Pending
-    //   ) {
-    //     const cpuSpeed = (
-    //       await this.serviceFactory.getConfigServiceInstance(serviceInstance)
-    //     ).cpuSpeed;
-    //
-    //     const { daysLeft, isTicketSent } =
-    //       await this.serviceFactory.getPropertiesOfServiceInstance(
-    //         serviceInstance,
-    //       );
-    //
-    //     const vdcItems: GetOrgVdcResult = await this.vdcService.getVdc(
-    //       options,
-    //       serviceInstance.id,
-    //     );
-    //
-    //     model = this.serviceFactory.configModelServiceInstanceList(
-    //       serviceInstance,
-    //       daysLeft,
-    //       isTicketSent,
-    //       vdcItems,
-    //       cpuSpeed,
-    //     );
-    //   } else {
-    //     model = this.serviceFactory.configModelServiceInstanceList(
-    //       serviceInstance,
-    //       0,
-    //       false,
-    //       {},
-    //       0,
-    //     );
-    //   }
-    //
-    //   res.push(model);
-    // }
   }
 
   async getServices(

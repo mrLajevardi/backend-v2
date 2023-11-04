@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { VmService } from './service/vm.service';
 import { VmController } from './controller/vm.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -7,6 +7,8 @@ import { SessionsModule } from '../base/sessions/sessions.module';
 import { CrudModule } from '../base/crud/crud.module';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { NetworksModule } from '../networks/networks.module';
+import { VmDetailService } from './service/vm-detail.service';
 
 @Module({
   imports: [
@@ -16,9 +18,10 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
     SessionsModule,
     CrudModule,
     MainWrapperModule,
+    forwardRef(() => NetworksModule),
   ],
   controllers: [VmController],
-  providers: [VmService],
+  providers: [VmService, VmDetailService],
   exports: [VmService],
 })
 export class VmModule {}

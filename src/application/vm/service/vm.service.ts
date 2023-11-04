@@ -15,6 +15,15 @@ import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { NetworksService } from '../../networks/networks.service';
+import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
+import { groupBy } from '../../../infrastructure/utils/extensions/array.extensions';
+import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
+import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
+import { CreateVm } from '../dto/create-vm.dto';
+import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+import * as process from 'process';
+import { VmDetailService } from './vm-detail.service';
 
 @Injectable()
 export class VmService {
@@ -25,6 +34,7 @@ export class VmService {
     private readonly organizationTableService: OrganizationTableService,
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
+    private readonly vmDetailService: VmDetailService,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId) {
@@ -124,7 +134,11 @@ export class VmService {
     });
   }
 
-  async createVm(options, data, serviceInstanceId) {
+  async createVm(options, data: CreateVm, serviceInstanceId: string) {
+    if ((data.storage as []).length > 4) {
+      return new ExceedEnoughDiskCountException();
+    }
+
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -342,7 +356,12 @@ export class VmService {
     });
   }
 
-  async getAllUserVm(options, serviceInstanceId, filter = '', search) {
+  async getAllUserVm(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    filter = '',
+    search: string,
+  ) {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -364,8 +383,11 @@ export class VmService {
       type: 'vm',
       filter,
     });
+
+    console.log(vmList);
+
     const vmValues = [];
-    vmList.data.record.forEach((recordItem) => {
+    for (const recordItem of vmList.data.record) {
       const id = recordItem.href.split('vApp/')[1];
       const name = recordItem.name;
       const os = recordItem.guestOs;
@@ -374,6 +396,9 @@ export class VmService {
       const memory = recordItem.memoryMB;
       const status = recordItem.status;
       const containerId = recordItem.container.split('vApp/')[1];
+      const countOfNetworks = (
+        await this.getVmNetworkSection(options, serviceInstanceId, id)
+      ).networkConnections.length;
       vmValues.push({
         id,
         name,
@@ -384,8 +409,9 @@ export class VmService {
         status,
         containerId,
         snapshot: recordItem.snapshot,
+        countOfNetworks,
       });
-    });
+    }
     const data = {
       total: vmList.data.total,
       pageSize: vmList.data.pageSize,
@@ -501,6 +527,20 @@ export class VmService {
   }
 
   async getVmDiskSection(options, serviceInstanceId, vmId) {
+    const yy = await this.vmDetailService.eventVm(
+      options,
+      serviceInstanceId,
+      '',
+      vmId,
+      '',
+      '',
+    );
+    // const xx = await this.vmDetailService.testTasksVm(
+    //   options,
+    //   serviceInstanceId,
+    //   '',
+    //   vmId,
+    // );
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -525,6 +565,7 @@ export class VmService {
       props.vdcId,
     );
     const data = [];
+
     vmSpecSection.diskSection.diskSettings.forEach((settings) => {
       const targetAdaptor = hardwareInfo.hardDiskAdapter.find(
         (diskAdaptor) => diskAdaptor.legacyId == settings.adapterType,
@@ -548,6 +589,35 @@ export class VmService {
       data.push(diskSection);
     });
     return Promise.resolve(data);
+  }
+
+  async getSnapShotDetails(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    vmId: string,
+  ): Promise<SnapShotDetails> {
+    const userId = options.user.userId;
+    const props: any =
+      await this.servicePropertiesService.getAllServiceProperties(
+        serviceInstanceId,
+      );
+    const session = await this.sessionsServices.checkUserSession(
+      userId,
+      props.orgId,
+    );
+    const vm = await mainWrapper.user.vm.getVapp(session, vmId);
+
+    const snapshotSection = vm.data.section.filter(
+      (d) => d._type == 'SnapshotSectionType',
+    )[0];
+
+    // SnapshotSectionType
+    const snapShotInf: SnapShotDetails = {
+      snapShotTime: snapshotSection.snapshot.created,
+      snapShotSize: snapshotSection.snapshot.size,
+    };
+
+    return Promise.resolve(snapShotInf);
   }
 
   async getVmGeneralSection(options, serviceInstanceId, vmId) {
@@ -1404,6 +1474,18 @@ export class VmService {
   }
 
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
+    const res = groupBy(data, (setting) => (setting as any).adapterType);
+    for (const key in res) {
+      const length = (DiskBusUnitBusNumberSpace[key] as []).length;
+
+      const list = res[key] as [];
+      if (list.length > length) {
+        return new ExceedEnoughDiskCountException(
+          `You can not create more than ${length} items for busType ${key}`,
+        );
+      }
+    }
+
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(

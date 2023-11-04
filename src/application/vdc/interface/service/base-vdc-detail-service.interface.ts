@@ -4,13 +4,14 @@ import { SessionRequest } from '../../../../infrastructure/types/session-request
 import { VdcInvoiceDetailsInfoResultDto } from '../../dto/vdc-invoice-details-info.result.dto';
 import { VdcDetailsResultDto } from '../../dto/vdc-details.result.dto';
 import { VdcDetailItemResultDto } from '../../dto/vdc-detail-item.result.dto';
+import { VdcItemLimitResultDto } from '../../dto/vdc-Item-limit.result.dto';
+import { VdcStoragesDetailResultDto } from '../../dto/vdc-storages-detail.result.dto';
 
 export const BASE_VDC_DETAIL_SERVICE = 'BASE_VDC_DETAIL_SERVICE';
 export interface BaseVdcDetailService extends IBaseService {
   getStorageDetailVdc(
     serviceInstanceId: string,
-    options: SessionRequest,
-  ): Promise<VdcInvoiceDetailsInfoResultDto[]>;
+  ): Promise<VdcStoragesDetailResultDto[]>;
 
   getVdcDetail(
     serviceInstanceId: string,
@@ -21,4 +22,9 @@ export interface BaseVdcDetailService extends IBaseService {
     option: SessionRequest,
     serviceInstanceId: string,
   ): Promise<VdcDetailItemResultDto>;
+
+  getVdcItemLimit(
+    serviceInstanceId: string,
+    option: SessionRequest,
+  ): Promise<VdcItemLimitResultDto>;
 }

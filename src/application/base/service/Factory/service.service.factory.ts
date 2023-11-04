@@ -61,7 +61,7 @@ export class ServiceServiceFactory {
 
   public configModelServiceInstanceList(
     serviceInstance: GetServicesReturnDto,
-    daysLeft: number,
+    // daysLeft: number,
     isTicketSent: boolean,
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
@@ -74,7 +74,7 @@ export class ServiceServiceFactory {
         serviceInstance.name,
         serviceInstance.serviceType.id,
         [],
-        daysLeft,
+        serviceInstance.daysLeft,
         isTicketSent,
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
       );

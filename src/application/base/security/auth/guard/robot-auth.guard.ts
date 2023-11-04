@@ -14,14 +14,14 @@ export class RobotAuthGuard extends AuthGuard('robot') {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
     console.log('can activate');
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    // const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+    //   context.getHandler(),
+    //   context.getClass(),
+    // ]);
 
-    if (isPublic) {
-      return false;
-    }
+    // if (isPublic) {
+    //   return false;
+    // }
 
     return super.canActivate(context);
   }

@@ -6,6 +6,9 @@ import { ServiceModule } from 'src/application/base/service/service.module';
 import { SessionsModule } from 'src/application/base/sessions/sessions.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { NetworksModule } from '../../networks/networks.module';
+import { VmDetailService } from './vm-detail.service';
+import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
 
 describe('VmService', () => {
   let service: VmService;
@@ -19,8 +22,10 @@ describe('VmService', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
+        NetworksModule,
+        MainWrapperModule,
       ],
-      providers: [VmService],
+      providers: [VmService, VmDetailService],
     }).compile();
 
     service = module.get<VmService>(VmService);

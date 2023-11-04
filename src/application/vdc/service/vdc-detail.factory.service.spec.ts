@@ -267,8 +267,4 @@ describe('VdcDetailFactoryService', () => {
 
     expect(model).toBeUndefined();
   });
-
-  it('should return vdc detail model with valid instance id', () => {
-    const vdcDetailModel = getVdcDetailModel();
-  });
 });

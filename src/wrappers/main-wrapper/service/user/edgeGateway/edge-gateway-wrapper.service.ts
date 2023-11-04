@@ -15,11 +15,13 @@ export class EdgeGatewayWrapperService {
     authToken: string,
     page = 1,
     pageSize = 25,
+    filter?: string,
   ): Promise<GetEdgeGatewayDto> {
     const options = {
       params: {
         page,
         pageSize,
+        ...(filter && { filter }),
       },
       headers: { Authorization: `Bearer ${authToken}` },
     };

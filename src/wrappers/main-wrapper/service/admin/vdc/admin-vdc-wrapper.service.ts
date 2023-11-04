@@ -11,6 +11,7 @@ import { AdminOrgVdcStorageProfileQuery } from '../../user/vdc/dto/instantiate-v
 import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
 import { GetProviderVdcsParams } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/get-provider-vdcs.dto';
 import { GetProviderVdcsMetadataDto } from './dto/get-provider-vdcs-metadata.dto';
+import { VdcUnits } from 'src/application/vdc/enum/vdc-units.enum';
 
 @Injectable()
 export class AdminVdcWrapperService {
@@ -183,7 +184,7 @@ export class AdminVdcWrapperService {
   async updateVdc(
     config: UpdateVdcComputePolicyDto,
     vdcId: string,
-  ): Promise<void> {
+  ): Promise<VcloudTask> {
     const vdcConfig = vcdConfig.admin.vdc;
     // convert from urn:vcloud:org:vdcId -> vdcId
     vdcId = vdcId.split(':').slice(-1)[0];
@@ -198,12 +199,12 @@ export class AdminVdcWrapperService {
       allocationModel: vdcConfig.AllocationModel,
       computeCapacity: {
         cpu: {
-          ...vdcConfig.ComputeCapacity.Cpu,
+          units: VdcUnits.CpuUnit,
           allocated: cpuAllocation,
           limit: cpuLimit,
         },
         memory: {
-          ...vdcConfig.ComputeCapacity.Memory,
+          units: VdcUnits.RamUnit,
           allocated: config.ram * 1024,
           limit: config.ram * 1024,
         },
@@ -212,6 +213,8 @@ export class AdminVdcWrapperService {
       vmQuota: config.vm,
       nicQuota: config.nicQuota,
       networkQuota: config.networkQuota,
+      resourceGuaranteedCpu: config.resourceGuaranteedCpu,
+      resourceGuaranteedMemory: config.resourceGuaranteedMemory,
     };
     const options = {
       headers: { Authorization: `Bearer ${config.authToken}` },
@@ -221,7 +224,12 @@ export class AdminVdcWrapperService {
     const endpoint = 'AdminVdcEndpointService.updateVdcEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    await this.vcloudWrapperService.request(wrapper(options));
+    const updatedVdc = await this.vcloudWrapperService.request(
+      wrapper(options),
+    );
+    return {
+      __vcloudTask: updatedVdc.headers.location,
+    };
   }
   async updateVdcStorageProfile(
     config: UpdateVdcStoragePolicyDto,
