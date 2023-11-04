@@ -84,7 +84,7 @@ export class VdcWrapperService {
     namedDiskProperties: NamedDiskProperties,
   ): Promise<VcloudTask> {
     const formattedVdcId = vdcId.split(':').slice(-1)[0];
-    const vdcStorageProfileLink = namedDiskProperties.storageProfileId;
+    const vdcStorageProfileLink = `${process.env.VCLOUD_BASE_URL}/api/vdcStorageProfile/${namedDiskProperties.policyId}`;
     const request: CreateNamedDiskBody = {
       'root:DiskCreateParams': {
         $: {
