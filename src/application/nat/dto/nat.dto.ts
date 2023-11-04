@@ -66,6 +66,7 @@ export class NatDto {
 
 export class NatQueryDto {
   @ApiProperty({ type: Boolean })
+  @Transform((prop) => JSON.parse(prop.value))
   @IsBoolean()
   getAll: boolean;
 

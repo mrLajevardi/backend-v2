@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 import { ApplicationRefDto } from 'src/application/edge-gateway/dto/application-ref.dto';
 
 export class NatRulesListDTO {
@@ -8,6 +8,7 @@ export class NatRulesListDTO {
     example: '4ffc5afd-0e3b-45db-b9c4-ec545fa5b43f',
   })
   @IsString()
+  @IsOptional()
   id: string;
 
   @ApiProperty({ type: Boolean, required: true })
@@ -36,14 +37,17 @@ export class NatRulesListDTO {
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
+  @IsOptional()
   externalIP?: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
+  @IsOptional()
   internalIP?: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
+  @IsOptional()
   destinationIp?: string;
 
   @ApiProperty({ type: String, example: 'DNAT' })

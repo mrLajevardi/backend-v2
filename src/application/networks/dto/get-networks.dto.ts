@@ -3,6 +3,10 @@ import { IsString, IsArray, IsOptional } from 'class-validator';
 import { NetworkSubnetsDto } from './network-subnets.dto';
 import { NetworkStatusEnum } from 'src/wrappers/main-wrapper/service/user/network/enum/network-status.enum';
 
+class Values {
+  @ApiProperty({ type: [NetworkSubnetsDto] })
+  values: NetworkSubnetsDto[];
+}
 export class GetNetworksDto {
   @ApiProperty({ type: String })
   @IsString()
@@ -14,7 +18,7 @@ export class GetNetworksDto {
 
   @ApiProperty({ type: [NetworkSubnetsDto] })
   @IsArray()
-  subnets: NetworkSubnetsDto[];
+  subnets: Values;
 
   @ApiProperty({ type: String, required: false })
   @IsOptional()
@@ -28,4 +32,18 @@ export class GetNetworksDto {
 
   @ApiProperty({ type: NetworkStatusEnum, enum: NetworkStatusEnum })
   status: NetworkStatusEnum;
+
+  // backingNetworkId: string;
+
+  // backingNetworkType: string;
+
+  // parentNetworkId: string;
+
+  // orgVdc: Ref;
+
+  // ownerRef: Ref;
+
+  // orgVdcIsNsxTBacked: null;
+
+  // orgRef: Ref;
 }
