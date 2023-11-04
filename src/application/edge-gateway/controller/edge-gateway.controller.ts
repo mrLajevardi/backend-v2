@@ -19,7 +19,10 @@ import {
 } from '@nestjs/swagger';
 import { CreateApplicationPortProfileDto } from '../dto/create-application-port-profile.dto';
 import { IPSetDto, UpdateIpSetsDto } from '../dto/ip-set.dto';
-import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
+import {
+  ApplicationProfileListDto,
+  ApplicationProfileListQueryDto,
+} from '../dto/application-profile-list.dto';
 import { DnsDto } from '../dto/dns.dto';
 import { IpSetsDto } from '../dto/ip-sets.dto';
 import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
@@ -31,6 +34,7 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { GetIpSetsListQueryDto } from '../dto/ip-set-list.dto';
 import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
+import { ApplicationPortProfileListValuesDto } from '../dto/application-port-profile-list-values.dto';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
@@ -131,8 +135,8 @@ export class EdgeGatewayController {
   async getApplicationPortProfile(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
-    @Request() options,
-  ): Promise<SingleApplicationPortProfileDto> {
+    @Request() options: SessionRequest,
+  ): Promise<ApplicationPortProfileListValuesDto> {
     return await this.service.applicationPortProfile.getApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -143,25 +147,15 @@ export class EdgeGatewayController {
   @Get('/:vdcInstanceId/applicationPortProfiles')
   @ApiOperation({ summary: 'Get a list of applicationPortProfiles' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
-  @ApiQuery({ name: 'page', type: 'number', required: false })
-  @ApiQuery({ name: 'pageSize', type: 'number', required: false })
-  @ApiQuery({ name: 'filter', type: 'string', required: false })
-  @ApiQuery({ name: 'search', type: 'string', required: false })
   async getApplicationPortProfiles(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Query('page') page?: number,
-    @Query('pageSize') pageSize?: number,
-    @Query('filter') filter?: string,
-    @Query('search') search?: string,
+    @Query() query: ApplicationProfileListQueryDto,
   ): Promise<ApplicationProfileListDto> {
     return await this.service.applicationPortProfile.getApplicationPortProfiles(
       options,
       vdcInstanceId,
-      page,
-      pageSize,
-      filter,
-      search,
+      query,
     );
   }
 
@@ -171,7 +165,7 @@ export class EdgeGatewayController {
   })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   async getDhcpForwarder(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
   ): Promise<DhcpForwarderDto> {
     return await this.service.getDhcpForwarder(options, vdcInstanceId);

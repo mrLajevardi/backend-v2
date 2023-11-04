@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { SessionsService } from '../base/sessions/sessions.service';
-import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
-import { DhcpService } from './dhcp.service';
 import { NetworkDto } from './dto/network.dto';
 import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
 import { SessionRequest } from '../../infrastructure/types/session-request.type';
@@ -20,7 +18,6 @@ export class NetworksService {
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
     private readonly networkWrapperService: NetworkWrapperService,
-    readonly dhcp: DhcpService,
   ) {}
 
   async createNetwork(
@@ -71,7 +68,7 @@ export class NetworksService {
       options.user.userId,
       Number(props.orgId),
     );
-    const network = await mainWrapper.user.network.deleteNetwork(
+    const network = await this.networkWrapperService.deleteNetwork(
       session,
       networkId,
     );
