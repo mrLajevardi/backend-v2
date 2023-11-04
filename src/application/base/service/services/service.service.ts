@@ -455,7 +455,7 @@ export class ServiceService {
 
     const allServicesInstances = await this.getServices(options, typeId, id);
     let cpuSpeed: VcloudMetadata = 0,
-      daysLeft = 0,
+      // daysLeft = 0,
       isTicketSent = false,
       vdcItems: GetOrgVdcResult = {};
     let model: GetAllVdcServiceWithItemsResultDto = {};
@@ -470,18 +470,19 @@ export class ServiceService {
             await this.serviceFactory.getConfigServiceInstance(serviceInstance)
           ).cpuSpeed;
 
-          const info = ({ daysLeft, isTicketSent } =
+          const info = ({ isTicketSent } =
             await this.serviceFactory.getPropertiesOfServiceInstance(
               serviceInstance,
             ));
-          (daysLeft = info.daysLeft), (isTicketSent = info.isTicketSent);
+          // (daysLeft = info.daysLeft),
+          isTicketSent = info.isTicketSent;
 
           vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
         }
 
         model = this.serviceFactory.configModelServiceInstanceList(
           serviceInstance,
-          daysLeft,
+          // daysLeft,
           isTicketSent,
           vdcItems,
           cpuSpeed,

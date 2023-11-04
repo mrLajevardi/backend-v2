@@ -197,7 +197,7 @@ export interface PurpleItem {
   addressOnParent: ElementName | null;
   allocationUnits: ElementName | null;
   automaticAllocation: AutomaticAllocation | null;
-  automaticDeallocation: null;
+  automaticDellocation: null;
   caption: null;
   changeableType: null;
   configurationName: null;

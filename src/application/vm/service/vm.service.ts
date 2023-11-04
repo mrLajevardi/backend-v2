@@ -22,6 +22,8 @@ import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm
 import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
 import { CreateVm } from '../dto/create-vm.dto';
 import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+import * as process from 'process';
+import { VmDetailService } from './vm-detail.service';
 
 @Injectable()
 export class VmService {
@@ -32,7 +34,7 @@ export class VmService {
     private readonly organizationTableService: OrganizationTableService,
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
-    private readonly networkService: NetworksService,
+    private readonly vmDetailService: VmDetailService,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId) {
@@ -354,7 +356,12 @@ export class VmService {
     });
   }
 
-  async getAllUserVm(options, serviceInstanceId, filter = '', search) {
+  async getAllUserVm(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    filter = '',
+    search: string,
+  ) {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -520,6 +527,20 @@ export class VmService {
   }
 
   async getVmDiskSection(options, serviceInstanceId, vmId) {
+    const yy = await this.vmDetailService.eventVm(
+      options,
+      serviceInstanceId,
+      '',
+      vmId,
+      '',
+      '',
+    );
+    // const xx = await this.vmDetailService.testTasksVm(
+    //   options,
+    //   serviceInstanceId,
+    //   '',
+    //   vmId,
+    // );
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
