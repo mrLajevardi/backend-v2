@@ -159,11 +159,14 @@ export class EdgeGatewayController {
     );
   }
 
-  @Get('/:vdcInstanceId/DhcpForwarder')
+  @Get('/:vdcInstanceId/dhcpForwarder')
   @ApiOperation({
     summary: 'Get DHCP Forwarder configuration of an edge gateway',
   })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    type: DhcpForwarderDto,
+  })
   async getDhcpForwarder(
     @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
@@ -181,15 +184,18 @@ export class EdgeGatewayController {
     return await this.service.getDnsForwarder(options, vdcInstanceId);
   }
 
-  @Get('/:vdcInstanceId/ExternalIPs')
+  @Get('/:vdcInstanceId/userIps')
   @ApiOperation({ summary: 'Get a list of dedicated IPs' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
-  async getExternalIPs(
-    @Request() options,
+  @ApiResponse({
+    type: [String],
+  })
+  async getUserIps(
+    @Request() options: SessionRequest,
 
     @Param('vdcInstanceId') vdcInstanceId: string,
   ): Promise<string[]> {
-    return await this.service.getExternalIPs(options, vdcInstanceId);
+    return await this.service.getUserIps(options, vdcInstanceId);
   }
 
   @Get('/:vdcInstanceId/firewalls')
@@ -262,7 +268,7 @@ export class EdgeGatewayController {
     );
   }
 
-  @Put('/:vdcInstanceId/DhcpForwarder')
+  @Put('/:vdcInstanceId/dhcpForwarder')
   @ApiOperation({
     summary: 'Update DHCP Forwarder configuration of an edge gateway',
   })

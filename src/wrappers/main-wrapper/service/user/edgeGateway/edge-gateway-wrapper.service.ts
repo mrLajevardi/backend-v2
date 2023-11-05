@@ -94,7 +94,9 @@ export class EdgeGatewayWrapperService {
     const request = {
       enabled,
       dhcpServers,
-      version,
+      version: {
+        version: version,
+      },
     };
     const options = {
       body: request,

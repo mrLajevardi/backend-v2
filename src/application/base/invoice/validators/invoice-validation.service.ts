@@ -231,6 +231,7 @@ export class InvoiceValidationService {
         },
       });
     if (requiredOtherItemsNotProvided.length > 0) {
+      console.log('required items:', requiredOtherItemsNotProvided);
       throw new BadRequestException(`required items not provided`);
     }
   }

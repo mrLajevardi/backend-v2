@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
-import { isEmpty } from 'lodash';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { ServicePropertiesTableService } from '../../base/crud/service-properties-table/service-properties-table.service';
@@ -15,6 +14,7 @@ import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.inte
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { IPSetDto, UpdateIpSetsDto } from '../dto/ip-set.dto';
 import { GetIpSetsListQueryDto, IPSetListDto } from '../dto/ip-set-list.dto';
+import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
 
 @Injectable()
 export class EdgeGatewayService {
@@ -25,6 +25,7 @@ export class EdgeGatewayService {
     private readonly servicePropertiesTable: ServicePropertiesTableService,
     readonly applicationPortProfile: ApplicationPortProfileService,
     private readonly ipSetsWrapperService: IpSetsWrapperService,
+    private readonly edgeGatewayWrapperService: EdgeGatewayWrapperService,
     readonly firewall: FirewallService,
   ) {}
 
@@ -77,7 +78,10 @@ export class EdgeGatewayService {
     });
   }
 
-  async getDhcpForwarder(options, vdcInstanceId): Promise<DhcpForwarderDto> {
+  async getDhcpForwarder(
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<DhcpForwarderDto> {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
@@ -94,11 +98,16 @@ export class EdgeGatewayService {
     const edgeName = edge.value;
     const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(userId, orgId);
-    const dhcpForwarder = await mainWrapper.user.edgeGateway.getDhcpForwarder(
+    const dhcpForwarder = await this.edgeGatewayWrapperService.getDhcpForwarder(
       session,
       edgeName,
     );
-    return Promise.resolve(dhcpForwarder);
+    const data: DhcpForwarderDto = {
+      dhcpServers: dhcpForwarder.dhcpServers,
+      enabled: dhcpForwarder.enabled,
+      version: dhcpForwarder.version.version,
+    };
+    return Promise.resolve(data);
   }
 
   async getDnsForwarder(options, vdcInstanceId) {
@@ -117,7 +126,10 @@ export class EdgeGatewayService {
     return Promise.resolve(dnsForwarderList);
   }
 
-  async getExternalIPs(options, vdcInstanceId) {
+  async getUserIps(
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<string[]> {
     const serviceEdgeIpRanges = await this.servicePropertiesTable.find({
       where: {
         serviceInstanceId: vdcInstanceId,
@@ -208,7 +220,11 @@ export class EdgeGatewayService {
     return Promise.resolve(filteredIPSet);
   }
 
-  async updateDhcpForwarder(options, data, vdcInstanceId) {
+  async updateDhcpForwarder(
+    options: SessionRequest,
+    data: DhcpForwarderDto,
+    vdcInstanceId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTable.findOne({
       where: {
@@ -226,21 +242,13 @@ export class EdgeGatewayService {
     const orgId = parseInt(serviceOrg.value);
     const session = await this.sessionService.checkUserSession(userId, orgId);
     const dhcpForwarder =
-      await mainWrapper.user.edgeGateway.updateDhcpForwarder(
+      await this.edgeGatewayWrapperService.updateDhcpForwarder(
         data.dhcpServers,
         data.enabled,
         data.version,
         edgeName,
         session,
       );
-    await this.logger.info(
-      'network',
-      'updateDhcpForwarder',
-      {
-        _object: dhcpForwarder.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
     return Promise.resolve({
       taskId: dhcpForwarder.__vcloudTask.split('task/')[1],
     });

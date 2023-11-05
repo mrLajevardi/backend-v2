@@ -9,8 +9,11 @@ interface UpdateDhcpForwarderUrlParams {
   gatewayId: string;
 }
 
+class Version {
+  version: number;
+}
 export class UpdateDhcpForwarderBody {
   enabled: boolean;
   dhcpServers: string[];
-  version: number;
+  version: Version;
 }
