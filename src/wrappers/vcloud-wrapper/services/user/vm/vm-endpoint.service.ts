@@ -31,12 +31,29 @@ import { UpdateVmDto } from './dto/update-vm.dto';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { GetMediaItemDto } from './dto/get-media-item.dto';
 import { UpdateNetworkSectionDto } from './dto/update-network-section.dto';
+import { GetEventVmDto } from './dto/get-event-vm.dto';
 
 @Injectable()
 export class VmEndpointService {
+  versionApiNumber = '1.0.0';
   name: string;
   constructor() {
     this.name = 'VmEndpointService';
+    this.versionApiNumber = '1.0.0';
+  }
+
+  eventVmEndpoint(options: GetEventVmDto): EndpointInterface {
+    return {
+      method: 'get',
+      resource: `/cloudapi/1.0.0/auditTrail`,
+      params: options.urlParams,
+      body: null,
+      headers: {
+        Accept: 'application/json;version=38.0.0-alpha',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    };
   }
   acquireVmTicketEndpoint(options: AcquireVmTicketDto): EndpointInterface {
     return {

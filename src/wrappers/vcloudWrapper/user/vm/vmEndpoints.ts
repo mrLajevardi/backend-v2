@@ -34,6 +34,7 @@ export const vmEndpoints = {
   createVm: createVmEndpoint,
   deleteVm: deleteVmEndpoint,
   acquireVmTicket: acquireVmTicketEndpoint,
+  // eventVm:eventVmEnd
   updateVm: updateVmEndpoint,
   getVmTemplates: getVmTemplatesEndpoint,
   getVm: getVmEndpoint,
