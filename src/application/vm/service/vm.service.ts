@@ -22,6 +22,9 @@ import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm
 import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
 import { CreateVm } from '../dto/create-vm.dto';
 import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+import * as process from 'process';
+import { VmDetailService } from './vm-detail.service';
+import { VmStatusEnum } from '../enums/vm-status.enum';
 
 @Injectable()
 export class VmService {
@@ -32,7 +35,7 @@ export class VmService {
     private readonly organizationTableService: OrganizationTableService,
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
-    private readonly networkService: NetworksService,
+    private readonly vmDetailService: VmDetailService,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId) {
@@ -354,7 +357,12 @@ export class VmService {
     });
   }
 
-  async getAllUserVm(options, serviceInstanceId, filter = '', search) {
+  async getAllUserVm(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    filter = '',
+    search: string,
+  ) {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -387,7 +395,7 @@ export class VmService {
       const cpu = recordItem.numberOfCpus;
       const storage = recordItem.totalStorageAllocatedMb;
       const memory = recordItem.memoryMB;
-      const status = recordItem.status;
+      const status = VmStatusEnum[recordItem.status];
       const containerId = recordItem.container.split('vApp/')[1];
       const countOfNetworks = (
         await this.getVmNetworkSection(options, serviceInstanceId, id)
@@ -520,6 +528,12 @@ export class VmService {
   }
 
   async getVmDiskSection(options, serviceInstanceId, vmId) {
+    // const xx = await this.vmDetailService.testTasksVm(
+    //   options,
+    //   serviceInstanceId,
+    //   '',
+    //   vmId,
+    // );
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -529,6 +543,16 @@ export class VmService {
       userId,
       props.orgId,
     );
+    // const yy = await this.vmDetailService.eventVm(
+    //   options,
+    //   serviceInstanceId,
+    //   '',
+    //   vmId,
+    //   '',
+    //   1,
+    //   20,
+    // );
+
     const storageProfile = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'orgVdcStorageProfile',
       page: 1,

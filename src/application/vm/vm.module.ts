@@ -8,6 +8,7 @@ import { CrudModule } from '../base/crud/crud.module';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { NetworksModule } from '../networks/networks.module';
+import { VmDetailService } from './service/vm-detail.service';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { NetworksModule } from '../networks/networks.module';
     forwardRef(() => NetworksModule),
   ],
   controllers: [VmController],
-  providers: [VmService],
+  providers: [VmService, VmDetailService],
   exports: [VmService],
 })
 export class VmModule {}

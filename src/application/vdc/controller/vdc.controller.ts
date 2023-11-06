@@ -2,7 +2,6 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -21,8 +20,6 @@ import {
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
-import { vpcInternalSettingsMock } from '../mock/vpc-internal-settings.mock';
-import { vpcTemplatesMock } from '../mock/vpc-templates.mock';
 import {
   BASE_VDC_INVOICE_SERVICE,
   BaseVdcInvoiceServiceInterface,
@@ -47,7 +44,6 @@ import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
 
 @ApiBearerAuth()
 @ApiTags('Vpc')
-// @UseFilters(new HttpExceptionFilter())
 @Controller('vdc')
 export class VdcController {
   constructor(
