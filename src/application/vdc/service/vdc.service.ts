@@ -430,7 +430,10 @@ export class VdcService {
       pageSize: 10,
       filter: `id==${props['vdcId']}`,
     });
-
+    if (vdcData.data.total === 0) {
+      // There is no any vdc in vcloud for this vdc Id ==>props['vdcId']
+      return null;
+    }
     const model = this.vdcFactoryService.getVdcOrgVdcModelResult(vdcData);
 
     return Promise.resolve(model);
