@@ -560,7 +560,10 @@ export class ServiceService {
     const services = await this.serviceInstancesTableService.find({
       where,
       relations: ['serviceItems', 'serviceType'],
-      order: { createDate: { direction: 'DESC' } },
+      order: {
+        status: { direction: 'ASC' },
+        createDate: { direction: 'DESC' },
+      },
     });
     console.log(services);
     const extendedServiceList = services.map((service) => {
