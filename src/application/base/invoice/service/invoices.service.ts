@@ -154,6 +154,7 @@ export class InvoicesService implements BaseInvoiceService {
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,
       invoiceCost.itemsSum,
+      groupedItems,
     );
     return { invoiceId: invoice.id };
   }
@@ -204,6 +205,7 @@ export class InvoicesService implements BaseInvoiceService {
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,
       invoiceCost.itemsSum,
+      groupedItems,
     );
     return { invoiceId: invoice.id };
   }
@@ -291,6 +293,7 @@ export class InvoicesService implements BaseInvoiceService {
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,
       finalInvoiceCost.itemsSum,
+      groupedItems,
     );
     return {
       invoiceId: invoice.id,
@@ -376,6 +379,7 @@ export class InvoicesService implements BaseInvoiceService {
     await this.invoiceFactoryService.createInvoiceItems(
       createdInvoice.id,
       invoiceCost.itemsSum,
+      groupedItems,
     );
     return { invoiceId: createdInvoice.id };
   }
