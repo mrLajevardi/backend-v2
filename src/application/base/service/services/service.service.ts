@@ -488,34 +488,6 @@ export class ServiceService {
         res.push(model);
       }
     }
-    // for (const serviceInstance in allServicesInstances) {
-    //   if (
-    //     serviceInstance.status != ServiceStatusEnum.Error &&
-    //     serviceInstance.status != ServiceStatusEnum.Pending
-    //   ) {
-    //     cpuSpeed = (
-    //       await this.serviceFactory.getConfigServiceInstance(serviceInstance)
-    //     ).cpuSpeed;
-    //
-    //     const info = ({ isTicketSent } =
-    //       await this.serviceFactory.getPropertiesOfServiceInstance(
-    //         serviceInstance,
-    //       ));
-    //     // (daysLeft = info.daysLeft),
-    //     isTicketSent = info.isTicketSent;
-    //
-    //     vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
-    //   }
-    //
-    //   model = this.serviceFactory.configModelServiceInstanceList(
-    //     serviceInstance,
-    //     // daysLeft,
-    //     isTicketSent,
-    //     vdcItems,
-    //     cpuSpeed,
-    //   );
-    //   res.push(model);
-    // }
 
     // await Promise.all(
     // allServicesInstances.map((serviceInstance) => {
@@ -588,6 +560,7 @@ export class ServiceService {
     const services = await this.serviceInstancesTableService.find({
       where,
       relations: ['serviceItems', 'serviceType'],
+      order: { createDate: { direction: 'DESC' } },
     });
     console.log(services);
     const extendedServiceList = services.map((service) => {
