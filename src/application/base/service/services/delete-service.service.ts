@@ -16,6 +16,7 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { Like } from 'typeorm';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
+import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 
 @Injectable()
 export class DeleteServiceService {
@@ -44,7 +45,7 @@ export class DeleteServiceService {
     console.log('first');
     const serviceTypeID = serviceInstance.serviceTypeId;
     if (serviceInstance.status === 1) {
-      throw new BadGatewayException();
+      throw new BadRequestException();
     }
     if (serviceTypeID == 'vdc') {
       const adminSession = await this.sessionsService.checkAdminSession();
