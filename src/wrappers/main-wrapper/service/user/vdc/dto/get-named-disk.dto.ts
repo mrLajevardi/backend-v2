@@ -46,7 +46,7 @@ export interface Records {
   storageProfile: string;
   storageProfileName: string;
   status: string;
-  busType: string;
+  busType: number;
   busTypeDesc: string;
   busSubType: string;
   attachedVmCount: number;

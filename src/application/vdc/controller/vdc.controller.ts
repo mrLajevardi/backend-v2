@@ -36,6 +36,11 @@ import { Public } from 'src/application/base/security/auth/decorators/ispublic.d
 import { TemplatesDto, templatesQueryParamsDto } from '../dto/templates.dto';
 import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { NamedDiskDto } from '../dto/named-disk.dto';
+import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
+// import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Vpc')
@@ -86,16 +91,16 @@ export class VdcController {
   @ApiResponse({
     status: 201,
     description: 'create a vm from template',
-    type: 'object',
+    type: TaskReturnDto,
   })
   async createNamedDisk(
     @Request()
-    options: any,
+    options: SessionRequest,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Body()
-    data: TempDto,
-  ) {
+    data: CreateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
     return this.vdcService.createNamedDisk(options, vdcInstanceId, data);
   }
 
@@ -107,18 +112,18 @@ export class VdcController {
   @ApiResponse({
     status: 201,
     description: 'create a vm from template',
-    type: 'object',
+    type: TaskReturnDto,
   })
   async detachNamedDisk(
     @Request()
-    options: any,
+    options: SessionRequest,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
     @Param('vmId')
     vmId: string,
-  ) {
+  ): Promise<TaskReturnDto> {
     return this.vdcService.detachNamedDisk(
       options,
       vdcInstanceId,
@@ -128,19 +133,19 @@ export class VdcController {
   }
 
   @Get('/:serviceInstanceId/namedDisk')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'get all service named disks' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiResponse({
     status: 201,
     description: 'create a vm from template',
-    type: 'object',
+    type: [NamedDiskDto],
   })
   async getNamedDisk(
     @Request()
-    options: any,
+    options: SessionRequest,
     @Param('serviceInstanceId')
     serviceInstanceId: string,
-  ) {
+  ): Promise<NamedDiskDto[]> {
     return this.vdcService.getNamedDisk(options, serviceInstanceId);
   }
 
@@ -162,22 +167,22 @@ export class VdcController {
   }
 
   @Get('/:serviceInstanceId/namedDisk/:namedDiskId/attachedVm')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'get attached vm of a named disk' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
   @ApiResponse({
     status: 201,
     description: 'create a vm from template',
-    type: 'object',
+    type: String,
   })
   async getVmAttachedToNamedDisk(
     @Request()
-    options: any,
+    options: SessionRequest,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
-  ) {
+  ): Promise<string> {
     return this.vdcService.getVmAttachedToNamedDisk(
       options,
       vdcInstanceId,
@@ -186,44 +191,44 @@ export class VdcController {
   }
 
   @Delete('/:serviceInstanceId/namedDisk/:namedDiskId')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'remove named disk' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
   @ApiResponse({
     status: 201,
     description: 'create a vm from template',
-    type: 'object',
+    type: TaskReturnDto,
   })
   async removeNamedDisk(
     @Request()
-    options: any,
+    options: SessionRequest,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
-  ) {
+  ): Promise<TaskReturnDto> {
     return this.vdcService.removeNamedDisk(options, vdcInstanceId, namedDiskId);
   }
 
   @Put('/:serviceInstanceId/namedDisk/:namedDiskId')
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'update named Disk' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
   @ApiResponse({
     status: 201,
     description: 'create a vm from template',
-    type: 'object',
+    type: TaskReturnDto,
   })
   async updateNamedDisk(
     @Request()
-    options: any,
+    options: SessionRequest,
     @Param('serviceInstanceId')
     vdcInstanceId: string,
     @Param('namedDiskId')
     namedDiskId: string,
     @Body()
-    data: TempDto,
-  ) {
+    data: UpdateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
     return this.vdcService.updateNamedDisk(
       options,
       vdcInstanceId,

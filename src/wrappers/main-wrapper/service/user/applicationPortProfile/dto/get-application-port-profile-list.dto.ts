@@ -1,3 +1,5 @@
+import { ApplicationPortsProtocols } from '../enum/application-ports-protocols.enum';
+
 interface ApplicationPortProfile {
   orgRef: null | string;
   contextEntityId: null | string;
@@ -13,8 +15,8 @@ interface ApplicationPortProfile {
 
 interface ApplicationPort {
   name: string;
-  protocol: string;
-  destinationPorts: string[];
+  protocol: ApplicationPortsProtocols;
+  destinationPorts: number[];
 }
 
 export interface GetApplicationPortProfileListDto {

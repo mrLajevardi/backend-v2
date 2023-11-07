@@ -1,5 +1,5 @@
 export interface VdcProperties {
-  orgId: number;
+  orgId: string;
   vdcId?: string;
   edgeName?: string;
   genId?: string;

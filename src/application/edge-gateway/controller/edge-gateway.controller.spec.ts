@@ -9,6 +9,7 @@ import { ApplicationPortProfileService } from '../service/application-port-profi
 import { EdgeGatewayService } from '../service/edge-gateway.service';
 import { FirewallService } from '../service/firewall.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('EdgeGatewayController', () => {
   let controller: EdgeGatewayController;
@@ -22,6 +23,7 @@ describe('EdgeGatewayController', () => {
         SessionsModule,
         CrudModule,
         ServicePropertiesModule,
+        MainWrapperModule,
       ],
       providers: [
         EdgeGatewayService,

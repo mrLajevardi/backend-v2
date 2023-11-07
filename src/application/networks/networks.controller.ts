@@ -22,16 +22,24 @@ import {
 import { DhcpBindingsDataDto } from './dto/dbcp-bindings.dto';
 import { NetworkDto } from './dto/network.dto';
 import { GetDhcpDto } from './dto/get-dhcp.dto';
-import { GetNetworkListDto } from './dto/get-network-list.dto';
-import { GetNetworksDto } from './dto/get-networks.dto';
+import {
+  GetNetworkListDto,
+  GetNetworkListQueryDto,
+} from './dto/get-network-list.dto';
 import { UpdateDhcpDto } from '../edge-gateway/dto/update-dbcp.dto';
 import { TempDto } from '../vdc/dto/temp.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { DhcpService } from './dhcp.service';
 
 @ApiTags('Networks')
 @ApiBearerAuth()
 @Controller('networks')
 export class NetworksController {
-  constructor(private readonly service: NetworksService) {}
+  constructor(
+    private readonly service: NetworksService,
+    private readonly dhcpService: DhcpService,
+  ) {}
 
   @Post(':vdcInstanceId/:networkId/dhcp/bindings')
   @ApiOperation({ summary: 'Create a new dhcp binding' })
@@ -49,7 +57,7 @@ export class NetworksController {
     @Param('networkId') networkId: string,
     @Body() data: TempDto,
   ): Promise<object> {
-    return await this.service.dhcp.createDhcpBinding(
+    return await this.dhcpService.createDhcpBinding(
       options,
       vdcInstanceId,
       networkId,
@@ -64,13 +72,13 @@ export class NetworksController {
   @ApiResponse({
     status: 200,
     description: 'Returns the created network',
-    type: Object,
+    type: TaskReturnDto,
   })
   async createNetwork(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Body() data: TempDto,
-  ): Promise<object> {
+    @Body() data: NetworkDto,
+  ): Promise<TaskReturnDto> {
     return await this.service.createNetwork(data, options, vdcInstanceId);
   }
 
@@ -90,7 +98,7 @@ export class NetworksController {
     @Param('networkId') networkId: string,
     @Param('bindingId') bindingId: string,
   ): Promise<object> {
-    return await this.service.dhcp.deleteDhcpBinding(
+    return await this.dhcpService.deleteDhcpBinding(
       options,
       vdcInstanceId,
       networkId,
@@ -112,11 +120,7 @@ export class NetworksController {
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('networkId') networkId: string,
   ): Promise<object> {
-    return await this.service.dhcp.deleteDhcp(
-      options,
-      vdcInstanceId,
-      networkId,
-    );
+    return await this.dhcpService.deleteDhcp(options, vdcInstanceId, networkId);
   }
 
   @Delete(':serviceInstanceId/:networkId')
@@ -126,13 +130,13 @@ export class NetworksController {
   @ApiResponse({
     status: 200,
     description: 'Returns the deleted network',
-    type: Object,
+    type: TaskReturnDto,
   })
   async deleteNetwork(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('networkId') networkId: string,
-  ): Promise<object> {
+  ): Promise<TaskReturnDto> {
     return await this.service.deleteNetwork(
       options,
       serviceInstanceId,
@@ -158,7 +162,7 @@ export class NetworksController {
     @Query('pageSize') pageSize?: number,
     @Query('getAll') getAll?: boolean,
   ): Promise<DhcpBindingsDataDto[]> {
-    return await this.service.dhcp.getAllDhcpBindings(
+    return await this.dhcpService.getAllDhcpBindings(
       options,
       vdcInstanceId,
       networkId,
@@ -183,7 +187,7 @@ export class NetworksController {
     @Param('networkId') networkId: string,
     @Param('bindingId') bindingId: string,
   ): Promise<DhcpBindingsDataDto> {
-    return this.service.dhcp.getDhcpBinding(
+    return this.dhcpService.getDhcpBinding(
       options,
       vdcInstanceId,
       networkId,
@@ -205,37 +209,27 @@ export class NetworksController {
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('networkId') networkId: string,
   ): Promise<GetDhcpDto> {
-    return this.service.dhcp.getDhcp(options, vdcInstanceId, networkId);
+    return this.dhcpService.getDhcp(options, vdcInstanceId, networkId);
   }
 
   @Get(':vdcInstanceId')
-  @ApiOperation({ summary: 'Get a list of networks' })
+  @ApiOperation({
+    summary: 'Get a list of networks',
+    description:
+      'Status property represents status of a Org Vdc network. This value will be PENDING if the network has been recorded by VCD but has not been fully configured, CONFIGURING if the network is in transition, REALIZED if the existing state of the network has been fully realized, or REALIZED_FAILED if there was an error creating the network.',
+  })
   @ApiParam({ name: 'vdcInstanceId', type: 'string' })
-  @ApiQuery({ name: 'page', type: 'number', required: false })
-  @ApiQuery({ name: 'pageSize', type: 'number', required: false })
-  @ApiQuery({ name: 'filter', type: 'string', required: false })
-  @ApiQuery({ name: 'search', type: 'string', required: false })
   @ApiResponse({
     status: 200,
     description: 'Returns the list of networks',
-    type: GetNetworksDto,
+    type: GetNetworkListDto,
   })
   async getNetworks(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Query('page') page?: number,
-    @Query('pageSize') pageSize?: number,
-    @Query('filter') filter?: string,
-    @Query('search') search?: string,
+    @Query() query: GetNetworkListQueryDto,
   ): Promise<GetNetworkListDto> {
-    return this.service.getNetworks(
-      options,
-      vdcInstanceId,
-      page,
-      pageSize,
-      filter,
-      search,
-    );
+    return this.service.getNetworks(options, vdcInstanceId, query);
   }
 
   @Put(':vdcInstanceId/:networkId/dhcp/bindings/:bindingId')
@@ -256,7 +250,7 @@ export class NetworksController {
     @Param('bindingId') bindingId: string,
     @Body() data: TempDto,
   ): Promise<object> {
-    return this.service.dhcp.updateDhcpBinding(
+    return this.dhcpService.updateDhcpBinding(
       options,
       vdcInstanceId,
       networkId,
@@ -281,7 +275,7 @@ export class NetworksController {
     @Param('networkId') networkId: string,
     @Body() data: TempDto,
   ): Promise<object> {
-    return await this.service.dhcp.updateDhcp(
+    return await this.dhcpService.updateDhcp(
       options,
       vdcInstanceId,
       networkId,
@@ -297,14 +291,14 @@ export class NetworksController {
   @ApiResponse({
     status: 200,
     description: 'Returns the updated network',
-    type: Object,
+    type: TaskReturnDto,
   })
   async updateNetwork(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('networkId') networkId: string,
-    @Body() data: TempDto,
-  ): Promise<object> {
+    @Body() data: NetworkDto,
+  ): Promise<TaskReturnDto> {
     return await this.service.updateNetwork(
       data,
       options,

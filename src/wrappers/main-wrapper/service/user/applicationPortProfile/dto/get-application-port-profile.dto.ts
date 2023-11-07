@@ -1,7 +1,7 @@
 interface ApplicationPort {
   name: string;
   protocol: string;
-  destinationPorts: string[];
+  destinationPorts: number[];
 }
 
 export interface GetApplicationPortProfileDto {

@@ -11,14 +11,14 @@ interface UpdateFirewallUrlParams {
 }
 
 export class UpdateFirewallBody {
-  id: string;
+  id?: string;
   name: string;
   applicationPortProfiles: ApplicationPortProfile[];
   comments: string;
   ipProtocol: string;
   logging: boolean;
   enabled: boolean;
-  sourceFirewallGroup: FirewallGroup[];
+  sourceFirewallGroups: FirewallGroup[];
   destinationFirewallGroups: FirewallGroup[];
   direction: string;
   actionValue: string;

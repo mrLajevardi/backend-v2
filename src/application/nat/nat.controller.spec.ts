@@ -7,6 +7,7 @@ import { ServiceModule } from '../base/service/service.module';
 import { CrudModule } from '../base/crud/crud.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('NatController', () => {
   let controller: NatController;
@@ -20,6 +21,7 @@ describe('NatController', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
+        MainWrapperModule,
       ],
       providers: [NatService],
       controllers: [NatController],

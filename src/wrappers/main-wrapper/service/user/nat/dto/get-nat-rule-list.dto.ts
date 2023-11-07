@@ -8,7 +8,7 @@ interface FirewallRuleDetail {
   applicationPortProfile: null | ApplicationPortProfile;
   externalAddresses: string;
   internalAddresses: null | string;
-  dnatExternalPort: null | string;
+  dnatExternalPort: null | number;
   logging: boolean;
   systemRule: boolean;
   snatDestinationAddresses: null | string;
