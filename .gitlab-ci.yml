@@ -22,6 +22,7 @@ unit-test-job:   # This job runs in the test stage.
     - develop
     - merge_requests
     - main
+    - fix/ci-cd
   script:
     - npm run test
   dependencies: []
@@ -42,6 +43,7 @@ lint-test-job:
     - develop
     - main
     - merge_requests
+    - fix/ci-cd
   dependencies: []
   script:
     - npm run lint
@@ -58,6 +60,7 @@ develop server deploy job:      # This job runs in the deploy stage.
   only:
     - develop
     - main
+    - fix/ci-cd
   dependencies: []
   script:
     - .\deploy.ps1
