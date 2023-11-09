@@ -24,6 +24,7 @@ import { CreateTemplateDto } from '../dto/create-template.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
 import { CreateVm } from '../dto/create-vm.dto';
 import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -958,5 +959,12 @@ export class VmController {
       serviceInstanceId,
       templateId,
     );
+  }
+  @Get('/disk/getDiskBusTypeInfo/')
+  // @ApiOperation({ summary: '' })
+  // @ApiOperation({ summary: 'getDiskBusTypeInfo' })
+  // @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  diskBusTypeInfo() {
+    return DiskBusUnitBusNumberSpace;
   }
 }

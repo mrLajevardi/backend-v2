@@ -573,6 +573,10 @@ export class VmService {
       const targetAdaptor = hardwareInfo.hardDiskAdapter.find(
         (diskAdaptor) => diskAdaptor.legacyId == settings.adapterType,
       );
+
+      // const iii = (settings.storageProfile.id as string).split(':');
+      const storageId = (settings.storageProfile.id as string).split(':')[3];
+
       const diskSection = {
         name: settings.disk === null ? null : settings.disk.name,
         iopLimit: storageProfile.data.record[0].iopsLimit,
@@ -587,7 +591,7 @@ export class VmService {
         shareable: settings.shareable,
         iops: settings.iops,
         sizeMb: settings.sizeMb,
-        diskId: settings.diskId,
+        storageId: storageId,
       };
       data.push(diskSection);
     });
@@ -1479,7 +1483,9 @@ export class VmService {
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
     const res = groupBy(data, (setting) => (setting as any).adapterType);
     for (const key in res) {
-      const length = (DiskBusUnitBusNumberSpace[key] as []).length;
+      const length = DiskBusUnitBusNumberSpace.find(
+        (bus) => bus.legacyId == key,
+      ).info.length;
 
       const list = res[key] as [];
       if (list.length > length) {
