@@ -1750,8 +1750,6 @@ export class VmService {
     return Promise.resolve(catalogId);
   }
 
-
-
   async getCountOfFiles(
     option: SessionRequest,
     serviceInstanceId: string,
