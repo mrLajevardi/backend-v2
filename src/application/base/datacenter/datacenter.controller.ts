@@ -6,7 +6,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Inject,
+  Param,
+  Query,
+  Body,
+} from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
@@ -16,6 +24,7 @@ import {
   BaseDatacenterService,
 } from './interface/datacenter.interface';
 import { Public } from '../security/auth/decorators/ispublic.decorator';
+import { CreateDatacenterDto } from './dto/create-datacenter.dto';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -80,5 +89,11 @@ export class DatacenterController {
         ),
       );
     return result;
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Create New Datacenter' })
+  createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
+    return this.service.createDatacenter(dto);
   }
 }

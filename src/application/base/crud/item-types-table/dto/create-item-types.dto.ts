@@ -1,4 +1,10 @@
-import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateItemTypesDto {
@@ -34,4 +40,28 @@ export class CreateItemTypesDto {
   @IsInt()
   @ApiProperty({ required: false })
   minPerRequest: number | null;
+
+  @IsString()
+  datacenterName: string;
+
+  @IsString()
+  rule: string;
+
+  @IsNumber()
+  parentId: number;
+
+  @IsNumber()
+  percent: number;
+
+  @IsBoolean()
+  required: boolean;
+
+  @IsBoolean()
+  enabled: boolean;
+
+  @IsString()
+  serviceTypeId: string;
+
+  @IsNumber()
+  step: number;
 }

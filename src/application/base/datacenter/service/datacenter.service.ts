@@ -18,6 +18,16 @@ import { trim } from 'lodash';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
+import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
+import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
+import {
+  ItemTypeCodes,
+  ItemTypeUnits,
+  VdcGenerationItemCodes,
+} from '../../itemType/enum/item-type-codes.enum';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -26,6 +36,8 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
     private readonly sessionsService: SessionsService,
     private readonly datacenterServiceFactory: DatacenterFactoryService,
+    private readonly serviceTypesTableService: ServiceTypesTableService,
+    private readonly itemTypesTableService: ItemTypesTableService,
   ) {}
 
   async getDatacenterMetadata(
@@ -177,5 +189,71 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     );
 
     return Promise.resolve(tree);
+  }
+
+  async createDatacenter(dto: CreateDatacenterDto): Promise<any> {
+    const datacenter = await this.getDatacenterMetadata(
+      '',
+      dto.generations[0].providerId,
+    );
+    const datacenterName = 'Asia';
+    const serviceType = await this.serviceTypesTableService.create({
+      baseFee: 0,
+      createInstanceScript: '',
+      isPayg: false,
+      maxAvailable: 10000,
+      title: dto.title,
+      verifyInstance: false,
+      id: ServiceTypesEnum.Vdc,
+      paygInterval: null,
+      paygScript: '',
+      type: 0,
+      datacenterName,
+    });
+    await this.datacenterServiceFactory.createPeriodItems(
+      dto,
+      serviceType,
+      datacenterName,
+    );
+    await this.datacenterServiceFactory.createCpuReservationItem(
+      dto,
+      serviceType,
+      datacenterName,
+    );
+    await this.datacenterServiceFactory.createRamReservationItem(
+      dto,
+      serviceType,
+      datacenterName,
+    );
+    await this.datacenterServiceFactory.createGenerationItems(
+      dto,
+      serviceType,
+      datacenterName,
+      datacenter,
+    );
+    for (const provider of dto.generations) {
+      const adminSession = await this.sessionsService.checkAdminSession();
+      const providerList =
+        await this.adminVdcWrapperService.getProviderVdcMetadata(
+          adminSession,
+          provider.providerId,
+        );
+      for (const providerItem of providerList.metadataEntry) {
+        if (providerItem.key === MetaDataDatacenterEnum.Location) {
+          providerItem.typedValue.value = dto.location;
+        } else if (
+          providerItem.key === MetaDataDatacenterEnum.DatacenterTitle
+        ) {
+          providerItem.typedValue.value = dto.title;
+        }
+      }
+      await this.adminVdcWrapperService.updateProviderMetadata(
+        {
+          metadataEntry: providerList.metadataEntry,
+        },
+        adminSession,
+        provider.providerId,
+      );
+    }
   }
 }

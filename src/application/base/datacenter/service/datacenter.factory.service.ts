@@ -14,11 +14,20 @@ import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { trim } from 'lodash';
 import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
 import { AdminVdcWrapperService } from '../../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
+import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
+import {
+  ItemTypeCodes,
+  ItemTypeUnits,
+  VdcGenerationItemCodes,
+} from '../../itemType/enum/item-type-codes.enum';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 
 @Injectable()
 export class DatacenterFactoryService {
   constructor(
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
+    private readonly itemTypesTableService: ItemTypesTableService,
   ) {}
 
   public GetFindOptionBy(
@@ -141,5 +150,332 @@ export class DatacenterFactoryService {
       },
     );
     return providerVdcsFilteredData;
+  }
+
+  async createPeriodItems(
+    dto: CreateDatacenterDto,
+    serviceType: ServiceTypes,
+    datacenterName: string,
+  ): Promise<void> {
+    const periodItemParent = await this.itemTypesTableService.create({
+      code: ItemTypeCodes.Period,
+      fee: 0,
+      maxAvailable: null,
+      maxPerRequest: null,
+      minPerRequest: null,
+      title: ItemTypeCodes.Period,
+      unit: ItemTypeUnits.PeriodItem,
+      datacenterName,
+      enabled: true,
+      parentId: 0,
+      percent: 0,
+      required: false,
+      rule: null,
+      serviceTypeId: serviceType.id,
+      step: null,
+    });
+    for (const periodItem of dto.period) {
+      await this.itemTypesTableService.create({
+        code: ItemTypeCodes.PeriodItem,
+        fee: 0,
+        maxAvailable: null,
+        maxPerRequest: periodItem.value,
+        minPerRequest: periodItem.value,
+        title: periodItem.title,
+        unit: ItemTypeUnits.PeriodItem,
+        datacenterName,
+        enabled: true,
+        parentId: periodItemParent.id,
+        percent: periodItem.percent,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: 1,
+      });
+    }
+  }
+  async createCpuReservationItem(
+    dto: CreateDatacenterDto,
+    serviceType: ServiceTypes,
+    datacenterName: string,
+  ): Promise<void> {
+    const reservationCpu = await this.itemTypesTableService.create({
+      code: ItemTypeCodes.CpuReservation,
+      fee: 0,
+      maxAvailable: null,
+      maxPerRequest: null,
+      minPerRequest: null,
+      title: ItemTypeCodes.CpuReservation,
+      unit: ItemTypeUnits.CpuReservation,
+      datacenterName,
+      enabled: true,
+      parentId: 0,
+      percent: 0,
+      required: false,
+      rule: null,
+      serviceTypeId: serviceType.id,
+      step: null,
+    });
+    for (const cpuReservationItem of dto.reservationCpu) {
+      await this.itemTypesTableService.create({
+        code: ItemTypeCodes.CpuReservationItem,
+        fee: 0,
+        maxAvailable: null,
+        maxPerRequest: cpuReservationItem.value,
+        minPerRequest: cpuReservationItem.value,
+        title: cpuReservationItem.value.toString(),
+        unit: ItemTypeUnits.CpuReservation,
+        datacenterName,
+        enabled: cpuReservationItem.enabled,
+        parentId: reservationCpu.id,
+        percent: cpuReservationItem.percent,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: 1,
+      });
+    }
+  }
+
+  async createRamReservationItem(
+    dto: CreateDatacenterDto,
+    serviceType: ServiceTypes,
+    datacenterName: string,
+  ): Promise<void> {
+    const reservationRam = await this.itemTypesTableService.create({
+      code: ItemTypeCodes.MemoryReservation,
+      fee: 0,
+      maxAvailable: null,
+      maxPerRequest: null,
+      minPerRequest: null,
+      title: ItemTypeCodes.MemoryReservation,
+      unit: ItemTypeUnits.MemoryReservation,
+      datacenterName,
+      enabled: true,
+      parentId: 0,
+      percent: 0,
+      required: false,
+      rule: null,
+      serviceTypeId: serviceType.id,
+      step: null,
+    });
+    for (const memoryReservationItem of dto.reservationRam) {
+      await this.itemTypesTableService.create({
+        code: ItemTypeCodes.MemoryReservationItem,
+        fee: 0,
+        maxAvailable: null,
+        maxPerRequest: memoryReservationItem.value,
+        minPerRequest: memoryReservationItem.value,
+        title: memoryReservationItem.value.toString(),
+        unit: ItemTypeUnits.MemoryReservation,
+        datacenterName,
+        enabled: memoryReservationItem.enabled,
+        parentId: reservationRam.id,
+        percent: memoryReservationItem.percent,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: 1,
+      });
+    }
+  }
+
+  async createGenerationItems(
+    dto: CreateDatacenterDto,
+    serviceType: ServiceTypes,
+    datacenterName: string,
+    metaData: FoundDatacenterMetadata,
+  ): Promise<void> {
+    const generation = await this.itemTypesTableService.create({
+      code: ItemTypeCodes.Generation,
+      fee: 0,
+      maxAvailable: null,
+      maxPerRequest: null,
+      minPerRequest: null,
+      title: ItemTypeCodes.Generation,
+      unit: ItemTypeCodes.Generation,
+      datacenterName,
+      enabled: true,
+      parentId: 0,
+      percent: 0,
+      required: false,
+      rule: null,
+      serviceTypeId: serviceType.id,
+      step: null,
+    });
+    for (const generationItem of dto.generations) {
+      const generationName = metaData.generation as string;
+      const genItem = await this.itemTypesTableService.create({
+        code: generationName,
+        fee: 0,
+        maxAvailable: null,
+        maxPerRequest: null,
+        minPerRequest: null,
+        title: generationName,
+        unit: ItemTypeCodes.Generation,
+        datacenterName,
+        enabled: true,
+        parentId: generation.id,
+        percent: 0,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: null,
+      });
+      const vmItem = generationItem.items.vm;
+      const ipItem = generationItem.items.ip;
+      await this.itemTypesTableService.create({
+        code: VdcGenerationItemCodes.Vm,
+        fee: vmItem.price,
+        maxAvailable: null,
+        maxPerRequest: vmItem.max,
+        minPerRequest: vmItem.min,
+        title: VdcGenerationItemCodes.Vm,
+        unit: ItemTypeUnits.VmItem,
+        datacenterName,
+        enabled: true,
+        parentId: genItem.id,
+        percent: 0,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: vmItem.step,
+      });
+      await this.itemTypesTableService.create({
+        code: VdcGenerationItemCodes.Ip,
+        fee: ipItem.price,
+        maxAvailable: null,
+        maxPerRequest: ipItem.max,
+        minPerRequest: ipItem.min,
+        title: VdcGenerationItemCodes.Ip,
+        unit: ItemTypeUnits.Ip,
+        datacenterName,
+        enabled: true,
+        parentId: genItem.id,
+        percent: 0,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: ipItem.step,
+      });
+      const cpu = await this.itemTypesTableService.create({
+        code: VdcGenerationItemCodes.Cpu,
+        fee: generationItem.items.cpu.basePrice,
+        maxAvailable: null,
+        maxPerRequest: null,
+        minPerRequest: null,
+        title: VdcGenerationItemCodes.Cpu,
+        unit: ItemTypeUnits.Cpu,
+        datacenterName,
+        enabled: true,
+        parentId: genItem.id,
+        percent: 0,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: null,
+      });
+      for (
+        let index = 0;
+        index < generationItem.items.cpu.levels.length;
+        index++
+      ) {
+        const cpuItem = generationItem.items.cpu.levels[index];
+        await this.itemTypesTableService.create({
+          code: 'l' + index,
+          fee: 0,
+          maxAvailable: null,
+          maxPerRequest: cpuItem.max,
+          minPerRequest: cpuItem.min,
+          title: 'L' + index,
+          unit: ItemTypeUnits.Cpu,
+          datacenterName,
+          enabled: true,
+          parentId: cpu.id,
+          percent: cpuItem.percent,
+          required: false,
+          rule: null,
+          serviceTypeId: serviceType.id,
+          step: cpuItem.step,
+        });
+      }
+      const ram = await this.itemTypesTableService.create({
+        code: VdcGenerationItemCodes.Ram,
+        fee: generationItem.items.ram.basePrice,
+        maxAvailable: null,
+        maxPerRequest: null,
+        minPerRequest: null,
+        title: VdcGenerationItemCodes.Ram,
+        unit: ItemTypeUnits.Ram,
+        datacenterName,
+        enabled: true,
+        parentId: genItem.id,
+        percent: 0,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: null,
+      });
+      for (
+        let index = 0;
+        index < generationItem.items.ram.levels.length;
+        index++
+      ) {
+        const ramItem = generationItem.items.ram.levels[index];
+        await this.itemTypesTableService.create({
+          code: 'l' + index,
+          fee: 0,
+          maxAvailable: null,
+          maxPerRequest: ramItem.max,
+          minPerRequest: ramItem.min,
+          title: 'L' + index,
+          unit: ItemTypeUnits.Ram,
+          datacenterName,
+          enabled: true,
+          parentId: ram.id,
+          percent: ramItem.percent,
+          required: false,
+          rule: null,
+          serviceTypeId: serviceType.id,
+          step: ramItem.step,
+        });
+      }
+      const disk = await this.itemTypesTableService.create({
+        code: VdcGenerationItemCodes.Disk,
+        fee: 0,
+        maxAvailable: null,
+        maxPerRequest: null,
+        minPerRequest: null,
+        title: VdcGenerationItemCodes.Disk,
+        unit: ItemTypeUnits.Disk,
+        datacenterName,
+        enabled: true,
+        parentId: genItem.id,
+        percent: 0,
+        required: false,
+        rule: null,
+        serviceTypeId: serviceType.id,
+        step: null,
+      });
+      for (const diskItem of generationItem.items.diskItems) {
+        await this.itemTypesTableService.create({
+          code: diskItem.code,
+          fee: diskItem.price,
+          maxAvailable: null,
+          maxPerRequest: diskItem.max,
+          minPerRequest: diskItem.min,
+          title: VdcGenerationItemCodes.Disk,
+          unit: ItemTypeUnits.Disk,
+          datacenterName,
+          enabled: diskItem.enabled,
+          parentId: disk.id,
+          percent: 0,
+          required: false,
+          rule: null,
+          serviceTypeId: serviceType.id,
+          step: null,
+        });
+      }
+    }
   }
 }
