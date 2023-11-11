@@ -1,9 +1,9 @@
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { EndpointOptionsInterface } from 'src/wrappers/interfaces/endpoint.interface';
-import { Stream } from 'stream';
 
 export interface PartialUploadDto extends EndpointOptionsInterface {
   urlParams: PartialUploadUrlParams;
-  body: Stream;
+  body: SessionRequest;
 }
 
 interface PartialUploadUrlParams {
