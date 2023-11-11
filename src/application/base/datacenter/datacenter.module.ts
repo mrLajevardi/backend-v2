@@ -8,6 +8,7 @@ import { DatacenterFactoryService } from './service/datacenter.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { SessionsModule } from '../sessions/sessions.module';
 import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
+import { DatacenterAdminService } from './service/datacenter.admin.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
       useClass: DatacenterService,
     },
     DatacenterFactoryService,
+    DatacenterAdminService,
   ],
   controllers: [DatacenterController],
   exports: [BASE_DATACENTER_SERVICE],

@@ -19,15 +19,11 @@ import { ItemTypes } from '../../../../infrastructure/database/entities/ItemType
 import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
-import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import {
-  ItemTypeCodes,
-  ItemTypeUnits,
-  VdcGenerationItemCodes,
-} from '../../itemType/enum/item-type-codes.enum';
+import { DatacenterAdminService } from './datacenter.admin.service';
+import { DatacenterOperationTypeEnum } from '../enum/datacenter-opertation-type.enum';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -38,6 +34,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly datacenterServiceFactory: DatacenterFactoryService,
     private readonly serviceTypesTableService: ServiceTypesTableService,
     private readonly itemTypesTableService: ItemTypesTableService,
+    private readonly datacenterAdminService: DatacenterAdminService,
   ) {}
 
   async getDatacenterMetadata(
@@ -191,12 +188,13 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     return Promise.resolve(tree);
   }
 
-  async createDatacenter(dto: CreateDatacenterDto): Promise<any> {
+  async createDatacenter(dto: CreateDatacenterDto): Promise<void> {
+    await this.updateDatacenterMetadata(dto);
     const datacenter = await this.getDatacenterMetadata(
       '',
       dto.generations[0].providerId,
     );
-    const datacenterName = 'Asia';
+    const datacenterName = datacenter.generation as string;
     const serviceType = await this.serviceTypesTableService.create({
       baseFee: 0,
       createInstanceScript: '',
@@ -210,27 +208,35 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       type: 0,
       datacenterName,
     });
-    await this.datacenterServiceFactory.createPeriodItems(
+    await this.datacenterAdminService.createOrUpdatePeriodItems(
       dto,
       serviceType,
       datacenterName,
+      DatacenterOperationTypeEnum.Create,
     );
-    await this.datacenterServiceFactory.createCpuReservationItem(
+    await this.datacenterAdminService.createOrUpdateCpuReservationItem(
       dto,
       serviceType,
       datacenterName,
+      DatacenterOperationTypeEnum.Create,
     );
-    await this.datacenterServiceFactory.createRamReservationItem(
+    await this.datacenterAdminService.createOrUpdateRamReservationItem(
       dto,
       serviceType,
       datacenterName,
+      DatacenterOperationTypeEnum.Create,
     );
-    await this.datacenterServiceFactory.createGenerationItems(
+    await this.datacenterAdminService.createOrUpdateGenerationItems(
       dto,
       serviceType,
       datacenterName,
       datacenter,
+      DatacenterOperationTypeEnum.Create,
     );
+    await this.updateDatacenterMetadata(dto);
+  }
+
+  async updateDatacenterMetadata(dto: CreateDatacenterDto): Promise<void> {
     for (const provider of dto.generations) {
       const adminSession = await this.sessionsService.checkAdminSession();
       const providerList =
@@ -255,5 +261,40 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         provider.providerId,
       );
     }
+  }
+
+  async updateDatacenter(dto: CreateDatacenterDto): Promise<void> {
+    const serviceType = await this.serviceTypesTableService.findById(dto.id);
+    await this.updateDatacenterMetadata(dto);
+    const datacenter = await this.getDatacenterMetadata(
+      '',
+      dto.generations[0].providerId,
+    );
+    const datacenterName = datacenter.generation as string;
+    await this.datacenterAdminService.createOrUpdatePeriodItems(
+      dto,
+      serviceType,
+      datacenterName,
+      DatacenterOperationTypeEnum.Update,
+    );
+    await this.datacenterAdminService.createOrUpdateCpuReservationItem(
+      dto,
+      serviceType,
+      datacenterName,
+      DatacenterOperationTypeEnum.Update,
+    );
+    await this.datacenterAdminService.createOrUpdateRamReservationItem(
+      dto,
+      serviceType,
+      datacenterName,
+      DatacenterOperationTypeEnum.Update,
+    );
+    await this.datacenterAdminService.createOrUpdateGenerationItems(
+      dto,
+      serviceType,
+      datacenterName,
+      datacenter,
+      DatacenterOperationTypeEnum.Update,
+    );
   }
 }

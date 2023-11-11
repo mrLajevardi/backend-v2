@@ -27,6 +27,9 @@ export class Configs {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceType: ServiceTypes;
 }

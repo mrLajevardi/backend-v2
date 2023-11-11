@@ -65,7 +65,10 @@ export class Templates {
   expireDate: Date;
 
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)
-  @JoinColumn([{ name: 'ServiceTypeId', referencedColumnName: 'id' }])
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceType: ServiceTypes;
 
   @OneToMany(() => Invoices, (invoice) => invoice.templates)

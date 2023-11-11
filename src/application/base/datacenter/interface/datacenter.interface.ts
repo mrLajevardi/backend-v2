@@ -25,4 +25,6 @@ export interface BaseDatacenterService extends IBaseService {
   ): Promise<FoundDatacenterMetadata>;
 
   createDatacenter(dto: CreateDatacenterDto): Promise<void>;
+
+  updateDatacenter(dto: CreateDatacenterDto): Promise<void>;
 }

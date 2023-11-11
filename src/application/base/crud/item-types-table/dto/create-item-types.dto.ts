@@ -6,6 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 
 export class CreateItemTypesDto {
   @IsInt()
@@ -42,7 +43,7 @@ export class CreateItemTypesDto {
   minPerRequest: number | null;
 
   @IsString()
-  datacenterName: string;
+  datacenterName?: string;
 
   @IsString()
   rule: string;
@@ -60,8 +61,12 @@ export class CreateItemTypesDto {
   enabled: boolean;
 
   @IsString()
-  serviceTypeId: string;
+  serviceTypeId?: string;
 
   @IsNumber()
   step: number;
+
+  serviceType?: Partial<ServiceTypes>;
+
+  createDate?: Date;
 }

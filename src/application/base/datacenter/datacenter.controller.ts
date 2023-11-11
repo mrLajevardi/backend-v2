@@ -14,6 +14,7 @@ import {
   Param,
   Query,
   Body,
+  Put,
 } from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
@@ -95,5 +96,11 @@ export class DatacenterController {
   @ApiOperation({ summary: 'Create New Datacenter' })
   createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
     return this.service.createDatacenter(dto);
+  }
+
+  @Put()
+  @ApiOperation({ summary: 'Update existing Datacenter' })
+  updateDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
+    return this.service.updateDatacenter(dto);
   }
 }

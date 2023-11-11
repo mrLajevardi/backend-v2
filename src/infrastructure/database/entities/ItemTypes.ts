@@ -5,6 +5,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { InvoiceItems } from './InvoiceItems';
@@ -15,7 +16,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
 export class ItemTypes {
-  @Column('int', { primary: true, name: 'ID' })
+  @PrimaryGeneratedColumn({ name: 'ID' })
   id: number;
 
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
@@ -92,5 +93,9 @@ export class ItemTypes {
   invoiceItems: InvoiceItems[];
 
   @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceItems: ServiceItems[];
 }

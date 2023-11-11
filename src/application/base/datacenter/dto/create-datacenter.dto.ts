@@ -46,6 +46,11 @@ class GenerationItem {
   @IsNumber()
   @IsOptional()
   price?: number;
+
+  @ApiProperty({ type: Number, required: false })
+  @IsNumber()
+  @IsOptional()
+  id?: number;
 }
 
 class ComputeItem {
@@ -59,6 +64,11 @@ class ComputeItem {
   @Type(() => GenerationItem)
   @ValidateNested({ each: true })
   levels: GenerationItem[];
+
+  @ApiProperty({ type: Number, required: false })
+  @IsNumber()
+  @IsOptional()
+  id?: number;
 }
 class DiskItem extends GenerationItem {
   @ApiProperty({ type: Boolean })
@@ -108,6 +118,11 @@ class Generation {
   })
   @IsEnum(ServicePlanTypeEnum)
   type: ServicePlanTypeEnum;
+
+  @IsNumber()
+  @ApiProperty({ type: Number })
+  @IsOptional()
+  id?: number;
 }
 
 class Period {
@@ -123,6 +138,11 @@ class Period {
   @IsString()
   @ApiProperty({ type: String })
   title: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({ type: Number })
+  id?: number;
 }
 
 class Reservation {
@@ -144,12 +164,22 @@ class Reservation {
   })
   @IsEnum(ServicePlanTypeEnum)
   type: ServicePlanTypeEnum;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({ type: Number })
+  id?: number;
 }
 
 export class CreateDatacenterDto {
   @ApiProperty({ type: String })
   @IsString()
   title: string;
+
+  @ApiProperty({ type: String, required: false })
+  @IsString()
+  @IsOptional()
+  id?: string;
 
   @ApiProperty({ type: String })
   @IsString()
