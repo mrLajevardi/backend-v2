@@ -1,9 +1,9 @@
 export class VmTasksDto {
-  status: string;
+  status: number;
   type: string; /// ???
-  functor: string; /// ? OwnerName Or ObjectName
-  createDate: Date;
-  compilationDate: Date;
+  performingUser: string; /// ? OwnerName Or ObjectName
+  createDate: string;
+  compilationDate: string;
   // what is سه روز اخیر
 }
 

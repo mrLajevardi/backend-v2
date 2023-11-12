@@ -72,4 +72,57 @@ export class VmDetailController {
       vappId: vappId,
     });
   }
+
+  @ApiQuery({
+    name: 'dateFilter',
+    type: String,
+    required: true,
+    // allowEmptyValue:true
+  })
+  @ApiQuery({
+    name: 'serviceInstanceId',
+    type: String,
+    required: true,
+    example: 'D7F09556-272D-47CE-A91D-8FBA51676BF4',
+  })
+  @ApiQuery({ name: 'vmId', type: String, required: true })
+  @ApiQuery({ name: 'vappId', type: String, required: true })
+  @ApiQuery({ name: 'page', type: Number, required: true })
+  @ApiQuery({ name: 'pageSize', type: Number, required: true })
+  @ApiQuery({
+    name: 'dateBegin',
+    type: Date,
+    required: false,
+    allowEmptyValue: true,
+  })
+  @ApiQuery({
+    name: 'dateEnd',
+    type: Date,
+    required: false,
+    allowEmptyValue: true,
+  })
+  @Get('/monitor/tasks')
+  async getTasksVm(
+    @Query('dateFilter') dateFilter: SortDateTypeEnum,
+    @Query('serviceInstanceId') serviceInstanceId: string,
+    @Query('vmId') vmId: string,
+    @Query('vappId') vappId: string,
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
+    @Query('dateBegin') dateBegin: Date,
+    @Query('dateEnd') dateEnd: Date,
+    @Request() options: SessionRequest,
+  ) {
+    return await this.VmDetailService.tasksVm(
+      options,
+      serviceInstanceId,
+      vappId,
+      vmId,
+      '',
+      dateFilter,
+      '',
+      page,
+      pageSize,
+    );
+  }
 }

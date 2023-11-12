@@ -24,18 +24,21 @@ export class VmDetailService {
     private readonly vmDetailFactoryService: VmDetailFactoryService,
   ) {}
 
-  async TasksVm(
+  async tasksVm(
     options: SessionRequest,
     serviceInstanceId: string,
     vappId: string,
     vmId: string,
     filter: string,
+    dateFilter: SortDateTypeEnum,
     search: string,
+    page: number,
+    pageSize: number,
   ): Promise<VmTasksDto[]> {
     // TODO ==> Implementation  Filter and Search
 
     const userId = options.user.userId;
-    vappId = 'vapp-365e2e3e-503b-4f46-aa45-1a6ddd4ee584';
+    // vappId = 'vapp-365e2e3e-503b-4f46-aa45-1a6ddd4ee584';
 
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -45,7 +48,7 @@ export class VmDetailService {
       userId,
       props.orgId,
     );
-    if (filter !== '') {
+    if (filter === '') {
       // filter = `(isVAppTemplate==false;vdc==${props.vdcId});` + `(${filter})`;
       // ((object==https://labvpc.aradcloud.com/api/vApp/vm-8fd59628-64f9-439c-8e92-6d01ca2bbbe2,object==https://labvpc.aradcloud.com/api/vApp/vapp-365e2e3e-503b-4f46-aa45-1a6ddd4ee584))
       // filter = `(object==https://labvpc.aradcloud.com/api/vApp/${vmId})`;
@@ -61,8 +64,8 @@ export class VmDetailService {
     const tasks = await this.vdcWrapperService.vcloudQuery(session, {
       type: TaskQueryTypes.Task,
       format: 'records',
-      page: 1,
-      pageSize: 128,
+      page: Number(page),
+      pageSize: Number(pageSize),
       filterEncoded: true,
       links: true,
       filter: filter,
@@ -74,11 +77,11 @@ export class VmDetailService {
 
     tasksModels.record.forEach((task) => {
       taskValues.push({
-        type: task._type, // ?
-        compilationDate: new Date(task.endDate),
-        functor: task.ownerName, // ?
-        status: task.status, // ?
-        createDate: new Date(task.startDate),
+        type: task.objectType, // ?
+        compilationDate: task.endDate,
+        performingUser: task.ownerName, // ?
+        status: task.status.trim().toLowerCase() == 'success' ? 1 : 0, // ?
+        createDate: task.startDate,
       });
     });
 
@@ -148,8 +151,5 @@ export class VmDetailService {
       });
     });
     return Promise.resolve(res);
-    // const tasksModels: VmTaskModel = JSON.parse(JSON.stringify(tasks.data));
-    //
-    // const taskValues: VmTasksDto[] = [];
   }
 }

@@ -651,6 +651,14 @@ export class VmService {
       type: 'vm',
       filter: `id==${vmId}`,
     });
+
+    const medias = vm.data.section
+      .find((sec) => sec._type == 'VmSpecSectionType')
+      .mediaSection.mediaSettings.filter(
+        (media) => media.mediaState !== 'DISCONNECTED',
+      )
+      .map((img) => img.mediaImage.name as string);
+
     const data: any = {
       name: vm.data.name,
       description: vm.data.description,
@@ -659,6 +667,8 @@ export class VmService {
       status: vmList.data.record[0].status,
       snapshot: vmList.data.record[0].snapshot,
     };
+    data.medias = medias;
+
     vm.data.section.forEach((section) => {
       if (section._type === 'OperatingSystemSectionType') {
         data.osType =
@@ -1490,7 +1500,10 @@ export class VmService {
   }
 
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
-    const res = groupBy(data, (setting) => (setting as any).adapterType);
+    const res = groupBy(
+      data,
+      (setting) => (setting as any).adapterType.legacyId,
+    );
     for (const key in res) {
       const length = DiskBusUnitBusNumberSpace.find(
         (bus) => bus.legacyId == key,
