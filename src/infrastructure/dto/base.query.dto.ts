@@ -6,6 +6,3 @@ export class sortTypeColumn {
   name: string;
   type: 'ASC' | 'DESC';
 }
-
-
-
