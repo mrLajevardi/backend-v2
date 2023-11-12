@@ -1485,7 +1485,10 @@ export class VmService {
   }
 
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
-    const res = groupBy(data, (setting) => (setting as any).adapterType);
+    const res = groupBy(
+      data,
+      (setting) => (setting as any).adapterType.legacyId,
+    );
     for (const key in res) {
       const length = DiskBusUnitBusNumberSpace.find(
         (bus) => bus.legacyId == key,
