@@ -646,6 +646,14 @@ export class VmService {
       type: 'vm',
       filter: `id==${vmId}`,
     });
+
+    const medias = vm.data.section
+      .find((sec) => sec._type == 'VmSpecSectionType')
+      .mediaSection.mediaSettings.filter(
+        (media) => media.mediaState !== 'DISCONNECTED',
+      )
+      .map((img) => img.mediaImage.name as string);
+
     const data: any = {
       name: vm.data.name,
       description: vm.data.description,
@@ -654,6 +662,8 @@ export class VmService {
       status: vmList.data.record[0].status,
       snapshot: vmList.data.record[0].snapshot,
     };
+    data.medias = medias;
+
     vm.data.section.forEach((section) => {
       if (section._type === 'OperatingSystemSectionType') {
         data.osType =
