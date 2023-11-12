@@ -961,9 +961,6 @@ export class VmController {
     );
   }
   @Get('/disk/getDiskBusTypeInfo/')
-  // @ApiOperation({ summary: '' })
-  // @ApiOperation({ summary: 'getDiskBusTypeInfo' })
-  // @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   diskBusTypeInfo() {
     return DiskBusUnitBusNumberSpace;
   }
