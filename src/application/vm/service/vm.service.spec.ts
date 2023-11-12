@@ -26,7 +26,7 @@ describe('VmService', () => {
         NetworksModule,
         MainWrapperModule,
       ],
-      providers: [VmService,VmDetailFactoryService, VmDetailService],
+      providers: [VmService, VmDetailFactoryService, VmDetailService],
     }).compile();
 
     service = module.get<VmService>(VmService);

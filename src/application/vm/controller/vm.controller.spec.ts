@@ -27,7 +27,7 @@ describe('VmController', () => {
         MainWrapperModule,
         forwardRef(() => NetworksModule),
       ],
-      providers: [VmService, VmDetailService,VmDetailFactoryService],
+      providers: [VmService, VmDetailService, VmDetailFactoryService],
       controllers: [VmController],
     }).compile();
 
