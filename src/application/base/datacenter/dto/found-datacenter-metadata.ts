@@ -5,4 +5,6 @@ export interface FoundDatacenterMetadata {
   datacenter: VcloudMetadata | null;
   datacenterTitle: VcloudMetadata | null;
   cpuSpeed: VcloudMetadata | null;
+  enabled?: boolean | null;
+  location?: string | null;
 }

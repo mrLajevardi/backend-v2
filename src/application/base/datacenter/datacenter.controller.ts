@@ -16,6 +16,8 @@ import {
   BaseDatacenterService,
 } from './interface/datacenter.interface';
 import { Public } from '../security/auth/decorators/ispublic.decorator';
+import { DataCenterList } from './dto/datacenter-list.dto';
+import { DatacenterDetails } from './dto/datacenter-details.dto';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -24,6 +26,7 @@ export class DatacenterController {
   constructor(
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly service: BaseDatacenterService,
+    private readonly datacenterservice : DatacenterService,
   ) {}
 
   @Public()
@@ -81,4 +84,23 @@ export class DatacenterController {
       );
     return result;
   }
+
+
+  @Get('/getAllDatacenters')
+  @Public()
+  async getAllDataCenters():Promise<DataCenterList[]>{
+      const result = await this.datacenterservice.getAllDataCenters();
+      return result;
+  }
+
+  @Get('/getDatacenterDetails/:datacenterName')
+  @Public()
+  async getDatacenterDetails(
+    @Param('datacenterName') datacenterName: string,
+  ):Promise<DatacenterDetails>{
+      const result = await this.datacenterservice.getDatacenterDetails(datacenterName);
+      return result;
+  }
+
+
 }

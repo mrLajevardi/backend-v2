@@ -7,9 +7,7 @@ type Network = {
   isConnected: boolean;
   networkAdaptorType: string;
   networkName: string;
-}
-
-
+};
 
 export class CreateVmFromTemplate {
   @ApiProperty({ type: String })
@@ -22,7 +20,7 @@ export class CreateVmFromTemplate {
   primaryNetwork: number;
   templateId: string;
   templateName: string;
-  
+
   @ApiProperty({ type: String })
   @IsString()
   @IsOptional()

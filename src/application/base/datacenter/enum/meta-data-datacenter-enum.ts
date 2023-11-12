@@ -4,4 +4,5 @@ export enum MetaDataDatacenterEnum {
   DatacenterTitle = 'datacenterTitle',
   CpuSpeed = 'cpuSpeed',
   Enabled = 'enabled',
+  Location = 'location'
 }

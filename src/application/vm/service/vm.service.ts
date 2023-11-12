@@ -28,9 +28,25 @@ import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm
 import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
 import { CreateVm } from '../dto/create-vm.dto';
 
-
 @Injectable()
 export class VmService {
+  static mainWrapper: any;
+  static createVmFromTemplate(
+    options: { user: { userId: string }; locals: {} },
+    data: {
+      templateId: string;
+      computerName: string;
+      name: string;
+      primaryNetwork: number;
+      networks: any[];
+      powerOn: boolean;
+      description: string;
+      templateName: string;
+    },
+    vdcInstanceId: string,
+  ) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionsServices: SessionsService,
@@ -98,7 +114,11 @@ export class VmService {
     });
   }
 
-  async createVMFromTemplate(options, data:CreateVmFromTemplate, vdcInstanceId:string):Promise<TaskReturnDto> {
+  async createVMFromTemplate(
+    options,
+    data: CreateVmFromTemplate,
+    vdcInstanceId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -138,7 +158,11 @@ export class VmService {
     });
   }
 
-  async createVm(options, data:CreateVm, serviceInstanceId:string):Promise<TaskReturnDto | any > {
+  async createVm(
+    options,
+    data: CreateVm,
+    serviceInstanceId: string,
+  ): Promise<TaskReturnDto | any> {
     if ((data.storage as []).length > 4) {
       return new ExceedEnoughDiskCountException();
     }
@@ -196,7 +220,12 @@ export class VmService {
     });
   }
 
-  async createVmSnapShot(options, serviceInstanceId:string, vAppId:string, data:CreateVmFromTemplate):Promise<TaskReturnDto> {
+  async createVmSnapShot(
+    options,
+    serviceInstanceId: string,
+    vAppId: string,
+    data: CreateVmFromTemplate,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTableService.findOne({
       where: {
@@ -275,7 +304,11 @@ export class VmService {
     });
   }
 
-  async deleteVm(options, serviceInstanceId:string, vAppId:string):Promise<TaskReturnDto> {
+  async deleteVm(
+    options,
+    serviceInstanceId: string,
+    vAppId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -359,7 +392,12 @@ export class VmService {
     });
   }
 
-  async getAllUserVm(options, serviceInstanceId: string, filter = '', search=''):Promise<VmList> {
+  async getAllUserVm(
+    options,
+    serviceInstanceId: string,
+    filter = '',
+    search = '',
+  ): Promise<VmList> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -420,7 +458,10 @@ export class VmService {
     return Promise.resolve(data);
   }
 
-  async getAllUserVmTemplates(options, serviceInstanceId: string):Promise<VmTemplateList[]> {
+  async getAllUserVmTemplates(
+    options,
+    serviceInstanceId: string,
+  ): Promise<VmTemplateList[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -524,7 +565,11 @@ export class VmService {
     });
   }
 
-  async getVmDiskSection(options, serviceInstanceId: string, vmId: string):Promise<VmDiskSection[]> {
+  async getVmDiskSection(
+    options,
+    serviceInstanceId: string,
+    vmId: string,
+  ): Promise<VmDiskSection[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1456,7 +1501,6 @@ export class VmService {
   }
 
   async updateDiskSection(options, data, serviceInstanceId, vmId) {
-
     const res = groupBy(data, (setting) => (setting as any).adapterType);
     for (const key in res) {
       const length = (DiskBusUnitBusNumberSpace[key] as []).length;
