@@ -576,6 +576,7 @@ export class VmService {
 
       // const iii = (settings.storageProfile.id as string).split(':');
       const storageId = (settings.storageProfile.id as string).split(':')[3];
+      const storageName = settings.storageProfile.name as string;
 
       const diskSection = {
         name: settings.disk === null ? null : settings.disk.name,
@@ -591,7 +592,10 @@ export class VmService {
         shareable: settings.shareable,
         iops: settings.iops,
         sizeMb: settings.sizeMb,
-        storageId: storageId,
+        storageType: {
+          storageId,
+          storageName,
+        },
       };
       data.push(diskSection);
     });
