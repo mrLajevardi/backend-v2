@@ -9,6 +9,7 @@ import { ServicePropertiesModule } from 'src/application/base/service-properties
 import { NetworksModule } from '../../networks/networks.module';
 import { VmDetailService } from './vm-detail.service';
 import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
+import { VmDetailFactoryService } from './vm-detail.factory.service';
 
 describe('VmService', () => {
   let service: VmService;
@@ -25,7 +26,7 @@ describe('VmService', () => {
         NetworksModule,
         MainWrapperModule,
       ],
-      providers: [VmService, VmDetailService],
+      providers: [VmService,VmDetailFactoryService, VmDetailService],
     }).compile();
 
     service = module.get<VmService>(VmService);
