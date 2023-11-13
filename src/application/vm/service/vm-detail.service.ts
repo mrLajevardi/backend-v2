@@ -13,6 +13,8 @@ import * as events from 'events';
 import { SortDateTypeEnum } from '../../../infrastructure/filters/sort-date-type.enum';
 import { timestamp } from 'rxjs';
 import { VmDetailFactoryService } from './vm-detail.factory.service';
+import { formatVcloudDate } from '../../../infrastructure/utils/extensions/date.extension';
+import { VmTasksQueryDto } from '../dto/vm-tasks.query.dto';
 
 @Injectable()
 export class VmDetailService {
@@ -26,46 +28,33 @@ export class VmDetailService {
 
   async tasksVm(
     options: SessionRequest,
-    serviceInstanceId: string,
-    vappId: string,
-    vmId: string,
-    filter: string,
-    dateFilter: SortDateTypeEnum,
-    search: string,
-    page: number,
-    pageSize: number,
+    query: VmTasksQueryDto,
   ): Promise<VmTasksDto[]> {
     // TODO ==> Implementation  Filter and Search
 
     const userId = options.user.userId;
-    // vappId = 'vapp-365e2e3e-503b-4f46-aa45-1a6ddd4ee584';
-
+    let filter = '';
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
-        serviceInstanceId,
+        query.serviceInstanceId,
       );
     const session = await this.sessionsServices.checkUserSession(
       userId,
       props.orgId,
     );
-    if (filter === '') {
-      // filter = `(isVAppTemplate==false;vdc==${props.vdcId});` + `(${filter})`;
-      // ((object==https://labvpc.aradcloud.com/api/vApp/vm-8fd59628-64f9-439c-8e92-6d01ca2bbbe2,object==https://labvpc.aradcloud.com/api/vApp/vapp-365e2e3e-503b-4f46-aa45-1a6ddd4ee584))
-      // filter = `(object==https://labvpc.aradcloud.com/api/vApp/${vmId})`;
-      filter = `(object==${process.env.VCLOUD_BASE_URL}/api/vApp/${vmId},object==${process.env.VCLOUD_BASE_URL}/api/vApp/${vappId})`;
-    }
-    // else {
-    //   filter = `(isVAppTemplate==false;vdc==${props.vdcId})`;
-    // }
-    // if (search) {
-    //   filter = filter + `;(name==*${search}*,guestOs==*${search}*)`;
-    //  }
+    const filterDate: string = this.vmDetailFactoryService.filterDateVmDetails(
+      query.dateBegin,
+      query.dateEnd,
+      query.dateFilter,
+      'startDate',
+    );
+    filter = `(object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vmId},object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vappId});${filterDate}`;
 
     const tasks = await this.vdcWrapperService.vcloudQuery(session, {
       type: TaskQueryTypes.Task,
       format: 'records',
-      page: Number(page),
-      pageSize: Number(pageSize),
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
       filterEncoded: true,
       links: true,
       filter: filter,
@@ -99,15 +88,17 @@ export class VmDetailService {
       pageSize: 20,
       pageCountTotal: 0,
     };
-    const filterDate =
-      this.vmDetailFactoryService.filterTimeStampVmDetails(query);
+    const filterDate = this.vmDetailFactoryService.filterDateVmDetails(
+      query.dateBegin,
+      query.dateEnd,
+      query.dateFilter,
+      'timestamp',
+    );
 
     // query.vappId = 'vapp-365e2e3e-503b-4f46-aa45-1a6ddd4ee584';
     const userId = options.user.userId;
     const vmguid = query.vmId.replace('vm-', '');
     const vappguid = query.vappId.replace('vapp-', '');
-    // https://labvpc.aradcloud.com/cloudapi/1.0.0/auditTrail?page=1&pageSize=15&filterEncoded=true&filter=(timestamp=gt=2023-10-31T20:30:00.071Z)&sortDesc=timestamp&links=true
-    //(timestamp=gt=2023-10-31T20:30:00.602Z;(eventEntity.id==urn:vcloud:vm:8fd59628-64f9-439c-8e92-6d01ca2bbbe2,eventEntity.id==urn:vcloud:vapp:365e2e3e-503b-4f46-aa45-1a6ddd4ee584))
     //TODO --> Time Stamp Expression (امروز - این هفته - این ماه )
     const filter = `(${filterDate}(eventEntity.id==urn:vcloud:vm:${vmguid},eventEntity.id==urn:vcloud:vapp:${vappguid}))`;
     const props: any =
@@ -118,31 +109,19 @@ export class VmDetailService {
       userId,
       props.orgId,
     );
-    // if (filter !== '') {
-    //   // filter = `(isVAppTemplate==false;vdc==${props.vdcId});` + `(${filter})`;
-    //   // ((object==https://labvpc.aradcloud.com/api/vApp/vm-8fd59628-64f9-439c-8e92-6d01ca2bbbe2,object==https://labvpc.aradcloud.com/api/vApp/vapp-365e2e3e-503b-4f46-aa45-1a6ddd4ee584))
-    //   // filter = `(object==https://labvpc.aradcloud.com/api/vApp/${vmId})`;
-    //   filter = `(object==${process.env.VCLOUD_BASE_URL}/api/vApp/${vmId},object==${process.env.VCLOUD_BASE_URL}/api/vApp/${vappId})`;
-    // }
-    // else {
-    //   filter = `(isVAppTemplate==false;vdc==${props.vdcId})`;
-    // }
-    // if (search) {
-    //   filter = filter + `;(name==*${search}*,guestOs==*${search}*)`;
-    //  }
 
-    const tasks = await this.vmWrapperService.eventVm(
+    const events = await this.vmWrapperService.eventVm(
       session,
       filter,
       query.page,
       query.pageSize,
     );
-    res.totalNumber = tasks.data.resultTotal;
-    res.pageSize = tasks.data.pageSize;
-    res.pageNumber = tasks.data.page;
-    res.pageCountTotal = tasks.data.pageCount;
-    res.totalNumber = tasks.data.resultTotal;
-    tasks.data.values.forEach((event) => {
+    res.totalNumber = events.data.resultTotal;
+    res.pageSize = events.data.pageSize;
+    res.pageNumber = events.data.page;
+    res.pageCountTotal = events.data.pageCount;
+    res.totalNumber = events.data.resultTotal;
+    events.data.values.forEach((event) => {
       res.values.push({
         type: (event.eventType as string).split('/')[5],
         date: event.timestamp,

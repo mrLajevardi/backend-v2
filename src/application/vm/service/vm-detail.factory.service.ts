@@ -1,13 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { VmEventQueryDto } from '../dto/vm-event.query.dto';
+
 import { SortDateTypeEnum } from '../../../infrastructure/filters/sort-date-type.enum';
+import { getDateMinusDay } from '../../../infrastructure/utils/extensions/date.extension';
 
 @Injectable()
 export class VmDetailFactoryService {
-  padTo2Digits(num: number) {
-    return num.toString().padStart(2, '0');
-  }
-
   // formatDate(date: Date) {
   //   return (
   //     [
@@ -23,59 +20,51 @@ export class VmDetailFactoryService {
   //     ].join(':')
   //   );
   // }
-  formatDate(currentDate: Date): string {
-    // const currentDate = new Date();
 
-    // Get the formatted date and time string from toISOString()
-    const isoString = currentDate.toISOString();
-
-    // Extract individual components
-    const yearMonthDay = isoString.slice(0, 10);
-    const time = isoString.slice(11, 23);
-    const timeZone = isoString.slice(23);
-
-    // Create the formatted date and time string
-    const formattedDateTime = `${yearMonthDay}T${time}${timeZone}`;
-
-    return formattedDateTime;
-  }
-
-  filterTimeStampVmDetails(query: VmEventQueryDto) {
-    // const now = new Date('now');
-    // Date.
-    "yyyy-MM-dd'T'HH:mm:ss.SSSXX";
-    const date2 = this.formatDate(new Date());
-    let filterDate = `timestamp=lt=${date2};`;
-    const date = new Date();
-    switch (Number(query.dateFilter)) {
-      case SortDateTypeEnum.Today:
-        filterDate = `timestamp=le=${date2}`;
-        break;
-      case SortDateTypeEnum.YesterDay:
-        filterDate = `timestamp=le=${this.formatDate(
-          date,
-        )} , timestamp=ge=${this.formatDate(
-          new Date(date.setDate(date.getDate() - 1)),
-        )};`;
-        break;
-      case SortDateTypeEnum.LastWeek:
-        filterDate = `timestamp=le=${this.formatDate(
-          date,
-        )} , timestamp=ge=${this.formatDate(
-          new Date(date.setDate(date.getDate() - 7)),
-        )};`;
-        break;
-      case SortDateTypeEnum.LastMoth:
-        filterDate = `timestamp=le=${this.formatDate(
-          date,
-        )} , timestamp=ge=${this.formatDate(
-          new Date(date.setDate(date.getDate() - 30)),
-        )};`;
-        break;
-      case SortDateTypeEnum.MoreThanLastMonth:
-        filterDate = `timestamp=le=${date2};`;
-        break;
+  filterDateVmDetails(
+    startDate: Date,
+    endDate: Date,
+    dateFilter: SortDateTypeEnum,
+    fieldName: string,
+  ): string {
+    const date2 = new Date().toISOString();
+    let filterDate = `${fieldName}=le=${date2};`;
+    if (startDate != null && endDate != null) {
+      filterDate = `${fieldName}=le=${endDate.toISOString()};${fieldName}=ge=${startDate.toISOString()}`;
+    } else {
+      const date = new Date();
+      switch (Number(dateFilter)) {
+        case SortDateTypeEnum.Today:
+          filterDate = `${fieldName}=le=${date2}`;
+          break;
+        case SortDateTypeEnum.YesterDay:
+          // const tt = date.toISOString();
+          //2023-11-13T08:02:40.815Z
+          filterDate = `${fieldName}=lt=${date2.trim()};${fieldName}=ge=${getDateMinusDay(
+            date,
+            1,
+          )
+            .toISOString()
+            .trim()}`;
+          break;
+        case SortDateTypeEnum.LastWeek:
+          filterDate = `${fieldName}=le=${date.toISOString()};${fieldName}=ge=${getDateMinusDay(
+            date,
+            7,
+          ).toISOString()};`;
+          break;
+        case SortDateTypeEnum.LastMoth:
+          filterDate = `${fieldName}=le=${date.toISOString()};${fieldName}=ge=${getDateMinusDay(
+            date,
+            30,
+          ).toISOString()};`;
+          break;
+        case SortDateTypeEnum.MoreThanLastMonth:
+          filterDate = `${fieldName}=le=${date2};`;
+          break;
+      }
     }
+
     return filterDate;
   }
 }

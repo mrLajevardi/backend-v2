@@ -4,4 +4,5 @@ export enum SortDateTypeEnum {
   LastWeek = 2,
   LastMoth = 3,
   MoreThanLastMonth = 4,
+  None = -1,
 }
