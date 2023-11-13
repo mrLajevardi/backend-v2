@@ -26,6 +26,7 @@ export class VmDetailController {
     type: String,
     required: true,
     // allowEmptyValue:true
+    example: 'Today',
   })
   @ApiQuery({
     name: 'serviceInstanceId',
@@ -35,8 +36,8 @@ export class VmDetailController {
   })
   @ApiQuery({ name: 'vmId', type: String, required: true })
   @ApiQuery({ name: 'vappId', type: String, required: true })
-  @ApiQuery({ name: 'page', type: Number, required: true })
-  @ApiQuery({ name: 'pageSize', type: Number, required: true })
+  @ApiQuery({ name: 'page', type: Number, required: true, example: 1 })
+  @ApiQuery({ name: 'pageSize', type: Number, required: true, example: 10 })
   @ApiQuery({
     name: 'dateBegin',
     type: Date,
@@ -76,6 +77,7 @@ export class VmDetailController {
   @ApiQuery({
     name: 'dateFilter',
     type: String,
+    // enum: SortDateTypeEnum,
     required: true,
     // allowEmptyValue:true
   })
@@ -113,16 +115,26 @@ export class VmDetailController {
     @Query('dateEnd') dateEnd: Date,
     @Request() options: SessionRequest,
   ) {
-    return await this.VmDetailService.tasksVm(
-      options,
-      serviceInstanceId,
-      vappId,
-      vmId,
-      '',
-      dateFilter,
-      '',
-      page,
-      pageSize,
-    );
+    // return await this.VmDetailService.tasksVm(
+    //   options,
+    //   serviceInstanceId,
+    //   vappId,
+    //   vmId,
+    //   '',
+    //   dateFilter,
+    //   '',
+    //   page,
+    //   pageSize,
+    // );
+    return await this.VmDetailService.tasksVm(options, {
+      dateBegin: dateBegin,
+      dateFilter: dateFilter,
+      dateEnd: dateEnd,
+      pageSize: pageSize,
+      vmId: vmId,
+      serviceInstanceId: serviceInstanceId,
+      page: page,
+      vappId: vappId,
+    });
   }
 }
