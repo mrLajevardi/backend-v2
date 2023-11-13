@@ -34,7 +34,7 @@ import { HardDiskAdapter, HardwareInfo, OperatingSystem, OsFamily } from '../dto
 import { VmMedia } from '../dto/get-media.dto';
 import { VmOsInfo } from '../dto/os-info.dto';
 import { VmRemovableMedia } from '../dto/vm-removableMedia.dto';
-import { VmSupportedHardDiskAdaptors } from '../dto/vm.dto';
+import { VmComputeSection, VmGuestCustomization, VmQuery, VmSupportedHardDiskAdaptors } from '../dto/vm.dto';
 
 @Injectable()
 export class VmService {
@@ -1037,7 +1037,7 @@ export class VmService {
     return Promise.resolve(filteredData);
   }
 
-  async getVmComputeSection(options, serviceInstanceId, vmId) {
+  async getVmComputeSection(options, serviceInstanceId:string, vmId:string):Promise<VmComputeSection> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1092,7 +1092,7 @@ export class VmService {
     return Promise.resolve(computeSectionData);
   }
 
-  async getVmGuestCustomization(options, serviceInstanceId, vmId) {
+  async getVmGuestCustomization(options, serviceInstanceId:string, vmId:string):Promise<VmGuestCustomization> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1197,7 +1197,7 @@ export class VmService {
     return Promise.resolve(filteredNetworkSection);
   }
 
-  async insertMedia(options, serviceInstanceId, vAppId, data) {
+  async insertMedia(options, serviceInstanceId:string, vAppId:string, data):Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1228,7 +1228,7 @@ export class VmService {
     });
   }
 
-  async installVmTools(options, serviceInstanceId, vmId) {
+  async installVmTools(options, serviceInstanceId:string, vmId:string):Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1252,7 +1252,7 @@ export class VmService {
     });
   }
 
-  async postAnswer(options, serviceInstanceId, vmId, data) {
+  async postAnswer(options, serviceInstanceId:string, vmId:string, data):Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1281,7 +1281,7 @@ export class VmService {
     });
   }
 
-  async powerOnVm(options, serviceInstanceId, vAppId) {
+  async powerOnVm(options, serviceInstanceId:string, vAppId:string):Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1310,7 +1310,7 @@ export class VmService {
     fields,
     offset,
     link,
-  ) {
+  ):Promise<VmQuery> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1335,7 +1335,7 @@ export class VmService {
     return Promise.resolve(query.data);
   }
 
-  async rebootVm(options, serviceInstanceId, vAppId) {
+  async rebootVm(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1351,7 +1351,7 @@ export class VmService {
     });
   }
 
-  async removeVmSnapShot(options, serviceInstanceId, vAppId) {
+  async removeVmSnapShot(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1375,7 +1375,7 @@ export class VmService {
     });
   }
 
-  async resetVm(options, serviceInstanceId, vAppId) {
+  async resetVm(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1391,7 +1391,7 @@ export class VmService {
     });
   }
 
-  async revertVmSnapShot(options, serviceInstanceId, vAppId) {
+  async revertVmSnapShot(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1407,7 +1407,7 @@ export class VmService {
     });
   }
 
-  async suspendVm(options, serviceInstanceId, vAppId) {
+  async suspendVm(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1447,7 +1447,7 @@ export class VmService {
     );
   }
 
-  async undeployVm(options, serviceInstanceId, vAppId, data) {
+  async undeployVm(options, serviceInstanceId:string, vAppId:string, data): Promise<TaskReturnDto>{
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1467,7 +1467,7 @@ export class VmService {
     });
   }
 
-  async updateVmComputeSection(options, serviceInstanceId, vmId, data) {
+  async updateVmComputeSection(options, serviceInstanceId:string, vmId:string, data): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1516,7 +1516,7 @@ export class VmService {
     });
   }
 
-  async updateDiskSection(options, data, serviceInstanceId, vmId) {
+  async updateDiskSection(options, data, serviceInstanceId:string, vmId:string): Promise<TaskReturnDto | ExceedEnoughDiskCountException> {
     const res = groupBy(data, (setting) => (setting as any).adapterType);
     for (const key in res) {
       const length = (DiskBusUnitBusNumberSpace[key] as []).length;
@@ -1570,7 +1570,7 @@ export class VmService {
     });
   }
 
-  async updateGuestCustomization(options, data, serviceInstanceId, vmId) {
+  async updateGuestCustomization(options, data, serviceInstanceId:string, vmId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1598,7 +1598,7 @@ export class VmService {
     });
   }
 
-  async updateMedia(options, data, serviceInstanceId, mediaId) {
+  async updateMedia(options, data, serviceInstanceId:string, mediaId:string,): Promise<TaskReturnDto> {
     if (!data?.name) {
       throw new BadRequestException();
     }
@@ -1629,7 +1629,7 @@ export class VmService {
     });
   }
 
-  async updateVAppTemplate(options, data, serviceInstanceId, templateId) {
+  async updateVAppTemplate(options, data, serviceInstanceId:string, templateId:string,): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1658,7 +1658,7 @@ export class VmService {
     });
   }
 
-  async updateVmGeneralSection(options, data, serviceInstanceId, vmId) {
+  async updateVmGeneralSection(options, data, serviceInstanceId:string, vmId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1691,7 +1691,7 @@ export class VmService {
     });
   }
 
-  async updateVmNetworkSection(options, data, serviceInstanceId, vmId) {
+  async updateVmNetworkSection(options, data, serviceInstanceId:string, vmId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
