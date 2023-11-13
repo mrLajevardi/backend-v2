@@ -28,6 +28,14 @@ import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { VmList } from '../dto/get-all-user-vm.dto';
 import { VmTemplateList } from '../dto/templates.dto';
 import { VmDiskSection } from '../dto/disk-section.dto';
+import { VmTicket } from '../dto/vm-ticket.dto';
+import { CatalogMedia } from '../dto/catalog-media.dto';
+import { VmGeneralSection } from '../dto/vm-general-section.dto';
+import { HardwareInfo } from '../dto/hardware-info.dto';
+import { VmMedia } from '../dto/get-media.dto';
+import { VmOsInfo } from '../dto/os-info.dto';
+import { VmRemovableMedia } from '../dto/vm-removableMedia.dto';
+import { VmSupportedHardDiskAdaptors } from '../dto/vm.dto';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -49,7 +57,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmTicket> {
     return this.vmService.acquireVMTicket(options, serviceInstanceId, vmId);
   }
 
@@ -67,7 +75,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
     @Body() data: CreateTemplateDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto>{
     return this.vmService.createTemplate(
       options,
       serviceInstanceId,
@@ -148,7 +156,7 @@ export class VmController {
     @Param('mediaId') mediaId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.deleteMedia(options, serviceInstanceId, mediaId);
   }
 
@@ -165,7 +173,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.deleteTemplate(options, serviceInstanceId, vmId);
   }
 
@@ -199,7 +207,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.deployVm(options, serviceInstanceId, vmId);
   }
 
@@ -216,7 +224,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto>{
     return this.vmService.discardSuspendVm(options, serviceInstanceId, vmId);
   }
 
@@ -233,7 +241,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto>{
     return this.vmService.ejectMedia(options, serviceInstanceId, vmId);
   }
 
@@ -291,7 +299,7 @@ export class VmController {
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
     @Request() options,
-  ): Promise<any> {
+  ):Promise<CatalogMedia> {
     return this.vmService.getCatalogMedias(
       options,
       serviceInstanceId,
@@ -330,7 +338,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('vmId') vmId: string,
     @Request() options,
-  ): Promise<any> {
+  ):Promise<VmGeneralSection> {
     return this.vmService.getVmGeneralSection(options, serviceInstanceId, vmId);
   }
 
@@ -361,7 +369,7 @@ export class VmController {
   async getHardwareInfo(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<HardwareInfo[]> {
     return this.vmService.getHardwareInfo(options, serviceInstanceId);
   }
 
@@ -376,7 +384,7 @@ export class VmController {
   async getMedia(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmMedia[]> {
     return this.vmService.getMedia(options, serviceInstanceId);
   }
 
@@ -391,7 +399,7 @@ export class VmController {
   async getOsInfo(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmOsInfo> {
     return this.vmService.getOsInfo(options, serviceInstanceId);
   }
 
@@ -425,7 +433,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('vmId') vmId: string,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmRemovableMedia[]> {
     return this.vmService.getVmRemovableMedia(options, serviceInstanceId, vmId);
   }
 
@@ -442,7 +450,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Query('osType') osType: string | undefined,
     @Request() options,
-  ): Promise<any> {
+  ): Promise<VmSupportedHardDiskAdaptors[]> {
     return this.vmService.getSupportedHardDiskAdaptors(
       options,
       serviceInstanceId,

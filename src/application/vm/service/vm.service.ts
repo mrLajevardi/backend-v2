@@ -27,6 +27,14 @@ import { groupBy } from '../../../infrastructure/utils/extensions/array.extensio
 import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
 import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
 import { CreateVm } from '../dto/create-vm.dto';
+import { VmTicket } from '../dto/vm-ticket.dto';
+import { CatalogMedia } from '../dto/catalog-media.dto';
+import { VmGeneralSection } from '../dto/vm-general-section.dto';
+import { HardDiskAdapter, HardwareInfo, OperatingSystem, OsFamily } from '../dto/hardware-info.dto';
+import { VmMedia } from '../dto/get-media.dto';
+import { VmOsInfo } from '../dto/os-info.dto';
+import { VmRemovableMedia } from '../dto/vm-removableMedia.dto';
+import { VmSupportedHardDiskAdaptors } from '../dto/vm.dto';
 
 @Injectable()
 export class VmService {
@@ -57,7 +65,7 @@ export class VmService {
     private readonly networkService: NetworksService,
   ) {}
 
-  async acquireVMTicket(options, vdcInstanceId, vAppId) {
+  async acquireVMTicket(options, vdcInstanceId, vAppId):Promise<VmTicket> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -79,7 +87,7 @@ export class VmService {
     serviceInstanceId: string,
     containerId: string,
     data: CreateTemplateDto,
-  ) {
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const serviceOrg = await this.servicePropertiesTableService.findOne({
       where: {
@@ -253,7 +261,7 @@ export class VmService {
     });
   }
 
-  async deleteMedia(options, serviceInstanceId, mediaId) {
+  async deleteMedia(options, serviceInstanceId:string, mediaId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -277,7 +285,7 @@ export class VmService {
     });
   }
 
-  async deleteTemplate(options, serviceInstanceId, templateId) {
+  async deleteTemplate(options, serviceInstanceId:string, templateId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -332,7 +340,7 @@ export class VmService {
     });
   }
 
-  async deployVm(options, serviceInstanceId, vAppId) {
+  async deployVm(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -348,7 +356,7 @@ export class VmService {
     });
   }
 
-  async discardSuspendVm(options, serviceInstanceId, vAppId) {
+  async discardSuspendVm(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -364,7 +372,7 @@ export class VmService {
     });
   }
 
-  async ejectMedia(options, serviceInstanceId, vAppId) {
+  async ejectMedia(options, serviceInstanceId:string, vAppId:string): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -528,7 +536,7 @@ export class VmService {
     return Promise.resolve(data);
   }
 
-  async getCatalogMedias(options, serviceInstanceId, page, pageSize) {
+  async getCatalogMedias(options, serviceInstanceId:string, page:number, pageSize:number):Promise<CatalogMedia> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -647,7 +655,7 @@ export class VmService {
     return Promise.resolve(snapShotInf);
   }
 
-  async getVmGeneralSection(options, serviceInstanceId, vmId) {
+  async getVmGeneralSection(options, serviceInstanceId:string, vmId:string):Promise<VmGeneralSection>{
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -699,7 +707,7 @@ export class VmService {
     return Promise.resolve(data);
   }
 
-  async getHardwareInfo(options, serviceInstanceId) {
+  async getHardwareInfo(options, serviceInstanceId:string): Promise<HardwareInfo[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -714,15 +722,16 @@ export class VmService {
       props.vdcId,
     );
 
-    const hardwareInfoForFront = [];
-    const osFamily = [];
-    const hardDiskAdapter = [];
-    const operatingSystem = [];
+    const hardwareInfoForFront: HardwareInfo[] = [];
+    const osFamily:OsFamily[] = [];
+    const hardDiskAdapter:HardDiskAdapter[] = [];
+    const operatingSystem:OperatingSystem[] = [];
 
-    const maxCoresPerSocket = vdcData.maxCoresPerSocket;
-    const maxMemorySizeMb = vdcData.maxMemorySizeMb;
-    const maxCPUs = vdcData.maxCPUs;
-    const supportedMemorySizeGb = vdcData.supportedMemorySizeGb;
+    const maxCoresPerSocket:number = vdcData.maxCoresPerSocket;
+    const maxMemorySizeMb:number = vdcData.maxMemorySizeMb;
+    const maxCPUs:number = vdcData.maxCPUs;
+    const supportedMemorySizeGb:number[] = vdcData.supportedMemorySizeGb;
+
     vdcData.supportedOperatingSystems.operatingSystemFamilyInfo.forEach(
       (element) => {
         const name = element.name;
@@ -762,6 +771,7 @@ export class VmService {
     });
 
     hardwareInfoForFront.push({
+
       maxCoresPerSocket,
       maxMemorySizeMb,
       maxCPUs,
@@ -773,7 +783,7 @@ export class VmService {
     return Promise.resolve(hardwareInfoForFront);
   }
 
-  async getMedia(options, serviceInstanceId) {
+  async getMedia(options, serviceInstanceId:string):Promise<VmMedia[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -802,7 +812,7 @@ export class VmService {
     return Promise.resolve(mediaInfo);
   }
 
-  async getOsInfo(options, serviceInstanceId) {
+  async getOsInfo(options, serviceInstanceId:string):Promise<VmOsInfo> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -816,7 +826,9 @@ export class VmService {
       session,
       props.vdcId,
     );
-    const data = {};
+    const data:VmOsInfo = {
+      MicrosoftWindows: []
+    };
     hardwareInfo.supportedOperatingSystems.operatingSystemFamilyInfo.forEach(
       (osFamily) => {
         data[osFamily.name] = [];
@@ -831,7 +843,7 @@ export class VmService {
     return Promise.resolve(data);
   }
 
-  async getQuestion(options, serviceInstanceId, vmId) {
+  async getQuestion(options, serviceInstanceId:string, vmId:string) {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -860,13 +872,17 @@ export class VmService {
     } catch (err) {
       questionText = question.question;
     }
+    console.log(question.choices,
+      question.questionId,
+      questionText,);
+
     return Promise.resolve({
       choices: question.choices,
       questionId: question.questionId,
       question: questionText,
     });
   }
-  async getVmRemovableMedia(options, serviceInstanceId, vmId) {
+  async getVmRemovableMedia(options, serviceInstanceId:string, vmId:string):Promise<VmRemovableMedia[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -892,7 +908,7 @@ export class VmService {
     return Promise.resolve(removableMedia);
   }
 
-  async getSupportedHardDiskAdaptors(options, serviceInstanceId, osType) {
+  async getSupportedHardDiskAdaptors(options, serviceInstanceId: string , osType: string | undefined):Promise<VmSupportedHardDiskAdaptors[]> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
