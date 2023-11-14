@@ -25,6 +25,10 @@ import { SnapShotDetails } from '../dto/snap-shot-details.dto';
 import * as process from 'process';
 import { VmDetailService } from './vm-detail.service';
 import { VmStatusEnum } from '../enums/vm-status.enum';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
+import { UploadFileDto } from '../dto/upload-file-info.dto';
+import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/dto/upload-file.dto';
 
 @Injectable()
 export class VmService {
@@ -36,6 +40,7 @@ export class VmService {
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
     private readonly vmDetailService: VmDetailService,
+    private readonly vmWrapperService: VmWrapperService,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId) {
@@ -1402,7 +1407,12 @@ export class VmService {
     });
   }
 
-  async transferFile(options, serviceInstanceId, transferId, contentLength) {
+  async transferFile(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    transferId: string,
+    contentLength: number,
+  ): Promise<void> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1414,16 +1424,11 @@ export class VmService {
     );
     const fullAddress = `/transfer/${transferId}/file`;
     //   console.log(options.req, transferId, contentLength);
-    const uploadedData = await userPartialUpload(
-      session,
-      fullAddress,
-      options.req,
-      {
-        'Content-Length': contentLength,
-        'Content-Range': `bytes ${0} - ${contentLength} / ${contentLength}`,
-        Connection: 'keep-alive',
-      },
-    );
+    await this.vmWrapperService.partialUpload(session, fullAddress, options, {
+      'Content-Length': contentLength.toString(),
+      'Content-Range': `bytes ${0} - ${contentLength} / ${contentLength}`,
+      Connection: 'keep-alive',
+    });
   }
 
   async undeployVm(options, serviceInstanceId, vAppId, data) {
@@ -1710,7 +1715,11 @@ export class VmService {
     });
   }
 
-  async uploadFileInfo(options, data, serviceInstanceId) {
+  async uploadFileInfo(
+    options: SessionRequest,
+    data: UploadFileDto,
+    serviceInstanceId: string,
+  ): Promise<UploadFileReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
