@@ -14,6 +14,8 @@ import {
 } from '../../datacenter/interface/datacenter.interface';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { ServiceStatusEnum } from '../enum/service-status.enum';
+import { EdgeGatewayService } from '../../../edge-gateway/service/edge-gateway.service';
+import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -23,6 +25,7 @@ export class ServiceServiceFactory {
     private readonly serviceInstancePropertiesService: BaseServicePropertiesService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
+    private readonly edgeGatewayService: EdgeGatewayService,
   ) {}
   public async getPropertiesOfServiceInstance(
     serviceInstance: GetServicesReturnDto,
@@ -59,9 +62,9 @@ export class ServiceServiceFactory {
     return metaData;
   }
 
-  public configModelServiceInstanceList(
+  public async configModelServiceInstanceList(
     serviceInstance: GetServicesReturnDto,
-    daysLeft: number,
+    option: SessionRequest,
     isTicketSent: boolean,
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
@@ -74,26 +77,44 @@ export class ServiceServiceFactory {
         serviceInstance.name,
         serviceInstance.serviceType.id,
         [],
-        daysLeft,
+        serviceInstance.daysLeft,
         isTicketSent,
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
       );
 
     //Cpu , Ram , Disk , Vm
-    const { serviceItemCpu, serviceItemRam, serviceItemDisk, serviceItemVM } =
-      this.createItemTypesForInstance(vdcItems, cpuSpeed);
+    const {
+      serviceItemCpu,
+      serviceItemRam,
+      serviceItemDisk,
+      serviceItemVM,
+      serviceItemIp,
+    } = await this.createItemTypesForInstance(
+      vdcItems,
+      cpuSpeed,
+      option,
+      serviceInstance.id,
+    );
 
     model.serviceItems.push(serviceItemCpu);
     model.serviceItems.push(serviceItemRam);
     model.serviceItems.push(serviceItemDisk);
     model.serviceItems.push(serviceItemVM);
+    model.serviceItems.push(serviceItemIp);
     return model;
   }
 
-  public createItemTypesForInstance(
+  public async createItemTypesForInstance(
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
+    option: SessionRequest,
+    serviceInstanceId: string,
   ) {
+    const countIp = await this.edgeGatewayService.getCountOfIpSet(
+      option,
+      serviceInstanceId,
+    );
+
     const serviceItemCpu = new ServiceItemDto(
       'CPU',
       vdcItems.cpuUsedMhz / Number(cpuSpeed),
@@ -117,6 +138,15 @@ export class ServiceServiceFactory {
       vdcItems.numberOfRunningVMs,
       vdcItems.numberOfVMs,
     );
-    return { serviceItemCpu, serviceItemRam, serviceItemDisk, serviceItemVM };
+
+    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
+
+    return {
+      serviceItemCpu,
+      serviceItemRam,
+      serviceItemDisk,
+      serviceItemVM,
+      serviceItemIp,
+    };
   }
 }

@@ -8,6 +8,7 @@ import { SessionsModule } from '../base/sessions/sessions.module';
 import { CrudModule } from '../base/crud/crud.module';
 import { NetworksController } from './networks.controller';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
     SessionsModule,
     CrudModule,
     ServicePropertiesModule,
+    MainWrapperModule,
     forwardRef(() => ServiceModule),
   ],
   providers: [NetworksService, DhcpService],

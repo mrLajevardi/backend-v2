@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
-import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
-import { FirewalListDto } from '../dto/firewall-list.dto';
+import { FirewallListDto } from '../dto/firewall-list.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
+import { FirewallWrapperService } from 'src/wrappers/main-wrapper/service/user/firewall/firewall-wrapper.service';
+import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
+import { UpdateFirewallBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/update-firewall.dto';
+import { UpdateFirewallDto } from '../dto/update-firewall.dto';
 
 @Injectable()
 export class FirewallService {
@@ -13,17 +18,23 @@ export class FirewallService {
     private readonly logger: LoggerService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
+    private readonly firewallWrapperService: FirewallWrapperService,
   ) {}
-  async addToFirewallList(options, vdcInstanceId, data) {
+  async addToFirewallList(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    data: FirewallListItemDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const firewallList = await mainWrapper.user.firewall.getFirewallList(
+    const firewallList = await this.firewallWrapperService.getFirewallList(
       session,
       props['edgeName'],
     );
@@ -32,18 +43,12 @@ export class FirewallService {
       userDefinedRules: firewallList.userDefinedRules,
       defaultRules: firewallList.defaultRules,
     };
-    for (const key of Object.keys(filteredFirewall)) {
+    for (const key in filteredFirewall) {
       const firewall = filteredFirewall[key];
       if (!isEmpty(firewall)) {
         filteredFirewall[key] = filteredFirewall[key].map((targetFirewall) => {
           return {
-            id: targetFirewall.id,
-            name: targetFirewall.name,
-            destinationFirewallGroups: targetFirewall.destinationFirewallGroups,
-            sourceFirewallGroups: targetFirewall.sourceFirewallGroups,
-            applicationPortProfiles: targetFirewall.applicationPortProfiles,
-            actionValue: targetFirewall.actionValue,
-            enabled: targetFirewall.enabled,
+            ...targetFirewall,
             direction: 'IN_OUT',
             ipProtocol: 'IPV4',
             logging: false,
@@ -55,38 +60,38 @@ export class FirewallService {
     }
     const newFirewall = {
       ...data,
-      actionValue: data.ruleType,
+      direction: 'IN_OUT',
+      ipProtocol: 'IPV4',
+      logging: false,
     };
-    delete newFirewall.ruleType;
-    filteredFirewall.userDefinedRules.unshift(newFirewall);
-    const firewall = await mainWrapper.user.firewall.updateFirewallList(
+    const userDefinedRules =
+      filteredFirewall.userDefinedRules as UpdateFirewallBody[];
+    userDefinedRules.unshift(newFirewall);
+    const response = await this.firewallWrapperService.updateFirewallList(
       session,
       filteredFirewall.userDefinedRules,
       props['edgeName'],
     );
-    await this.logger.info(
-      'firewall',
-      'updateFirewallList',
-      {
-        _object: firewall.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
     return Promise.resolve({
-      taskId: firewall.__vcloudTask.split('task/')[1],
+      taskId: response.__vcloudTask.split('task/')[1],
     });
   }
 
-  async deleteFirewall(options, vdcInstanceId, ruleId) {
-    const userId = options.user.id;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+  async deleteFirewall(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    ruleId: string,
+  ): Promise<TaskReturnDto> {
+    const userId = options.user.userId;
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const firewall = await mainWrapper.user.firewall.deleteFirewall(
+    const firewall = await this.firewallWrapperService.deleteFirewall(
       session,
       ruleId,
       props['edgeName'],
@@ -96,20 +101,24 @@ export class FirewallService {
     });
   }
 
-  async getFirewallList(options, vdcInstanceId) {
+  async getFirewallList(
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<FirewallListDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const firewallList = await mainWrapper.user.firewall.getFirewallList(
+    const firewallList = await this.firewallWrapperService.getFirewallList(
       session,
       props['edgeName'],
     );
-    const filteredFirewall: FirewalListDto = {
+    const filteredFirewall: FirewallListDto = {
       systemRules: firewallList.systemRules,
       userDefinedRules: firewallList.userDefinedRules,
       defaultRules: firewallList.defaultRules,
@@ -125,26 +134,31 @@ export class FirewallService {
             destinationFirewallGroups: targetFirewall.destinationFirewallGroups,
             sourceFirewallGroups: targetFirewall.sourceFirewallGroups,
             applicationPortProfiles: targetFirewall.applicationPortProfiles,
-            ruleType: targetFirewall.actionValue,
+            actionValue: targetFirewall.actionValue,
             enabled: targetFirewall.enabled,
             description: targetFirewall.description,
           };
         });
       }
     }
-    return Promise.resolve(filteredFirewall);
+    return filteredFirewall;
   }
 
-  async getSingleFirewall(options, vdcInstanceId, ruleId) {
+  async getSingleFirewall(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    ruleId: string,
+  ): Promise<FirewallListItemDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const firewall = await mainWrapper.user.firewall.getSingleFirewall(
+    const firewall = await this.firewallWrapperService.getSingleFirewall(
       session,
       ruleId,
       props['edgeName'],
@@ -155,14 +169,18 @@ export class FirewallService {
       destinationFirewallGroups: firewall.destinationFirewallGroups,
       sourceFirewallGroups: firewall.sourceFirewallGroups,
       applicationPortProfiles: firewall.applicationPortProfiles,
-      ruleType: firewall.actionValue,
+      actionValue: firewall.actionValue,
       enabled: firewall.enabled,
-      description: firewall.description,
+      comments: firewall.comments,
     };
     return Promise.resolve(filteredFirewall);
   }
 
-  async updateFirewallList(options, vdcInstanceId, data) {
+  async updateFirewallList(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    data: UpdateFirewallDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -172,43 +190,37 @@ export class FirewallService {
       props['orgId'],
     );
     const config = data.firewallList.map((firewall) => {
-      const result = {
+      const result: UpdateFirewallBody = {
         name: firewall.name,
         applicationPortProfiles: firewall.applicationPortProfiles,
-        comments: firewall.description,
+        comments: firewall.comments,
         ipProtocol: 'IPV4',
         logging: false,
         enabled: firewall.enabled,
         sourceFirewallGroups: firewall.sourceFirewallGroups,
         destinationFirewallGroups: firewall.destinationFirewallGroups,
         direction: 'IN_OUT',
-        description: firewall.description,
-        actionValue: firewall.ruleType,
+        actionValue: firewall.actionValue,
+        ...(firewall.id && { id: firewall.id }),
       };
-      if (firewall.id) {
-        result['id'] = firewall.id;
-      }
       return result;
     });
-    const firewall = await mainWrapper.user.firewall.updateFirewallList(
+    const firewall = await this.firewallWrapperService.updateFirewallList(
       session,
       config,
       props['edgeName'],
-    );
-    await this.logger.info(
-      'firewall',
-      'updateFirewallList',
-      {
-        _object: firewall.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
     );
     return Promise.resolve({
       taskId: firewall.__vcloudTask.split('task/')[1],
     });
   }
 
-  async updateSingleFirewall(options, vdcInstanceId, ruleId, data) {
+  async updateSingleFirewall(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    ruleId: string,
+    data: FirewallListItemDto,
+  ): Promise<TaskReturnDto> {
     console.log(ruleId);
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
@@ -221,29 +233,21 @@ export class FirewallService {
     const config = {
       name: data.name,
       applicationPortProfiles: data.applicationPortProfiles,
-      description: data.description,
+      comments: data.comments,
       ipProtocol: 'IPV4',
       logging: false,
       enabled: data.enabled,
       sourceFirewallGroups: data.sourceFirewallGroups,
       destinationFirewallGroups: data.destinationFirewallGroups,
       direction: 'IN_OUT',
-      actionValue: data.ruleType,
+      actionValue: data.actionValue,
       id: ruleId,
     };
-    const firewall = await mainWrapper.user.firewall.updateSingleFirewall(
+    const firewall = await this.firewallWrapperService.updateSingleFirewall(
       session,
       ruleId,
       config,
       props['edgeName'],
-    );
-    await this.logger.info(
-      'firewall',
-      'updateFirewall',
-      {
-        _object: firewall.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
     );
     return Promise.resolve({
       taskId: firewall.__vcloudTask.split('task/')[1],

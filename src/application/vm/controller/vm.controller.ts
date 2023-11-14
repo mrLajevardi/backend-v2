@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiHeader,
   ApiOperation,
   ApiParam,
   ApiQuery,
@@ -37,6 +38,11 @@ import { VmOsInfo } from '../dto/os-info.dto';
 import { VmRemovableMedia } from '../dto/vm-removableMedia.dto';
 import { VmComputeSection, VmGuestCustomization, VmQuery, VmSupportedHardDiskAdaptors } from '../dto/vm.dto';
 import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
+import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { TransferFileHeaderDto } from '../dto/transfer-file.dto';
+import { UploadFileDto } from '../dto/upload-file-info.dto';
+import { RequestHeaders } from 'src/infrastructure/decorators/request-header-decorator';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -737,22 +743,17 @@ export class VmController {
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'transferId', description: 'vm id' })
-  @ApiResponse({
-    status: 201,
-    description: 'acquire vm tickets',
-    type: 'object',
-  })
   async transferFile(
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('transferId') transferId: string,
-    @Headers('content-length') contentLength,
-    @Request() options,
-  ): Promise<any> {
+    @RequestHeaders() headers: TransferFileHeaderDto,
+    @Request() options: SessionRequest,
+  ): Promise<void> {
     return this.vmService.transferFile(
       options,
       serviceInstanceId,
       transferId,
-      contentLength,
+      headers['content-length'],
     );
   }
 
@@ -946,8 +947,8 @@ export class VmController {
   })
   async uploadFileInfo(
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: CreateVmFromTemplate,
-    @Request() options,
+    @Body() data: UploadFileDto,
+    @Request() options: SessionRequest,
   ): Promise<any> {
     return this.vmService.uploadFileInfo(options, data, serviceInstanceId);
   }
@@ -971,5 +972,9 @@ export class VmController {
       serviceInstanceId,
       templateId,
     );
+  }
+  @Get('/disk/getDiskBusTypeInfo/')
+  diskBusTypeInfo() {
+    return DiskBusUnitBusNumberSpace;
   }
 }

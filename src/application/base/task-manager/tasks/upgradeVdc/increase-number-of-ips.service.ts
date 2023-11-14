@@ -63,7 +63,7 @@ export class IncreaseNumberOfIpsService
       );
     const userSession = await this.sessionService.checkUserSession(
       task.userId,
-      props.orgId,
+      Number(props.orgId),
     );
     const adminSession = await this.sessionService.checkAdminSession();
     const filter = `name==${props.edgeName}`;

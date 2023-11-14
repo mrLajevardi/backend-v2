@@ -6,7 +6,6 @@ import {
   Body,
   Delete,
   Get,
-  Req,
   Query,
   Put,
 } from '@nestjs/common';
@@ -14,12 +13,14 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
-  ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { NatDto } from './dto/nat.dto';
+import { NatQueryDto } from './dto/nat.dto';
 import { NatService } from './nat.service';
-import { TempDto } from '../vdc/dto/temp.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { NatRulesListDTO } from './dto/nat-rules-list.dto';
 
 @ApiTags('Nat')
 @Controller('nat')
@@ -30,11 +31,12 @@ export class NatController {
   @Post('/:serviceInstanceId')
   @ApiOperation({ summary: 'creates a nat for user' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async createNatRule(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('serviceInstanceId') serviceInstanceId: string,
-    @Body() data: TempDto,
-  ): Promise<any> {
+    @Body() data: NatRulesListDTO,
+  ): Promise<TaskReturnDto> {
     return await this.service.createNatRule(data, options, serviceInstanceId);
   }
 
@@ -43,10 +45,10 @@ export class NatController {
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiParam({ name: 'ruleId', description: 'rule id' })
   async deleteNatRule(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('ruleId') ruleId: string,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return await this.service.deleteNatRule(options, serviceInstanceId, ruleId);
   }
 
@@ -55,7 +57,7 @@ export class NatController {
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiParam({ name: 'ruleId', description: 'rule id' })
   async getNatRule(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('ruleId') ruleId: string,
   ): Promise<any> {
@@ -65,32 +67,26 @@ export class NatController {
   @Get('/:serviceInstanceId')
   @ApiOperation({ summary: 'get user natRules' })
   @ApiParam({ name: 'serviceInstanceId', description: 'vdc instance id ' })
-  @ApiQuery({ name: 'pageSize', description: 'page size : number' })
-  @ApiQuery({ name: 'getAll', description: 'getAll : boolean' })
+  @ApiResponse({ type: [NatRulesListDTO] })
   async getNatRules(
-    @Request() options,
-    @Param('serviceInstanceId') serviceInstanceId,
-    @Query('pageSize') pageSize: number,
-    @Query('getAll') getAll: boolean,
-  ): Promise<any> {
-    return await this.service.getNatRules(
-      options,
-      serviceInstanceId,
-      pageSize,
-      getAll,
-    );
+    @Request() options: SessionRequest,
+    @Param('serviceInstanceId') serviceInstanceId: string,
+    @Query() query: NatQueryDto,
+  ): Promise<NatRulesListDTO[]> {
+    return await this.service.getNatRules(options, serviceInstanceId, query);
   }
 
   @Put('/:serviceInstanceId/:ruleId')
   @ApiOperation({ summary: ' update natRule ' })
   @ApiParam({ name: 'serviceInstanceId', description: 'vdc instance id ' })
   @ApiParam({ name: 'ruleId', description: 'rule id ' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateNatRuleConfig(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('ruleId') ruleId: string,
-    @Body() data: TempDto,
-  ) {
+    @Body() data: NatRulesListDTO,
+  ): Promise<TaskReturnDto> {
     return await this.service.updateNatRule(
       data,
       options,

@@ -9,6 +9,9 @@ import { VmService } from '../service/vm.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 import { NetworksModule } from '../../networks/networks.module';
 import { forwardRef } from '@nestjs/common';
+import { VmDetailService } from '../service/vm-detail.service';
+import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
+import { VmDetailFactoryService } from '../service/vm-detail.factory.service';
 describe('VmController', () => {
   let controller: VmController;
 
@@ -21,9 +24,10 @@ describe('VmController', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
+        MainWrapperModule,
         forwardRef(() => NetworksModule),
       ],
-      providers: [VmService],
+      providers: [VmService, VmDetailService, VmDetailFactoryService],
       controllers: [VmController],
     }).compile();
 

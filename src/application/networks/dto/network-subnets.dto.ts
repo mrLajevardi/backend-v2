@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 import { NetworkSubnetIpRangeDto } from './network-subnet-ip-range.dto';
+
+class Values {
+  @ApiProperty({ type: [NetworkSubnetIpRangeDto] })
+  values: NetworkSubnetIpRangeDto[];
+}
 export class NetworkSubnetsDto {
   @ApiProperty({ type: String, default: '192.168.1.1' })
   @IsString()
@@ -23,7 +28,7 @@ export class NetworkSubnetsDto {
   dnsServer2: string;
 
   @ApiProperty({ type: [NetworkSubnetIpRangeDto] })
-  ipRanges: NetworkSubnetIpRangeDto[];
+  ipRanges: Values;
 
   @ApiProperty({ type: Boolean })
   @IsBoolean()
@@ -33,7 +38,7 @@ export class NetworkSubnetsDto {
   @IsNumber()
   totalIpCount: number;
 
-  @ApiProperty({ type: String, default: '1' })
+  @ApiProperty({ type: Number, default: '1' })
   @IsString()
-  usedIpCount: string;
+  usedIpCount: number;
 }

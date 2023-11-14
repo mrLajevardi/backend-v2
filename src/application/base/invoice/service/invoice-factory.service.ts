@@ -9,10 +9,11 @@ import {
 } from '../dto/create-service-invoice.dto';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import {
+  DiskItemCodes,
   ItemTypeCodes,
   VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import {
   InvoiceItemCost,
@@ -30,12 +31,14 @@ import {
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { CostCalculationService } from './cost-calculation.service';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 
 @Injectable()
 export class InvoiceFactoryService {
   constructor(
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
     private readonly invoiceItemTableService: InvoiceItemsTableService,
+    private readonly serviceInstanceTable: ServiceInstancesTableService,
   ) {}
   async groupVdcItems(invoiceItems: InvoiceItemsDto[]): Promise<VdcItemGroup> {
     const vdcItemGroup: VdcItemGroup = {} as VdcItemGroup;
@@ -116,16 +119,23 @@ export class InvoiceFactoryService {
     remainingDays: number,
     date: Date,
   ): Promise<CreateInvoicesDto> {
+    const serviceCount = await this.serviceInstanceTable.count({
+      where: {
+        userId,
+        isDeleted: false,
+      },
+    });
+    const invoiceTitle = 'ابر خصوصی';
     const dto: CreateInvoicesDto = {
       userId: Number(userId),
       servicePlanType: data.servicePlanTypes,
       rawAmount: invoiceCost.totalCost,
       finalAmount: invoiceCost.totalCost,
       type: data.type,
-      endDateTime: addMonths(date, remainingDays),
+      endDateTime: addMonths(date, remainingDays / 30),
       dateTime: new Date(),
       serviceTypeId: groupedItems.generation.ip[0].serviceTypeId,
-      name: 'invoice' + Math.floor(Math.random() * 100),
+      name: invoiceTitle + ' ' + (serviceCount + 1),
       planAmount: 0,
       planRatio: 0,
       payed: false,
@@ -142,7 +152,23 @@ export class InvoiceFactoryService {
   async createInvoiceItems(
     invoiceId: number,
     invoiceItems: InvoiceItemCost[],
+    groupedItems: VdcItemGroup,
   ): Promise<void> {
+    const diskIds = groupedItems.generation.disk.map((item) => item.id);
+    const otherDisks = await this.serviceItemTypeTree.find({
+      where: {
+        parentId: groupedItems.generation.disk[0].parentId,
+        id: Not(In(diskIds)),
+        enabled: true,
+        code: Not(DiskItemCodes.Swap),
+      },
+    });
+    for (const disk of otherDisks) {
+      invoiceItems.push({
+        ...disk,
+        value: '0',
+      });
+    }
     for (const item of invoiceItems) {
       await this.invoiceItemTableService.create({
         itemId: item.id,

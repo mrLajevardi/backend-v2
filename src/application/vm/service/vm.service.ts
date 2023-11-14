@@ -35,6 +35,14 @@ import { VmMedia } from '../dto/get-media.dto';
 import { VmOsInfo } from '../dto/os-info.dto';
 import { VmRemovableMedia } from '../dto/vm-removableMedia.dto';
 import { VmComputeSection, VmGuestCustomization, VmQuery, VmSupportedHardDiskAdaptors } from '../dto/vm.dto';
+import { SnapShotDetails } from '../dto/snap-shot-details.dto';
+import * as process from 'process';
+import { VmDetailService } from './vm-detail.service';
+import { VmStatusEnum } from '../enums/vm-status.enum';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
+import { UploadFileDto } from '../dto/upload-file-info.dto';
+import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/dto/upload-file.dto';
 
 @Injectable()
 export class VmService {
@@ -62,7 +70,8 @@ export class VmService {
     private readonly organizationTableService: OrganizationTableService,
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
-    private readonly networkService: NetworksService,
+    private readonly vmDetailService: VmDetailService,
+    private readonly vmWrapperService: VmWrapperService,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId):Promise<VmTicket> {
@@ -438,7 +447,7 @@ export class VmService {
       const cpu = recordItem.numberOfCpus;
       const storage = recordItem.totalStorageAllocatedMb;
       const memory = recordItem.memoryMB;
-      const status = recordItem.status;
+      const status = VmStatusEnum[recordItem.status];
       const containerId = recordItem.container.split('vApp/')[1];
       const countOfNetworks = (
         await this.getVmNetworkSection(options, serviceInstanceId, id)
@@ -527,7 +536,7 @@ export class VmService {
         numCoresPerSocket,
         sockets: cpu / numCoresPerSocket,
         totalStorageAllocatedMb,
-        status,
+        status: VmStatusEnum[status],
         dateCreated,
         autoDeleteDate,
         isExpired,
@@ -587,6 +596,16 @@ export class VmService {
       userId,
       props.orgId,
     );
+    // const yy = await this.vmDetailService.eventVm(
+    //   options,
+    //   serviceInstanceId,
+    //   '',
+    //   vmId,
+    //   '',
+    //   1,
+    //   20,
+    // );
+
     const storageProfile = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'orgVdcStorageProfile',
       page: 1,
@@ -606,6 +625,11 @@ export class VmService {
       const targetAdaptor = hardwareInfo.hardDiskAdapter.find(
         (diskAdaptor) => diskAdaptor.legacyId == settings.adapterType,
       );
+
+      // const iii = (settings.storageProfile.id as string).split(':');
+      const storageId = (settings.storageProfile.id as string).split(':')[3];
+      const storageName = settings.storageProfile.name as string;
+
       const diskSection = {
         name: settings.disk === null ? null : settings.disk.name,
         iopLimit: storageProfile.data.record[0].iopsLimit,
@@ -620,7 +644,10 @@ export class VmService {
         shareable: settings.shareable,
         iops: settings.iops,
         sizeMb: settings.sizeMb,
-        diskId: settings.diskId,
+        storageType: {
+          storageId,
+          storageName,
+        },
       };
       data.push(diskSection);
     });
@@ -670,6 +697,14 @@ export class VmService {
       type: 'vm',
       filter: `id==${vmId}`,
     });
+
+    const medias = vm.data.section
+      .find((sec) => sec._type == 'VmSpecSectionType')
+      .mediaSection.mediaSettings.filter(
+        (media) => media.mediaState !== 'DISCONNECTED',
+      )
+      .map((img) => img.mediaImage.name as string);
+
     const data: any = {
       name: vm.data.name,
       description: vm.data.description,
@@ -678,6 +713,8 @@ export class VmService {
       status: vmList.data.record[0].status,
       snapshot: vmList.data.record[0].snapshot,
     };
+    data.medias = medias;
+
     vm.data.section.forEach((section) => {
       if (section._type === 'OperatingSystemSectionType') {
         data.osType =
@@ -1423,7 +1460,12 @@ export class VmService {
     });
   }
 
-  async transferFile(options, serviceInstanceId, transferId, contentLength) {
+  async transferFile(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    transferId: string,
+    contentLength: number,
+  ): Promise<void> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1435,16 +1477,11 @@ export class VmService {
     );
     const fullAddress = `/transfer/${transferId}/file`;
     //   console.log(options.req, transferId, contentLength);
-    const uploadedData = await userPartialUpload(
-      session,
-      fullAddress,
-      options.req,
-      {
-        'Content-Length': contentLength,
-        'Content-Range': `bytes ${0} - ${contentLength} / ${contentLength}`,
-        Connection: 'keep-alive',
-      },
-    );
+    await this.vmWrapperService.partialUpload(session, fullAddress, options, {
+      'Content-Length': contentLength.toString(),
+      'Content-Range': `bytes ${0} - ${contentLength} / ${contentLength}`,
+      Connection: 'keep-alive',
+    });
   }
 
   async undeployVm(options, serviceInstanceId:string, vAppId:string, data): Promise<TaskReturnDto>{
@@ -1517,9 +1554,14 @@ export class VmService {
   }
 
   async updateDiskSection(options, data, serviceInstanceId:string, vmId:string): Promise<TaskReturnDto | ExceedEnoughDiskCountException> {
-    const res = groupBy(data, (setting) => (setting as any).adapterType);
+    const res = groupBy(
+      data,
+      (setting) => (setting as any).adapterType.legacyId,
+    );
     for (const key in res) {
-      const length = (DiskBusUnitBusNumberSpace[key] as []).length;
+      const length = DiskBusUnitBusNumberSpace.find(
+        (bus) => bus.legacyId == key,
+      ).info.length;
 
       const list = res[key] as [];
       if (list.length > length) {
@@ -1726,7 +1768,11 @@ export class VmService {
     });
   }
 
-  async uploadFileInfo(options, data, serviceInstanceId) {
+  async uploadFileInfo(
+    options: SessionRequest,
+    data: UploadFileDto,
+    serviceInstanceId: string,
+  ): Promise<UploadFileReturnDto> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(

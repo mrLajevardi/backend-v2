@@ -14,12 +14,41 @@ import {
 } from './dto/instatiate-vm-from-template.dto';
 import { AdminOrgVdcStorageProfileQuery } from '../vdc/dto/instantiate-vm-from.templates-admin.dto';
 import { AcquireTicketDto } from './dto/acquire-vm-ticket.dto';
+import { EventVmDto } from './dto/event-vm-model.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 @Injectable()
 export class VmWrapperService {
   constructor(
     private readonly vcloudWrapperService: VcloudWrapperService,
     private readonly vdcWrapperService: VdcWrapperService,
   ) {}
+
+  async eventVm(
+    authToken: string,
+    filter: string,
+    page: number,
+    pageSize: number,
+    // sortDesc: string,
+  ): Promise<AxiosResponse<EventVmDto>> {
+    const endpoint = 'VmEndpointService.eventVmEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const events = await this.vcloudWrapperService.request<EventVmDto>(
+      wrapper({
+        headers: { Authorization: `Bearer ${authToken}` },
+        urlParams: {
+          filter: filter,
+          page: page,
+          pageSize: pageSize,
+          filterEncoded: true,
+          links: true,
+          sortDesc: 'timestamp', //TODO --> We should get sortDesc Column from user
+        },
+      }),
+    );
+    return events;
+  }
+
   async acquireVappTicket(
     authToken: string,
     vAppId: string,
@@ -363,19 +392,22 @@ export class VmWrapperService {
   async partialUpload(
     authToken: string,
     fullAddress: string,
-    data: Stream,
+    data: SessionRequest,
     header: PartialUploadHeaders,
-  ): Promise<void> {
+  ): Promise<VcloudTask> {
     const endpoint = 'VmEndpointService.partialUploadEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    await this.vcloudWrapperService.request(
+    const response = await this.vcloudWrapperService.request(
       wrapper({
         urlParams: { fullAddress },
         headers: { Authorization: `Bearer ${authToken}`, ...header },
         body: data,
       }),
     );
+    return {
+      __vcloudTask: response.headers.location,
+    };
   }
   async postAnswer(
     authToken: string,

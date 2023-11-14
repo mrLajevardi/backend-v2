@@ -175,11 +175,15 @@ export class InvoiceFactoryVdcService {
 
     res.ram = new VdcInvoiceDetailsInfoResultDto(ramModel);
 
-    res.disk = diskModel.map((diskmodel) => {
-      const res: VdcInvoiceDetailsInfoResultDto =
-        new VdcInvoiceDetailsInfoResultDto(diskmodel);
-      return res;
-    });
+    res.disk = diskModel
+      .map((diskmodel) => {
+        if (diskmodel.code.trim() !== 'swap') {
+          const res: VdcInvoiceDetailsInfoResultDto =
+            new VdcInvoiceDetailsInfoResultDto(diskmodel);
+          return res;
+        }
+      })
+      .filter((disk) => disk != null);
 
     res.ip = new VdcInvoiceDetailsInfoResultDto(ipModel);
 

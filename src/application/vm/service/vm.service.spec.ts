@@ -9,6 +9,9 @@ import { ServicePropertiesModule } from 'src/application/base/service-properties
 import { NetworksModule } from '../../networks/networks.module';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
+import { VmDetailService } from './vm-detail.service';
+import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
+import { VmDetailFactoryService } from './vm-detail.factory.service';
 
 describe('VmService', () => {
   let service: VmService;
@@ -52,8 +55,9 @@ describe('VmService', () => {
         SessionsModule,
         CrudModule,
         NetworksModule,
+        MainWrapperModule,
       ],
-      providers: [VmService],
+      providers: [VmService, VmDetailFactoryService, VmDetailService],
     }).compile();
 
     service = module.get<VmService>(VmService);
