@@ -48,6 +48,11 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TransferFileHeaderDto } from '../dto/transfer-file.dto';
 import { UploadFileDto } from '../dto/upload-file-info.dto';
 import { RequestHeaders } from 'src/infrastructure/decorators/request-header-decorator';
+import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { TransferFileHeaderDto } from '../dto/transfer-file.dto';
+import { UploadFileDto } from '../dto/upload-file-info.dto';
+import { RequestHeaders } from 'src/infrastructure/decorators/request-header-decorator';
 
 @ApiTags('VM')
 @Controller('vm')

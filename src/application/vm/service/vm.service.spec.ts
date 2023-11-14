@@ -12,6 +12,9 @@ import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
 import { VmDetailService } from './vm-detail.service';
 import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
 import { VmDetailFactoryService } from './vm-detail.factory.service';
+import { VmDetailService } from './vm-detail.service';
+import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
+import { VmDetailFactoryService } from './vm-detail.factory.service';
 
 describe('VmService', () => {
   let service: VmService;

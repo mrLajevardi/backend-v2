@@ -1,5 +1,5 @@
 npm run pm2:stop
-path="/var/services/arad-v2/*"
+path="/var/services/backend-v2/*"
 rm -rf $path
 wd=pwd
 path="/var/services/backend-v2/"
