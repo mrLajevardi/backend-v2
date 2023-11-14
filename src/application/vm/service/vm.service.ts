@@ -486,7 +486,7 @@ export class VmService {
         numCoresPerSocket,
         sockets: cpu / numCoresPerSocket,
         totalStorageAllocatedMb,
-        status,
+        status: VmStatusEnum[status],
         dateCreated,
         autoDeleteDate,
         isExpired,
