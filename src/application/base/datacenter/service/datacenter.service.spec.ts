@@ -245,7 +245,6 @@ describe('DatacenterService', () => {
     });
   });
 
-
   describe('getDatacenterDetails', () => {
     it('should return the correct datacenter details', async () => {
       const datacenterName = 'arad';
@@ -256,35 +255,34 @@ describe('DatacenterService', () => {
           { itemTypeName: 'Archive-3000', enabled: true },
           { itemTypeName: 'Standard-7000', enabled: true },
           { itemTypeName: 'Fast-10000', enabled: true },
-          { itemTypeName: 'VIP-12000', enabled: true }
+          { itemTypeName: 'VIP-12000', enabled: true },
         ],
         periodList: [
           { itemTypeName: '1', price: 0, unit: 'Month', enabled: true },
           { itemTypeName: '6', price: -0.05, unit: 'Month', enabled: true },
-          { itemTypeName: '12', price: -0.1, unit: 'Month', enabled: true }
+          { itemTypeName: '12', price: -0.1, unit: 'Month', enabled: true },
         ],
         enabled: true,
         location: 'example-location',
         gens: [
           { name: 'g2', enabled: true, cpuSpeed: 2500 },
-          { name: 'g2', enabled: true, cpuSpeed: 2500 }
+          { name: 'g2', enabled: true, cpuSpeed: 2500 },
         ],
-        providers: 'example-datacenter-(g2-2.5/g2-2.5)'
+        providers: 'example-datacenter-(g2-2.5/g2-2.5)',
       };
-      
+
       const myMock = jest
-      .spyOn(service,'getDatacenterDetails')
-      .mockImplementation((datacenterName:string)=>{
-        if(datacenterName && datacenterName !== ''){
-          return Promise.resolve(res)
-        }
-      });
-      
+        .spyOn(service, 'getDatacenterDetails')
+        .mockImplementation((datacenterName: string) => {
+          if (datacenterName && datacenterName !== '') {
+            return Promise.resolve(res);
+          }
+        });
+
       const model = await service.getDatacenterDetails(datacenterName);
 
       expect(model).toBe(res);
-      expect(myMock).toHaveBeenCalledWith(datacenterName);                                   
-
+      expect(myMock).toHaveBeenCalledWith(datacenterName);
     });
   });
   describe('getDatacenterDetails', () => {
@@ -292,40 +290,39 @@ describe('DatacenterService', () => {
       const datacenterName = '';
 
       const res: DatacenterDetails = {
-        name: "null" ,
+        name: 'null',
         diskList: [
-          { itemTypeName: "null", enabled: false },
-          { itemTypeName: "null", enabled: false },
-          { itemTypeName: "null", enabled: false },
-          { itemTypeName: "null", enabled: false }
+          { itemTypeName: 'null', enabled: false },
+          { itemTypeName: 'null', enabled: false },
+          { itemTypeName: 'null', enabled: false },
+          { itemTypeName: 'null', enabled: false },
         ],
         periodList: [
-          { itemTypeName: "null", price: 0, unit: "false", enabled: false },
-          { itemTypeName: "null", price: 0, unit: "false", enabled: false },
-          { itemTypeName: "null", price: 0, unit: "false", enabled: false }
+          { itemTypeName: 'null', price: 0, unit: 'false', enabled: false },
+          { itemTypeName: 'null', price: 0, unit: 'false', enabled: false },
+          { itemTypeName: 'null', price: 0, unit: 'false', enabled: false },
         ],
         enabled: false,
-        location: "null",
+        location: 'null',
         gens: [
-          { name: "null", enabled: false, cpuSpeed: 0 },
-          { name: "null", enabled: false, cpuSpeed: 0 }
+          { name: 'null', enabled: false, cpuSpeed: 0 },
+          { name: 'null', enabled: false, cpuSpeed: 0 },
         ],
-        providers: "null"
+        providers: 'null',
       };
-      
+
       const myMock = jest
-      .spyOn(service,'getDatacenterDetails')
-      .mockImplementation((datacenterName:string)=>{
-        if(!datacenterName || datacenterName === ''){
-          return Promise.resolve(res)
-        }
-      });
-      
+        .spyOn(service, 'getDatacenterDetails')
+        .mockImplementation((datacenterName: string) => {
+          if (!datacenterName || datacenterName === '') {
+            return Promise.resolve(res);
+          }
+        });
+
       const model = await service.getDatacenterDetails(datacenterName);
 
       expect(model).toBe(res);
-      expect(myMock).toHaveBeenCalledWith(datacenterName);                                   
-
+      expect(myMock).toHaveBeenCalledWith(datacenterName);
     });
   });
 });

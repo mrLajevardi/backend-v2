@@ -1,17 +1,17 @@
-import { VcloudMetadata } from "../type/vcloud-metadata.type";
+import { VcloudMetadata } from '../type/vcloud-metadata.type';
 
 type gensList = {
-    name: string;
-    id: string;
-    enabled: boolean;
-    cpuSpeed: VcloudMetadata;
-}
+  name: string;
+  id: string;
+  enabled: boolean;
+  cpuSpeed: VcloudMetadata;
+};
 
-export class DataCenterList{
-    datacenter: VcloudMetadata;
-    gens: gensList[];
-    datacenterTitle: VcloudMetadata;
-    enabled: boolean;
-    location: string;
-    number: number;
+export class DataCenterList {
+  datacenter: VcloudMetadata;
+  gens: gensList[];
+  datacenterTitle: VcloudMetadata;
+  enabled: boolean;
+  location: string;
+  number: number;
 }

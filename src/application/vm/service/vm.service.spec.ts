@@ -17,34 +17,32 @@ describe('VmService', () => {
   let service: VmService;
   let module: TestingModule;
 
-
-  const option = {}
+  const option = {};
   const data = {
-      name: "string",
-      computerName: "string",
-      networks:[{
-        allocationMode: "string",
-        ipAddress: "string",
+    name: 'string',
+    computerName: 'string',
+    networks: [
+      {
+        allocationMode: 'string',
+        ipAddress: 'string',
         isConnected: true,
-        networkAdaptorType: "string",
-        networkName: "string",
-      }],
-      powerOn: true,
-      primaryNetwork: 5,
-      templateId: "string",
-      templateName: "string",
-      description: "string"
-  }
-  const id = "1" 
+        networkAdaptorType: 'string',
+        networkName: 'string',
+      },
+    ],
+    powerOn: true,
+    primaryNetwork: 5,
+    templateId: 'string',
+    templateName: 'string',
+    description: 'string',
+  };
+  const id = '1';
 
-
-  const getValidTaskIdDto = ():TaskReturnDto =>{
-        return {
-            taskId: "123456"
-        }
-  }
-
-
+  const getValidTaskIdDto = (): TaskReturnDto => {
+    return {
+      taskId: '123456',
+    };
+  };
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -71,29 +69,22 @@ describe('VmService', () => {
   //   expect(service).toBeDefined();
   // });
 
-
-  it('should be return valid taskId', async()=>{
-
-    const res:TaskReturnDto = getValidTaskIdDto();
+  it('should be return valid taskId', async () => {
+    const res: TaskReturnDto = getValidTaskIdDto();
 
     const myMock = jest
-    .spyOn(service,'createVMFromTemplate')
-    .mockImplementation((options,data:CreateVmFromTemplate,vdcInstanceId:string)=>{
-        if(!data.name){
-          return Promise.resolve({taskId:null})
-        }
-    });
+      .spyOn(service, 'createVMFromTemplate')
+      .mockImplementation(
+        (options, data: CreateVmFromTemplate, vdcInstanceId: string) => {
+          if (!data.name) {
+            return Promise.resolve({ taskId: null });
+          }
+        },
+      );
 
-    const model = await service.createVMFromTemplate(option,data,id);
+    const model = await service.createVMFromTemplate(option, data, id);
 
     expect(model).toBe(res);
-    expect(myMock).toHaveBeenCalledWith(option,data,id);
-
-
+    expect(myMock).toHaveBeenCalledWith(option, data, id);
   });
-
-
-
-
-
 });

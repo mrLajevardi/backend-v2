@@ -36,7 +36,12 @@ import { HardwareInfo } from '../dto/hardware-info.dto';
 import { VmMedia } from '../dto/get-media.dto';
 import { VmOsInfo } from '../dto/os-info.dto';
 import { VmRemovableMedia } from '../dto/vm-removableMedia.dto';
-import { VmComputeSection, VmGuestCustomization, VmQuery, VmSupportedHardDiskAdaptors } from '../dto/vm.dto';
+import {
+  VmComputeSection,
+  VmGuestCustomization,
+  VmQuery,
+  VmSupportedHardDiskAdaptors,
+} from '../dto/vm.dto';
 import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
 import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
@@ -82,7 +87,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
     @Body() data: CreateTemplateDto,
-  ): Promise<TaskReturnDto>{
+  ): Promise<TaskReturnDto> {
     return this.vmService.createTemplate(
       options,
       serviceInstanceId,
@@ -231,7 +236,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<TaskReturnDto>{
+  ): Promise<TaskReturnDto> {
     return this.vmService.discardSuspendVm(options, serviceInstanceId, vmId);
   }
 
@@ -248,7 +253,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
-  ): Promise<TaskReturnDto>{
+  ): Promise<TaskReturnDto> {
     return this.vmService.ejectMedia(options, serviceInstanceId, vmId);
   }
 
@@ -306,7 +311,7 @@ export class VmController {
     @Query('page') page: number,
     @Query('pageSize') pageSize: number,
     @Request() options,
-  ):Promise<CatalogMedia> {
+  ): Promise<CatalogMedia> {
     return this.vmService.getCatalogMedias(
       options,
       serviceInstanceId,
@@ -345,7 +350,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('vmId') vmId: string,
     @Request() options,
-  ):Promise<VmGeneralSection> {
+  ): Promise<VmGeneralSection> {
     return this.vmService.getVmGeneralSection(options, serviceInstanceId, vmId);
   }
 
@@ -551,7 +556,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Body() data: CreateVmFromTemplate,
     @Request() options,
-  ):Promise<TaskReturnDto> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.insertMedia(options, serviceInstanceId, vmId, data);
   }
 
@@ -568,7 +573,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('vmId') vmId: string,
     @Request() options,
-  ):Promise<TaskReturnDto> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.installVmTools(options, serviceInstanceId, vmId);
   }
 
@@ -586,7 +591,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Body() data: CreateVmFromTemplate,
     @Request() options,
-  ):Promise<TaskReturnDto> {
+  ): Promise<TaskReturnDto> {
     return this.vmService.postAnswer(options, serviceInstanceId, vmId, data);
   }
 
@@ -603,7 +608,7 @@ export class VmController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Param('vmId') vmId: string,
     @Request() options,
-  ):Promise<TaskReturnDto>{
+  ): Promise<TaskReturnDto> {
     return this.vmService.powerOnVm(options, serviceInstanceId, vmId);
   }
 
@@ -882,7 +887,7 @@ export class VmController {
     @Param('templateId') templateId: string,
     @Body() data: CreateVmFromTemplate,
     @Request() options,
-  ): Promise<TaskReturnDto>{
+  ): Promise<TaskReturnDto> {
     return this.vmService.updateVAppTemplate(
       options,
       data,
@@ -928,7 +933,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Body() data: CreateVmFromTemplate,
     @Request() options,
-  ): Promise<TaskReturnDto>{
+  ): Promise<TaskReturnDto> {
     return this.vmService.updateVmNetworkSection(
       options,
       data,

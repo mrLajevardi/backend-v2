@@ -1,3 +1,3 @@
 export class VmTicket {
-    ticket:string | null;
+  ticket: string | null;
 }

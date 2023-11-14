@@ -1,5 +1,5 @@
 export class VmRemovableMedia {
-    mediaState: string;
-    mediaType: string;
-    mediaName?: string;
+  mediaState: string;
+  mediaType: string;
+  mediaName?: string;
 }

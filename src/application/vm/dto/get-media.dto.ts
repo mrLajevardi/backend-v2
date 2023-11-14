@@ -1,6 +1,4 @@
 export class VmMedia {
-    name: string;
-    href: string;
+  name: string;
+  href: string;
 }
-  
-  

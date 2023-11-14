@@ -1,10 +1,8 @@
 export class VmOsInfo {
-    MicrosoftWindows: MicrosoftWindow[];
+  MicrosoftWindows: MicrosoftWindow[];
 }
-  
+
 interface MicrosoftWindow {
-    osName: string;
-    osType: string;
+  osName: string;
+  osType: string;
 }
-  
-  

@@ -26,7 +26,7 @@ export class DatacenterController {
   constructor(
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly service: BaseDatacenterService,
-    private readonly datacenterservice : DatacenterService,
+    private readonly datacenterservice: DatacenterService,
   ) {}
 
   @Public()
@@ -85,22 +85,21 @@ export class DatacenterController {
     return result;
   }
 
-
   @Get('/getAllDatacenters')
   @Public()
-  async getAllDataCenters():Promise<DataCenterList[]>{
-      const result = await this.datacenterservice.getAllDataCenters();
-      return result;
+  async getAllDataCenters(): Promise<DataCenterList[]> {
+    const result = await this.datacenterservice.getAllDataCenters();
+    return result;
   }
 
   @Get('/getDatacenterDetails/:datacenterName')
   @Public()
   async getDatacenterDetails(
     @Param('datacenterName') datacenterName: string,
-  ):Promise<DatacenterDetails>{
-      const result = await this.datacenterservice.getDatacenterDetails(datacenterName);
-      return result;
+  ): Promise<DatacenterDetails> {
+    const result = await this.datacenterservice.getDatacenterDetails(
+      datacenterName,
+    );
+    return result;
   }
-
-
 }

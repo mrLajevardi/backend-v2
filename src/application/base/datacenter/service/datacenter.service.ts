@@ -19,7 +19,12 @@ import { ItemTypes } from '../../../../infrastructure/database/entities/ItemType
 import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { DataCenterList } from '../dto/datacenter-list.dto';
-import { DatacenterDetails, DiskList, GenDto, PeriodList } from '../dto/datacenter-details.dto';
+import {
+  DatacenterDetails,
+  DiskList,
+  GenDto,
+  PeriodList,
+} from '../dto/datacenter-details.dto';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -54,7 +59,6 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     };
 
     for (const value of metadata.metadataEntry) {
-
       const key = value.key;
 
       const metadataValue =
@@ -65,7 +69,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         value.key === MetaDataDatacenterEnum.Enabled &&
         !value.typedValue.value
       ) {
-        console.log("conjdition is run");
+        console.log('conjdition is run');
         return {
           datacenter: null,
           generation: null,
@@ -91,8 +95,6 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     return targetMetadata;
   }
 
-
-
   public findAllTargetMetadata(
     metadata: GetProviderVdcsMetadataDto,
   ): FoundDatacenterMetadata {
@@ -102,20 +104,16 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       datacenterTitle: null,
       cpuSpeed: null,
       enabled: null,
-      location: null
+      location: null,
     };
-    
 
     for (const value of metadata.metadataEntry) {
-
       const key = value.key;
-
 
       const metadataValue =
         value.typedValue._type === 'MetadataStringValue'
           ? trim(value.typedValue.value.toString()).toLowerCase()
           : value.typedValue.value;
-
 
       switch (key) {
         case MetaDataDatacenterEnum.Generation:
@@ -134,8 +132,8 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
           targetMetadata.enabled = metadataValue as boolean;
           break;
         case MetaDataDatacenterEnum.Location:
-            targetMetadata.location = metadataValue as string;
-            break;
+          targetMetadata.location = metadataValue as string;
+          break;
       }
     }
     return targetMetadata;
@@ -158,7 +156,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const datacenterConfigs: DatacenterConfigGenResultDto[] = [];
 
     // console.log("provider:  ",providerVdcsFilteredData);
-  
+
     await this.configProvider(
       providerVdcsFilteredData,
       adminSession,
@@ -184,13 +182,13 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
   }
 
   private getAllProviders(providerVdcsList: GetProviderVdcsDto) {
-    const providerIdList = []
-    
+    const providerIdList = [];
+
     const { values } = providerVdcsList;
     const providerVdcsFilteredData: Pick<Value, 'id'>[] = values.map(
       (value) => {
         const { id } = value;
-          return { id };
+        return { id };
       },
     );
     return providerVdcsFilteredData;
@@ -209,14 +207,11 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
 
       // console.log("metadata:  ",metadata);
 
-
       const targetMetadata = this.findTargetMetadata(metadata);
       if (targetMetadata.datacenter === null) {
         continue;
       }
       // console.log("targetMetadata:  ",targetMetadata);
-
-
 
       const targetConfig = datacenterConfigs.find((value) => {
         return value.datacenter === targetMetadata.datacenter;
@@ -263,8 +258,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     return Promise.resolve(tree);
   }
 
-
-  async getAllDataCenters():Promise<DataCenterList[]>{
+  async getAllDataCenters(): Promise<DataCenterList[]> {
     const adminSession = await this.sessionsService.checkAdminSession();
     const params = {
       page: 1,
@@ -276,25 +270,20 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       params,
     );
 
-    
+    const providerVdcsFilteredData = this.getAllProviders(providerVdcsList);
 
-    const providerVdcsFilteredData =
-      this.getAllProviders(providerVdcsList);
-    
-  
-    const dataCenterList : DataCenterList[] = []
+    const dataCenterList: DataCenterList[] = [];
 
-    let index = 0
+    let index = 0;
     for (const providerVdc of providerVdcsFilteredData) {
-
-      index = index + 1
+      index = index + 1;
       const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
         adminSession,
         providerVdc.id,
       );
       const targetMetadata = this.findAllTargetMetadata(metadata);
       if (targetMetadata.datacenter === null) {
-        index = index - 1
+        index = index - 1;
         continue;
       }
 
@@ -304,10 +293,14 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       const newGen = {
         name: targetMetadata.generation as string,
         id: providerVdc.id,
-        enabled:targetMetadata.enabled,
-        cpuSpeed:targetMetadata.cpuSpeed
+        enabled: targetMetadata.enabled,
+        cpuSpeed: targetMetadata.cpuSpeed,
       };
-      const enabled = await this.GetDatacenterConfigWithGenItems({DataCenterId:providerVdc.id,GenId:'',ServiceTypeId:''})
+      const enabled = await this.GetDatacenterConfigWithGenItems({
+        DataCenterId: providerVdc.id,
+        GenId: '',
+        ServiceTypeId: '',
+      });
       if (!targetConfig) {
         const config: DataCenterList = {
           datacenter: targetMetadata.datacenter,
@@ -315,7 +308,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
           gens: [newGen],
           enabled: enabled[0].enabled,
           location: targetMetadata.location,
-          number: index
+          number: index,
         };
 
         dataCenterList.push(config);
@@ -323,82 +316,83 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         targetConfig.gens.push(newGen);
       }
     }
-    return Promise.resolve(dataCenterList)
+    return Promise.resolve(dataCenterList);
   }
 
-  async getDatacenterDetails(datacenterName:string):Promise<DatacenterDetails> {
-      const result = await this.GetDatacenterConfigWithGenItems(new DatacenterConfigGenItemsQueryDto(
-        datacenterName,
-        '',
-        '',
-      ))
+  async getDatacenterDetails(
+    datacenterName: string,
+  ): Promise<DatacenterDetails> {
+    const result = await this.GetDatacenterConfigWithGenItems(
+      new DatacenterConfigGenItemsQueryDto(datacenterName, '', ''),
+    );
 
-      const disks =  result[1].subItems[0].subItems[1].subItems;
-      const diskList : DiskList[] = []
+    const disks = result[1].subItems[0].subItems[1].subItems;
+    const diskList: DiskList[] = [];
 
-      for (let i = 0; i < disks.length; i++) {
-        const res = {
-          itemTypeName : disks[i].itemTypeName,
-          enabled: disks[i].enabled
+    for (let i = 0; i < disks.length; i++) {
+      const res = {
+        itemTypeName: disks[i].itemTypeName,
+        enabled: disks[i].enabled,
+      };
+      diskList.push(res);
+    }
+
+    const periods = result[3].subItems;
+
+    const periodList: PeriodList[] = [];
+
+    for (let i = 0; i < periods.length; i++) {
+      const res = {
+        itemTypeName: periods[i].itemTypeName,
+        price: periods[i].price,
+        unit: periods[i].unit,
+        enabled: periods[i].enabled,
+      };
+      periodList.push(res);
+    }
+
+    const datacenterInf = [];
+
+    const allDatacenters = await this.getAllDataCenters();
+
+    for (let i = 0; i < allDatacenters.length; i++) {
+      if (allDatacenters[i].datacenter === datacenterName) {
+        const gen: GenDto[] = [];
+        for (let j = 0; j < allDatacenters[i].gens.length; j++) {
+          const res = {
+            name: allDatacenters[i].gens[i].name,
+            enabled: allDatacenters[i].gens[i].enabled,
+            cpuSpeed: allDatacenters[i].gens[i].cpuSpeed,
+          };
+          gen.push(res);
         }
-        diskList.push(res)
+        datacenterInf.push(gen);
+        datacenterInf.push(allDatacenters[i].location);
       }
+    }
 
-      
-      const periods = result[3].subItems
+    const providersGen = [];
 
-      const periodList: PeriodList[] = []
+    for (let i = 0; i < datacenterInf[0].length; i++) {
+      const res = {
+        genName: datacenterInf[0][i].name,
+        genCpuSpeed: datacenterInf[0][i].cpuSpeed,
+      };
+      providersGen.push(res);
+    }
 
-      for (let i = 0; i < periods.length; i++) {
-        const res = {
-          itemTypeName : periods[i].itemTypeName,
-          price: periods[i].price,
-          unit: periods[i].unit,
-          enabled: periods[i].enabled
-        }
-        periodList.push(res)
-      }
+    const datacenterDetails: any = {
+      name: datacenterName,
+      diskList,
+      periodList,
+      enabled: result[0].enabled,
+      location: datacenterInf[1],
+      gens: datacenterInf[0],
+      providers: `${datacenterName}-(${providersGen[0].genName}-${
+        providersGen[0].genCpuSpeed / 1000
+      }/${providersGen[1].genName}-${providersGen[1].genCpuSpeed / 1000})`,
+    };
 
-      const datacenterInf = []
-
-      const allDatacenters = await this.getAllDataCenters();
-
-      for(let i = 0  ; i < allDatacenters.length ; i++ ){
-          if(allDatacenters[i].datacenter === datacenterName){
-            const gen :GenDto[] = []
-            for(let j = 0  ; j < allDatacenters[i].gens.length ; j++ ){
-            const res = {
-              name: allDatacenters[i].gens[i].name,
-              enabled: allDatacenters[i].gens[i].enabled,
-              cpuSpeed: allDatacenters[i].gens[i].cpuSpeed
-            }
-            gen.push(res)
-          }
-            datacenterInf.push(gen)
-            datacenterInf.push(allDatacenters[i].location)
-          }
-      }
-
-      const providersGen = []
-
-      for(let i = 0  ; i < datacenterInf[0].length ; i++ ){
-        const res = {
-          genName : datacenterInf[0][i].name,
-          genCpuSpeed: datacenterInf[0][i].cpuSpeed 
-        }
-        providersGen.push(res)
-      }
-
-      const datacenterDetails: any = {
-        name:datacenterName,
-        diskList,
-        periodList,
-        enabled: result[0].enabled,
-        location:datacenterInf[1],
-        gens:datacenterInf[0],
-        providers:`${datacenterName}-(${providersGen[0].genName}-${providersGen[0].genCpuSpeed/1000}/${providersGen[1].genName}-${providersGen[1].genCpuSpeed/1000})`
-      }
-
-      return Promise.resolve(datacenterDetails)
+    return Promise.resolve(datacenterDetails);
   }
 }
