@@ -666,6 +666,7 @@ export class VmService {
       enterBIOSSetup: vm.data?.bootOptions?.enterBIOSSetup,
       status: vmList.data.record[0].status,
       snapshot: vmList.data.record[0].snapshot,
+      containerId: vmList.data.record[0].container.split('vApp/')[1],
     };
     data.medias = medias;
 
