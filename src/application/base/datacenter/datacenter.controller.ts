@@ -26,7 +26,6 @@ export class DatacenterController {
   constructor(
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly service: BaseDatacenterService,
-    
   ) {}
 
   @Public()
