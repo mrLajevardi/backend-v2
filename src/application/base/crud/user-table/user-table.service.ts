@@ -22,7 +22,7 @@ export class UserTableService {
 
   // Find One Item by its ID
   async findById(id: number): Promise<User> {
-    const serviceType = await this.repository.findOne({ where: { id: id } });
+    const serviceType = await this.repository.findOne({ where: { id: id }});
     return serviceType;
   }
 
@@ -63,6 +63,7 @@ export class UserTableService {
   async update(id: number, dto: UpdateUserDto): Promise<User> {
     const item = await this.findById(id);
     const updateItem: Partial<User> = Object.assign(item, dto);
+
     return await this.repository.save(updateItem);
   }
 

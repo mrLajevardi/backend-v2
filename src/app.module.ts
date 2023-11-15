@@ -44,6 +44,7 @@ import { BullModule as BullMQModule } from '@nestjs/bullmq';
 import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { DatacenterModule } from './application/base/datacenter/datacenter.module';
 import { ServiceItemModule } from './application/base/service-item/service-item.module';
+import {CheckUserProfileModule} from "./infrastructure/middleware/check-user-profile.module";
 
 @Module({
   imports: [
@@ -101,6 +102,7 @@ import { ServiceItemModule } from './application/base/service-item/service-item.
     UvdeskWrapperModule,
     DatacenterModule,
     ServiceItemModule,
+    CheckUserProfileModule,
   ],
   controllers: [AppController],
   providers: [

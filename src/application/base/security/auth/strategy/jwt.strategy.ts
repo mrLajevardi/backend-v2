@@ -27,9 +27,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new ForbiddenException('error in jwt');
     }
     let retVal = {};
+
     const originalData = {
       userId: payload.userId.toString(),
       username: payload.username,
+      personalVerification : payload.personalVerification
     };
     const impersonateAs = payload['impersonateAs'] as ImpersonateAs;
     if (impersonateAs) {
