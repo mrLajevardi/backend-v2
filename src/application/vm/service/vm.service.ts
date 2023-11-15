@@ -4,28 +4,22 @@ import { isNil } from 'lodash';
 import { ItemTypesTableService } from 'src/application/base/crud/item-types-table/item-types-table.service';
 import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
 import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
-import { ServiceService } from 'src/application/base/service/services/service.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { createOrgCatalog } from 'src/wrappers/mainWrapper/admin/org/createOrgCatalog';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
-import { userPartialUpload } from 'src/wrappers/mainWrapper/user/vm/partialUpload';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { CreateTemplateDto } from '../dto/create-template.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-// import { SnapShotDetails } from '../dto/snap-shot-details.dto';
 import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
-// import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { VmList } from '../dto/get-all-user-vm.dto';
 import { VmTemplateList } from '../dto/templates.dto';
 import { VmDiskSection } from '../dto/disk-section.dto';
-import { NetworksService } from '../../networks/networks.service';
 import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
 import { groupBy } from '../../../infrastructure/utils/extensions/array.extensions';
 import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
-import { DiskAdaptorTypeEnum } from '../enums/disk-adaptor-type.enum';
 import { CreateVm } from '../dto/create-vm.dto';
 import { VmTicket } from '../dto/vm-ticket.dto';
 import { CatalogMedia } from '../dto/catalog-media.dto';
@@ -57,22 +51,22 @@ import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/d
 @Injectable()
 export class VmService {
   static mainWrapper: any;
-  static createVmFromTemplate(
-    options: { user: { userId: string }; locals: {} },
-    data: {
-      templateId: string;
-      computerName: string;
-      name: string;
-      primaryNetwork: number;
-      networks: any[];
-      powerOn: boolean;
-      description: string;
-      templateName: string;
-    },
-    vdcInstanceId: string,
-  ) {
-    throw new Error('Method not implemented.');
-  }
+  // static createVmFromTemplate(
+  //   options: { user: { userId: string }; locals: object },
+  //   data: {
+  //     templateId: string;
+  //     computerName: string;
+  //     name: string;
+  //     primaryNetwork: number;
+  //     networks: any[];
+  //     powerOn: boolean;
+  //     description: string;
+  //     templateName: string;
+  //   },
+  //   vdcInstanceId: string,
+  // ) {
+  //   throw new Error('Method not implemented.');
+  // }
   constructor(
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionsServices: SessionsService,
