@@ -69,7 +69,7 @@ export class FirewallService {
     userDefinedRules.unshift(newFirewall);
     const response = await this.firewallWrapperService.updateFirewallList(
       session,
-      filteredFirewall.userDefinedRules,
+      { userDefinedRules: filteredFirewall.userDefinedRules },
       props['edgeName'],
     );
     return Promise.resolve({
@@ -189,30 +189,36 @@ export class FirewallService {
       userId,
       props['orgId'],
     );
-    const config = data.firewallList.map((firewall) => {
-      const result: UpdateFirewallBody = {
-        name: firewall.name,
-        applicationPortProfiles: firewall.applicationPortProfiles,
-        comments: firewall.comments,
-        ipProtocol: 'IPV4',
-        logging: false,
-        enabled: firewall.enabled,
-        sourceFirewallGroups: firewall.sourceFirewallGroups,
-        destinationFirewallGroups: firewall.destinationFirewallGroups,
-        direction: 'IN_OUT',
-        actionValue: firewall.actionValue,
-        ...(firewall.id && { id: firewall.id }),
-      };
-      return result;
-    });
+    const userDefinedRules = data.userDefinedRules.map(this.filterFirewall);
+    const defaultRules = data.defaultRules.map(this.filterFirewall);
     const firewall = await this.firewallWrapperService.updateFirewallList(
       session,
-      config,
+      {
+        userDefinedRules,
+        defaultRules,
+      },
       props['edgeName'],
     );
     return Promise.resolve({
       taskId: firewall.__vcloudTask.split('task/')[1],
     });
+  }
+
+  private filterFirewall(firewall: FirewallListItemDto): UpdateFirewallBody {
+    const result: UpdateFirewallBody = {
+      name: firewall.name,
+      applicationPortProfiles: firewall.applicationPortProfiles,
+      comments: firewall.comments,
+      ipProtocol: 'IPV4',
+      logging: false,
+      enabled: firewall.enabled,
+      sourceFirewallGroups: firewall.sourceFirewallGroups,
+      destinationFirewallGroups: firewall.destinationFirewallGroups,
+      direction: 'IN_OUT',
+      actionValue: firewall.actionValue,
+      ...(firewall.id && { id: firewall.id }),
+    };
+    return result;
   }
 
   async updateSingleFirewall(
