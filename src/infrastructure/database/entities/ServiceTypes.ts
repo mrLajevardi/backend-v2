@@ -6,7 +6,7 @@ import { Templates } from './Templates';
 import { ServiceInstances } from './ServiceInstances';
 import { isTestingEnv } from '../../helpers/helpers';
 
-@Index('PK_ServiceTypes', ['id', 'datacenterName'], { unique: true })
+@Index('PK_ServiceTypes', ['id'], { unique: true })
 @Entity('ServiceTypes', { schema: 'services' })
 export class ServiceTypes {
   @Column('varchar', { primary: true, name: 'ID', length: 50 })
@@ -45,13 +45,13 @@ export class ServiceTypes {
   @Column('datetime', { name: 'CreateDate', nullable: true })
   createDate: Date | null;
 
-  @OneToMany(() => Configs, (configs) => configs.serviceTypes)
+  @OneToMany(() => Configs, (configs) => configs.serviceType)
   configs: Configs[];
 
-  @OneToMany(() => Discounts, (discounts) => discounts.serviceTypes)
+  @OneToMany(() => Discounts, (discounts) => discounts.serviceType)
   discounts: Discounts[];
 
-  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceTypes)
+  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceType)
   itemTypes: ItemTypes[];
 
   @OneToMany(() => Templates, (templates) => templates.serviceType)
