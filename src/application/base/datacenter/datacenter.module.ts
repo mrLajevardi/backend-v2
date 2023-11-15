@@ -23,7 +23,6 @@ import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
       useClass: DatacenterService,
     },
     DatacenterFactoryService,
-    DatacenterService,
   ],
   controllers: [DatacenterController],
   exports: [BASE_DATACENTER_SERVICE],

@@ -89,8 +89,8 @@ export class DatacenterController {
   async getAllDataCenters(): Promise<DataCenterList[]> {
     const result = await this.service.getAllDataCenters();
     return result;
-  }
 
+  }
   @Get('/getDatacenterDetails/:datacenterName')
   @Public()
   async getDatacenterDetails(
