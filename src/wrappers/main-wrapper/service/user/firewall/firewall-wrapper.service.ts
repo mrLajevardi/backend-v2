@@ -7,6 +7,7 @@ import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 import { GetFirewallListDto } from './dto/get-firewall-list.dto';
 import { UpdateFirewallBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/update-firewall.dto';
 import { GetFirewallDto } from './dto/get-firewall.dto';
+import { UpdateFirewallListBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/update-firewall-list.dto';
 
 @Injectable()
 export class FirewallWrapperService {
@@ -112,7 +113,7 @@ export class FirewallWrapperService {
   }
   async updateFirewallList(
     authToken: string,
-    config: UpdateFirewallBody[],
+    config: UpdateFirewallListBody,
     edgeName: string,
   ): Promise<VcloudTask> {
     const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
@@ -124,9 +125,6 @@ export class FirewallWrapperService {
     const gatewayId = gateway.values.filter(
       (value) => value.name === edgeName,
     )[0].id;
-    const requestBody = {
-      userDefinedRules: config,
-    };
     const endpoint = 'FirewallEndpointService.updateFirewallListEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
@@ -134,7 +132,7 @@ export class FirewallWrapperService {
       wrapper({
         headers: { Authorization: `Bearer ${authToken}` },
         urlParams: { gatewayId },
-        body: requestBody,
+        body: config,
       }),
     );
     return Promise.resolve({
