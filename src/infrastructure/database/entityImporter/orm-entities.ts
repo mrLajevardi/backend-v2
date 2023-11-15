@@ -49,7 +49,7 @@ import { ServicePlans } from '../entities/ServicePlans';
 import { ServiceReports } from '../entities/views/service-reports';
 import { ServiceItemTypesTree } from '../entities/views/service-item-types-tree';
 import { Templates } from '../entities/Templates';
-import {Company} from "../entities/Company";
+import { Company } from '../entities/Company';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [

@@ -54,8 +54,8 @@ import {
   // LinkedinAuthGuard,
   LinkedinGuardAuth,
 } from '../guard/linkedin.auth.guard';
-import {TwoFaAuthTypeEnum} from "../enum/two-fa-auth-type.enum";
-import {TwoFaAuthService} from "../service/two-fa-auth.service";
+import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
+import { TwoFaAuthService } from '../service/two-fa-auth.service';
 
 @ApiTags('Auth')
 @Controller('auth')

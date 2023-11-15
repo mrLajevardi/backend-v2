@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsOptional, Matches} from 'class-validator';
+import { IsOptional, Matches } from 'class-validator';
 
 export class ChangePhoneNumberDto {
   @ApiProperty()
@@ -11,7 +11,6 @@ export class ChangePhoneNumberDto {
   @IsOptional()
   @Matches('^(\\+98|0)?9\\d{9}$')
   newPhoneNumber?: string;
-
 
   @ApiProperty()
   @IsOptional()

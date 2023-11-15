@@ -1,69 +1,72 @@
 import {
-    IsBoolean,
-    IsDate, IsDateString, IsDecimal, isDefined, IsNotEmpty,
-    IsOptional,
-    IsString, ValidateIf, ValidationOptions,
+  IsBoolean,
+  IsDate,
+  IsDateString,
+  IsDecimal,
+  isDefined,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateIf,
+  ValidationOptions,
 } from 'class-validator';
-import {ApiProperty} from '@nestjs/swagger';
-import {Groups} from 'src/infrastructure/database/entities/Groups';
-import {Transform, Type} from "class-transformer";
-import {json} from "express";
+import { ApiProperty } from '@nestjs/swagger';
+import { Groups } from 'src/infrastructure/database/entities/Groups';
+import { Transform, Type } from 'class-transformer';
+import { json } from 'express';
 
 export class CreateProfileDto {
+  constructor() {}
+  @IsBoolean()
+  @Transform(({ value }) => JSON.parse(value))
+  @ApiProperty({ default: true })
+  personality: boolean;
 
-    constructor() {
+  @IsString()
+  @ApiProperty()
+  @IsNotEmpty()
+  name: string;
 
-    }
-    @IsBoolean()
-    @Transform(({value}) => JSON.parse(value))
-    @ApiProperty({default: true})
-    personality: boolean
+  @IsString()
+  @ApiProperty()
+  family: string;
 
-    @IsString()
-    @ApiProperty()
-    @IsNotEmpty()
-    name: string
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  phoneNumber?: string;
 
-    @IsString()
-    @ApiProperty()
-    family: string
+  @IsString()
+  @ApiProperty()
+  personalCode: string;
 
-    @IsString()
-    @IsOptional()
-    @ApiProperty()
-    phoneNumber?: string;
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  @ApiProperty({ type: Date })
+  birthDate?: Date;
 
-    @IsString()
-    @ApiProperty()
-    personalCode: string;
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ default: false, required: false })
+  companyOwner?: boolean;
 
-    @Transform(({value}) => new Date(value))
-    @IsDate()
-    @ApiProperty({type: Date})
-    birthDate?: Date;
+  @IsString()
+  @ApiProperty()
+  @ValidateIf((value) => !value.personality)
+  companyName?: string;
 
-    @IsBoolean()
-    @IsOptional()
-    @ApiProperty({default: false, required: false})
-    companyOwner?: boolean
+  @IsString()
+  @ValidateIf((value) => !value.personality)
+  @ApiProperty()
+  companyCode?: string;
 
-    @IsString()
-    @ApiProperty()
-    @ValidateIf((value) => !value.personality)
-    companyName?: string
+  @IsString()
+  @ValidateIf((value) => !value.personality)
+  @ApiProperty({ required: false })
+  submittedCode?: string;
 
-    @IsString()
-    @ValidateIf((value) => !value.personality)
-    @ApiProperty()
-    companyCode?: string
-
-    @IsString()
-    @ValidateIf((value) => !value.personality)
-    @ApiProperty({required: false})
-    submittedCode?: string
-
-    @IsString()
-    @ValidateIf((value) => !value.personality)
-    @ApiProperty()
-    economyCode?: string
+  @IsString()
+  @ValidateIf((value) => !value.personality)
+  @ApiProperty()
+  economyCode?: string;
 }

@@ -22,7 +22,7 @@ export class UserTableService {
 
   // Find One Item by its ID
   async findById(id: number): Promise<User> {
-    const serviceType = await this.repository.findOne({ where: { id: id }});
+    const serviceType = await this.repository.findOne({ where: { id: id } });
     return serviceType;
   }
 
