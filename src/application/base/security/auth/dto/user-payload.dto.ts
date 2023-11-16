@@ -1,6 +1,7 @@
 export class UserPayload {
   userId?: number;
   username?: string;
+  personalVerification?: boolean;
   originalUser?: {
     userId?: number;
     username?: string;
@@ -8,4 +9,5 @@ export class UserPayload {
   isRobot?: number;
   robotToken?: string;
   isPublic?: boolean;
+  twoFactorAuth?: number;
 }

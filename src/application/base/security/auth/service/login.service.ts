@@ -28,7 +28,7 @@ export class LoginService {
     if (!otpGenerated) {
       throw new OtpErrorException();
     }
-    console.log(otpGenerated);
+
     try {
       if (sendSMS) {
         await this.notificationService.sms.sendSMS(
@@ -118,6 +118,7 @@ export class LoginService {
     const payload = {
       username: user.username,
       userId: user.id,
+      personalVerification: user.personalVerification,
       impersonateAs: !isEmpty(impersonateAs)
         ? {
             username: impersonateAs.username,

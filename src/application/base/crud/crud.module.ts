@@ -42,6 +42,7 @@ import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.mod
 import { ServiceReportsViewModule } from './service-reports-view/service-reports-view.module';
 import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-item-types-tree.module';
 import { TemplatesTableModule } from './templates/templates-table.module';
+import { CompanyTableModule } from './company-table/company-table.module';
 
 @Module({
   imports: [
@@ -89,6 +90,7 @@ import { TemplatesTableModule } from './templates/templates-table.module';
     ServiceReportsViewModule,
     ServiceItemTypesTreeModule,
     TemplatesTableModule,
+    CompanyTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -135,6 +137,7 @@ import { TemplatesTableModule } from './templates/templates-table.module';
     ServiceReportsViewModule,
     ServiceItemTypesTreeModule,
     TemplatesTableModule,
+    CompanyTableModule,
   ],
 })
 export class CrudModule {}

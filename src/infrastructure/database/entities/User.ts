@@ -2,9 +2,12 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Company } from './Company';
 import { GroupsMapping } from './GroupsMapping';
 import { Invoices } from './Invoices';
 import { Organization } from './Organization';
@@ -112,6 +115,36 @@ export class User {
   })
   phoneVerified: boolean;
 
+  @Column('date', { name: 'birthDate', nullable: true })
+  birthDate: Date | null;
+
+  @Column('nvarchar', { name: 'personalCode', nullable: true, length: 100 })
+  personalCode: string | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'companyOwner',
+    nullable: true,
+    default: () => '(0)',
+  })
+  companyOwner: boolean | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'personalVerification',
+    nullable: true,
+    default: () => 1,
+  })
+  personalVerification: boolean | null;
+
+  @Column('tinyint', {
+    name: 'twoFactorAuth',
+    nullable: true,
+    default: () => 0,
+  })
+  twoFactorAuth: number;
+
+  @Column('date', { name: 'companyId', nullable: true })
+  companyId: number | null;
+
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
 
@@ -123,4 +156,8 @@ export class User {
 
   @OneToMany(() => Transactions, (transactions) => transactions.user)
   transactions: Transactions[];
+
+  @ManyToOne(() => Company, (company) => company.users)
+  @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])
+  company: Company;
 }

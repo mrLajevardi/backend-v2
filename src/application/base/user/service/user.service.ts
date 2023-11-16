@@ -34,11 +34,22 @@ import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invali
 import { JwtService } from '@nestjs/jwt';
 import { MoreThanOneUserWithSameEmail } from 'src/infrastructure/exceptions/more-than-one-user-with-this-email.exception';
 import * as process from 'process';
+import { CreateProfileDto } from '../dto/create-profile.dto';
+import { CompanyTableService } from '../../crud/company-table/company-table.service';
+import { CreateCompanyDto } from '../../crud/company-table/dto/create-company.dto';
+import { Company } from '../../../../infrastructure/database/entities/Company';
+import { plainToClass } from 'class-transformer';
+import { UserProfileDto } from '../dto/user-profile.dto';
+import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
+import { LoginService } from '../../security/auth/service/login.service';
+import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userTable: UserTableService,
+    private readonly companyTable: CompanyTableService,
     private readonly transactionsTable: TransactionsTableService,
     private readonly roleMappingsTable: RoleMappingTableService,
     private readonly systemSettingsTable: SystemSettingsTableService,
@@ -59,6 +70,10 @@ export class UserService {
     return await this.userTable.findOne({
       where: { phoneNumber: phoneNumber },
     });
+  }
+
+  async findById(userId: number): Promise<User> {
+    return await this.userTable.findById(userId);
   }
 
   //changing the user email and set email verified to false
@@ -550,5 +565,155 @@ export class UserService {
       console.log(err);
       return Promise.reject(new InvalidEmailTokenException());
     }
+  }
+
+  async createProfile(
+    options: SessionRequest,
+    data: CreateProfileDto,
+  ): Promise<UserProfileDto> {
+    const userProfileData: UpdateUserDto = {
+      name: data.name,
+      family: data.family,
+      personalCode: data.personalCode,
+      companyOwner: data.companyOwner,
+      personalVerification: true,
+    };
+
+    if (!data.personality) {
+      const company: Company = await this.companyTable.create(
+        plainToClass(CreateCompanyDto, data, { excludeExtraneousValues: true }),
+      );
+      userProfileData.companyId = company.id;
+    }
+
+    // verify user with api and change personalVerification to true
+
+    const updatedUser = await this.userTable.updateWithOptions(
+      userProfileData,
+      { reload: true },
+      { where: { id: options.user.userId }, relations: ['company'] },
+    );
+
+    return await this.getUserProfileDto(updatedUser);
+  }
+
+  async getUserProfile(options: SessionRequest) {
+    // const user = await this.userTable.findOne(options.user.userId);
+    const user = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company'],
+    });
+
+    const userProfileDto: UserProfileDto = await this.getUserProfileDto(user);
+
+    return userProfileDto;
+  }
+
+  async changeUserPhoneNumber(
+    options: SessionRequest,
+    data: VerifyOtpDto,
+  ): Promise<UserProfileDto> {
+    const verify: boolean = this.securityTools.otp.otpVerifier(
+      data.phoneNumber,
+      data.otp,
+      data.hash,
+    );
+    if (!verify) {
+      throw new OtpErrorException();
+    }
+
+    const userUpdatingData: UpdateUserDto = {
+      phoneNumber: data.phoneNumber,
+      username: 'U-' + data.phoneNumber,
+    };
+
+    const updatedUser = await this.userTable.update(
+      options.user.userId,
+      userUpdatingData,
+    );
+
+    return await this.getUserProfileDto(updatedUser);
+  }
+
+  async personalVerification(options: SessionRequest) {
+    const userProfileData: UpdateUserDto = {
+      personalVerification: true,
+    };
+
+    const updatedUser = await this.userTable.update(
+      options.user.userId,
+      userProfileData,
+    );
+    const user = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company'],
+    });
+
+    return await this.getUserProfileDto(user);
+  }
+
+  async getUserProfileDto(user: User): Promise<UserProfileDto> {
+    return {
+      name: user.name,
+      family: user.family,
+      email: user.email,
+      birthDate: user.birthDate,
+      phoneNumber: user.phoneNumber,
+      personalCode: user.personalCode,
+      personalVerification: user.personalVerification,
+      company: user.company
+        ? {
+            companyName: user.company.companyName,
+            companyCode: user.company.companyCode,
+            economyCode: user.company.economyCode,
+            submittedCode: user.company.submittedCode,
+          }
+        : undefined,
+    };
+  }
+
+  async sendOtpToEmail(
+    options: SessionRequest,
+    data: ChangeEmailDto,
+  ): Promise<any> {
+    const otpGenerated = this.securityTools.otp.otpGenerator(data.email);
+    if (!otpGenerated) {
+      throw new OtpErrorException();
+    }
+
+    const mailContent =
+      this.notificationService.emailContents.emailVerification(
+        otpGenerated.otp,
+        data.email,
+      );
+    const mail = this.notificationService.email.sendMail(mailContent);
+
+    return { email: data.email, hash: otpGenerated.hash };
+  }
+
+  async verifyEmailOtp(
+    options: SessionRequest,
+    data: VerifyEmailDto,
+  ): Promise<boolean> {
+    const otpVerification = this.securityTools.otp.otpVerifier(
+      data.email,
+      data.otp,
+      data.hash,
+    );
+
+    if (!otpVerification) {
+      return false;
+    }
+
+    const userUpdatingData: UpdateUserDto = {
+      email: data.email,
+    };
+
+    const user = await this.userTable.update(
+      options.user.userId,
+      userUpdatingData,
+    );
+
+    return true;
   }
 }

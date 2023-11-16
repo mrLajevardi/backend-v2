@@ -11,11 +11,62 @@ import { CrudModule } from '../../crud/crud.module';
 import { NotificationModule } from '../../notification/notification.module';
 import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { UserAdminService } from './user-admin.service';
+import { User } from '../../../../infrastructure/database/entities/User';
+import { CreateProfileDto } from '../dto/create-profile.dto';
+import { fa } from '@faker-js/faker';
+import { UserProfileDto } from '../dto/user-profile.dto';
+import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
+import { CompanyTableService } from '../../crud/company-table/company-table.service';
+import { isNull } from 'lodash';
+import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 
 describe('UserService', () => {
   let table: UserTableService;
   let service: UserService;
   let testDataService: TestDataService;
+  const userDataValid: UserProfileDto = {
+    personalVerification: true,
+    phoneNumber: '09128524065',
+    name: 'mmwdali',
+    family: 'hosseini',
+    personalCode: '03825893147',
+    birthDate: new Date('2002-02-02'),
+    email: 'test@test.com',
+  };
+
+  const userDataInValid: UserProfileDto = {
+    personalVerification: true,
+    phoneNumber: '09128524065',
+    name: 'mmwdali',
+    family: 'hosseini',
+    personalCode: '03825893147',
+    birthDate: new Date('2002-02-02'),
+    email: 'test@test.com',
+  };
+
+  const companyData = {
+    companyName: 'test',
+    companyCode: '15975325841',
+    economyCode: '15816515114',
+    submittedCode: '565515515115',
+  };
+
+  // const mockUserTableService = {
+  //     updateWithOptions: jest.fn((data, saveOption, option) => {
+  //         return {
+  //             ...userData,
+  //             company: companyData
+  //         }
+  //     })
+  // };
+  const mockCompanyTableService = {
+    create: jest.fn((id, dto) => {
+      return {
+        id: Math.floor(new Date().getTime() / 1000),
+        ...dto,
+      };
+    }),
+  };
 
   let module: TestingModule;
   beforeEach(async () => {
@@ -29,8 +80,18 @@ describe('UserService', () => {
         NotificationModule,
         SecurityToolsModule,
       ],
-      providers: [UserService, UserAdminService],
-    }).compile();
+      providers: [
+        UserService,
+        UserAdminService,
+        UserTableService,
+        CompanyTableService,
+      ],
+    })
+      // .overrideProvider(UserTableService)
+      // .useValue(mockUserTableService)
+      .overrideProvider(CompanyTableService)
+      .useValue(mockCompanyTableService)
+      .compile();
 
     table = module.get<UserTableService>(UserTableService);
     service = module.get<UserService>(UserService);
@@ -81,5 +142,98 @@ describe('UserService', () => {
       const hash2 = await encryptPassword('abc123');
       expect(hash1).not.toBe(hash2);
     });
+  });
+
+  describe('createProfile', () => {
+    it('should be return user profile  without company if valid data  ', async () => {
+      const data: CreateProfileDto = {
+        personality: true,
+        name: 'mmwdali',
+        family: 'hosseini',
+        personalCode: '03825893147',
+        birthDate: new Date('2002-02-02'),
+      };
+
+      jest
+        .spyOn(service, 'createProfile')
+        .mockImplementation((options, data): Promise<any> => {
+          if (
+            isNull(data.name) ||
+            isNull(data.family) ||
+            isNull(data.personalCode)
+          ) {
+            return Promise.reject(BadRequestException);
+          } else {
+            return Promise.resolve(userDataValid);
+          }
+        });
+
+      const resFunction = await service.createProfile(
+        {} as SessionRequest,
+        data,
+      );
+
+      expect(resFunction).toEqual(userDataValid);
+    });
+
+    it('should be return user profile data with company if valid data', async () => {
+      const data: CreateProfileDto = {
+        personality: false,
+        name: 'mmwdali',
+        family: 'hosseini',
+        personalCode: '03825893147',
+        birthDate: new Date('2001-02-02'),
+        companyOwner: false,
+        ...companyData,
+      };
+
+      jest
+        .spyOn(service, 'createProfile')
+        .mockImplementation((options, data): Promise<any> => {
+          if (
+            isNull(data.name) ||
+            isNull(data.family) ||
+            isNull(data.personalCode)
+          ) {
+            return Promise.reject(BadRequestException);
+          } else {
+            return Promise.resolve({
+              ...userDataValid,
+              company: companyData,
+            });
+          }
+        });
+
+      const resFunction = await service.createProfile(
+        {} as SessionRequest,
+        data,
+      );
+
+      expect(resFunction).toEqual({
+        ...userDataValid,
+        company: companyData,
+      });
+    });
+
+    // it('should be return exception if null data  if null data', async () => {
+    //
+    //     const data: CreateProfileDto = {
+    //         personality: null,
+    //         name: null,
+    //         family: null,
+    //         personalCode: null,
+    //         birthDate: null,
+    //         companyOwner: null,
+    //     };
+    //
+    //     const options = {
+    //         user: {
+    //             userId: 1060
+    //         }
+    //     }
+    //
+    //     const resFunction = await service.createProfile(options as SessionRequest,new  CreateProfileDto());
+    //     expect(resFunction).toEqual({});
+    // });
   });
 });

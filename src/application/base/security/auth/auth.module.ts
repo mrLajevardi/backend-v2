@@ -23,6 +23,11 @@ import { AbilityModule } from '../ability/ability.module';
 import { LinkedinStrategy } from './strategy/linkedin.strategy';
 import { OauthServiceFactory } from './service/oauth.service.factory';
 import { GithubStrategy } from './strategy/github.strategy';
+import { TwoFaAuthService } from './service/two-fa-auth.service';
+import { TwoFaAuthTypeService } from './classes/two-fa-auth-type.service';
+import { TwoFaAuthSmsService } from './classes/two-fa-auth-sms.service';
+import { TwoFaAuthEmailService } from './classes/two-fa-auth-email.service';
+import { TwoFaAuthStrategy } from './classes/two-fa-auth.strategy';
 
 @Module({
   imports: [
@@ -55,6 +60,11 @@ import { GithubStrategy } from './strategy/github.strategy';
     RobotStrategy,
     AuthService,
     LoginService,
+    TwoFaAuthService,
+    TwoFaAuthTypeService,
+    TwoFaAuthSmsService,
+    TwoFaAuthEmailService,
+    TwoFaAuthStrategy,
   ],
   exports: [AuthService],
 })

@@ -8,6 +8,7 @@ import {
   Request,
   Res,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -33,12 +34,27 @@ import { Response } from 'express';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { ChangeEmailDto } from '../dto/change-email.dto';
 import { ResetForgottenPasswordDto } from '../dto/reset-forgotten-password.dto';
+import { CreateProfileDto } from '../dto/create-profile.dto';
+import { User } from '../../../../infrastructure/database/entities/User';
+import { PersonalVerificationGuard } from '../../security/auth/guard/personal-verification.guard';
+import { UserProfileDto } from '../dto/user-profile.dto';
+import { LoginService } from '../../security/auth/service/login.service';
+import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
+import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
+import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
+import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
 
 @ApiTags('User')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
+// @UseGuards(PersonalVerificationGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly loginService: LoginService,
+    private readonly securityTools: SecurityToolsService,
+  ) {}
 
   @Public()
   @Get('/checkPhoneNumber/:phoneNumber')
@@ -226,5 +242,102 @@ export class UserController {
     @Request() options: SessionRequest,
   ): Promise<void> {
     await this.userService.verifyEmail(options, token);
+  }
+
+  @Post('/createProfile')
+  @ApiOperation({ summary: 'create user profile' })
+  async createProfile(
+    @Request() options: SessionRequest,
+    @Body() data: CreateProfileDto,
+  ): Promise<UserProfileDto> {
+    return await this.userService.createProfile(options, data);
+  }
+
+  @Get('/profile')
+  @ApiOperation({ summary: 'get user profile' })
+  async profile(@Request() options: SessionRequest): Promise<UserProfileDto> {
+    return await this.userService.getUserProfile(options);
+  }
+
+  @Get('/personalVerification')
+  @ApiOperation({
+    summary: 'personal verification , call external api to verification',
+  })
+  async personalVerification(
+    @Request() options: SessionRequest,
+  ): Promise<UserProfileDto> {
+    return await this.userService.personalVerification(options);
+  }
+
+  @Post('/changePhoneNumber')
+  @ApiOperation({
+    summary: 'change current user phone number , send otp to old phone number',
+  })
+  async changePhoneNumber(
+    @Request() options: SessionRequest,
+    // @Body() data: PhoneNumberDto
+  ) {
+    const user: UserProfileDto = await this.userService.findById(
+      options.user.userId,
+    );
+    const otp = await this.loginService.generateOtp(user.phoneNumber);
+
+    return {
+      phoneNumber: user.phoneNumber,
+      hash: otp.hash,
+    };
+  }
+
+  @Post('/changePhoneNumber/old-phone/verify-otp')
+  @ApiOperation({
+    summary: 'verify old phone number otp , send otp to new phone number',
+  })
+  async changePhoneNumberOldNumberVerifyOtp(
+    @Request() options: SessionRequest,
+    @Body() data: ChangePhoneNumberDto,
+  ) {
+    const verify: boolean = this.securityTools.otp.otpVerifier(
+      data.oldPhoneNumber,
+      data.otp,
+      data.hash,
+    );
+
+    if (!verify) {
+      throw new OtpErrorException();
+    }
+
+    const otp = await this.loginService.generateOtp(data.newPhoneNumber);
+
+    return {
+      phoneNumber: data.newPhoneNumber,
+      hash: otp.hash,
+    };
+  }
+
+  @Post('/changePhoneNumber/new-phone/verify-otp')
+  @ApiOperation({ summary: 'change current user phone number' })
+  async changePhoneNumberVerifyOtp(
+    @Request() options: SessionRequest,
+    @Body() data: VerifyOtpDto,
+  ): Promise<UserProfileDto> {
+    return await this.userService.changeUserPhoneNumber(options, data);
+  }
+
+  @Post('/insertEmail')
+  @ApiOperation({ summary: 'insert or update email , then send otp to email' })
+  async insertEmail(
+    @Request() options: SessionRequest,
+    @Body() data: ChangeEmailDto,
+  ) {
+    return await this.userService.sendOtpToEmail(options, data);
+  }
+
+  @Post('/email/verify-otp')
+  @ApiOperation({ summary: 'verify email otp' })
+  async verifyEmailOtp(
+    @Request() options: SessionRequest,
+    @Body() data: VerifyEmailDto,
+  ): Promise<boolean> {
+    return await this.userService.verifyEmailOtp(options, data);
   }
 }

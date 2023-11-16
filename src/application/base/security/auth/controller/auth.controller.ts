@@ -54,6 +54,8 @@ import {
   // LinkedinAuthGuard,
   LinkedinGuardAuth,
 } from '../guard/linkedin.auth.guard';
+import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
+import { TwoFaAuthService } from '../service/two-fa-auth.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -61,6 +63,7 @@ import {
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
+    private readonly twoFaAuthService: TwoFaAuthService,
     private readonly oauthService: OauthService,
     private readonly securityTools: SecurityToolsService,
     private readonly userService: UserService,
@@ -102,9 +105,16 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: SessionRequest): Promise<AccessTokenDto> {
+  async login(@Request() req: SessionRequest): Promise<any> {
     console.log('login', req.user);
+
     return this.authService.login.getLoginToken(req.user.userId);
+
+    // if (req.user.twoFactorAuth == TwoFaAuthTypeEnum.None){
+    //   return this.authService.login.getLoginToken(req.user.userId);
+    // }else{
+    //   return this.twoFaAuthService.sendOtp(req.user);
+    // }
   }
 
   @Public()

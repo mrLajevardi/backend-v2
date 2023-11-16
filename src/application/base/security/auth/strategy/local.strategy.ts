@@ -21,6 +21,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const userPayload: UserPayload = {
       userId: user.id,
       username: user.username,
+      personalVerification: user.personalVerification,
+      twoFactorAuth: user.twoFactorAuth,
     };
     return userPayload;
   }

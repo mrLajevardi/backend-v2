@@ -41,4 +41,32 @@ export class EmailContentService {
       html: htmlContent,
     };
   }
+
+  twoFactorAuth(code: string, to: string): MailOptions {
+    const htmlContent = `<h4 dir="rtl">
+        کد ورود شما :
+        <br>
+        ${code}
+        </h4>`;
+
+    return {
+      subject: 'کد ورود دو مرحله ای',
+      to,
+      html: htmlContent,
+    };
+  }
+
+  emailVerification(code: string, to: string): MailOptions {
+    const htmlContent = `<h4 dir="rtl">
+        کد تایید شما :
+        <br>
+        ${code}
+        </h4>`;
+
+    return {
+      subject: 'کد تایید',
+      to,
+      html: htmlContent,
+    };
+  }
 }

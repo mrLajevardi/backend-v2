@@ -12,7 +12,7 @@ export class OtpService {
       specialChars: false,
     });
     const key = process.env.OTP_SECRET_KEY;
-    console.log('creating otp from', phoneNumber, otp, key);
+
     const hash = otpTool.createNewOTP(phoneNumber, otp, key);
     return { otp: otp, hash };
   }

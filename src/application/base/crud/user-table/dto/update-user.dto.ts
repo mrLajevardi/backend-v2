@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
+  IsDecimal,
   IsEmail,
   IsNumber,
   IsOptional,
@@ -114,4 +115,29 @@ export class UpdateUserDto {
   @IsOptional()
   @ApiProperty({ type: [Groups], required: false })
   groups?: Groups[];
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  personalCode?: string | null;
+
+  @IsDate()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  birthDate?: Date;
+
+  @IsDecimal()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  companyId?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ default: false, required: false })
+  companyOwner?: boolean | null;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  personalVerification?: boolean;
 }
