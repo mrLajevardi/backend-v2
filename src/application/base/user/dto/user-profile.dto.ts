@@ -48,7 +48,7 @@ export class UserProfileDto {
   //
   // @Expose()
   // economyCode?: string
-  company: CompanyUserDto;
+  company?: CompanyUserDto;
 }
 
 export class CompanyUserDto {
