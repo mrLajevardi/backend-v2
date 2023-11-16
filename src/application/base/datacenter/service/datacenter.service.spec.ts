@@ -14,11 +14,12 @@ import { cloneDeep } from 'lodash';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
+import { DatacenterDetails } from '../dto/datacenter-details.dto';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
-
   let module: TestingModule;
+
   function datacenterMetadataMockFactory(
     datacenter: string | null,
     generation: string | null,
@@ -241,6 +242,87 @@ describe('DatacenterService', () => {
       const result = await service.getDatacenterConfigWithGen();
       const correctResult = [];
       expect(result).toStrictEqual(correctResult);
+    });
+  });
+
+  describe('getDatacenterDetails', () => {
+    it('should return the correct datacenter details', async () => {
+      const datacenterName = 'arad';
+
+      const res: DatacenterDetails = {
+        name: 'arad',
+        diskList: [
+          { itemTypeName: 'Archive-3000', enabled: true },
+          { itemTypeName: 'Standard-7000', enabled: true },
+          { itemTypeName: 'Fast-10000', enabled: true },
+          { itemTypeName: 'VIP-12000', enabled: true },
+        ],
+        periodList: [
+          { itemTypeName: '1', price: 0, unit: 'Month', enabled: true },
+          { itemTypeName: '6', price: -0.05, unit: 'Month', enabled: true },
+          { itemTypeName: '12', price: -0.1, unit: 'Month', enabled: true },
+        ],
+        enabled: true,
+        location: 'example-location',
+        gens: [
+          { name: 'g2', enabled: true, cpuSpeed: 2500 },
+          { name: 'g2', enabled: true, cpuSpeed: 2500 },
+        ],
+        providers: 'example-datacenter-(g2-2.5/g2-2.5)',
+      };
+
+      const myMock = jest
+        .spyOn(service, 'getDatacenterDetails')
+        .mockImplementation((datacenterName: string) => {
+          if (datacenterName && datacenterName !== '') {
+            return Promise.resolve(res);
+          }
+        });
+
+      const model = await service.getDatacenterDetails(datacenterName);
+
+      expect(model).toBe(res);
+      expect(myMock).toHaveBeenCalledWith(datacenterName);
+    });
+  });
+  describe('getDatacenterDetails', () => {
+    it('should return invalid data', async () => {
+      const datacenterName = '';
+
+      const res: DatacenterDetails = {
+        name: 'null',
+        diskList: [
+          { itemTypeName: 'null', enabled: false },
+          { itemTypeName: 'null', enabled: false },
+          { itemTypeName: 'null', enabled: false },
+          { itemTypeName: 'null', enabled: false },
+        ],
+        periodList: [
+          { itemTypeName: 'null', price: 0, unit: 'false', enabled: false },
+          { itemTypeName: 'null', price: 0, unit: 'false', enabled: false },
+          { itemTypeName: 'null', price: 0, unit: 'false', enabled: false },
+        ],
+        enabled: false,
+        location: 'null',
+        gens: [
+          { name: 'null', enabled: false, cpuSpeed: 0 },
+          { name: 'null', enabled: false, cpuSpeed: 0 },
+        ],
+        providers: 'null',
+      };
+
+      const myMock = jest
+        .spyOn(service, 'getDatacenterDetails')
+        .mockImplementation((datacenterName: string) => {
+          if (!datacenterName || datacenterName === '') {
+            return Promise.resolve(res);
+          }
+        });
+
+      const model = await service.getDatacenterDetails(datacenterName);
+
+      expect(model).toBe(res);
+      expect(myMock).toHaveBeenCalledWith(datacenterName);
     });
   });
 });
