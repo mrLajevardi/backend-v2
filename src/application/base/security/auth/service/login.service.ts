@@ -28,7 +28,7 @@ export class LoginService {
     if (!otpGenerated) {
       throw new OtpErrorException();
     }
-    console.log(otpGenerated);
+
     try {
       if (sendSMS) {
         await this.notificationService.sms.sendSMS(

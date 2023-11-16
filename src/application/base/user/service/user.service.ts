@@ -572,7 +572,10 @@ export class UserService {
     data: CreateProfileDto,
   ): Promise<UserProfileDto> {
     const userProfileData: UpdateUserDto = {
-      ...data,
+      name: data.name,
+      family: data.family,
+      personalCode: data.personalCode,
+      companyOwner: data.companyOwner,
       personalVerification: true,
     };
 
@@ -582,20 +585,16 @@ export class UserService {
       );
       userProfileData.companyId = company.id;
     }
+
     // verify user with api and change personalVerification to true
 
-    const updatedUser = await this.userTable.update(
-      options.user.userId,
+    const updatedUser = await this.userTable.updateWithOptions(
       userProfileData,
+      { reload: true },
+      { where: { id: options.user.userId }, relations: ['company'] },
     );
 
-    // const userProfileDto: UserProfileDto = plainToClass(UserProfileDto, updatedUser, {excludeExtraneousValues: true});
-
-    const userProfileDto: UserProfileDto = await this.getUserProfileDto(
-      updatedUser,
-    );
-
-    return userProfileDto;
+    return await this.getUserProfileDto(updatedUser);
   }
 
   async getUserProfile(options: SessionRequest) {
@@ -669,7 +668,7 @@ export class UserService {
             economyCode: user.company.economyCode,
             submittedCode: user.company.submittedCode,
           }
-        : null,
+        : undefined,
     };
   }
 

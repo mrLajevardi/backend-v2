@@ -10,6 +10,7 @@ import {
   FindOptionsWhere,
   DeleteResult,
   UpdateResult,
+  SaveOptions,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -67,6 +68,16 @@ export class UserTableService {
     return await this.repository.save(updateItem);
   }
 
+  async updateWithOptions(
+    dto: UpdateUserDto,
+    saveOption: SaveOptions,
+    option: FindOneOptions<User>,
+  ): Promise<User> {
+    const item = await this.findOne(option);
+    const updateItem: Partial<User> = Object.assign(item, dto);
+
+    return await this.repository.save(updateItem, option);
+  }
   // update many items
   async updateAll(
     where: FindOptionsWhere<User>,

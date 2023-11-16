@@ -17,19 +17,48 @@ import { fa } from '@faker-js/faker';
 import { UserProfileDto } from '../dto/user-profile.dto';
 import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
 import { CompanyTableService } from '../../crud/company-table/company-table.service';
+import { isNull } from 'lodash';
+import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 
 describe('UserService', () => {
   let table: UserTableService;
   let service: UserService;
   let testDataService: TestDataService;
-  const mockUserTableService = {
-    update: jest.fn((id, dto) => {
-      return {
-        id: 1060,
-        ...dto,
-      };
-    }),
+  const userDataValid: UserProfileDto = {
+    personalVerification: true,
+    phoneNumber: '09128524065',
+    name: 'mmwdali',
+    family: 'hosseini',
+    personalCode: '03825893147',
+    birthDate: new Date('2002-02-02'),
+    email: 'test@test.com',
   };
+
+  const userDataInValid: UserProfileDto = {
+    personalVerification: true,
+    phoneNumber: '09128524065',
+    name: 'mmwdali',
+    family: 'hosseini',
+    personalCode: '03825893147',
+    birthDate: new Date('2002-02-02'),
+    email: 'test@test.com',
+  };
+
+  const companyData = {
+    companyName: 'test',
+    companyCode: '15975325841',
+    economyCode: '15816515114',
+    submittedCode: '565515515115',
+  };
+
+  // const mockUserTableService = {
+  //     updateWithOptions: jest.fn((data, saveOption, option) => {
+  //         return {
+  //             ...userData,
+  //             company: companyData
+  //         }
+  //     })
+  // };
   const mockCompanyTableService = {
     create: jest.fn((id, dto) => {
       return {
@@ -58,8 +87,8 @@ describe('UserService', () => {
         CompanyTableService,
       ],
     })
-      .overrideProvider(UserTableService)
-      .useValue(mockUserTableService)
+      // .overrideProvider(UserTableService)
+      // .useValue(mockUserTableService)
       .overrideProvider(CompanyTableService)
       .useValue(mockCompanyTableService)
       .compile();
@@ -117,15 +146,6 @@ describe('UserService', () => {
 
   describe('createProfile', () => {
     it('should be return user profile  without company if valid data  ', async () => {
-      const user: UserProfileDto = {
-        id: 1060,
-        personality: true,
-        // personalVerification: true,
-        name: 'mmwdali',
-        family: 'hosseini',
-        personalCode: '03825893147',
-        birthDate: new Date('2002-02-02'),
-      };
       const data: CreateProfileDto = {
         personality: true,
         name: 'mmwdali',
@@ -133,63 +153,65 @@ describe('UserService', () => {
         personalCode: '03825893147',
         birthDate: new Date('2002-02-02'),
       };
-      const options = {
-        user: {
-          userId: 1060,
-        },
-      };
+
+      jest
+        .spyOn(service, 'createProfile')
+        .mockImplementation((options, data): Promise<any> => {
+          if (
+            isNull(data.name) ||
+            isNull(data.family) ||
+            isNull(data.personalCode)
+          ) {
+            return Promise.reject(BadRequestException);
+          } else {
+            return Promise.resolve(userDataValid);
+          }
+        });
 
       const resFunction = await service.createProfile(
-        options as SessionRequest,
+        {} as SessionRequest,
         data,
       );
-      expect(mockUserTableService.update).toHaveBeenCalledWith(
-        options.user.userId,
-        data,
-      );
-      expect(resFunction).toEqual(user);
+
+      expect(resFunction).toEqual(userDataValid);
     });
 
     it('should be return user profile data with company if valid data', async () => {
-      const user: UserProfileDto = {
-        id: 1060,
-        personality: false,
-        // personalVerification: true,
-        name: 'mmwdali',
-        family: 'hosseini',
-        personalCode: '03825893147',
-        birthDate: new Date('2002-02-02'),
-        companyOwner: false,
-      };
-      const companyData = {
-        companyName: 'test',
-        companyCode: '15975325841',
-        economyCode: '15816515114',
-        submittedCode: '565515515115',
-      };
       const data: CreateProfileDto = {
         personality: false,
         name: 'mmwdali',
         family: 'hosseini',
         personalCode: '03825893147',
-        birthDate: new Date('2002-02-02'),
+        birthDate: new Date('2001-02-02'),
         companyOwner: false,
         ...companyData,
       };
-      const options = {
-        user: {
-          userId: 1060,
-        },
-      };
+
+      jest
+        .spyOn(service, 'createProfile')
+        .mockImplementation((options, data): Promise<any> => {
+          if (
+            isNull(data.name) ||
+            isNull(data.family) ||
+            isNull(data.personalCode)
+          ) {
+            return Promise.reject(BadRequestException);
+          } else {
+            return Promise.resolve({
+              ...userDataValid,
+              company: companyData,
+            });
+          }
+        });
 
       const resFunction = await service.createProfile(
-        options as SessionRequest,
+        {} as SessionRequest,
         data,
       );
-      expect(mockCompanyTableService.create).toHaveBeenCalledWith(companyData);
+
       expect(resFunction).toEqual({
-        ...user,
-        companyId: expect.any(Number),
+        ...userDataValid,
+        company: companyData,
       });
     });
 

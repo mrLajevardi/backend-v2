@@ -7,7 +7,7 @@ import { TwoFaAuthStrategy } from '../classes/two-fa-auth.strategy';
 @Injectable()
 export class TwoFaAuthService {
   constructor(
-    private readonly TwoFaAuthType: TwoFaAuthTypeService,
+    private TwoFaAuthType: TwoFaAuthTypeService,
     private TwoFaAuthStrategy: TwoFaAuthStrategy,
   ) {}
 
