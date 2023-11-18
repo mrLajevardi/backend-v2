@@ -12,7 +12,7 @@ import { GroupsMapping } from './GroupsMapping';
 import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
-import { isTestingEnv } from '../../helpers/helpers';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })

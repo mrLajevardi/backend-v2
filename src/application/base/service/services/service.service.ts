@@ -478,9 +478,9 @@ export class ServiceService {
         vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
       }
       if (vdcItems !== null) {
-        model = this.serviceFactory.configModelServiceInstanceList(
+        model = await this.serviceFactory.configModelServiceInstanceList(
           serviceInstance,
-          // daysLeft,
+          options,
           isTicketSent,
           vdcItems,
           cpuSpeed,

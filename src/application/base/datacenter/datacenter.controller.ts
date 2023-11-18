@@ -10,12 +10,13 @@ import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
-import { DatacenterService } from './service/datacenter.service';
 import {
   BASE_DATACENTER_SERVICE,
   BaseDatacenterService,
 } from './interface/datacenter.interface';
 import { Public } from '../security/auth/decorators/ispublic.decorator';
+import { DataCenterList } from './dto/datacenter-list.dto';
+import { DatacenterDetails } from './dto/datacenter-details.dto';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -79,6 +80,21 @@ export class DatacenterController {
           serviceTypeId,
         ),
       );
+    return result;
+  }
+
+  @Get('/getAllDatacenters')
+  @Public()
+  async getAllDataCenters(): Promise<DataCenterList[]> {
+    const result = await this.service.getAllDataCenters();
+    return result;
+  }
+  @Get('/getDatacenterDetails/:datacenterName')
+  @Public()
+  async getDatacenterDetails(
+    @Param('datacenterName') datacenterName: string,
+  ): Promise<DatacenterDetails> {
+    const result = await this.service.getDatacenterDetails(datacenterName);
     return result;
   }
 }

@@ -15,6 +15,7 @@ import {
 import { AdminOrgVdcStorageProfileQuery } from '../vdc/dto/instantiate-vm-from.templates-admin.dto';
 import { AcquireTicketDto } from './dto/acquire-vm-ticket.dto';
 import { EventVmDto } from './dto/event-vm-model.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 @Injectable()
 export class VmWrapperService {
   constructor(
@@ -391,19 +392,22 @@ export class VmWrapperService {
   async partialUpload(
     authToken: string,
     fullAddress: string,
-    data: Stream,
+    data: SessionRequest,
     header: PartialUploadHeaders,
-  ): Promise<void> {
+  ): Promise<VcloudTask> {
     const endpoint = 'VmEndpointService.partialUploadEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    await this.vcloudWrapperService.request(
+    const response = await this.vcloudWrapperService.request(
       wrapper({
         urlParams: { fullAddress },
         headers: { Authorization: `Bearer ${authToken}`, ...header },
         body: data,
       }),
     );
+    return {
+      __vcloudTask: response.headers.location,
+    };
   }
   async postAnswer(
     authToken: string,

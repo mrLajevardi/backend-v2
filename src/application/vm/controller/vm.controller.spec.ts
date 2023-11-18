@@ -11,6 +11,7 @@ import { NetworksModule } from '../../networks/networks.module';
 import { forwardRef } from '@nestjs/common';
 import { VmDetailService } from '../service/vm-detail.service';
 import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
+import { VmDetailFactoryService } from '../service/vm-detail.factory.service';
 describe('VmController', () => {
   let controller: VmController;
 
@@ -26,7 +27,7 @@ describe('VmController', () => {
         MainWrapperModule,
         forwardRef(() => NetworksModule),
       ],
-      providers: [VmService, VmDetailService],
+      providers: [VmService, VmDetailService, VmDetailFactoryService],
       controllers: [VmController],
     }).compile();
 

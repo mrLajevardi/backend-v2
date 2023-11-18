@@ -16,7 +16,6 @@ import { Transform, Type } from 'class-transformer';
 import { json } from 'express';
 
 export class CreateProfileDto {
-  constructor() {}
   @IsBoolean()
   @Transform(({ value }) => JSON.parse(value))
   @ApiProperty({ default: true })
