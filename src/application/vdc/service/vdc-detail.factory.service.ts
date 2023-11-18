@@ -228,9 +228,7 @@ export class VdcDetailFactoryService {
   }
 
   async calcComputeVdcItemByVms(
-    option: Request & {
-      user: UserPayload;
-    },
+    option: SessionRequest,
     serviceInstanceId: string,
   ) {
     const vmFilters = 'status==POWERED_OFF';

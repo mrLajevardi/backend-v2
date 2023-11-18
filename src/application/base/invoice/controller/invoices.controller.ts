@@ -15,6 +15,7 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
@@ -33,10 +34,19 @@ import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { getTransactionsDto } from '../../crud/transactions-table/dto/get-transactions.dto';
 import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { Action } from '../../security/ability/enum/action.enum';
+import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
 
 @ApiTags('Invoices')
 @Controller('invoices')
-@ApiBearerAuth() // Requires authentication with a JWT token
+@ApiBearerAuth()
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) => {
+  // const t = ability.can(Action.Manage)
+  return ability.can(Action.Create, subject('Invoices', props));
+}) // Requires authentication with a JWT token
 export class InvoicesController {
   constructor(
     @Inject(BASE_INVOICE_SERVICE)

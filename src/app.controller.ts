@@ -25,6 +25,9 @@ import { SystemSettings } from './infrastructure/database/entities/SystemSetting
 
 // @UseInterceptors(SentryInterceptor) // This is a test to make sure that sentry is okay !!
 @Controller()
+@CheckPolicies((ability: PureAbility) =>
+  ability.can(Action.Manage, PredefinedRoles.AdminRole),
+)
 export class AppController {
   constructor(
     private readonly appService: AppService,
@@ -58,7 +61,7 @@ export class AppController {
   @ApiResponse({ status: 200, description: 'Returns the system settings' })
   @ApiBearerAuth() // Requires authentication with a JWT token
   @CheckPolicies((ability: PureAbility) =>
-    ability.can(Action.Manage, PredefinedRoles.AdminRole),
+    ability.cannot(Action.Manage, PredefinedRoles.AdminRole),
   )
   @Get('systemSettings')
   getSystemSettings(): Promise<SystemSettings[]> {
