@@ -900,7 +900,7 @@ export class VmService {
       props.vdcId,
     );
     const data: VmOsInfo = {
-      MicrosoftWindows: [],
+      // MicrosoftWindows: [],
     };
     hardwareInfo.supportedOperatingSystems.operatingSystemFamilyInfo.forEach(
       (osFamily) => {
