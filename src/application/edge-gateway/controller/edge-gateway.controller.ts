@@ -59,11 +59,12 @@ export class EdgeGatewayController {
   @Post('/:vdcInstanceId/applicationPortProfiles')
   @ApiOperation({ summary: 'Create an applicationPortProfile' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async createApplicationPortProfile(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Body() data: CreateApplicationPortProfileDto,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.applicationPortProfile.createApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -87,11 +88,12 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Delete an applicationPortProfile' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'applicationId', description: 'Application ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async deleteApplicationPortProfile(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.applicationPortProfile.deleteApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -103,11 +105,12 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Delete a firewall' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'firewallId', description: 'Firewall ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async deleteFirewall(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('firewallId') firewallId: string,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.firewall.deleteFirewall(
       options,
       vdcInstanceId,
@@ -132,6 +135,7 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Get an applicationPortProfile by ID' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'applicationId', description: 'Application ID' })
+  @ApiResponse({ type: ApplicationPortProfileListValuesDto })
   async getApplicationPortProfile(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
@@ -147,6 +151,7 @@ export class EdgeGatewayController {
   @Get('/:vdcInstanceId/applicationPortProfiles')
   @ApiOperation({ summary: 'Get a list of applicationPortProfiles' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: ApplicationProfileListDto })
   async getApplicationPortProfiles(
     @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
@@ -254,12 +259,13 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Update an applicationPortProfile' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'applicationId', description: 'Application ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateApplicationPortProfile(
     @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
     @Body() data: CreateApplicationPortProfileDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return await this.service.applicationPortProfile.updateApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -273,12 +279,12 @@ export class EdgeGatewayController {
     summary: 'Update DHCP Forwarder configuration of an edge gateway',
   })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateDhcpForwarderConfig(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Body() data: DhcpForwarderDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return await this.service.updateDhcpForwarder(options, data, vdcInstanceId);
   }
 
