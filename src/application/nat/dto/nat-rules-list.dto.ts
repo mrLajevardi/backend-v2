@@ -1,6 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
 import { ApplicationRefDto } from 'src/application/edge-gateway/dto/application-ref.dto';
+import { NatFirewallMatchEnum } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-firewall-match.enum';
 
 export class NatRulesListDTO {
   @ApiProperty({
@@ -17,33 +25,31 @@ export class NatRulesListDTO {
 
   @ApiProperty({ type: Boolean, required: false })
   @IsBoolean()
-  logging?: boolean;
+  logging: boolean;
 
   @ApiProperty({ type: Number, required: false, example: 2 })
   @IsNumber()
-  priority?: number;
+  priority: number;
 
   @ApiProperty({
-    type: String,
+    enum: NatFirewallMatchEnum,
     required: true,
     example: 'MATCH_EXTERNAL_ADDRESS',
   })
-  @IsString()
-  firewallMatch: string;
+  @IsEnum(NatFirewallMatchEnum)
+  firewallMatch: NatFirewallMatchEnum;
 
   @ApiProperty({ type: String, example: 'test' })
   @IsString()
-  name?: string;
+  name: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
-  @IsOptional()
-  externalIP?: string;
+  externalIP: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
-  @IsOptional()
-  internalIP?: string;
+  internalIP: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
@@ -62,6 +68,8 @@ export class NatRulesListDTO {
   description?: string;
 
   @ApiProperty({ type: Number, example: 22 })
+  @ValidateIf((value) => value !== null)
   @IsNumber()
+  @IsOptional()
   externalPort?: number;
 }
