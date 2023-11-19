@@ -115,17 +115,6 @@ export class VmDetailController {
     @Query('dateEnd') dateEnd: Date,
     @Request() options: SessionRequest,
   ) {
-    // return await this.VmDetailService.tasksVm(
-    //   options,
-    //   serviceInstanceId,
-    //   vappId,
-    //   vmId,
-    //   '',
-    //   dateFilter,
-    //   '',
-    //   page,
-    //   pageSize,
-    // );
     return await this.VmDetailService.tasksVm(options, {
       dateBegin: dateBegin,
       dateFilter: dateFilter,

@@ -230,6 +230,8 @@ export class VdcDetailFactoryService {
         }
       });
       return {
+        max: storage.value,
+        usage: storage.usage,
         code: diskCode,
         name: storage.title,
         id: storage.id,
