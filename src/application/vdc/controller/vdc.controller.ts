@@ -334,7 +334,6 @@ export class VdcController {
 
   @Get('/disk/diskTypes')
   // @Public()
-
   async getDiskTypes(): Promise<any> {
     return [
       { code: DiskItemCodes.Fast, name: DiskItemName.Fast },
