@@ -35,7 +35,6 @@ export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
     filter: `vdc==${vdcId}`,
   });
 
-
   const vdcStorageProfile = query.data.record.find((item) => {
     if (
       item.name.toLowerCase().includes(config.storage.policyId.toLowerCase())
