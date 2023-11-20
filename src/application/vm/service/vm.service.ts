@@ -157,13 +157,14 @@ export class VmService {
       {
         computerName: data.computerName,
         name: data.name,
-        primaryNetworkIndex: data.primaryNetwork,
+        primaryNetworkIndex: data.primaryNetworkIndex,
         networks: data.networks,
         powerOn: data.powerOn,
         description: data.description,
         sourceHref: sourceHref,
         sourceId: data.templateId,
         sourceName: data.templateName,
+        storage: data.storage,
       },
     );
     await this.loggerService.info(
