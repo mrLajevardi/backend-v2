@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'arad-v2.back',
+      name: 'arad-v2.bak',
       script: './dist/main.js',
       instances: 1,
       autorestart: true,
