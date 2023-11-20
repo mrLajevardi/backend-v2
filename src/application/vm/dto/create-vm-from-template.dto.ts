@@ -17,7 +17,7 @@ export class CreateVmFromTemplate {
   computerName: string;
   networks: Network[];
   powerOn: boolean;
-  primaryNetwork: number;
+  primaryNetworkIndex: number;
   templateId: string;
   templateName: string;
 
