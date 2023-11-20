@@ -10,7 +10,7 @@ module.exports = {
       env_development: {
         NODE_ENV: 'development',
       },
-      node_args: 'cross-env PORT=3007 --max-http-header-size=80000',
+      node_args: '--max-http-header-size=80000',
       env_production: {
         NODE_ENV: 'production',
       },

@@ -44,7 +44,7 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @ApiOperation({ summary: 'Get user profile' })
+  @ApiOperation({ summary: 'Get user profile 1' })
   @ApiResponse({ status: 200, description: 'Returns the user profile' })
   @ApiBearerAuth() // Requires authentication with a JWT token
   @UseGuards(JwtAuthGuard)

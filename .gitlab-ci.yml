@@ -58,6 +58,7 @@ develop server deploy job:      # This job runs in the deploy stage.
   only:
     - develop
     - main
+    - fix/pipeline
   dependencies: []
   script:
     - .\deploy.ps1
