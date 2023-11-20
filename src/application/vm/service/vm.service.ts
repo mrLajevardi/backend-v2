@@ -183,7 +183,7 @@ export class VmService {
     options,
     data: CreateVm,
     serviceInstanceId: string,
-  ): Promise<TaskReturnDto | any> {
+  ): Promise<TaskReturnDto | ExceedEnoughDiskCountException> {
     if ((data.storage as []).length > 4) {
       return new ExceedEnoughDiskCountException();
     }

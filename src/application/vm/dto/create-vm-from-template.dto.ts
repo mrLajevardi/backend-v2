@@ -1,13 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray, IsOptional } from 'class-validator';
-
-type Network = {
-  allocationMode: string;
-  ipAddress: string;
-  isConnected: boolean;
-  networkAdaptorType: string;
-  networkName: string;
-};
+import { IsString, IsOptional } from 'class-validator';
+import { Network, StoragePolicy } from './create-vm.dto';
 
 export class CreateVmFromTemplate {
   @ApiProperty({ type: String })
@@ -20,6 +13,7 @@ export class CreateVmFromTemplate {
   primaryNetworkIndex: number;
   templateId: string;
   templateName: string;
+  storage: StoragePolicy;
 
   @ApiProperty({ type: String })
   @IsString()
