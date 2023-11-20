@@ -34,7 +34,17 @@ export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
     links: true,
     filter: `vdc==${vdcId}`,
   });
-  const vdcStorageProfileLink = query.data.record[0].href;
+
+
+  const vdcStorageProfile = query.data.record.find((item) => {
+    if (
+      item.name.toLowerCase().includes(config.storage.policyId.toLowerCase())
+    ) {
+      return item;
+    }
+  });
+
+  // const vdcStorageProfileLink = query.data.record[0].href;
   const networks = [];
   if (!isEmpty(config.networks)) {
     let index = 0;
@@ -84,7 +94,7 @@ export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
         },
         'root:StorageProfile': {
           $: {
-            href: vdcStorageProfileLink,
+            href: vdcStorageProfile.href,
             type: 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
           },
         },

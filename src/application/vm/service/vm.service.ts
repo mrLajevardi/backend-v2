@@ -164,6 +164,7 @@ export class VmService {
         sourceHref: sourceHref,
         sourceId: data.templateId,
         sourceName: data.templateName,
+        storage: data.storage,
       },
     );
     await this.loggerService.info(
@@ -183,7 +184,7 @@ export class VmService {
     options,
     data: CreateVm,
     serviceInstanceId: string,
-  ): Promise<TaskReturnDto | ExceedEnoughDiskCountException> {
+  ): Promise<TaskReturnDto | any> {
     if ((data.storage as []).length > 4) {
       return new ExceedEnoughDiskCountException();
     }
