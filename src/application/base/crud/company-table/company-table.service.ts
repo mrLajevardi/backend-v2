@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../../../../infrastructure/database/entities/Company';
 import {
   DeleteResult,
-  FindManyOptions,
+  FindManyOptions, FindOneOptions,
   FindOptionsWhere,
-  Repository,
+  Repository, SaveOptions,
   UpdateResult,
 } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -59,5 +59,20 @@ export class CompanyTableService {
     where: FindOptionsWhere<Company> = {},
   ): Promise<DeleteResult> {
     return await this.repository.delete(where);
+  }
+
+  async findOne(options?: FindOneOptions<Company>): Promise<Company> {
+    return await this.repository.findOne(options);
+  }
+
+  async updateWithOptions(
+      dto: UpdateCompanyDto,
+      saveOption: SaveOptions,
+      option: FindOneOptions<Company>,
+  ): Promise<Company> {
+    const item = await this.findOne(option);
+    const updateItem: Partial<Company> = Object.assign(item, dto);
+
+    return await this.repository.save(updateItem, option);
   }
 }

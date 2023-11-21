@@ -76,7 +76,7 @@ export class UserTableService {
     const item = await this.findOne(option);
     const updateItem: Partial<User> = Object.assign(item, dto);
 
-    return await this.repository.save(updateItem, option);
+    return await this.repository.save(updateItem, saveOption);
   }
   // update many items
   async updateAll(
