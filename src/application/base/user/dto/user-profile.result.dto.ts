@@ -18,7 +18,7 @@ export class UserProfileResultDto {
       personalVerification: item.personalVerification,
       companyOwner: item.companyOwner,
       company:
-        item.company !== undefined
+        item.company !== undefined && item.company !== null
           ? new CompanyResultDto().toArray(item.company)
           : null,
     };

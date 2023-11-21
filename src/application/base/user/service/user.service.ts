@@ -589,18 +589,14 @@ export class UserService {
 
     // verify user with api and change personalVerification to true
 
-    const updatedUser = await this.userTable.updateWithOptions(
-      userProfileData,
-      { reload: true },
-      {
-        where: { id: options.user.userId },
-        relations: ['company'],
-        loadEagerRelations: true,
-      },
-    );
-    // const updatedUser = await this.userTable.update(options.user.userId , userProfileData);
+    await this.userTable.update(options.user.userId, userProfileData);
 
-    return new UserProfileResultDto().toArray(updatedUser);
+    const userWithRelation = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company'],
+    });
+
+    return new UserProfileResultDto().toArray(userWithRelation);
   }
 
   async getUserProfile(options: SessionRequest) {
