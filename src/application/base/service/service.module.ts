@@ -27,6 +27,7 @@ import { ServiceServiceFactory } from './Factory/service.service.factory';
 import { ServiceInstancesTableModule } from '../crud/service-instances-table/service-instances-table.module';
 import { ServiceItemsTableModule } from '../crud/service-items-table/service-items-table.module';
 import { TaskManagerModule } from '../task-manager/task-manager.module';
+import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     ServiceItemsTableModule,
     ServiceInstancesTableModule,
     TaskManagerModule,
+    EdgeGatewayModule,
   ],
   providers: [
     ServiceService,

@@ -12,4 +12,5 @@ interface UpdateFirewallListUrlParams {
 
 export class UpdateFirewallListBody {
   userDefinedRules: UpdateFirewallBody[];
+  defaultRules?: UpdateFirewallBody[];
 }

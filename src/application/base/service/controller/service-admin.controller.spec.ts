@@ -19,6 +19,7 @@ import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.servi
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { UserModule } from '../../user/user.module';
+import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -38,6 +39,7 @@ describe('ServiceAdminController', () => {
         MainWrapperModule,
         DatacenterModule,
         UserModule,
+        EdgeGatewayModule,
       ],
       providers: [
         ServiceAdminService,

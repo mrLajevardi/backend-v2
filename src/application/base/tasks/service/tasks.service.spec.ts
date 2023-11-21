@@ -19,6 +19,7 @@ import { ServiceServiceFactory } from '../../service/Factory/service.service.fac
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 import { UserModule } from '../../user/user.module';
+import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -44,6 +45,7 @@ describe('TasksService', () => {
         VdcModule,
         DatacenterModule,
         UserModule,
+        EdgeGatewayModule,
       ],
       providers: [
         TaskManagerService,

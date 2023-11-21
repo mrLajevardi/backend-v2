@@ -106,7 +106,6 @@ export class ApplicationPortProfileService {
       return {
         ports: ports.destinationPorts,
         protocol: ports.protocol,
-        name: ports.name,
       };
     });
     const result: ApplicationPortProfileListValuesDto = {
@@ -114,6 +113,7 @@ export class ApplicationPortProfileService {
       name: applicationPortProfile.name,
       applicationPortProfile: ports,
       scope: applicationPortProfile.scope,
+      status: applicationPortProfile.status,
     };
     return Promise.resolve(result);
   }
@@ -163,6 +163,7 @@ export class ApplicationPortProfileService {
           name: application.name,
           applicationPortProfile: ports,
           scope: application.scope,
+          status: application.status,
         };
       });
     const result: ApplicationProfileListDto = {
