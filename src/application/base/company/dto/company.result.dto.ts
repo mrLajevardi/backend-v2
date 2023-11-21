@@ -20,12 +20,6 @@ export class CompanyResultDtoFormat {
 }
 
 export class CompanyResultDto {
-  collection(data: Company[]) {
-    return data.map((item: Company) => {
-      return this.toArray(item);
-    });
-  }
-
   collection(data: Company[]): CompanyResultDtoFormat[] {
     return data.map((item: Company) => {
       return this.toArray(item);
