@@ -3,9 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Company } from '../../../../infrastructure/database/entities/Company';
 import {
   DeleteResult,
-  FindManyOptions, FindOneOptions,
+  FindManyOptions,
+  FindOneOptions,
   FindOptionsWhere,
-  Repository, SaveOptions,
+  Repository,
+  SaveOptions,
   UpdateResult,
 } from 'typeorm';
 import { CreateCompanyDto } from './dto/create-company.dto';
@@ -66,9 +68,9 @@ export class CompanyTableService {
   }
 
   async updateWithOptions(
-      dto: UpdateCompanyDto,
-      saveOption: SaveOptions,
-      option: FindOneOptions<Company>,
+    dto: UpdateCompanyDto,
+    saveOption: SaveOptions,
+    option: FindOneOptions<Company>,
   ): Promise<Company> {
     const item = await this.findOne(option);
     const updateItem: Partial<Company> = Object.assign(item, dto);

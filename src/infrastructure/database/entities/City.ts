@@ -6,71 +6,71 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
-} from "typeorm";
-import { Province } from "./Province";
-import { Company } from "./Company";
+} from 'typeorm';
+import { Province } from './Province';
+import { Company } from './Company';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
-@Index("PK__City__3214EC07AF53D481", ["id"], { unique: true })
-@Entity("City", { schema: "security" })
+@Index('PK__City__3214EC07AF53D481', ['id'], { unique: true })
+@Entity('City', { schema: 'security' })
 export class City {
   @PrimaryGeneratedColumn({
-    type: isTestingEnv() ? 'int' : 'decimal' ,
-    name: "Id",
+    type: isTestingEnv() ? 'int' : 'decimal',
+    name: 'Id',
     // precision: 18,
     // scale: 0,
   })
   id: number;
 
-  @Column("nvarchar", { name: "CityName", nullable: true, length: 50 })
+  @Column('nvarchar', { name: 'CityName', nullable: true, length: 50 })
   cityName: string | null;
 
-  @Column("datetime", {
-    name: "CreateDate",
+  @Column('datetime', {
+    name: 'CreateDate',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   createDate: Date | null;
 
-  @Column("datetime", {
-    name: "UpdateDate",
+  @Column('datetime', {
+    name: 'UpdateDate',
     nullable: true,
-    default: () => "getdate()",
+    default: () => 'getdate()',
   })
   updateDate: Date | null;
 
-  @Column("decimal", {
-    name: "LastEditorId",
+  @Column('decimal', {
+    name: 'LastEditorId',
     nullable: true,
     precision: 18,
     scale: 0,
   })
   lastEditorId: number | null;
 
-  @Column("decimal", {
-    name: "CreatorId",
+  @Column('decimal', {
+    name: 'CreatorId',
     nullable: true,
     precision: 18,
     scale: 0,
   })
   creatorId: number | null;
 
-  @Column("nvarchar", { name: "IntegCode", nullable: true })
+  @Column('nvarchar', { name: 'IntegCode', nullable: true })
   integCode: string | null;
 
   @Column({
-    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier' ,
-    name: "Guid",
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'Guid',
     nullable: true,
-    default: () => "newsequentialid()",
+    default: () => 'newsequentialid()',
   })
   guid: string | null;
 
   @ManyToOne(() => Province, (province) => province.cities, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: "ProvinceId", referencedColumnName: "id" }])
+  @JoinColumn([{ name: 'ProvinceId', referencedColumnName: 'id' }])
   province: Province;
 
   @OneToMany(() => Company, (company) => company.city)
