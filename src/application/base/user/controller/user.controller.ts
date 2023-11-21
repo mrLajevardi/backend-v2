@@ -269,7 +269,7 @@ export class UserController {
     return await this.userService.personalVerification(options);
   }
 
-  @Post('/changePhoneNumber')
+  @Get('/changePhoneNumber')
   @ApiOperation({
     summary: 'change current user phone number , send otp to old phone number',
   })

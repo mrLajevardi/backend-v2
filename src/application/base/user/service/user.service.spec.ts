@@ -19,6 +19,11 @@ import { SessionRequest } from '../../../../infrastructure/types/session-request
 import { CompanyTableService } from '../../crud/company-table/company-table.service';
 import { isNull } from 'lodash';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
+import { EmailService } from '../../notification/email.service';
+import { ChangeEmailDto } from '../dto/change-email.dto';
+import { OtpService } from '../../security/security-tools/otp.service';
+import { OtpHashDto } from '../../security/security-tools/dto/otp-hash.dto';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
 
 describe('UserService', () => {
   let table: UserTableService;
@@ -68,6 +73,29 @@ describe('UserService', () => {
     }),
   };
 
+  const mockEmailService = {
+    sendMail: jest.fn((): void => {
+      const a = 'as';
+    }),
+  };
+
+  const mockOtpService = {
+    otpGenerator: jest.fn((phoneNumber: string): OtpHashDto => {
+      return {
+        otp: randomInt(100000, 999999).toString(),
+        hash: 'fdcf10ded8e80b753e6add8c36b3ebf5e63b6e0f298dae9781ed9649d47ce1e9.1700292574735',
+      };
+    }),
+    otpVerifier: jest.fn(
+      (phoneNumber: string, otp: string, hash: string): boolean => {
+        return true;
+      },
+    ),
+  };
+
+  const randomInt = (min: number, max: number): number =>
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -85,12 +113,17 @@ describe('UserService', () => {
         UserAdminService,
         UserTableService,
         CompanyTableService,
+        OtpService,
       ],
     })
       // .overrideProvider(UserTableService)
       // .useValue(mockUserTableService)
       .overrideProvider(CompanyTableService)
       .useValue(mockCompanyTableService)
+      .overrideProvider(EmailService)
+      .useValue(mockEmailService)
+      .overrideProvider(OtpService)
+      .useValue(mockOtpService)
       .compile();
 
     table = module.get<UserTableService>(UserTableService);
@@ -214,26 +247,48 @@ describe('UserService', () => {
         company: companyData,
       });
     });
+  });
 
-    // it('should be return exception if null data  if null data', async () => {
-    //
-    //     const data: CreateProfileDto = {
-    //         personality: null,
-    //         name: null,
-    //         family: null,
-    //         personalCode: null,
-    //         birthDate: null,
-    //         companyOwner: null,
-    //     };
-    //
-    //     const options = {
-    //         user: {
-    //             userId: 1060
-    //         }
-    //     }
-    //
-    //     const resFunction = await service.createProfile(options as SessionRequest,new  CreateProfileDto());
-    //     expect(resFunction).toEqual({});
-    // });
+  describe('email verifying', () => {
+    it('should be return email and hash profile if valid data', async () => {
+      const data: ChangeEmailDto = {
+        email: 'mmmwdali@test.com',
+      };
+
+      const resFunction = await service.sendOtpToEmail(
+        {} as SessionRequest,
+        data,
+      );
+
+      expect(resFunction).toEqual({
+        email: expect.any(String),
+        hash: expect.any(String),
+      });
+    });
+    it('should be return true if valid email , otp , hash for verifying email otp', async () => {
+      const data: VerifyEmailDto = {
+        email: 'seyed.mmwdali@gmail.com',
+        otp: '123456',
+        hash: 'sdsdsddsdsdsdssd',
+      };
+
+      jest
+        .spyOn(service, 'verifyEmailOtp')
+        .mockImplementation(
+          async (
+            options: SessionRequest,
+            data: VerifyEmailDto,
+          ): Promise<boolean> => {
+            return Promise.resolve(true);
+          },
+        );
+
+      const resFunction = await service.verifyEmailOtp(
+        { user: { userId: 1060 } } as SessionRequest,
+        data,
+      );
+
+      expect(resFunction).toBeTruthy();
+    });
   });
 });

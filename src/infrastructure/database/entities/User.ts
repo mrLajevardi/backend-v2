@@ -142,7 +142,7 @@ export class User {
   })
   twoFactorAuth: number;
 
-  @Column('date', { name: 'companyId', nullable: true })
+  @Column('decimal', { name: 'companyId', nullable: true })
   companyId: number | null;
 
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)

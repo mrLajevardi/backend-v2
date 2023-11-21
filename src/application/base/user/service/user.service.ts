@@ -44,6 +44,7 @@ import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
 import { LoginService } from '../../security/auth/service/login.service';
 import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
+import { UserProfileResultDto } from '../dto/user-profile.result.dto';
 
 @Injectable()
 export class UserService {
@@ -591,10 +592,15 @@ export class UserService {
     const updatedUser = await this.userTable.updateWithOptions(
       userProfileData,
       { reload: true },
-      { where: { id: options.user.userId }, relations: ['company'] },
+      {
+        where: { id: options.user.userId },
+        relations: ['company'],
+        loadEagerRelations: true,
+      },
     );
+    // const updatedUser = await this.userTable.update(options.user.userId , userProfileData);
 
-    return await this.getUserProfileDto(updatedUser);
+    return new UserProfileResultDto().toArray(updatedUser);
   }
 
   async getUserProfile(options: SessionRequest) {
@@ -604,9 +610,7 @@ export class UserService {
       relations: ['company'],
     });
 
-    const userProfileDto: UserProfileDto = await this.getUserProfileDto(user);
-
-    return userProfileDto;
+    return new UserProfileResultDto().toArray(user);
   }
 
   async changeUserPhoneNumber(
@@ -632,7 +636,7 @@ export class UserService {
       userUpdatingData,
     );
 
-    return await this.getUserProfileDto(updatedUser);
+    return new UserProfileResultDto().toArray(updatedUser);
   }
 
   async personalVerification(options: SessionRequest) {
@@ -649,27 +653,7 @@ export class UserService {
       relations: ['company'],
     });
 
-    return await this.getUserProfileDto(user);
-  }
-
-  async getUserProfileDto(user: User): Promise<UserProfileDto> {
-    return {
-      name: user.name,
-      family: user.family,
-      email: user.email,
-      birthDate: user.birthDate,
-      phoneNumber: user.phoneNumber,
-      personalCode: user.personalCode,
-      personalVerification: user.personalVerification,
-      company: user.company
-        ? {
-            companyName: user.company.companyName,
-            companyCode: user.company.companyCode,
-            economyCode: user.company.economyCode,
-            submittedCode: user.company.submittedCode,
-          }
-        : undefined,
-    };
+    return new UserProfileResultDto().toArray(updatedUser);
   }
 
   async sendOtpToEmail(
