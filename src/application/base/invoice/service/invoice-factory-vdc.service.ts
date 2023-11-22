@@ -189,13 +189,9 @@ export class InvoiceFactoryVdcService {
 
     res.generation = generation;
 
-    res.reservationCpu = `${Number(reservationCpu.value) * 100}${
-      reservationCpu.unit
-    } vCPU`;
+    res.reservationCpu = `${Number(reservationCpu.value)}`;
 
-    res.reservationRam = `${Number(reservationCpu.value) * 100}${
-      reservationCpu.unit
-    } RAM`;
+    res.reservationRam = `${Number(reservationRam.value)}`;
 
     res.vm = new VdcInvoiceDetailsInfoResultDto(vmModel);
 
