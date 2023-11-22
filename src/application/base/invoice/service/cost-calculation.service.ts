@@ -84,10 +84,10 @@ export class CostCalculationService {
     const periodItem = groupedItems.period;
     const itemsPeriodCost =
       totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);
-    const discountValue = itemsPeriodCost * periodItem.percent;
-    const periodTotalCost = options.applyPeriodPercent
-      ? itemsPeriodCost + discountValue
+    const discountValue = options.applyPeriodPercent
+      ? itemsPeriodCost * periodItem.percent
       : 0;
+    const periodTotalCost = itemsPeriodCost + discountValue;
     const supportCosts = groupedItems.guaranty.fee * parseInt(periodItem.value);
     const invoiceTotalCosts = periodTotalCost + supportCosts;
     return {
