@@ -9,5 +9,6 @@ import { TicketingWrapperService } from './service/wrapper/ticketing-wrapper.ser
     UvDeskWrapperService,
     TicketingWrapperService,
   ],
+  exports: [TicketingWrapperService],
 })
 export class UvdeskWrapperModule {}

@@ -140,4 +140,9 @@ export class UpdateUserDto {
   @IsOptional()
   @ApiProperty({ required: false })
   personalVerification?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  avatarId?: string | null;
 }

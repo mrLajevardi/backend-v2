@@ -13,6 +13,7 @@ import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { FileUpload } from './FileUpload';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
@@ -145,6 +146,13 @@ export class User {
   @Column('decimal', { name: 'companyId', nullable: true })
   companyId: number | null;
 
+  @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'avatarId',
+    nullable: true,
+  })
+  avatarId: string | null;
+
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
 
@@ -160,4 +168,8 @@ export class User {
   @ManyToOne(() => Company, (company) => company.users)
   @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])
   company: Company;
+
+  @ManyToOne(() => FileUpload, (file) => file.user)
+  @JoinColumn({ name: 'avatarId', referencedColumnName: 'streamId' })
+  avatar: FileUpload;
 }

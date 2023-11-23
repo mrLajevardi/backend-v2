@@ -102,6 +102,7 @@ export class LoginService {
   async getLoginToken(
     userId: number,
     impersonateId?: number,
+    aiAccessToken?: string,
   ): Promise<AccessTokenDto> {
     console.log('getLoginToken', userId, impersonateId);
     if (!userId) {
@@ -126,9 +127,9 @@ export class LoginService {
           }
         : null,
     };
-    console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
+      ai_token: aiAccessToken,
     };
   }
 }

@@ -11,6 +11,11 @@ import { ServicePropertiesService } from 'src/application/base/service-propertie
 import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { TaskDataType } from '../../interface/task-data-type.interface';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
+import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
+import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 @Injectable()
 export class UpgradeDiskResourcesService
   implements BaseTask<UpgradeVdcStepsEnum>
@@ -23,11 +28,30 @@ export class UpgradeDiskResourcesService
     private readonly sessionService: SessionsService,
     private readonly serviceProperties: ServicePropertiesService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
+    private readonly serviceInstanceTableService: ServiceInstancesTableService,
+    private readonly userService: UserTableService,
+    private readonly ticketingWrapperService: TicketingWrapperService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.UpgradeDiskResources;
   }
-  execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
-    return this.increaseStorageResource(job);
+  async execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
+    try {
+      await this.increaseStorageResource(job);
+    } catch (err) {
+      const service = await this.serviceInstanceTableService.findById(
+        job.data.serviceInstanceId,
+      );
+      const user = await this.userService.findById(service.userId);
+      await this.ticketingWrapperService.createTicket(
+        'ارتقا دیسک با مشکل مواجه شد',
+        ActAsTypeEnum.User,
+        null,
+        user.name,
+        'تیکت اتوماتیک',
+        user.username,
+      );
+      return Promise.reject(err);
+    }
   }
 
   async increaseStorageResource(

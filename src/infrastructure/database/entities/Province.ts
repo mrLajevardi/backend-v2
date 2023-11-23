@@ -13,15 +13,12 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Entity('Province', { schema: 'security' })
 export class Province {
   @PrimaryGeneratedColumn({
-    type: isTestingEnv() ? 'int' : 'decimal',
     name: 'Id',
-    // precision: 18,
-    // scale: 0,
   })
   id: number;
 
-  @Column('nvarchar', { name: 'ProvineName', nullable: true, length: 50 })
-  provineName: string | null;
+  @Column('nvarchar', { name: 'ProvinceName', nullable: true, length: 50 })
+  provinceName: string | null;
 
   @Column('nvarchar', { name: 'PhoneCode', nullable: true, length: 25 })
   phoneCode: string | null;

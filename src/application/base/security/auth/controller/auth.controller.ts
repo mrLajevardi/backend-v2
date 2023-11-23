@@ -106,9 +106,11 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req: SessionRequest): Promise<any> {
-    console.log('login', req.user);
-
-    return this.authService.login.getLoginToken(req.user.userId);
+    return this.authService.login.getLoginToken(
+      req.user.userId,
+      null,
+      req.user.aiAccessToken,
+    );
 
     // if (req.user.twoFactorAuth == TwoFaAuthTypeEnum.None){
     //   return this.authService.login.getLoginToken(req.user.userId);

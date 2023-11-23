@@ -46,4 +46,9 @@ export class UpdateCompanyDto {
   @IsOptional()
   @ApiProperty()
   companyAddress?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  LogoId?: string;
 }
