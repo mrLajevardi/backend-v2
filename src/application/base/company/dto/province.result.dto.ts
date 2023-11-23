@@ -18,7 +18,7 @@ export class ProvinceResultDto {
   toArray(item: Province): ProvinceResultDtoFormat {
     return {
       id: item.id,
-      provinceName: item.provineName,
+      provinceName: item.provinceName,
       phoneCode: item.phoneCode,
       cities:
         isArray(item.cities) && item.cities.length > 0

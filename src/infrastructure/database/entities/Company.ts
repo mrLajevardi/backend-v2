@@ -11,6 +11,7 @@ import { Province } from './Province';
 import { City } from './City';
 import { User } from './User';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { FileUpload } from './FileUpload';
 
 @Index('PK__Company__3213E83F6DC356F4', ['id'], { unique: true })
 @Entity('Company', { schema: 'security' })
@@ -42,10 +43,7 @@ export class Company {
   updateDate: Date | null;
 
   @PrimaryGeneratedColumn({
-    type: isTestingEnv() ? 'int' : 'decimal',
     name: 'Id',
-    // precision: 18,
-    // scale: 0,
   })
   id: number;
 
@@ -73,8 +71,12 @@ export class Company {
   @Column('nvarchar', { name: 'Address', nullable: true })
   companyAddress: string | null;
 
-  @Column('nvarchar', { name: 'Logo', nullable: true })
-  companyLogo: string | null;
+  @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'LogoId',
+    nullable: true,
+  })
+  LogoId: string | null;
 
   @ManyToOne(() => Province, (province) => province.companies)
   @JoinColumn([{ name: 'ProvinceId', referencedColumnName: 'id' }])
@@ -86,4 +88,8 @@ export class Company {
 
   @OneToMany(() => User, (user) => user.company)
   users: User[];
+
+  @ManyToOne(() => FileUpload, (file) => file.company)
+  @JoinColumn({ name: 'LogoId', referencedColumnName: 'streamId' })
+  companyLogo: FileUpload;
 }

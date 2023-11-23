@@ -50,6 +50,7 @@ export class CompanyTableService {
   async update(id: number, dto: UpdateCompanyDto): Promise<Company> {
     const item = await this.findById(id);
     const updateItem: Partial<Company> = Object.assign(item, dto);
+
     return await this.repository.save(updateItem);
   }
 

@@ -5,6 +5,7 @@ import {
   ProvinceResultDto,
   ProvinceResultDtoFormat,
 } from './province.result.dto';
+import { isNil } from 'lodash';
 
 export class CompanyResultDtoFormat {
   id: number;
@@ -15,6 +16,7 @@ export class CompanyResultDtoFormat {
   companyCode: string | null;
   economyCode: string | null;
   submittedCode: string | null;
+  companyLogo: string | null;
   province: ProvinceResultDtoFormat | null;
   city: CityResultDtoFormat | null;
 }
@@ -36,12 +38,14 @@ export class CompanyResultDto {
       companyCode: item.companyCode,
       economyCode: item.economyCode,
       submittedCode: item.submittedCode,
-      province:
-        item.province !== undefined
-          ? new ProvinceResultDto().toArray(item.province)
+      companyLogo:
+        item.companyLogo !== undefined && item.companyLogo !== null
+          ? item.companyLogo.streamId
           : null,
-      city:
-        item.city !== undefined ? new CityResultDto().toArray(item.city) : null,
+      province: !isNil(item.province)
+        ? new ProvinceResultDto().toArray(item.province)
+        : null,
+      city: !isNil(item.city) ? new CityResultDto().toArray(item.city) : null,
     };
   }
 }

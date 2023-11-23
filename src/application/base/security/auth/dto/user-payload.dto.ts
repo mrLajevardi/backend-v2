@@ -8,6 +8,7 @@ export class UserPayload {
   };
   isRobot?: number;
   robotToken?: string;
+  aiAccessToken?: string;
   isPublic?: boolean;
   twoFactorAuth?: number;
 }
