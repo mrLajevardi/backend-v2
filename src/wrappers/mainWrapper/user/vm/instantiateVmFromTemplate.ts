@@ -3,7 +3,7 @@ import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
-import process from 'process';
+import * as process from 'process';
 /**
  *
  * @param {String} authToken
