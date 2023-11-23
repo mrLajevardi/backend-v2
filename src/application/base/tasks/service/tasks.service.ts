@@ -11,6 +11,8 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { In } from 'typeorm';
 import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
+import { Task } from '../../../../wrappers/main-wrapper/service/user/vm/dto/get-media-item.dto';
+import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
 
 @Injectable()
 export class TasksService {
@@ -125,6 +127,14 @@ export class TasksService {
     });
     data = data.slice(0, 10);
     return Promise.resolve(data);
+  }
+
+  async getLastTaskErrorBy(serviceInstanceId: string): Promise<Tasks> {
+    const task = await this.taskTable.findOne({
+      where: { serviceInstanceId: serviceInstanceId, status: 'error' },
+      order: { startTime: { direction: 'DESC' } },
+    });
+    return task;
   }
 
   async getTask(
