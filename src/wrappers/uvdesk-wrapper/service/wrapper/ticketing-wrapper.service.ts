@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UvDeskWrapperService } from '../uv-desk-wrapper.service';
 import { ConfigService } from '@nestjs/config';
+import { ActAsTypeEnum } from './enum/act-as-type.enum';
 
 @Injectable()
 export class TicketingWrapperService {
@@ -8,7 +9,14 @@ export class TicketingWrapperService {
     private readonly uvDeskWrapperService: UvDeskWrapperService,
     private readonly configService: ConfigService,
   ) {}
-  async createTicket(message, actAsType, actAsEmail, name, subject, from) {
+  async createTicket(
+    message,
+    actAsType: ActAsTypeEnum,
+    actAsEmail,
+    name,
+    subject,
+    from,
+  ) {
     const endpoint = 'createTicketEndpoint';
     const wrapper =
       this.uvDeskWrapperService.getWrapper<typeof endpoint>(endpoint);
