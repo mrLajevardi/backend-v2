@@ -99,7 +99,7 @@ export class TasksService {
       },
       take: 10,
       order: {
-        taskId: 'DESC',
+        startTime: 'DESC',
       },
     });
     for (const task of customTasks) {
