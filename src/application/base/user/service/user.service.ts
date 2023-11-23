@@ -23,7 +23,7 @@ import { SecurityToolsService } from '../../security/security-tools/security-too
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { Like } from 'typeorm';
+import { getConnection, Like } from 'typeorm';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
@@ -45,6 +45,7 @@ import { LoginService } from '../../security/auth/service/login.service';
 import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { UserProfileResultDto } from '../dto/user-profile.result.dto';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -58,6 +59,7 @@ export class UserService {
     private readonly paymentService: PaymentService,
     private readonly notificationService: NotificationService,
     private readonly securityTools: SecurityToolsService,
+    private readonly connection: Connection,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -687,6 +689,7 @@ export class UserService {
 
     const userUpdatingData: UpdateUserDto = {
       email: data.email,
+      emailVerified: true,
     };
 
     const user = await this.userTable.update(
@@ -695,5 +698,40 @@ export class UserService {
     );
 
     return true;
+  }
+
+  async uploadAvatar(
+    options: SessionRequest,
+    file: Express.Multer.File,
+  ): Promise<any> {
+    const fileStream = file.buffer;
+    const fileName = Date.now().toString() + file.originalname;
+
+    const avatar = await this.connection
+      .createQueryBuilder()
+      .insert()
+      .into('FileUpload')
+      .values({ fileStream: fileStream, name: fileName })
+      .returning('Inserted.stream_id')
+      .execute();
+
+    // console.log('\n\n\n\n file: \n\n' , avatar , '\n\n\n\n name: \n\n' , avatar.raw[0].stream_id)
+    const updateUserData: UpdateUserDto = {
+      avatarId: avatar.raw[0].stream_id,
+    };
+
+    const updatedUser: User = await this.userTable.update(
+      options.user.userId,
+      updateUserData,
+    );
+
+    const user: User = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company', 'avatar'],
+    });
+
+    console.log('\n\n\n\n\n\n\n', user);
+
+    return new UserProfileResultDto().toArray(user);
   }
 }

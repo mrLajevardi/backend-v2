@@ -1,26 +1,47 @@
 import { User } from '../../../../infrastructure/database/entities/User';
-import { CompanyResultDto } from '../../company/dto/company.result.dto';
+import {
+  CompanyResultDto,
+  CompanyResultDtoFormat,
+} from '../../company/dto/company.result.dto';
+import { isNil } from 'lodash';
+
+export class UserProfileResultDtoFormat {
+  name: string;
+  family: string;
+  birthDate: Date;
+  phoneNumber: string;
+  email: string;
+  emailVerified: boolean;
+  personalCode: string;
+  personalVerification: boolean;
+  companyOwner: boolean;
+  avatar: any;
+  company: CompanyResultDtoFormat | null;
+}
 
 export class UserProfileResultDto {
-  collection(data: User[]) {
+  collection(data: User[]): UserProfileResultDtoFormat[] {
     return data.map((item: User) => {
       return this.toArray(item);
     });
   }
-  toArray(item: User) {
+
+  toArray(item: User): UserProfileResultDtoFormat {
     return {
       // id: item.id,
       name: item.name,
       family: item.family,
       birthDate: item.birthDate,
       phoneNumber: item.phoneNumber,
+      email: item.email,
+      emailVerified: item.emailVerified,
       personalCode: item.personalCode,
       personalVerification: item.personalVerification,
       companyOwner: item.companyOwner,
-      company:
-        item.company !== undefined && item.company !== null
-          ? new CompanyResultDto().toArray(item.company)
-          : null,
+      avatar: !isNil(item.avatar) ? item.avatar.streamId : null,
+      company: !isNil(item.company)
+        ? new CompanyResultDto().toArray(item.company)
+        : null,
     };
   }
 }

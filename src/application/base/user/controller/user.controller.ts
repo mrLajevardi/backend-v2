@@ -9,6 +9,8 @@ import {
   Res,
   Req,
   UseGuards,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -44,6 +46,7 @@ import { SecurityToolsService } from '../../security/security-tools/security-too
 import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('User')
 @Controller('users')
@@ -339,5 +342,17 @@ export class UserController {
     @Body() data: VerifyEmailDto,
   ): Promise<boolean> {
     return await this.userService.verifyEmailOtp(options, data);
+  }
+
+  @Post('/uploadAvatar')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'upload avatar profile for user' })
+  async uploadAvatar(
+    @Request() options: SessionRequest,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const data = await this.userService.uploadAvatar(options, file);
+
+    return data;
   }
 }
