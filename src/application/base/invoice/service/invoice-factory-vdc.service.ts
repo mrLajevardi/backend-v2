@@ -2,6 +2,7 @@ import { InvoiceDetailVdcModel } from '../interface/invoice-detail-vdc.interface
 import { InvoiceItems } from '../../../../infrastructure/database/entities/InvoiceItems';
 import { ServiceItemTypesTree } from '../../../../infrastructure/database/entities/views/service-item-types-tree';
 import {
+  DiskItemCodes,
   ItemTypeCodes,
   VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
@@ -175,9 +176,17 @@ export class InvoiceFactoryVdcService {
 
     res.ram = new VdcInvoiceDetailsInfoResultDto(ramModel);
 
+    const swapdisk = diskModel.find(
+      (disk) => disk.code.toLowerCase().trim() == DiskItemCodes.Swap,
+    );
+
     res.disk = diskModel
       .map((diskmodel) => {
-        if (diskmodel.code.trim() !== 'swap') {
+        if (diskmodel.code.trim() !== DiskItemCodes.Swap) {
+          if (diskmodel.code.toLowerCase().trim() == DiskItemCodes.Standard) {
+            diskmodel.fee += swapdisk.fee;
+          }
+
           const res: VdcInvoiceDetailsInfoResultDto =
             new VdcInvoiceDetailsInfoResultDto(diskmodel);
           return res;
