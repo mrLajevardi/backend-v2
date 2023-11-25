@@ -41,6 +41,8 @@ import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-ga
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
 import { FirewallService } from 'src/application/edge-gateway/service/firewall.service';
 import { FirewallActionValue } from 'src/wrappers/main-wrapper/service/user/firewall/enum/firewall-action-value.enum';
+import { TaskQueryTypes } from '../enum/task-query-types.enum';
+import { NatTypes } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-types.enum';
 
 // @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
@@ -386,7 +388,7 @@ export class TaskManagerService {
       customTaskId: customTaskId,
       vcloudTask: vcloudTask,
       target: 'task',
-      nextTask: 'finishVdcTask',
+      nextTask: 'createNetwork',
       requestOptions: requestOptions,
     });
   }
@@ -410,7 +412,7 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const network = await this.networkService.createNetwork(
-      '192.168.1.1',
+      '192.168.0.1',
       props['vdcId'],
       props['orgId'],
       props['edgeName'],
@@ -421,6 +423,7 @@ export class TaskManagerService {
       customTaskId,
       vcloudTask: network.__vcloudTask,
       target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
       requestOptions,
       nextTask: 'createDhcp',
     });
@@ -478,6 +481,7 @@ export class TaskManagerService {
       customTaskId,
       vcloudTask: dhcp.__vcloudTask,
       target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
       requestOptions,
       nextTask: 'createNat',
     });
@@ -492,10 +496,6 @@ export class TaskManagerService {
       serviceInstanceId,
     );
     const userId = service.userId;
-    const serviceProperties =
-      await this.serviceProperties.getAllServiceProperties<VdcProperties>(
-        service.id,
-      );
     const ipListProps = await this.servicePropertiesTable.find({
       where: {
         serviceInstanceId: service.id,
@@ -516,6 +516,7 @@ export class TaskManagerService {
         firewallMatch: NatFirewallMatchEnum.MatchExternalAddress,
         name: 'default_nat',
         priority: 0,
+        type: NatTypes.Snat,
       },
       options,
       service.id,
@@ -526,6 +527,7 @@ export class TaskManagerService {
       customTaskId,
       vcloudTask: taskId,
       target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
       requestOptions,
       nextTask: 'createIpSet',
     });
@@ -567,8 +569,9 @@ export class TaskManagerService {
       customTaskId,
       vcloudTask: taskId,
       target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
       requestOptions,
-      nextTask: 'createIpSet',
+      nextTask: 'createFirewall',
     });
   }
 
@@ -600,7 +603,7 @@ export class TaskManagerService {
         destinationFirewallGroups: null,
         sourceFirewallGroups: [{ id: ipSet.id }],
         enabled: true,
-        name: 'internal_rule',
+        name: 'internet_rule',
       },
     );
     const taskId = process.env.VCLOUD_BASE_URL + 'api/task/' + firewall.taskId;
@@ -608,9 +611,10 @@ export class TaskManagerService {
       serviceInstanceId,
       customTaskId,
       vcloudTask: taskId,
+      taskType: TaskQueryTypes.AdminTask,
       target: 'task',
       requestOptions,
-      nextTask: 'createIpSet',
+      nextTask: 'finishVdcTask',
     });
   }
   async createOrg(
@@ -1220,6 +1224,7 @@ export class TaskManagerService {
       },
       {
         status: 'success',
+        endTime: new Date(),
       },
     );
   }
@@ -1305,14 +1310,6 @@ export class TaskManagerService {
         endTime: new Date(),
       },
     );
-    this.taskQueue.add({
-      serviceInstanceId,
-      customTaskId,
-      vcloudTask: null,
-      target: null,
-      nextTask: 'createNetwork',
-      requestOptions,
-    });
   }
 
   async finishVgpuTask(

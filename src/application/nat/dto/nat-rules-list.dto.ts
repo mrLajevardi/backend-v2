@@ -58,7 +58,7 @@ export class NatRulesListDTO {
 
   @ApiProperty({ type: String, example: 'DNAT' })
   @IsString()
-  type?: string;
+  type: string;
 
   @ApiProperty({ type: ApplicationRefDto })
   applicationPortProfile?: ApplicationRefDto;
