@@ -57,4 +57,18 @@ export class TasksController {
   ): Promise<void> {
     return this.tasksService.cancelTask(options, vdcInstanceId, taskId);
   }
+
+  @ApiOperation({
+    summary: 'Retry a Task',
+  })
+  @ApiParam({ name: 'taskId', type: String })
+  @ApiResponse({
+    status: 201,
+  })
+  async retryCustomTasks(
+    @Request() options: SessionRequest,
+    @Param() taskId: string,
+  ): Promise<void> {
+    return this.tasksService.retryCustomTasks(options, taskId);
+  }
 }

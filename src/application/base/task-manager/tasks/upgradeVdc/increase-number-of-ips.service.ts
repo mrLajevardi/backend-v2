@@ -23,6 +23,8 @@ import { ServiceStatusEnum } from 'src/application/base/service/enum/service-sta
 import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
+import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-message.enum';
+import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
 
 @Injectable()
 export class IncreaseNumberOfIpsService
@@ -55,11 +57,11 @@ export class IncreaseNumberOfIpsService
       );
       const user = await this.userService.findById(service.userId);
       await this.ticketingWrapperService.createTicket(
-        'افزایش تعداد ایپی های کاربر به خطا خورد',
+        TicketsMessagesEnum.IncreaseNumberOfIpsFailure,
         ActAsTypeEnum.User,
         null,
         user.name,
-        'تیکت اتوماتیک',
+        TicketsSubjectEnum.AutomaticTicket,
         user.username,
       );
       console.log(err);

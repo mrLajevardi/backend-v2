@@ -20,6 +20,7 @@ import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 import { UserModule } from '../../user/user.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -46,6 +47,7 @@ describe('TasksService', () => {
         DatacenterModule,
         UserModule,
         EdgeGatewayModule,
+        // UvdeskWrapperModule,
       ],
       providers: [
         TaskManagerService,

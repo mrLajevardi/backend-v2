@@ -12,6 +12,11 @@ import { ServiceModule } from '../../service/service.module';
 import { SessionsModule } from '../../sessions/sessions.module';
 import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
 import { AbilityModule } from '../../security/ability/ability.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
+import { NatModule } from 'src/application/nat/nat.module';
+import { NetworksModule } from 'src/application/networks/networks.module';
+import { TaskManagerModule } from '../../task-manager/task-manager.module';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -31,6 +36,11 @@ describe('TasksController', () => {
         CrudModule,
         SessionsModule,
         OrganizationModule,
+        MainWrapperModule,
+        EdgeGatewayModule,
+        NatModule,
+        NetworksModule,
+        TaskManagerModule,
         forwardRef(() => ServiceModule),
       ],
       providers: [TasksService],

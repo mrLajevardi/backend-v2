@@ -11,6 +11,7 @@ import { GetDhcpDto } from 'src/application/networks/dto/get-dhcp.dto';
 import { GetDhcpBindingDto } from './dto/get-dhcp-binding.dto';
 import { DhcpPool } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/dhcp/dto/update-dhcp.dto';
 import { UpdateDhcpBindingBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/dhcp/dto/update-dhcp-bindings.dto';
+import { DhcpModeEnum } from './enum/dhcp-mode.enum';
 
 @Injectable()
 export class DhcpWrapperService {
@@ -149,7 +150,7 @@ export class DhcpWrapperService {
     dnsServers: string[], // limit 2
     leaseTime: number,
     networkId: string,
-    mode: string, // EDGE, NETWORK and RELAY
+    mode: DhcpModeEnum, // EDGE, NETWORK and RELAY
   ): Promise<VcloudTask> {
     const gateway: any = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,

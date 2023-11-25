@@ -18,6 +18,11 @@ import { TaskAdminService } from './service/task-admin.service';
 import { AbilityModule } from '../security/ability/ability.module';
 import { InvoicesModule } from '../invoice/invoices.module';
 import { UserModule } from '../user/user.module';
+import { TaskManagerModule } from '../task-manager/task-manager.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
+import { NatModule } from 'src/application/nat/nat.module';
+import { NetworksModule } from 'src/application/networks/networks.module';
 
 @Module({
   imports: [
@@ -26,6 +31,11 @@ import { UserModule } from '../user/user.module';
       name: 'tasks2',
     }),
     LoggerModule,
+    TaskManagerModule,
+    MainWrapperModule,
+    EdgeGatewayModule,
+    NatModule,
+    forwardRef(() => NetworksModule),
     // VdcModule,
     forwardRef(() => VdcModule),
     forwardRef(() => InvoicesModule),

@@ -13,6 +13,7 @@ import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.m
 import { VmDetailFactoryService } from './vm-detail.factory.service';
 import { VmDetailService } from './vm-detail.service';
 import { StoragePolicy } from '../dto/create-vm.dto';
+import { forwardRef } from '@nestjs/common';
 
 describe('VmService', () => {
   let service: VmService;
@@ -54,8 +55,8 @@ describe('VmService', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
-        NetworksModule,
         MainWrapperModule,
+        forwardRef(() => NetworksModule),
       ],
       providers: [VmService, VmDetailFactoryService, VmDetailService],
     }).compile();

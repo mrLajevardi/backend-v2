@@ -16,6 +16,8 @@ import { UserTableService } from 'src/application/base/crud/user-table/user-tabl
 import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
 import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
 import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
+import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-message.enum';
+import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
 @Injectable()
 export class UpgradeDiskResourcesService
   implements BaseTask<UpgradeVdcStepsEnum>
@@ -43,11 +45,11 @@ export class UpgradeDiskResourcesService
       );
       const user = await this.userService.findById(service.userId);
       await this.ticketingWrapperService.createTicket(
-        'ارتقا دیسک با مشکل مواجه شد',
+        TicketsMessagesEnum.IncreaseStorageResourceFailure,
         ActAsTypeEnum.User,
         null,
         user.name,
-        'تیکت اتوماتیک',
+        TicketsSubjectEnum.AutomaticTicket,
         user.username,
       );
       return Promise.reject(err);

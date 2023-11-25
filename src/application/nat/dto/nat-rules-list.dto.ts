@@ -17,7 +17,7 @@ export class NatRulesListDTO {
   })
   @IsString()
   @IsOptional()
-  id: string;
+  id?: string;
 
   @ApiProperty({ type: Boolean, required: true })
   @IsBoolean()
@@ -25,7 +25,7 @@ export class NatRulesListDTO {
 
   @ApiProperty({ type: Boolean, required: false })
   @IsBoolean()
-  logging: boolean;
+  logging?: boolean;
 
   @ApiProperty({ type: Number, required: false, example: 2 })
   @IsNumber()
@@ -58,7 +58,7 @@ export class NatRulesListDTO {
 
   @ApiProperty({ type: String, example: 'DNAT' })
   @IsString()
-  type?: string;
+  type: string;
 
   @ApiProperty({ type: ApplicationRefDto })
   applicationPortProfile?: ApplicationRefDto;

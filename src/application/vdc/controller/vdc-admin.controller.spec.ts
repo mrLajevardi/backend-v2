@@ -59,7 +59,7 @@ describe('VdcAdminController', () => {
         OrgService,
         EdgeService,
         NetworkService,
-        TaskManagerService,
+        // TaskManagerService,
         VgpuDnatService,
         VdcWrapperService,
       ],

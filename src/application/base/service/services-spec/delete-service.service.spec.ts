@@ -28,6 +28,7 @@ import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -57,6 +58,7 @@ describe('DeleteServiceService', () => {
         DatacenterModule,
         TaskManagerModule,
         EdgeGatewayModule,
+        UvdeskWrapperModule,
       ],
       providers: [
         ServiceService,
