@@ -11,6 +11,8 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { In } from 'typeorm';
 import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
+import { TaskManagerService } from '../../task-manager/service/task-manager.service';
+import { TasksEnum } from '../../task-manager/enum/tasks.enum';
 
 @Injectable()
 export class TasksService {
@@ -21,6 +23,7 @@ export class TasksService {
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly configsTable: ConfigsTableService,
     private readonly organizationTableService: OrganizationTableService,
+    private readonly taskManagerService: TaskManagerService,
   ) {}
 
   async getTasksList(
@@ -200,5 +203,24 @@ export class TasksService {
     );
     await mainWrapper.user.tasks.cancelTask(session, taskId);
     return;
+  }
+
+  async retryCustomTasks(
+    options: SessionRequest,
+    taskId: string,
+  ): Promise<void> {
+    const task = await this.taskTable.findById(taskId);
+    if (task.userId !== options.user.userId) {
+      throw new ForbiddenException();
+    }
+    await this.taskManagerService.createFlow(
+      task.operation as TasksEnum,
+      task.serviceInstanceId,
+      JSON.parse(task.operation),
+      {
+        reuseTask: true,
+        task,
+      },
+    );
   }
 }

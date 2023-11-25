@@ -27,6 +27,7 @@ import { UserPayload } from '../../security/auth/dto/user-payload.dto';
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { Inject, forwardRef } from '@nestjs/common';
+import { ServiceStatusEnum } from '../../service/enum/service-status.enum';
 
 // @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
@@ -101,7 +102,7 @@ export class TaskManagerService {
           id: job.data.serviceInstanceId,
         },
         {
-          status: 3,
+          status: ServiceStatusEnum.Error,
         },
       );
       return done();
@@ -1086,6 +1087,7 @@ export class TaskManagerService {
         id: serviceInstanceId,
       },
       {
+        retryCount: 0,
         status: 3,
       },
     );

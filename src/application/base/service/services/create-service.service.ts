@@ -27,6 +27,11 @@ import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 import { TaskManagerService } from '../../task-manager/service/task-manager.service';
 import { TasksEnum } from '../../task-manager/enum/tasks.enum';
+import { ServiceStatusEnum } from '../enum/service-status.enum';
+import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
+import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
+import { TicketsSubjectEnum } from '../../ticket/enum/tickets-subject.enum';
+import { TicketsMessagesEnum } from '../../ticket/enum/tickets-message.enum';
 
 @Injectable()
 export class CreateServiceService {
@@ -43,6 +48,7 @@ export class CreateServiceService {
     private readonly discountsTable: DiscountsTableService,
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly newTaskManagerService: TaskManagerService,
+    private readonly ticketingWrapperService: TicketingWrapperService,
   ) {}
 
   async createService(
@@ -275,8 +281,20 @@ export class CreateServiceService {
         id: serviceInstanceId,
       },
     });
-    if (service.status === 1 || service.status === 3) {
+    const user = await this.userService.findById(options.user.userId);
+    const retryCount = service.retryCount === null ? 0 : service.retryCount;
+    if (service.status !== ServiceStatusEnum.Error || retryCount > 2) {
       throw new BadRequestException();
+    }
+    if (retryCount === 1) {
+      await this.ticketingWrapperService.createTicket(
+        TicketsMessagesEnum.VdcCreationFailure,
+        ActAsTypeEnum.User,
+        null,
+        user.name,
+        TicketsSubjectEnum.AutomaticTicket,
+        user.username,
+      );
     }
     const task = await this.tasksTableService.create({
       userId: options.user.userId,
@@ -293,6 +311,7 @@ export class CreateServiceService {
       },
       {
         status: 1,
+        retryCount: retryCount + 1,
       },
     );
     await this.taskManagerService.addTask({
