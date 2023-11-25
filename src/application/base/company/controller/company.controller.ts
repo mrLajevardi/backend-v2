@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -10,6 +19,7 @@ import { CompanyService } from '../service/company.service';
 import { CompanyResultDto } from '../dto/company.result.dto';
 import { CompanyUpdatePhoneNumberDto } from '../dto/company-update-phone-number.dto';
 import { CompanyUpdateAddressDto } from '../dto/company-update-address.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Company')
 @Controller('company')
@@ -68,5 +78,23 @@ export class CompanyController {
     );
 
     return new CompanyResultDto().toArray(updatedCompany);
+  }
+
+  @Post('/uploadLogo/:companyId')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiParam({
+    name: 'companyId',
+    type: String,
+    description: 'companyId about a specify company',
+  })
+  @ApiOperation({ summary: 'upload logo for company' })
+  async uploadLogo(
+    @Param('companyId') companyId: number,
+    @Request() options: SessionRequest,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const data = await this.companyService.uploadLogo(options, companyId, file);
+
+    return data;
   }
 }

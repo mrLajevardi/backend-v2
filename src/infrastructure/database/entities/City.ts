@@ -15,10 +15,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Entity('City', { schema: 'security' })
 export class City {
   @PrimaryGeneratedColumn({
-    type: isTestingEnv() ? 'int' : 'decimal',
     name: 'Id',
-    // precision: 18,
-    // scale: 0,
   })
   id: number;
 

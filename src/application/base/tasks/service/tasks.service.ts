@@ -13,6 +13,8 @@ import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 import { TaskManagerService } from '../../task-manager/service/task-manager.service';
 import { TasksEnum } from '../../task-manager/enum/tasks.enum';
+import { Task } from '../../../../wrappers/main-wrapper/service/user/vm/dto/get-media-item.dto';
+import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
 
 @Injectable()
 export class TasksService {
@@ -128,6 +130,14 @@ export class TasksService {
     });
     data = data.slice(0, 10);
     return Promise.resolve(data);
+  }
+
+  async getLastTaskErrorBy(serviceInstanceId: string): Promise<Tasks> {
+    const task = await this.taskTable.findOne({
+      where: { serviceInstanceId: serviceInstanceId, status: 'error' },
+      order: { startTime: { direction: 'DESC' } },
+    });
+    return task;
   }
 
   async getTask(

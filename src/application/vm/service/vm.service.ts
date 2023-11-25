@@ -705,8 +705,8 @@ export class VmService {
     )[0];
 
     const snapShotInf: SnapShotDetails = {
-      snapShotTime: snapshotSection.snapshot.created,
-      snapShotSize: snapshotSection.snapshot.size,
+      snapShotTime: snapshotSection.snapshot?.created,
+      snapShotSize: snapshotSection.snapshot?.size,
     };
 
     return Promise.resolve(snapShotInf);
