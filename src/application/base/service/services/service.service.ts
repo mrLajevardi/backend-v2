@@ -468,16 +468,15 @@ export class ServiceService {
           await this.serviceFactory.getConfigServiceInstance(serviceInstance)
         ).cpuSpeed;
 
+        vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
+      }
+      if (vdcItems !== null) {
         const info = ({ isTicketSent } =
           await this.serviceFactory.getPropertiesOfServiceInstance(
             serviceInstance,
           ));
         // (daysLeft = info.daysLeft),
         isTicketSent = info.isTicketSent;
-
-        vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
-      }
-      if (vdcItems !== null) {
         model = await this.serviceFactory.configModelServiceInstanceList(
           serviceInstance,
           options,
