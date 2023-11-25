@@ -35,7 +35,7 @@ import { NetworksModule } from 'src/application/networks/networks.module';
     MainWrapperModule,
     EdgeGatewayModule,
     NatModule,
-    NetworksModule,
+    forwardRef(() => NetworksModule),
     // VdcModule,
     forwardRef(() => VdcModule),
     forwardRef(() => InvoicesModule),

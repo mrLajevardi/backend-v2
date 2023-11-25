@@ -15,6 +15,11 @@ import { ServicePropertiesModule } from '../../service-properties/service-proper
 import { ServicePropertiesService } from '../../service-properties/service-properties.service';
 import { ServiceModule } from '../../service/service.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
+import { NatModule } from 'src/application/nat/nat.module';
+import { NetworksModule } from 'src/application/networks/networks.module';
+import { TaskManagerModule } from '../../task-manager/task-manager.module';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -37,6 +42,11 @@ describe('TaskManagerService', () => {
         ServiceModule,
         InvoicesModule,
         VdcModule,
+        MainWrapperModule,
+        EdgeGatewayModule,
+        NatModule,
+        NetworksModule,
+        TaskManagerModule,
       ],
       providers: [
         TaskManagerService,
