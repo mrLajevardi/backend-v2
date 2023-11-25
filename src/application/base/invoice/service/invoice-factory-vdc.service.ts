@@ -209,9 +209,10 @@ export class InvoiceFactoryVdcService {
       name: vmModel.datacenterName,
     }; // TODO about DatacenterName and DatacenterTitle;
 
-    res.finalPrice = ramModel.finalAmount;
+    // Math.round((item.fee ? item.fee : item.price) / 1000) * 1000
+    res.finalPrice = Math.round(ramModel.finalAmount / 1000) * 1000;
 
-    res.rawAmount = ramModel.rawAmount;
+    res.rawAmount = Math.round(ramModel.rawAmount / 1000) * 1000;
 
     res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
 
