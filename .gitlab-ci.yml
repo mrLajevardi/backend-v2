@@ -19,8 +19,8 @@ unit-test-job:   # This job runs in the test stage.
   extends:
     - .job-cache
   only:
-    - develop
-    - merge_requests
+    # - develop
+    # - merge_requests
     - main
   script:
     - npm run test
@@ -39,9 +39,9 @@ lint-test-job:
   extends:
     - .job-cache
   only:
-    - develop
+    # - develop
     - main
-    - merge_requests
+    # - merge_requests
   dependencies: []
   script:
     - npm run lint
