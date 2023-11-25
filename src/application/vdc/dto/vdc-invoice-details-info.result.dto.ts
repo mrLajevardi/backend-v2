@@ -5,7 +5,7 @@ export class VdcInvoiceDetailsInfoResultDto extends BaseResultDto {
   constructor(item: InvoiceDetailVdcModel) {
     super();
 
-    this.price = Math.round(item.fee ? item.fee : item.price);
+    this.price = (Math.round((item.fee ? item.fee : item.price) / 1000))*1000;
     this.title = item.title;
     this.unit = item.unit;
     this.value = item.value.toString();
