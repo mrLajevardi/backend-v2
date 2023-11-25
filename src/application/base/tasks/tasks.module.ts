@@ -18,6 +18,7 @@ import { TaskAdminService } from './service/task-admin.service';
 import { AbilityModule } from '../security/ability/ability.module';
 import { InvoicesModule } from '../invoice/invoices.module';
 import { UserModule } from '../user/user.module';
+import { TaskManagerModule } from '../task-manager/task-manager.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UserModule } from '../user/user.module';
       name: 'tasks2',
     }),
     LoggerModule,
+    TaskManagerModule,
     // VdcModule,
     forwardRef(() => VdcModule),
     forwardRef(() => InvoicesModule),
