@@ -21,13 +21,11 @@ export class TasksController {
     status: 201,
     description: 'The item has been successfully created',
   })
-  @ApiParam({ name: 'vdcInstanceId' })
-  @Get(':vdcInstanceId')
+  @Get()
   async getTasks(
     @Request() options: SessionRequest,
-    @Param('vdcInstanceId') vdcInstanceId: string,
   ): Promise<GetTasksReturnDto[]> {
-    return this.tasksService.getTasksList(options, vdcInstanceId);
+    return this.tasksService.getTasksList(options);
   }
 
   @ApiOperation({ summary: 'Create a new item' })
@@ -35,15 +33,13 @@ export class TasksController {
     status: 201,
     description: 'The item has been successfully created',
   })
-  @ApiParam({ name: 'vdcInstanceId' })
   @ApiParam({ name: 'taskId' })
-  @Get(':vdcInstanceId/task/:taskId')
+  @Get(':taskId')
   async getTask(
     @Request() options: SessionRequest,
-    @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('taskId') taskId: string,
   ): Promise<GetTasksReturnDto> {
-    return this.tasksService.getTask(options, vdcInstanceId, taskId);
+    return this.tasksService.getTask(options, taskId);
   }
 
   @ApiOperation({ summary: 'Create a new item' })
@@ -60,5 +56,19 @@ export class TasksController {
     @Param('taskId') taskId: string,
   ): Promise<void> {
     return this.tasksService.cancelTask(options, vdcInstanceId, taskId);
+  }
+
+  @ApiOperation({
+    summary: 'Retry a Task',
+  })
+  @ApiParam({ name: 'taskId', type: String })
+  @ApiResponse({
+    status: 201,
+  })
+  async retryCustomTasks(
+    @Request() options: SessionRequest,
+    @Param() taskId: string,
+  ): Promise<void> {
+    return this.tasksService.retryCustomTasks(options, taskId);
   }
 }

@@ -157,13 +157,14 @@ export class VmService {
       {
         computerName: data.computerName,
         name: data.name,
-        primaryNetworkIndex: data.primaryNetwork,
+        primaryNetworkIndex: data.primaryNetworkIndex,
         networks: data.networks,
         powerOn: data.powerOn,
         description: data.description,
         sourceHref: sourceHref,
         sourceId: data.templateId,
         sourceName: data.templateName,
+        storage: data.storage,
       },
     );
     await this.loggerService.info(
@@ -471,7 +472,11 @@ export class VmService {
       const cpu = recordItem.numberOfCpus;
       const storage = recordItem.totalStorageAllocatedMb;
       const memory = recordItem.memoryMB;
+      const forbiddenStatusList = ['FAILED_CREATION', 'UNKNOWN', 'UNRESOLVED'];
       const status = VmStatusEnum[recordItem.status];
+      if (forbiddenStatusList.includes(recordItem.status)) {
+        continue;
+      }
       const containerId = recordItem.container.split('vApp/')[1];
       const countOfNetworks = (
         await this.getVmNetworkSection(options, serviceInstanceId, id)
@@ -704,8 +709,8 @@ export class VmService {
     )[0];
 
     const snapShotInf: SnapShotDetails = {
-      snapShotTime: snapshotSection.snapshot.created,
-      snapShotSize: snapshotSection.snapshot.size,
+      snapShotTime: snapshotSection.snapshot?.created,
+      snapShotSize: snapshotSection.snapshot?.size,
     };
 
     return Promise.resolve(snapShotInf);
@@ -900,7 +905,7 @@ export class VmService {
       props.vdcId,
     );
     const data: VmOsInfo = {
-      MicrosoftWindows: [],
+      // MicrosoftWindows: [],
     };
     hardwareInfo.supportedOperatingSystems.operatingSystemFamilyInfo.forEach(
       (osFamily) => {

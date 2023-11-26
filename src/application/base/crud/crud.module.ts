@@ -43,6 +43,9 @@ import { ServiceReportsViewModule } from './service-reports-view/service-reports
 import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-item-types-tree.module';
 import { TemplatesTableModule } from './templates/templates-table.module';
 import { CompanyTableModule } from './company-table/company-table.module';
+import { ProvinceTableModule } from './province-table/province-table.module';
+import { FileTableService } from './file-table/file-table.service';
+import { FileTableModule } from './file-table/file-table.module';
 
 @Module({
   imports: [
@@ -91,6 +94,8 @@ import { CompanyTableModule } from './company-table/company-table.module';
     ServiceItemTypesTreeModule,
     TemplatesTableModule,
     CompanyTableModule,
+    ProvinceTableModule,
+    FileTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -138,6 +143,8 @@ import { CompanyTableModule } from './company-table/company-table.module';
     ServiceItemTypesTreeModule,
     TemplatesTableModule,
     CompanyTableModule,
+    ProvinceTableModule,
+    FileTableModule,
   ],
 })
 export class CrudModule {}

@@ -12,6 +12,8 @@ import { CreateVmFromTemplate } from '../dto/create-vm-from-template.dto';
 import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
 import { VmDetailFactoryService } from './vm-detail.factory.service';
 import { VmDetailService } from './vm-detail.service';
+import { StoragePolicy } from '../dto/create-vm.dto';
+import { forwardRef } from '@nestjs/common';
 
 describe('VmService', () => {
   let service: VmService;
@@ -31,10 +33,11 @@ describe('VmService', () => {
       },
     ],
     powerOn: true,
-    primaryNetwork: 5,
+    primaryNetworkIndex: 5,
     templateId: 'string',
     templateName: 'string',
     description: 'string',
+    storage: { sizeMb: 12, policyId: '' },
   };
   const id = '1';
 
@@ -52,8 +55,8 @@ describe('VmService', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
-        NetworksModule,
         MainWrapperModule,
+        forwardRef(() => NetworksModule),
       ],
       providers: [VmService, VmDetailFactoryService, VmDetailService],
     }).compile();

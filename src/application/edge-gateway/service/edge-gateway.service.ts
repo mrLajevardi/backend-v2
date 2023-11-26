@@ -164,6 +164,16 @@ export class EdgeGatewayService {
     if (search) {
       filter = filter + `;(name==*${search}*)`;
     }
+
+    if (props['edgeName'] === undefined) {
+      return Promise.resolve({
+        resultTotal: 0,
+        page: 0,
+        pageSize: 0,
+        values: [],
+        pageCount: 0,
+      });
+    }
     const ipSetsList = await this.ipSetsWrapperService.getIPSetsList(
       session,
       page,

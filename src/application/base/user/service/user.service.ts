@@ -23,7 +23,7 @@ import { SecurityToolsService } from '../../security/security-tools/security-too
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { Like } from 'typeorm';
+import { getConnection, Like } from 'typeorm';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
@@ -44,6 +44,8 @@ import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
 import { LoginService } from '../../security/auth/service/login.service';
 import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
+import { UserProfileResultDto } from '../dto/user-profile.result.dto';
+import { Connection } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -57,6 +59,7 @@ export class UserService {
     private readonly paymentService: PaymentService,
     private readonly notificationService: NotificationService,
     private readonly securityTools: SecurityToolsService,
+    private readonly connection: Connection,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -588,13 +591,14 @@ export class UserService {
 
     // verify user with api and change personalVerification to true
 
-    const updatedUser = await this.userTable.updateWithOptions(
-      userProfileData,
-      { reload: true },
-      { where: { id: options.user.userId }, relations: ['company'] },
-    );
+    await this.userTable.update(options.user.userId, userProfileData);
 
-    return await this.getUserProfileDto(updatedUser);
+    const userWithRelation = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company'],
+    });
+
+    return new UserProfileResultDto().toArray(userWithRelation);
   }
 
   async getUserProfile(options: SessionRequest) {
@@ -604,9 +608,7 @@ export class UserService {
       relations: ['company'],
     });
 
-    const userProfileDto: UserProfileDto = await this.getUserProfileDto(user);
-
-    return userProfileDto;
+    return new UserProfileResultDto().toArray(user);
   }
 
   async changeUserPhoneNumber(
@@ -627,12 +629,17 @@ export class UserService {
       username: 'U-' + data.phoneNumber,
     };
 
+    // Update User in Cloud Director
+    //Disable
+    //Delete
+    //ReCreate
+
     const updatedUser = await this.userTable.update(
       options.user.userId,
       userUpdatingData,
     );
 
-    return await this.getUserProfileDto(updatedUser);
+    return new UserProfileResultDto().toArray(updatedUser);
   }
 
   async personalVerification(options: SessionRequest) {
@@ -649,27 +656,7 @@ export class UserService {
       relations: ['company'],
     });
 
-    return await this.getUserProfileDto(user);
-  }
-
-  async getUserProfileDto(user: User): Promise<UserProfileDto> {
-    return {
-      name: user.name,
-      family: user.family,
-      email: user.email,
-      birthDate: user.birthDate,
-      phoneNumber: user.phoneNumber,
-      personalCode: user.personalCode,
-      personalVerification: user.personalVerification,
-      company: user.company
-        ? {
-            companyName: user.company.companyName,
-            companyCode: user.company.companyCode,
-            economyCode: user.company.economyCode,
-            submittedCode: user.company.submittedCode,
-          }
-        : undefined,
-    };
+    return new UserProfileResultDto().toArray(updatedUser);
   }
 
   async sendOtpToEmail(
@@ -707,6 +694,7 @@ export class UserService {
 
     const userUpdatingData: UpdateUserDto = {
       email: data.email,
+      emailVerified: true,
     };
 
     const user = await this.userTable.update(
@@ -715,5 +703,40 @@ export class UserService {
     );
 
     return true;
+  }
+
+  async uploadAvatar(
+    options: SessionRequest,
+    file: Express.Multer.File,
+  ): Promise<any> {
+    const fileStream = file.buffer;
+    const fileName = Date.now().toString() + file.originalname;
+
+    const avatar = await this.connection
+      .createQueryBuilder()
+      .insert()
+      .into('FileUpload')
+      .values({ fileStream: fileStream, name: fileName })
+      .returning('Inserted.stream_id')
+      .execute();
+
+    // console.log('\n\n\n\n file: \n\n' , avatar , '\n\n\n\n name: \n\n' , avatar.raw[0].stream_id)
+    const updateUserData: UpdateUserDto = {
+      avatarId: avatar.raw[0].stream_id,
+    };
+
+    const updatedUser: User = await this.userTable.update(
+      options.user.userId,
+      updateUserData,
+    );
+
+    const user: User = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company', 'avatar'],
+    });
+
+    console.log('\n\n\n\n\n\n\n', user);
+
+    return new UserProfileResultDto().toArray(user);
   }
 }

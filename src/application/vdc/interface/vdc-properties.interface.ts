@@ -4,4 +4,5 @@ export interface VdcProperties {
   edgeName?: string;
   genId?: string;
   name: string;
+  edgeIpRange?: string;
 }

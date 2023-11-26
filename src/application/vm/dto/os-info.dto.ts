@@ -1,5 +1,5 @@
 export class VmOsInfo {
-  MicrosoftWindows: MicrosoftWindow[];
+  // MicrosoftWindows: MicrosoftWindow[];
 }
 
 interface MicrosoftWindow {

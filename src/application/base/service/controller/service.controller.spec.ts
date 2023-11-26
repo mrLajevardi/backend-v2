@@ -22,6 +22,7 @@ import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.servi
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -44,6 +45,7 @@ describe('ServiceController', () => {
         DatacenterModule,
         TaskManagerModule,
         EdgeGatewayModule,
+        UvdeskWrapperModule,
       ],
       providers: [
         ServiceAdminService,

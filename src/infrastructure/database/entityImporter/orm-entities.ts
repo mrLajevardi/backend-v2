@@ -50,6 +50,9 @@ import { ServiceReports } from '../entities/views/service-reports';
 import { ServiceItemTypesTree } from '../entities/views/service-item-types-tree';
 import { Templates } from '../entities/Templates';
 import { Company } from '../entities/Company';
+import { Province } from '../entities/Province';
+import { City } from '../entities/City';
+import { FileUpload } from '../entities/FileUpload';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -78,6 +81,9 @@ export const dbEntities = [
   SystemSettings,
   User,
   Company,
+  Province,
+  City,
+
   // services Schema
   Configs,
   Discounts,
@@ -106,4 +112,5 @@ export const dbEntities = [
   Transactions,
   ServiceReports,
   ServiceItems,
+  FileUpload,
 ];

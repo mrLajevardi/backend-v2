@@ -12,7 +12,6 @@ import { UserModule } from 'src/application/base/user/user.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 import { AbilityModule } from 'src/application/base/security/ability/ability.module';
-import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { BullModule } from '@nestjs/bull';
 import { forwardRef } from '@nestjs/common';
 import { VgpuModule } from 'src/application/vgpu/vgpu.module';
@@ -59,7 +58,7 @@ describe('VdcAdminController', () => {
         OrgService,
         EdgeService,
         NetworkService,
-        TaskManagerService,
+        // TaskManagerService,
         VgpuDnatService,
         VdcWrapperService,
       ],

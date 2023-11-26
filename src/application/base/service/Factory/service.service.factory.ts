@@ -1,6 +1,9 @@
 import { GetServicesReturnDto } from '../dto/return/get-services.dto';
 import { GetOrgVdcResult } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
-import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
+import {
+  GetAllVdcServiceWithItemsResultDto,
+  TaskDetail,
+} from '../dto/get-all-vdc-service-with-items-result.dto';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
 import { ServiceItemDto } from '../dto/service-item.dto';
 import { Inject, Injectable } from '@nestjs/common';
@@ -16,6 +19,8 @@ import { SystemSettingsTableService } from '../../crud/system-settings-table/sys
 import { ServiceStatusEnum } from '../enum/service-status.enum';
 import { EdgeGatewayService } from '../../../edge-gateway/service/edge-gateway.service';
 import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
+import { TasksService } from '../../tasks/service/tasks.service';
+import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -26,6 +31,7 @@ export class ServiceServiceFactory {
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
     private readonly edgeGatewayService: EdgeGatewayService,
+    private readonly taskService: TasksService,
   ) {}
   public async getPropertiesOfServiceInstance(
     serviceInstance: GetServicesReturnDto,
@@ -69,6 +75,24 @@ export class ServiceServiceFactory {
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
   ) {
+    async function getTask() {
+      let task: Tasks = null;
+      let taskDetail: TaskDetail = null;
+      if (serviceInstance.status == ServiceStatusEnum.Error) {
+        task = await this.taskService.getLastTaskErrorBy(serviceInstance.id);
+        taskDetail = {
+          details: task.details,
+          startTime: task.startTime,
+          taskId: task.taskId,
+          operation: task.operation,
+          currentStep: task.currentStep,
+        };
+      }
+      return taskDetail;
+    }
+
+    const taskDetail = await getTask.call(this);
+
     const model: GetAllVdcServiceWithItemsResultDto =
       new GetAllVdcServiceWithItemsResultDto(
         serviceInstance.id,
@@ -80,6 +104,7 @@ export class ServiceServiceFactory {
         serviceInstance.daysLeft,
         isTicketSent,
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
+        taskDetail,
       );
 
     //Cpu , Ram , Disk , Vm

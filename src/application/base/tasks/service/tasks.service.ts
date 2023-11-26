@@ -10,6 +10,11 @@ import { VcloudErrorException } from 'src/infrastructure/exceptions/vcloud-error
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { In } from 'typeorm';
 import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
+import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
+import { TaskManagerService } from '../../task-manager/service/task-manager.service';
+import { TasksEnum } from '../../task-manager/enum/tasks.enum';
+import { Task } from '../../../../wrappers/main-wrapper/service/user/vm/dto/get-media-item.dto';
+import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
 
 @Injectable()
 export class TasksService {
@@ -19,62 +24,61 @@ export class TasksService {
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly configsTable: ConfigsTableService,
+    private readonly organizationTableService: OrganizationTableService,
+    private readonly taskManagerService: TaskManagerService,
   ) {}
 
   async getTasksList(
     options: SessionRequest,
-    vdcInstanceId: string,
   ): Promise<GetTasksReturnDto[] | null> {
     const userId = options.user.userId;
-    const props: any =
-      await this.servicePropertiesService.getAllServiceProperties(
-        vdcInstanceId,
-      );
-    const service = await this.serviceInstancesTable.findById(vdcInstanceId);
-    let session;
-    let tasks;
-    if (service.serviceTypeId === 'aradAi') {
-      return Promise.resolve(null);
-    }
-    if (service.serviceTypeId === 'vgpu') {
-      session = await this.sessionService.checkAdminSession();
-      const configsData = await this.configsTable.find({
-        where: {
-          propertyKey: In(['config.vgpu.orgName', 'config.vgpu.orgId']),
-        },
-      });
-      const configs: any = {};
-      configsData.forEach((property) => {
-        configs[property.propertyKey] = property.value;
-      });
-      const { 'config.vgpu.orgName': orgName, 'config.vgpu.orgId': orgId } =
-        configs;
-      const filter = `objectName==${vdcInstanceId + 'VM'}`;
-      tasks = await mainWrapper.user.vdc.vcloudQuery(
-        session,
-        {
-          type: 'task',
-          page: 1,
-          pageSize: 10,
-          sortDesc: 'startDate',
-          filter,
-        },
-        {
-          'X-vCloud-Authorization': orgName,
-          'X-VMWARE-VCLOUD-AUTH-CONTEXT': orgName,
-          'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgId,
-        },
-      );
-    }
-    if (service.serviceTypeId === 'vdc') {
-      session = await this.sessionService.checkUserSession(userId, props.orgId);
-      tasks = await mainWrapper.user.vdc.vcloudQuery(session, {
-        type: 'task',
-        page: 1,
-        pageSize: 10,
-        sortDesc: 'startDate',
-      });
-    }
+    const org = await this.organizationTableService.findOne({
+      where: {
+        user: { id: userId },
+      },
+    });
+    // let session;
+    // let tasks;
+    // if (service.serviceTypeId === 'aradAi') {
+    //   return Promise.resolve(null);
+    // }
+    // if (service.serviceTypeId === 'vgpu') {
+    //   session = await this.sessionService.checkAdminSession();
+    //   const configsData = await this.configsTable.find({
+    //     where: {
+    //       propertyKey: In(['config.vgpu.orgName', 'config.vgpu.orgId']),
+    //     },
+    //   });
+    //   const configs: any = {};
+    //   configsData.forEach((property) => {
+    //     configs[property.propertyKey] = property.value;
+    //   });
+    //   const { 'config.vgpu.orgName': orgName, 'config.vgpu.orgId': orgId } =
+    //     configs;
+    //   const filter = `objectName==${vdcInstanceId + 'VM'}`;
+    //   tasks = await mainWrapper.user.vdc.vcloudQuery(
+    //     session,
+    //     {
+    //       type: 'task',
+    //       page: 1,
+    //       pageSize: 10,
+    //       sortDesc: 'startDate',
+    //       filter,
+    //     },
+    //     {
+    //       'X-vCloud-Authorization': orgName,
+    //       'X-VMWARE-VCLOUD-AUTH-CONTEXT': orgName,
+    //       'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgId,
+    //     },
+    //   );
+    // }
+    const session = await this.sessionService.checkUserSession(userId, org.id);
+    const tasks = await mainWrapper.user.vdc.vcloudQuery(session, {
+      type: 'task',
+      page: 1,
+      pageSize: 10,
+      sortDesc: 'startDate',
+    });
     if (!tasks) {
       throw new VcloudErrorException();
     }
@@ -96,11 +100,11 @@ export class TasksService {
     });
     const customTasks = await this.taskTable.find({
       where: {
-        serviceInstanceId: vdcInstanceId,
+        userId,
       },
       take: 10,
       order: {
-        taskId: 'DESC',
+        startTime: 'DESC',
       },
     });
     for (const task of customTasks) {
@@ -128,43 +132,45 @@ export class TasksService {
     return Promise.resolve(data);
   }
 
+  async getLastTaskErrorBy(serviceInstanceId: string): Promise<Tasks> {
+    const task = await this.taskTable.findOne({
+      where: { serviceInstanceId: serviceInstanceId, status: 'error' },
+      order: { startTime: { direction: 'DESC' } },
+    });
+    return task;
+  }
+
   async getTask(
     options: SessionRequest,
-    vdcInstanceId: string,
     taskId: string,
   ): Promise<GetTasksReturnDto | null> {
     const userId = options.user.userId;
-    const props: any =
-      await this.servicePropertiesService.getAllServiceProperties(
-        vdcInstanceId,
-      );
+    const org = await this.organizationTableService.findOne({
+      where: {
+        user: { id: userId },
+      },
+    });
     let session;
     const customTask = await this.taskTable.findById(taskId);
-    const service = await this.serviceInstancesTable.findById(vdcInstanceId);
-    console.log(service);
     let data;
     if (isEmpty(customTask)) {
-      if (service.serviceTypeId === 'aradAi') {
-        return Promise.resolve(null);
-      }
-      if (service.serviceTypeId === 'vgpu') {
-        session = await this.sessionService.checkAdminSession();
-      }
-      if (service.serviceTypeId === 'vdc') {
-        session = await this.sessionService.checkUserSession(
-          userId,
-          props.orgId,
-        );
-      }
+      // if (service.serviceTypeId === 'aradAi') {
+      //   return Promise.resolve(null);
+      // }
+      // if (service.serviceTypeId === 'vgpu') {
+      //   session = await this.sessionService.checkAdminSession();
+      // }
+      // if (service.serviceTypeId === 'vdc') {
+      // }
+      session = await this.sessionService.checkUserSession(userId, org.id);
       const vcloudTask = await mainWrapper.user.tasks.getTask(session, taskId);
-      console.log(vcloudTask.data);
-      const ownerName = vcloudTask.data.owner.name;
-      if (
-        service.serviceTypeId === 'vgpu' &&
-        ownerName.slice(0, ownerName.length - 2) !== service.id
-      ) {
-        throw new ForbiddenException();
-      }
+      // const ownerName = vcloudTask.data.owner.name;
+      // if (
+      //   service.serviceTypeId === 'vgpu' &&
+      //   ownerName.slice(0, ownerName.length - 2) !== service.id
+      // ) {
+      //   throw new ForbiddenException();
+      // }
       let taskDetail = null;
       if (vcloudTask.data.status === 'error') {
         taskDetail = vcloudTask.data.details;
@@ -207,5 +213,24 @@ export class TasksService {
     );
     await mainWrapper.user.tasks.cancelTask(session, taskId);
     return;
+  }
+
+  async retryCustomTasks(
+    options: SessionRequest,
+    taskId: string,
+  ): Promise<void> {
+    const task = await this.taskTable.findById(taskId);
+    if (task.userId !== options.user.userId) {
+      throw new ForbiddenException();
+    }
+    await this.taskManagerService.createFlow(
+      task.operation as TasksEnum,
+      task.serviceInstanceId,
+      JSON.parse(task.operation),
+      {
+        reuseTask: true,
+        task,
+      },
+    );
   }
 }

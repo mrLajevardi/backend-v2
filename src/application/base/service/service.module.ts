@@ -28,6 +28,7 @@ import { ServiceInstancesTableModule } from '../crud/service-instances-table/ser
 import { ServiceItemsTableModule } from '../crud/service-items-table/service-items-table.module';
 import { TaskManagerModule } from '../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
     SessionsModule,
     LoggerModule,
     UserModule,
+    UvdeskWrapperModule,
     PaymentModule,
     forwardRef(() => InvoicesModule),
     // forwardRef(() => TasksModule),
