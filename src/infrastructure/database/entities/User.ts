@@ -153,6 +153,15 @@ export class User {
   })
   avatarId: string | null;
 
+  @Column({
+    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
+    name: 'guid',
+    unique: !isTestingEnv(),
+    nullable: isTestingEnv(),
+    default: () => isTestingEnv() ? null : 'newsequentialid()',
+  })
+  guid: string;
+
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
 

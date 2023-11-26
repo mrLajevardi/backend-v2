@@ -44,6 +44,8 @@ import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-it
 import { TemplatesTableModule } from './templates/templates-table.module';
 import { CompanyTableModule } from './company-table/company-table.module';
 import { ProvinceTableModule } from './province-table/province-table.module';
+import { FileTableService } from './file-table/file-table.service';
+import { FileTableModule } from './file-table/file-table.module';
 
 @Module({
   imports: [
@@ -93,6 +95,7 @@ import { ProvinceTableModule } from './province-table/province-table.module';
     TemplatesTableModule,
     CompanyTableModule,
     ProvinceTableModule,
+    FileTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -141,6 +144,7 @@ import { ProvinceTableModule } from './province-table/province-table.module';
     TemplatesTableModule,
     CompanyTableModule,
     ProvinceTableModule,
+    FileTableModule,
   ],
 })
 export class CrudModule {}
