@@ -20,6 +20,7 @@ import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.mod
 import { NatModule } from 'src/application/nat/nat.module';
 import { NetworksModule } from 'src/application/networks/networks.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -33,6 +34,7 @@ describe('TaskManagerService', () => {
           name: 'tasks2',
         }),
         LoggerModule,
+
         // VdcModule,
         forwardRef(() => VgpuModule),
         CrudModule,
