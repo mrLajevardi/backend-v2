@@ -29,6 +29,9 @@ import { InvoicesModule } from '../../invoice/invoices.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { MainWrapperModule } from '../../../../wrappers/main-wrapper/main-wrapper.module';
+import { NetworksModule } from '../../../networks/networks.module';
+import { NatModule } from '../../../nat/nat.module';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -37,7 +40,9 @@ describe('DeleteServiceService', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
-        CrudModule,
+        NetworksModule,
+        NatModule,
+        MainWrapperModule,
         DatabaseModule,
         SessionsModule,
         UserModule,

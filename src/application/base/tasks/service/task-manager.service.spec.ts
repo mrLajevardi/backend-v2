@@ -34,6 +34,7 @@ describe('TaskManagerService', () => {
           name: 'tasks2',
         }),
         LoggerModule,
+
         // VdcModule,
         forwardRef(() => VgpuModule),
         CrudModule,
@@ -48,7 +49,6 @@ describe('TaskManagerService', () => {
         NatModule,
         NetworksModule,
         TaskManagerModule,
-        // UvdeskWrapperModule,
       ],
       providers: [
         TaskManagerService,
