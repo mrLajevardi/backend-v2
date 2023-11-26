@@ -22,10 +22,10 @@ export class PoliciesGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const policyHandlers =
-      this.reflector.getAllAndOverride<PolicyHandler[]>(CHECK_POLICIES_KEY, [
+      this.reflector.get<PolicyHandler[]>(
+        CHECK_POLICIES_KEY,
         context.getHandler(),
-        context.getClass(),
-      ]) || [];
+      ) || [];
 
     const { user } = context.switchToHttp().getRequest();
     // console.dir(policyHandlers, { depth: null });
