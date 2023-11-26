@@ -158,7 +158,7 @@ export class User {
     name: 'guid',
     unique: !isTestingEnv(),
     nullable: isTestingEnv(),
-    default: () => isTestingEnv() ? null : 'newsequentialid()',
+    default: () => (isTestingEnv() ? null : 'newsequentialid()'),
   })
   guid: string;
 
