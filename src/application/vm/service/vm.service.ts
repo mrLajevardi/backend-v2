@@ -472,7 +472,11 @@ export class VmService {
       const cpu = recordItem.numberOfCpus;
       const storage = recordItem.totalStorageAllocatedMb;
       const memory = recordItem.memoryMB;
+      const forbiddenStatusList = ['FAILED_CREATION', 'UNKNOWN', 'UNRESOLVED'];
       const status = VmStatusEnum[recordItem.status];
+      if (forbiddenStatusList.includes(recordItem.status)) {
+        continue;
+      }
       const containerId = recordItem.container.split('vApp/')[1];
       const countOfNetworks = (
         await this.getVmNetworkSection(options, serviceInstanceId, id)

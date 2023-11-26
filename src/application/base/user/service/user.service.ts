@@ -629,6 +629,11 @@ export class UserService {
       username: 'U-' + data.phoneNumber,
     };
 
+    // Update User in Cloud Director
+    //Disable
+    //Delete
+    //ReCreate
+
     const updatedUser = await this.userTable.update(
       options.user.userId,
       userUpdatingData,

@@ -27,6 +27,22 @@ import { UserPayload } from '../../security/auth/dto/user-payload.dto';
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { Inject, forwardRef } from '@nestjs/common';
+import { ServiceStatusEnum } from '../../service/enum/service-status.enum';
+import { ServicePropertiesService } from '../../service-properties/service-properties.service';
+import { DhcpWrapperService } from 'src/wrappers/main-wrapper/service/user/dhcp/dhcp-wrapper.service';
+import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
+import { NetworksService } from 'src/application/networks/networks.service';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { DhcpModeEnum } from 'src/wrappers/main-wrapper/service/user/dhcp/enum/dhcp-mode.enum';
+import { NatWrapperService } from 'src/wrappers/main-wrapper/service/user/nat/nat-wrapper.service';
+import { NatService } from 'src/application/nat/nat.service';
+import { NatFirewallMatchEnum } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-firewall-match.enum';
+import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-gateway.service';
+import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
+import { FirewallService } from 'src/application/edge-gateway/service/firewall.service';
+import { FirewallActionValue } from 'src/wrappers/main-wrapper/service/user/firewall/enum/firewall-action-value.enum';
+import { TaskQueryTypes } from '../enum/task-query-types.enum';
+import { NatTypes } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-types.enum';
 
 // @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
@@ -51,6 +67,12 @@ export class TaskManagerService {
     @Inject(forwardRef(() => InvoiceFactoryService))
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly vdcFactoryService: VdcFactoryService,
+    private readonly serviceProperties: ServicePropertiesService,
+    private readonly dhcpWrapperService: DhcpWrapperService,
+    private readonly networksService: NetworksService,
+    private readonly natService: NatService,
+    private readonly edgeGatewayService: EdgeGatewayService,
+    private readonly firewallService: FirewallService,
   ) {}
 
   @Process()
@@ -101,7 +123,7 @@ export class TaskManagerService {
           id: job.data.serviceInstanceId,
         },
         {
-          status: 3,
+          status: ServiceStatusEnum.Error,
         },
       );
       return done();
@@ -366,7 +388,7 @@ export class TaskManagerService {
       customTaskId: customTaskId,
       vcloudTask: vcloudTask,
       target: 'task',
-      nextTask: 'finishVdcTask',
+      nextTask: 'createNetwork',
       requestOptions: requestOptions,
     });
   }
@@ -390,23 +412,211 @@ export class TaskManagerService {
       props[prop.propertyKey] = prop.value;
     }
     const network = await this.networkService.createNetwork(
-      '192.168.1.1',
+      '192.168.0.1',
       props['vdcId'],
       props['orgId'],
       props['edgeName'],
       userId,
     );
-
-    await this.loggerService.info(
-      'network',
-      'createNetwork',
-      {
-        _object: network.__vcloudTask.split('task/')[1],
-      },
-      { ...requestOptions },
-    );
+    this.taskQueue.add({
+      serviceInstanceId,
+      customTaskId,
+      vcloudTask: network.__vcloudTask,
+      target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
+      requestOptions,
+      nextTask: 'createDhcp',
+    });
   }
 
+  async createDhcp(
+    serviceInstanceId: string,
+    customTaskId: string,
+    requestOptions: object,
+  ): Promise<void> {
+    const service = await this.serviceInstancesTable.findById(
+      serviceInstanceId,
+    );
+    const userId = service.userId;
+    const serviceProperties =
+      await this.serviceProperties.getAllServiceProperties<VdcProperties>(
+        service.id,
+      );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      Number(serviceProperties.orgId),
+    );
+    const options = {
+      user: { userId: userId },
+    } as SessionRequest;
+    const networks = await this.networksService.getNetworks(
+      options,
+      service.id,
+      { page: 1, pageSize: 1 },
+    );
+    const startAddress = '192.168.0.2';
+    const endAddress = '192.168.0.254';
+    const listenerIp = '192.168.0.1';
+    const dns = '4.2.2.4';
+    const lease = 86400;
+    const dhcp = await this.dhcpWrapperService.updateDhcp(
+      session,
+      [
+        {
+          enabled: true,
+          ipRange: {
+            startAddress,
+            endAddress,
+          },
+        },
+      ],
+      listenerIp,
+      [dns],
+      lease,
+      networks.values[0].id,
+      DhcpModeEnum.Edge,
+    );
+    this.taskQueue.add({
+      serviceInstanceId,
+      customTaskId,
+      vcloudTask: dhcp.__vcloudTask,
+      target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
+      requestOptions,
+      nextTask: 'createNat',
+    });
+  }
+
+  async createNat(
+    serviceInstanceId: string,
+    customTaskId: string,
+    requestOptions: object,
+  ): Promise<void> {
+    const service = await this.serviceInstancesTable.findById(
+      serviceInstanceId,
+    );
+    const userId = service.userId;
+    const ipListProps = await this.servicePropertiesTable.find({
+      where: {
+        serviceInstanceId: service.id,
+        propertyKey: VdcServiceProperties.IpRange,
+      },
+      order: { id: { direction: 'DESC' } },
+      take: 1,
+    });
+    const options = {
+      user: { userId: userId },
+    } as SessionRequest;
+    const ip = ipListProps[0].value.split('-');
+    const nat = await this.natService.createNatRule(
+      {
+        enabled: true,
+        externalIP: ip[0],
+        internalIP: '192.168.0.0/24',
+        firewallMatch: NatFirewallMatchEnum.MatchExternalAddress,
+        name: 'default_nat',
+        priority: 0,
+        type: NatTypes.Snat,
+      },
+      options,
+      service.id,
+    );
+    const taskId = process.env.VCLOUD_BASE_URL + 'api/task/' + nat.taskId;
+    this.taskQueue.add({
+      serviceInstanceId,
+      customTaskId,
+      vcloudTask: taskId,
+      target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
+      requestOptions,
+      nextTask: 'createIpSet',
+    });
+  }
+
+  async createIpSet(
+    serviceInstanceId: string,
+    customTaskId: string,
+    requestOptions: object,
+  ): Promise<void> {
+    const service = await this.serviceInstancesTable.findById(
+      serviceInstanceId,
+    );
+    const userId = service.userId;
+    const options = {
+      user: { userId: userId },
+    } as SessionRequest;
+    const ipListProps = await this.servicePropertiesTable.find({
+      where: {
+        serviceInstanceId: service.id,
+        propertyKey: VdcServiceProperties.IpRange,
+      },
+      order: { id: { direction: 'DESC' } },
+      take: 1,
+    });
+    const ip = ipListProps[0].value.split('-')[0];
+    const ipSet = await this.edgeGatewayService.createIPSet(
+      options,
+      service.id,
+      {
+        description: '',
+        ipList: [ip],
+        name: 'External_Address',
+      },
+    );
+    const taskId = process.env.VCLOUD_BASE_URL + 'api/task/' + ipSet.taskId;
+    this.taskQueue.add({
+      serviceInstanceId,
+      customTaskId,
+      vcloudTask: taskId,
+      target: 'task',
+      taskType: TaskQueryTypes.AdminTask,
+      requestOptions,
+      nextTask: 'createFirewall',
+    });
+  }
+
+  async createFirewall(
+    serviceInstanceId: string,
+    customTaskId: string,
+    requestOptions: object,
+  ): Promise<void> {
+    const service = await this.serviceInstancesTable.findById(
+      serviceInstanceId,
+    );
+    const userId = service.userId;
+    const options = {
+      user: { userId: userId },
+    } as SessionRequest;
+    const ipSets = await this.edgeGatewayService.getIPSetsList(
+      options,
+      service.id,
+      { page: 1, pageSize: 1 },
+    );
+    const ipSet = ipSets.values[0];
+    const firewall = await this.firewallService.addToFirewallList(
+      options,
+      service.id,
+      {
+        actionValue: FirewallActionValue.Allow,
+        applicationPortProfiles: null,
+        comments: '',
+        destinationFirewallGroups: null,
+        sourceFirewallGroups: [{ id: ipSet.id }],
+        enabled: true,
+        name: 'internet_rule',
+      },
+    );
+    const taskId = process.env.VCLOUD_BASE_URL + 'api/task/' + firewall.taskId;
+    this.taskQueue.add({
+      serviceInstanceId,
+      customTaskId,
+      vcloudTask: taskId,
+      taskType: TaskQueryTypes.AdminTask,
+      target: 'task',
+      requestOptions,
+      nextTask: 'finishVdcTask',
+    });
+  }
   async createOrg(
     serviceInstanceId: string,
     customTaskId: string,
@@ -1014,6 +1224,7 @@ export class TaskManagerService {
       },
       {
         status: 'success',
+        endTime: new Date(),
       },
     );
   }
@@ -1086,6 +1297,7 @@ export class TaskManagerService {
         id: serviceInstanceId,
       },
       {
+        retryCount: 0,
         status: 3,
       },
     );
@@ -1098,14 +1310,6 @@ export class TaskManagerService {
         endTime: new Date(),
       },
     );
-    this.taskQueue.add({
-      serviceInstanceId,
-      customTaskId,
-      vcloudTask: null,
-      target: null,
-      nextTask: 'createNetwork',
-      requestOptions,
-    });
   }
 
   async finishVgpuTask(
