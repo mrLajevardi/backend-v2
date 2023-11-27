@@ -24,6 +24,6 @@ import { VmDetailController } from './controller/vm-detail.controller';
   ],
   controllers: [VmController, VmDetailController],
   providers: [VmService, VmDetailService, VmDetailFactoryService],
-  exports: [VmService],
+  exports: [VmService, VmDetailFactoryService],
 })
 export class VmModule {}

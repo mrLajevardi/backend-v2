@@ -33,8 +33,6 @@ import { DhcpWrapperService } from 'src/wrappers/main-wrapper/service/user/dhcp/
 import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
 import { NetworksService } from 'src/application/networks/networks.service';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { DhcpModeEnum } from 'src/wrappers/main-wrapper/service/user/dhcp/enum/dhcp-mode.enum';
-import { NatWrapperService } from 'src/wrappers/main-wrapper/service/user/nat/nat-wrapper.service';
 import { NatService } from 'src/application/nat/nat.service';
 import { NatFirewallMatchEnum } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-firewall-match.enum';
 import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-gateway.service';
@@ -43,6 +41,7 @@ import { FirewallService } from 'src/application/edge-gateway/service/firewall.s
 import { FirewallActionValue } from 'src/wrappers/main-wrapper/service/user/firewall/enum/firewall-action-value.enum';
 import { TaskQueryTypes } from '../enum/task-query-types.enum';
 import { NatTypes } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-types.enum';
+import { DhcpModeEnum } from '../../../../wrappers/main-wrapper/service/user/dhcp/enum/dhcp-mode.enum';
 
 // @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
