@@ -15,6 +15,10 @@ import { TaskManagerService } from '../../task-manager/service/task-manager.serv
 import { TasksEnum } from '../../task-manager/enum/tasks.enum';
 import { Task } from '../../../../wrappers/main-wrapper/service/user/vm/dto/get-media-item.dto';
 import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
+import { VmTasksQueryDto } from '../../../vm/dto/vm-tasks.query.dto';
+import process from 'process';
+import { VmDetailFactoryService } from '../../../vm/service/vm-detail.factory.service';
+import { TaskFactoryService } from './task.factory.service';
 
 @Injectable()
 export class TasksService {
@@ -22,14 +26,14 @@ export class TasksService {
     private readonly taskTable: TasksTableService,
     private readonly sessionService: SessionsService,
     private readonly servicePropertiesService: ServicePropertiesService,
-    private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly configsTable: ConfigsTableService,
     private readonly organizationTableService: OrganizationTableService,
     private readonly taskManagerService: TaskManagerService,
+    private readonly taskFactoryService: TaskFactoryService,
   ) {}
 
   async getTasksList(
     options: SessionRequest,
+    query: VmTasksQueryDto,
   ): Promise<GetTasksReturnDto[] | null> {
     const userId = options.user.userId;
     const org = await this.organizationTableService.findOne({
@@ -37,47 +41,17 @@ export class TasksService {
         user: { id: userId },
       },
     });
-    // let session;
-    // let tasks;
-    // if (service.serviceTypeId === 'aradAi') {
-    //   return Promise.resolve(null);
-    // }
-    // if (service.serviceTypeId === 'vgpu') {
-    //   session = await this.sessionService.checkAdminSession();
-    //   const configsData = await this.configsTable.find({
-    //     where: {
-    //       propertyKey: In(['config.vgpu.orgName', 'config.vgpu.orgId']),
-    //     },
-    //   });
-    //   const configs: any = {};
-    //   configsData.forEach((property) => {
-    //     configs[property.propertyKey] = property.value;
-    //   });
-    //   const { 'config.vgpu.orgName': orgName, 'config.vgpu.orgId': orgId } =
-    //     configs;
-    //   const filter = `objectName==${vdcInstanceId + 'VM'}`;
-    //   tasks = await mainWrapper.user.vdc.vcloudQuery(
-    //     session,
-    //     {
-    //       type: 'task',
-    //       page: 1,
-    //       pageSize: 10,
-    //       sortDesc: 'startDate',
-    //       filter,
-    //     },
-    //     {
-    //       'X-vCloud-Authorization': orgName,
-    //       'X-VMWARE-VCLOUD-AUTH-CONTEXT': orgName,
-    //       'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgId,
-    //     },
-    //   );
-    // }
+
+    let filter = '';
+    filter = this.taskFactoryService.setTaskFilter(query);
+
     const session = await this.sessionService.checkUserSession(userId, org.id);
     const tasks = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'task',
-      page: 1,
-      pageSize: 10,
+      page: Number(query.page),
+      pageSize: Number(query.pageSize),
       sortDesc: 'startDate',
+      filter: filter,
     });
     if (!tasks) {
       throw new VcloudErrorException();
@@ -128,7 +102,7 @@ export class TasksService {
         return 0;
       }
     });
-    data = data.slice(0, 10);
+    data = data.slice(0, query.pageSize);
     return Promise.resolve(data);
   }
 

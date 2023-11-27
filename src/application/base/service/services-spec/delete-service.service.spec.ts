@@ -32,6 +32,8 @@ import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.
 import { MainWrapperModule } from '../../../../wrappers/main-wrapper/main-wrapper.module';
 import { NetworksModule } from '../../../networks/networks.module';
 import { NatModule } from '../../../nat/nat.module';
+import { TaskFactoryService } from '../../tasks/service/task.factory.service';
+import { VmModule } from '../../../vm/vm.module';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -40,6 +42,7 @@ describe('DeleteServiceService', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
+        VmModule,
         NetworksModule,
         NatModule,
         MainWrapperModule,
@@ -78,6 +81,7 @@ describe('DeleteServiceService', () => {
         NetworkService,
         VgpuDnatService,
         ServiceServiceFactory,
+        TaskFactoryService,
       ],
     }).compile();
 

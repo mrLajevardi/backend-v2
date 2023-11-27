@@ -23,6 +23,8 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
 import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
 import { NatModule } from 'src/application/nat/nat.module';
 import { NetworksModule } from 'src/application/networks/networks.module';
+import { VmModule } from '../../vm/vm.module';
+import { TaskFactoryService } from './service/task.factory.service';
 
 @Module({
   imports: [
@@ -46,6 +48,7 @@ import { NetworksModule } from 'src/application/networks/networks.module';
     PayAsYouGoModule,
     //NetworksModule,
     ServicePropertiesModule,
+    VmModule,
   ],
   providers: [
     TasksService,
@@ -53,6 +56,7 @@ import { NetworksModule } from 'src/application/networks/networks.module';
     VgpuDnatService,
     NetworkService,
     TaskAdminService,
+    TaskFactoryService,
   ],
   controllers: [TasksController, TaskAdminController],
   exports: [TasksService, TaskManagerService],
