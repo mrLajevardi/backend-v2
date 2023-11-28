@@ -665,6 +665,7 @@ export class VmService {
       const storageName = settings.storageProfile.name as string;
 
       const diskSection = {
+        id: settings.diskId.toString(),
         name: settings.disk === null ? null : settings.disk.name,
         iopLimit: storageProfile.data.record[0].iopsLimit,
         diskIopsEnabled: storageProfile.data.record[0].diskIopsEnabled,
@@ -1688,19 +1689,19 @@ export class VmService {
       userId,
       props.orgId,
     );
-    const storageItemType = await this.itemTypesTableService.findOne({
-      where: {
-        serviceTypeId: 'vm',
-        code: 'storage',
-      },
-    });
+    // const storageItemType = await this.itemTypesTableService.findOne({
+    //   where: {
+    //     serviceTypeId: 'vm',
+    //     code: 'storage',
+    //   },
+    // });
     let storageSum = 0;
     data.forEach((disk) => {
       storageSum += parseInt(disk.sizeMb);
     });
-    if (storageSum > storageItemType.maxPerRequest) {
-      throw new BadRequestException();
-    }
+    // if (storageSum > storageItemType.maxPerRequest) {
+    //   throw new BadRequestException();
+    // }
     const vm = await mainWrapper.user.vm.updateVmDiskSection(
       session,
       vmId,
