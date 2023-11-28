@@ -46,6 +46,7 @@ import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-err
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { UserProfileResultDto } from '../dto/user-profile.result.dto';
 import { Connection } from 'typeorm';
+import { RedisCacheService } from './redis-cache.service';
 
 @Injectable()
 export class UserService {
@@ -60,6 +61,7 @@ export class UserService {
     private readonly notificationService: NotificationService,
     private readonly securityTools: SecurityToolsService,
     private readonly connection: Connection,
+    private readonly redisCacheService: RedisCacheService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -168,7 +170,7 @@ export class UserService {
       phoneVerified: true,
       acceptTermsOfService: true,
     };
-    console.log(createDto);
+
     const theUser = await this.userTable.create(createDto);
 
     await this.logger.info(
@@ -183,11 +185,11 @@ export class UserService {
       },
     );
 
-    await this.roleMappingsTable.create({
-      roleId: 'user',
-      principalType: 'USER',
-      principalId: theUser.id.toString(),
-    });
+    // await this.roleMappingsTable.create({
+    //   roleId: 'user',
+    //   principalType: 'USER',
+    //   principalId: theUser.id.toString(),
+    // });
 
     return theUser;
   }
@@ -620,7 +622,11 @@ export class UserService {
       data.otp,
       data.hash,
     );
-    if (!verify) {
+
+    const cacheKey = options.user.userId + '_changePhoneNumber';
+    const checkCache = await this.redisCacheService.exist(cacheKey);
+
+    if (!verify || !checkCache) {
       throw new OtpErrorException();
     }
 

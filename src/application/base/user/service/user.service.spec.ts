@@ -24,6 +24,7 @@ import { ChangeEmailDto } from '../dto/change-email.dto';
 import { OtpService } from '../../security/security-tools/otp.service';
 import { OtpHashDto } from '../../security/security-tools/dto/otp-hash.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
+import { RedisCacheService } from './redis-cache.service';
 
 describe('UserService', () => {
   let table: UserTableService;
@@ -114,6 +115,7 @@ describe('UserService', () => {
         UserTableService,
         CompanyTableService,
         OtpService,
+        RedisCacheService,
       ],
     })
       // .overrideProvider(UserTableService)
