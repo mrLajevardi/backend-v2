@@ -9,6 +9,7 @@ import { NotificationModule } from '../../notification/notification.module';
 import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { UserService } from './user.service';
 import { AbilityModule } from '../../security/ability/ability.module';
+import { RedisCacheService } from './redis-cache.service';
 
 describe('UserAdminService', () => {
   let service: UserAdminService;
@@ -26,7 +27,7 @@ describe('UserAdminService', () => {
         NotificationModule,
         SecurityToolsModule,
       ],
-      providers: [UserService, UserAdminService],
+      providers: [UserService, UserAdminService, RedisCacheService],
     }).compile();
 
     service = module.get<UserAdminService>(UserAdminService);

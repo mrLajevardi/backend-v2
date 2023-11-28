@@ -47,6 +47,7 @@ import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-err
 import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { RedisCacheService } from '../service/redis-cache.service';
 
 @ApiTags('User')
 @Controller('users')
@@ -57,6 +58,7 @@ export class UserController {
     private readonly userService: UserService,
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
+    private readonly redisCacheService: RedisCacheService,
   ) {}
 
   @Public()
@@ -308,6 +310,9 @@ export class UserController {
     if (!verify) {
       throw new OtpErrorException();
     }
+
+    const cacheKey: string = options.user.userId + '_changePhoneNumber';
+    await this.redisCacheService.set(cacheKey, data.oldPhoneNumber, 480000);
 
     const otp = await this.loginService.generateOtp(data.newPhoneNumber);
 

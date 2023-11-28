@@ -9,6 +9,7 @@ import { NotificationModule } from '../../notification/notification.module';
 import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { UserAdminService } from '../service/user-admin.service';
 import { UserService } from '../service/user.service';
+import { RedisCacheService } from '../service/redis-cache.service';
 
 describe('UserAdminController', () => {
   let controller: UserAdminController;
@@ -25,7 +26,7 @@ describe('UserAdminController', () => {
         NotificationModule,
         SecurityToolsModule,
       ],
-      providers: [UserService, UserAdminService],
+      providers: [UserService, UserAdminService, RedisCacheService],
       controllers: [UserAdminController],
     }).compile();
 
