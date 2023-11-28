@@ -46,9 +46,11 @@ import { DatacenterModule } from './application/base/datacenter/datacenter.modul
 import { ServiceItemModule } from './application/base/service-item/service-item.module';
 import { CompanyModule } from './application/base/company/company.module';
 import { FileModule } from './application/base/file/file.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
+    CacheModule.register({ isGlobal: true }),
     // RavenModule,
     ConfigModule.forRoot({
       isGlobal: true,

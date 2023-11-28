@@ -10,12 +10,14 @@ import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
 import { ConfigModule } from '@nestjs/config';
 import { isTestingEnv } from '../helpers/helpers';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    CacheModule.register({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: () =>
         !isTestingEnv()
