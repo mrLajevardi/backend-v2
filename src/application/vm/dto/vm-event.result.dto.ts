@@ -5,6 +5,8 @@ export class VmEventValuesDto {
   type: string;
   performingUser: string;
   date: Date;
+  description: string;
+  operationType: string;
 }
 export class VmEventResultDto extends BaseResultDto {
   values: VmEventValuesDto[];
