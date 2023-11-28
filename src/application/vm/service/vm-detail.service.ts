@@ -127,6 +127,8 @@ export class VmDetailService {
         date: event.timestamp,
         status: event.eventStatus == 'SUCCESS',
         performingUser: event.user.name,
+        description: event.description,
+        operationType: event.eventType,
       });
     });
     return Promise.resolve(res);
