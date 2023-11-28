@@ -220,7 +220,6 @@ export class VdcDetailFactoryService {
       Number(vdcDetail.ram.value) -
       (cpuCoreUsageVmOffs + Number(vdcDetail.ram.usage));
 
-
     const itemsDiskCodes = Object.keys(DiskItemCodes);
     let diskCode = '';
     model.diskInfo = diskItemsModel.map((storage) => {
