@@ -219,6 +219,8 @@ export class VdcDetailFactoryService {
     model.ramInfo.maxUsableWithOffAndOnVMs =
       Number(vdcDetail.ram.value) -
       (cpuCoreUsageVmOffs + Number(vdcDetail.ram.usage));
+
+
     const itemsDiskCodes = Object.keys(DiskItemCodes);
     let diskCode = '';
     model.diskInfo = diskItemsModel.map((storage) => {
@@ -229,6 +231,7 @@ export class VdcDetailFactoryService {
           diskCode = item.toLowerCase();
         }
       });
+
       return {
         max: storage.value,
         usage: storage.usage,

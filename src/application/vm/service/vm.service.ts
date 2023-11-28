@@ -47,6 +47,7 @@ import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
 import { UploadFileDto } from '../dto/upload-file-info.dto';
 import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/dto/upload-file.dto';
+import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
 
 @Injectable()
 export class VmService {
@@ -630,15 +631,6 @@ export class VmService {
       userId,
       props.orgId,
     );
-    // const yy = await this.vmDetailService.eventVm(
-    //   options,
-    //   serviceInstanceId,
-    //   '',
-    //   vmId,
-    //   '',
-    //   1,
-    //   20,
-    // );
 
     const storageProfile = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'orgVdcStorageProfile',
@@ -663,6 +655,15 @@ export class VmService {
       // const iii = (settings.storageProfile.id as string).split(':');
       const storageId = (settings.storageProfile.id as string).split(':')[3];
       const storageName = settings.storageProfile.name as string;
+      let storageCode = '';
+      const itemsDiskCodes = Object.keys(DiskItemCodes);
+      itemsDiskCodes.forEach((code) => {
+        if (
+          storageName.trim().toLowerCase().includes(code.trim().toLowerCase())
+        ) {
+          storageCode = code;
+        }
+      });
 
       const diskSection = {
         id: settings.diskId.toString(),
@@ -682,6 +683,7 @@ export class VmService {
         storageType: {
           storageId,
           storageName,
+          code: storageCode.toLowerCase(),
         },
       };
       data.push(diskSection);
