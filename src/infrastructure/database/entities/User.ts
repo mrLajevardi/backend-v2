@@ -154,6 +154,20 @@ export class User {
   avatarId: string | null;
 
   @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'companyLetterId',
+    nullable: true,
+  })
+  companyLetterId: string | null;
+
+  @Column('tinyint', {
+    name: 'companyLetterStatus',
+    nullable: true,
+    default: () => 0,
+  })
+  companyLetterStatus: number;
+
+  @Column({
     type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
     name: 'guid',
     unique: !isTestingEnv(),
@@ -181,4 +195,8 @@ export class User {
   @ManyToOne(() => FileUpload, (file) => file.user)
   @JoinColumn({ name: 'avatarId', referencedColumnName: 'streamId' })
   avatar: FileUpload;
+
+  @ManyToOne(() => FileUpload)
+  @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'streamId' })
+  companyLetter: FileUpload;
 }

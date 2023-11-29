@@ -13,12 +13,15 @@ import { SystemSettingsTableService } from '../../crud/system-settings-table/sys
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { PaymentService } from 'src/application/payment/payment.service';
 import { NotificationService } from '../../notification/notification.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
-import { encryptPassword } from 'src/infrastructure/helpers/helpers';
+import {
+  comparePassword,
+  encryptPassword,
+} from 'src/infrastructure/helpers/helpers';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
@@ -44,9 +47,15 @@ import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
 import { LoginService } from '../../security/auth/service/login.service';
 import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
-import { UserProfileResultDto } from '../dto/user-profile.result.dto';
+import {
+  UserProfileResultDto,
+  UserProfileResultDtoFormat,
+} from '../dto/user-profile.result.dto';
 import { Connection } from 'typeorm';
 import { RedisCacheService } from './redis-cache.service';
+import { ChangeNameDto } from '../dto/change-name.dto';
+import { ChangePasswordDto } from '../dto/change-password.dto';
+import { CompanyLetterStatusEnum } from '../enum/company-letter-status.enum';
 
 @Injectable()
 export class UserService {
@@ -89,7 +98,10 @@ export class UserService {
     });
   }
 
-  async changePassword(userId: number, newPassword: string): Promise<void> {
+  async changePasswordAdmin(
+    userId: number,
+    newPassword: string,
+  ): Promise<void> {
     if (!newPassword) {
       return Promise.reject(new BadRequestException());
     }
@@ -99,6 +111,33 @@ export class UserService {
       { id: userId },
       { password: hashedPassword },
     );
+  }
+
+  async changePassword(
+    options: SessionRequest,
+    data: ChangePasswordDto,
+  ): Promise<boolean> {
+    if (data.otpVerification) {
+      const cacheKey = options.user.userId + '_changePassword';
+      const checkCache = await this.redisCacheService.exist(cacheKey);
+      if (!checkCache) {
+        throw new ForbiddenException();
+      }
+    } else {
+      const user: User = await this.userTable.findById(options.user.userId);
+      const isValid = await comparePassword(user.password, data.oldPassword);
+      if (!isValid) {
+        throw new ForbiddenException();
+      }
+    }
+
+    const hashedPassword = await encryptPassword(data.newPassword);
+
+    await this.userTable.update(options.user.userId, {
+      password: hashedPassword,
+    });
+
+    return Promise.resolve(true);
   }
 
   async checkUserCredit(
@@ -509,9 +548,9 @@ export class UserService {
     }
   }
 
-  async resetPasswordByPhone(
-    data: ResetPasswordByPhoneDto,
-  ): Promise<{ hash: string }> {
+  async resetPasswordByPhone(data: ResetPasswordByPhoneDto): Promise<{
+    hash: string;
+  }> {
     const user = await this.userTable.findOne({
       where: {
         phoneNumber: data.phoneNumber,
@@ -607,7 +646,13 @@ export class UserService {
     // const user = await this.userTable.findOne(options.user.userId);
     const user = await this.userTable.findOne({
       where: { id: options.user.userId },
-      relations: ['company'],
+      relations: [
+        'company',
+        'company.province',
+        'company.city',
+        'avatar',
+        'companyLetter',
+      ],
     });
 
     return new UserProfileResultDto().toArray(user);
@@ -714,7 +759,7 @@ export class UserService {
   async uploadAvatar(
     options: SessionRequest,
     file: Express.Multer.File,
-  ): Promise<any> {
+  ): Promise<UserProfileResultDtoFormat> {
     const fileStream = file.buffer;
     const fileName = Date.now().toString() + file.originalname;
 
@@ -742,6 +787,58 @@ export class UserService {
     });
 
     console.log('\n\n\n\n\n\n\n', user);
+
+    return new UserProfileResultDto().toArray(user);
+  }
+
+  async changeName(options: SessionRequest, data: ChangeNameDto) {
+    const userUpdatingData: UpdateUserDto = {
+      name: data.name,
+      family: data.family,
+    };
+
+    const user = await this.userTable.update(
+      options.user.userId,
+      userUpdatingData,
+    );
+
+    return new UserProfileResultDto().toArray(user);
+  }
+
+  async uploadCompanyLetter(
+    options: SessionRequest,
+    file: Express.Multer.File,
+  ): Promise<UserProfileResultDtoFormat> {
+    const checkUserCompany: User = await this.userTable.findById(
+      options.user.userId,
+    );
+
+    if (isNil(checkUserCompany.companyId)) {
+      throw new BadRequestException();
+    }
+
+    const fileStream = file.buffer;
+    const fileName = Date.now().toString() + file.originalname;
+
+    const letter = await this.connection
+      .createQueryBuilder()
+      .insert()
+      .into('FileUpload')
+      .values({ fileStream: fileStream, name: fileName })
+      .returning('Inserted.stream_id')
+      .execute();
+
+    const updateUserData: UpdateUserDto = {
+      companyLetterId: letter.raw[0].stream_id,
+      companyLetterStatus: CompanyLetterStatusEnum.Uploaded,
+    };
+
+    await this.userTable.update(options.user.userId, updateUserData);
+
+    const user: User = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company', 'avatar', 'companyLetter'],
+    });
 
     return new UserProfileResultDto().toArray(user);
   }
