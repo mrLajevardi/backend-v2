@@ -20,6 +20,7 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { UserModule } from '../../user/user.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -40,6 +41,7 @@ describe('ServiceAdminController', () => {
         DatacenterModule,
         UserModule,
         EdgeGatewayModule,
+        InvoicesModule,
       ],
       providers: [
         ServiceAdminService,
