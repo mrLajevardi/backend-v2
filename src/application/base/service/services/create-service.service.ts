@@ -32,6 +32,7 @@ import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wra
 import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 import { TicketsSubjectEnum } from '../../ticket/enum/tickets-subject.enum';
 import { TicketsMessagesEnum } from '../../ticket/enum/tickets-message.enum';
+import { ServiceServiceFactory } from '../Factory/service.service.factory';
 
 @Injectable()
 export class CreateServiceService {
@@ -49,6 +50,7 @@ export class CreateServiceService {
     private readonly itemTypesTable: ItemTypesTableService,
     private readonly newTaskManagerService: TaskManagerService,
     private readonly ticketingWrapperService: TicketingWrapperService,
+    private readonly serviceFactory: ServiceServiceFactory,
   ) {}
 
   async createService(
@@ -67,6 +69,7 @@ export class CreateServiceService {
     if (invoice === null) {
       throw new ForbiddenException();
     }
+    await this.serviceFactory.checkResources(invoice.id);
     let serviceInstanceId = null;
     let task = null;
     let taskId = null;

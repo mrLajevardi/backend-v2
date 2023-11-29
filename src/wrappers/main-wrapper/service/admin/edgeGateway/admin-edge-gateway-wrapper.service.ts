@@ -74,7 +74,7 @@ export class AdminEdgeGatewayWrapperService {
    * @param {Number} pageSize
    * @return {Promise}
    */
-  private async findExternalNetwork(
+  public async findExternalNetwork(
     authToken: string,
     page = 1,
     pageSize = 25,
@@ -82,7 +82,7 @@ export class AdminEdgeGatewayWrapperService {
     const network = await this.getExternalNetworks(authToken, page, pageSize);
     return Promise.resolve(network);
   }
-  private async ipAllocation(
+  public async ipAllocation(
     externalNetworkId: string,
     authToken: string,
     userIpCount: number,
