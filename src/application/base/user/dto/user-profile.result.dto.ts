@@ -15,7 +15,9 @@ export class UserProfileResultDtoFormat {
   personalCode: string;
   personalVerification: boolean;
   companyOwner: boolean;
-  avatar: any;
+  avatar: string;
+  companyLetter: string;
+  companyLetterStatus: number;
   company: CompanyResultDtoFormat | null;
 }
 
@@ -39,6 +41,10 @@ export class UserProfileResultDto {
       personalVerification: item.personalVerification,
       companyOwner: item.companyOwner,
       avatar: !isNil(item.avatar) ? item.avatar.streamId : null,
+      companyLetter: !isNil(item.companyLetter)
+        ? item.companyLetter.streamId
+        : null,
+      companyLetterStatus: item.companyLetterStatus,
       company: !isNil(item.company)
         ? new CompanyResultDto().toArray(item.company)
         : null,

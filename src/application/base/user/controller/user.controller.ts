@@ -48,6 +48,7 @@ import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-numbe
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RedisCacheService } from '../service/redis-cache.service';
+import { ChangeNameDto } from '../dto/change-name.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -109,19 +110,64 @@ export class UserController {
     return { email: info.email };
   }
 
-  @Put('changePassword')
-  @ApiOperation({ summary: 'change password ' })
-  @ApiBody({ type: ChangePasswordDto })
+  // @Put('changePassword')
+  // @ApiOperation({ summary: 'change password ' })
+  // @ApiBody({ type: ChangePasswordDto })
+  // async changePassword(
+  //   @Request() options: SessionRequest,
+  //   @Body() dto: ChangePasswordDto,
+  //   @Res() res: Response,
+  // ): Promise<Response> {
+  //   console.log('change pass');
+  //   console.log(options.user);
+  //   const userId = options.user.userId;
+  //   await this.userService.changePassword(userId, dto.password);
+  //   return res.status(200).json({ message: 'Group created successfully' });
+  // }
+  @Get('changePassword/sendOtp')
+  @ApiOperation({ summary: 'send otp to phone number for changing password' })
+  async sendOtpChangingPassword(@Request() options: SessionRequest) {
+    const user: UserProfileDto = await this.userService.findById(
+      options.user.userId,
+    );
+    const otp = await this.loginService.generateOtp(user.phoneNumber);
+
+    return {
+      phoneNumber: user.phoneNumber,
+      hash: otp.hash,
+    };
+  }
+  @Post('changePassword/verifyOtp')
+  @ApiOperation({
+    summary: 'verify otp sent to phone number for changing password',
+  })
+  async verifyOtpChangingPassword(
+    @Request() options: SessionRequest,
+    @Body() data: VerifyOtpDto,
+  ): Promise<boolean> {
+    const verify: boolean = this.securityTools.otp.otpVerifier(
+      data.phoneNumber,
+      data.otp,
+      data.hash,
+    );
+
+    if (!verify) {
+      throw new OtpErrorException();
+    }
+
+    const cacheKey: string = options.user.userId + '_changePassword';
+    await this.redisCacheService.set(cacheKey, data.phoneNumber, 480000);
+
+    return true;
+  }
+
+  @Post('changePassword')
+  @ApiOperation({ summary: 'change password for current user ' })
   async changePassword(
     @Request() options: SessionRequest,
-    @Body() dto: ChangePasswordDto,
-    @Res() res: Response,
-  ): Promise<Response> {
-    console.log('change pass');
-    console.log(options.user);
-    const userId = options.user.userId;
-    await this.userService.changePassword(userId, dto.password);
-    return res.status(200).json({ message: 'Group created successfully' });
+    @Body() data: ChangePasswordDto,
+  ): Promise<boolean> {
+    return await this.userService.changePassword(options, data);
   }
 
   @Post('/credit/increment')
@@ -356,8 +402,27 @@ export class UserController {
     @Request() options: SessionRequest,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const data = await this.userService.uploadAvatar(options, file);
+    return await this.userService.uploadAvatar(options, file);
+  }
 
-    return data;
+  @Post('/changeName')
+  @ApiOperation({ summary: 'change name , family' })
+  async changeName(
+    @Request() options: SessionRequest,
+    @Body() data: ChangeNameDto,
+  ) {
+    return await this.userService.changeName(options, data);
+  }
+
+  @Post('/uploadCompanyLetter')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({
+    summary: 'upload company letter for introducing the representative',
+  })
+  async uploadCompanyLetter(
+    @Request() options: SessionRequest,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.userService.uploadCompanyLetter(options, file);
   }
 }
