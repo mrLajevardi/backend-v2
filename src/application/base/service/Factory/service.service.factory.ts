@@ -193,7 +193,7 @@ export class ServiceServiceFactory {
     });
     const transformedInvoiceItems = invoiceItems.map((item) => {
       const invoiceItemType: InvoiceItemsDto = {
-        itemTypeId: item.id,
+        itemTypeId: item.itemId,
         value: item.value,
       };
       return invoiceItemType;
