@@ -58,6 +58,7 @@ export class GetOrgVdcResult {
     numberOfDisks: number,
     numberOfVMs: number,
     numberOfRunningVMs: number,
+    description: string,
   ) {
     this.name = vdcName;
     this.cpuAllocationMhz = cpuAllocationMhz;
@@ -74,6 +75,7 @@ export class GetOrgVdcResult {
     this.numberOfDisks = numberOfDisks;
     this.numberOfVMs = numberOfVMs;
     this.numberOfRunningVMs = numberOfRunningVMs;
+    this.description = description;
   }
 }
 

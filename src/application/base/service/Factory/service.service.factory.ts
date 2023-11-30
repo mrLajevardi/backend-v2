@@ -115,6 +115,7 @@ export class ServiceServiceFactory {
         isTicketSent,
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
         taskDetail,
+        vdcItems.description ? vdcItems.description : '',
       );
 
     //Cpu , Ram , Disk , Vm
