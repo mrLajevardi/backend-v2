@@ -42,6 +42,8 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
   // @ApiProperty({  enum: ServicePlanTypeEnum })
   servicePlanType?: ServicePlanTypeEnum;
 
+  description?: string;
+
   constructor(
     id: string,
     status: ServiceStatusEnum,
@@ -49,11 +51,11 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     name: string,
     serviceTypeId: string,
     serviceItems: ServiceItemDto[],
-    // expired: boolean,
     daysLeft: number,
     ticketSent: boolean,
     servicePlanType: ServicePlanTypeEnum,
     taskDetail?: TaskDetail,
+    description?: string,
   ) {
     super();
     this.id = id;
@@ -67,6 +69,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     this.daysLeft = daysLeft;
     this.ticketSent = ticketSent;
     this.servicePlanType = servicePlanType;
+    this.description = description;
   }
 
   static getMock(): GetAllVdcServiceWithItemsResultDto[] {
