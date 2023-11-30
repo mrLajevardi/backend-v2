@@ -8,6 +8,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { ApplicationPortProfileService } from './application-port-profile.service';
 import { EdgeGatewayService } from './edge-gateway.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('FirewallService', () => {
   let service: FirewallService;
@@ -21,6 +22,7 @@ describe('FirewallService', () => {
         SessionsModule,
         CrudModule,
         ServicePropertiesModule,
+        MainWrapperModule,
       ],
       providers: [
         EdgeGatewayService,

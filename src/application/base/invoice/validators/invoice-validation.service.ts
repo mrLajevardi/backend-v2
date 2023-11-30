@@ -186,6 +186,7 @@ export class InvoiceValidationService {
         },
       });
     if (requiredGenerationItemsNotProvided.length > 0) {
+      console.log('missing items: ', requiredGenerationItemsNotProvided);
       throw new BadRequestException(`required generation items not provided`);
     }
   }
@@ -231,6 +232,7 @@ export class InvoiceValidationService {
         },
       });
     if (requiredOtherItemsNotProvided.length > 0) {
+      console.log('required items:', requiredOtherItemsNotProvided);
       throw new BadRequestException(`required items not provided`);
     }
   }
@@ -404,10 +406,12 @@ export class InvoiceValidationService {
               .split('_')[1]
               .split('g')[1];
             if (
-              Number(invoiceItemGenerationNumber) <
+              Number(invoiceItemGenerationNumber) !==
               Number(serviceItemGenerationNumber)
             ) {
-              throw new BadRequestException('downgrade is not possible');
+              throw new BadRequestException(
+                'changing generation is not possible',
+              );
             }
           }
         }

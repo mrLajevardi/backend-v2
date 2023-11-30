@@ -7,6 +7,7 @@ import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('NatService', () => {
   let service: NatService;
@@ -20,6 +21,7 @@ describe('NatService', () => {
         ServicePropertiesModule,
         SessionsModule,
         CrudModule,
+        MainWrapperModule,
       ],
       providers: [NatService],
     }).compile();

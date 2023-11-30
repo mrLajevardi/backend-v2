@@ -83,7 +83,10 @@ export class VdcFactoryService {
     invoiceGroupItem.splice(invoiceGroupItem.indexOf(swapItem), 1);
     for (const invoiceItem of invoiceGroupItem) {
       for (const storageProfile of storageProfiles.data.record) {
-        if (storageProfile.name.toLowerCase().includes(invoiceItem.code)) {
+        if (
+          storageProfile.name.toLowerCase().includes(invoiceItem.code) &&
+          Number(invoiceItem.value) > 0
+        ) {
           const isDefault = storageProfile.name
             .toLowerCase()
             .includes(DiskItemCodes.Standard)
@@ -98,7 +101,7 @@ export class VdcFactoryService {
               name: storageProfile.name,
             },
             units: VdcUnits.StorageUnit,
-            limit: Number(invoiceItem.value),
+            limit: Number(invoiceItem.value) * 1024,
           };
           vdcStorageProfileParams.push(storage);
         }

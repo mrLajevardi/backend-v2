@@ -11,7 +11,7 @@ interface CreateNatUrlParams {
 
 export class CreateNatBody {
   enabled: boolean;
-  dnatExternalPort: object;
+  dnatExternalPort: number;
   externalAddresses: string;
   internalAddresses: string;
   internalPort: number | null;

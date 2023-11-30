@@ -1,3 +1,4 @@
+import { FirewallActionValue } from '../enum/firewall-action-value.enum';
 import {
   ApplicationPortProfile,
   SourceFirewallGroup,
@@ -6,13 +7,12 @@ import {
 export interface GetFirewallDto {
   id: string;
   name: string;
-  description: string;
   sourceFirewallGroups: null | SourceFirewallGroup[];
   destinationFirewallGroups: null | SourceFirewallGroup[];
   applicationPortProfiles: null | ApplicationPortProfile[];
   ipProtocol: string;
   action: string;
-  actionValue: string;
+  actionValue: FirewallActionValue;
   direction: string;
   logging: boolean;
   networkContextProfiles: null; // Define the type if available

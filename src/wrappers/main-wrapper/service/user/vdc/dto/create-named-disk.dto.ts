@@ -5,4 +5,5 @@ export class NamedDiskProperties {
   size: number;
   sharingType: string;
   description: string;
+  policyId: string;
 }

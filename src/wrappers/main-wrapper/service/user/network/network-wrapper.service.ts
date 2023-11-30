@@ -7,6 +7,7 @@ import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 import { CreateNetworkDto } from './dto/create-network.dto';
 import { GetNetworkListDto } from './dto/get-network-list.dto';
 import { GetIpUsageNetworkDto } from './dto/get-ip-usage-network.dto';
+import { NetworksTypesEnum } from './enum/network-types.enum';
 
 @Injectable()
 export class NetworkWrapperService {
@@ -29,7 +30,7 @@ export class NetworkWrapperService {
     );
     const gatewayId = targetGateway[0].id;
     let connection = null;
-    if (config.networkType !== 'ISOLATED') {
+    if (config.networkType !== NetworksTypesEnum.Isolated) {
       connection = {
         connectionType: config.connectionType,
         connectionTypeValue: config.connectionTypeValue,
@@ -51,7 +52,7 @@ export class NetworkWrapperService {
             enabled: true,
             gateway: config.gateway,
             ipRanges: {
-              values: config.ipRanges.values,
+              values: [],
             },
             prefixLength: config.prefixLength,
           },
@@ -155,7 +156,7 @@ export class NetworkWrapperService {
       (value) => value.name === edgeName,
     )[0].id;
     let connection = null;
-    if (config.networkType !== 'ISOLATED') {
+    if (config.networkType !== NetworksTypesEnum.Isolated) {
       connection = {
         connectionType: config.connectionType,
         connectionTypeValue: config.connectionTypeValue,
@@ -177,7 +178,7 @@ export class NetworkWrapperService {
             enabled: true,
             gateway: config.gateway,
             ipRanges: {
-              values: config.ipRanges.values,
+              values: [],
             },
             prefixLength: config.prefixLength,
           },

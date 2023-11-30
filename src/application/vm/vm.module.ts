@@ -9,6 +9,8 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { NetworksModule } from '../networks/networks.module';
 import { VmDetailService } from './service/vm-detail.service';
+import { VmDetailFactoryService } from './service/vm-detail.factory.service';
+import { VmDetailController } from './controller/vm-detail.controller';
 
 @Module({
   imports: [
@@ -20,8 +22,8 @@ import { VmDetailService } from './service/vm-detail.service';
     MainWrapperModule,
     forwardRef(() => NetworksModule),
   ],
-  controllers: [VmController],
-  providers: [VmService, VmDetailService],
-  exports: [VmService],
+  controllers: [VmController, VmDetailController],
+  providers: [VmService, VmDetailService, VmDetailFactoryService],
+  exports: [VmService, VmDetailFactoryService],
 })
 export class VmModule {}

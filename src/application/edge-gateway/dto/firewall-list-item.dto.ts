@@ -1,13 +1,26 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsDefined, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsDefined,
+  IsEnum,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
 import { ApplicationRefDto } from './application-ref.dto';
 import { FirewallGroupDto } from './firewall-group.dto';
+import { Type } from 'class-transformer';
+import { FirewallActionValue } from 'src/wrappers/main-wrapper/service/user/firewall/enum/firewall-action-value.enum';
 
 export class FirewallListItemDto {
   @ApiProperty({ type: String })
   @IsString()
   @IsDefined()
-  id: string;
+  @IsOptional()
+  id?: string;
 
   @ApiProperty({ type: String })
   @IsString()
@@ -15,12 +28,17 @@ export class FirewallListItemDto {
   name: string;
 
   @ApiProperty({ type: [ApplicationRefDto] })
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => ApplicationRefDto)
+  @ValidateNested({ each: true })
+  @ValidateIf((object, value) => value !== null)
   applicationPortProfiles: ApplicationRefDto[];
 
-  @ApiProperty({ type: String })
-  @IsString()
+  @ApiProperty({ type: FirewallActionValue, enum: FirewallActionValue })
+  @IsEnum(FirewallActionValue)
   @IsDefined()
-  ruleType: string;
+  actionValue: FirewallActionValue;
 
   @ApiProperty({ type: Boolean })
   @IsBoolean()
@@ -28,15 +46,23 @@ export class FirewallListItemDto {
   enabled: boolean;
 
   @ApiProperty({ type: [FirewallGroupDto] })
-  @IsDefined()
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => FirewallGroupDto)
+  @ValidateNested({ each: true })
+  @ValidateIf((object, value) => value !== null)
   sourceFirewallGroups: FirewallGroupDto[];
 
   @ApiProperty({ type: [FirewallGroupDto] })
-  @IsDefined()
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => FirewallGroupDto)
+  @ValidateNested({ each: true })
+  @ValidateIf((object, value) => value !== null)
   destinationFirewallGroups: FirewallGroupDto[];
 
   @ApiProperty({ type: String })
   @IsString()
   @IsOptional()
-  description?: string;
+  comments: string;
 }

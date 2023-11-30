@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { CreateVdcDto } from './dto/create-vdc.dto';
-import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import {
+  EndpointInterface,
+  EndpointOptionsInterface,
+} from 'src/wrappers/interfaces/endpoint.interface';
 import { DeleteVdcDto } from './dto/delete-vdc.dto';
 import { DisableVdcDto } from './dto/disable-vdc.dto';
 import { EnableVdcDto } from './dto/enable-vdc.dto';
@@ -9,6 +12,7 @@ import { UpdateVdcDto } from './dto/update-vdc.dto';
 import { UpdateVdcStorageProfileDto } from './dto/update-vdc-storage-profile.dto';
 import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
 import { GetProviderVdcMetadataDto } from './dto/get-provider-vdc-metadata.dto';
+import { GetProviderVdcDto } from './dto/get-provider-vdc.dto';
 
 @Injectable()
 export class AdminVdcEndpointService {
@@ -132,6 +136,19 @@ export class AdminVdcEndpointService {
     return {
       method: 'get',
       resource: `/api/admin/providervdc/${options.urlParams.providerVdcId}/metadata`,
+      params: null,
+      body: null,
+      headers: {
+        Accept: 'application/*+json;version=36.3',
+        ...options.headers,
+      },
+    };
+  }
+
+  getProviderVdcEndpoint(options: GetProviderVdcDto): EndpointInterface {
+    return {
+      method: 'get',
+      resource: `/api/admin/providervdc/${options.urlParams.providerVdcId}`,
       params: null,
       body: null,
       headers: {

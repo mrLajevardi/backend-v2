@@ -2,6 +2,7 @@ import { InvoiceDetailVdcModel } from '../interface/invoice-detail-vdc.interface
 import { InvoiceItems } from '../../../../infrastructure/database/entities/InvoiceItems';
 import { ServiceItemTypesTree } from '../../../../infrastructure/database/entities/views/service-item-types-tree';
 import {
+  DiskItemCodes,
   ItemTypeCodes,
   VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
@@ -175,19 +176,31 @@ export class InvoiceFactoryVdcService {
 
     res.ram = new VdcInvoiceDetailsInfoResultDto(ramModel);
 
-    res.disk = diskModel.map((diskmodel) => {
-      const res: VdcInvoiceDetailsInfoResultDto =
-        new VdcInvoiceDetailsInfoResultDto(diskmodel);
-      return res;
-    });
+    const swapdisk = diskModel.find(
+      (disk) => disk.code.toLowerCase().trim() == DiskItemCodes.Swap,
+    );
+
+    res.disk = diskModel
+      .map((diskmodel) => {
+        if (diskmodel.code.trim() !== DiskItemCodes.Swap) {
+          if (diskmodel.code.toLowerCase().trim() == DiskItemCodes.Standard) {
+            diskmodel.fee += swapdisk.fee;
+          }
+
+          const res: VdcInvoiceDetailsInfoResultDto =
+            new VdcInvoiceDetailsInfoResultDto(diskmodel);
+          return res;
+        }
+      })
+      .filter((disk) => disk != null);
 
     res.ip = new VdcInvoiceDetailsInfoResultDto(ipModel);
 
     res.generation = generation;
 
-    res.reservationCpu = reservationCpu.title;
+    res.reservationCpu = `${Number(reservationCpu.value)}`;
 
-    res.reservationRam = reservationRam.title;
+    res.reservationRam = `${Number(reservationRam.value)}`;
 
     res.vm = new VdcInvoiceDetailsInfoResultDto(vmModel);
 
@@ -196,9 +209,10 @@ export class InvoiceFactoryVdcService {
       name: vmModel.datacenterName,
     }; // TODO about DatacenterName and DatacenterTitle;
 
-    res.finalPrice = ramModel.finalAmount;
+    // Math.round((item.fee ? item.fee : item.price) / 1000) * 1000
+    res.finalPrice = Math.round(ramModel.finalAmount / 1000) * 1000;
 
-    res.rawAmount = ramModel.rawAmount;
+    res.rawAmount = Math.round(ramModel.rawAmount / 1000) * 1000;
 
     res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
 

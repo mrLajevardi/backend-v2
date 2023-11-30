@@ -84,10 +84,10 @@ export class CostCalculationService {
     const periodItem = groupedItems.period;
     const itemsPeriodCost =
       totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);
-    const discountValue = itemsPeriodCost * periodItem.percent;
-    const periodTotalCost = options.applyPeriodPercent
-      ? itemsPeriodCost + discountValue
+    const discountValue = options.applyPeriodPercent
+      ? itemsPeriodCost * periodItem.percent
       : 0;
+    const periodTotalCost = itemsPeriodCost + discountValue;
     const supportCosts = groupedItems.guaranty.fee * parseInt(periodItem.value);
     const invoiceTotalCosts = periodTotalCost + supportCosts;
     return {
@@ -146,13 +146,15 @@ export class CostCalculationService {
     const cpuCost =
       cpuParent.fee *
       parseInt(cpuItem.value) *
-      (cpuItem.percent + 1) *
-      (reservations.cpuReservation.percent + 1);
+      cpuItem.percent *
+      // (reservations.cpuReservation.percent + 1);
+      reservations.cpuReservation.percent;
     const ramCost =
       ramParent.fee *
       parseInt(ramItem.value) *
-      (ramItem.percent + 1) *
-      (reservations.memoryReservation.percent + 1);
+      ramItem.percent *
+      // (reservations.memoryReservation.percent + 1);
+      reservations.memoryReservation.percent;
     const result = [
       { ...cpuItem, cost: cpuCost },
       {

@@ -1,4 +1,4 @@
-type Network = {
+export type Network = {
   allocationMode: string;
   ipAddress: string;
   isConnected: boolean;
@@ -6,7 +6,7 @@ type Network = {
   networkName: string;
 };
 
-type Storage = { sizeMb: number; policyId: string };
+export type StoragePolicy = { sizeMb: number; policyId: string };
 
 export class CreateVm {
   computerName: string;
@@ -21,5 +21,5 @@ export class CreateVm {
   powerOn: boolean;
   primaryNetworkIndex: number;
   ram: number;
-  storage: Storage[];
+  storage: StoragePolicy[];
 }
