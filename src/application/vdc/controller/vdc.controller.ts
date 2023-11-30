@@ -44,7 +44,10 @@ import {
   DiskItemCodes,
   DiskItemName,
 } from '../../base/itemType/enum/item-type-codes.enum';
-import { GetAvailableResourcesQueryDto } from '../dto/get-resources.dto';
+import {
+  GetAvailableResourcesDto,
+  GetAvailableResourcesQueryDto,
+} from '../dto/get-resources.dto';
 // import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
 @ApiBearerAuth()
@@ -344,13 +347,15 @@ export class VdcController {
   }
 
   @Get('resources/availableResources')
-  @ApiOperation({ summary: 'Returns service plans' })
+  @ApiOperation({ summary: 'Returns available resources' })
   @ApiResponse({
     status: 200,
-    description: 'Array of service plans',
-    type: Array,
+    description: 'available resources',
+    type: GetAvailableResourcesDto,
   })
-  async get(@Query() query: GetAvailableResourcesQueryDto): Promise<any> {
+  async get(
+    @Query() query: GetAvailableResourcesQueryDto,
+  ): Promise<GetAvailableResourcesDto> {
     return await this.vdcService.getAvailableResources(query.datacenterName);
   }
 }

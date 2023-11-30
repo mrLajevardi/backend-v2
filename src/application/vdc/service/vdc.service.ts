@@ -617,12 +617,17 @@ export class VdcService {
         adminSession,
         gen.id,
       );
+      const metadata = await this.datacenterService.getDatacenterMetadata(
+        '',
+        gen.id,
+      );
       const filteredComputePolicies: ComputeCapacity = {
         cpu: {
           allocation: computePolicies.computeCapacity.cpu.allocation,
           reserved: computePolicies.computeCapacity.cpu.reserved,
           total: computePolicies.computeCapacity.cpu.total,
           used: computePolicies.computeCapacity.cpu.used,
+          cpuSpeed: metadata.cpuSpeed as number,
         },
         ram: {
           allocation: computePolicies.computeCapacity.memory.allocation,
