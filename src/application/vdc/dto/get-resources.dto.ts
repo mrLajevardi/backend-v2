@@ -37,9 +37,14 @@ class ComputeCapacityItem {
   @ApiProperty({ type: Number })
   reserved: number;
 }
+
+class CpuComputeCapacity extends ComputeCapacityItem {
+  @ApiProperty({ type: Number })
+  cpuSpeed: number;
+}
 export class ComputeCapacity {
   @ApiProperty({ type: ComputeCapacityItem })
-  cpu: ComputeCapacityItem;
+  cpu: CpuComputeCapacity;
 
   @ApiProperty({ type: ComputeCapacityItem })
   ram: ComputeCapacityItem;
@@ -60,6 +65,9 @@ export class ProviderVdcResourceList {
 }
 
 export class GetAvailableResourcesDto {
+  @ApiProperty({ type: GetAvailableIps })
   providerGateway: GetAvailableIps;
+
+  @ApiProperty({ type: [ProviderVdcResourceList] })
   providerVdc: ProviderVdcResourceList[];
 }
