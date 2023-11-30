@@ -26,7 +26,6 @@ import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.mod
 import { VmModule } from 'src/application/vm/vm.module';
 import { NetworksModule } from 'src/application/networks/networks.module';
 import { DatacenterModule } from 'src/application/base/datacenter/datacenter.module';
-import { ServiceService } from '../../base/service/services/service.service';
 
 describe('VdcController', () => {
   let controller: VdcController;
@@ -38,6 +37,7 @@ describe('VdcController', () => {
         DatabaseModule,
         CrudModule,
         LoggerModule,
+        //TasksModule,
         SessionsModule,
         DatacenterModule,
         OrganizationModule,
@@ -58,7 +58,6 @@ describe('VdcController', () => {
         NetworkService,
         VdcFactoryService,
         VdcDetailFactoryService,
-        ServiceService,
         {
           provide: BASE_VDC_INVOICE_SERVICE,
           useClass: VdcInvoiceService,
