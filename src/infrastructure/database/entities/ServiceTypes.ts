@@ -50,13 +50,13 @@ export class ServiceTypes {
   @Column('datetime', { name: 'CreateDate', nullable: true })
   createDate: Date | null;
 
-  @OneToMany(() => Configs, (configs) => configs.serviceType)
+  @OneToMany(() => Configs, (configs) => configs.serviceTypes)
   configs: Configs[];
 
-  @OneToMany(() => Discounts, (discounts) => discounts.serviceType)
+  @OneToMany(() => Discounts, (discounts) => discounts.serviceTypes)
   discounts: Discounts[];
 
-  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceType)
+  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceTypes)
   itemTypes: ItemTypes[];
 
   @OneToMany(() => Templates, (templates) => templates.serviceType)

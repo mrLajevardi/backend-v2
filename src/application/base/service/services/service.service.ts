@@ -18,7 +18,6 @@ import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
-import { ZarinpalConfigDto } from 'src/application/payment/dto/zarinpal-config.dto';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
@@ -468,19 +467,18 @@ export class ServiceService {
           await this.serviceFactory.getConfigServiceInstance(serviceInstance)
         ).cpuSpeed;
 
+        vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
+      }
+      if (vdcItems !== null) {
         const info = ({ isTicketSent } =
           await this.serviceFactory.getPropertiesOfServiceInstance(
             serviceInstance,
           ));
         // (daysLeft = info.daysLeft),
         isTicketSent = info.isTicketSent;
-
-        vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
-      }
-      if (vdcItems !== null) {
-        model = this.serviceFactory.configModelServiceInstanceList(
+        model = await this.serviceFactory.configModelServiceInstanceList(
           serviceInstance,
-          // daysLeft,
+          options,
           isTicketSent,
           vdcItems,
           cpuSpeed,
@@ -489,36 +487,6 @@ export class ServiceService {
       }
     }
 
-    // await Promise.all(
-    // allServicesInstances.map((serviceInstance) => {
-    //   if (
-    //     serviceInstance.status != ServiceStatusEnum.Error &&
-    //     serviceInstance.status != ServiceStatusEnum.Pending
-    //   ) {
-    //     cpuSpeed = (
-    //       await this.serviceFactory.getConfigServiceInstance(serviceInstance)
-    //     ).cpuSpeed;
-    //
-    //     const info = ({ isTicketSent } =
-    //       await this.serviceFactory.getPropertiesOfServiceInstance(
-    //         serviceInstance,
-    //       ));
-    //     // (daysLeft = info.daysLeft),
-    //     isTicketSent = info.isTicketSent;
-    //
-    //     vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
-    //   }
-    //
-    //   model = this.serviceFactory.configModelServiceInstanceList(
-    //     serviceInstance,
-    //     // daysLeft,
-    //     isTicketSent,
-    //     vdcItems,
-    //     cpuSpeed,
-    //   );
-    //   res.push(model);
-    // });
-    // );
     return res;
   }
 

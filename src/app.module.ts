@@ -44,9 +44,13 @@ import { BullModule as BullMQModule } from '@nestjs/bullmq';
 import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { DatacenterModule } from './application/base/datacenter/datacenter.module';
 import { ServiceItemModule } from './application/base/service-item/service-item.module';
+import { CompanyModule } from './application/base/company/company.module';
+import { FileModule } from './application/base/file/file.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
+    CacheModule.register({ isGlobal: true }),
     // RavenModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -101,6 +105,8 @@ import { ServiceItemModule } from './application/base/service-item/service-item.
     UvdeskWrapperModule,
     DatacenterModule,
     ServiceItemModule,
+    CompanyModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [

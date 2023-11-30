@@ -1,6 +1,6 @@
 $path = "C:\arad-v2\*"
 $working_directory = Get-Location
-$pm2_proccess = 'arad-v2-bak'
+$pm2_proccess = 'arad-v2.bak'
 npm run pm2:stop
 Remove-Item -Path $path -Recurse -Force
 $path = "C:\arad-v2"

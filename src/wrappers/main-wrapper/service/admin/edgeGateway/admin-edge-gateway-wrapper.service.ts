@@ -74,7 +74,7 @@ export class AdminEdgeGatewayWrapperService {
    * @param {Number} pageSize
    * @return {Promise}
    */
-  private async findExternalNetwork(
+  public async findExternalNetwork(
     authToken: string,
     page = 1,
     pageSize = 25,
@@ -82,7 +82,7 @@ export class AdminEdgeGatewayWrapperService {
     const network = await this.getExternalNetworks(authToken, page, pageSize);
     return Promise.resolve(network);
   }
-  private async ipAllocation(
+  public async ipAllocation(
     externalNetworkId: string,
     authToken: string,
     userIpCount: number,
@@ -106,10 +106,12 @@ export class AdminEdgeGatewayWrapperService {
         });
         ipAddresses.shift();
         remainingIp--;
-      } else {
+      } else if (availableIp.length >= index + 2) {
         index++;
         ipRange = availableIp[index];
         ipAddresses = getIPRange(ipRange.startAddress, ipRange.endAddress);
+      } else {
+        break;
       }
     }
     if (allocatedIPAddresses.length < userIpCount) {

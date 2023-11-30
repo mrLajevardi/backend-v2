@@ -9,6 +9,7 @@ import {
   Request,
   Query,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -32,6 +33,7 @@ import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
 import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
 import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
+import { PersonalVerificationGuard } from '../../security/auth/guard/personal-verification.guard';
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -45,6 +47,7 @@ export class ServiceController {
 
   // create new item
   @ApiOperation({ summary: 'Create a new item' })
+  @UseGuards(PersonalVerificationGuard)
   @ApiResponse({
     status: 201,
     description: 'The item has been successfully created',

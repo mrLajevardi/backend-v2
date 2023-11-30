@@ -2,14 +2,18 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Company } from './Company';
 import { GroupsMapping } from './GroupsMapping';
 import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { FileUpload } from './FileUpload';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
@@ -112,6 +116,66 @@ export class User {
   })
   phoneVerified: boolean;
 
+  @Column('date', { name: 'birthDate', nullable: true })
+  birthDate: Date | null;
+
+  @Column('nvarchar', { name: 'personalCode', nullable: true, length: 100 })
+  personalCode: string | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'companyOwner',
+    nullable: true,
+    default: () => '(0)',
+  })
+  companyOwner: boolean | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'personalVerification',
+    nullable: true,
+    default: () => 1,
+  })
+  personalVerification: boolean | null;
+
+  @Column('tinyint', {
+    name: 'twoFactorAuth',
+    nullable: true,
+    default: () => 0,
+  })
+  twoFactorAuth: number;
+
+  @Column('decimal', { name: 'companyId', nullable: true })
+  companyId: number | null;
+
+  @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'avatarId',
+    nullable: true,
+  })
+  avatarId: string | null;
+
+  @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'companyLetterId',
+    nullable: true,
+  })
+  companyLetterId: string | null;
+
+  @Column('tinyint', {
+    name: 'companyLetterStatus',
+    nullable: true,
+    default: () => 0,
+  })
+  companyLetterStatus: number;
+
+  @Column({
+    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
+    name: 'guid',
+    unique: !isTestingEnv(),
+    nullable: isTestingEnv(),
+    default: () => (isTestingEnv() ? null : 'newsequentialid()'),
+  })
+  guid: string;
+
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
 
@@ -123,4 +187,16 @@ export class User {
 
   @OneToMany(() => Transactions, (transactions) => transactions.user)
   transactions: Transactions[];
+
+  @ManyToOne(() => Company, (company) => company.users)
+  @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])
+  company: Company;
+
+  @ManyToOne(() => FileUpload, (file) => file.user)
+  @JoinColumn({ name: 'avatarId', referencedColumnName: 'streamId' })
+  avatar: FileUpload;
+
+  @ManyToOne(() => FileUpload)
+  @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'streamId' })
+  companyLetter: FileUpload;
 }

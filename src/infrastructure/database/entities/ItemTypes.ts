@@ -55,7 +55,7 @@ export class ItemTypes {
   })
   createDate: Date | null;
 
-  @Column('int', { name: 'Percent', nullable: true })
+  @Column('float', { name: 'Percent', nullable: true, precision: 53 })
   percent: number | null;
 
   @Column('tinyint', { name: 'PrinciplePrice', nullable: true })
@@ -92,6 +92,12 @@ export class ItemTypes {
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
   invoiceItems: InvoiceItems[];
 
+  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
+  serviceTypes: ServiceTypes;
   @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
   @JoinColumn([
     { name: 'ServiceTypeID', referencedColumnName: 'id' },

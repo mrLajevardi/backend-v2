@@ -12,6 +12,7 @@ import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
 import { GetProviderVdcsParams } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/get-provider-vdcs.dto';
 import { GetProviderVdcsMetadataDto } from './dto/get-provider-vdcs-metadata.dto';
 import { VdcUnits } from 'src/application/vdc/enum/vdc-units.enum';
+import { GetProviderVdcDto } from './dto/get-provider-vdc.dto';
 import { UpdateProviderVdcMetadataBody } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/update-provider-vdc-metadata.dto';
 
 @Injectable()
@@ -315,6 +316,28 @@ export class AdminVdcWrapperService {
         }),
       );
     return providerVdcsList.data;
+  }
+
+  async getProviderVdc(
+    authToken: string,
+    providerVdcId: string,
+  ): Promise<GetProviderVdcDto> {
+    const endpoint = 'AdminVdcEndpointService.getProviderVdcEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const formattedId = providerVdcId.split('providervdc:').slice(-1)[0];
+    const providerVdc =
+      await this.vcloudWrapperService.request<GetProviderVdcDto>(
+        wrapper({
+          urlParams: {
+            providerVdcId: formattedId,
+          },
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }),
+      );
+    return providerVdc.data;
   }
 
   async updateProviderMetadata(

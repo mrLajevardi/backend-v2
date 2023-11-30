@@ -17,14 +17,14 @@ import { DiskBusUnitBusNumberSpace } from './diskBusUnitBusNumberSpace';
 function getBusUnitBusNumberFree(
   disksBusnumberBusUnitGrouped: Record<string, unknown[]>,
   // adapterType: string,
-): Record<string, []> {
+): Record<string, { busUnit: number; busNumber: number }[]> {
   // const model = disksBusnumberBusUnitGrouped[adapterType].map((d) => {
   //   return {
   //     busNumber: (d as any).busNumber,
   //     unitNumber: (d as any).unitNumber,
   //   };
   // });
-  const res: Record<string, []> = {};
+  const res: Record<string, { busUnit: number; busNumber: number }[]> = {};
   for (const adapterType in disksBusnumberBusUnitGrouped) {
     const model = disksBusnumberBusUnitGrouped[adapterType].map((d) => {
       return {
@@ -32,20 +32,16 @@ function getBusUnitBusNumberFree(
         unitNumber: (d as any).unitNumber,
       };
     });
-    const freeSpace = DiskBusUnitBusNumberSpace[adapterType].filter((s) =>
+    const freeSpace = DiskBusUnitBusNumberSpace.find(
+      (bus) => bus.legacyId == adapterType,
+    ).info.filter((s) =>
       model.every(
-        (f) => f.unitNumber != s.unitNumber && f.busNumber != s.busNumber,
+        (f) => f.unitNumber != s.busUnit && f.busNumber != s.busNumber,
       ),
     );
     res[adapterType] = freeSpace;
   }
   return res;
-  // const freeSpace = DiskBusUnitBusNumberSpace[adapterType].filter((s) =>
-  //   model.every(
-  //     (f) => f.unitNumber != s.unitNumber && f.busNumber != s.busNumber,
-  //   ),
-  // );
-  // return freeSpace[0];
 }
 export async function userUpdateDiskSection(
   authToken,
@@ -81,7 +77,7 @@ export async function userUpdateDiskSection(
   vmSpecSection.modified = true;
   vmSpecSection.diskSection.diskSettings.forEach((diskSection) => {
     diskSettings.forEach((settings) => {
-      if (settings.diskId === diskSection.diskId) {
+      if (settings.id === diskSection.diskId) {
         const updatedSetting = {
           ...diskSection,
           // busNumber: diskSection.busNumber,
@@ -92,9 +88,11 @@ export async function userUpdateDiskSection(
           //   __prefix: diskSection.storageProfile.prefix,
           //   // "__prefix": "root"?
           // },
-          sizeMb: settings.sizeMb,
+          sizeMb: settings.size,
         };
         updatedSetting.storageProfile.href = `${vcdConfig.baseUrl}/${vcdConfig.user.storageProfile.name}/${settings.storageId}`;
+        updatedSetting.storageProfile.id = `urn:vcloud:vdcstorageProfile:${settings.storageId}`;
+        // updatedSetting.storageProfile.name = 'ARAD-Tier-Fast-Amin';
         updatedDiskSettings.push(updatedSetting);
       }
     });
@@ -122,7 +120,7 @@ export async function userUpdateDiskSection(
       )[0].busNumber;
       // console.log(targetAdaptor, controllers, '👌👌');
       const newSetting = {
-        sizeMb: settings.sizeMb,
+        sizeMb: settings.size,
         // unitNumber: controllers[targetAdaptor][0].unitNumber,
         unitNumber: uniNumber,
         // busNumber: controllers[targetAdaptor][0].busNumber,
@@ -139,6 +137,8 @@ export async function userUpdateDiskSection(
   });
   vmSpecSection.diskSection.diskSettings = updatedDiskSettings;
   console.log(updatedDiskSettings, '❤️❤️❤️');
+
+  // vmInfoData.storageProfile = updatedDiskSettings[0];
   // }
   // });
   const diskSection = await new VcloudWrapper().posts('user.vm.updateVm', {

@@ -19,13 +19,14 @@ import {
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
-import { DatacenterService } from './service/datacenter.service';
 import {
   BASE_DATACENTER_SERVICE,
   BaseDatacenterService,
 } from './interface/datacenter.interface';
 import { Public } from '../security/auth/decorators/ispublic.decorator';
 import { CreateDatacenterDto } from './dto/create-datacenter.dto';
+import { DataCenterList } from './dto/datacenter-list.dto';
+import { DatacenterDetails } from './dto/datacenter-details.dto';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -92,15 +93,18 @@ export class DatacenterController {
     return result;
   }
 
-  @Post()
-  @ApiOperation({ summary: 'Create New Datacenter' })
-  createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
-    return this.service.createDatacenter(dto);
+  @Get('/getAllDatacenters')
+  @Public()
+  async getAllDataCenters(): Promise<DataCenterList[]> {
+    const result = await this.service.getAllDataCenters();
+    return result;
   }
-
-  @Put()
-  @ApiOperation({ summary: 'Update existing Datacenter' })
-  updateDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
-    return this.service.updateDatacenter(dto);
+  @Get('/getDatacenterDetails/:datacenterName')
+  @Public()
+  async getDatacenterDetails(
+    @Param('datacenterName') datacenterName: string,
+  ): Promise<DatacenterDetails> {
+    const result = await this.service.getDatacenterDetails(datacenterName);
+    return result;
   }
 }

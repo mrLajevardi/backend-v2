@@ -3,4 +3,5 @@ export enum NetworkStatusEnum {
   Configuring = 'CONFIGURING',
   Realized = 'REALIZED',
   RealizationFailed = 'REALIZATION_FAILED',
+  Unknown = 'UNKNOWN ',
 }

@@ -37,6 +37,7 @@ import { PaginationReturnDto } from 'src/infrastructure/dto/pagination-return.dt
 import { Response } from 'express';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { FilteredUser } from '../types/filtered-user.type';
+import { ChangePasswordAdminDto } from '../dto/change-password-admin.dto';
 
 @ApiTags('User-admin')
 @Controller('admin/users')
@@ -293,10 +294,10 @@ export class UserAdminController {
   @ApiBody({ type: ChangePasswordDto })
   async changePassword(
     @Param('id') userId: number,
-    @Body() dto: ChangePasswordDto,
+    @Body() dto: ChangePasswordAdminDto,
     @Res() res: Response,
   ): Promise<Response> {
-    await this.userService.changePassword(userId, dto.password);
+    await this.userService.changePasswordAdmin(userId, dto.password);
     return res.status(200).json({ message: 'Password changed successfully' });
   }
 }

@@ -29,6 +29,16 @@ import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
 import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
 import { NamedDiskDto } from '../dto/named-disk.dto';
 import { VdcProperties } from '../interface/vdc-properties.interface';
+import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
+import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
+import {
+  ComputeCapacity,
+  GetAvailableIps,
+  GetAvailableResourcesDto,
+  ProviderVdcResourceList,
+  StoragePoliciesList,
+} from '../dto/get-resources.dto';
+import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-codes.enum';
 
 @Injectable()
 export class VdcService {
@@ -45,6 +55,7 @@ export class VdcService {
     private readonly loggerService: LoggerService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
     private readonly templatesTableService: TemplatesTableService,
+    private readonly adminEdgeGatewayWrapperService: AdminEdgeGatewayWrapperService,
   ) {}
 
   async createVdc(
@@ -541,5 +552,91 @@ export class VdcService {
       templatesList.push(templateDto);
     }
     return templatesList;
+  }
+
+  async getAvailableResources(
+    datacenterName: string,
+  ): Promise<GetAvailableResourcesDto> {
+    const adminSession = await this.sessionService.checkAdminSession();
+    const externalNetworks =
+      await this.adminEdgeGatewayWrapperService.findExternalNetwork(
+        adminSession,
+        1,
+        1,
+      );
+    const availableIps: GetAvailableIps = {
+      totalIpCount: 0,
+      usedIpCount: 0,
+    };
+    externalNetworks.values[0].subnets.values.forEach((value) => {
+      availableIps.totalIpCount += value.totalIpCount;
+      availableIps.usedIpCount += value.usedIpCount;
+    });
+
+    const datacenter =
+      await this.datacenterService.getDatacenterConfigWithGen();
+    const targetDatacenter = datacenter.find(
+      (item) => item.datacenter === datacenterName,
+    );
+    const providerVdcList: ProviderVdcResourceList[] = [];
+    for (const gen of targetDatacenter.gens) {
+      const providerVdc: ProviderVdcResourceList = {
+        ...gen,
+      } as ProviderVdcResourceList;
+      const storageProfiles =
+        await this.vdcWrapperService.vcloudQuery<ProviderVdcStorageProfilesDto>(
+          adminSession,
+          {
+            type: 'providerVdcStorageProfile',
+            format: 'records',
+            page: 1,
+            pageSize: 15,
+            sortAsc: 'name',
+            filter: `isEnabled==true;providerVdc==${
+              gen.id.split(':').slice(-1)[0]
+            }`,
+          },
+        );
+      const filteredStorageProfiles: StoragePoliciesList[] = [];
+      for (const profile of storageProfiles.data.record) {
+        const name = Object.values(DiskItemCodes).find((code) =>
+          profile.name.toLocaleLowerCase().includes(code),
+        );
+        if (!name) {
+          continue;
+        }
+        const data: StoragePoliciesList = {
+          name,
+          storageTotalMB: profile.storageTotalMB,
+          storageUsedMB: profile.storageUsedMB,
+        };
+        filteredStorageProfiles.push(data);
+      }
+      providerVdc.storagePolicies = filteredStorageProfiles;
+      const computePolicies = await this.adminVdcWrapperService.getProviderVdc(
+        adminSession,
+        gen.id,
+      );
+      const filteredComputePolicies: ComputeCapacity = {
+        cpu: {
+          allocation: computePolicies.computeCapacity.cpu.allocation,
+          reserved: computePolicies.computeCapacity.cpu.reserved,
+          total: computePolicies.computeCapacity.cpu.total,
+          used: computePolicies.computeCapacity.cpu.used,
+        },
+        ram: {
+          allocation: computePolicies.computeCapacity.memory.allocation,
+          reserved: computePolicies.computeCapacity.memory.reserved,
+          total: computePolicies.computeCapacity.memory.total,
+          used: computePolicies.computeCapacity.memory.used,
+        },
+      };
+      providerVdc.computeCapacity = filteredComputePolicies;
+      providerVdcList.push(providerVdc);
+    }
+    return {
+      providerGateway: availableIps,
+      providerVdc: providerVdcList,
+    };
   }
 }

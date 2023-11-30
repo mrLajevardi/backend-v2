@@ -5,6 +5,7 @@ import { UserTableService } from '../crud/user-table/user-table.service';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
 import { vcdAuthConfig } from 'src/wrappers/mainWrapper/vcdAuthConfig';
 import { log } from 'console';
+import { isNil } from 'lodash';
 
 @Injectable()
 export class SessionsService {
@@ -40,7 +41,10 @@ export class SessionsService {
   }> {
     const user = await this.userTable.findById(userId);
     const org = await this.organizationTable.findById(orgId);
-    const filteredUsername = user.username.replace('@', '_').replace('.', '_');
+    // const filteredUsername = user.username.replace('@', '_').replace('.', '_');
+    const filteredUsername = !isNil(user.guid)
+      ? user.guid
+      : user.username.replace('@', '_').replace('.', '_');
     //This part is because of preventing errors and should be deleted
     //
     const session = mainWrapper.admin.user.createSession;

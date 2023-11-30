@@ -27,6 +27,9 @@ import { ServiceServiceFactory } from './Factory/service.service.factory';
 import { ServiceInstancesTableModule } from '../crud/service-instances-table/service-instances-table.module';
 import { ServiceItemsTableModule } from '../crud/service-items-table/service-items-table.module';
 import { TaskManagerModule } from '../task-manager/task-manager.module';
+import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 @Module({
   imports: [
@@ -35,7 +38,9 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     SessionsModule,
     LoggerModule,
     UserModule,
+    UvdeskWrapperModule,
     PaymentModule,
+    MainWrapperModule,
     forwardRef(() => InvoicesModule),
     // forwardRef(() => TasksModule),
     // forwardRef(() => TasksModule),
@@ -43,6 +48,7 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     forwardRef(() => VgpuModule),
     // InvoicesModule,
     // VdcModule,
+
     forwardRef(() => TasksModule),
     // VgpuModule,
     AbilityModule,
@@ -53,6 +59,7 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     ServiceItemsTableModule,
     ServiceInstancesTableModule,
     TaskManagerModule,
+    EdgeGatewayModule,
   ],
   providers: [
     ServiceService,

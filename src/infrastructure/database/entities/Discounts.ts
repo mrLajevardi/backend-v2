@@ -38,6 +38,12 @@ export class Discounts {
   @Column('varchar', { name: 'Code', nullable: true, length: 50 })
   code: string | null;
 
+  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.discounts)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
+  serviceTypes: ServiceTypes;
   @Column('varchar', { name: 'ServiceTypeID' })
   serviceTypeId: string;
 

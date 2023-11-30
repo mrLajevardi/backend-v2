@@ -40,6 +40,11 @@ import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { NamedDiskDto } from '../dto/named-disk.dto';
 import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
+import {
+  DiskItemCodes,
+  DiskItemName,
+} from '../../base/itemType/enum/item-type-codes.enum';
+import { GetAvailableResourcesQueryDto } from '../dto/get-resources.dto';
 // import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
 @ApiBearerAuth()
@@ -326,5 +331,26 @@ export class VdcController {
       serviceInstanceId,
       options,
     );
+  }
+
+  @Get('/disk/diskTypes')
+  async getDiskTypes(): Promise<any> {
+    return [
+      { code: DiskItemCodes.Fast, name: DiskItemName.Fast },
+      { code: DiskItemCodes.Archive, name: DiskItemName.Archive },
+      { code: DiskItemCodes.Vip, name: DiskItemName.Vip },
+      { code: DiskItemCodes.Standard, name: DiskItemName.Standard },
+    ];
+  }
+
+  @Get('resources/availableResources')
+  @ApiOperation({ summary: 'Returns service plans' })
+  @ApiResponse({
+    status: 200,
+    description: 'Array of service plans',
+    type: Array,
+  })
+  async get(@Query() query: GetAvailableResourcesQueryDto): Promise<any> {
+    return await this.vdcService.getAvailableResources(query.datacenterName);
   }
 }

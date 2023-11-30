@@ -19,7 +19,7 @@ export interface Value {
   cellId: null;
   eventType: string;
   // serviceNamespace: ServiceNamespace;
-  eventStatus: EventStatus;
+  eventStatus: EventStatus; // SUCCESS -- FAILURE
   timestamp: Date;
   external: boolean;
   additionalProperties: AdditionalProperties;

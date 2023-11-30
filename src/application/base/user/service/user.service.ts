@@ -13,17 +13,20 @@ import { SystemSettingsTableService } from '../../crud/system-settings-table/sys
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { PaymentService } from 'src/application/payment/payment.service';
 import { NotificationService } from '../../notification/notification.service';
 import { InvalidPhoneNumberException } from 'src/infrastructure/exceptions/invalid-phone-number.exception';
 import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
-import { encryptPassword } from 'src/infrastructure/helpers/helpers';
+import {
+  comparePassword,
+  encryptPassword,
+} from 'src/infrastructure/helpers/helpers';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { Like } from 'typeorm';
+import { getConnection, Like } from 'typeorm';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
@@ -34,11 +37,31 @@ import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invali
 import { JwtService } from '@nestjs/jwt';
 import { MoreThanOneUserWithSameEmail } from 'src/infrastructure/exceptions/more-than-one-user-with-this-email.exception';
 import * as process from 'process';
+import { CreateProfileDto } from '../dto/create-profile.dto';
+import { CompanyTableService } from '../../crud/company-table/company-table.service';
+import { CreateCompanyDto } from '../../crud/company-table/dto/create-company.dto';
+import { Company } from '../../../../infrastructure/database/entities/Company';
+import { plainToClass } from 'class-transformer';
+import { UserProfileDto } from '../dto/user-profile.dto';
+import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
+import { LoginService } from '../../security/auth/service/login.service';
+import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
+import {
+  UserProfileResultDto,
+  UserProfileResultDtoFormat,
+} from '../dto/user-profile.result.dto';
+import { Connection } from 'typeorm';
+import { RedisCacheService } from './redis-cache.service';
+import { ChangeNameDto } from '../dto/change-name.dto';
+import { ChangePasswordDto } from '../dto/change-password.dto';
+import { CompanyLetterStatusEnum } from '../enum/company-letter-status.enum';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userTable: UserTableService,
+    private readonly companyTable: CompanyTableService,
     private readonly transactionsTable: TransactionsTableService,
     private readonly roleMappingsTable: RoleMappingTableService,
     private readonly systemSettingsTable: SystemSettingsTableService,
@@ -46,6 +69,8 @@ export class UserService {
     private readonly paymentService: PaymentService,
     private readonly notificationService: NotificationService,
     private readonly securityTools: SecurityToolsService,
+    private readonly connection: Connection,
+    private readonly redisCacheService: RedisCacheService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -61,6 +86,10 @@ export class UserService {
     });
   }
 
+  async findById(userId: number): Promise<User> {
+    return await this.userTable.findById(userId);
+  }
+
   //changing the user email and set email verified to false
   async changeEmail(userId: number, dto: ChangeEmailDto): Promise<void> {
     await this.userTable.update(userId, {
@@ -69,7 +98,10 @@ export class UserService {
     });
   }
 
-  async changePassword(userId: number, newPassword: string): Promise<void> {
+  async changePasswordAdmin(
+    userId: number,
+    newPassword: string,
+  ): Promise<void> {
     if (!newPassword) {
       return Promise.reject(new BadRequestException());
     }
@@ -79,6 +111,33 @@ export class UserService {
       { id: userId },
       { password: hashedPassword },
     );
+  }
+
+  async changePassword(
+    options: SessionRequest,
+    data: ChangePasswordDto,
+  ): Promise<boolean> {
+    if (data.otpVerification) {
+      const cacheKey = options.user.userId + '_changePassword';
+      const checkCache = await this.redisCacheService.exist(cacheKey);
+      if (!checkCache) {
+        throw new ForbiddenException();
+      }
+    } else {
+      const user: User = await this.userTable.findById(options.user.userId);
+      const isValid = await comparePassword(user.password, data.oldPassword);
+      if (!isValid) {
+        throw new ForbiddenException();
+      }
+    }
+
+    const hashedPassword = await encryptPassword(data.newPassword);
+
+    await this.userTable.update(options.user.userId, {
+      password: hashedPassword,
+    });
+
+    return Promise.resolve(true);
   }
 
   async checkUserCredit(
@@ -150,7 +209,7 @@ export class UserService {
       phoneVerified: true,
       acceptTermsOfService: true,
     };
-    console.log(createDto);
+
     const theUser = await this.userTable.create(createDto);
 
     await this.logger.info(
@@ -165,11 +224,11 @@ export class UserService {
       },
     );
 
-    await this.roleMappingsTable.create({
-      roleId: 'user',
-      principalType: 'USER',
-      principalId: theUser.id.toString(),
-    });
+    // await this.roleMappingsTable.create({
+    //   roleId: 'user',
+    //   principalType: 'USER',
+    //   principalId: theUser.id.toString(),
+    // });
 
     return theUser;
   }
@@ -489,9 +548,9 @@ export class UserService {
     }
   }
 
-  async resetPasswordByPhone(
-    data: ResetPasswordByPhoneDto,
-  ): Promise<{ hash: string }> {
+  async resetPasswordByPhone(data: ResetPasswordByPhoneDto): Promise<{
+    hash: string;
+  }> {
     const user = await this.userTable.findOne({
       where: {
         phoneNumber: data.phoneNumber,
@@ -550,5 +609,237 @@ export class UserService {
       console.log(err);
       return Promise.reject(new InvalidEmailTokenException());
     }
+  }
+
+  async createProfile(
+    options: SessionRequest,
+    data: CreateProfileDto,
+  ): Promise<UserProfileDto> {
+    const userProfileData: UpdateUserDto = {
+      name: data.name,
+      family: data.family,
+      personalCode: data.personalCode,
+      companyOwner: data.companyOwner,
+      personalVerification: true,
+    };
+
+    if (!data.personality) {
+      const company: Company = await this.companyTable.create(
+        plainToClass(CreateCompanyDto, data, { excludeExtraneousValues: true }),
+      );
+      userProfileData.companyId = company.id;
+    }
+
+    // verify user with api and change personalVerification to true
+
+    await this.userTable.update(options.user.userId, userProfileData);
+
+    const userWithRelation = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company'],
+    });
+
+    return new UserProfileResultDto().toArray(userWithRelation);
+  }
+
+  async getUserProfile(options: SessionRequest) {
+    // const user = await this.userTable.findOne(options.user.userId);
+    const user = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: [
+        'company',
+        'company.province',
+        'company.city',
+        'avatar',
+        'companyLetter',
+      ],
+    });
+
+    return new UserProfileResultDto().toArray(user);
+  }
+
+  async changeUserPhoneNumber(
+    options: SessionRequest,
+    data: VerifyOtpDto,
+  ): Promise<UserProfileDto> {
+    const verify: boolean = this.securityTools.otp.otpVerifier(
+      data.phoneNumber,
+      data.otp,
+      data.hash,
+    );
+
+    const cacheKey = options.user.userId + '_changePhoneNumber';
+    const checkCache = await this.redisCacheService.exist(cacheKey);
+
+    if (!verify || !checkCache) {
+      throw new OtpErrorException();
+    }
+
+    const userUpdatingData: UpdateUserDto = {
+      phoneNumber: data.phoneNumber,
+      username: 'U-' + data.phoneNumber,
+    };
+
+    // Update User in Cloud Director
+    //Disable
+    //Delete
+    //ReCreate
+
+    const updatedUser = await this.userTable.update(
+      options.user.userId,
+      userUpdatingData,
+    );
+
+    return new UserProfileResultDto().toArray(updatedUser);
+  }
+
+  async personalVerification(options: SessionRequest) {
+    const userProfileData: UpdateUserDto = {
+      personalVerification: true,
+    };
+
+    const updatedUser = await this.userTable.update(
+      options.user.userId,
+      userProfileData,
+    );
+    const user = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company'],
+    });
+
+    return new UserProfileResultDto().toArray(updatedUser);
+  }
+
+  async sendOtpToEmail(
+    options: SessionRequest,
+    data: ChangeEmailDto,
+  ): Promise<any> {
+    const otpGenerated = this.securityTools.otp.otpGenerator(data.email);
+    if (!otpGenerated) {
+      throw new OtpErrorException();
+    }
+
+    const mailContent =
+      this.notificationService.emailContents.emailVerification(
+        otpGenerated.otp,
+        data.email,
+      );
+    const mail = this.notificationService.email.sendMail(mailContent);
+
+    return { email: data.email, hash: otpGenerated.hash };
+  }
+
+  async verifyEmailOtp(
+    options: SessionRequest,
+    data: VerifyEmailDto,
+  ): Promise<boolean> {
+    const otpVerification = this.securityTools.otp.otpVerifier(
+      data.email,
+      data.otp,
+      data.hash,
+    );
+
+    if (!otpVerification) {
+      return false;
+    }
+
+    const userUpdatingData: UpdateUserDto = {
+      email: data.email,
+      emailVerified: true,
+    };
+
+    const user = await this.userTable.update(
+      options.user.userId,
+      userUpdatingData,
+    );
+
+    return true;
+  }
+
+  async uploadAvatar(
+    options: SessionRequest,
+    file: Express.Multer.File,
+  ): Promise<UserProfileResultDtoFormat> {
+    const fileStream = file.buffer;
+    const fileName = Date.now().toString() + file.originalname;
+
+    const avatar = await this.connection
+      .createQueryBuilder()
+      .insert()
+      .into('FileUpload')
+      .values({ fileStream: fileStream, name: fileName })
+      .returning('Inserted.stream_id')
+      .execute();
+
+    // console.log('\n\n\n\n file: \n\n' , avatar , '\n\n\n\n name: \n\n' , avatar.raw[0].stream_id)
+    const updateUserData: UpdateUserDto = {
+      avatarId: avatar.raw[0].stream_id,
+    };
+
+    const updatedUser: User = await this.userTable.update(
+      options.user.userId,
+      updateUserData,
+    );
+
+    const user: User = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company', 'avatar'],
+    });
+
+    console.log('\n\n\n\n\n\n\n', user);
+
+    return new UserProfileResultDto().toArray(user);
+  }
+
+  async changeName(options: SessionRequest, data: ChangeNameDto) {
+    const userUpdatingData: UpdateUserDto = {
+      name: data.name,
+      family: data.family,
+    };
+
+    const user = await this.userTable.update(
+      options.user.userId,
+      userUpdatingData,
+    );
+
+    return new UserProfileResultDto().toArray(user);
+  }
+
+  async uploadCompanyLetter(
+    options: SessionRequest,
+    file: Express.Multer.File,
+  ): Promise<UserProfileResultDtoFormat> {
+    const checkUserCompany: User = await this.userTable.findById(
+      options.user.userId,
+    );
+
+    if (isNil(checkUserCompany.companyId)) {
+      throw new BadRequestException();
+    }
+
+    const fileStream = file.buffer;
+    const fileName = Date.now().toString() + file.originalname;
+
+    const letter = await this.connection
+      .createQueryBuilder()
+      .insert()
+      .into('FileUpload')
+      .values({ fileStream: fileStream, name: fileName })
+      .returning('Inserted.stream_id')
+      .execute();
+
+    const updateUserData: UpdateUserDto = {
+      companyLetterId: letter.raw[0].stream_id,
+      companyLetterStatus: CompanyLetterStatusEnum.Uploaded,
+    };
+
+    await this.userTable.update(options.user.userId, updateUserData);
+
+    const user: User = await this.userTable.findOne({
+      where: { id: options.user.userId },
+      relations: ['company', 'avatar', 'companyLetter'],
+    });
+
+    return new UserProfileResultDto().toArray(user);
   }
 }

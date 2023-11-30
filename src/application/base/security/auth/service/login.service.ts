@@ -28,7 +28,7 @@ export class LoginService {
     if (!otpGenerated) {
       throw new OtpErrorException();
     }
-    console.log(otpGenerated);
+
     try {
       if (sendSMS) {
         await this.notificationService.sms.sendSMS(
@@ -102,6 +102,7 @@ export class LoginService {
   async getLoginToken(
     userId: number,
     impersonateId?: number,
+    aiAccessToken?: string,
   ): Promise<AccessTokenDto> {
     console.log('getLoginToken', userId, impersonateId);
     if (!userId) {
@@ -118,6 +119,7 @@ export class LoginService {
     const payload = {
       username: user.username,
       userId: user.id,
+      personalVerification: user.personalVerification,
       impersonateAs: !isEmpty(impersonateAs)
         ? {
             username: impersonateAs.username,
@@ -125,9 +127,9 @@ export class LoginService {
           }
         : null,
     };
-    console.log(payload);
     return {
       access_token: this.jwtService.sign(payload),
+      ai_token: aiAccessToken,
     };
   }
 }

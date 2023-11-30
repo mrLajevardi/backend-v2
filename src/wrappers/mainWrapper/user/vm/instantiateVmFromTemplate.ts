@@ -3,6 +3,7 @@ import { userGetVdcComputePolicy } from '../vdc/getVdcComputePolicy';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import * as process from 'process';
 /**
  *
  * @param {String} authToken
@@ -34,7 +35,18 @@ export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
     links: true,
     filter: `vdc==${vdcId}`,
   });
-  const vdcStorageProfileLink = query.data.record[0].href;
+  const vdcStorageProfileLink = `${process.env.VCLOUD_BASE_URL}/api/vdcStorageProfile/`;
+
+  //
+  // const vdcStorageProfile = query.data.record.find((item) => {
+  //   if (
+  //     item.name.toLowerCase().includes(config.storage.policyId.toLowerCase())
+  //   ) {
+  //     return item;
+  //   }
+  // });
+
+  // const vdcStorageProfileLink = query.data.record[0].href;
   const networks = [];
   if (!isEmpty(config.networks)) {
     let index = 0;
@@ -84,7 +96,8 @@ export async function userInstantiateVmFromTemplate(authToken, vdcId, config) {
         },
         'root:StorageProfile': {
           $: {
-            href: vdcStorageProfileLink,
+            // href: vdcStorageProfile.href,
+            href: `${vdcStorageProfileLink}/${config.storage.policyId}`,
             type: 'application/vnd.vmware.vcloud.vdcStorageProfile+xml',
           },
         },

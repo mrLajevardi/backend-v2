@@ -16,6 +16,10 @@ import { ServicePropertiesModule } from '../../service-properties/service-proper
 import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -33,15 +37,19 @@ describe('CreateServiceService', () => {
         UserModule,
         InvoicesModule,
         TasksModule,
+        MainWrapperModule,
+        EdgeGatewayModule,
         forwardRef(() => VgpuModule),
         TransactionsModule,
         ServicePropertiesModule,
+        UvdeskWrapperModule,
       ],
       providers: [
         CreateServiceService,
         ExtendServiceService,
         ServiceChecksService,
         VgpuDnatService,
+        ServiceServiceFactory,
       ],
     }).compile();
 

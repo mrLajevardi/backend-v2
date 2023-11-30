@@ -31,6 +31,13 @@ export enum DiskItemCodes {
   Fast = 'fast',
   Swap = 'swap',
 }
+export enum DiskItemName {
+  Standard = 'استاندارد',
+  Archive = 'آرشیو',
+  Vip = 'ویژه',
+  Fast = 'سریع',
+  // Swap = 'swap',
+}
 
 //TODO Convert to English
 export enum GuarantyCode {

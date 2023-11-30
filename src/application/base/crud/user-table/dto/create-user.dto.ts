@@ -1,12 +1,14 @@
 import {
   IsBoolean,
   IsDate,
+  IsDecimal,
   IsEmail,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateUserDto {
   @IsNumber()
@@ -112,4 +114,24 @@ export class CreateUserDto {
   @IsBoolean()
   @ApiProperty()
   phoneVerified: boolean;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  personalCode?: string | null;
+
+  @Transform(({ value }) => new Date(value))
+  @IsDate()
+  @ApiProperty({ required: false, type: Date })
+  birthDate?: Date;
+
+  @IsDecimal()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  companyId?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ default: false, required: false })
+  companyOwner?: boolean;
 }
