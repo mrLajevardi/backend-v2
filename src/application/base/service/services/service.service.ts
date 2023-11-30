@@ -483,6 +483,7 @@ export class ServiceService {
           vdcItems,
           cpuSpeed,
         );
+
         res.push(model);
       }
     }
