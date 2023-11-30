@@ -119,16 +119,16 @@ export class VdcDetailService implements BaseVdcDetailService {
     res2.vm.usage = vdcDetails.serviceItems.find(
       (service) =>
         service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Vm,
-    ).quantity;
+    ).usage;
     res2.cpu.usage = vdcDetails.serviceItems.find(
       (service) =>
         service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Cpu,
-    ).quantity;
+    ).usage;
 
     res2.ram.usage = vdcDetails.serviceItems.find(
       (service) =>
         service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Ram,
-    ).quantity;
+    ).usage;
 
     res2.guaranty.title = await this.serviceItemService.getGuarantyTitleBy(
       serviceInstanceId,
