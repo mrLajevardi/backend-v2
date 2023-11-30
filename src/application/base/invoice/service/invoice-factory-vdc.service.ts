@@ -175,6 +175,7 @@ export class InvoiceFactoryVdcService {
     res.cpu = new VdcInvoiceDetailsInfoResultDto(cpuModel);
 
     res.ram = new VdcInvoiceDetailsInfoResultDto(ramModel);
+    res.ram.usage = res.ram.usage * 1024;
 
     const swapdisk = diskModel.find(
       (disk) => disk.code.toLowerCase().trim() == DiskItemCodes.Swap,
