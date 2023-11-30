@@ -29,6 +29,7 @@ import { ServiceItemsTableModule } from '../crud/service-items-table/service-ite
 import { TaskManagerModule } from '../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.
     UserModule,
     UvdeskWrapperModule,
     PaymentModule,
+    MainWrapperModule,
     forwardRef(() => InvoicesModule),
     // forwardRef(() => TasksModule),
     // forwardRef(() => TasksModule),
@@ -46,6 +48,7 @@ import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.
     forwardRef(() => VgpuModule),
     // InvoicesModule,
     // VdcModule,
+
     forwardRef(() => TasksModule),
     // VgpuModule,
     AbilityModule,

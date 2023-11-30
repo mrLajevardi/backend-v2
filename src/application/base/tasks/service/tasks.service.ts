@@ -1,23 +1,17 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { SessionsService } from '../../sessions/sessions.service';
-import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { isEmpty } from 'lodash';
 import { ServicePropertiesService } from '../../service-properties/service-properties.service';
 import { VcloudErrorException } from 'src/infrastructure/exceptions/vcloud-error.exception';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { In } from 'typeorm';
 import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
 import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
 import { TaskManagerService } from '../../task-manager/service/task-manager.service';
 import { TasksEnum } from '../../task-manager/enum/tasks.enum';
-import { Task } from '../../../../wrappers/main-wrapper/service/user/vm/dto/get-media-item.dto';
 import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
 import { VmTasksQueryDto } from '../../../vm/dto/vm-tasks.query.dto';
-import process from 'process';
-import { VmDetailFactoryService } from '../../../vm/service/vm-detail.factory.service';
 import { TaskFactoryService } from './task.factory.service';
 
 @Injectable()
@@ -41,7 +35,9 @@ export class TasksService {
         user: { id: userId },
       },
     });
-
+    if (!org) {
+      return [];
+    }
     let filter = '';
     filter = this.taskFactoryService.setTaskFilter(query);
 

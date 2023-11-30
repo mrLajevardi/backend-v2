@@ -18,6 +18,7 @@ import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.servi
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { UserModule } from '../../user/user.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -38,6 +39,7 @@ describe('ServiceAdminService', () => {
         DatacenterModule,
         UserModule,
         EdgeGatewayModule,
+        InvoicesModule,
       ],
       providers: [
         ServiceAdminService,
