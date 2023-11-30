@@ -469,6 +469,7 @@ export class VmService {
     for (const recordItem of vmList.data.record) {
       const id = recordItem.href.split('vApp/')[1];
       const name = recordItem.name;
+      const vmToolsVersion = recordItem.otherAttributes.vmToolsVersion;
       const os = recordItem.guestOs;
       const cpu = recordItem.numberOfCpus;
       const storage = recordItem.totalStorageAllocatedMb;
@@ -489,6 +490,7 @@ export class VmService {
         cpu,
         storage,
         memory,
+        vmToolsVersion,
         status,
         containerId,
         snapshot: recordItem.snapshot,
