@@ -33,6 +33,7 @@ export class DatacenterAdminService {
       required: false,
       rule: null,
       step: null,
+      isDeleted: false,
       serviceType: {
         datacenterName,
         id: serviceType.id,
@@ -69,6 +70,7 @@ export class DatacenterAdminService {
         rule: null,
         serviceTypeId: serviceType.id,
         step: 1,
+        isDeleted: false,
       };
       if (type === DatacenterOperationTypeEnum.Create) {
         await this.itemTypesTableService.create(dto);
@@ -78,8 +80,12 @@ export class DatacenterAdminService {
         {
           id: periodItem.id,
         },
-        dto,
+        {
+          isDeleted: true,
+          deleteDate: new Date(),
+        },
       );
+      await this.itemTypesTableService.create(dto);
     }
   }
   async createOrUpdateCpuReservationItem(
@@ -107,6 +113,7 @@ export class DatacenterAdminService {
         serviceTypeId: serviceType.id,
         step: null,
         createDate: new Date(),
+        isDeleted: false,
       });
     } else {
       const firstItem = await this.itemTypesTableService.findById(
@@ -134,6 +141,7 @@ export class DatacenterAdminService {
         rule: null,
         serviceTypeId: serviceType.id,
         step: 1,
+        isDeleted: false,
       };
       if (type === DatacenterOperationTypeEnum.Create) {
         await this.itemTypesTableService.create(dto);
@@ -143,8 +151,12 @@ export class DatacenterAdminService {
         {
           id: cpuReservationItem.id,
         },
-        dto,
+        {
+          isDeleted: true,
+          deleteDate: new Date(),
+        },
       );
+      await this.itemTypesTableService.create(dto);
     }
   }
 
@@ -173,6 +185,7 @@ export class DatacenterAdminService {
         serviceTypeId: serviceType.id,
         step: null,
         createDate: new Date(),
+        isDeleted: false,
       });
     } else {
       const firstItem = await this.itemTypesTableService.findById(
@@ -199,6 +212,7 @@ export class DatacenterAdminService {
         rule: null,
         serviceTypeId: serviceType.id,
         step: 1,
+        isDeleted: false,
       };
       if (type === DatacenterOperationTypeEnum.Create) {
         await this.itemTypesTableService.create(dto);
@@ -208,7 +222,10 @@ export class DatacenterAdminService {
         {
           id: memoryReservationItem.id,
         },
-        dto,
+        {
+          deleteDate: new Date(),
+          isDeleted: true,
+        },
       );
     }
   }
@@ -238,6 +255,7 @@ export class DatacenterAdminService {
         serviceTypeId: serviceType.id,
         step: null,
         createDate: new Date(),
+        isDeleted: false,
       });
     } else {
       const firstItem = await this.itemTypesTableService.findById(
@@ -268,6 +286,7 @@ export class DatacenterAdminService {
           serviceTypeId: serviceType.id,
           step: null,
           createDate: new Date(),
+          isDeleted: false,
         });
       } else {
         genItem = await this.itemTypesTableService.findById(generationItem.id);
@@ -290,6 +309,7 @@ export class DatacenterAdminService {
         rule: null,
         serviceTypeId: serviceType.id,
         step: vmItem.step,
+        isDeleted: false,
       };
       const ipDto = {
         code: VdcGenerationItemCodes.Ip,
@@ -307,6 +327,7 @@ export class DatacenterAdminService {
         rule: null,
         serviceTypeId: serviceType.id,
         step: ipItem.step,
+        isDeleted: false,
       };
       const cpuDto = {
         code: VdcGenerationItemCodes.Cpu,
@@ -324,6 +345,7 @@ export class DatacenterAdminService {
         rule: null,
         serviceTypeId: serviceType.id,
         step: null,
+        isDeleted: false,
       };
       const ramDto = {
         code: VdcGenerationItemCodes.Ram,
@@ -341,6 +363,7 @@ export class DatacenterAdminService {
         rule: null,
         serviceTypeId: serviceType.id,
         step: null,
+        isDeleted: false,
       };
       const diskDto = {
         code: VdcGenerationItemCodes.Disk,
@@ -359,6 +382,7 @@ export class DatacenterAdminService {
         serviceTypeId: serviceType.id,
         step: null,
         createDate: new Date(),
+        isDeleted: false,
       };
       let cpu: ItemTypes;
       let ram: ItemTypes;
@@ -409,11 +433,16 @@ export class DatacenterAdminService {
           rule: null,
           serviceTypeId: serviceType.id,
           step: cpuItem.step,
+          isDeleted: false,
         };
         if (type === DatacenterOperationTypeEnum.Create) {
           await this.itemTypesTableService.create(cpuItemDto);
         } else {
-          await this.itemTypesTableService.update(cpuItem.id, cpuItemDto);
+          await this.itemTypesTableService.update(cpuItem.id, {
+            isDeleted: true,
+            deleteDate: new Date(),
+          });
+          await this.itemTypesTableService.create(cpuItemDto);
         }
       }
       for (
@@ -439,11 +468,16 @@ export class DatacenterAdminService {
           serviceTypeId: serviceType.id,
           step: ramItem.step,
           createDate: new Date(),
+          isDeleted: false,
         };
         if (type === DatacenterOperationTypeEnum.Create) {
           await this.itemTypesTableService.create(ramItemDto);
         } else {
-          await this.itemTypesTableService.update(ramItem.id, ramItemDto);
+          await this.itemTypesTableService.update(ramItem.id, {
+            isDeleted: true,
+            deleteDate: new Date(),
+          });
+          await this.itemTypesTableService.create(ramItemDto);
         }
       }
       for (const diskItem of generationItem.items.diskItems) {
@@ -464,12 +498,17 @@ export class DatacenterAdminService {
           serviceTypeId: serviceType.id,
           step: null,
           createDate: new Date(),
+          isDeleted: false,
         };
         if (type === DatacenterOperationTypeEnum.Create) {
           await this.itemTypesTableService.create(diskItemDto);
-          return;
+        } else {
+          await this.itemTypesTableService.update(diskItem.id, {
+            isDeleted: true,
+            deleteDate: new Date(),
+          });
+          await this.itemTypesTableService.create(diskItemDto);
         }
-        await this.itemTypesTableService.update(diskItem.id, diskItemDto);
       }
     }
   }

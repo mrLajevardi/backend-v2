@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { DatacenterService } from './service/datacenter.service';
 import { DatacenterController } from './datacenter.controller';
 import { DatabaseModule } from '../../../infrastructure/database/database.module';
@@ -9,6 +9,7 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
 import { SessionsModule } from '../sessions/sessions.module';
 import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
 import { DatacenterAdminService } from './service/datacenter.admin.service';
+import { InvoicesModule } from '../invoice/invoices.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { DatacenterAdminService } from './service/datacenter.admin.service';
     DatacenterTableModule,
     MainWrapperModule,
     SessionsModule,
+    forwardRef(() => InvoicesModule),
   ],
   providers: [
     {

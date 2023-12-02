@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsDate,
   IsInt,
   IsNumber,
   IsOptional,
@@ -68,5 +69,14 @@ export class CreateItemTypesDto {
 
   serviceType?: Partial<ServiceTypes>;
 
+  @IsDate()
+  @IsOptional()
   createDate?: Date;
+
+  @IsDate()
+  @IsOptional()
+  deleteDate?: Date;
+
+  @IsBoolean()
+  isDeleted: boolean;
 }

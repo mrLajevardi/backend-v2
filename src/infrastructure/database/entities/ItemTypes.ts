@@ -76,6 +76,19 @@ export class ItemTypes {
     nullable: true,
   })
   required: boolean | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsDeleted',
+    nullable: false,
+  })
+  isDeleted: boolean;
+
+  @Column('datetime', {
+    name: 'DeleteDate',
+    nullable: true,
+  })
+  deleteDate: Date | null;
+
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.itemType,

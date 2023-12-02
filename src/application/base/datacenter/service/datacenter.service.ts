@@ -31,6 +31,8 @@ import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { DatacenterAdminService } from './datacenter.admin.service';
 import { DatacenterOperationTypeEnum } from '../enum/datacenter-opertation-type.enum';
+import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
+import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -42,6 +44,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly serviceTypesTableService: ServiceTypesTableService,
     private readonly itemTypesTableService: ItemTypesTableService,
     private readonly datacenterAdminService: DatacenterAdminService,
+    private readonly invoiceFactoryService: InvoiceFactoryService,
   ) {}
 
   async getDatacenterMetadata(
@@ -513,5 +516,24 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       datacenter,
       DatacenterOperationTypeEnum.Update,
     );
+  }
+
+  async getDatacenterConfigs(query: { datacenter: null }) {
+    const itemTypes = await this.dataCenterTableService.find({
+      where: {
+        datacenterName: query.datacenter,
+      },
+    });
+    const transformedItems = itemTypes.map((item) => {
+      const itemType: InvoiceItemsDto = {
+        itemTypeId: item.id,
+        value: '',
+      };
+      return itemType;
+    });
+    const groupItems = await this.invoiceFactoryService.groupVdcItems(
+      transformedItems,
+    );
+    return groupItems;
   }
 }

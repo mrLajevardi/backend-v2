@@ -107,4 +107,14 @@ export class DatacenterController {
     const result = await this.service.getDatacenterDetails(datacenterName);
     return result;
   }
+
+  @Get('/defaults')
+  @Public()
+  async getDatacenterDefault(): // @Param('datacenterName') datacenterName: string,
+  Promise<DatacenterDetails> {
+    const result = await this.service.getDatacenterConfigs({
+      datacenter: null,
+    });
+    return result;
+  }
 }
