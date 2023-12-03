@@ -519,9 +519,9 @@ export class VmService {
     id,
   ) {
     const forbiddenStatusVmsList = [
-      VmStatusEnum.FAILED_CREATION,
-      VmStatusEnum.UNKNOWN,
-      VmStatusEnum.UNRESOLVED,
+      VmStatusEnum[VmStatusEnum.FAILED_CREATION],
+      VmStatusEnum[VmStatusEnum.UNKNOWN],
+      VmStatusEnum[VmStatusEnum.UNRESOLVED],
     ];
     return forbiddenStatusVmsList.includes(recordItem.status)
       ? 0
