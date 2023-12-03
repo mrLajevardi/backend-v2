@@ -123,7 +123,7 @@ export class VmDetailService {
     res.totalNumber = events.data.resultTotal;
     events.data.values.forEach((event) => {
       res.values.push({
-        // type: (event.eventType as string).split('/')[5],
+        type: (event.eventType as string).split('/')[5],
         date: event.timestamp,
         status: event.eventStatus == 'SUCCESS',
         performingUser: event.user.name,
