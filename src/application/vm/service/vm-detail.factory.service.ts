@@ -2,25 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { SortDateTypeEnum } from '../../../infrastructure/filters/sort-date-type.enum';
 import { getDateMinusDay } from '../../../infrastructure/utils/extensions/date.extension';
+import { VmStatusEnum } from '../enums/vm-status.enum';
 
 @Injectable()
 export class VmDetailFactoryService {
-  // formatDate(date: Date) {
-  //   return (
-  //     [
-  //       date.getFullYear(),
-  //       this.padTo2Digits(date.getMonth() + 1),
-  //       this.padTo2Digits(date.getDate()),
-  //     ].join('-') +
-  //     ' ' +
-  //     [
-  //       this.padTo2Digits(date.getHours()),
-  //       this.padTo2Digits(date.getMinutes()),
-  //       this.padTo2Digits(date.getSeconds()),
-  //     ].join(':')
-  //   );
-  // }
-
   filterDateVmDetails(
     startDate: Date,
     endDate: Date,
@@ -66,5 +51,17 @@ export class VmDetailFactoryService {
     }
 
     return filterDate;
+  }
+
+  async getCountOfNetworksVm(
+    forbiddenStatusVmsList: VmStatusEnum[],
+    recordItem,
+    options,
+    serviceInstanceId: string,
+    id,
+  ) {
+    if (forbiddenStatusVmsList.includes(recordItem.status)) {
+      return 0;
+    }
   }
 }

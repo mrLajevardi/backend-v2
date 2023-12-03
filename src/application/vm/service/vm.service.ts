@@ -475,15 +475,18 @@ export class VmService {
       const cpu = recordItem.numberOfCpus;
       const storage = recordItem.totalStorageAllocatedMb;
       const memory = recordItem.memoryMB;
-      const forbiddenStatusList = ['FAILED_CREATION', 'UNKNOWN', 'UNRESOLVED'];
+
       const status = VmStatusEnum[recordItem.status];
-      if (forbiddenStatusList.includes(recordItem.status)) {
-        continue;
-      }
+
       const containerId = recordItem.container.split('vApp/')[1];
-      const countOfNetworks = (
-        await this.getVmNetworkSection(options, serviceInstanceId, id)
-      ).networkConnections.length;
+
+      const countOfNetworks = await this.getCountOfNetworksVm(
+        recordItem,
+        options,
+        serviceInstanceId,
+        id,
+      );
+
       vmValues.push({
         id,
         name,
@@ -507,6 +510,23 @@ export class VmService {
       values: vmValues,
     };
     return Promise.resolve(data);
+  }
+
+  private async getCountOfNetworksVm(
+    recordItem,
+    options,
+    serviceInstanceId: string,
+    id,
+  ) {
+    const forbiddenStatusVmsList = [
+      VmStatusEnum.FAILED_CREATION,
+      VmStatusEnum.UNKNOWN,
+      VmStatusEnum.UNRESOLVED,
+    ];
+    return forbiddenStatusVmsList.includes(recordItem.status)
+      ? 0
+      : (await this.getVmNetworkSection(options, serviceInstanceId, id))
+          .networkConnections.length;
   }
 
   async getAllUserVmTemplates(
