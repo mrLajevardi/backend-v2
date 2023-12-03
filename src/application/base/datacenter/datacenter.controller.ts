@@ -117,4 +117,9 @@ export class DatacenterController {
     });
     return result;
   }
+
+  @Put()
+  async updateDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
+    return this.service.updateDatacenter(dto);
+  }
 }

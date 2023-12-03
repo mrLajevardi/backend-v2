@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
@@ -10,6 +10,7 @@ import {
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 import { DatacenterOperationTypeEnum } from '../enum/datacenter-opertation-type.enum';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { In } from 'typeorm';
 @Injectable()
 export class DatacenterAdminService {
   constructor(private readonly itemTypesTableService: ItemTypesTableService) {}
@@ -46,14 +47,23 @@ export class DatacenterAdminService {
         periodItemParentDto,
       );
     } else {
-      const firstItem = await this.itemTypesTableService.findById(
-        dto.period[0].id,
-      );
       periodItemParent = await this.itemTypesTableService.findById(
-        firstItem.parentId,
+        dto.period.id,
+      );
+      if (!periodItemParent) {
+        throw new BadRequestException();
+      }
+      await this.itemTypesTableService.updateAll(
+        {
+          parentId: periodItemParent.id,
+        },
+        {
+          isDeleted: true,
+          deleteDate: new Date(),
+        },
       );
     }
-    for (const periodItem of dto.period) {
+    for (const periodItem of dto.period.levels) {
       const dto = {
         code: ItemTypeCodes.PeriodItem,
         fee: 0,
@@ -72,19 +82,6 @@ export class DatacenterAdminService {
         step: 1,
         isDeleted: false,
       };
-      if (type === DatacenterOperationTypeEnum.Create) {
-        await this.itemTypesTableService.create(dto);
-        return;
-      }
-      await this.itemTypesTableService.updateAll(
-        {
-          id: periodItem.id,
-        },
-        {
-          isDeleted: true,
-          deleteDate: new Date(),
-        },
-      );
       await this.itemTypesTableService.create(dto);
     }
   }
@@ -116,15 +113,23 @@ export class DatacenterAdminService {
         isDeleted: false,
       });
     } else {
-      const firstItem = await this.itemTypesTableService.findById(
-        dto.reservationCpu[0].id,
-      );
       reservationCpu = await this.itemTypesTableService.findById(
-        firstItem.parentId,
+        dto.reservationCpu.id,
+      );
+      if (!reservationCpu) {
+        throw new BadRequestException();
+      }
+      await this.itemTypesTableService.updateAll(
+        {
+          parentId: reservationCpu.id,
+        },
+        {
+          isDeleted: true,
+          deleteDate: new Date(),
+        },
       );
     }
-
-    for (const cpuReservationItem of dto.reservationCpu) {
+    for (const cpuReservationItem of dto.reservationCpu.levels) {
       const dto = {
         code: ItemTypeCodes.CpuReservationItem,
         fee: 0,
@@ -143,19 +148,6 @@ export class DatacenterAdminService {
         step: 1,
         isDeleted: false,
       };
-      if (type === DatacenterOperationTypeEnum.Create) {
-        await this.itemTypesTableService.create(dto);
-        return;
-      }
-      await this.itemTypesTableService.updateAll(
-        {
-          id: cpuReservationItem.id,
-        },
-        {
-          isDeleted: true,
-          deleteDate: new Date(),
-        },
-      );
       await this.itemTypesTableService.create(dto);
     }
   }
@@ -188,14 +180,23 @@ export class DatacenterAdminService {
         isDeleted: false,
       });
     } else {
-      const firstItem = await this.itemTypesTableService.findById(
-        dto.reservationRam[0].id,
-      );
       reservationRam = await this.itemTypesTableService.findById(
-        firstItem.parentId,
+        dto.reservationRam.id,
+      );
+      if (!reservationRam) {
+        throw new BadRequestException();
+      }
+      await this.itemTypesTableService.updateAll(
+        {
+          parentId: reservationRam.id,
+        },
+        {
+          deleteDate: new Date(),
+          isDeleted: true,
+        },
       );
     }
-    for (const memoryReservationItem of dto.reservationRam) {
+    for (const memoryReservationItem of dto.reservationRam.levels) {
       const dto = {
         code: ItemTypeCodes.MemoryReservationItem,
         fee: 0,
@@ -214,19 +215,7 @@ export class DatacenterAdminService {
         step: 1,
         isDeleted: false,
       };
-      if (type === DatacenterOperationTypeEnum.Create) {
-        await this.itemTypesTableService.create(dto);
-        return;
-      }
-      await this.itemTypesTableService.updateAll(
-        {
-          id: memoryReservationItem.id,
-        },
-        {
-          deleteDate: new Date(),
-          isDeleted: true,
-        },
-      );
+      await this.itemTypesTableService.create(dto);
     }
   }
   async createOrUpdateGenerationItems(
@@ -410,6 +399,15 @@ export class DatacenterAdminService {
         disk = await this.itemTypesTableService.findById(
           firstDiskItem.parentId,
         );
+        await this.itemTypesTableService.updateAll(
+          {
+            parentId: In([cpu.id, ram.id, disk.id]),
+          },
+          {
+            isDeleted: true,
+            deleteDate: new Date(),
+          },
+        );
       }
       for (
         let index = 0;
@@ -435,15 +433,7 @@ export class DatacenterAdminService {
           step: cpuItem.step,
           isDeleted: false,
         };
-        if (type === DatacenterOperationTypeEnum.Create) {
-          await this.itemTypesTableService.create(cpuItemDto);
-        } else {
-          await this.itemTypesTableService.update(cpuItem.id, {
-            isDeleted: true,
-            deleteDate: new Date(),
-          });
-          await this.itemTypesTableService.create(cpuItemDto);
-        }
+        await this.itemTypesTableService.create(cpuItemDto);
       }
       for (
         let index = 0;
@@ -470,17 +460,9 @@ export class DatacenterAdminService {
           createDate: new Date(),
           isDeleted: false,
         };
-        if (type === DatacenterOperationTypeEnum.Create) {
-          await this.itemTypesTableService.create(ramItemDto);
-        } else {
-          await this.itemTypesTableService.update(ramItem.id, {
-            isDeleted: true,
-            deleteDate: new Date(),
-          });
-          await this.itemTypesTableService.create(ramItemDto);
-        }
+        await this.itemTypesTableService.create(ramItemDto);
       }
-      for (const diskItem of generationItem.items.diskItems) {
+      for (const diskItem of generationItem.items.diskItems.levels) {
         const diskItemDto = {
           code: diskItem.code,
           fee: diskItem.price,
@@ -500,15 +482,7 @@ export class DatacenterAdminService {
           createDate: new Date(),
           isDeleted: false,
         };
-        if (type === DatacenterOperationTypeEnum.Create) {
-          await this.itemTypesTableService.create(diskItemDto);
-        } else {
-          await this.itemTypesTableService.update(diskItem.id, {
-            isDeleted: true,
-            deleteDate: new Date(),
-          });
-          await this.itemTypesTableService.create(diskItemDto);
-        }
+        await this.itemTypesTableService.create(diskItemDto);
       }
     }
   }
