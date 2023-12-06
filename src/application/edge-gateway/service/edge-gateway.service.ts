@@ -154,6 +154,15 @@ export class EdgeGatewayService {
       await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
         vdcInstanceId,
       );
+    if (!props.orgId) {
+      return Promise.resolve({
+        page: 0,
+        pageSize: 0,
+        values: [],
+        pageCount: 0,
+        resultTotal: 0,
+      });
+    }
     const session = await this.sessionService.checkUserSession(
       userId,
       Number(props.orgId),
