@@ -155,4 +155,9 @@ export class UpdateUserDto {
   @IsOptional()
   @ApiProperty({ required: false })
   companyLetterStatus?: number | null;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  twoFactorAuth?: number;
 }

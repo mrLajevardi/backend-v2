@@ -10,6 +10,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SecurityToolsModule } from '../../security-tools/security-tools.module';
 import { OtpService } from '../../security-tools/otp.service';
 import { AbilityModule } from '../../ability/ability.module';
+import { AuthModule } from '../auth.module';
 
 describe('LoginService', () => {
   let service: LoginService;
@@ -22,6 +23,7 @@ describe('LoginService', () => {
         AbilityModule,
         PassportModule,
         CrudModule,
+        AuthModule,
         UserModule,
         NotificationModule,
         LoggerModule,
