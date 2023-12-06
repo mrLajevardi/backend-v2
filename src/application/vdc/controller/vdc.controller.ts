@@ -252,7 +252,10 @@ export class VdcController {
     @Param('invoiceId')
     invoiceId: string,
   ): Promise<VdcInvoiceDetailsResultDto> {
-    return await this.baseVdcInvoiceService.getVdcInvoiceDetail(invoiceId);
+    return await this.baseVdcInvoiceService.getVdcInvoiceDetail(
+      invoiceId,
+      'vdc',
+    );
   }
 
   @Get('invoice/:invoiceId/preFactor')
@@ -262,7 +265,10 @@ export class VdcController {
     @Param('invoiceId')
     invoiceId: string,
   ) {
-    const res = await this.baseVdcInvoiceService.getVdcPreFactor(invoiceId);
+    const res = await this.baseVdcInvoiceService.getVdcPreFactor(
+      invoiceId,
+      'vdc',
+    );
     return res;
   }
 

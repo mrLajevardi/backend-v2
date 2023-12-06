@@ -10,15 +10,17 @@ import { VdcInvoiceDetailsResultDto } from '../../../vdc/dto/vdc-invoice-details
 import { VdcInvoiceDetailsInfoResultDto } from '../../../vdc/dto/vdc-invoice-details-info.result.dto';
 import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { ServiceTypes } from '../../../../infrastructure/database/entities/ServiceTypes';
 
 @Injectable()
 export class InvoiceFactoryVdcService {
   constructor(private readonly invoicesTable: InvoicesTableService) {}
   async getVdcInvoiceDetailModel(
     invoiceId: string,
+    serviceTypeWhere = 'vdc',
   ): Promise<InvoiceDetailVdcModel[]> {
-    const serviceTypeWhere = 'vdc';
-
+    // const serviceTypeWhere = 'vdc';
+    // serviceTypeWhere = 'vdc';
     // const invoiceModels: any[] = [];
 
     const invoiceModels = await this.invoicesTable
@@ -43,6 +45,12 @@ export class InvoiceFactoryVdcService {
       .addSelect(
         'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max , SIT.Price ',
       )
+      .innerJoin(
+        ServiceTypes,
+        'ST',
+        `ST.ID = N'${serviceTypeWhere}'  AND  ST.DatacenterName = SIT.DatacenterName `,
+      )
+      .addSelect(`ST.Title as DatacenterTitle`)
       .getRawMany();
 
     return invoiceModels.map((model) => {
@@ -63,6 +71,7 @@ export class InvoiceFactoryVdcService {
         min: model.Min,
         price: model.Price,
         templateId: model.TemplateID,
+        datacenterTitle: model.DatacenterTitle,
       };
 
       return res;
@@ -206,7 +215,7 @@ export class InvoiceFactoryVdcService {
     res.vm = new VdcInvoiceDetailsInfoResultDto(vmModel);
 
     res.datacenter = {
-      title: vmModel.datacenterName,
+      title: vmModel.datacenterTitle,
       name: vmModel.datacenterName,
     }; // TODO about DatacenterName and DatacenterTitle;
 
