@@ -182,7 +182,7 @@ export class NatService {
         destinationIP: value.snatDestinationAddresses,
         externalPort: value.dnatExternalPort,
         applicationPortProfile: value.applicationPortProfile,
-        description: value.description,
+        description: value.description ? value.description : '',
         type: value.type,
       };
     });
