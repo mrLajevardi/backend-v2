@@ -10,6 +10,7 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { SecurityToolsModule } from '../../security-tools/security-tools.module';
 import { LoginService } from './login.service';
 import { OtpService } from '../../security-tools/otp.service';
+import { AuthModule } from '../auth.module';
 
 describe('OauthService', () => {
   let service: OauthService;
@@ -22,6 +23,7 @@ describe('OauthService', () => {
         PassportModule,
         CrudModule,
         UserModule,
+        AuthModule,
         NotificationModule,
         LoggerModule,
         SecurityToolsModule,

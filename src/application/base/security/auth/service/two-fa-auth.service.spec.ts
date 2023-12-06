@@ -19,10 +19,38 @@ import { PaymentModule } from '../../../../payment/payment.module';
 import { JwtModule } from '@nestjs/jwt';
 import { NotificationModule } from '../../../notification/notification.module';
 import { SecurityToolsModule } from '../../security-tools/security-tools.module';
+import { UserPayload } from '../dto/user-payload.dto';
+import { TwoFaAuthInterface } from '../classes/interface/two-fa-auth.interface';
+import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 
 describe('TwoFaAuthService', () => {
-  let provider: TwoFaAuthService;
-
+  let service: TwoFaAuthService;
+  const mockTwoFaAuthStrategy = {
+    setStrategy: jest.fn((strategy: TwoFaAuthInterface) => {
+      console.log(strategy);
+    }),
+    sendOtp: jest.fn(
+      async (user: UserPayload): Promise<SendOtpTwoFactorAuthDto> => {
+        return {
+          hash: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+        } as SendOtpTwoFactorAuthDto;
+      },
+    ),
+    verifyOtp: jest.fn(
+      async (
+        user: UserPayload,
+        otp: string,
+        hash: string,
+      ): Promise<boolean> => {
+        return Promise.resolve(true);
+      },
+    ),
+  };
+  const mockUserTableService = {
+    update: jest.fn((userId: number, dto: any): Promise<any> => {
+      return Promise.resolve({});
+    }),
+  };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
@@ -48,12 +76,56 @@ describe('TwoFaAuthService', () => {
         EmailContentService,
         Repository<User>,
       ],
-    }).compile();
+    })
+      .overrideProvider(TwoFaAuthStrategy)
+      .useValue(mockTwoFaAuthStrategy)
+      .overrideProvider(UserTableService)
+      .useValue(mockUserTableService)
+      .compile();
 
-    provider = module.get<TwoFaAuthService>(TwoFaAuthService);
+    service = module.get<TwoFaAuthService>(TwoFaAuthService);
   });
 
   it('should be defined', () => {
-    expect(provider).toBeDefined();
+    expect(service).toBeDefined();
+  });
+
+  describe('enable two factor authenticate', () => {
+    it('should be return true if valid data enable ', async () => {
+      const user: UserPayload = {
+        userId: 1060,
+        personalVerification: true,
+      };
+      /*
+       *** type can be sms or email
+       */
+      const type = 'sms';
+      const data = await service.enable(user, type);
+
+      expect(data).not.toBeNull();
+      expect(data).toEqual({
+        hash: expect.any(String),
+      });
+    });
+    it('should be return true if valid data enableVerification', async () => {
+      const user: UserPayload = {
+        userId: 1060,
+        personalVerification: true,
+      };
+      /*
+       *** type can be sms or email
+       */
+
+      const type = 'sms';
+      const data = await service.enableVerification(
+        user,
+        type,
+        '123456',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
+      );
+
+      expect(data).not.toBeNull();
+      expect(data).toBeTruthy();
+    });
   });
 });

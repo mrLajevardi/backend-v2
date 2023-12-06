@@ -5,6 +5,7 @@ import { NotificationService } from '../../../notification/notification.service'
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { OtpService } from '../../security-tools/otp.service';
 import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
+import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 
 @Injectable()
 export class TwoFaAuthSmsService implements TwoFaAuthInterface {
@@ -14,7 +15,7 @@ export class TwoFaAuthSmsService implements TwoFaAuthInterface {
     private otpService: OtpService,
   ) {}
 
-  async sendOtp(userPayload: UserPayload): Promise<any> {
+  async sendOtp(userPayload: UserPayload): Promise<SendOtpTwoFactorAuthDto> {
     const user = await this.userTable.findById(userPayload.userId);
     const otpGenerated = this.otpService.otpGenerator(user.phoneNumber);
     if (!otpGenerated) {
@@ -25,14 +26,14 @@ export class TwoFaAuthSmsService implements TwoFaAuthInterface {
       otpGenerated.otp,
     );
 
-    return { otp: otpGenerated.otp, hash: otpGenerated.hash };
+    return { hash: otpGenerated.hash };
   }
 
   async verifyOtp(
     userPayload: UserPayload,
     otp: string,
     hash: string,
-  ): Promise<any> {
+  ): Promise<boolean> {
     const user = await this.userTable.findById(userPayload.userId);
     return this.otpService.otpVerifier(user.phoneNumber, otp, hash);
   }

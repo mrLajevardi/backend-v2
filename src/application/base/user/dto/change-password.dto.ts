@@ -9,7 +9,7 @@ export class ChangePasswordDto {
 
   @ApiProperty()
   @IsString()
-  @Matches('^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$')
+  // @Matches('^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$')
   newPassword: string;
 
   @IsBoolean()
