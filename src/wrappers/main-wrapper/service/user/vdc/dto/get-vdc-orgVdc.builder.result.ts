@@ -64,6 +64,11 @@ export class GetVdcOrgVdcBuilderResult {
     return this;
   }
 
+  public WithDescription(description: string): GetVdcOrgVdcBuilderResult {
+    this.description = description;
+    return this;
+  }
+
   public WithCpuLimitMhz(cpuLimitMhz: number): GetVdcOrgVdcBuilderResult {
     this.cpuLimitMhz = cpuLimitMhz;
     return this;
@@ -159,6 +164,7 @@ export class GetVdcOrgVdcBuilderResult {
       this.numberOfDisks,
       this.numberOfVMs,
       this.numberOfRunningVMs,
+      this.description,
     );
   }
 }

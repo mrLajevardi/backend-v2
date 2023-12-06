@@ -21,6 +21,12 @@ import { EdgeGatewayService } from '../../../edge-gateway/service/edge-gateway.s
 import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
 import { TasksService } from '../../tasks/service/tasks.service';
 import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
+import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
+import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
+import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
+import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
+import { SessionsService } from '../../sessions/sessions.service';
+import { InsufficientResourceException } from 'src/infrastructure/exceptions/insufficient-resource.exception';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -32,6 +38,10 @@ export class ServiceServiceFactory {
     private readonly datacenterService: BaseDatacenterService,
     private readonly edgeGatewayService: EdgeGatewayService,
     private readonly taskService: TasksService,
+    private readonly invoiceItemsTableService: InvoiceItemsTableService,
+    private readonly invoiceFactoryService: InvoiceFactoryService,
+    private readonly adminEdgegatewayWrapperService: AdminEdgeGatewayWrapperService,
+    private readonly sessionService: SessionsService,
   ) {}
   public async getPropertiesOfServiceInstance(
     serviceInstance: GetServicesReturnDto,
@@ -105,6 +115,7 @@ export class ServiceServiceFactory {
         isTicketSent,
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
         taskDetail,
+        vdcItems.description ? vdcItems.description : '',
       );
 
     //Cpu , Ram , Disk , Vm
@@ -173,5 +184,39 @@ export class ServiceServiceFactory {
       serviceItemVM,
       serviceItemIp,
     };
+  }
+
+  async checkResources(invoiceId: number): Promise<void> {
+    const invoiceItems = await this.invoiceItemsTableService.find({
+      where: {
+        invoiceId,
+      },
+    });
+    const transformedInvoiceItems = invoiceItems.map((item) => {
+      const invoiceItemType: InvoiceItemsDto = {
+        itemTypeId: item.itemId,
+        value: item.value,
+      };
+      return invoiceItemType;
+    });
+    const groupItems = await this.invoiceFactoryService.groupVdcItems(
+      transformedInvoiceItems,
+    );
+    const adminSession = await this.sessionService.checkAdminSession();
+    const externalNetworks =
+      await this.adminEdgegatewayWrapperService.findExternalNetwork(
+        adminSession,
+        1,
+        1,
+      );
+    try {
+      await this.adminEdgegatewayWrapperService.ipAllocation(
+        externalNetworks.values[0].id,
+        adminSession,
+        Number(groupItems.generation.ip[0].value),
+      );
+    } catch {
+      throw new InsufficientResourceException();
+    }
   }
 }
