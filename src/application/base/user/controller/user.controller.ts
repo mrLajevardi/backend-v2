@@ -428,6 +428,14 @@ export class UserController {
     return await this.userService.uploadCompanyLetter(options, file);
   }
 
+  @Get('/deleteCompanyLetter')
+  @ApiOperation({
+    summary: 'delete company letter',
+  })
+  async deleteCompanyLetter(@Request() options: SessionRequest) {
+    return await this.userService.deleteCompanyLetter(options);
+  }
+
   @Get('transactions')
   @ApiOperation({ summary: 'Get all user transactions' })
   @ApiQuery({ name: 'page', type: Number, required: false })

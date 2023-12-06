@@ -57,6 +57,7 @@ import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CompanyLetterStatusEnum } from '../enum/company-letter-status.enum';
 import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
 import { Transactions } from '../../../../infrastructure/database/entities/Transactions';
+import { FileTableService } from '../../crud/file-table/file-table.service';
 
 @Injectable()
 export class UserService {
@@ -72,6 +73,7 @@ export class UserService {
     private readonly securityTools: SecurityToolsService,
     private readonly connection: Connection,
     private readonly redisCacheService: RedisCacheService,
+    private readonly fileTableService: FileTableService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -850,6 +852,18 @@ export class UserService {
     return new UserProfileResultDto().toArray(user);
   }
 
+  async deleteCompanyLetter(options: SessionRequest): Promise<boolean> {
+    const user = await this.userTable.findById(options.user.userId);
+
+    await this.userTable.update(options.user.userId, {
+      companyLetterId: null,
+      companyLetterStatus: null,
+    });
+
+    const file = this.fileTableService.delete(user.companyLetterId);
+
+    return true;
+  }
   async getTransactions(
     options: SessionRequest,
     page: number,

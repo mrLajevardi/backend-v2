@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindManyOptions, Repository } from 'typeorm';
+import {
+  DeleteResult,
+  FindManyOptions,
+  FindOptionsWhere,
+  Repository,
+} from 'typeorm';
 import { FileUpload } from '../../../../infrastructure/database/entities/FileUpload';
 
 @Injectable()
@@ -16,5 +21,13 @@ export class FileTableService {
 
   async find(options?: FindManyOptions<FileUpload>): Promise<FileUpload[]> {
     return await this.repository.find(options);
+  }
+
+  async delete(streamId: string): Promise<DeleteResult> {
+    const where: FindOptionsWhere<FileUpload> = {
+      streamId: streamId,
+    };
+
+    return await this.repository.delete(where);
   }
 }

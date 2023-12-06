@@ -14,6 +14,9 @@ import { isNil } from 'lodash';
 import { UpdateCompanyDto } from '../../crud/company-table/dto/update-company.dto';
 import { Company } from '../../../../infrastructure/database/entities/Company';
 import { CompanyUpdatePhoneNumberDto } from '../dto/company-update-phone-number.dto';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { CompanyUpdateAddressDto } from '../dto/company-update-address.dto';
 // import { Connection } from 'typeorm';
 
 describe('CompanyService', () => {
@@ -183,14 +186,56 @@ describe('CompanyService', () => {
     expect(data).toEqual(ExpectedFormat);
   });
 
-  // it('should be return exception if invalid data for update phone number', async () => {
-  //
-  //     const updatePhoneNumber: CompanyUpdatePhoneNumberDto = {
-  //         phoneNumber: '0256694785'
-  //     }
-  //
-  //     const data = await service.updatePhoneNumber(mockCompanyData.id, updatePhoneNumber);
-  //
-  //     expect(data).toThrow();
-  // });
+  it('should be return exception if invalid data for update phone number', async () => {
+    const updatePhoneNumber = {
+      phoneNumber: '0256694785',
+    };
+
+    const validateObject: CompanyUpdatePhoneNumberDto = plainToInstance(
+      CompanyUpdatePhoneNumberDto,
+      updatePhoneNumber,
+    );
+
+    const errors = await validate(validateObject);
+
+    expect(errors.length).not.toBe(0);
+    expect(JSON.stringify(errors)).toContain(
+      'phoneNumber must match /^\\\\d{3}-\\\\d{8}$/ regular expression',
+    );
+  });
+
+  it('should be update address(postalCode,address,province,city) and return company data', async () => {
+    const updateAddressDto: CompanyUpdateAddressDto = {
+      companyPostalCode: '123456789',
+      companyAddress: 'qom,test,test',
+      provinceId: 145,
+      cityId: 25,
+    };
+
+    const data = await service.updateAddress(
+      mockCompanyData.id,
+      updateAddressDto,
+    );
+
+    expect(mockCompanyTableService.update).toBeCalled();
+    expect(mockCompanyTableService.findOne).toBeCalled();
+    expect(data).toEqual(ExpectedFormat);
+  });
+
+  it('should be return exception if invalid data for update address', async () => {
+    const updateAddressDto = {
+      companyPostalCode: 123456789,
+      companyAddress: 123,
+      provinceId: 'asdasd',
+      cityId: 'asdasd',
+    };
+
+    const validateObject: CompanyUpdateAddressDto = plainToInstance(
+      CompanyUpdateAddressDto,
+      updateAddressDto,
+    );
+    const errors = await validate(validateObject);
+
+    expect(errors.length).toBe(4);
+  });
 });
