@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
-import { FindManyOptions } from 'typeorm';
+import { FindManyOptions, Like } from 'typeorm';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -42,9 +42,9 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly sessionsService: SessionsService,
     private readonly datacenterServiceFactory: DatacenterFactoryService,
     private readonly serviceTypesTableService: ServiceTypesTableService,
-    private readonly itemTypesTableService: ItemTypesTableService,
     private readonly datacenterAdminService: DatacenterAdminService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
+    private readonly itemTypeTableService: ItemTypesTableService,
   ) {}
 
   async getDatacenterMetadata(
@@ -414,7 +414,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       '',
       dto.generations[0].providerId,
     );
-    const datacenterName = datacenter.generation as string;
+    const datacenterName = datacenter.datacenter as string;
     const serviceType = await this.serviceTypesTableService.create({
       baseFee: 0,
       createInstanceScript: '',
@@ -428,32 +428,36 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       type: 0,
       datacenterName,
     });
+    const queryRunner = await this.itemTypeTableService.getQueryRunner();
+    await queryRunner.startTransaction();
     await this.datacenterAdminService.createOrUpdatePeriodItems(
       dto,
       serviceType,
       datacenterName,
-      DatacenterOperationTypeEnum.Create,
+      queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateCpuReservationItem(
       dto,
       serviceType,
       datacenterName,
-      DatacenterOperationTypeEnum.Create,
+      queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateRamReservationItem(
       dto,
       serviceType,
       datacenterName,
-      DatacenterOperationTypeEnum.Create,
+      queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateGenerationItems(
       dto,
       serviceType,
       datacenterName,
       datacenter,
-      DatacenterOperationTypeEnum.Create,
+      queryRunner,
     );
     await this.updateDatacenterMetadata(dto);
+    await queryRunner.commitTransaction();
+    await queryRunner.release();
   }
 
   async updateDatacenterMetadata(dto: CreateDatacenterDto): Promise<void> {
@@ -490,32 +494,46 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       '',
       dto.generations[0].providerId,
     );
-    const datacenterName = datacenter.generation as string;
+    const datacenterName = datacenter.datacenter as string;
+    const queryRunner = await this.itemTypeTableService.getQueryRunner();
+    await queryRunner.startTransaction();
+    await this.itemTypeTableService.updateWithQueryRunner(
+      queryRunner,
+      {
+        datacenterName: Like(`${datacenterName}%`),
+      },
+      {
+        deleteDate: new Date(),
+        isDeleted: true,
+      },
+    );
     await this.datacenterAdminService.createOrUpdatePeriodItems(
       dto,
       serviceType,
       datacenterName,
-      DatacenterOperationTypeEnum.Update,
+      queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateCpuReservationItem(
       dto,
       serviceType,
       datacenterName,
-      DatacenterOperationTypeEnum.Update,
+      queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateRamReservationItem(
       dto,
       serviceType,
       datacenterName,
-      DatacenterOperationTypeEnum.Update,
+      queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateGenerationItems(
       dto,
       serviceType,
       datacenterName,
       datacenter,
-      DatacenterOperationTypeEnum.Update,
+      queryRunner,
     );
+    await queryRunner.commitTransaction();
+    await queryRunner.release();
   }
 
   async getDatacenterConfigs(query: { datacenter: null }) {

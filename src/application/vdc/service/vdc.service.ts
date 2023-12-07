@@ -603,6 +603,7 @@ export class VdcService {
           profile.name.toLocaleLowerCase().includes(code),
         );
         if (!name) {
+          
           continue;
         }
         const data: StoragePoliciesList = {

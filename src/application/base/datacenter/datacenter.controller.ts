@@ -122,4 +122,9 @@ export class DatacenterController {
   async updateDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
     return this.service.updateDatacenter(dto);
   }
+
+  @Post()
+  async createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
+    return this.service.createDatacenter(dto);
+  }
 }

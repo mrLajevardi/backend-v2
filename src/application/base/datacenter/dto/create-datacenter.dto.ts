@@ -5,8 +5,10 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
+  IsDefined,
   IsEnum,
   IsIn,
+  IsNotEmptyObject,
   IsNumber,
   IsObject,
   IsOptional,
@@ -18,7 +20,7 @@ import {
 import { Type } from 'class-transformer';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 
-class GenerationItem {
+export class GenerationItem {
   @ApiProperty({
     type: String,
   })
@@ -47,70 +49,80 @@ class GenerationItem {
   @IsOptional()
   price?: number;
 }
-
-class BaseGenerationItem extends GenerationItem {
-  @IsNumber()
+class ComputeItem {
   @ApiProperty({ type: Number })
-  @IsOptional()
-  id?: number;
-}
+  @IsNumber()
+  basePrice: number;
 
-class GenerationItemParent {
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  baseMax: number;
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  baseMin: number;
+
   @ApiProperty({ type: [GenerationItem] })
   @IsArray()
   @IsObject({ each: true })
   @Type(() => GenerationItem)
   @ValidateNested({ each: true })
   levels: GenerationItem[];
-
-  @ApiProperty({ type: Number, required: false })
-  @IsNumber()
-  @IsOptional()
-  id?: number;
-}
-class ComputeItem extends GenerationItemParent {
-  @ApiProperty({ type: Number })
-  @IsNumber()
-  basePrice: number;
 }
 class DiskItem extends GenerationItem {
   @ApiProperty({ type: Boolean })
   @IsBoolean()
   enabled: boolean;
 }
+class GenerationItems {
+  @ApiProperty({ type: ComputeItem })
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ComputeItem)
+  ram: ComputeItem;
 
-class DiskItemParent {
+  @ApiProperty({ type: ComputeItem })
+  @ApiProperty({ type: ComputeItem })
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ComputeItem)
+  cpu: ComputeItem;
+
   @ApiProperty({ type: [DiskItem] })
   @IsArray()
   @IsObject({ each: true })
   @Type(() => DiskItem)
   @ValidateNested({ each: true })
-  levels: DiskItem[];
+  diskItems: DiskItem[];
 
-  @ApiProperty({ type: Number, required: false })
-  @IsNumber()
-  @IsOptional()
-  id?: number;
-}
-class GenerationItems {
-  @ApiProperty({ type: ComputeItem })
-  ram: ComputeItem;
+  @ApiProperty({ type: GenerationItem })
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => GenerationItem)
+  vm: GenerationItem;
 
-  @ApiProperty({ type: ComputeItem })
-  cpu: ComputeItem;
-
-  @ApiProperty({ type: DiskItemParent })
-  diskItems: DiskItemParent;
-
-  @ApiProperty({ type: BaseGenerationItem })
-  vm: BaseGenerationItem;
-
-  @ApiProperty({ type: BaseGenerationItem })
-  ip: BaseGenerationItem;
+  @ApiProperty({ type: GenerationItem })
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => GenerationItem)
+  ip: GenerationItem;
 }
 
 class Generation {
   @ApiProperty({ type: GenerationItems })
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => GenerationItems)
   items: GenerationItems;
 
   @ApiProperty({ type: String })
@@ -130,7 +142,7 @@ class Generation {
   id?: number;
 }
 
-class Period {
+export class Period {
   @IsNumber()
   @ApiProperty({ type: Number })
   percent: number;
@@ -145,23 +157,7 @@ class Period {
   title: string;
 }
 
-class PeriodParent {
-  @IsNumber()
-  @ApiProperty({ type: Number })
-  @IsOptional()
-  id?: number;
-
-  @IsArray({})
-  @IsObject({ each: true })
-  @Type(() => Period)
-  @ValidateNested({ each: true })
-  @ArrayMaxSize(3)
-  @ArrayMinSize(1)
-  @ApiProperty({ type: [Period] })
-  levels: Period[];
-}
-
-class Reservation {
+export class Reservation {
   @ApiProperty({ type: Boolean })
   @IsBoolean()
   enabled: boolean;
@@ -180,20 +176,6 @@ class Reservation {
   })
   @IsEnum(ServicePlanTypeEnum)
   type: ServicePlanTypeEnum;
-}
-
-class ReservationParent {
-  @IsNumber()
-  @ApiProperty({ type: Number })
-  @IsOptional()
-  id?: number;
-
-  @IsArray()
-  @IsObject({ each: true })
-  @Type(() => Reservation)
-  @ValidateNested({ each: true })
-  @ApiProperty({ type: [Reservation] })
-  levels: Reservation[];
 }
 
 export class CreateDatacenterDto {
@@ -221,12 +203,26 @@ export class CreateDatacenterDto {
   @IsBoolean()
   enabled: boolean;
 
-  @ApiProperty({ type: PeriodParent })
-  period: PeriodParent;
+  @IsArray({})
+  @IsObject({ each: true })
+  @Type(() => Period)
+  @ValidateNested({ each: true })
+  @ArrayMaxSize(3)
+  @ArrayMinSize(1)
+  @ApiProperty({ type: [Period] })
+  period: Period[];
 
-  @ApiProperty({ type: ReservationParent })
-  reservationCpu: ReservationParent;
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => Reservation)
+  @ValidateNested({ each: true })
+  @ApiProperty({ type: [Reservation] })
+  reservationCpu: Reservation[];
 
-  @ApiProperty({ type: ReservationParent })
-  reservationRam: ReservationParent;
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => Reservation)
+  @ValidateNested({ each: true })
+  @ApiProperty({ type: [Reservation] })
+  reservationRam: Reservation[];
 }

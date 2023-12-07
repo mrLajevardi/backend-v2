@@ -67,7 +67,7 @@ export class CreateItemTypesDto {
   @IsNumber()
   step: number;
 
-  serviceType?: Partial<ServiceTypes>;
+  serviceTypes?: Partial<ServiceTypes>;
 
   @IsDate()
   @IsOptional()

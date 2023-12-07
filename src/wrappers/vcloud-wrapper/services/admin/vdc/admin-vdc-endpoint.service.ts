@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateVdcDto } from './dto/create-vdc.dto';
-import {
-  EndpointInterface,
-  EndpointOptionsInterface,
-} from 'src/wrappers/interfaces/endpoint.interface';
+import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
 import { DeleteVdcDto } from './dto/delete-vdc.dto';
 import { DisableVdcDto } from './dto/disable-vdc.dto';
 import { EnableVdcDto } from './dto/enable-vdc.dto';
