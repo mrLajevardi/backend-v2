@@ -49,7 +49,7 @@ export class GenerationItem {
   @IsOptional()
   price?: number;
 }
-class ComputeItem {
+export class ComputeItem {
   @ApiProperty({ type: Number })
   @IsNumber()
   basePrice: number;
@@ -69,12 +69,12 @@ class ComputeItem {
   @ValidateNested({ each: true })
   levels: GenerationItem[];
 }
-class DiskItem extends GenerationItem {
+export class DiskItem extends GenerationItem {
   @ApiProperty({ type: Boolean })
   @IsBoolean()
   enabled: boolean;
 }
-class GenerationItems {
+export class GenerationItems {
   @ApiProperty({ type: ComputeItem })
   @IsDefined()
   @IsNotEmptyObject()
@@ -116,7 +116,7 @@ class GenerationItems {
   ip: GenerationItem;
 }
 
-class Generation {
+export class Generation {
   @ApiProperty({ type: GenerationItems })
   @IsDefined()
   @IsNotEmptyObject()
@@ -135,11 +135,6 @@ class Generation {
   })
   @IsEnum(ServicePlanTypeEnum)
   type: ServicePlanTypeEnum;
-
-  @IsNumber()
-  @ApiProperty({ type: Number })
-  @IsOptional()
-  id?: number;
 }
 
 export class Period {
@@ -182,11 +177,6 @@ export class CreateDatacenterDto {
   @ApiProperty({ type: String })
   @IsString()
   title: string;
-
-  @ApiProperty({ type: String, required: false })
-  @IsString()
-  @IsOptional()
-  id?: string;
 
   @ApiProperty({ type: String })
   @IsString()

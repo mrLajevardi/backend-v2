@@ -1,7 +1,14 @@
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
-import { FindManyOptions, FindOptionsWhere, IsNull, Like } from 'typeorm';
+import {
+  And,
+  FindManyOptions,
+  FindOptionsWhere,
+  IsNull,
+  Like,
+  Not,
+} from 'typeorm';
 
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 import {
@@ -10,8 +17,34 @@ import {
 } from '../../../../wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs.dto';
 import { AdminVdcWrapperService } from '../../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import {
+  ItemTypeCodes,
+  VdcGenerationItemCodes,
+} from '../../itemType/enum/item-type-codes.enum';
+import { plainToInstance } from 'class-transformer';
+import {
+  ComputeItem,
+  CreateDatacenterDto,
+  DiskItem,
+  Generation,
+  GenerationItem,
+  GenerationItems,
+  Period,
+  Reservation,
+} from '../dto/create-datacenter.dto';
+import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
+import _, { keyBy } from 'lodash';
+import { DatacenterService } from './datacenter.service';
+import { BASE_DATACENTER_SERVICE } from '../interface/datacenter.interface';
+import { DatacenterDetails } from '../dto/datacenter-details.dto';
 @Injectable()
 export class DatacenterFactoryService {
+  constructor(
+    private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private datacenterService: DatacenterService,
+  ) {}
   public GetFindOptionBy(
     query: DatacenterConfigGenItemsQueryDto,
   ): FindManyOptions<ItemTypes> {
@@ -132,5 +165,158 @@ export class DatacenterFactoryService {
       },
     );
     return providerVdcsFilteredData;
+  }
+
+  async getDatacenterConfigs(
+    datacenterName: string,
+    serviceTypeId: string,
+  ): Promise<CreateDatacenterDto> {
+    const dsConfig = await this.datacenterService.getDatacenterDetails(
+      datacenterName,
+    );
+    const itemTypes = await this.serviceItemTypesTreeService.find({
+      where: {
+        datacenterName,
+        serviceTypeId,
+        codeHierarchy: And(
+          Not(Like(ItemTypeCodes.Guaranty + '%')),
+          Not(Like(ItemTypeCodes.Generation + '%')),
+        ),
+      },
+    });
+    const periodItems: Period[] = [];
+    const reservationCpuItems: Reservation[] = [];
+    const reservationRamItems: Reservation[] = [];
+    for (const itemType of itemTypes) {
+      const parents = itemType.codeHierarchy.split('_');
+      switch (parents[0]) {
+        case ItemTypeCodes.Period:
+          this.setPeriodItems(itemType, periodItems);
+          break;
+        case ItemTypeCodes.CpuReservation:
+          this.setReservation(itemType, reservationCpuItems);
+          break;
+        case ItemTypeCodes.MemoryReservation:
+          this.setReservation(itemType, reservationRamItems);
+          break;
+      }
+    }
+    const generations = await this.setGeneration(
+      datacenterName,
+      serviceTypeId,
+      dsConfig,
+    );
+    const datacenter: CreateDatacenterDto = {
+      reservationCpu: reservationCpuItems,
+      reservationRam: reservationRamItems,
+      enabled: true,
+      generations,
+      period: periodItems,
+      title: dsConfig.name,
+      location: dsConfig.location,
+    };
+    return datacenter;
+  }
+
+  setPeriodItems(
+    item: ServiceItemTypesTree,
+    periodItemInstance: Period[],
+  ): void {
+    const periodItem = plainToInstance(Period, item);
+    periodItemInstance.push(periodItem);
+  }
+
+  setReservation(
+    item: ServiceItemTypesTree,
+    reservationItems: Reservation[],
+  ): void {
+    const reservationItem = plainToInstance(Reservation, item);
+    reservationItems.push(reservationItem);
+  }
+
+  async setGeneration(
+    datacenterName: string,
+    serviceTypeId: string,
+    dsConfig: DatacenterDetails,
+  ): Promise<Generation[]> {
+    const generations = await this.serviceItemTypesTreeService.find({
+      where: {
+        datacenterName,
+        serviceTypeId,
+        codeHierarchy: Like('g%'),
+      },
+    });
+    const generationsDto: Generation[] = [];
+    for (const generation of generations) {
+      const targetDs = dsConfig.gens.find(
+        (gen) => gen.name === generation.code,
+      );
+      const generationDto: Generation = {
+        providerId: targetDs.id,
+        type: 0,
+        items: {} as GenerationItems,
+      };
+      const items = await this.serviceItemTypesTreeService.find({
+        where: {
+          parentId: generation.id,
+        },
+      });
+      for (const item of items) {
+        if (item.code === VdcGenerationItemCodes.Cpu) {
+          const cpuItem: ComputeItem = {
+            baseMax: item.maxPerRequest,
+            baseMin: item.minPerRequest,
+            basePrice: item.fee,
+            levels: [],
+          };
+          const cpuLevels = await this.serviceItemTypesTreeService.find({
+            where: {
+              parentId: item.id,
+            },
+          });
+          for (const cpuLevel of cpuLevels) {
+            const generationItem = plainToInstance(GenerationItem, cpuLevel);
+            cpuItem.levels.push(generationItem);
+          }
+          generationDto.items.cpu = cpuItem;
+        } else if (item.code === VdcGenerationItemCodes.Ram) {
+          const ramItem: ComputeItem = {
+            baseMax: item.maxPerRequest,
+            baseMin: item.minPerRequest,
+            basePrice: item.fee,
+            levels: [],
+          };
+          const ramLevels = await this.serviceItemTypesTreeService.find({
+            where: {
+              parentId: item.id,
+            },
+          });
+          for (const cpuLevel of ramLevels) {
+            const generationItem = plainToInstance(GenerationItem, cpuLevel);
+            ramItem.levels.push(generationItem);
+          }
+          generationDto.items.ram = ramItem;
+        } else if (item.code === VdcGenerationItemCodes.Disk) {
+          const diskItems = await this.serviceItemTypesTreeService.find({
+            where: {
+              parentId: item.id,
+            },
+          });
+          generationDto.items.diskItems = [];
+          for (const diskItem of diskItems) {
+            const diskItemDto = plainToInstance(DiskItem, diskItem);
+            generationDto.items.diskItems.push(diskItemDto);
+          }
+        } else if (item.code === VdcGenerationItemCodes.Vm) {
+          const vmDto = plainToInstance(GenerationItem, item);
+          generationDto.items.vm = vmDto;
+        } else if (item.code === VdcGenerationItemCodes.Ip) {
+          const ipDto = plainToInstance(GenerationItem, item);
+          generationDto.items.ip = ipDto;
+        }
+      }
+      generationsDto.push(generationDto);
+    }
+    return generationsDto;
   }
 }

@@ -375,6 +375,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
             name: allDatacenters[i].gens[i].name,
             enabled: allDatacenters[i].gens[i].enabled,
             cpuSpeed: allDatacenters[i].gens[i].cpuSpeed,
+            id: allDatacenters[i].gens[i].id,
           };
           gen.push(res);
         }
@@ -393,8 +394,10 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       providersGen.push(res);
     }
 
+    console.log(datacenterInf);
     const datacenterDetails: any = {
       name: datacenterName,
+      // title: datacenterInf
       diskList,
       periodList,
       enabled: result[0].enabled,
@@ -488,7 +491,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
   }
 
   async updateDatacenter(dto: CreateDatacenterDto): Promise<void> {
-    const serviceType = await this.serviceTypesTableService.findById(dto.id);
+    const serviceType = await this.serviceTypesTableService.findById('vdc');
     await this.updateDatacenterMetadata(dto);
     const datacenter = await this.getDatacenterMetadata(
       '',
