@@ -84,6 +84,7 @@ export class ServiceServiceFactory {
     isTicketSent: boolean,
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
+    extensionDay: number,
   ) {
     async function getTask() {
       let task: Tasks = null;
@@ -117,6 +118,7 @@ export class ServiceServiceFactory {
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
         taskDetail,
         vdcItems.description ? vdcItems.description : '',
+        serviceInstance.daysLeft <= extensionDay,
       );
 
     //Cpu , Ram , Disk , Vm
