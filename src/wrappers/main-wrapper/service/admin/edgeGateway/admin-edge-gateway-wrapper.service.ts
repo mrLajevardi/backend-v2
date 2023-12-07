@@ -27,6 +27,7 @@ export class AdminEdgeGatewayWrapperService {
       params: {
         page,
         pageSize,
+        sortAsc: 'name',
       },
       headers: {
         Authorization: `Bearer ${authToken}`,
