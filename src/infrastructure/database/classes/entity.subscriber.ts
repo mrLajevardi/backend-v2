@@ -19,10 +19,11 @@ export class EntitySubscriber implements EntitySubscriberInterface {
   }
 
   async afterUpdate(event: UpdateEvent<any>) {
+    console.log(event);
     const data: CreateEntityLogDto = {
       userId: parseInt(this.cls.get('userId')),
       entityType: event.entity.constructor.name.toString(),
-      entityId: event.databaseEntity.id,
+      entityId: event.databaseEntity?.id,
       before: JSON.stringify(event.databaseEntity),
       after: JSON.stringify(event.entity),
     };
