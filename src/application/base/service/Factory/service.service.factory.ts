@@ -90,6 +90,7 @@ export class ServiceServiceFactory {
       let taskDetail: TaskDetail = null;
       if (serviceInstance.status == ServiceStatusEnum.Error) {
         task = await this.taskService.getLastTaskErrorBy(serviceInstance.id);
+        if (!task) return taskDetail;
         taskDetail = {
           details: task.details,
           startTime: task.startTime,

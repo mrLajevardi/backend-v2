@@ -17,7 +17,10 @@ export interface BaseInvoiceService {
     options: SessionRequest,
   ): Promise<InvoiceIdDto>;
 
-  getVdcInvoiceDetails(invoiceId: string): Promise<VdcInvoiceDetailsResultDto>;
+  getVdcInvoiceDetails(
+    invoiceId: string,
+    serviceType: string,
+  ): Promise<VdcInvoiceDetailsResultDto>;
 
   vdcInvoiceCalculator(
     dto: VdcInvoiceCalculatorDto,

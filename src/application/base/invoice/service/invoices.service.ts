@@ -90,12 +90,16 @@ export class InvoicesService implements BaseInvoiceService {
 
   async getVdcInvoiceDetails(
     invoiceId: string,
+    serviceType = 'vdc',
   ): Promise<VdcInvoiceDetailsResultDto> {
     const res: VdcInvoiceDetailsResultDto = {};
 
     //We should Join in this way == > Invoice --> InvoiceItem --> view.ServiceItemTypesTree
     const vdcInvoiceDetailsModels =
-      await this.invoiceVdcFactory.getVdcInvoiceDetailModel(invoiceId);
+      await this.invoiceVdcFactory.getVdcInvoiceDetailModel(
+        invoiceId,
+        serviceType,
+      );
 
     const {
       cpuModel,
