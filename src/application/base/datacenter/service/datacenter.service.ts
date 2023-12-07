@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
-import { FindManyOptions, Like } from 'typeorm';
+import { And, FindManyOptions, Like, Not } from 'typeorm';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -25,7 +25,11 @@ import {
   GenDto,
   PeriodList,
 } from '../dto/datacenter-details.dto';
-import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
+import {
+  CreateDatacenterDto,
+  Period,
+  Reservation,
+} from '../dto/create-datacenter.dto';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
@@ -33,6 +37,10 @@ import { DatacenterAdminService } from './datacenter.admin.service';
 import { DatacenterOperationTypeEnum } from '../enum/datacenter-opertation-type.enum';
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
+import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -45,6 +53,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly datacenterAdminService: DatacenterAdminService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly itemTypeTableService: ItemTypesTableService,
+    private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
   ) {}
 
   async getDatacenterMetadata(
@@ -372,15 +381,16 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         const gen: GenDto[] = [];
         for (let j = 0; j < allDatacenters[i].gens.length; j++) {
           const res = {
-            name: allDatacenters[i].gens[i].name,
-            enabled: allDatacenters[i].gens[i].enabled,
-            cpuSpeed: allDatacenters[i].gens[i].cpuSpeed,
-            id: allDatacenters[i].gens[i].id,
+            name: allDatacenters[i].gens[j].name,
+            enabled: allDatacenters[i].gens[j].enabled,
+            cpuSpeed: allDatacenters[i].gens[j].cpuSpeed,
+            id: allDatacenters[i].gens[j].id,
           };
           gen.push(res);
         }
         datacenterInf.push(gen);
         datacenterInf.push(allDatacenters[i].location);
+        datacenterInf.push(allDatacenters[i].datacenterTitle);
       }
     }
 
@@ -402,6 +412,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       periodList,
       enabled: result[0].enabled,
       location: datacenterInf[1],
+      title: datacenterInf[2],
       gens: datacenterInf[0],
       providers: `${datacenterName}-(${providersGen[0].genName}-${
         providersGen[0].genCpuSpeed / 1000
@@ -539,22 +550,60 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     await queryRunner.release();
   }
 
-  async getDatacenterConfigs(query: { datacenter: null }) {
-    const itemTypes = await this.dataCenterTableService.find({
+  async getDatacenterConfigs(
+    query: GetDatacenterConfigsQueryDto,
+  ): Promise<CreateDatacenterDto> {
+    const { datacenterName, serviceTypeId } = query;
+    const dsConfig = await this.getDatacenterDetails(datacenterName);
+    const itemTypes = await this.serviceItemTypesTreeService.find({
       where: {
-        datacenterName: query.datacenter,
+        datacenterName,
+        serviceTypeId,
+        codeHierarchy: And(
+          Not(Like(ItemTypeCodes.Guaranty + '%')),
+          Not(Like(ItemTypeCodes.Generation + '%')),
+        ),
       },
     });
-    const transformedItems = itemTypes.map((item) => {
-      const itemType: InvoiceItemsDto = {
-        itemTypeId: item.id,
-        value: '',
-      };
-      return itemType;
-    });
-    const groupItems = await this.invoiceFactoryService.groupVdcItems(
-      transformedItems,
+    const periodItems: Period[] = [];
+    const reservationCpuItems: Reservation[] = [];
+    const reservationRamItems: Reservation[] = [];
+    for (const itemType of itemTypes) {
+      const parents = itemType.codeHierarchy.split(
+        ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+      );
+      switch (parents[1]) {
+        case ItemTypeCodes.PeriodItem:
+          this.datacenterServiceFactory.setPeriodItems(itemType, periodItems);
+          break;
+        case ItemTypeCodes.CpuReservationItem:
+          this.datacenterServiceFactory.setReservation(
+            itemType,
+            reservationCpuItems,
+          );
+          break;
+        case ItemTypeCodes.MemoryReservationItem:
+          this.datacenterServiceFactory.setReservation(
+            itemType,
+            reservationRamItems,
+          );
+          break;
+      }
+    }
+    const generations = await this.datacenterServiceFactory.setGeneration(
+      datacenterName,
+      serviceTypeId,
+      dsConfig,
     );
-    return groupItems;
+    const datacenter: CreateDatacenterDto = {
+      reservationCpu: reservationCpuItems,
+      reservationRam: reservationRamItems,
+      enabled: true,
+      generations,
+      period: periodItems,
+      title: dsConfig.title,
+      location: dsConfig.location,
+    };
+    return datacenter;
   }
 }

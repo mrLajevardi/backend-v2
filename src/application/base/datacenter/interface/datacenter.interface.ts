@@ -7,6 +7,7 @@ import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { DataCenterList } from '../dto/datacenter-list.dto';
 import { DatacenterDetails } from '../dto/datacenter-details.dto';
 import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
+import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
 
 export const BASE_DATACENTER_SERVICE = 'BASE_DATACENTER_SERVICE';
 
@@ -34,5 +35,7 @@ export interface BaseDatacenterService extends IBaseService {
 
   updateDatacenter(dto: CreateDatacenterDto): Promise<void>;
 
-  getDatacenterConfigs(query: any): Promise<any>;
+  getDatacenterConfigs(
+    query: GetDatacenterConfigsQueryDto,
+  ): Promise<CreateDatacenterDto>;
 }

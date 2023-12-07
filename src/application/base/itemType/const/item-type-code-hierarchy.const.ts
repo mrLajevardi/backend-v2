@@ -1,0 +1,1 @@
+export const ITEM_TYPE_CODE_HIERARCHY_SPLITTER = '_';

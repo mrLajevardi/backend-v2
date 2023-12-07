@@ -42,8 +42,6 @@ import { DatacenterDetails } from '../dto/datacenter-details.dto';
 export class DatacenterFactoryService {
   constructor(
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
-    @Inject(BASE_DATACENTER_SERVICE)
-    private datacenterService: DatacenterService,
   ) {}
   public GetFindOptionBy(
     query: DatacenterConfigGenItemsQueryDto,
@@ -167,62 +165,13 @@ export class DatacenterFactoryService {
     return providerVdcsFilteredData;
   }
 
-  async getDatacenterConfigs(
-    datacenterName: string,
-    serviceTypeId: string,
-  ): Promise<CreateDatacenterDto> {
-    const dsConfig = await this.datacenterService.getDatacenterDetails(
-      datacenterName,
-    );
-    const itemTypes = await this.serviceItemTypesTreeService.find({
-      where: {
-        datacenterName,
-        serviceTypeId,
-        codeHierarchy: And(
-          Not(Like(ItemTypeCodes.Guaranty + '%')),
-          Not(Like(ItemTypeCodes.Generation + '%')),
-        ),
-      },
-    });
-    const periodItems: Period[] = [];
-    const reservationCpuItems: Reservation[] = [];
-    const reservationRamItems: Reservation[] = [];
-    for (const itemType of itemTypes) {
-      const parents = itemType.codeHierarchy.split('_');
-      switch (parents[0]) {
-        case ItemTypeCodes.Period:
-          this.setPeriodItems(itemType, periodItems);
-          break;
-        case ItemTypeCodes.CpuReservation:
-          this.setReservation(itemType, reservationCpuItems);
-          break;
-        case ItemTypeCodes.MemoryReservation:
-          this.setReservation(itemType, reservationRamItems);
-          break;
-      }
-    }
-    const generations = await this.setGeneration(
-      datacenterName,
-      serviceTypeId,
-      dsConfig,
-    );
-    const datacenter: CreateDatacenterDto = {
-      reservationCpu: reservationCpuItems,
-      reservationRam: reservationRamItems,
-      enabled: true,
-      generations,
-      period: periodItems,
-      title: dsConfig.name,
-      location: dsConfig.location,
-    };
-    return datacenter;
-  }
-
   setPeriodItems(
     item: ServiceItemTypesTree,
     periodItemInstance: Period[],
   ): void {
-    const periodItem = plainToInstance(Period, item);
+    const periodItem = plainToInstance(Period, item, {
+      excludeExtraneousValues: true,
+    });
     periodItemInstance.push(periodItem);
   }
 
@@ -230,7 +179,9 @@ export class DatacenterFactoryService {
     item: ServiceItemTypesTree,
     reservationItems: Reservation[],
   ): void {
-    const reservationItem = plainToInstance(Reservation, item);
+    const reservationItem = plainToInstance(Reservation, item, {
+      excludeExtraneousValues: true,
+    });
     reservationItems.push(reservationItem);
   }
 
@@ -243,7 +194,7 @@ export class DatacenterFactoryService {
       where: {
         datacenterName,
         serviceTypeId,
-        codeHierarchy: Like('g%'),
+        code: And(Like('g%'), Not(ItemTypeCodes.Generation)),
       },
     });
     const generationsDto: Generation[] = [];
@@ -251,6 +202,9 @@ export class DatacenterFactoryService {
       const targetDs = dsConfig.gens.find(
         (gen) => gen.name === generation.code,
       );
+      if (targetDs == undefined) {
+        continue;
+      }
       const generationDto: Generation = {
         providerId: targetDs.id,
         type: 0,
@@ -275,7 +229,9 @@ export class DatacenterFactoryService {
             },
           });
           for (const cpuLevel of cpuLevels) {
-            const generationItem = plainToInstance(GenerationItem, cpuLevel);
+            const generationItem = plainToInstance(GenerationItem, cpuLevel, {
+              excludeExtraneousValues: true,
+            });
             cpuItem.levels.push(generationItem);
           }
           generationDto.items.cpu = cpuItem;
@@ -292,7 +248,9 @@ export class DatacenterFactoryService {
             },
           });
           for (const cpuLevel of ramLevels) {
-            const generationItem = plainToInstance(GenerationItem, cpuLevel);
+            const generationItem = plainToInstance(GenerationItem, cpuLevel, {
+              excludeExtraneousValues: true,
+            });
             ramItem.levels.push(generationItem);
           }
           generationDto.items.ram = ramItem;
@@ -304,14 +262,20 @@ export class DatacenterFactoryService {
           });
           generationDto.items.diskItems = [];
           for (const diskItem of diskItems) {
-            const diskItemDto = plainToInstance(DiskItem, diskItem);
+            const diskItemDto = plainToInstance(DiskItem, diskItem, {
+              excludeExtraneousValues: true,
+            });
             generationDto.items.diskItems.push(diskItemDto);
           }
         } else if (item.code === VdcGenerationItemCodes.Vm) {
-          const vmDto = plainToInstance(GenerationItem, item);
+          const vmDto = plainToInstance(GenerationItem, item, {
+            excludeExtraneousValues: true,
+          });
           generationDto.items.vm = vmDto;
         } else if (item.code === VdcGenerationItemCodes.Ip) {
-          const ipDto = plainToInstance(GenerationItem, item);
+          const ipDto = plainToInstance(GenerationItem, item, {
+            excludeExtraneousValues: true,
+          });
           generationDto.items.ip = ipDto;
         }
       }
