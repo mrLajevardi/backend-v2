@@ -44,6 +44,8 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
 
   description?: string;
 
+  extendable?: boolean;
+
   constructor(
     id: string,
     status: ServiceStatusEnum,
@@ -56,6 +58,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     servicePlanType: ServicePlanTypeEnum,
     taskDetail?: TaskDetail,
     description?: string,
+    extendable?: boolean,
   ) {
     super();
     this.id = id;
@@ -70,6 +73,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     this.ticketSent = ticketSent;
     this.servicePlanType = servicePlanType;
     this.description = description;
+    this.extendable = extendable;
   }
 
   static getMock(): GetAllVdcServiceWithItemsResultDto[] {
