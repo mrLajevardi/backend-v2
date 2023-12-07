@@ -28,6 +28,8 @@ export class AdminEdgeGatewayWrapperService {
         page,
         pageSize,
         sortAsc: 'name',
+        filter:
+          '((networkBackings.values.backingTypeValue==NSXT_TIER0,networkBackings.values.backingTypeValue==NSXT_VRF_TIER0));usingIpSpace==false',
       },
       headers: {
         Authorization: `Bearer ${authToken}`,

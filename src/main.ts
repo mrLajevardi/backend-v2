@@ -34,7 +34,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalFilters(new HttpExceptionFilter());
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new SentryFilter(httpAdapter));
-  await app.listen(process.env.PORT);
+  await app.listen(process.env.PORT, '192.168.99.20');
 }
 
 bootstrap();
