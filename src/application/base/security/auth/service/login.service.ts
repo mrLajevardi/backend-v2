@@ -7,7 +7,7 @@ import {
   encryptPassword,
 } from 'src/infrastructure/helpers/helpers';
 import { User } from 'src/infrastructure/database/entities/User';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { OtpService } from '../../security-tools/otp.service';
 import { AccessTokenDto } from '../dto/access-token.dto';
 import { OtpErrorException } from 'src/infrastructure/exceptions/otp-error-exception';
@@ -141,7 +141,10 @@ export class LoginService {
   }
 
   async loginProcess(user: UserPayload) {
-    if (user.twoFactorAuth == TwoFaAuthTypeEnum.None) {
+    if (
+      user.twoFactorAuth == TwoFaAuthTypeEnum.None ||
+      isNil(user.twoFactorAuth)
+    ) {
       const tokens: AccessTokenDto = await this.getLoginToken(
         user.userId,
         null,

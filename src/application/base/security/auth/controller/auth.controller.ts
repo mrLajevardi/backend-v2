@@ -129,7 +129,7 @@ export class AuthController {
       data.otp,
       data.hash,
     );
-    console.log('testt \n\n\n\n\n ', verifyOtp, req.user);
+
     if (!verifyOtp) {
       throw new OtpErrorException();
     }
@@ -173,6 +173,14 @@ export class AuthController {
       dto.otp,
       dto.hash,
     );
+  }
+
+  @Get('/twoFactorAuth/disable')
+  @ApiOperation({ summary: 'disable two factor authenticate for current user' })
+  async disableTwoFactorAuthenticate(
+    @Request() req: SessionRequest,
+  ): Promise<boolean> {
+    return await this.twoFaAuthService.disable(req.user);
   }
 
   @Public()
