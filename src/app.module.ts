@@ -136,7 +136,7 @@ import { EntityLogModule } from './application/base/entity-log/entity-log.module
     },
     NetworkService,
     ApplicationPortProfileService,
-    EntitySubscriber,
+    // EntitySubscriber,
   ],
   exports: [],
 })

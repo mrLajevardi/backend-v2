@@ -35,7 +35,7 @@ import { EntityManager } from 'typeorm';
               extra: {
                 trustServerCertificate: true,
               },
-              subscribers: [EntitySubscriber],
+              // subscribers: [EntitySubscriber],
             } as TypeOrmModuleOptions)
           : ({
               type: 'sqlite',
