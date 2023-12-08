@@ -56,6 +56,10 @@ import {
 } from '../guard/linkedin.auth.guard';
 import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { TwoFaAuthService } from '../service/two-fa-auth.service';
+import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import { VerifyOtpTwoFactorAuthDto } from '../dto/verify-otp-two-factor-auth.dto';
+import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
+import { EnableTwoFactorAuthenticateDto } from '../dto/enable-two-factor-authenticate.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -106,17 +110,77 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req: SessionRequest): Promise<any> {
-    return this.authService.login.getLoginToken(
+    return await this.authService.login.loginProcess(req.user);
+  }
+
+  @Public()
+  @Post('/twoFactorAuth/verify')
+  @ApiOperation({
+    summary: 'verify otp sent to user two factor authenticate',
+  })
+  @ApiBody({ type: VerifyOtpTwoFactorAuthDto })
+  @UseGuards(LocalAuthGuard)
+  async verifyTwoFactorAuthenticate(
+    @Request() req: SessionRequest,
+    @Body() data: VerifyOtpTwoFactorAuthDto,
+  ) {
+    const verifyOtp: boolean = await this.twoFaAuthService.verifyOtp(
+      req.user,
+      data.otp,
+      data.hash,
+    );
+
+    if (!verifyOtp) {
+      throw new OtpErrorException();
+    }
+
+    return await this.authService.login.getLoginToken(
       req.user.userId,
       null,
       req.user.aiAccessToken,
     );
+  }
 
-    // if (req.user.twoFactorAuth == TwoFaAuthTypeEnum.None){
-    //   return this.authService.login.getLoginToken(req.user.userId);
-    // }else{
-    //   return this.twoFaAuthService.sendOtp(req.user);
-    // }
+  @Get('/twoFactorAuth/enable/:twoFactorAuthType')
+  @ApiOperation({ summary: 'enable two factor authenticate for current user' })
+  // @UseGuards(LocalAuthGuard)
+  async enableTwoFactorAuthenticate(
+    @Request() req: SessionRequest,
+    @Param() twoFactorAuthenticateType: EnableTwoFactorAuthenticateDto,
+  ): Promise<SendOtpTwoFactorAuthDto> {
+    const data: SendOtpTwoFactorAuthDto = await this.twoFaAuthService.enable(
+      req.user,
+      twoFactorAuthenticateType.twoFactorAuthType,
+    );
+
+    return data;
+  }
+
+  @Post('/twoFactorAuth/enable/:twoFactorAuthType/verify')
+  @ApiOperation({
+    summary: 'verify enable two factor authenticate for current user',
+  })
+  // @UseGuards(LocalAuthGuard)
+  @ApiBody({ type: VerifyOtpTwoFactorAuthDto })
+  async verifyEnableTwoFactorAuthenticate(
+    @Request() req: SessionRequest,
+    @Param() twoFactorAuthenticateType: EnableTwoFactorAuthenticateDto,
+    @Body() dto: VerifyOtpTwoFactorAuthDto,
+  ): Promise<boolean> {
+    return await this.twoFaAuthService.enableVerification(
+      req.user,
+      twoFactorAuthenticateType.twoFactorAuthType,
+      dto.otp,
+      dto.hash,
+    );
+  }
+
+  @Get('/twoFactorAuth/disable')
+  @ApiOperation({ summary: 'disable two factor authenticate for current user' })
+  async disableTwoFactorAuthenticate(
+    @Request() req: SessionRequest,
+  ): Promise<boolean> {
+    return await this.twoFaAuthService.disable(req.user);
   }
 
   @Public()

@@ -2,12 +2,19 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { NotificationService } from 'src/application/base/notification/notification.service';
-import { comparePassword } from 'src/infrastructure/helpers/helpers';
+import {
+  comparePassword,
+  encryptPassword,
+} from 'src/infrastructure/helpers/helpers';
 import { User } from 'src/infrastructure/database/entities/User';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { OtpService } from '../../security-tools/otp.service';
 import { AccessTokenDto } from '../dto/access-token.dto';
 import { OtpErrorException } from 'src/infrastructure/exceptions/otp-error-exception';
+import { UserPayload } from '../dto/user-payload.dto';
+import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
+import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import { TwoFaAuthService } from './two-fa-auth.service';
 
 @Injectable()
 export class LoginService {
@@ -17,6 +24,7 @@ export class LoginService {
     private jwtService: JwtService,
     private otpService: OtpService,
     private notificationService: NotificationService,
+    private twoFaAuthService: TwoFaAuthService,
   ) {}
 
   // generates a phone otp and return the hash
@@ -61,7 +69,6 @@ export class LoginService {
     if (!user) {
       throw new UnauthorizedException();
     }
-
     // checking the availablity of the user and
     const isValid = await comparePassword(user.password, pass);
     if (user && isValid) {
@@ -131,5 +138,31 @@ export class LoginService {
       access_token: this.jwtService.sign(payload),
       ai_token: aiAccessToken,
     };
+  }
+
+  async loginProcess(user: UserPayload) {
+    if (
+      user.twoFactorAuth == TwoFaAuthTypeEnum.None ||
+      isNil(user.twoFactorAuth)
+    ) {
+      const tokens: AccessTokenDto = await this.getLoginToken(
+        user.userId,
+        null,
+        user.aiAccessToken,
+      );
+
+      return {
+        two_factor_authenticate: false,
+        ...tokens,
+      };
+    } else {
+      const sendOtp: SendOtpTwoFactorAuthDto =
+        await this.twoFaAuthService.sendOtp(user);
+
+      return {
+        two_factor_authenticate: true,
+        ...sendOtp,
+      };
+    }
   }
 }

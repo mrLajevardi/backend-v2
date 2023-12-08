@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UserService } from './service/user.service';
 import { UserController } from './controller/user.controller';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
@@ -14,6 +14,7 @@ import { AbilityModule } from '../security/ability/ability.module';
 import { LoginService } from '../security/auth/service/login.service';
 import { OtpService } from '../security/security-tools/otp.service';
 import { RedisCacheService } from './service/redis-cache.service';
+import { AuthModule } from '../security/auth/auth.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RedisCacheService } from './service/redis-cache.service';
     NotificationModule,
     SecurityToolsModule,
     AbilityModule,
+    forwardRef(() => AuthModule),
   ],
   providers: [
     UserService,
@@ -32,6 +34,7 @@ import { RedisCacheService } from './service/redis-cache.service';
     LoginService,
     OtpService,
     RedisCacheService,
+    // TwoFaAuthService,
   ],
   controllers: [UserController, UserAdminController],
   exports: [UserService, RedisCacheService],

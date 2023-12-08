@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+export class NamedDiskAttachedVms {
+  @ApiProperty({ type: String })
+  id: string;
+
+  @ApiProperty({ type: String })
+  name: string;
+}
 export class NamedDiskDto {
   @ApiProperty({ type: String })
   id: string;
@@ -24,6 +31,9 @@ export class NamedDiskDto {
 
   @ApiProperty({ type: Number, example: 1 })
   attachedVmCount: number;
+
+  @ApiProperty({ type: [NamedDiskAttachedVms] })
+  attachedVms: NamedDiskAttachedVms[];
 
   @ApiProperty({ type: Number, example: 6 })
   busType: number;

@@ -47,9 +47,18 @@ import { ServiceItemModule } from './application/base/service-item/service-item.
 import { CompanyModule } from './application/base/company/company.module';
 import { FileModule } from './application/base/file/file.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ClsModule } from 'nestjs-cls';
+import { EntitySubscriber } from './infrastructure/database/classes/entity.subscriber';
+import { EntityLogModule } from './application/base/entity-log/entity-log.module';
 
 @Module({
   imports: [
+    ClsModule.forRoot({
+      global: true,
+      guard: { mount: true },
+      middleware: { mount: true },
+      interceptor: { mount: true },
+    }),
     CacheModule.register({ isGlobal: true }),
     // RavenModule,
     ConfigModule.forRoot({
@@ -107,6 +116,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     ServiceItemModule,
     CompanyModule,
     FileModule,
+    EntityLogModule,
   ],
   controllers: [AppController],
   providers: [
@@ -126,6 +136,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     },
     NetworkService,
     ApplicationPortProfileService,
+    EntitySubscriber,
   ],
   exports: [],
 })

@@ -53,6 +53,7 @@ import { Company } from '../entities/Company';
 import { Province } from '../entities/Province';
 import { City } from '../entities/City';
 import { FileUpload } from '../entities/FileUpload';
+import { EntityLog } from '../entities/EntityLog';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -113,4 +114,5 @@ export const dbEntities = [
   ServiceReports,
   ServiceItems,
   FileUpload,
+  EntityLog,
 ];

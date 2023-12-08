@@ -26,7 +26,7 @@ import { SecurityToolsService } from '../../security/security-tools/security-too
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { getConnection, Like } from 'typeorm';
+import { FindOptionsWhere, ILike, Like } from 'typeorm';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
@@ -44,7 +44,6 @@ import { Company } from '../../../../infrastructure/database/entities/Company';
 import { plainToClass } from 'class-transformer';
 import { UserProfileDto } from '../dto/user-profile.dto';
 import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
-import { LoginService } from '../../security/auth/service/login.service';
 import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import {
@@ -56,6 +55,9 @@ import { RedisCacheService } from './redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CompanyLetterStatusEnum } from '../enum/company-letter-status.enum';
+import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
+import { Transactions } from '../../../../infrastructure/database/entities/Transactions';
+import { FileTableService } from '../../crud/file-table/file-table.service';
 
 @Injectable()
 export class UserService {
@@ -71,6 +73,7 @@ export class UserService {
     private readonly securityTools: SecurityToolsService,
     private readonly connection: Connection,
     private readonly redisCacheService: RedisCacheService,
+    private readonly fileTableService: FileTableService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -620,6 +623,7 @@ export class UserService {
       family: data.family,
       personalCode: data.personalCode,
       companyOwner: data.companyOwner,
+      birthDate: data.birthDate,
       personalVerification: true,
     };
 
@@ -771,7 +775,12 @@ export class UserService {
       .returning('Inserted.stream_id')
       .execute();
 
-    // console.log('\n\n\n\n file: \n\n' , avatar , '\n\n\n\n name: \n\n' , avatar.raw[0].stream_id)
+    console.log(
+      '\n\n\n\n file: \n\n',
+      avatar,
+      '\n\n\n\n name: \n\n',
+      avatar.raw[0].stream_id,
+    );
     const updateUserData: UpdateUserDto = {
       avatarId: avatar.raw[0].stream_id,
     };
@@ -841,5 +850,83 @@ export class UserService {
     });
 
     return new UserProfileResultDto().toArray(user);
+  }
+
+  async deleteCompanyLetter(options: SessionRequest): Promise<boolean> {
+    const user = await this.userTable.findById(options.user.userId);
+
+    await this.userTable.update(options.user.userId, {
+      companyLetterId: null,
+      companyLetterStatus: null,
+    });
+
+    const file = this.fileTableService.delete(user.companyLetterId);
+
+    return true;
+  }
+  async getTransactions(
+    options: SessionRequest,
+    page: number,
+    pageSize: number,
+    serviceType: string,
+    value: number,
+    invoiceID: number,
+    ServiceID: string,
+    startDateTime: Date,
+    endDateTime: Date,
+  ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
+    if (pageSize > 128) {
+      return Promise.reject(new BadRequestException());
+    }
+    if (startDateTime && !endDateTime) {
+      endDateTime = new Date();
+    }
+
+    let where: FindOptionsWhere<Transactions> = {};
+    if (
+      isNil(
+        serviceType ||
+          value ||
+          invoiceID ||
+          ServiceID ||
+          startDateTime ||
+          endDateTime,
+      )
+    ) {
+      where = {
+        userId: options.user.userId,
+      };
+    } else {
+      where = {
+        invoiceId: invoiceID,
+        userId: options.user.userId,
+        serviceInstanceId: ServiceID,
+        value: value,
+        description: ILike(`%${serviceType}%`),
+      };
+    }
+    if (startDateTime && endDateTime) {
+      where['DateTime'] = { $between: [startDateTime, endDateTime] };
+    }
+
+    const transaction = await this.transactionsTable.find({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      where,
+      order: {
+        id: 'DESC',
+      },
+    });
+    const withoutPagination = await this.transactionsTable.find({
+      where,
+    });
+
+    const totalRecords = withoutPagination.length;
+    const data = { transaction: transaction, totalRecords };
+    if (!transaction) {
+      return Promise.reject(new ForbiddenException());
+    }
+
+    return Promise.resolve(data);
   }
 }
