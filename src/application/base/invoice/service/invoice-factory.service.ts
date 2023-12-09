@@ -122,7 +122,6 @@ export class InvoiceFactoryService {
     const serviceCount = await this.serviceInstanceTable.count({
       where: {
         userId,
-        isDeleted: false,
       },
     });
     const invoiceTitle = 'ابر خصوصی';
