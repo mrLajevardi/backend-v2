@@ -58,6 +58,7 @@ import { CompanyLetterStatusEnum } from '../enum/company-letter-status.enum';
 import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
 import { Transactions } from '../../../../infrastructure/database/entities/Transactions';
 import { FileTableService } from '../../crud/file-table/file-table.service';
+import { UserAlreadyExist } from '../../../../infrastructure/exceptions/user-already-exist.exception';
 
 @Injectable()
 export class UserService {
@@ -677,6 +678,16 @@ export class UserService {
 
     if (!verify || !checkCache) {
       throw new OtpErrorException();
+    }
+
+    const checkUser = await this.userTable.findOne({
+      where: {
+        phoneNumber: data.phoneNumber,
+      },
+    });
+
+    if (!isNil(checkUser)) {
+      throw new UserAlreadyExist();
     }
 
     const userUpdatingData: UpdateUserDto = {
