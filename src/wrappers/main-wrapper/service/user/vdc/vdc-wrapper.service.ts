@@ -306,4 +306,26 @@ export class VdcWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
+
+  async editGeneralInfo(
+    vdcId: string,
+    description: string,
+    authToken: string,
+  ): Promise<VcloudTask> {
+    const options = {
+      headers: { Authorization: `Bearer ${authToken}` },
+    };
+    const endpoint = 'VdcEndpointService.editGeneralInfo';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const action = await this.vcloudWrapperService.request(
+      wrapper({
+        ...options,
+        headers: { Authorization: `Bearer ${authToken}` },
+        urlParams: { vdcId },
+        body: { description },
+      }),
+    );
+    return { __vcloudTask: '' };
+  }
 }

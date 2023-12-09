@@ -9,6 +9,7 @@ import { VmAttachedNamedDiskDto } from './dto/vm-attached-named-disk.dto';
 import { RemoveNamedDiskDto } from './dto/remove-named-disk.dto';
 import { UpdateNamedDiskDto } from './dto/update-named-disk.dto';
 import { VcloudQueryDto } from './dto/vcloud-query.dto';
+import { EditGeneralInfoVdcDto } from './dto/edit-general-info-vdc.dto';
 
 @Injectable()
 export class VdcEndpointService {
@@ -42,12 +43,27 @@ export class VdcEndpointService {
       },
     };
   }
+
+  editGeneralInfo(options: EditGeneralInfoVdcDto): EndpointInterface {
+    return {
+      method: 'put',
+      resource: `/cloudapi/1.0.0/orgs/urn:vcloud:org:${options.urlParams.vdcId}`,
+      params: {},
+      body: options.body,
+      headers: {
+        Accept: 'application/* +json;version=38.0.0-alpha',
+        'Content-Type': 'application/* +xml;',
+        ...options.headers,
+      },
+    };
+  }
+
   detachNamedDisk(options: DetachNamedDiskOptionsDto): EndpointInterface {
     return {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/disk/action/detach`,
       params: {},
-      body: options.body,
+      body: null,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
         'Content-Type': 'application/* +json;',
