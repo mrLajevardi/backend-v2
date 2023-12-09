@@ -2,6 +2,7 @@ import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -48,6 +49,7 @@ import {
   GetAvailableResourcesDto,
   GetAvailableResourcesQueryDto,
 } from '../dto/get-resources.dto';
+import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
 // import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
 @ApiBearerAuth()
@@ -363,5 +365,33 @@ export class VdcController {
     @Query() query: GetAvailableResourcesQueryDto,
   ): Promise<GetAvailableResourcesDto> {
     return await this.vdcService.getAvailableResources(query.datacenterName);
+  }
+
+  @Put('general/edit/')
+  @ApiQuery({
+    type: String,
+    name: 'serviceInstanceId',
+    required: true,
+  })
+  @ApiQuery({
+    type: String,
+    name: 'description',
+    required: false,
+  })
+  // @ApiOperation({ summary: 'Returns available resources' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'available resources',
+  //   type: GetAvailableResourcesDto,
+  // })
+  async editGeneralInfo(
+    @Request()
+    options: SessionRequest,
+    @Query() query: VdcDetailEditGeneralQuery,
+  ): Promise<string> {
+    return (await this.baseVdcDetailService.editGeneralInfo(
+      options,
+      query,
+    )) as string;
   }
 }
