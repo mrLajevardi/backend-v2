@@ -190,20 +190,6 @@ export class InvoiceFactoryVdcService {
       (disk) => disk.code.toLowerCase().trim() == DiskItemCodes.Swap,
     );
 
-    res.disk = diskModel
-      .map((diskmodel) => {
-        if (diskmodel.code.trim() !== DiskItemCodes.Swap) {
-          if (diskmodel.code.toLowerCase().trim() == DiskItemCodes.Standard) {
-            diskmodel.fee += swapdisk.fee;
-          }
-
-          const res: VdcInvoiceDetailsInfoResultDto =
-            new VdcInvoiceDetailsInfoResultDto(diskmodel);
-          return res;
-        }
-      })
-      .filter((disk) => disk != null);
-
     res.ip = new VdcInvoiceDetailsInfoResultDto(ipModel);
 
     res.generation = generation;
@@ -213,6 +199,8 @@ export class InvoiceFactoryVdcService {
     res.reservationRam = `${Number(reservationRam.value)}`;
 
     res.vm = new VdcInvoiceDetailsInfoResultDto(vmModel);
+
+    res.disk = this.calcDiskInvoice(diskModel, swapdisk);
 
     res.datacenter = {
       title: vmModel.datacenterTitle,
@@ -231,5 +219,24 @@ export class InvoiceFactoryVdcService {
     res.templateId = ramModel.templateId;
 
     // res.period = { title: period.title, value: period.min };
+  }
+
+  private calcDiskInvoice(
+    diskModel: InvoiceDetailVdcModel[],
+    swapDisk: InvoiceDetailVdcModel,
+  ): VdcInvoiceDetailsInfoResultDto[] {
+    return diskModel
+      .map((diskmodel) => {
+        if (diskmodel.code.trim() !== DiskItemCodes.Swap) {
+          if (diskmodel.code.toLowerCase().trim() == DiskItemCodes.Standard) {
+            diskmodel.fee += swapDisk.fee;
+          }
+
+          const res: VdcInvoiceDetailsInfoResultDto =
+            new VdcInvoiceDetailsInfoResultDto(diskmodel);
+          return res;
+        }
+      })
+      .filter((disk) => disk != null);
   }
 }
