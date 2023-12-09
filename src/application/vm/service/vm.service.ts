@@ -473,7 +473,7 @@ export class VmService {
       const os = recordItem.guestOs;
       const description = recordItem.description;
       const cpu = recordItem.numberOfCpus;
-      const storage = recordItem.totalStorageAllocatedMb;
+      const storage = recordItem.totalStorageAllocatedMb - recordItem.memoryMB;
       const memory = recordItem.memoryMB;
 
       const status = VmStatusEnum[recordItem.status];
