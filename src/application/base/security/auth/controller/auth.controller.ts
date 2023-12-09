@@ -326,8 +326,7 @@ export class AuthController {
   @ApiBody({ type: CreateUserWithOtpDto })
   async registerByOtp(
     @Body() dto: CreateUserWithOtpDto,
-    @Res() res: Response,
-  ): Promise<Response> {
+  ): Promise<AccessTokenDto> {
     // checking if the user exists or not
     const userExist = await this.userService.checkPhoneNumber(dto.phoneNumber);
 
@@ -342,10 +341,11 @@ export class AuthController {
     if (!verify) {
       throw new InvalidTokenException();
     }
-    await this.userService.createUserByPhoneNumber(
+    const user = await this.userService.createUserByPhoneNumber(
       dto.phoneNumber,
       dto.password,
     );
-    return res.status(200).json({ message: 'User created successfully' });
+
+    return await this.authService.login.getLoginToken(user.id);
   }
 }
