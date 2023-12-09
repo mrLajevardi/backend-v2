@@ -345,10 +345,10 @@ export class VdcController {
   @Get('/disk/diskTypes')
   async getDiskTypes(): Promise<any> {
     return [
-      { code: DiskItemCodes.Fast, name: DiskItemName.Fast },
-      { code: DiskItemCodes.Archive, name: DiskItemName.Archive },
-      { code: DiskItemCodes.Vip, name: DiskItemName.Vip },
       { code: DiskItemCodes.Standard, name: DiskItemName.Standard },
+      { code: DiskItemCodes.Archive, name: DiskItemName.Archive },
+      { code: DiskItemCodes.Fast, name: DiskItemName.Fast },
+      { code: DiskItemCodes.Vip, name: DiskItemName.Vip },
     ];
   }
 

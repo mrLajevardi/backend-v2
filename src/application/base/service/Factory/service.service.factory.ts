@@ -126,8 +126,8 @@ export class ServiceServiceFactory {
       serviceItemCpu,
       serviceItemRam,
       serviceItemDisk,
-      serviceItemVM,
-      serviceItemIp,
+      // serviceItemVM,
+      // serviceItemIp,
     } = await this.createItemTypesForInstance(
       vdcItems,
       cpuSpeed,
@@ -138,8 +138,8 @@ export class ServiceServiceFactory {
     model.serviceItems.push(serviceItemCpu);
     model.serviceItems.push(serviceItemRam);
     model.serviceItems.push(serviceItemDisk);
-    model.serviceItems.push(serviceItemVM);
-    model.serviceItems.push(serviceItemIp);
+    // model.serviceItems.push(serviceItemVM);
+    // model.serviceItems.push(serviceItemIp);
     return model;
   }
 
@@ -149,10 +149,10 @@ export class ServiceServiceFactory {
     option: SessionRequest,
     serviceInstanceId: string,
   ) {
-    const countIp = await this.edgeGatewayService.getCountOfIpSet(
-      option,
-      serviceInstanceId,
-    );
+    // const countIp = await this.edgeGatewayService.getCountOfIpSet(
+    //   option,
+    //   serviceInstanceId,
+    // );
 
     const serviceItemCpu = new ServiceItemDto(
       'CPU',
@@ -166,26 +166,28 @@ export class ServiceServiceFactory {
       vdcItems.memoryAllocationMB,
     );
 
+    // Getting
     const serviceItemDisk = new ServiceItemDto(
       'DISK',
-      vdcItems.storageUsedMB,
-      vdcItems.storageLimitMB,
+      // vdcItems.storageUsedMB,
+      vdcItems.storageUsedMB -
+        vdcItems.numberOfRunningVMs * vdcItems.memoryUsedMB,
+      vdcItems.storageLimitMB -
+        vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
     );
-
-    const serviceItemVM = new ServiceItemDto(
-      'VM',
-      vdcItems.numberOfRunningVMs,
-      vdcItems.numberOfVMs,
-    );
-
-    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
+    //
+    // const serviceItemVM = new ServiceItemDto(
+    //   'VM',
+    //   vdcItems.numberOfRunningVMs,
+    //   vdcItems.numberOfVMs,
+    // );
 
     return {
       serviceItemCpu,
       serviceItemRam,
       serviceItemDisk,
-      serviceItemVM,
-      serviceItemIp,
+      // serviceItemVM,
+      // serviceItemIp,
     };
   }
 
