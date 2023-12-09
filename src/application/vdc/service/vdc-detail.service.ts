@@ -31,7 +31,7 @@ import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-a
 import { EditGeneralInfoVdcDto } from '../../../wrappers/vcloud-wrapper/services/user/vdc/dto/edit-general-info-vdc.dto';
 import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
 import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
-import {GetCodeDisk} from "../utils/disk.utils";
+import { GetCodeDisk } from '../utils/disk.utils';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
