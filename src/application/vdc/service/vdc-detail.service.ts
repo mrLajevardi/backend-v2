@@ -28,6 +28,10 @@ import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dt
 import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
 import { ServiceService } from '../../base/service/services/service.service';
 import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-all-vdc-service-with-items-result.dto';
+import { EditGeneralInfoVdcDto } from '../../../wrappers/vcloud-wrapper/services/user/vdc/dto/edit-general-info-vdc.dto';
+import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
+import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
+import { GetCodeDisk } from '../utils/disk.utils';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -139,7 +143,7 @@ export class VdcDetailService implements BaseVdcDetailService {
           title: storage.title,
           usage: storage.usage,
           value: storage.value.toString(),
-          code: VdcGenerationItemCodes.Disk,
+          code: GetCodeDisk(storage.title),
           price: 0,
           unit: 'MB',
         } as VdcInvoiceDetailsInfoResultDto;
@@ -211,5 +215,34 @@ export class VdcDetailService implements BaseVdcDetailService {
     );
 
     return model;
+  }
+
+  async editGeneralInfo(
+    option: SessionRequest,
+    query: VdcDetailEditGeneralQuery,
+  ): Promise<string | BadRequestException> {
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      query.serviceInstanceId,
+    );
+    if (props['vdcId'] == null || props['orgId'] == null)
+      return new BadRequestException(
+        'this vdc does not have any vdc id or org id ',
+      );
+    // const authToken = await this.sessionService.checkUserSession(
+    //   option.user.userId,
+    //   props['orgId'],
+    // );
+    const authToken = (
+      await this.sessionService.createUserSession(
+        props['orgId'],
+        option.user.userId,
+      )
+    ).token;
+    const yy = this.vdcWrapperService.editGeneralInfo(
+      props['vdcId'] as string,
+      query.description,
+      authToken,
+    );
+    return '';
   }
 }
