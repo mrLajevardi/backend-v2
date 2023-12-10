@@ -170,8 +170,7 @@ export class ServiceServiceFactory {
     const serviceItemDisk = new ServiceItemDto(
       'DISK',
       // vdcItems.storageUsedMB,
-      vdcItems.storageUsedMB -
-        vdcItems.numberOfRunningVMs * vdcItems.memoryUsedMB,
+      vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
       vdcItems.storageLimitMB -
         vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
     );
