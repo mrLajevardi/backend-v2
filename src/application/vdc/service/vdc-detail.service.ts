@@ -32,6 +32,8 @@ import { EditGeneralInfoVdcDto } from '../../../wrappers/vcloud-wrapper/services
 import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
 import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
 import { GetCodeDisk } from '../utils/disk.utils';
+import { OrganizationTableService } from '../../base/crud/organization-table/organization-table.service';
+import { GetVdcIdBy } from '../utils/vdc-properties.utils';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -43,6 +45,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     @Inject(BASE_SERVICE_ITEM_SERVICE)
     private readonly serviceItemService: BaseServiceItem,
     private readonly serviceService: ServiceService,
+    private readonly organizationTableService: OrganizationTableService,
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
@@ -224,25 +227,31 @@ export class VdcDetailService implements BaseVdcDetailService {
     const props = await this.servicePropertiesService.getAllServiceProperties(
       query.serviceInstanceId,
     );
-    if (props['vdcId'] == null || props['orgId'] == null)
+
+    if (
+      props['vdcId'] == null ||
+      props['orgId'] == null ||
+      props['name'] == null
+    )
       return new BadRequestException(
         'this vdc does not have any vdc id or org id ',
       );
-    // const authToken = await this.sessionService.checkUserSession(
-    //   option.user.userId,
-    //   props['orgId'],
-    // );
+
     const authToken = (
       await this.sessionService.createUserSession(
         props['orgId'],
         option.user.userId,
       )
     ).token;
-    const yy = this.vdcWrapperService.editGeneralInfo(
-      props['vdcId'] as string,
+
+    const vdcId = GetVdcIdBy(props['vdcId']);
+
+    const task = await this.vdcWrapperService.editGeneralInfo(
+      vdcId,
+      props['name'],
       query.description,
       authToken,
     );
-    return '';
+    return task.__vcloudTask;
   }
 }

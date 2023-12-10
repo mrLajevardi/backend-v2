@@ -44,7 +44,7 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
     NatModule,
     VmModule,
     forwardRef(() => ServiceModule),
-
+    OrganizationModule,
     // TasksModule,
     forwardRef(() => TasksModule),
     SessionsModule,
