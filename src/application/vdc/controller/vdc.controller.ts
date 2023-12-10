@@ -17,6 +17,7 @@ import {
   Put,
   Query,
   Request,
+  UseGuards,
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
 import { TempDto } from '../dto/temp.dto';
@@ -49,6 +50,7 @@ import {
   GetAvailableResourcesDto,
   GetAvailableResourcesQueryDto,
 } from '../dto/get-resources.dto';
+import { PersonalVerificationGuard } from 'src/application/base/security/auth/guard/personal-verification.guard';
 import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
 // import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
@@ -355,6 +357,7 @@ export class VdcController {
   }
 
   @Get('resources/availableResources')
+  @UseGuards(PersonalVerificationGuard)
   @ApiOperation({ summary: 'Returns available resources' })
   @ApiResponse({
     status: 200,

@@ -942,7 +942,7 @@ export class TaskManagerService {
     const session = await this.sessionService.checkAdminSession();
     // const vdcName = props?.name;
     const user = await this.userTable.findById(userId);
-    const vdcName = user?.username + '_org_vdc_' + service.index;
+    const vdcName = user.guid + '_org_vdc_' + service.index;
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'adminOrgVdc',
       filter: `name==*${vdcName}*`,
@@ -1014,7 +1014,7 @@ export class TaskManagerService {
     let vcloudTask = null;
     const userId = service.userId;
     const user = await this.userTable.findById(userId);
-    const vdcName = user?.username.toLowerCase() + '_org_vdc_' + service.index;
+    const vdcName = user.guid + '_org_vdc_' + service.index;
 
     const session = await this.sessionService.checkAdminSession();
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
