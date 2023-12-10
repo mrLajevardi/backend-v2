@@ -357,7 +357,7 @@ export class VdcController {
   }
 
   @Get('resources/availableResources')
-  @UseGuards(PersonalVerificationGuard)
+  // @UseGuards(PersonalVerificationGuard)
   @ApiOperation({ summary: 'Returns available resources' })
   @ApiResponse({
     status: 200,
