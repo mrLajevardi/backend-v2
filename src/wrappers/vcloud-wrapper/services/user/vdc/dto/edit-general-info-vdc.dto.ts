@@ -2,12 +2,12 @@ import { EndpointOptionsInterface } from '../../../../../interfaces/endpoint.int
 
 export interface EditGeneralInfoVdcDto extends EndpointOptionsInterface {
   urlParams: EditGeneralInfoVdcParams;
-  body: EditGeneralInfoVdcBody;
+  body: string;
 }
 
 export class EditGeneralInfoVdcParams {
   vdcId: string;
 }
-export class EditGeneralInfoVdcBody {
-  description: string;
-}
+// export class EditGeneralInfoVdcBody {
+//   description: string;
+// }

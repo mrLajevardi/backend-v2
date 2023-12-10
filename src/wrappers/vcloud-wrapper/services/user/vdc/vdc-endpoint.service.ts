@@ -10,6 +10,7 @@ import { RemoveNamedDiskDto } from './dto/remove-named-disk.dto';
 import { UpdateNamedDiskDto } from './dto/update-named-disk.dto';
 import { VcloudQueryDto } from './dto/vcloud-query.dto';
 import { EditGeneralInfoVdcDto } from './dto/edit-general-info-vdc.dto';
+import { vcdConfig } from '../../../../mainWrapper/vcdConfig';
 
 @Injectable()
 export class VdcEndpointService {
@@ -47,12 +48,15 @@ export class VdcEndpointService {
   editGeneralInfo(options: EditGeneralInfoVdcDto): EndpointInterface {
     return {
       method: 'put',
-      resource: `/cloudapi/1.0.0/orgs/urn:vcloud:org:${options.urlParams.vdcId}`,
+      resource: `${vcdConfig.baseUrl}/api/vdc/${options.urlParams.vdcId}`,
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
-        'Content-Type': 'application/* +xml;',
+        Accept: 'application/*+xml;version=38.0.0-alpha',
+        'Content-Type': 'application/*+xml;charset=UTF-8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Accept-Encoding': 'gzip, deflate, br',
+
         ...options.headers,
       },
     };
