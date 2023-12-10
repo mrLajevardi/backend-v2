@@ -10,7 +10,7 @@ import { RemoveNamedDiskDto } from './dto/remove-named-disk.dto';
 import { UpdateNamedDiskDto } from './dto/update-named-disk.dto';
 import { VcloudQueryDto } from './dto/vcloud-query.dto';
 import { EditGeneralInfoVdcDto } from './dto/edit-general-info-vdc.dto';
-import {vcdConfig} from "../../../../mainWrapper/vcdConfig";
+import { vcdConfig } from '../../../../mainWrapper/vcdConfig';
 
 @Injectable()
 export class VdcEndpointService {
