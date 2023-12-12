@@ -769,7 +769,7 @@ export class VmService {
       description: vm.data.description,
       bootDelay: vm.data?.bootOptions?.bootDelay,
       enterBIOSSetup: vm.data?.bootOptions?.enterBIOSSetup,
-      status: vmList.data.record[0].status,
+      status: VmStatusEnum[vmList.data.record[0].status],
       snapshot: vmList.data.record[0].snapshot,
       containerId: vmList.data.record[0].container.split('vApp/')[1],
     };
