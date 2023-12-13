@@ -55,6 +55,7 @@ describe('VdcDetailService', () => {
     return {
       disk: [
         {
+          priceWithTax: 0,
           unit: 'GB',
           code: VdcGenerationItemCodes.Disk,
           usage: 10000,

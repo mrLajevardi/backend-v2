@@ -212,7 +212,11 @@ export class InvoiceFactoryVdcService {
 
     res.finalPriceWithTax = res.finalPrice * 0.09 + res.finalPrice;
 
+    res.finalPriceTax = res.finalPrice * 0.09;
+
     res.rawAmount = Math.round(ramModel.rawAmount / 1000) * 1000;
+
+    res.rawAmountTax = res.rawAmount * 0.09;
 
     res.rawAmountWithTax = res.rawAmount * 0.09 + res.rawAmount;
 
