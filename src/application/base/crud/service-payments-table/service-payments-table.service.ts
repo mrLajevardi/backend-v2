@@ -40,7 +40,9 @@ export class ServicePaymentsTableService {
 
     return await this.repository.save(createdItem);
   }
-
+  getQueryBuilder() {
+    return this.repository.createQueryBuilder('ServicePayments');
+  }
   async updateAll(
     where: FindOptionsWhere<ServicePayments>,
     dto: UpdateServicePaymentsDto,
