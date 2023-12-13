@@ -210,7 +210,11 @@ export class InvoiceFactoryVdcService {
     // Math.round((item.fee ? item.fee : item.price) / 1000) * 1000
     res.finalPrice = Math.round(ramModel.finalAmount / 1000) * 1000;
 
+    res.finalPriceWithTax = res.finalPrice * 0.09 + res.finalPrice;
+
     res.rawAmount = Math.round(ramModel.rawAmount / 1000) * 1000;
+
+    res.rawAmountWithTax = res.rawAmount * 0.09 + res.rawAmount;
 
     res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
 

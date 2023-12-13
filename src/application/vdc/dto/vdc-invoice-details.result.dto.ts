@@ -17,8 +17,10 @@ export class VdcInvoiceDetailsResultDto extends BaseResultDto {
   period?: VdcInvoiceDetailsInfoResultDto;
   generation?: string;
   finalPrice?: number;
+  finalPriceWithTax?: number;
   reservationRam?: string;
   reservationCpu?: string;
   rawAmount?: number;
+  rawAmountWithTax?: number;
   templateId?: string;
 }
