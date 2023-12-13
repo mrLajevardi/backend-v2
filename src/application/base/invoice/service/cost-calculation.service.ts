@@ -172,23 +172,21 @@ export class CostCalculationService {
     const diskItemCosts: InvoiceItemCost[] = [];
     for (const diskItem of invoiceItem) {
       const diskItemCost = diskItem.fee * parseInt(diskItem.value);
-      if (diskItem.code === DiskItemCodes.Standard) {
-        const swapValue = parseInt(ramItem.value) * parseInt(vmItem.value);
-        const swapDiskItemCost = diskItem.fee * swapValue;
-        const swapItem = await this.serviceItemTypeTreeService.findOne({
-          where: {
-            parentId: diskItem.parentId,
-            code: DiskItemCodes.Swap,
-          },
-        });
-        diskItemCosts.push({
-          ...swapItem,
-          cost: swapDiskItemCost,
-          value: swapValue.toString(),
-        });
-      }
       diskItemCosts.push({ ...diskItem, cost: diskItemCost });
     }
+    const swapValue = parseInt(ramItem.value) * parseInt(vmItem.value);
+    const swapDiskItemCost = 0;
+    const swapItem = await this.serviceItemTypeTreeService.findOne({
+      where: {
+        parentId: invoiceItem[0].parentId,
+        code: DiskItemCodes.Swap,
+      },
+    });
+    diskItemCosts.push({
+      ...swapItem,
+      cost: swapDiskItemCost,
+      value: swapValue.toString(),
+    });
     return diskItemCosts;
   }
 

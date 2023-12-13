@@ -306,4 +306,40 @@ export class VdcWrapperService {
       __vcloudTask: action.headers['location'],
     });
   }
+
+  async editGeneralInfo(
+    vdcId: string,
+    vdcName: string,
+    description: string,
+    authToken: string,
+  ): Promise<VcloudTask> {
+    const options = {
+      headers: { Authorization: `Bearer ${authToken}` },
+    };
+    const request = {
+      'root:Vdc': {
+        $: {
+          'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
+          name: vdcName,
+        },
+        'root:Description': description,
+      },
+    };
+
+    const builder = new Builder();
+    const xmlRequest = builder.buildObject(request);
+
+    const endpoint = 'VdcEndpointService.editGeneralInfo';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const action = await this.vcloudWrapperService.request(
+      wrapper({
+        ...options,
+        headers: { Authorization: `Bearer ${authToken}` },
+        urlParams: { vdcId },
+        body: xmlRequest,
+      }),
+    );
+    return { __vcloudTask: action.data as string };
+  }
 }

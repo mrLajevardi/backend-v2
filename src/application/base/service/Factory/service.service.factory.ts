@@ -166,19 +166,22 @@ export class ServiceServiceFactory {
       vdcItems.memoryAllocationMB,
     );
 
+    // Getting
     const serviceItemDisk = new ServiceItemDto(
       'DISK',
-      vdcItems.storageUsedMB,
-      vdcItems.storageLimitMB,
+      // vdcItems.storageUsedMB,
+      vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
+      vdcItems.storageLimitMB -
+        vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
     );
+
+    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
 
     const serviceItemVM = new ServiceItemDto(
       'VM',
       vdcItems.numberOfRunningVMs,
       vdcItems.numberOfVMs,
     );
-
-    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
 
     return {
       serviceItemCpu,

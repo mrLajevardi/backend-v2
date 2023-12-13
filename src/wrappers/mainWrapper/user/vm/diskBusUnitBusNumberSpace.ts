@@ -71,7 +71,7 @@ export const DiskBusUnitBusNumberSpace = [
     legacyId: '6',
     usable: true,
     name: 'SATA',
-    6: [
+    info: [
       { busUnit: 0, busNumber: 0 },
       { busUnit: 0, busNumber: 1 },
       { busUnit: 0, busNumber: 2 },

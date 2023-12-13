@@ -231,14 +231,14 @@ export class CreateServiceService {
         taskId = task.taskId;
       }
       // update user invoice
-      this.InvoiceTableService.updateAll(
+      await this.InvoiceTableService.updateAll(
         {
           userId: userId,
           id: invoice.id,
         },
         {
+          serviceInstanceId,
           payed: true,
-          serviceInstanceId: serviceInstanceId,
         },
       );
     }
@@ -257,17 +257,17 @@ export class CreateServiceService {
         );
         taskId = task.taskId;
       }
+      this.InvoiceTableService.updateAll(
+        {
+          userId: userId,
+          id: invoice.id,
+        },
+        {
+          payed: true,
+          serviceInstanceId: invoice.serviceInstanceId,
+        },
+      );
     }
-    this.InvoiceTableService.updateAll(
-      {
-        userId: userId,
-        id: invoice.id,
-      },
-      {
-        payed: true,
-        serviceInstanceId: invoice.serviceInstanceId,
-      },
-    );
     return Promise.resolve({
       id: serviceInstanceId,
       taskId: taskId,

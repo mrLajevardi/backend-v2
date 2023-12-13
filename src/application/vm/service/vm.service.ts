@@ -48,6 +48,7 @@ import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-w
 import { UploadFileDto } from '../dto/upload-file-info.dto';
 import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/dto/upload-file.dto';
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
+import { GetCodeDisk } from '../../vdc/utils/disk.utils';
 
 @Injectable()
 export class VmService {
@@ -473,7 +474,7 @@ export class VmService {
       const os = recordItem.guestOs;
       const description = recordItem.description;
       const cpu = recordItem.numberOfCpus;
-      const storage = recordItem.totalStorageAllocatedMb;
+      const storage = recordItem.totalStorageAllocatedMb - recordItem.memoryMB;
       const memory = recordItem.memoryMB;
 
       const status = VmStatusEnum[recordItem.status];
@@ -676,18 +677,11 @@ export class VmService {
         (diskAdaptor) => diskAdaptor.legacyId == settings.adapterType,
       );
 
-      // const iii = (settings.storageProfile.id as string).split(':');
       const storageId = (settings.storageProfile.id as string).split(':')[3];
       const storageName = settings.storageProfile.name as string;
       let storageCode = '';
-      const itemsDiskCodes = Object.keys(DiskItemCodes);
-      itemsDiskCodes.forEach((code) => {
-        if (
-          storageName.trim().toLowerCase().includes(code.trim().toLowerCase())
-        ) {
-          storageCode = code;
-        }
-      });
+
+      storageCode = GetCodeDisk(storageName);
 
       const diskSection = {
         id: settings.diskId.toString(),
@@ -775,7 +769,7 @@ export class VmService {
       description: vm.data.description,
       bootDelay: vm.data?.bootOptions?.bootDelay,
       enterBIOSSetup: vm.data?.bootOptions?.enterBIOSSetup,
-      status: vmList.data.record[0].status,
+      status: VmStatusEnum[vmList.data.record[0].status],
       snapshot: vmList.data.record[0].snapshot,
       containerId: vmList.data.record[0].container.split('vApp/')[1],
     };
