@@ -15,6 +15,7 @@ import { LoginService } from '../security/auth/service/login.service';
 import { OtpService } from '../security/security-tools/otp.service';
 import { RedisCacheService } from './service/redis-cache.service';
 import { AuthModule } from '../security/auth/auth.module';
+import { UserInfoService } from './service/user-info.service';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { AuthModule } from '../security/auth/auth.module';
     LoginService,
     OtpService,
     RedisCacheService,
+    UserInfoService,
     // TwoFaAuthService,
   ],
   controllers: [UserController, UserAdminController],

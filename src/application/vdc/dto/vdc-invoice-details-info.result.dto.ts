@@ -11,12 +11,16 @@ export class VdcInvoiceDetailsInfoResultDto extends BaseResultDto {
     this.value = item.value.toString();
     this.usage = 0;
     this.code = item.code;
+    this.priceWithTax = this.price + this.price * 0.09;
+    this.tax = this.price * 0.09;
   }
 
-  price: number; // InvoiceItem
-  title: string; //  Tree => Code
-  unit: string; //  ? Static
+  price: number;
+  title: string;
+  unit: string;
   value: string; // InvoiceItem
   usage: number;
   code: string;
+  priceWithTax: number;
+  tax?: number;
 }

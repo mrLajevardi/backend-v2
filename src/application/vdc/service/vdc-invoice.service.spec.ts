@@ -48,6 +48,7 @@ describe('VdcInvoiceService', () => {
     return {
       disk: [
         {
+          priceWithTax: 0,
           unit: 'GB',
           code: VdcGenerationItemCodes.Disk,
           usage: 10000,
@@ -59,6 +60,7 @@ describe('VdcInvoiceService', () => {
       servicePlanType: ServicePlanTypeEnum.Static,
       status: ServiceStatusEnum.Success,
       ram: {
+        priceWithTax: 0,
         price: 1004,
         title: 'RAM',
         value: '4096',
@@ -67,6 +69,7 @@ describe('VdcInvoiceService', () => {
         unit: 'GB',
       },
       cpu: {
+        priceWithTax: 0,
         price: 123456,
         title: 'CPU',
         value: '8',
