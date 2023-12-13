@@ -51,7 +51,7 @@ import {
   UserProfileResultDtoFormat,
 } from '../dto/user-profile.result.dto';
 import { Connection } from 'typeorm';
-import { RedisCacheService } from './redis-cache.service';
+import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { CompanyLetterStatusEnum } from '../enum/company-letter-status.enum';
@@ -59,6 +59,7 @@ import { TransactionsReturnDto } from '../../service/dto/return/transactions-ret
 import { Transactions } from '../../../../infrastructure/database/entities/Transactions';
 import { FileTableService } from '../../crud/file-table/file-table.service';
 import { UserAlreadyExist } from '../../../../infrastructure/exceptions/user-already-exist.exception';
+import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 
 @Injectable()
 export class UserService {
@@ -284,7 +285,7 @@ export class UserService {
         value: amount,
         invoiceId,
         description: 'INC',
-        paymentType: 1,
+        paymentType: PaymentTypes.PayByZarinpal,
         paymentToken: authorityCode,
         isApproved: false,
         serviceInstanceId: null, // added because in main code in loopback was not exist

@@ -9,7 +9,7 @@ import { NotificationModule } from '../../notification/notification.module';
 import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { UserAdminService } from '../service/user-admin.service';
 import { UserService } from '../service/user.service';
-import { RedisCacheService } from '../service/redis-cache.service';
+import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 
 describe('UserAdminController', () => {
   let controller: UserAdminController;

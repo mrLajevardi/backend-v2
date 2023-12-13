@@ -82,4 +82,9 @@ export class UpdateServiceInstancesDto {
   @IsOptional()
   @IsNumber()
   retryCount?: number | null;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty()
+  credit?: number;
 }

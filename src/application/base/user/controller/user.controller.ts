@@ -46,7 +46,7 @@ import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-err
 import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { RedisCacheService } from '../service/redis-cache.service';
+import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
 import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
 
