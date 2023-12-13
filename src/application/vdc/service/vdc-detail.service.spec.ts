@@ -66,6 +66,7 @@ describe('VdcDetailService', () => {
       servicePlanType: ServicePlanTypeEnum.Static,
       status: ServiceStatusEnum.Success,
       ram: {
+        priceWithTax: 0,
         price: 1004,
         title: 'RAM',
         value: '4096',
@@ -74,6 +75,7 @@ describe('VdcDetailService', () => {
         unit: 'GB',
       },
       cpu: {
+        priceWithTax: 0,
         price: 123456,
         title: 'CPU',
         value: '8',
