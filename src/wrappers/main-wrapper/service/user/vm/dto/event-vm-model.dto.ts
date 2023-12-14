@@ -1,3 +1,5 @@
+import { VmPowerStateEventEnum } from "../enum/vm-power-state-event.enum";
+
 export interface EventVmDto {
   resultTotal: number;
   pageCount: number;
@@ -56,7 +58,7 @@ export interface AdditionalProperties {
   'currentContext.user.proxyAddress': string;
   'currentContext.user.clientIpAddress': string;
   'vm.storageProfile.name.ARAD-Tier-Standard-Amin'?: number;
-  'vm.state'?: number;
+  'vm.state'?: VmPowerStateEventEnum;
 }
 
 export interface Entity {

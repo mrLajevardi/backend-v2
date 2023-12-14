@@ -34,6 +34,7 @@ import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
 import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
 import { PersonalVerificationGuard } from '../../security/auth/guard/personal-verification.guard';
+import { PaygServiceService } from '../services/payg-service.service';
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -43,6 +44,7 @@ export class ServiceController {
     private readonly createService: CreateServiceService,
     private readonly deleteService: DeleteServiceService,
     private readonly serviceService: ServiceService,
+    private readonly paygService: PaygServiceService,
   ) {}
 
   // create new item
@@ -235,5 +237,10 @@ export class ServiceController {
     @Query('filter') filter: string,
   ): Promise<any> {
     return this.service.getServicetypes(options, filter);
+  }
+
+  @Post('/payg')
+  async payg() {
+    return this.paygService.checkAllVdcVmsEvents();
   }
 }

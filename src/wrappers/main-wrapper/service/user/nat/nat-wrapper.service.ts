@@ -137,6 +137,7 @@ export class NatWrapperService {
     pageSize = 1,
     cursor = '',
     edgeName: string,
+    additionalHeaders?: object,
   ): Promise<AxiosResponse<GetNatRuleListDto>> {
     const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
       authToken,
@@ -157,7 +158,7 @@ export class NatWrapperService {
     const natRules = await this.vcloudWrapperService.request<GetNatRuleListDto>(
       wrapper({
         params,
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: { Authorization: `Bearer ${authToken}`, ...additionalHeaders },
         urlParams: { gatewayId },
       }),
     );

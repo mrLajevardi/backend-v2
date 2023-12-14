@@ -30,6 +30,7 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { PaygServiceService } from './services/payg-service.service';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
     DeleteServiceService,
     ServiceAdminService,
     ServiceServiceFactory,
+    PaygServiceService,
   ],
   controllers: [ServiceController, ServiceAdminController],
   exports: [
