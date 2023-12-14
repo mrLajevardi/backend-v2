@@ -15,6 +15,11 @@ import { InvoiceItemCost } from '../../invoice/interface/invoice-item-cost.inter
 import { cloneDeep } from 'lodash';
 import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
 import { NatWrapperService } from 'src/wrappers/main-wrapper/service/user/nat/nat-wrapper.service';
+import { BudgetingService } from '../../budgeting/service/budgeting.service';
+import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
+import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
+import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
+import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
 
 @Injectable()
 export class PaygServiceService {
@@ -26,7 +31,10 @@ export class PaygServiceService {
     private readonly vdcWrapperService: VdcWrapperService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly paygCostCalculationService: PaygCostCalculationService,
-    private readonly natWrapperService: NatWrapperService,
+    private readonly budgetingService: BudgetingService,
+    private readonly adminEdgeGatewayWrapperService: AdminEdgeGatewayWrapperService,
+    private readonly servicePropertiesTableService: ServicePropertiesTableService,
+    private readonly edgeWrapperService: EdgeGatewayWrapperService,
   ) {}
 
   async checkAllVdcVmsEvents(): Promise<void> {
@@ -122,12 +130,23 @@ export class PaygServiceService {
           sum,
           service,
         );
-      await this.disablePaygService(
-        props,
-        tenantHeaders,
-        adminSession,
-        vmslist.data,
-      );
+      try {
+        await this.budgetingService.paidFromBudgetCredit(
+          service.id,
+          {
+            paidAmount: totalCost.totalCost,
+          },
+          totalCost.itemsSum,
+        );
+      } catch (err) {
+        await this.disablePaygService(
+          props,
+          service.id,
+          tenantHeaders,
+          adminSession,
+          vmslist.data,
+        );
+      }
     }
   }
 
@@ -150,13 +169,35 @@ export class PaygServiceService {
 
   async disablePaygService(
     props: VdcProperties,
+    serviceInstanceId: string,
     tenantHeaders: object,
     session: string,
     vmList: GetVMQueryDto,
   ): Promise<void> {
     const vmRequests: Promise<VcloudTask>[] = [];
-    const natRequests: Promise<VcloudTask>[] = [];
     const action = 'suspend';
+    const ips = await this.servicePropertiesTableService.find({
+      where: {
+        propertyKey: VdcServiceProperties.IpRange,
+        serviceInstanceId,
+      },
+    });
+    const alreadyAssignedIpList = ips.map((item) => {
+      const ip = item.value.split('-')[0];
+      return {
+        startAddress: ip,
+        endAddress: ip,
+      };
+    });
+    const filter = `name==${props.edgeName}`;
+    const currentGateway = await this.edgeWrapperService.getEdgeGateway(
+      session,
+      1,
+      1,
+      filter,
+    );
+    const result = currentGateway.values[0];
+    const edgeId = result.id;
     vmList.record.forEach((item) => {
       const vmId = item.href.split('/').slice(-1)[0];
       const promise = this.vmWrapperService.undeployvApp(
@@ -167,43 +208,25 @@ export class PaygServiceService {
       );
       vmRequests.push(promise);
     });
-    const nat = await this.natWrapperService.getNatRuleList(
-      session,
-      1,
-      '',
-      props.edgeName,
-      tenantHeaders,
-    );
-    nat.data.values.forEach((item) => {
-      const request = this.natWrapperService.updateNatRule(
-        {
-          applicationPortProfile: item.applicationPortProfile,
-          authToken: session,
-          description: item.description,
-          dnatExternalPort: item.dnatExternalPort,
-          enabled: false,
-          externalAddresses: item.externalAddresses,
-          firewallMatch: item.firewallMatch,
-          internalAddresses: item.internalAddresses,
-          internalPort: null,
-          logging: item.logging,
-          name: item.name,
-          priority: item.priority,
-          ruleId: item.id,
-          snatDestinationAddresses: item.snatDestinationAddresses,
-          type: item.type,
-        },
-        props.edgeName,
-      );
-      natRequests.push(request);
-    });
     try {
       await Promise.allSettled(vmRequests);
     } catch (err) {
       console.log(err);
     }
     try {
-      await Promise.allSettled(natRequests);
+      await this.adminEdgeGatewayWrapperService.updateEdge(
+        {
+          alreadyAssignedIpCounts: ips.length,
+          alreadyAssignedIpList,
+          authToken: session,
+          name: props.edgeName,
+          userIpCount: 0,
+          vdcId: props.vdcId,
+          connected: false,
+        },
+        edgeId,
+        result.edgeGatewayUplinks[0].subnets.values[0].primaryIp,
+      );
     } catch (err) {
       console.log(err);
     }

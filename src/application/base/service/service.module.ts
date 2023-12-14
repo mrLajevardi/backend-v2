@@ -31,6 +31,7 @@ import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { PaygServiceService } from './services/payg-service.service';
+import { BudgetingModule } from '../budgeting/budgeting.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { PaygServiceService } from './services/payg-service.service';
     UvdeskWrapperModule,
     PaymentModule,
     MainWrapperModule,
+    BudgetingModule,
     forwardRef(() => InvoicesModule),
     // forwardRef(() => TasksModule),
     // forwardRef(() => TasksModule),

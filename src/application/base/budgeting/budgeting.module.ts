@@ -10,5 +10,6 @@ import { ServiceChecksService } from '../service/services/service-checks.service
   imports: [DatabaseModule, CrudModule],
   controllers: [BudgetingController],
   providers: [BudgetingService, UserInfoService, ServiceChecksService],
+  exports: [BudgetingService],
 })
 export class BudgetingModule {}

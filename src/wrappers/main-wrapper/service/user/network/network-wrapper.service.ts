@@ -176,7 +176,7 @@ export class NetworkWrapperService {
             dnsServer1: config.dnsServer1,
             dnsServer2: config.dnsServer2,
             dnsSuffix: config.dnsSuffix,
-            enabled: config.enabled || true,
+            enabled: config.enabled ?? true,
             gateway: config.gateway,
             ipRanges: {
               values: [],
