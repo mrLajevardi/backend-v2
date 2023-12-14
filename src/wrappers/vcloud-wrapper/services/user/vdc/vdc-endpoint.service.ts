@@ -67,7 +67,7 @@ export class VdcEndpointService {
       method: 'post',
       resource: `/api/vApp/${options.urlParams.vmId}/disk/action/detach`,
       params: {},
-      body: null,
+      body: options.body,
       headers: {
         Accept: 'application/* +json;version=38.0.0-alpha',
         'Content-Type': 'application/* +json;',
