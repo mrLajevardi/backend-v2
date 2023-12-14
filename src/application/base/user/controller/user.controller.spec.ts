@@ -15,6 +15,10 @@ import { OtpService } from '../../security/security-tools/otp.service';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { AuthModule } from '../../security/auth/auth.module';
 import { forwardRef } from '@nestjs/common';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { ServiceModule } from '../../service/service.module';
+import { UserInfoService } from '../service/user-info.service';
+import { VitrificationServiceService } from '../service/vitrification.service.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -30,6 +34,8 @@ describe('UserController', () => {
         PaymentModule,
         JwtModule,
         NotificationModule,
+        TransactionsModule,
+        ServiceModule,
         SecurityToolsModule,
         forwardRef(() => AuthModule),
         // AuthModule ,
@@ -40,6 +46,8 @@ describe('UserController', () => {
         LoginService,
         OtpService,
         RedisCacheService,
+        UserInfoService,
+        VitrificationServiceService,
       ],
       controllers: [UserController],
     }).compile();

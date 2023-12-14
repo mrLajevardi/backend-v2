@@ -18,4 +18,6 @@ export enum PaymentTypes {
   PayToServiceByUserCredit = 4,
 
   PayToUserCreditByBudgeting = 5,
+
+  PayToUserCreditByAdmin = 6,
 }

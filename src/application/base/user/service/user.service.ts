@@ -26,7 +26,7 @@ import { SecurityToolsService } from '../../security/security-tools/security-too
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { CreateUserDto } from '../../crud/user-table/dto/create-user.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { FindOptionsWhere, ILike, Like } from 'typeorm';
+import { Connection, FindOptionsWhere, ILike, Like } from 'typeorm';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
@@ -50,7 +50,6 @@ import {
   UserProfileResultDto,
   UserProfileResultDtoFormat,
 } from '../dto/user-profile.result.dto';
-import { Connection } from 'typeorm';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
 import { ChangePasswordDto } from '../dto/change-password.dto';
@@ -60,6 +59,8 @@ import { Transactions } from '../../../../infrastructure/database/entities/Trans
 import { FileTableService } from '../../crud/file-table/file-table.service';
 import { UserAlreadyExist } from '../../../../infrastructure/exceptions/user-already-exist.exception';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
+import { UserInfoService } from './user-info.service';
+import { TransactionsService } from '../../transactions/transactions.service';
 
 @Injectable()
 export class UserService {
@@ -67,6 +68,7 @@ export class UserService {
     private readonly userTable: UserTableService,
     private readonly companyTable: CompanyTableService,
     private readonly transactionsTable: TransactionsTableService,
+    private readonly transactionsService: TransactionsService,
     private readonly roleMappingsTable: RoleMappingTableService,
     private readonly systemSettingsTable: SystemSettingsTableService,
     private readonly logger: LoggerService,
@@ -76,6 +78,7 @@ export class UserService {
     private readonly connection: Connection,
     private readonly redisCacheService: RedisCacheService,
     private readonly fileTableService: FileTableService,
+    private readonly userInfoService: UserInfoService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -152,23 +155,15 @@ export class UserService {
     serviceType: string,
   ): Promise<boolean> {
     try {
-      const user = await this.userTable.findById(userId);
-      const userCredit = user.credit;
-      console.log(costs);
-      if (userCredit >= costs) {
-        const updatedCredit = userCredit - costs;
-        // Implement
+      const userCredit = await this.userInfoService.getUserCreditBy(userId);
 
-        await this.userTable.updateAll(
-          { id: userId },
-          { credit: updatedCredit },
+      if (userCredit >= costs) {
+        await this.transactionsService.create(
+          userId,
+          PaymentTypes.PayByCredit,
+          -costs,
         );
 
-        // ******
-
-        if (options && serviceType && updatedCredit) {
-          //only for lint
-        }
         await this.logger.info(
           'services',
           'buyService',
@@ -179,9 +174,7 @@ export class UserService {
           },
           { ...options.user },
         );
-        // if (updateResult.count < 1) {
-        //   return Promise.reject(new Error('not updated'));
-        // }
+
         return Promise.resolve(true);
       } else {
         return Promise.resolve(false);
@@ -205,7 +198,6 @@ export class UserService {
       realm: null,
       hasVdc: false,
       emailToken: null,
-      credit: 0,
       emailVerified: false,
       deleted: false,
       email: null,
@@ -394,9 +386,11 @@ export class UserService {
   }
 
   async getUserCredit(options: SessionRequest): Promise<number> {
-    console.log(options.user.userId);
-    const user = await this.userTable.findById(options.user.userId);
-    return Promise.resolve(user.credit);
+    const userCredit = await this.userInfoService.getUserCreditBy(
+      options.user.userId,
+    );
+
+    return Promise.resolve(userCredit);
   }
 
   // getActiveRemoteMethods(model) {
@@ -411,17 +405,6 @@ export class UserService {
 
   //   return activeRemoteMethods;
   // }
-
-  async postUserCredit(options: SessionRequest, credit: number): Promise<void> {
-    const user = await this.userTable.findById(options.user.userId);
-    await this.userTable.updateAll(
-      { id: options.user.userId },
-      {
-        credit: user.credit + credit,
-      },
-    );
-    return;
-  }
 
   async updateUser(
     userId: number,
@@ -467,6 +450,7 @@ export class UserService {
         userId: userId,
       },
     });
+
     if (transaction === null) {
       return Promise.reject(new ForbiddenException());
     }
@@ -478,7 +462,6 @@ export class UserService {
     const { verified, refID } =
       await this.paymentService.zarinpal.paymentVerify(paymentRequestData);
 
-    console.log(verified, transaction.isApproved);
     if (verified && !transaction.isApproved) {
       // approve user transaction
       await this.transactionsTable.updateAll(
@@ -488,14 +471,6 @@ export class UserService {
         },
         {
           isApproved: true,
-        },
-      );
-      await this.userTable.updateAll(
-        {
-          id: userId,
-        },
-        {
-          credit: user.credit + transaction.value,
         },
       );
     }

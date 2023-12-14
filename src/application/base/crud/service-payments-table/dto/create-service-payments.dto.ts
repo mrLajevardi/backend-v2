@@ -22,4 +22,9 @@ export class CreateServicePaymentsDto {
 
   @IsInt()
   paymentType: number;
+
+  @IsString()
+  @ApiProperty()
+  @Expose()
+  metaData?: string | null;
 }

@@ -14,9 +14,6 @@ import {
 } from '../dto/results/budgeting.result.dto';
 import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { WithdrawBudgetCreditToUserCreditDto } from '../dto/withdraw-budget-credit-to-user-credit.dto';
-import { Transactions } from '../../../../infrastructure/database/entities/Transactions';
-import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
-import { isNil } from 'lodash';
 
 @ApiTags('Budget')
 @Controller('budgeting')
@@ -39,11 +36,6 @@ export class BudgetingController {
   }
 
   @Post('increaseBudgetCredit/:serviceInstanceId')
-  // @ApiParam({
-  //   name: 'serviceInstancesId',
-  //   type: String,
-  //   description: 'serviceInstanceId about a specify serviceInstance',
-  // })
   @ApiOperation({
     summary:
       'increase budget credit for specific service(serviceInstance) from user credit',
@@ -52,23 +44,18 @@ export class BudgetingController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options: SessionRequest,
     @Body() data: IncreaseBudgetCreditDto,
-  ): Promise<any> {
+  ): Promise<boolean> {
     const serviceInstance =
       await this.budgetingService.increaseBudgetingService(
         options.user.userId,
         serviceInstanceId,
         data,
       );
-    return true;
-    // return new BudgetingResultDto().toArray(serviceInstance);
+
+    return serviceInstance;
   }
 
   @Post('withdrawToUserCredit/:serviceInstanceId')
-  // @ApiParam({
-  //   name: 'serviceInstancesId',
-  //   type: String,
-  //   description: 'serviceInstanceId about a specify serviceInstance',
-  // })
   @ApiOperation({
     summary: 'withdraw budget credit to user credit',
   })
@@ -76,25 +63,13 @@ export class BudgetingController {
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options: SessionRequest,
     @Body() data: WithdrawBudgetCreditToUserCreditDto,
-  ) {
-    const transaction: Transactions =
-      await this.budgetingService.withdrawServiceCreditToUserCredit(
-        options.user.userId,
-        serviceInstanceId,
-        data.amount,
-      );
+  ): Promise<boolean> {
+    const paid = await this.budgetingService.withdrawServiceCreditToUserCredit(
+      options.user.userId,
+      serviceInstanceId,
+      data.amount,
+    );
 
-    // const response: TransactionsReturnDto = {
-    //   id: transaction.id ,
-    //   userId: transaction.userId ,
-    //   serviceInstanceId: transaction.serviceInstanceId,
-    //   value: transaction.value ,
-    //   paymentType: transaction.paymentType ,
-    //   dateTime: transaction.dateTime ,
-    //   isApproved: transaction.isApproved ,
-    // }
-    //
-    // return response;
-    return !isNil(transaction.id);
+    return paid;
   }
 }

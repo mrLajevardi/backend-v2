@@ -12,10 +12,11 @@ import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.e
 import { PaidFromBudgetCreditDto } from '../dto/paid-from-budget-credit.dto';
 import { isNil } from 'lodash';
 import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
-import { Transactions } from '../../../../infrastructure/database/entities/Transactions';
 import { PaidFromUserCreditDto } from '../dto/paid-from-user-credit.dto';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 import { ServicePaymentsTableService } from '../../crud/service-payments-table/service-payments-table.service';
+import { UserInfoService } from '../../user/service/user-info.service';
+import { ServiceChecksService } from '../../service/services/service-checks.service';
 
 @Injectable()
 export class BudgetingService {
@@ -24,6 +25,8 @@ export class BudgetingService {
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly userTableService: UserTableService,
     private readonly servicePaymentTableService: ServicePaymentsTableService,
+    private readonly userInfoService: UserInfoService,
+    private readonly serviceChecksService: ServiceChecksService,
   ) {}
 
   async getUserBudgeting(userId: number): Promise<ServiceInstances[]> {
@@ -36,7 +39,17 @@ export class BudgetingService {
         },
       });
 
-    return data;
+    const calculateData: Awaited<ServiceInstances>[] = await Promise.all(
+      data.map(async (item: ServiceInstances) => {
+        item['credit'] = await this.serviceChecksService.getServiceCreditBy(
+          item.id,
+        );
+        return item;
+      }),
+    );
+    console.log(calculateData);
+
+    return calculateData;
   }
 
   async increaseBudgetingService(
@@ -44,8 +57,9 @@ export class BudgetingService {
     serviceInstanceId: string,
     data: IncreaseBudgetCreditDto,
   ) {
-    const user: User = await this.userTableService.findById(userId);
-    const userCredit = user.credit;
+    const userCredit: number = await this.userInfoService.getUserCreditBy(
+      userId,
+    );
     const serviceInstance: ServiceInstances =
       await this.serviceInstancesTableService.findById(serviceInstanceId);
 
@@ -79,6 +93,7 @@ export class BudgetingService {
   async paidFromBudgetCredit(
     serviceInstanceId: string,
     data: PaidFromBudgetCreditDto,
+    metaData?: any[],
   ) {
     const serviceInstance: ServiceInstances =
       await this.serviceInstancesTableService.findOne({
@@ -89,7 +104,8 @@ export class BudgetingService {
         },
       });
 
-    const serviceInstanceCredit = serviceInstance.credit;
+    const serviceInstanceCredit: number =
+      await this.serviceChecksService.getServiceCreditBy(serviceInstanceId);
 
     if (isNil(serviceInstance)) {
       throw new NotFoundException();
@@ -108,6 +124,7 @@ export class BudgetingService {
       serviceInstanceId: serviceInstanceId,
       price: -data.paidAmount,
       paymentType: PaymentTypes.PayToServiceByBudgeting,
+      metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
     });
 
     return true;
@@ -117,9 +134,10 @@ export class BudgetingService {
     userId: number,
     serviceInstanceId: string,
     data: PaidFromUserCreditDto,
-  ): Promise<Transactions> {
+    metaData?: any[],
+  ): Promise<boolean> {
     const user: User = await this.userTableService.findById(userId);
-    const userCredit = user.credit;
+    const userCredit = await this.userInfoService.getUserCreditBy(userId);
 
     if (isNil(user)) {
       throw new NotFoundException();
@@ -128,8 +146,6 @@ export class BudgetingService {
     if (userCredit == 0 || data.paidAmount > userCredit) {
       throw new NotEnoughCreditException();
     }
-
-    const afterUserCredit = userCredit - data.paidAmount;
 
     const transactionDto: CreateTransactionsDto = {
       userId: userId.toString(),
@@ -143,14 +159,24 @@ export class BudgetingService {
       isApproved: true,
     };
 
-    const transaction: Transactions =
-      await this.transactionsTableService.create(transactionDto);
+    await this.transactionsTableService.create(transactionDto);
 
-    await this.userTableService.update(userId, {
-      credit: afterUserCredit,
+    await this.servicePaymentTableService.create({
+      userId: userId,
+      serviceInstanceId: serviceInstanceId,
+      paymentType: PaymentTypes.PayToServiceByUserCredit,
+      price: data.paidAmount,
     });
 
-    return transaction;
+    await this.servicePaymentTableService.create({
+      userId: userId,
+      serviceInstanceId: serviceInstanceId,
+      paymentType: PaymentTypes.PayToServiceByUserCredit,
+      price: -data.paidAmount,
+      metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
+    });
+
+    return true;
   }
 
   async withdrawServiceCreditToUserCredit(
@@ -166,10 +192,12 @@ export class BudgetingService {
           isDeleted: false,
         },
       });
+    const serviceInstanceCredit: number =
+      await this.serviceChecksService.getServiceCreditBy(serviceInstanceId);
     if (isNil(serviceInstance)) {
       throw new NotFoundException();
     }
-    if (serviceInstance.credit == 0 || amount > serviceInstance.credit) {
+    if (serviceInstanceCredit == 0 || amount > serviceInstanceCredit) {
       throw new NotEnoughCreditException();
     }
 
@@ -179,33 +207,22 @@ export class BudgetingService {
       throw new NotFoundException();
     }
 
-    const afterServiceInstanceCredit = serviceInstance.credit - amount;
+    await this.servicePaymentTableService.create({
+      userId: userId,
+      serviceInstanceId: serviceInstanceId,
+      paymentType: PaymentTypes.PayToUserCreditByBudgeting,
+      price: -amount,
+    });
 
-    const afterUserCredit = user.credit + amount;
-
-    const transactionDto: CreateTransactionsDto = {
+    await this.transactionsTableService.create({
       userId: userId.toString(),
       serviceInstanceId: serviceInstanceId,
       dateTime: new Date(),
       value: amount,
       paymentType: PaymentTypes.PayToUserCreditByBudgeting,
-      description: '',
-      invoiceId: null,
-      paymentToken: null,
       isApproved: true,
-    };
-
-    const transaction: Transactions =
-      await this.transactionsTableService.create(transactionDto);
-
-    await this.userTableService.update(userId, {
-      credit: afterUserCredit,
     });
 
-    await this.serviceInstancesTableService.update(serviceInstanceId, {
-      credit: afterServiceInstanceCredit,
-    });
-
-    return transaction;
+    return true;
   }
 }

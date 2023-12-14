@@ -28,7 +28,6 @@ import { UserService } from '../service/user.service';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
-import { PostUserCreditDto } from '../dto/post-user-credit.dto';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { PhoneNumberDto } from '../../security/auth/dto/phoneNumber.dto';
@@ -49,6 +48,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
 import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
+import { VitrificationServiceService } from '../service/vitrification.service.service';
 
 @ApiTags('User')
 @Controller('users')
@@ -60,6 +60,7 @@ export class UserController {
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
     private readonly redisCacheService: RedisCacheService,
+    private readonly vitrificationServiceService: VitrificationServiceService,
   ) {}
 
   @Public()
@@ -227,17 +228,6 @@ export class UserController {
     return userCredit;
   }
 
-  @Post('/credit')
-  @ApiOperation({ summary: 'update user credit' })
-  @ApiBody({ type: PostUserCreditDto })
-  @ApiCreatedResponse({ description: 'User credit updated successfully' })
-  async updateUserCredit(
-    @Body() body: PostUserCreditDto,
-    @Request() options: SessionRequest,
-  ): Promise<void> {
-    await this.userService.postUserCredit(options, body.credit);
-  }
-
   @Get('/info')
   @ApiOperation({ summary: 'returns single user info' })
   @ApiResponse({
@@ -308,7 +298,7 @@ export class UserController {
 
   @Get('/profile')
   @ApiOperation({ summary: 'get user profile' })
-  async profile(@Request() options: SessionRequest): Promise<UserProfileDto> {
+  async profile(@Request() options: SessionRequest) {
     return await this.userService.getUserProfile(options);
   }
 

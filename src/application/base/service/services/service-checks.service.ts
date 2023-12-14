@@ -105,7 +105,7 @@ export class ServiceChecksService {
     return null;
   }
 
-  async getServiceCreditBy(serviceInstanceId: string) {
+  async getServiceCreditBy(serviceInstanceId: string): Promise<number> {
     const servicePayment = await this.servicePaymentsTableService
       .getQueryBuilder()
       .select('SUM(ServicePayments.Price)', 'Credit')

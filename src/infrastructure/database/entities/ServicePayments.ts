@@ -1,8 +1,15 @@
-import { Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity } from 'typeorm';
+import { randomUUID } from 'crypto';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Entity('ServicePayments', { schema: 'dbo' })
 export class ServicePayments {
-  @Column('uniqueidentifier', { name: 'Id', nullable: true, primary: true })
+  @Column({
+    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
+    name: 'Id',
+    nullable: true,
+    primary: true,
+  })
   id: string | null;
 
   @Column('datetime', { name: 'CreateDate', nullable: true })
@@ -34,9 +41,21 @@ export class ServicePayments {
   @Column('int', { name: 'InvoiceId', nullable: true })
   invoiceId: number | null;
 
-  @Column('uniqueidentifier', { name: 'ServiceInstanceId', nullable: true })
+  @Column({
+    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
+    name: 'ServiceInstanceId',
+    nullable: true,
+  })
   serviceInstanceId: string | null;
 
   @Column('decimal', { name: 'Price', nullable: true, precision: 18, scale: 0 })
   price: number | null;
+
+  @Column('nvarchar', { name: 'MetaData', nullable: true })
+  metaData: string;
+
+  @BeforeInsert()
+  setId() {
+    this.id = randomUUID();
+  }
 }

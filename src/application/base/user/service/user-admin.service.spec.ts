@@ -10,6 +10,8 @@ import { SecurityToolsModule } from '../../security/security-tools/security-tool
 import { UserService } from './user.service';
 import { AbilityModule } from '../../security/ability/ability.module';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserInfoService } from './user-info.service';
 
 describe('UserAdminService', () => {
   let service: UserAdminService;
@@ -26,8 +28,14 @@ describe('UserAdminService', () => {
         JwtModule,
         NotificationModule,
         SecurityToolsModule,
+        TransactionsModule,
       ],
-      providers: [UserService, UserAdminService, RedisCacheService],
+      providers: [
+        UserService,
+        UserAdminService,
+        RedisCacheService,
+        UserInfoService,
+      ],
     }).compile();
 
     service = module.get<UserAdminService>(UserAdminService);

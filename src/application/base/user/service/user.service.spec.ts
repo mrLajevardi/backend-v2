@@ -25,6 +25,8 @@ import { OtpService } from '../../security/security-tools/otp.service';
 import { OtpHashDto } from '../../security/security-tools/dto/otp-hash.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserInfoService } from './user-info.service';
 
 describe('UserService', () => {
   let table: UserTableService;
@@ -108,11 +110,13 @@ describe('UserService', () => {
         JwtModule,
         NotificationModule,
         SecurityToolsModule,
+        TransactionsModule,
       ],
       providers: [
         UserService,
         UserAdminService,
         UserTableService,
+        UserInfoService,
         CompanyTableService,
         OtpService,
         RedisCacheService,

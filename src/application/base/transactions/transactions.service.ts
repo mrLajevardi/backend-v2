@@ -1,9 +1,8 @@
-import { BadRequestException, Injectable, Req } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateTransactionsDto } from '../crud/transactions-table/dto/create-transactions.dto';
 import { TransactionsTableService } from '../crud/transactions-table/transactions-table.service';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
-import { SessionRequest } from '../../../infrastructure/types/session-request.type';
-import { FindOptionsWhere } from 'typeorm';
+import { PaymentTypes } from '../crud/transactions-table/enum/payment-types.enum';
 
 @Injectable()
 export class TransactionsService {
@@ -25,22 +24,24 @@ export class TransactionsService {
     return await this.transactionTable.create(dto);
   }
 
-  // async getOwnUser(
-  //     options: SessionRequest,
-  //     page: number,
-  //     pageSize: number,
-  //     startDateTime: Date,
-  //     endDateTime: Date,
-  // ) {
-  //     if (pageSize > 128) {
-  //         throw new BadRequestException();
-  //     }
-  //
-  //     let where: FindOptionsWhere<Transactions> = {
-  //       userId
-  //     };
-  //
-  //
-  //
-  // }
+  async create(
+    userId: number,
+    type: PaymentTypes,
+    value: number,
+    serviceInstanceId?: string,
+    description?: string,
+  ) {
+    const transaction = await this.transactionTable.create({
+      userId: userId.toString(),
+      value: value,
+      paymentType: type,
+      isApproved: true,
+      dateTime: new Date(),
+      serviceInstanceId,
+      description,
+    });
+    console.log(transaction);
+
+    return transaction;
+  }
 }
