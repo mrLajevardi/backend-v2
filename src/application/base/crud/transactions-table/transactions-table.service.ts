@@ -12,6 +12,8 @@ import {
   UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { columnName } from 'typeorm-model-generator/dist/src/NamingStrategy';
+import { PickKeysByType } from 'typeorm/common/PickKeysByType';
 
 @Injectable()
 export class TransactionsTableService {
@@ -33,6 +35,10 @@ export class TransactionsTableService {
       .andWhere('transactions.InvoiceID IS NULL')
       .groupBy('transactions.ServiceInstanceID')
       .getRawMany();
+  }
+
+  getQueryBuilder() {
+    return this.repository.createQueryBuilder('transactions');
   }
 
   // Find One Item by its ID

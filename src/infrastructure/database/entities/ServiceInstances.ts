@@ -89,8 +89,7 @@ export class ServiceInstances {
   })
   retryCount: number | null;
 
-  @Column('int', { name: 'Credit', nullable: true, default: () => '(0)' })
-  credit: number | null;
+  credit?: number | null;
 
   @Column({
     name: 'DaysLeft',
