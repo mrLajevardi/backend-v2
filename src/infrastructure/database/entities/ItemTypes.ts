@@ -99,6 +99,7 @@ export class ItemTypes {
     nullable: true,
   })
   enabled: boolean | null;
+  
 
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;

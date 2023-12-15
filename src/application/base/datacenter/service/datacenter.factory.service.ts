@@ -15,8 +15,6 @@ import {
   GetProviderVdcsDto,
   Value,
 } from '../../../../wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs.dto';
-import { AdminVdcWrapperService } from '../../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import {
   ItemTypeCodes,
@@ -25,7 +23,6 @@ import {
 import { plainToInstance } from 'class-transformer';
 import {
   ComputeItem,
-  CreateDatacenterDto,
   DiskItem,
   Generation,
   GenerationItem,
@@ -34,9 +31,6 @@ import {
   Reservation,
 } from '../dto/create-datacenter.dto';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
-import _, { keyBy } from 'lodash';
-import { DatacenterService } from './datacenter.service';
-import { BASE_DATACENTER_SERVICE } from '../interface/datacenter.interface';
 import { DatacenterDetails } from '../dto/datacenter-details.dto';
 @Injectable()
 export class DatacenterFactoryService {
@@ -185,7 +179,7 @@ export class DatacenterFactoryService {
   }
 
   async setGeneration(
-    datacenterName: string,
+    datacenterName: string | null,
     serviceTypeId: string,
     dsConfig: DatacenterDetails,
   ): Promise<Generation[]> {
@@ -193,25 +187,24 @@ export class DatacenterFactoryService {
       where: {
         datacenterName,
         serviceTypeId,
+        isDeleted: false,
         code: And(Like('g%'), Not(ItemTypeCodes.Generation)),
       },
     });
     const generationsDto: Generation[] = [];
     for (const generation of generations) {
-      const targetDs = dsConfig.gens.find(
-        (gen) => gen.name === generation.code,
-      );
-      if (targetDs == undefined) {
-        continue;
-      }
+      const targetDs = !datacenterName
+        ? null
+        : dsConfig.gens.find((gen) => gen.name === generation.code);
       const generationDto: Generation = {
-        providerId: targetDs.id,
+        providerId: targetDs?.id || null,
         type: 0,
         items: {} as GenerationItems,
       };
       const items = await this.serviceItemTypesTreeService.find({
         where: {
           parentId: generation.id,
+          isDeleted: false,
         },
       });
       for (const item of items) {
@@ -225,6 +218,7 @@ export class DatacenterFactoryService {
           const cpuLevels = await this.serviceItemTypesTreeService.find({
             where: {
               parentId: item.id,
+              isDeleted: false,
             },
           });
           for (const cpuLevel of cpuLevels) {
@@ -244,6 +238,7 @@ export class DatacenterFactoryService {
           const ramLevels = await this.serviceItemTypesTreeService.find({
             where: {
               parentId: item.id,
+              isDeleted: false,
             },
           });
           for (const cpuLevel of ramLevels) {
@@ -257,6 +252,7 @@ export class DatacenterFactoryService {
           const diskItems = await this.serviceItemTypesTreeService.find({
             where: {
               parentId: item.id,
+              isDeleted: false,
             },
           });
           generationDto.items.diskItems = [];
