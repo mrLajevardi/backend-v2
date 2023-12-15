@@ -235,20 +235,20 @@ export class DatacenterAdminService {
     for (const generationItem of generationItems) {
       const generationName = metaData.generation as string;
       try {
-        this.checkConfigs(generationItem.items.cpu.levels, {
-          checkMinMax: true,
-          baseMax: generationItem.items.cpu.baseMax,
-          baseMin: generationItem.items.cpu.baseMin,
-          checkPercent: true,
-          checkPrice: false,
-        });
-        this.checkConfigs(generationItem.items.ram.levels, {
-          checkMinMax: true,
-          baseMax: generationItem.items.ram.baseMax,
-          baseMin: generationItem.items.ram.baseMin,
-          checkPercent: true,
-          checkPrice: false,
-        });
+        // this.checkConfigs(generationItem.items.cpu.levels, {
+        //   checkMinMax: true,
+        //   baseMax: generationItem.items.cpu.baseMax,
+        //   baseMin: generationItem.items.cpu.baseMin,
+        //   checkPercent: true,
+        //   checkPrice: false,
+        // });
+        // this.checkConfigs(generationItem.items.ram.levels, {
+        //   checkMinMax: true,
+        //   baseMax: generationItem.items.ram.baseMax,
+        //   baseMin: generationItem.items.ram.baseMin,
+        //   checkPercent: true,
+        //   checkPrice: false,
+        // });
       } catch (err) {
         await queryRunner.rollbackTransaction();
         await queryRunner.release();
@@ -472,7 +472,7 @@ export class DatacenterAdminService {
           required: false,
           rule: null,
           serviceTypeId: serviceType.id,
-          step: null,
+          step: diskItem.step,
           createDate: new Date(),
           isDeleted: false,
           type: generationItem.type,

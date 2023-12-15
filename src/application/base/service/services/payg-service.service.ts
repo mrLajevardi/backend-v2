@@ -277,6 +277,7 @@ export class PaygServiceService {
       firstItem.serviceTypeId,
       null,
       null,
+
       firstItem.datacenterName,
       ServicePlanTypeEnum.Payg,
       VmPowerStateEventEnum.PowerOff,

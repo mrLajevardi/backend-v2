@@ -14,7 +14,7 @@ import {
 import { GetProviderVdcsMetadataDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs-metadata.dto';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { BaseDatacenterService } from '../interface/datacenter.interface';
-import { forEach, trim } from 'lodash';
+import { capitalize, forEach, trim } from 'lodash';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
@@ -42,6 +42,7 @@ import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/
 import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
 import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import { VcloudMetadata } from '../type/vcloud-metadata.type';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 
 @Injectable()
@@ -79,6 +80,8 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       generation: null,
       datacenterTitle: null,
       cpuSpeed: null,
+      location: null,
+      enabled: null,
     };
 
     for (const value of metadata.metadataEntry) {
@@ -92,12 +95,13 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         value.key === MetaDataDatacenterEnum.Enabled &&
         !value.typedValue.value
       ) {
-        console.log('conjdition is run');
         return {
           datacenter: null,
           generation: null,
           datacenterTitle: null,
           cpuSpeed: null,
+          enabled: false,
+          location: null,
         };
       }
       switch (key) {
@@ -112,6 +116,12 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
           break;
         case MetaDataDatacenterEnum.CpuSpeed:
           targetMetadata.cpuSpeed = metadataValue;
+          break;
+        case MetaDataDatacenterEnum.Enabled:
+          targetMetadata.enabled = metadataValue as boolean;
+          break;
+        case MetaDataDatacenterEnum.Location:
+          targetMetadata.location = metadataValue as string;
           break;
       }
     }
@@ -242,11 +252,13 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       const newGen = {
         name: targetMetadata.generation,
         id: providerVdc.id,
+        enable: targetMetadata.enabled,
       };
       if (!targetConfig) {
         const config: DatacenterConfigGenResultDto = {
           datacenter: targetMetadata.datacenter,
           title: targetMetadata.datacenterTitle,
+          location: targetMetadata.location,
           gens: [newGen],
         };
 
@@ -604,12 +616,20 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
   async getDatacenterConfigs(
     query: GetDatacenterConfigsQueryDto,
   ): Promise<CreateDatacenterDto> {
-    const { datacenterName, serviceTypeId } = query;
-    const dsConfig = await this.getDatacenterDetails(datacenterName);
+    const { serviceTypeId } = query;
+    const datacenterName = query?.datacenterName || null;
+    const dsConfig = datacenterName
+      ? (await this.getDatacenterConfigWithGen()).find(
+          (item) => item.datacenter === datacenterName.toLowerCase(),
+        )
+      : null;
+    const datacenterCondition =
+      datacenterName !== null ? capitalize(datacenterName) : datacenterName;
     const itemTypes = await this.serviceItemTypesTreeService.find({
       where: {
-        datacenterName,
+        datacenterName: datacenterCondition,
         serviceTypeId,
+        isDeleted: false,
         codeHierarchy: And(
           Not(Like(ItemTypeCodes.Guaranty + '%')),
           Not(Like(ItemTypeCodes.Generation + '%')),
@@ -651,7 +671,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       datacenterName,
       serviceTypeId,
       dsConfig,
-      ServicePlanTypeEnum.Payg,
+      ServicePlanTypeEnum.Static,
     );
     const datacenter: CreateDatacenterDto = {
       paygReservationCpu: reservationCpuItems.filter(
@@ -670,8 +690,8 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       paygGenerations,
       staticGenerations,
       period: periodItems,
-      title: dsConfig.title,
-      location: dsConfig.location,
+      title: (dsConfig?.title as string) || null,
+      location: (dsConfig?.location as string) || null,
     };
     return datacenter;
   }

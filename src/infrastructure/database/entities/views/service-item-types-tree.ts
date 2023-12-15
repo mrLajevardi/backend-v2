@@ -88,6 +88,18 @@ export class ServiceItemTypesTree {
   @Column('nvarchar', { name: 'CodeHierarchy', nullable: true, length: 150 })
   codeHierarchy: string;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsDeleted',
+    nullable: false,
+  })
+  isDeleted: boolean;
+
+  @Column('datetime', {
+    name: 'DeleteDate',
+    nullable: true,
+  })
+  deleteDate: Date | null;
+
   @ManyToOne(() => ServiceTypes)
   @JoinColumn({ name: 'ServiceTypeID', referencedColumnName: 'id' })
   serviceTypes: ServiceTypes;
