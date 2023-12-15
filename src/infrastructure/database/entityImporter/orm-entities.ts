@@ -55,6 +55,7 @@ import { City } from '../entities/City';
 import { FileUpload } from '../entities/FileUpload';
 import { EntityLog } from '../entities/EntityLog';
 import { ServicePayments } from '../entities/ServicePayments';
+import { VServiceInstances } from '../entities/views/v-serviceInstances';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -85,8 +86,6 @@ export const dbEntities = [
   Company,
   Province,
   City,
-
-  // services Schema
   Configs,
   Discounts,
   ItemTypes,
@@ -117,4 +116,5 @@ export const dbEntities = [
   FileUpload,
   EntityLog,
   ServicePayments,
+  VServiceInstances,
 ];

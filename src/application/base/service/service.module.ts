@@ -33,6 +33,7 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
 import { PaygServiceService } from './services/payg-service.service';
 import { BudgetingModule } from '../budgeting/budgeting.module';
 import { VmModule } from '../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/v-service-instances-table.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { VmModule } from '../../vm/vm.module';
     TaskManagerModule,
     EdgeGatewayModule,
     VmModule,
+    VServiceInstancesTableModule,
   ],
   providers: [
     ServiceService,
