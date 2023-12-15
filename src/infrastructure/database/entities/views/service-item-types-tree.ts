@@ -1,6 +1,7 @@
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { ServiceTypes } from '../ServiceTypes';
 import { isTestingEnv } from '../../../helpers/helpers';
+import { ServicePlanTypeEnum } from '../../../../application/base/service/enum/service-plan-type.enum';
 @Entity({
   schema: 'services',
   name: 'ServiceItemTypesTree',
@@ -80,6 +81,9 @@ export class ServiceItemTypesTree {
 
   @Column('nvarchar', { name: 'Hierarchy', nullable: true, length: 50 })
   hierarchy: string;
+
+  @Column('tinyint', { name: 'Type', nullable: false })
+  type: ServicePlanTypeEnum;
 
   @Column('nvarchar', { name: 'CodeHierarchy', nullable: true, length: 150 })
   codeHierarchy: string;

@@ -13,8 +13,6 @@ import {
   IsObject,
   IsOptional,
   IsString,
-  Length,
-  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { Expose, Type } from 'class-transformer';
@@ -217,7 +215,14 @@ export class CreateDatacenterDto {
   @Type(() => Generation)
   @ValidateNested({ each: true })
   @ApiProperty({ type: [Generation] })
-  generations: Generation[];
+  paygGenerations: Generation[];
+
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => Generation)
+  @ValidateNested({ each: true })
+  @ApiProperty({ type: [Generation] })
+  staticGenerations: Generation[];
 
   @ApiProperty({ type: Boolean })
   @IsBoolean()
@@ -237,12 +242,26 @@ export class CreateDatacenterDto {
   @Type(() => Reservation)
   @ValidateNested({ each: true })
   @ApiProperty({ type: [Reservation] })
-  reservationCpu: Reservation[];
+  paygReservationCpu: Reservation[];
 
   @IsArray()
   @IsObject({ each: true })
   @Type(() => Reservation)
   @ValidateNested({ each: true })
   @ApiProperty({ type: [Reservation] })
-  reservationRam: Reservation[];
+  staticReservationCpu: Reservation[];
+
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => Reservation)
+  @ValidateNested({ each: true })
+  @ApiProperty({ type: [Reservation] })
+  paygReservationRam: Reservation[];
+
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => Reservation)
+  @ValidateNested({ each: true })
+  @ApiProperty({ type: [Reservation] })
+  staticReservationRam: Reservation[];
 }

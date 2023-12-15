@@ -27,6 +27,7 @@ import {
 } from '../dto/datacenter-details.dto';
 import {
   CreateDatacenterDto,
+  Generation,
   Period,
   Reservation,
 } from '../dto/create-datacenter.dto';
@@ -41,6 +42,7 @@ import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/
 import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
 import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -423,10 +425,14 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
   }
 
   async createDatacenter(dto: CreateDatacenterDto): Promise<void> {
-    await this.updateDatacenterMetadata(dto);
+    let generation = dto.staticGenerations;
+    if (generation.length === 0) {
+      generation = dto.paygGenerations;
+    }
+    await this.updateDatacenterMetadata(generation, dto.location, dto.title);
     const datacenter = await this.getDatacenterMetadata(
       '',
-      dto.generations[0].providerId,
+      generation[0].providerId,
     );
     const datacenterName = datacenter.datacenter as string;
     const serviceType = await this.serviceTypesTableService.create({
@@ -451,31 +457,53 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateCpuReservationItem(
-      dto,
+      dto.paygReservationCpu,
+      serviceType,
+      datacenterName,
+      queryRunner,
+    );
+    await this.datacenterAdminService.createOrUpdateCpuReservationItem(
+      dto.staticReservationCpu,
       serviceType,
       datacenterName,
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateRamReservationItem(
-      dto,
+      dto.paygReservationRam,
+      serviceType,
+      datacenterName,
+      queryRunner,
+    );
+    await this.datacenterAdminService.createOrUpdateRamReservationItem(
+      dto.staticReservationRam,
       serviceType,
       datacenterName,
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateGenerationItems(
-      dto,
+      dto.staticGenerations,
       serviceType,
       datacenterName,
       datacenter,
       queryRunner,
     );
-    await this.updateDatacenterMetadata(dto);
+    await this.datacenterAdminService.createOrUpdateGenerationItems(
+      dto.paygGenerations,
+      serviceType,
+      datacenterName,
+      datacenter,
+      queryRunner,
+    );
     await queryRunner.commitTransaction();
     await queryRunner.release();
   }
 
-  async updateDatacenterMetadata(dto: CreateDatacenterDto): Promise<void> {
-    for (const provider of dto.generations) {
+  async updateDatacenterMetadata(
+    dto: Generation[],
+    location: string,
+    title: string,
+  ): Promise<void> {
+    for (const provider of dto) {
       const adminSession = await this.sessionsService.checkAdminSession();
       const providerList =
         await this.adminVdcWrapperService.getProviderVdcMetadata(
@@ -484,11 +512,11 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         );
       for (const providerItem of providerList.metadataEntry) {
         if (providerItem.key === MetaDataDatacenterEnum.Location) {
-          providerItem.typedValue.value = dto.location;
+          providerItem.typedValue.value = location;
         } else if (
           providerItem.key === MetaDataDatacenterEnum.DatacenterTitle
         ) {
-          providerItem.typedValue.value = dto.title;
+          providerItem.typedValue.value = title;
         }
       }
       await this.adminVdcWrapperService.updateProviderMetadata(
@@ -503,10 +531,14 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
 
   async updateDatacenter(dto: CreateDatacenterDto): Promise<void> {
     const serviceType = await this.serviceTypesTableService.findById('vdc');
-    await this.updateDatacenterMetadata(dto);
+    let generation = dto.staticGenerations;
+    if (generation.length === 0) {
+      generation = dto.paygGenerations;
+    }
+    await this.updateDatacenterMetadata(generation, dto.location, dto.title);
     const datacenter = await this.getDatacenterMetadata(
       '',
-      dto.generations[0].providerId,
+      generation[0].providerId,
     );
     const datacenterName = datacenter.datacenter as string;
     const queryRunner = await this.itemTypeTableService.getQueryRunner();
@@ -528,19 +560,38 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateCpuReservationItem(
-      dto,
+      dto.paygReservationCpu,
+      serviceType,
+      datacenterName,
+      queryRunner,
+    );
+    await this.datacenterAdminService.createOrUpdateCpuReservationItem(
+      dto.staticReservationCpu,
       serviceType,
       datacenterName,
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateRamReservationItem(
-      dto,
+      dto.paygReservationRam,
+      serviceType,
+      datacenterName,
+      queryRunner,
+    );
+    await this.datacenterAdminService.createOrUpdateRamReservationItem(
+      dto.staticReservationRam,
       serviceType,
       datacenterName,
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateGenerationItems(
-      dto,
+      dto.paygGenerations,
+      serviceType,
+      datacenterName,
+      datacenter,
+      queryRunner,
+    );
+    await this.datacenterAdminService.createOrUpdateGenerationItems(
+      dto.staticGenerations,
       serviceType,
       datacenterName,
       datacenter,
@@ -590,16 +641,34 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
           break;
       }
     }
-    const generations = await this.datacenterServiceFactory.setGeneration(
+    const paygGenerations = await this.datacenterServiceFactory.setGeneration(
       datacenterName,
       serviceTypeId,
       dsConfig,
+      ServicePlanTypeEnum.Payg,
+    );
+    const staticGenerations = await this.datacenterServiceFactory.setGeneration(
+      datacenterName,
+      serviceTypeId,
+      dsConfig,
+      ServicePlanTypeEnum.Payg,
     );
     const datacenter: CreateDatacenterDto = {
-      reservationCpu: reservationCpuItems,
-      reservationRam: reservationRamItems,
+      paygReservationCpu: reservationCpuItems.filter(
+        (item) => item.type === ServicePlanTypeEnum.Payg,
+      ),
+      staticReservationCpu: reservationCpuItems.filter(
+        (item) => item.type === ServicePlanTypeEnum.Static,
+      ),
+      paygReservationRam: reservationRamItems.filter(
+        (item) => item.type === ServicePlanTypeEnum.Payg,
+      ),
+      staticReservationRam: reservationRamItems.filter(
+        (item) => item.type === ServicePlanTypeEnum.Static,
+      ),
       enabled: true,
-      generations,
+      paygGenerations,
+      staticGenerations,
       period: periodItems,
       title: dsConfig.title,
       location: dsConfig.location,

@@ -38,6 +38,7 @@ import _, { keyBy } from 'lodash';
 import { DatacenterService } from './datacenter.service';
 import { BASE_DATACENTER_SERVICE } from '../interface/datacenter.interface';
 import { DatacenterDetails } from '../dto/datacenter-details.dto';
+import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 @Injectable()
 export class DatacenterFactoryService {
   constructor(
@@ -188,11 +189,13 @@ export class DatacenterFactoryService {
     datacenterName: string,
     serviceTypeId: string,
     dsConfig: DatacenterDetails,
+    type: ServicePlanTypeEnum,
   ): Promise<Generation[]> {
     const generations = await this.serviceItemTypesTreeService.find({
       where: {
         datacenterName,
         serviceTypeId,
+        type,
         code: And(Like('g%'), Not(ItemTypeCodes.Generation)),
       },
     });
@@ -206,7 +209,7 @@ export class DatacenterFactoryService {
       }
       const generationDto: Generation = {
         providerId: targetDs.id,
-        type: 0,
+        type,
         items: {} as GenerationItems,
       };
       const items = await this.serviceItemTypesTreeService.find({

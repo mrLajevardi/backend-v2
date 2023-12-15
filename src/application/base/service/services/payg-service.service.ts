@@ -282,7 +282,7 @@ export class PaygServiceService {
       VmPowerStateEventEnum.PowerOff,
       new Date(),
     );
-    await this.extendService.addGenIdToServiceProperties()
+    // await this.extendService.addGenIdToServiceProperties()
     await this.budgetingService.increaseBudgetingService(
       userId,
       serviceInstanceId,
