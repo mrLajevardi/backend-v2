@@ -27,6 +27,7 @@ import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
 import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { InsufficientResourceException } from 'src/infrastructure/exceptions/insufficient-resource.exception';
+import { VmService } from '../../../vm/service/vm.service';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -42,6 +43,7 @@ export class ServiceServiceFactory {
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly adminEdgegatewayWrapperService: AdminEdgeGatewayWrapperService,
     private readonly sessionService: SessionsService,
+    private readonly vmService: VmService,
   ) {}
   public async getPropertiesOfServiceInstance(
     serviceInstance: GetServicesReturnDto,
@@ -149,6 +151,12 @@ export class ServiceServiceFactory {
     option: SessionRequest,
     serviceInstanceId: string,
   ) {
+    const allVms = await this.vmService.getAllUserVm(option, serviceInstanceId);
+
+    let allMemoryVms = 0;
+
+    allVms.values.forEach((vm) => (allMemoryVms += vm.memory));
+
     const countIp = await this.edgeGatewayService.getCountOfIpSet(
       option,
       serviceInstanceId,
@@ -170,7 +178,8 @@ export class ServiceServiceFactory {
     const serviceItemDisk = new ServiceItemDto(
       'DISK',
       // vdcItems.storageUsedMB,
-      vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
+      //   vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
+      vdcItems.storageUsedMB - allMemoryVms,
       vdcItems.storageLimitMB -
         vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
     );
