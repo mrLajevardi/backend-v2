@@ -7,6 +7,7 @@ import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/v
 import { ServicePropertiesService } from '../../base/service-properties/service-properties.service';
 import { VdcInvoiceDetailsInfoResultDto } from '../dto/vdc-invoice-details-info.result.dto';
 import {
+  ItemTypeCodes,
   VdcGenerationItemCodes,
   VdcGenerationItemUnit,
 } from '../../base/itemType/enum/item-type-codes.enum';
@@ -25,6 +26,14 @@ import { VdcItemLimitQueryDto } from '../dto/vdc-item-limit.query.dto';
 import { VmService } from '../../vm/service/vm.service';
 import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dto';
 import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
+import { ServiceService } from '../../base/service/services/service.service';
+import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-all-vdc-service-with-items-result.dto';
+import { EditGeneralInfoVdcDto } from '../../../wrappers/vcloud-wrapper/services/user/vdc/dto/edit-general-info-vdc.dto';
+import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
+import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
+import { GetCodeDisk } from '../utils/disk.utils';
+import { OrganizationTableService } from '../../base/crud/organization-table/organization-table.service';
+import { GetVdcIdBy } from '../utils/vdc-properties.utils';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -35,6 +44,8 @@ export class VdcDetailService implements BaseVdcDetailService {
     private readonly servicePropertiesService: ServicePropertiesService,
     @Inject(BASE_SERVICE_ITEM_SERVICE)
     private readonly serviceItemService: BaseServiceItem,
+    private readonly serviceService: ServiceService,
+    private readonly organizationTableService: OrganizationTableService,
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
@@ -82,7 +93,10 @@ export class VdcDetailService implements BaseVdcDetailService {
     return Promise.resolve(res);
   }
 
-  async getVdcDetail(serviceInstanceId: string): Promise<VdcDetailsResultDto> {
+  async getVdcDetail(
+    serviceInstanceId: string,
+    option?: SessionRequest,
+  ): Promise<VdcDetailsResultDto> {
     if (!serviceInstanceId) {
       return {};
     }
@@ -99,7 +113,29 @@ export class VdcDetailService implements BaseVdcDetailService {
       res2,
     );
 
+    const vdcDetails = (
+      (await this.serviceService.getServicesWithItems(
+        option,
+        'vdc',
+        serviceInstanceId,
+      )) as GetAllVdcServiceWithItemsResultDto[]
+    )[0];
+
     this.vdcDetailFactory.getVdcDetailItemModel(vdcModels, res2);
+
+    res2.vm.usage = vdcDetails.serviceItems.find(
+      (service) =>
+        service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Vm,
+    ).usage;
+    res2.cpu.usage = vdcDetails.serviceItems.find(
+      (service) =>
+        service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Cpu,
+    ).usage;
+
+    res2.ram.usage = vdcDetails.serviceItems.find(
+      (service) =>
+        service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Ram,
+    ).usage;
 
     res2.guaranty.title = await this.serviceItemService.getGuarantyTitleBy(
       serviceInstanceId,
@@ -110,7 +146,7 @@ export class VdcDetailService implements BaseVdcDetailService {
           title: storage.title,
           usage: storage.usage,
           value: storage.value.toString(),
-          code: VdcGenerationItemCodes.Disk,
+          code: GetCodeDisk(storage.title),
           price: 0,
           unit: 'MB',
         } as VdcInvoiceDetailsInfoResultDto;
@@ -171,7 +207,7 @@ export class VdcDetailService implements BaseVdcDetailService {
         option,
         serviceInstanceId,
       );
-    const vdcDetail = await this.getVdcDetail(serviceInstanceId);
+    const vdcDetail = await this.getVdcDetail(serviceInstanceId, option);
     const diskInfoModel = await this.getStorageDetailVdc(serviceInstanceId);
     this.vdcDetailFactory.fillModelVdcItemLimit(
       model,
@@ -182,5 +218,40 @@ export class VdcDetailService implements BaseVdcDetailService {
     );
 
     return model;
+  }
+
+  async editGeneralInfo(
+    option: SessionRequest,
+    query: VdcDetailEditGeneralQuery,
+  ): Promise<string | BadRequestException> {
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      query.serviceInstanceId,
+    );
+
+    if (
+      props['vdcId'] == null ||
+      props['orgId'] == null ||
+      props['name'] == null
+    )
+      return new BadRequestException(
+        'this vdc does not have any vdc id or org id ',
+      );
+
+    const authToken = (
+      await this.sessionService.createUserSession(
+        props['orgId'],
+        option.user.userId,
+      )
+    ).token;
+
+    const vdcId = GetVdcIdBy(props['vdcId']);
+
+    const task = await this.vdcWrapperService.editGeneralInfo(
+      vdcId,
+      props['name'],
+      query.description,
+      authToken,
+    );
+    return task.__vcloudTask;
   }
 }

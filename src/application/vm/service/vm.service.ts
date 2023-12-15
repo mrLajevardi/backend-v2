@@ -48,6 +48,7 @@ import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-w
 import { UploadFileDto } from '../dto/upload-file-info.dto';
 import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/dto/upload-file.dto';
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
+import { GetCodeDisk } from '../../vdc/utils/disk.utils';
 
 @Injectable()
 export class VmService {
@@ -473,17 +474,20 @@ export class VmService {
       const os = recordItem.guestOs;
       const description = recordItem.description;
       const cpu = recordItem.numberOfCpus;
-      const storage = recordItem.totalStorageAllocatedMb;
+      const storage = recordItem.totalStorageAllocatedMb - recordItem.memoryMB;
       const memory = recordItem.memoryMB;
-      const forbiddenStatusList = ['FAILED_CREATION', 'UNKNOWN', 'UNRESOLVED'];
+
       const status = VmStatusEnum[recordItem.status];
-      if (forbiddenStatusList.includes(recordItem.status)) {
-        continue;
-      }
+
       const containerId = recordItem.container.split('vApp/')[1];
-      const countOfNetworks = (
-        await this.getVmNetworkSection(options, serviceInstanceId, id)
-      ).networkConnections.length;
+
+      const countOfNetworks = await this.getCountOfNetworksVm(
+        recordItem,
+        options,
+        serviceInstanceId,
+        id,
+      );
+
       vmValues.push({
         id,
         name,
@@ -507,6 +511,23 @@ export class VmService {
       values: vmValues,
     };
     return Promise.resolve(data);
+  }
+
+  private async getCountOfNetworksVm(
+    recordItem,
+    options,
+    serviceInstanceId: string,
+    id,
+  ) {
+    const forbiddenStatusVmsList = [
+      VmStatusEnum[VmStatusEnum.FAILED_CREATION],
+      VmStatusEnum[VmStatusEnum.UNKNOWN],
+      VmStatusEnum[VmStatusEnum.UNRESOLVED],
+    ];
+    return forbiddenStatusVmsList.includes(recordItem.status)
+      ? 0
+      : (await this.getVmNetworkSection(options, serviceInstanceId, id))
+          .networkConnections.length;
   }
 
   async getAllUserVmTemplates(
@@ -656,18 +677,11 @@ export class VmService {
         (diskAdaptor) => diskAdaptor.legacyId == settings.adapterType,
       );
 
-      // const iii = (settings.storageProfile.id as string).split(':');
       const storageId = (settings.storageProfile.id as string).split(':')[3];
       const storageName = settings.storageProfile.name as string;
       let storageCode = '';
-      const itemsDiskCodes = Object.keys(DiskItemCodes);
-      itemsDiskCodes.forEach((code) => {
-        if (
-          storageName.trim().toLowerCase().includes(code.trim().toLowerCase())
-        ) {
-          storageCode = code;
-        }
-      });
+
+      storageCode = GetCodeDisk(storageName);
 
       const diskSection = {
         id: settings.diskId.toString(),
@@ -716,8 +730,8 @@ export class VmService {
     )[0];
 
     const snapShotInf: SnapShotDetails = {
-      snapShotTime: snapshotSection.snapshot?.created,
-      snapShotSize: snapshotSection.snapshot?.size,
+      snapShotTime: snapshotSection?.snapshot?.created,
+      snapShotSize: snapshotSection?.snapshot?.size,
     };
 
     return Promise.resolve(snapShotInf);
@@ -755,7 +769,7 @@ export class VmService {
       description: vm.data.description,
       bootDelay: vm.data?.bootOptions?.bootDelay,
       enterBIOSSetup: vm.data?.bootOptions?.enterBIOSSetup,
-      status: vmList.data.record[0].status,
+      status: VmStatusEnum[vmList.data.record[0].status],
       snapshot: vmList.data.record[0].snapshot,
       containerId: vmList.data.record[0].container.split('vApp/')[1],
     };

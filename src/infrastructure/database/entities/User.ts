@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Column,
   Entity,
   Index,
@@ -175,6 +176,11 @@ export class User {
     default: () => (isTestingEnv() ? null : 'newsequentialid()'),
   })
   guid: string;
+
+  // @AfterLoad()
+  // afterLoad1(@Request() options) {
+  //
+  // }
 
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];

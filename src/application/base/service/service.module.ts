@@ -54,7 +54,7 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
     AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
-    DatacenterModule,
+    forwardRef(() => DatacenterModule),
     SystemSettingsTableModule,
     ServiceItemsTableModule,
     ServiceInstancesTableModule,

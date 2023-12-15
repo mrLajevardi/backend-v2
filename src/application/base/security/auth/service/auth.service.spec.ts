@@ -19,6 +19,7 @@ import { LoginService } from './login.service';
 import { OauthService } from './oauth.service';
 import { PaymentModule } from 'src/application/payment/payment.module';
 import { OtpService } from '../../security-tools/otp.service';
+import { AuthModule } from '../auth.module';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -31,6 +32,7 @@ describe('AuthService', () => {
         PassportModule,
         CrudModule,
         UserModule,
+        AuthModule,
         NotificationModule,
         LoggerModule,
         SecurityToolsModule,

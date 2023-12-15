@@ -10,15 +10,17 @@ import { VdcInvoiceDetailsResultDto } from '../../../vdc/dto/vdc-invoice-details
 import { VdcInvoiceDetailsInfoResultDto } from '../../../vdc/dto/vdc-invoice-details-info.result.dto';
 import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { ServiceTypes } from '../../../../infrastructure/database/entities/ServiceTypes';
 
 @Injectable()
 export class InvoiceFactoryVdcService {
   constructor(private readonly invoicesTable: InvoicesTableService) {}
   async getVdcInvoiceDetailModel(
     invoiceId: string,
+    serviceTypeWhere = 'vdc',
   ): Promise<InvoiceDetailVdcModel[]> {
-    const serviceTypeWhere = 'vdc';
-
+    // const serviceTypeWhere = 'vdc';
+    // serviceTypeWhere = 'vdc';
     // const invoiceModels: any[] = [];
 
     const invoiceModels = await this.invoicesTable
@@ -43,6 +45,12 @@ export class InvoiceFactoryVdcService {
       .addSelect(
         'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max , SIT.Price ',
       )
+      .innerJoin(
+        ServiceTypes,
+        'ST',
+        `ST.ID = N'${serviceTypeWhere}'  AND  ST.DatacenterName = SIT.DatacenterName `,
+      )
+      .addSelect(`ST.Title as DatacenterTitle`)
       .getRawMany();
 
     return invoiceModels.map((model) => {
@@ -63,6 +71,7 @@ export class InvoiceFactoryVdcService {
         min: model.Min,
         price: model.Price,
         templateId: model.TemplateID,
+        datacenterTitle: model.DatacenterTitle,
       };
 
       return res;
@@ -175,24 +184,11 @@ export class InvoiceFactoryVdcService {
     res.cpu = new VdcInvoiceDetailsInfoResultDto(cpuModel);
 
     res.ram = new VdcInvoiceDetailsInfoResultDto(ramModel);
+    res.ram.value = (Number(res.ram.value) * 1024).toString();
 
     const swapdisk = diskModel.find(
       (disk) => disk.code.toLowerCase().trim() == DiskItemCodes.Swap,
     );
-
-    res.disk = diskModel
-      .map((diskmodel) => {
-        if (diskmodel.code.trim() !== DiskItemCodes.Swap) {
-          if (diskmodel.code.toLowerCase().trim() == DiskItemCodes.Standard) {
-            diskmodel.fee += swapdisk.fee;
-          }
-
-          const res: VdcInvoiceDetailsInfoResultDto =
-            new VdcInvoiceDetailsInfoResultDto(diskmodel);
-          return res;
-        }
-      })
-      .filter((disk) => disk != null);
 
     res.ip = new VdcInvoiceDetailsInfoResultDto(ipModel);
 
@@ -204,15 +200,25 @@ export class InvoiceFactoryVdcService {
 
     res.vm = new VdcInvoiceDetailsInfoResultDto(vmModel);
 
+    res.disk = this.calcDiskInvoice(diskModel, swapdisk);
+
     res.datacenter = {
-      title: vmModel.datacenterName,
+      title: vmModel.datacenterTitle,
       name: vmModel.datacenterName,
     }; // TODO about DatacenterName and DatacenterTitle;
 
     // Math.round((item.fee ? item.fee : item.price) / 1000) * 1000
     res.finalPrice = Math.round(ramModel.finalAmount / 1000) * 1000;
 
+    res.finalPriceWithTax = res.finalPrice * 0.09 + res.finalPrice;
+
+    res.finalPriceTax = res.finalPrice * 0.09;
+
     res.rawAmount = Math.round(ramModel.rawAmount / 1000) * 1000;
+
+    res.rawAmountTax = res.rawAmount * 0.09;
+
+    res.rawAmountWithTax = res.rawAmount * 0.09 + res.rawAmount;
 
     res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
 
@@ -221,5 +227,24 @@ export class InvoiceFactoryVdcService {
     res.templateId = ramModel.templateId;
 
     // res.period = { title: period.title, value: period.min };
+  }
+
+  private calcDiskInvoice(
+    diskModel: InvoiceDetailVdcModel[],
+    swapDisk: InvoiceDetailVdcModel,
+  ): VdcInvoiceDetailsInfoResultDto[] {
+    return diskModel
+      .map((diskmodel) => {
+        if (diskmodel.code.trim() !== DiskItemCodes.Swap) {
+          if (diskmodel.code.toLowerCase().trim() == DiskItemCodes.Standard) {
+            diskmodel.fee += swapDisk.fee;
+          }
+
+          const res: VdcInvoiceDetailsInfoResultDto =
+            new VdcInvoiceDetailsInfoResultDto(diskmodel);
+          return res;
+        }
+      })
+      .filter((disk) => disk != null);
   }
 }

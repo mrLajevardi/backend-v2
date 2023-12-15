@@ -13,6 +13,8 @@ import { UserAdminService } from '../service/user-admin.service';
 import { LoginService } from '../../security/auth/service/login.service';
 import { OtpService } from '../../security/security-tools/otp.service';
 import { RedisCacheService } from '../service/redis-cache.service';
+import { AuthModule } from '../../security/auth/auth.module';
+import { forwardRef } from '@nestjs/common';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -29,6 +31,8 @@ describe('UserController', () => {
         JwtModule,
         NotificationModule,
         SecurityToolsModule,
+        forwardRef(() => AuthModule),
+        // AuthModule ,
       ],
       providers: [
         UserService,

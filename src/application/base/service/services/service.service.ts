@@ -38,6 +38,7 @@ import { ServiceStatusEnum } from '../enum/service-status.enum';
 import { VcloudMetadata } from '../../datacenter/type/vcloud-metadata.type';
 import { UserService } from '../../user/service/user.service';
 import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 @Injectable()
 export class ServiceService {
   constructor(
@@ -61,6 +62,7 @@ export class ServiceService {
     private readonly vdcService: VdcService,
     private readonly serviceFactory: ServiceServiceFactory,
     private readonly userService: UserService,
+    private readonly systemSettingsService: SystemSettingsTableService,
   ) {}
 
   async increaseServiceResources(
@@ -452,6 +454,12 @@ export class ServiceService {
   > {
     const res: GetAllVdcServiceWithItemsResultDto[] = [];
 
+    //To Do ==> get Config ExtensionDaysLimit from SystemSettings
+    const extensionDaysLeft = (
+      await this.systemSettingsService.findOne({
+        where: { propertyKey: 'ExtensionDaysLimit' },
+      })
+    ).value;
     const allServicesInstances = await this.getServices(options, typeId, id);
     let cpuSpeed: VcloudMetadata = 0,
       // daysLeft = 0,
@@ -482,7 +490,9 @@ export class ServiceService {
           isTicketSent,
           vdcItems,
           cpuSpeed,
+          Number(extensionDaysLeft),
         );
+
         res.push(model);
       }
     }

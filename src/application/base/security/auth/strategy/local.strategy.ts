@@ -4,10 +4,14 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../service/auth.service';
 import { UserPayload } from '../dto/user-payload.dto';
 import axios from 'axios';
+import { ClsService } from 'nestjs-cls';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private readonly cls: ClsService,
+  ) {
     super();
   }
 
@@ -48,6 +52,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       twoFactorAuth: user.twoFactorAuth,
       aiAccessToken: aiToken,
     };
+
+    this.cls.set('userId', user.id);
 
     return userPayload;
   }

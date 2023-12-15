@@ -62,7 +62,6 @@ export class DatacenterFactoryService {
           datacenterName: IsNull(),
           code: generationName,
           title: generationName,
-          // serviceTypeId: Like(`${'vdc'}`),
         },
       );
     }

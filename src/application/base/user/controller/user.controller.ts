@@ -7,10 +7,10 @@ import {
   Put,
   Request,
   Res,
-  Req,
-  UseGuards,
   UploadedFile,
   UseInterceptors,
+  Req,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -21,6 +21,7 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
 import { UserService } from '../service/user.service';
@@ -37,8 +38,6 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { ChangeEmailDto } from '../dto/change-email.dto';
 import { ResetForgottenPasswordDto } from '../dto/reset-forgotten-password.dto';
 import { CreateProfileDto } from '../dto/create-profile.dto';
-import { User } from '../../../../infrastructure/database/entities/User';
-import { PersonalVerificationGuard } from '../../security/auth/guard/personal-verification.guard';
 import { UserProfileDto } from '../dto/user-profile.dto';
 import { LoginService } from '../../security/auth/service/login.service';
 import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
@@ -49,6 +48,7 @@ import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RedisCacheService } from '../service/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
+import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -161,12 +161,14 @@ export class UserController {
     return true;
   }
 
-  @Post('changePassword')
+  @Put('changePassword')
   @ApiOperation({ summary: 'change password for current user ' })
   async changePassword(
     @Request() options: SessionRequest,
     @Body() data: ChangePasswordDto,
   ): Promise<boolean> {
+    // const hashedPassword = await encryptPassword('12345678');
+    // console.log('password: \n\n\n\n\n\n\n\n' , hashedPassword);
     return await this.userService.changePassword(options, data);
   }
 
@@ -424,5 +426,54 @@ export class UserController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return await this.userService.uploadCompanyLetter(options, file);
+  }
+
+  @Get('/deleteCompanyLetter')
+  @ApiOperation({
+    summary: 'delete company letter',
+  })
+  async deleteCompanyLetter(@Request() options: SessionRequest) {
+    return await this.userService.deleteCompanyLetter(options);
+  }
+
+  @Get('transactions')
+  @ApiOperation({ summary: 'Get all user transactions' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  @ApiQuery({ name: 'serviceType', type: String, required: false })
+  @ApiQuery({ name: 'value', type: String, required: false })
+  @ApiQuery({ name: 'invoiceID', type: String, required: false })
+  @ApiQuery({ name: 'ServiceID', type: String, required: false })
+  @ApiQuery({ name: 'startDateTime', type: String, required: false })
+  @ApiQuery({ name: 'endDateTime', type: String, required: false })
+  @ApiOkResponse({ description: 'The array of user transactions', type: Array })
+  async getTransactions(
+    @Req() options: SessionRequest,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('serviceType') serviceType?: string,
+    @Query('value') value?: number,
+    @Query('invoiceID') invoiceID?: number,
+    @Query('ServiceID') ServiceID?: string,
+    @Query('startDateTime') startDateTime?: string,
+    @Query('endDateTime') endDateTime?: string,
+  ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
+    if (!page) {
+      page = 1;
+    }
+    if (!pageSize) {
+      pageSize = 10;
+    }
+    return await this.userService.getTransactions(
+      options,
+      page,
+      pageSize,
+      serviceType,
+      value,
+      invoiceID,
+      ServiceID,
+      startDateTime ? new Date(startDateTime) : null,
+      endDateTime ? new Date(endDateTime) : null,
+    );
   }
 }

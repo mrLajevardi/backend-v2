@@ -16,7 +16,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
 export class ItemTypes {
-  @PrimaryGeneratedColumn({ name: 'ID' })
+  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
   id: number;
 
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })

@@ -84,12 +84,14 @@ export class ServiceServiceFactory {
     isTicketSent: boolean,
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
+    extensionDay: number,
   ) {
     async function getTask() {
       let task: Tasks = null;
       let taskDetail: TaskDetail = null;
       if (serviceInstance.status == ServiceStatusEnum.Error) {
         task = await this.taskService.getLastTaskErrorBy(serviceInstance.id);
+        if (!task) return taskDetail;
         taskDetail = {
           details: task.details,
           startTime: task.startTime,
@@ -116,6 +118,7 @@ export class ServiceServiceFactory {
         ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
         taskDetail,
         vdcItems.description ? vdcItems.description : '',
+        serviceInstance.daysLeft <= extensionDay,
       );
 
     //Cpu , Ram , Disk , Vm
@@ -163,19 +166,22 @@ export class ServiceServiceFactory {
       vdcItems.memoryAllocationMB,
     );
 
+    // Getting
     const serviceItemDisk = new ServiceItemDto(
       'DISK',
-      vdcItems.storageUsedMB,
-      vdcItems.storageLimitMB,
+      // vdcItems.storageUsedMB,
+      vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
+      vdcItems.storageLimitMB -
+        vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
     );
+
+    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
 
     const serviceItemVM = new ServiceItemDto(
       'VM',
       vdcItems.numberOfRunningVMs,
       vdcItems.numberOfVMs,
     );
-
-    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
 
     return {
       serviceItemCpu,
@@ -194,7 +200,7 @@ export class ServiceServiceFactory {
     });
     const transformedInvoiceItems = invoiceItems.map((item) => {
       const invoiceItemType: InvoiceItemsDto = {
-        itemTypeId: item.id,
+        itemTypeId: item.itemId,
         value: item.value,
       };
       return invoiceItemType;

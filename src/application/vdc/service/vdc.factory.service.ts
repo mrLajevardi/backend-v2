@@ -82,6 +82,7 @@ export class VdcFactoryService {
     const valueSum = Number(standardItem.value) + Number(swapItem.value);
     standardItem.value = valueSum.toString();
     invoiceGroupItem.splice(invoiceGroupItem.indexOf(swapItem), 1);
+
     for (const invoiceItem of invoiceGroupItem) {
       for (const storageProfile of storageProfiles.data.record) {
         if (

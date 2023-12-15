@@ -11,6 +11,8 @@ import { TestDataService } from './test-data.service';
 import { ConfigModule } from '@nestjs/config';
 import { isTestingEnv } from '../helpers/helpers';
 import { CacheModule } from '@nestjs/cache-manager';
+import { EntitySubscriber } from './classes/entity.subscriber';
+import { EntityManager } from 'typeorm';
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { CacheModule } from '@nestjs/cache-manager';
               extra: {
                 trustServerCertificate: true,
               },
+              // subscribers: [EntitySubscriber],
             } as TypeOrmModuleOptions)
           : ({
               type: 'sqlite',

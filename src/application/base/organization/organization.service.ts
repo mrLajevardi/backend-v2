@@ -70,7 +70,7 @@ export class OrganizationService {
       sessionToken,
       {
         type: 'user',
-        filter: `name==${filteredUsername}`,
+        filter: `name==${newFilteredUsername}`,
       },
       {
         'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgInfo.id.split('org:')[1],

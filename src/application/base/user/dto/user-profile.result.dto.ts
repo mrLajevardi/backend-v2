@@ -13,6 +13,7 @@ export class UserProfileResultDtoFormat {
   email: string;
   emailVerified: boolean;
   personalCode: string;
+  twoFactorAuthenticate: number;
   personalVerification: boolean;
   companyOwner: boolean;
   avatar: string;
@@ -40,6 +41,7 @@ export class UserProfileResultDto {
       personalCode: item.personalCode,
       personalVerification: item.personalVerification,
       companyOwner: item.companyOwner,
+      twoFactorAuthenticate: item.twoFactorAuth,
       avatar: !isNil(item.avatar) ? item.avatar.streamId : null,
       companyLetter: !isNil(item.companyLetter)
         ? item.companyLetter.streamId

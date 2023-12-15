@@ -27,7 +27,7 @@ import {
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
 import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
-import { NamedDiskDto } from '../dto/named-disk.dto';
+import { NamedDiskAttachedVms, NamedDiskDto } from '../dto/named-disk.dto';
 import { VdcProperties } from '../interface/vdc-properties.interface';
 import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
 import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
@@ -241,8 +241,8 @@ export class VdcService {
         },
         vdcStorageProfiles,
         networkPoolReference: vcdConfig.admin.vdc.NetworkPoolReference,
-        resourceGuaranteedMemory: Number(data.memoryReservation),
-        resourceGuaranteedCpu: Number(data.cpuReservation),
+        resourceGuaranteedMemory: Number(data.memoryReservation.value) / 100,
+        resourceGuaranteedCpu: Number(data.cpuReservation.value) / 100,
         cores: Number(data.generation.cpu[0].value),
         vCpuInMhz: Number(datacenterMetadata.cpuSpeed),
         ram: Number(data.generation.ram[0].value),
@@ -389,7 +389,7 @@ export class VdcService {
       props['vdcId'],
     );
     const recordListForFront: NamedDiskDto[] = [];
-    recordList.forEach((element) => {
+    for (const element of recordList) {
       const id = element.href.split('disk/')[1];
       const name = element.name;
       const sizeMb = element.sizeMb;
@@ -398,6 +398,17 @@ export class VdcService {
       const ownerName = element.ownerName;
       const status = element.status;
       const attachedVmCount = element.attachedVmCount;
+      let attachedVms: NamedDiskAttachedVms[] = [];
+      if (attachedVmCount > 0) {
+        const attachedVmList =
+          await this.vdcWrapperService.getVmAttachedNamedDisk(session, id);
+        attachedVms = attachedVmList.data.vmReference.map((vm) => {
+          return {
+            name: vm.name,
+            id: vm.href.split('/').slice(-1)[0],
+          };
+        });
+      }
       recordListForFront.push({
         id,
         name,
@@ -407,13 +418,14 @@ export class VdcService {
         ownerName,
         status,
         attachedVmCount,
+        attachedVms,
         busType: element.busType,
         busSubType: element.busSubType,
         sharingType: element.sharingType,
         busTypeDesc: element.busTypeDesc,
         policyId: element.storageProfile.split('/').slice(-1)[0],
       });
-    });
+    }
     return recordListForFront;
   }
 
@@ -618,12 +630,17 @@ export class VdcService {
         adminSession,
         gen.id,
       );
+      const metadata = await this.datacenterService.getDatacenterMetadata(
+        '',
+        gen.id,
+      );
       const filteredComputePolicies: ComputeCapacity = {
         cpu: {
           allocation: computePolicies.computeCapacity.cpu.allocation,
           reserved: computePolicies.computeCapacity.cpu.reserved,
           total: computePolicies.computeCapacity.cpu.total,
           used: computePolicies.computeCapacity.cpu.used,
+          cpuSpeed: metadata.cpuSpeed as number,
         },
         ram: {
           allocation: computePolicies.computeCapacity.memory.allocation,
