@@ -24,6 +24,7 @@ import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
+import { VmModule } from '../../../vm/vm.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -48,6 +49,7 @@ describe('ServiceController', () => {
         EdgeGatewayModule,
         UvdeskWrapperModule,
         InvoicesModule,
+        VmModule,
       ],
       providers: [
         ServiceAdminService,
