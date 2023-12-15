@@ -355,14 +355,7 @@ export class PaygServiceService {
     };
   }
 
-  async getPaygVdcCalculator(
-    dto: CreatePaygVdcServiceDto,
-    options: SessionRequest,
-  ) {
-    const userId = options.user.userId;
-    const firstItem = await this.itemTypeTableService.findById(
-      dto.itemsTypes[0].itemTypeId,
-    );
+  async getPaygVdcCalculator(dto: CreatePaygVdcServiceDto) {
     const cost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
 
@@ -371,14 +364,15 @@ export class PaygServiceService {
         ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
       );
       return {
-        cost: item.cost,
+        cost: item.cost * 60,
         code: parents[2],
         value: item.value,
       };
     });
     return {
-      items: filteredCostItems,
+      itemsPer: filteredCostItems,
       totalCost: cost.totalCost,
+      perHour: cost.totalCost / dto.duration / 24,
     };
   }
 }
