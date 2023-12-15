@@ -46,21 +46,6 @@ import { TransactionsReturnDto } from '../dto/return/transactions-return.dto';
 export class ServiceAdminController {
   constructor(private readonly service: ServiceAdminService) {}
 
-  @Delete('/all/:serviceCount')
-  @ApiParam({
-    name: 'serviceCount',
-    type: 'number',
-    description: 'number of all services ',
-  })
-  @ApiOperation({ summary: 'Delete all services' })
-  async adminDeleteAll(
-    @Req() options: SessionRequest,
-    @Param('serviceCount') serviceCount: number,
-  ): Promise<void> {
-    console.log(serviceCount);
-    await this.service.deleteAllServices(serviceCount, options);
-  }
-
   @Delete(':serviceInstanceId')
   @ApiOperation({ summary: 'Delete service by Admin' })
   @ApiParam({

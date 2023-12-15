@@ -57,7 +57,7 @@ import { BudgetingModule } from '../budgeting/budgeting.module';
     AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
-    DatacenterModule,
+    forwardRef(() => DatacenterModule),
     SystemSettingsTableModule,
     ServiceItemsTableModule,
     ServiceInstancesTableModule,

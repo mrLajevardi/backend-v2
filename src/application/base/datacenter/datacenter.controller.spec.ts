@@ -6,6 +6,7 @@ import { mockProviderVdcs } from './mock/providers-vdcs.mock';
 import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
 import { DatacenterFactoryService } from './service/datacenter.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { CrudModule } from '../crud/crud.module';
 
 describe('GroupController', () => {
   let controller: DatacenterController;
@@ -32,7 +33,7 @@ describe('GroupController', () => {
       },
     ];
     module = await Test.createTestingModule({
-      imports: [MainWrapperModule],
+      imports: [MainWrapperModule, CrudModule],
       providers: [
         {
           provide: BASE_DATACENTER_SERVICE,

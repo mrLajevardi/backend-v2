@@ -13,6 +13,7 @@ import { GetProviderVdcsParams } from 'src/wrappers/vcloud-wrapper/services/admi
 import { GetProviderVdcsMetadataDto } from './dto/get-provider-vdcs-metadata.dto';
 import { VdcUnits } from 'src/application/vdc/enum/vdc-units.enum';
 import { GetProviderVdcDto } from './dto/get-provider-vdc.dto';
+import { UpdateProviderVdcMetadataBody } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/update-provider-vdc-metadata.dto';
 
 @Injectable()
 export class AdminVdcWrapperService {
@@ -337,5 +338,28 @@ export class AdminVdcWrapperService {
         }),
       );
     return providerVdc.data;
+  }
+
+  async updateProviderMetadata(
+    config: UpdateProviderVdcMetadataBody,
+    authToken: string,
+    providerVdcId: string,
+  ): Promise<void> {
+    const formattedId = providerVdcId.split('providervdc:').slice(-1)[0];
+    const endpoint =
+      'AdminVdcEndpointService.updateProviderVdcMetadataEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    await this.vcloudWrapperService.request<GetProviderVdcsMetadataDto>(
+      wrapper({
+        urlParams: {
+          providerVdcId: formattedId,
+        },
+        body: config,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }),
+    );
   }
 }

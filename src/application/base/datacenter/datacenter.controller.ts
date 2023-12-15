@@ -6,7 +6,16 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Inject,
+  Param,
+  Query,
+  Body,
+  Put,
+} from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from './dto/datacenter-config-gen-items.query.dto';
@@ -15,8 +24,10 @@ import {
   BaseDatacenterService,
 } from './interface/datacenter.interface';
 import { Public } from '../security/auth/decorators/ispublic.decorator';
+import { CreateDatacenterDto } from './dto/create-datacenter.dto';
 import { DataCenterList } from './dto/datacenter-list.dto';
 import { DatacenterDetails } from './dto/datacenter-details.dto';
+import { GetDatacenterConfigsQueryDto } from './dto/get-datacenter-configs.dto';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -96,5 +107,35 @@ export class DatacenterController {
   ): Promise<DatacenterDetails> {
     const result = await this.service.getDatacenterDetails(datacenterName);
     return result;
+  }
+
+  @Get('/groupedConfiguration')
+  @ApiOperation({
+    summary: 'return grouped by Datacenter configurations',
+  })
+  @ApiResponse({
+    type: CreateDatacenterDto,
+  })
+  async getDatacenterDefault(
+    @Query() query: GetDatacenterConfigsQueryDto,
+  ): Promise<CreateDatacenterDto> {
+    const result = await this.service.getDatacenterConfigs(query);
+    return result;
+  }
+
+  @Put()
+  @ApiOperation({
+    summary: 'updates datacenter configs',
+  })
+  async updateDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
+    return this.service.updateDatacenter(dto);
+  }
+
+  @Post()
+  @ApiOperation({
+    summary: 'creates a datacenter',
+  })
+  async createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
+    return this.service.createDatacenter(dto);
   }
 }

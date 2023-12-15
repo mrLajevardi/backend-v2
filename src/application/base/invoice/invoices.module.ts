@@ -19,7 +19,7 @@ import { PaygCostCalculationService } from './service/payg-cost-calculation.serv
   imports: [
     DatabaseModule,
     CrudModule,
-    DatacenterModule,
+    forwardRef(() => DatacenterModule),
     UserModule,
     forwardRef(() => VdcModule),
     // VgpuModule,
