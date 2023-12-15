@@ -4,7 +4,7 @@
 // @Injectable()
 // export class PaygRobotService {
 //   constructor(private readonly vmWrapperService: VmWrapperService) {}
-  
+
 //   checkVmEvents() {
 //     const event = await this.vmWrapperService.eventVm()
 //   }

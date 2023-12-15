@@ -1,4 +1,4 @@
-import { VmPowerStateEventEnum } from "../enum/vm-power-state-event.enum";
+import { VmPowerStateEventEnum } from '../enum/vm-power-state-event.enum';
 
 export interface EventVmDto {
   resultTotal: number;
