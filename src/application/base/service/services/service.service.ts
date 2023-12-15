@@ -539,8 +539,8 @@ export class ServiceService {
       where,
       relations: ['serviceItems', 'serviceType'],
       order: {
-        status: { direction: 'ASC' },
         createDate: { direction: 'DESC' },
+        status: { direction: 'ASC' },
       },
     });
     console.log(services);
@@ -552,6 +552,7 @@ export class ServiceService {
         expired: expired,
         retryCount: service.retryCount,
         daysLeft: service.daysLeft,
+        createDate:service.createDate
       };
     });
     return extendedServiceList;

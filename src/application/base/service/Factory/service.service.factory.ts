@@ -123,6 +123,7 @@ export class ServiceServiceFactory {
         taskDetail,
         vdcItems.description ? vdcItems.description : '',
         serviceInstance.daysLeft <= extensionDay,
+        serviceInstance.createDate,
       );
 
     //Cpu , Ram , Disk , Vm
