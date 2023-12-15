@@ -56,29 +56,6 @@ export class ServiceAdminService {
     private readonly servicePropertiesService: ServicePropertiesService,
   ) {}
 
-  async deleteAllServices(
-    count: number,
-    options: SessionRequest,
-  ): Promise<void> {
-    const serviceInstances = await this.serviceInstancesTable.find({
-      where: {
-        serviceTypeId: Not(ILike('aradAiDemo')),
-        isDeleted: false,
-      },
-    });
-    console.log(serviceInstances.length, count);
-    if (serviceInstances.length == count) {
-      for (const serviceInstance of serviceInstances) {
-        try {
-          await this.deleteService(options, serviceInstance.id);
-          console.log('deleting', serviceInstance.id);
-        } catch (error) {
-          console.log('unable to delete ', serviceInstance.id);
-        }
-      }
-    }
-  }
-
   async deleteService(
     options: SessionRequest,
     serviceInstanceId: string,

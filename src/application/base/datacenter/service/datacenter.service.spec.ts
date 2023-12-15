@@ -15,6 +15,11 @@ import { DatacenterFactoryService } from './datacenter.factory.service';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { DatacenterDetails } from '../dto/datacenter-details.dto';
+import { CrudModule } from '../../crud/crud.module';
+import { DatabaseModule } from '@faker-js/faker';
+import { DatacenterAdminService } from './datacenter.admin.service';
+import { forwardRef } from '@nestjs/common';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
@@ -66,10 +71,17 @@ describe('DatacenterService', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
+      imports: [
+        DatacenterTableModule,
+        MainWrapperModule,
+        SessionsModule,
+        CrudModule,
+        forwardRef(() => InvoicesModule),
+      ],
       providers: [
         DatacenterService,
         DatacenterFactoryService,
+        DatacenterAdminService,
         {
           provide: AdminVdcWrapperService,
           useValue: createWrapperMockService(
@@ -168,10 +180,17 @@ describe('DatacenterService', () => {
       const wrongMetadataMock = cloneDeep(mockDatacenterMetadata);
       wrongMetadataMock.metadataEntry[0].key = 'datacent';
       module = await Test.createTestingModule({
-        imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
+        imports: [
+          DatacenterTableModule,
+          MainWrapperModule,
+          SessionsModule,
+          CrudModule,
+          forwardRef(() => InvoicesModule),
+        ],
         providers: [
           DatacenterService,
           DatacenterFactoryService,
+          DatacenterAdminService,
           {
             provide: AdminVdcWrapperService,
             useValue: createWrapperMockService(
@@ -195,10 +214,17 @@ describe('DatacenterService', () => {
       const emptyMetadataMock = cloneDeep(mockDatacenterMetadata);
       emptyMetadataMock.metadataEntry = [];
       module = await Test.createTestingModule({
-        imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
+        imports: [
+          DatacenterTableModule,
+          MainWrapperModule,
+          SessionsModule,
+          CrudModule,
+          forwardRef(() => InvoicesModule),
+        ],
         providers: [
           DatacenterService,
           DatacenterFactoryService,
+          DatacenterAdminService,
           {
             provide: AdminVdcWrapperService,
             useValue: createWrapperMockService(
@@ -221,10 +247,17 @@ describe('DatacenterService', () => {
       const emptyProviderList = cloneDeep(mockProviderVdcs);
       emptyProviderList.values = [];
       module = await Test.createTestingModule({
-        imports: [DatacenterTableModule, MainWrapperModule, SessionsModule],
+        imports: [
+          DatacenterTableModule,
+          MainWrapperModule,
+          SessionsModule,
+          CrudModule,
+          forwardRef(() => InvoicesModule),
+        ],
         providers: [
           DatacenterService,
           DatacenterFactoryService,
+          DatacenterAdminService,
           {
             provide: AdminVdcWrapperService,
             useValue: createWrapperMockService(
@@ -250,6 +283,7 @@ describe('DatacenterService', () => {
       const datacenterName = 'arad';
 
       const res: DatacenterDetails = {
+        title: 'امین',
         name: 'arad',
         diskList: [
           { itemTypeName: 'Archive-3000', enabled: true },
@@ -265,8 +299,8 @@ describe('DatacenterService', () => {
         enabled: true,
         location: 'example-location',
         gens: [
-          { name: 'g2', enabled: true, cpuSpeed: 2500 },
-          { name: 'g2', enabled: true, cpuSpeed: 2500 },
+          { name: 'g2', enabled: true, cpuSpeed: 2500, id: 'd' },
+          { name: 'g2', enabled: true, cpuSpeed: 2500, id: 'd' },
         ],
         providers: 'example-datacenter-(g2-2.5/g2-2.5)',
       };
@@ -290,6 +324,7 @@ describe('DatacenterService', () => {
       const datacenterName = '';
 
       const res: DatacenterDetails = {
+        title: 'امین',
         name: 'null',
         diskList: [
           { itemTypeName: 'null', enabled: false },
@@ -305,8 +340,8 @@ describe('DatacenterService', () => {
         enabled: false,
         location: 'null',
         gens: [
-          { name: 'null', enabled: false, cpuSpeed: 0 },
-          { name: 'null', enabled: false, cpuSpeed: 0 },
+          { name: 'null', enabled: false, cpuSpeed: 0, id: 'd' },
+          { name: 'null', enabled: false, cpuSpeed: 0, id: 'd' },
         ],
         providers: 'null',
       };
