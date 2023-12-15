@@ -1,13 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
-import { InvoiceItemsDto } from '../dto/create-service-invoice.dto';
+import {
+  CreateServiceInvoiceDto,
+  InvoiceItemsDto,
+} from '../dto/create-service-invoice.dto';
 import { InvoiceFactoryService } from './invoice-factory.service';
 import { CostCalculationService } from './cost-calculation.service';
 import {
   InvoiceItemCost,
   TotalInvoiceItemCosts,
 } from '../interface/invoice-item-cost.interface';
+import { CalculateOptions } from '../interface/calculate-options.interface';
+import { CreatePaygVdcServiceDto } from '../../service/dto/create-payg-vdc-service.dto';
 
 @Injectable()
 export class PaygCostCalculationService {
@@ -66,6 +71,7 @@ export class PaygCostCalculationService {
   async calculateVdcPaygService(
     computeItems: InvoiceItemCost[],
     service: ServiceInstances,
+    durationInMin: number,
   ): Promise<TotalInvoiceItemCosts> {
     const serviceItems = await this.serviceItemsTableService.find({
       where: {
@@ -103,10 +109,29 @@ export class PaygCostCalculationService {
       itemsSum: itemsSum,
       itemsTotalCosts: totalCost,
     };
-    const periodItem = groupedItems.period;
-    const supportCosts = groupedItems.guaranty.fee * parseInt(periodItem.value);
+    const supportCosts = groupedItems.guaranty.fee;
     const invoiceTotalCosts =
       totalInvoiceItemCosts.itemsTotalCosts + supportCosts;
+    return {
+      itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
+      itemsSum: totalInvoiceItemCosts.itemsSum,
+      totalCost: invoiceTotalCosts,
+    };
+  }
+
+  async calculateVdcPaygTypeInvoice(
+    dto: CreatePaygVdcServiceDto,
+  ): Promise<TotalInvoiceItemCosts> {
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      dto.itemsTypes,
+    );
+    const totalInvoiceItemCosts =
+      await this.costCalculationService.calculateVdcGenerationItems(
+        groupedItems,
+      );
+    const supportCosts = groupedItems.guaranty.fee;
+    const invoiceTotalCosts =
+      (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) * dto.duration;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,

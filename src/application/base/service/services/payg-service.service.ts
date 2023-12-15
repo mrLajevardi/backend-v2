@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -29,6 +29,10 @@ import { ItemTypesTableService } from '../../crud/item-types-table/item-types-ta
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
+import { CostCalculationService } from '../../invoice/service/cost-calculation.service';
+import * as paygConfg from '../configs/payg.conf.json';
+import { UserInfoService } from '../../user/service/user-info.service';
+import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 
 @Injectable()
 export class PaygServiceService {
@@ -49,6 +53,7 @@ export class PaygServiceService {
     private readonly itemTypeTableService: ItemTypesTableService,
     private readonly taskTableService: TasksTableService,
     private readonly taskManagerService: TaskManagerService,
+    private readonly userInfoService: UserInfoService,
   ) {}
 
   async checkAllVdcVmsEvents(): Promise<void> {
@@ -58,6 +63,7 @@ export class PaygServiceService {
         status: ServiceStatusEnum.Success,
         userId: 1043,
         isDeleted: false,
+        servicePlanType: ServicePlanTypeEnum.Payg,
       },
     });
     for (const service of activeServices) {
@@ -139,10 +145,13 @@ export class PaygServiceService {
         }
       }
       const sum = this.sumComputeItems(totalVpcCost);
+      const duration = new Date().getTime() - service.offset.getTime();
+      const durationInMin = Math.round(duration / 1000 / 60);
       const totalCost =
         await this.paygCostCalculationService.calculateVdcPaygService(
           sum,
           service,
+          durationInMin,
         );
       try {
         await this.budgetingService.paidFromBudgetCredit(
@@ -250,10 +259,19 @@ export class PaygServiceService {
     dto: CreatePaygVdcServiceDto,
     options: SessionRequest,
   ): Promise<TaskReturnDto> {
+    if (dto.duration < paygConfg.minimumDuration) {
+      throw new BadRequestException();
+    }
     const userId = options.user.userId;
     const firstItem = await this.itemTypeTableService.findById(
       dto.itemsTypes[0].itemTypeId,
     );
+    const cost =
+      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
+    const credit = await this.userInfoService.getUserCreditBy(userId);
+    if (cost.totalCost > credit) {
+      throw new NotEnoughCreditException();
+    }
     const serviceInstanceId = await this.extendService.createServiceInstance(
       userId,
       firstItem.serviceTypeId,
@@ -261,6 +279,16 @@ export class PaygServiceService {
       null,
       firstItem.datacenterName,
       ServicePlanTypeEnum.Payg,
+      VmPowerStateEventEnum.PowerOff,
+      new Date(),
+    );
+    await this.extendService.addGenIdToServiceProperties()
+    await this.budgetingService.increaseBudgetingService(
+      userId,
+      serviceInstanceId,
+      {
+        increaseAmount: cost.totalCost,
+      },
     );
     for (const item of dto.itemsTypes) {
       await this.serviceItemsTableService.create({

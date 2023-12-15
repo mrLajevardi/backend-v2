@@ -3,7 +3,13 @@ import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
 } from '../../invoice/dto/create-service-invoice.dto';
-import { IsArray, IsObject, ValidateIf, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsObject,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreatePaygVdcServiceDto {
@@ -16,4 +22,8 @@ export class CreatePaygVdcServiceDto {
   @ValidateNested({ each: true })
   @ValidateIf((object: CreateServiceInvoiceDto) => object.templateId === null)
   itemsTypes: InvoiceItemsDto[];
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  duration: number;
 }
