@@ -48,6 +48,8 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
 
   createDate?: Date;
 
+  credit?: number;
+
   constructor(
     id: string,
     status: ServiceStatusEnum,
@@ -62,6 +64,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     description?: string,
     extendable?: boolean,
     createDate?: Date,
+    credit?: number,
   ) {
     super();
     this.id = id;
@@ -77,6 +80,7 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     this.description = description;
     this.extendable = extendable;
     this.createDate = createDate;
+    this.credit = credit;
   }
 
   static getMock(): GetAllVdcServiceWithItemsResultDto[] {

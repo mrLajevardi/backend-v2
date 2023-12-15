@@ -25,6 +25,7 @@ import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -50,6 +51,7 @@ describe('ServiceController', () => {
         UvdeskWrapperModule,
         InvoicesModule,
         VmModule,
+        VServiceInstancesTableModule,
       ],
       providers: [
         ServiceAdminService,

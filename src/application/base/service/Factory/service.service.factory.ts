@@ -124,6 +124,7 @@ export class ServiceServiceFactory {
         vdcItems.description ? vdcItems.description : '',
         serviceInstance.daysLeft <= extensionDay,
         serviceInstance.createDate,
+        serviceInstance.credit,
       );
 
     //Cpu , Ram , Disk , Vm
