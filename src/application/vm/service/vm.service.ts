@@ -48,7 +48,7 @@ import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-w
 import { UploadFileDto } from '../dto/upload-file-info.dto';
 import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/dto/upload-file.dto';
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
-import { GetCodeDisk } from '../../vdc/utils/disk.utils';
+import { GetCodeDisk } from '../../vdc/utils/disk-functions.utils';
 
 @Injectable()
 export class VmService {

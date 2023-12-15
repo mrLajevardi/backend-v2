@@ -20,6 +20,7 @@ import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
+import { VmModule } from '../../../vm/vm.module';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -43,6 +44,7 @@ describe('CreateServiceService', () => {
         TransactionsModule,
         ServicePropertiesModule,
         UvdeskWrapperModule,
+        VmModule,
       ],
       providers: [
         CreateServiceService,

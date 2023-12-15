@@ -30,6 +30,7 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { VmModule } from '../../vm/vm.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
     ServiceInstancesTableModule,
     TaskManagerModule,
     EdgeGatewayModule,
+    VmModule,
   ],
   providers: [
     ServiceService,
