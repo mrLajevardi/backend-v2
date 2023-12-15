@@ -253,6 +253,6 @@ export class ServiceController {
     @Body() dto: CreatePaygVdcServiceDto,
     @Request() options: SessionRequest,
   ): Promise<any> {
-    return this.paygService.getPaygVdcCalculator(dto, options);
+    return this.paygService.getPaygVdcCalculator(dto);
   }
 }
