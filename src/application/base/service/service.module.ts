@@ -32,6 +32,7 @@ import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { PaygServiceService } from './services/payg-service.service';
 import { BudgetingModule } from '../budgeting/budgeting.module';
+import { VmModule } from '../../vm/vm.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { BudgetingModule } from '../budgeting/budgeting.module';
     ServiceInstancesTableModule,
     TaskManagerModule,
     EdgeGatewayModule,
+    VmModule,
   ],
   providers: [
     ServiceService,

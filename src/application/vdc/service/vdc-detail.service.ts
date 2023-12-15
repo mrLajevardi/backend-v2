@@ -7,6 +7,7 @@ import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/v
 import { ServicePropertiesService } from '../../base/service-properties/service-properties.service';
 import { VdcInvoiceDetailsInfoResultDto } from '../dto/vdc-invoice-details-info.result.dto';
 import {
+  DiskItemCodes,
   ItemTypeCodes,
   VdcGenerationItemCodes,
   VdcGenerationItemUnit,
@@ -31,9 +32,10 @@ import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-a
 import { EditGeneralInfoVdcDto } from '../../../wrappers/vcloud-wrapper/services/user/vdc/dto/edit-general-info-vdc.dto';
 import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
 import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
-import { GetCodeDisk } from '../utils/disk.utils';
+import { CalcSwapStorage, GetCodeDisk } from '../utils/disk-functions.utils';
 import { OrganizationTableService } from '../../base/crud/organization-table/organization-table.service';
 import { GetVdcIdBy } from '../utils/vdc-properties.utils';
+import { autoInject, inject } from 'async';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -46,6 +48,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     private readonly serviceItemService: BaseServiceItem,
     private readonly serviceService: ServiceService,
     private readonly organizationTableService: OrganizationTableService,
+    private readonly vmService: VmService,
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
@@ -127,6 +130,7 @@ export class VdcDetailService implements BaseVdcDetailService {
       (service) =>
         service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Vm,
     ).usage;
+
     res2.cpu.usage = vdcDetails.serviceItems.find(
       (service) =>
         service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Cpu,
@@ -140,18 +144,43 @@ export class VdcDetailService implements BaseVdcDetailService {
     res2.guaranty.title = await this.serviceItemService.getGuarantyTitleBy(
       serviceInstanceId,
     );
-    res2.disk = (await this.getStorageDetailVdc(serviceInstanceId)).map(
-      (storage) => {
-        return {
+
+    const diskModel = (await this.getStorageDetailVdc(serviceInstanceId)).map(
+      async (storage) => {
+        const diskCode = GetCodeDisk(storage.title);
+
+        const res: VdcInvoiceDetailsInfoResultDto = {
           title: storage.title,
           usage: storage.usage,
           value: storage.value.toString(),
-          code: GetCodeDisk(storage.title),
+          code: diskCode,
           price: 0,
           unit: 'MB',
-        } as VdcInvoiceDetailsInfoResultDto;
+          tax: 0,
+          priceWithTax: 0,
+        };
+
+        if (res.code == DiskItemCodes.Standard) {
+          const storage = await CalcSwapStorage(
+            {
+              storageLimit: Number(res.value),
+              storageUsed: res.usage,
+              memoryAllocation: Number(res2.ram.value),
+              serviceInstanceId: serviceInstanceId,
+            },
+            this.vmService,
+            option as SessionRequest,
+          );
+
+          res.usage = Number(storage.used);
+          res.value = storage.limit.toString();
+        }
+
+        return res;
       },
     );
+
+    res2.disk = await Promise.all(diskModel);
 
     return res2;
   }

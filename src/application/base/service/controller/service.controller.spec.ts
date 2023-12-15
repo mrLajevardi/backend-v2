@@ -24,6 +24,7 @@ import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
+import { VmModule } from '../../../vm/vm.module';
 import { PaygServiceService } from '../services/payg-service.service';
 import { BudgetingModule } from '../../budgeting/budgeting.module';
 
@@ -50,6 +51,7 @@ describe('ServiceController', () => {
         EdgeGatewayModule,
         UvdeskWrapperModule,
         InvoicesModule,
+        VmModule,
         BudgetingModule,
       ],
       providers: [
