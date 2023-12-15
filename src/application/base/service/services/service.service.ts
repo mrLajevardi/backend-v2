@@ -466,7 +466,7 @@ export class ServiceService {
     let cpuSpeed: VcloudMetadata = 0,
       // daysLeft = 0,
       isTicketSent = false,
-      vdcItems: GetOrgVdcResult = {};
+      vdcItems: GetOrgVdcResult = null;
     let model: GetAllVdcServiceWithItemsResultDto = {};
     for (const serviceInstance of allServicesInstances) {
       if (
@@ -479,7 +479,7 @@ export class ServiceService {
 
         vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
       }
-      if (vdcItems !== null) {
+      if (vdcItems != null) {
         const info = ({ isTicketSent } =
           await this.serviceFactory.getPropertiesOfServiceInstance(
             serviceInstance,
