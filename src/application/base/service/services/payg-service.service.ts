@@ -20,6 +20,15 @@ import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/servic
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
 import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
+import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { ExtendServiceService } from './extend-service.service';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
+import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
+import { TaskManagerService } from '../../tasks/service/task-manager.service';
 
 @Injectable()
 export class PaygServiceService {
@@ -35,6 +44,11 @@ export class PaygServiceService {
     private readonly adminEdgeGatewayWrapperService: AdminEdgeGatewayWrapperService,
     private readonly servicePropertiesTableService: ServicePropertiesTableService,
     private readonly edgeWrapperService: EdgeGatewayWrapperService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
+    private readonly extendService: ExtendServiceService,
+    private readonly itemTypeTableService: ItemTypesTableService,
+    private readonly taskTableService: TasksTableService,
+    private readonly taskManagerService: TaskManagerService,
   ) {}
 
   async checkAllVdcVmsEvents(): Promise<void> {
@@ -76,8 +90,8 @@ export class PaygServiceService {
         const urnVmId = 'urn:vcloud:vm:' + id.replace('vm-', '');
         const urnContainerId =
           'urn:vcloud:vapp:' + containerId.replace('vapp-', '');
-        const offset = new Date('2023-12-13T11:51:19.012Z').toISOString();
-        let lastState: VmPowerStateEventEnum = 0;
+        const offset = service.offset;
+        let lastState = service.lastState;
         const eventType = 'com/vmware/vcloud/event/vm/change_state';
         const filter = `(timestamp=gt=${offset};(eventEntity.id==${urnVmId},eventEntity.id==${urnContainerId});eventType==${eventType})`;
         const events = await this.vmWrapperService.eventVm(
@@ -230,5 +244,55 @@ export class PaygServiceService {
     } catch (err) {
       console.log(err);
     }
+  }
+
+  async createPaygVdcService(
+    dto: CreatePaygVdcServiceDto,
+    options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    const userId = options.user.userId;
+    const firstItem = await this.itemTypeTableService.findById(
+      dto.itemsTypes[0].itemTypeId,
+    );
+    const serviceInstanceId = await this.extendService.createServiceInstance(
+      userId,
+      firstItem.serviceTypeId,
+      null,
+      null,
+      firstItem.datacenterName,
+      ServicePlanTypeEnum.Payg,
+    );
+    for (const item of dto.itemsTypes) {
+      await this.serviceItemsTableService.create({
+        serviceInstanceId,
+        itemTypeId: item.itemTypeId,
+        quantity: 0,
+        value: item.value,
+        itemTypeCode: '',
+      });
+    }
+    const task = await this.taskTableService.create({
+      userId: userId,
+      serviceInstanceId,
+      operation: 'createDataCenter',
+      details: null,
+      startTime: new Date(),
+      endTime: null,
+      status: 'running',
+    });
+    await this.taskManagerService.addTask({
+      serviceInstanceId,
+      customTaskId: task.taskId,
+      vcloudTask: null,
+      nextTask: 'createOrg',
+      requestOptions: {
+        ...options.user,
+        serviceInstanceId: serviceInstanceId,
+      },
+      target: 'object',
+    });
+    return {
+      taskId: task.taskId,
+    };
   }
 }

@@ -163,7 +163,7 @@ export class ExtendServiceService {
   async createServiceInstance(
     userId: number,
     serviceTypeID: string,
-    expireDate: Date,
+    expireDate: Date | null,
     name = null,
     datacenterName: string,
     servicePlanType: number | null = null,
