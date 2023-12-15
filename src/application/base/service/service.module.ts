@@ -30,6 +30,8 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { PaygServiceService } from './services/payg-service.service';
+import { BudgetingModule } from '../budgeting/budgeting.module';
 import { VmModule } from '../../vm/vm.module';
 import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/v-service-instances-table.module';
 
@@ -43,6 +45,7 @@ import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/
     UvdeskWrapperModule,
     PaymentModule,
     MainWrapperModule,
+    BudgetingModule,
     forwardRef(() => InvoicesModule),
     // forwardRef(() => TasksModule),
     // forwardRef(() => TasksModule),
@@ -56,7 +59,7 @@ import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/
     AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
-    DatacenterModule,
+    forwardRef(() => DatacenterModule),
     SystemSettingsTableModule,
     ServiceItemsTableModule,
     ServiceInstancesTableModule,
@@ -74,6 +77,7 @@ import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/
     DeleteServiceService,
     ServiceAdminService,
     ServiceServiceFactory,
+    PaygServiceService,
   ],
   controllers: [ServiceController, ServiceAdminController],
   exports: [
@@ -82,6 +86,7 @@ import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/
     ExtendServiceService,
     DiscountsService,
     ServiceChecksService,
+    PaygServiceService,
   ],
 })
 export class ServiceModule {}

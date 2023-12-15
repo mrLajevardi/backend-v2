@@ -36,7 +36,7 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
   imports: [
     MainWrapperModule,
     DatabaseModule,
-    DatacenterModule,
+    forwardRef(() => DatacenterModule),
     MainWrapperModule,
     CrudModule,
     LoggerModule,

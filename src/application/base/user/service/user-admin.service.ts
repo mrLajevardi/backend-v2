@@ -18,6 +18,7 @@ import { User } from 'src/infrastructure/database/entities/User';
 import { PaginationReturnDto } from 'src/infrastructure/dto/pagination-return.dto';
 import { SystemErrorDto } from '../dto/system-error.dto';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
+import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 
 @Injectable()
 export class UserAdminService {
@@ -245,19 +246,13 @@ export class UserAdminService {
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
     }
-    await this.userTable.updateAll(
-      { id: userId },
-      {
-        credit: user.credit + credit,
-      },
-    );
     await this.transactionsTable.create({
       userId: user.id.toString(),
       dateTime: new Date(),
       value: credit,
       invoiceId: null,
       description: 'INC',
-      paymentType: 3,
+      paymentType: PaymentTypes.PayToUserCreditByAdmin,
       paymentToken: null,
       isApproved: true,
       serviceInstanceId: null,

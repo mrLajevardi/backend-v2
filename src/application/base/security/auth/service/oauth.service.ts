@@ -470,7 +470,7 @@ export class OauthService {
     newUser.realm = null;
     newUser.hasVdc = null;
     newUser.emailToken = null;
-    newUser.credit = 0;
+    // newUser.credit = 0;
     newUser.emailVerified = false;
     newUser.deleted = false;
 

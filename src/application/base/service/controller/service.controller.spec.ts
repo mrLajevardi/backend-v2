@@ -25,6 +25,8 @@ import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 import { VmModule } from '../../../vm/vm.module';
+import { PaygServiceService } from '../services/payg-service.service';
+import { BudgetingModule } from '../../budgeting/budgeting.module';
 import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('ServiceController', () => {
@@ -52,6 +54,7 @@ describe('ServiceController', () => {
         InvoicesModule,
         VmModule,
         VServiceInstancesTableModule,
+        BudgetingModule,
       ],
       providers: [
         ServiceAdminService,
@@ -62,6 +65,7 @@ describe('ServiceController', () => {
         VdcService,
         VdcFactoryService,
         ServiceServiceFactory,
+        PaygServiceService,
       ],
       controllers: [ServiceController],
     }).compile();

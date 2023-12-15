@@ -21,12 +21,6 @@ export class Transactions {
   @Column('float', { name: 'Value', precision: 53 })
   value: number;
 
-  @Column('float', { name: 'before', precision: 53 })
-  before: number;
-
-  @Column('float', { name: 'after', precision: 53 })
-  after: number;
-
   @Column('int', { name: 'InvoiceID', nullable: true })
   invoiceId: number | null;
 

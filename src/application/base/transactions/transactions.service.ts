@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateTransactionsDto } from '../crud/transactions-table/dto/create-transactions.dto';
 import { TransactionsTableService } from '../crud/transactions-table/transactions-table.service';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
+import { PaymentTypes } from '../crud/transactions-table/enum/payment-types.enum';
 
 @Injectable()
 export class TransactionsService {
@@ -21,5 +22,26 @@ export class TransactionsService {
     dto.invoiceId = invoiceId;
     dto.description = description;
     return await this.transactionTable.create(dto);
+  }
+
+  async create(
+    userId: number,
+    type: PaymentTypes,
+    value: number,
+    serviceInstanceId?: string,
+    description?: string,
+  ) {
+    const transaction = await this.transactionTable.create({
+      userId: userId.toString(),
+      value: value,
+      paymentType: type,
+      isApproved: true,
+      dateTime: new Date(),
+      serviceInstanceId,
+      description,
+    });
+    console.log(transaction);
+
+    return transaction;
   }
 }

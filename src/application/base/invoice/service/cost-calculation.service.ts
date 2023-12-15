@@ -96,6 +96,7 @@ export class CostCalculationService {
       totalCost: invoiceTotalCosts,
     };
   }
+
   async calculateRemainingPeriod(
     currentInvoiceItems: InvoiceItemsDto[],
     newInvoice: InvoiceItemsDto[],

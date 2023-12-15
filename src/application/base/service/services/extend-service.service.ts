@@ -35,6 +35,7 @@ import {
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
+import { VmPowerStateEventEnum } from 'src/wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
 
 @Injectable()
 export class ExtendServiceService {
@@ -163,10 +164,12 @@ export class ExtendServiceService {
   async createServiceInstance(
     userId: number,
     serviceTypeID: string,
-    expireDate: Date,
+    expireDate: Date | null,
     name = null,
     datacenterName: string,
     servicePlanType: number | null = null,
+    lastState: VmPowerStateEventEnum = null,
+    offset: Date = null,
   ): Promise<string> {
     const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
       where: {
@@ -176,7 +179,7 @@ export class ExtendServiceService {
     });
     const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
     const serviceType = await this.serviceTypeTable.findById(serviceTypeID);
-    const serivce = await this.serviceInstancesTable.create({
+    const service = await this.serviceInstancesTable.create({
       userId: userId,
       serviceType: serviceType,
       status: 1,
@@ -187,8 +190,10 @@ export class ExtendServiceService {
       name: name,
       servicePlanType,
       datacenterName,
+      offset,
+      lastState,
     });
-    return Promise.resolve(serivce.id);
+    return Promise.resolve(service.id);
   }
 
   //enable Vdc On Vcloud

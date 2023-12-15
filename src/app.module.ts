@@ -50,6 +50,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ClsModule } from 'nestjs-cls';
 import { EntitySubscriber } from './infrastructure/database/classes/entity.subscriber';
 import { EntityLogModule } from './application/base/entity-log/entity-log.module';
+import { BudgetingModule } from './application/base/budgeting/budgeting.module';
 
 @Module({
   imports: [
@@ -117,6 +118,7 @@ import { EntityLogModule } from './application/base/entity-log/entity-log.module
     CompanyModule,
     FileModule,
     EntityLogModule,
+    BudgetingModule,
   ],
   controllers: [AppController],
   providers: [

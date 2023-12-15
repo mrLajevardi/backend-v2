@@ -7,7 +7,7 @@ export enum ItemTypeCodes {
   CpuReservationItem = 'reservationPercentCpu',
   MemoryReservationItem = 'reservationPercentRam',
   GuarantyItem = 'guarantyItem',
-  PeriodItemItem = 'perioditem',
+  PeriodItem = 'periodItem',
 }
 
 export enum VdcGenerationItemCodes {
@@ -44,4 +44,15 @@ export enum GuarantyCode {
   Vip = 'حرفه ای ',
   Base = 'پایه',
   Practical = 'کاربردی',
+}
+
+export enum ItemTypeUnits {
+  PeriodItem = 'Month',
+  CpuReservation = '%',
+  MemoryReservation = '%',
+  VmItem = 'Count',
+  Ip = 'Ip',
+  Cpu = 'Cores',
+  Ram = 'GB',
+  Disk = 'GB',
 }

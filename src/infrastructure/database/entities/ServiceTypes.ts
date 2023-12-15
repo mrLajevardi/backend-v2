@@ -15,7 +15,12 @@ export class ServiceTypes {
   @Column('nvarchar', { name: 'Title' })
   title: string;
 
-  @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
+  @Column('nvarchar', {
+    primary: true,
+    name: 'DatacenterName',
+    nullable: true,
+    length: 50,
+  })
   datacenterName: string | null;
 
   @Column('float', { name: 'BaseFee', precision: 53 })

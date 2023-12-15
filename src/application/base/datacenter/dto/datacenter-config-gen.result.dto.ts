@@ -34,6 +34,11 @@ export class DatacenterConfigGenResultDto extends BaseResultDto {
   })
   title: VcloudMetadata;
 
+  @ApiProperty({
+    type: String,
+  })
+  location: VcloudMetadata;
+
   constructor(datacenter: string, gens: DatacenterGenerations[]) {
     super();
     this.datacenter = datacenter;

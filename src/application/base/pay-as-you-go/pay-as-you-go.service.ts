@@ -46,14 +46,11 @@ export class PayAsYouGoService {
     await this.transactionsTable.create(itmeData);
     //console.log(service);
 
-    const { credit } = await this.userTable.findById(userId);
-    console.log(credit);
-    if (credit < cost) {
-      return Promise.reject(new PaymentRequiredException());
-    }
-    await this.userTable.update(userId, {
-      credit: credit - cost,
-    });
+    // const { credit } = await this.userTable.findById(userId);
+    // console.log(credit);
+    // if (credit < cost) {
+    //   return Promise.reject(new PaymentRequiredException());
+    // }
   }
 
   async updateLastPAYG(serviceInstanceId: string, cost: number): Promise<void> {
