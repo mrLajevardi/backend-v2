@@ -83,7 +83,6 @@ export class DatacenterController {
     name: 'servicePlanType',
     enum: ServicePlanTypeEnum,
     required: true,
-    example: 'Static',
   })
   async getDatacenterItemsConfig(
     @Param('datacenterId') datacenterId: string,

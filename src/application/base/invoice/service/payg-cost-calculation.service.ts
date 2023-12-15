@@ -131,7 +131,10 @@ export class PaygCostCalculationService {
       );
     const supportCosts = groupedItems.guaranty.fee;
     const invoiceTotalCosts =
-      (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) * dto.duration;
+      (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) *
+      dto.duration *
+      60 *
+      24;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,

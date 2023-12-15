@@ -82,6 +82,7 @@ import { BudgetingModule } from '../budgeting/budgeting.module';
     ExtendServiceService,
     DiscountsService,
     ServiceChecksService,
+    PaygServiceService,
   ],
 })
 export class ServiceModule {}

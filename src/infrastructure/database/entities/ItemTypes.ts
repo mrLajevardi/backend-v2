@@ -104,7 +104,7 @@ export class ItemTypes {
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;
 
-  @Column('tinyint', { name: 'Type', nullable: false })
+  @Column('tinyint', { name: 'Type', nullable: true })
   type: ServicePlanTypeEnum;
 
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)

@@ -247,4 +247,12 @@ export class ServiceController {
   ): Promise<TaskReturnDto> {
     return this.paygService.createPaygVdcService(dto, options);
   }
+
+  @Post('/vdc/payg/calculator')
+  async vdcPaygCalculator(
+    @Body() dto: CreatePaygVdcServiceDto,
+    @Request() options: SessionRequest,
+  ): Promise<any> {
+    return this.paygService.getPaygVdcCalculator(dto, options);
+  }
 }

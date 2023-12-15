@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -33,6 +33,12 @@ import { CostCalculationService } from '../../invoice/service/cost-calculation.s
 import * as paygConfg from '../configs/payg.conf.json';
 import { UserInfoService } from '../../user/service/user-info.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import { Like } from 'typeorm';
+import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import { DatacenterService } from '../../datacenter/service/datacenter.service';
+import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
 
 @Injectable()
 export class PaygServiceService {
@@ -54,6 +60,9 @@ export class PaygServiceService {
     private readonly taskTableService: TasksTableService,
     private readonly taskManagerService: TaskManagerService,
     private readonly userInfoService: UserInfoService,
+    private readonly serviceItemTreeTableService: ServiceItemTypesTreeService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private readonly datacenterService: DatacenterService,
   ) {}
 
   async checkAllVdcVmsEvents(): Promise<void> {
@@ -283,7 +292,28 @@ export class PaygServiceService {
       VmPowerStateEventEnum.PowerOff,
       new Date(),
     );
-    // await this.extendService.addGenIdToServiceProperties()
+    const generationItem = await this.serviceItemTreeTableService.findOne({
+      where: {
+        codeHierarchy: Like(ItemTypeCodes.Generation + '_%'),
+      },
+    });
+    const genIdKey = 'genId';
+    const parent = generationItem.codeHierarchy.split(
+      ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+    )[1];
+    const datacenterList =
+      await this.datacenterService.getDatacenterConfigWithGen();
+    const targetDc = datacenterList.find((dc) => {
+      return dc.datacenter === generationItem.datacenterName.toLowerCase();
+    });
+    const gen = targetDc.gens.find((gen) => {
+      return gen.name === parent;
+    });
+    await this.servicePropertiesTableService.create({
+      serviceInstanceId,
+      propertyKey: genIdKey,
+      value: gen.id,
+    });
     await this.budgetingService.increaseBudgetingService(
       userId,
       serviceInstanceId,
@@ -322,6 +352,33 @@ export class PaygServiceService {
     });
     return {
       taskId: task.taskId,
+    };
+  }
+
+  async getPaygVdcCalculator(
+    dto: CreatePaygVdcServiceDto,
+    options: SessionRequest,
+  ) {
+    const userId = options.user.userId;
+    const firstItem = await this.itemTypeTableService.findById(
+      dto.itemsTypes[0].itemTypeId,
+    );
+    const cost =
+      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
+
+    const filteredCostItems = cost.itemsSum.map((item) => {
+      const parents = item.codeHierarchy.split(
+        ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+      );
+      return {
+        cost: item.cost,
+        code: parents[2],
+        value: item.value,
+      };
+    });
+    return {
+      items: filteredCostItems,
+      totalCost: cost.totalCost,
     };
   }
 }
