@@ -552,7 +552,7 @@ export class ServiceService {
         expired: expired,
         retryCount: service.retryCount,
         daysLeft: service.daysLeft,
-        createDate:service.createDate
+        createDate: service.createDate,
       };
     });
     return extendedServiceList;
