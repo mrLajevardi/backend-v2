@@ -5,10 +5,14 @@ import { ErrorDetail } from '../dto/return/error-detail.dto';
 import { ServiceItemsSum } from 'src/infrastructure/database/entities/views/service-items-sum';
 import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { ServicePaymentsTableService } from '../../crud/service-payments-table/service-payments-table.service';
 
 @Injectable()
 export class ServiceChecksService {
-  constructor(private readonly serviceItemsSumTable: ServiceItemsSumService) {}
+  constructor(
+    private readonly serviceItemsSumTable: ServiceItemsSumService,
+    private readonly servicePaymentsTableService: ServicePaymentsTableService,
+  ) {}
 
   //Moved from serviceChecks
   checkNatParams(data: object, keys: string[]): boolean | ErrorDetail {
@@ -99,5 +103,16 @@ export class ServiceChecksService {
       return errorDetail;
     }
     return null;
+  }
+
+  async getServiceCreditBy(serviceInstanceId: string): Promise<number> {
+    const servicePayment = await this.servicePaymentsTableService
+      .getQueryBuilder()
+      .select('SUM(ServicePayments.Price)', 'Credit')
+      .where(`ServicePayments.ServiceInstanceId= :serviceInstanceId`, {
+        serviceInstanceId,
+      })
+      .getRawOne();
+    return servicePayment.Credit;
   }
 }

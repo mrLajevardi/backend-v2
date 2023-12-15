@@ -9,7 +9,9 @@ import { NotificationModule } from '../../notification/notification.module';
 import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { UserAdminService } from '../service/user-admin.service';
 import { UserService } from '../service/user.service';
-import { RedisCacheService } from '../service/redis-cache.service';
+import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserInfoService } from '../service/user-info.service';
 
 describe('UserAdminController', () => {
   let controller: UserAdminController;
@@ -25,8 +27,14 @@ describe('UserAdminController', () => {
         JwtModule,
         NotificationModule,
         SecurityToolsModule,
+        TransactionsModule,
       ],
-      providers: [UserService, UserAdminService, RedisCacheService],
+      providers: [
+        UserService,
+        UserAdminService,
+        RedisCacheService,
+        UserInfoService,
+      ],
       controllers: [UserAdminController],
     }).compile();
 

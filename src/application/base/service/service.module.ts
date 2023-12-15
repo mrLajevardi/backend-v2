@@ -30,6 +30,8 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
 import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { PaygServiceService } from './services/payg-service.service';
+import { BudgetingModule } from '../budgeting/budgeting.module';
 import { VmModule } from '../../vm/vm.module';
 
 @Module({
@@ -42,6 +44,7 @@ import { VmModule } from '../../vm/vm.module';
     UvdeskWrapperModule,
     PaymentModule,
     MainWrapperModule,
+    BudgetingModule,
     forwardRef(() => InvoicesModule),
     // forwardRef(() => TasksModule),
     // forwardRef(() => TasksModule),
@@ -72,6 +75,7 @@ import { VmModule } from '../../vm/vm.module';
     DeleteServiceService,
     ServiceAdminService,
     ServiceServiceFactory,
+    PaygServiceService,
   ],
   controllers: [ServiceController, ServiceAdminController],
   exports: [
@@ -80,6 +84,7 @@ import { VmModule } from '../../vm/vm.module';
     ExtendServiceService,
     DiscountsService,
     ServiceChecksService,
+    PaygServiceService,
   ],
 })
 export class ServiceModule {}

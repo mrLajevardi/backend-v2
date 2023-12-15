@@ -13,9 +13,11 @@ import { UserAdminController } from './controller/user-admin.controller';
 import { AbilityModule } from '../security/ability/ability.module';
 import { LoginService } from '../security/auth/service/login.service';
 import { OtpService } from '../security/security-tools/otp.service';
-import { RedisCacheService } from './service/redis-cache.service';
+import { RedisCacheService } from '../../../infrastructure/utils/services/redis-cache.service';
 import { AuthModule } from '../security/auth/auth.module';
+import { VitrificationServiceService } from './service/vitrification.service.service';
 import { UserInfoService } from './service/user-info.service';
+import { TransactionsModule } from '../transactions/transactions.module';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { UserInfoService } from './service/user-info.service';
     NotificationModule,
     SecurityToolsModule,
     AbilityModule,
+    TransactionsModule,
     forwardRef(() => AuthModule),
   ],
   providers: [
@@ -35,10 +38,11 @@ import { UserInfoService } from './service/user-info.service';
     LoginService,
     OtpService,
     RedisCacheService,
+    VitrificationServiceService,
     UserInfoService,
     // TwoFaAuthService,
   ],
   controllers: [UserController, UserAdminController],
-  exports: [UserService, RedisCacheService],
+  exports: [UserService, RedisCacheService, UserInfoService],
 })
 export class UserModule {}

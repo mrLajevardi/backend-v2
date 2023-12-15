@@ -373,10 +373,7 @@ search ." > /etc/resolv.conf`;
       },
     });
     const user = await this.userTable.findById(userId);
-    if (parseInt(minimumCost.value) > user.credit) {
-      const err = new NotEnoughCreditException();
-      return Promise.reject(err);
-    }
+
     const gpuPlans = {
       gpuBronze: 'bronze',
       gpuSilver: 'silver',

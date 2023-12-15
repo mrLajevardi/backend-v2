@@ -10,7 +10,7 @@ import { Tasks } from './Tasks';
 import { Tickets } from './Tickets';
 import { randomUUID } from 'crypto';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
-
+import { VmPowerStateEventEnum } from '../../../wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
 @Index('index_zare_IsDeleted', ['isDeleted'], {})
 @Index('PK_ServiceInstances', ['id'], { unique: true })
 @Entity('ServiceInstances', { schema: 'user' })
@@ -89,8 +89,7 @@ export class ServiceInstances {
   })
   retryCount: number | null;
 
-  @Column('int', { name: 'Credit', nullable: true, default: () => '(0)' })
-  credit: number | null;
+  credit?: number | null;
 
   @Column({
     name: 'DaysLeft',
@@ -99,6 +98,18 @@ export class ServiceInstances {
     readonly: true,
   })
   daysLeft: number | null;
+
+  @Column({
+    name: 'LastState',
+    nullable: true,
+  })
+  lastState: VmPowerStateEventEnum | null;
+
+  @Column({
+    name: 'Offset',
+    nullable: true,
+  })
+  offset: Date | null;
 
   @OneToMany(
     () => AiTransactionsLogs,

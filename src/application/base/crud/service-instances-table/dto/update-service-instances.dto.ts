@@ -6,6 +6,7 @@ import {
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { VmPowerStateEventEnum } from 'src/wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
 
 export class UpdateServiceInstancesDto {
   @IsString()
@@ -82,4 +83,8 @@ export class UpdateServiceInstancesDto {
   @IsOptional()
   @IsNumber()
   retryCount?: number | null;
+
+  offset?: Date;
+
+  lastState?: VmPowerStateEventEnum;
 }

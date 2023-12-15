@@ -16,4 +16,5 @@ export class CreateNetworkDto {
   name: string;
   networkType: string;
   description: string;
+  enabled?: boolean;
 }

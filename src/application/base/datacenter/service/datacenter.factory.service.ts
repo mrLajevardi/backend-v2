@@ -15,8 +15,6 @@ import {
   GetProviderVdcsDto,
   Value,
 } from '../../../../wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs.dto';
-import { AdminVdcWrapperService } from '../../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import {
   ItemTypeCodes,
@@ -25,7 +23,6 @@ import {
 import { plainToInstance } from 'class-transformer';
 import {
   ComputeItem,
-  CreateDatacenterDto,
   DiskItem,
   Generation,
   GenerationItem,
@@ -34,10 +31,10 @@ import {
   Reservation,
 } from '../dto/create-datacenter.dto';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
-import _, { keyBy } from 'lodash';
-import { DatacenterService } from './datacenter.service';
-import { BASE_DATACENTER_SERVICE } from '../interface/datacenter.interface';
 import { DatacenterDetails } from '../dto/datacenter-details.dto';
+import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
+import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
+import { capitalize, isEmpty } from 'lodash';
 @Injectable()
 export class DatacenterFactoryService {
   constructor(
@@ -55,15 +52,11 @@ export class DatacenterFactoryService {
       query.DataCenterId != undefined &&
       query.DataCenterId.trim().length > 0
     ) {
-      findOptionsItemTypes.push(
-        { datacenterName: Like(`${query.DataCenterId.toLowerCase()}`) },
-
-        {
-          datacenterName: IsNull(),
-          code: generationName,
-          title: generationName,
-        },
-      );
+      findOptionsItemTypes.push({
+        datacenterName: Like(`${query.DataCenterId.toLowerCase()}`),
+        type: query.ServicePlanType,
+        isDeleted: false,
+      });
     }
     option.relations = { serviceType: true };
     if (
@@ -72,6 +65,8 @@ export class DatacenterFactoryService {
     ) {
       findOptionsItemTypes.push({
         serviceTypeId: Like(`${query.ServiceTypeId.toLowerCase()}`),
+        type: query.ServicePlanType,
+        isDeleted: false,
       });
     }
     for (
@@ -171,6 +166,7 @@ export class DatacenterFactoryService {
     const periodItem = plainToInstance(Period, item, {
       excludeExtraneousValues: true,
     });
+    periodItem.value = item.minPerRequest;
     periodItemInstance.push(periodItem);
   }
 
@@ -181,37 +177,56 @@ export class DatacenterFactoryService {
     const reservationItem = plainToInstance(Reservation, item, {
       excludeExtraneousValues: true,
     });
+    reservationItem.value = item.minPerRequest;
     reservationItems.push(reservationItem);
   }
 
   async setGeneration(
-    datacenterName: string,
+    datacenterName: string | null,
     serviceTypeId: string,
-    dsConfig: DatacenterDetails,
+    dsConfig: DatacenterConfigGenResultDto,
+    type: ServicePlanTypeEnum,
   ): Promise<Generation[]> {
+    const codeCondition =
+      datacenterName !== null
+        ? And(
+            Like('g%'),
+            Not(ItemTypeCodes.Generation),
+            Not(Like(ItemTypeCodes.Guaranty + '%')),
+          )
+        : ItemTypeCodes.Generation;
+    console.log({
+      datacenterName: datacenterName || capitalize(datacenterName),
+      serviceTypeId,
+      isDeleted: false,
+      type,
+      code: codeCondition,
+    });
+    const datacenterCondition =
+      datacenterName !== null ? capitalize(datacenterName) : datacenterName;
     const generations = await this.serviceItemTypesTreeService.find({
       where: {
-        datacenterName,
+        datacenterName: datacenterCondition,
         serviceTypeId,
-        code: And(Like('g%'), Not(ItemTypeCodes.Generation)),
+        isDeleted: false,
+        type,
+        code: codeCondition,
       },
     });
     const generationsDto: Generation[] = [];
     for (const generation of generations) {
-      const targetDs = dsConfig.gens.find(
-        (gen) => gen.name === generation.code,
-      );
-      if (targetDs == undefined) {
-        continue;
-      }
+      const targetDs = !datacenterName
+        ? null
+        : dsConfig.gens.find((gen) => gen.name === generation.code);
       const generationDto: Generation = {
-        providerId: targetDs.id,
-        type: 0,
+        providerId: targetDs?.id || null,
+        type,
         items: {} as GenerationItems,
       };
       const items = await this.serviceItemTypesTreeService.find({
         where: {
           parentId: generation.id,
+          isDeleted: false,
         },
       });
       for (const item of items) {
@@ -225,12 +240,18 @@ export class DatacenterFactoryService {
           const cpuLevels = await this.serviceItemTypesTreeService.find({
             where: {
               parentId: item.id,
+              isDeleted: false,
             },
           });
           for (const cpuLevel of cpuLevels) {
-            const generationItem = plainToInstance(GenerationItem, cpuLevel, {
-              excludeExtraneousValues: true,
-            });
+            const generationItem: GenerationItem = {
+              code: cpuLevel.code,
+              max: cpuLevel.maxPerRequest,
+              min: cpuLevel.minPerRequest,
+              step: cpuLevel.step,
+              percent: cpuLevel.percent,
+              price: cpuLevel.fee,
+            };
             cpuItem.levels.push(generationItem);
           }
           generationDto.items.cpu = cpuItem;
@@ -244,12 +265,18 @@ export class DatacenterFactoryService {
           const ramLevels = await this.serviceItemTypesTreeService.find({
             where: {
               parentId: item.id,
+              isDeleted: false,
             },
           });
-          for (const cpuLevel of ramLevels) {
-            const generationItem = plainToInstance(GenerationItem, cpuLevel, {
-              excludeExtraneousValues: true,
-            });
+          for (const ramLevel of ramLevels) {
+            const generationItem: GenerationItem = {
+              code: ramLevel.code,
+              max: ramLevel.maxPerRequest,
+              min: ramLevel.minPerRequest,
+              step: ramLevel.step,
+              percent: ramLevel.percent,
+              price: ramLevel.fee,
+            };
             ramItem.levels.push(generationItem);
           }
           generationDto.items.ram = ramItem;
@@ -257,24 +284,41 @@ export class DatacenterFactoryService {
           const diskItems = await this.serviceItemTypesTreeService.find({
             where: {
               parentId: item.id,
+              isDeleted: false,
             },
           });
           generationDto.items.diskItems = [];
           for (const diskItem of diskItems) {
-            const diskItemDto = plainToInstance(DiskItem, diskItem, {
-              excludeExtraneousValues: true,
-            });
+            const diskItemDto: DiskItem = {
+              code: diskItem.code,
+              enabled: diskItem.enabled,
+              max: diskItem.maxPerRequest,
+              min: diskItem.minPerRequest,
+              price: diskItem.fee,
+              step: diskItem.step,
+              percent: diskItem.percent,
+            };
             generationDto.items.diskItems.push(diskItemDto);
           }
         } else if (item.code === VdcGenerationItemCodes.Vm) {
-          const vmDto = plainToInstance(GenerationItem, item, {
-            excludeExtraneousValues: true,
-          });
+          const vmDto: GenerationItem = {
+            code: item.code,
+            max: item.maxPerRequest,
+            min: item.minPerRequest,
+            step: item.step,
+            percent: item.percent,
+            price: item.fee,
+          };
           generationDto.items.vm = vmDto;
         } else if (item.code === VdcGenerationItemCodes.Ip) {
-          const ipDto = plainToInstance(GenerationItem, item, {
-            excludeExtraneousValues: true,
-          });
+          const ipDto: GenerationItem = {
+            code: item.code,
+            max: item.maxPerRequest,
+            min: item.minPerRequest,
+            step: item.step,
+            percent: item.percent,
+            price: item.fee,
+          };
           generationDto.items.ip = ipDto;
         }
       }

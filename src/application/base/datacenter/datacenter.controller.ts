@@ -28,6 +28,7 @@ import { CreateDatacenterDto } from './dto/create-datacenter.dto';
 import { DataCenterList } from './dto/datacenter-list.dto';
 import { DatacenterDetails } from './dto/datacenter-details.dto';
 import { GetDatacenterConfigsQueryDto } from './dto/get-datacenter-configs.dto';
+import { ServicePlanTypeEnum } from '../service/enum/service-plan-type.enum';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -78,10 +79,16 @@ export class DatacenterController {
     type: String,
     required: false,
   })
+  @ApiQuery({
+    name: 'servicePlanType',
+    enum: ServicePlanTypeEnum,
+    required: true,
+  })
   async getDatacenterItemsConfig(
     @Param('datacenterId') datacenterId: string,
     @Query('genId') genId: string,
     @Query('serviceTypeId') serviceTypeId?: string,
+    @Query('servicePlanType') servicePlanType?: ServicePlanTypeEnum,
   ): Promise<DatacenterConfigGenItemsResultDto[]> {
     const result: DatacenterConfigGenItemsResultDto[] =
       await this.service.GetDatacenterConfigWithGenItems(
@@ -89,6 +96,7 @@ export class DatacenterController {
           datacenterId,
           genId,
           serviceTypeId,
+          servicePlanType,
         ),
       );
     return result;

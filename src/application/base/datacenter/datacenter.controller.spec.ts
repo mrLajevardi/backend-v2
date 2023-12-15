@@ -28,6 +28,7 @@ describe('GroupController', () => {
     const datacenterConfigWithGenMock: DatacenterConfigGenResultDto[] = [
       {
         datacenter: 'amin',
+        location: 'ایران',
         title: 'امین',
         gens: [{ name: 'g1', id: mockProviderVdcs.values[0].id }],
       },
@@ -58,6 +59,7 @@ describe('GroupController', () => {
     const correctResult: DatacenterConfigGenResultDto[] = [
       {
         datacenter: 'amin',
+        location: 'ایران',
         title: 'امین',
         gens: [
           {
