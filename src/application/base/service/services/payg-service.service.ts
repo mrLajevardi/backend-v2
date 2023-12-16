@@ -35,10 +35,16 @@ import { UserInfoService } from '../../user/service/user-info.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { Like } from 'typeorm';
-import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import {
+  DiskItemCodes,
+  ItemTypeCodes,
+} from '../../itemType/enum/item-type-codes.enum';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
+import { VdcService } from 'src/application/vdc/service/vdc.service';
+import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 
 @Injectable()
 export class PaygServiceService {
@@ -63,6 +69,8 @@ export class PaygServiceService {
     private readonly serviceItemTreeTableService: ServiceItemTypesTreeService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: DatacenterService,
+    private readonly adminVdcWrapperService: AdminVdcWrapperService,
+    private readonly invoiceFactoryService: InvoiceFactoryService,
   ) {}
 
   async checkAllVdcVmsEvents(): Promise<void> {
@@ -262,6 +270,10 @@ export class PaygServiceService {
     } catch (err) {
       console.log(err);
     }
+    await this.adminVdcWrapperService.disableVdc(session, props.vdcId);
+    await this.serviceInstanceTableService.update(serviceInstanceId, {
+      status: ServiceStatusEnum.Disabled,
+    });
   }
 
   async createPaygVdcService(
@@ -292,15 +304,24 @@ export class PaygServiceService {
       VmPowerStateEventEnum.PowerOff,
       new Date(),
     );
-    const generationItem = await this.serviceItemTreeTableService.findOne({
+    const groupItems = await this.invoiceFactoryService.groupVdcItems(
+      dto.itemsTypes,
+    );
+    const generationItem = groupItems.generation.vm[0];
+    const swapItem = await this.itemTypeTableService.findOne({
       where: {
-        codeHierarchy: Like(ItemTypeCodes.Generation + '_%'),
+        parentId: groupItems.generation.disk[0].parentId,
+        code: DiskItemCodes.Swap,
       },
     });
-    const genIdKey = 'genId';
+    dto.itemsTypes.push({
+      itemTypeId: swapItem.id,
+      value: groupItems.generation.ram[0].value,
+    });
     const parent = generationItem.codeHierarchy.split(
       ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
     )[1];
+    const genIdKey = 'genId';
     const datacenterList =
       await this.datacenterService.getDatacenterConfigWithGen();
     const targetDc = datacenterList.find((dc) => {
