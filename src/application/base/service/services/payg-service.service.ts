@@ -46,6 +46,8 @@ import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceIn
 import { VdcService } from 'src/application/vdc/service/vdc.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
 
 @Injectable()
 export class PaygServiceService {
@@ -72,6 +74,7 @@ export class PaygServiceService {
     private readonly datacenterService: DatacenterService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
+    private readonly systemSettingsTableService: SystemSettingsTableService,
   ) {}
 
   async checkAllVdcVmsEvents(service: ServiceInstances = null): Promise<void> {
@@ -402,10 +405,16 @@ export class PaygServiceService {
         value: item.value,
       });
     }
+    const taxPercent = await this.systemSettingsTableService.findOne({
+      where: {
+        propertyKey: SystemSettingsPropertyKeysEnum.TaxPercent,
+      },
+    });
     return {
       itemsPer: filteredCostItems,
       totalCost: cost.totalCost,
       perHour: cost.totalCost / dto.duration / 24,
+      taxIncluded: (Number(taxPercent.value) + 1) * cost.totalCost,
     };
   }
 }
