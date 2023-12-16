@@ -48,6 +48,7 @@ import { FileTableModule } from './file-table/file-table.module';
 import { EntityLogTableModule } from './entity-log-table/entity-log-table.module';
 import { ServicePaymentsTableService } from './service-payments-table/service-payments-table.service';
 import { ServicePaymentsTableModule } from './service-payments-table/service-payments-table.module';
+import { VServiceInstancesTableModule } from './v-service-instances-table/v-service-instances-table.module';
 
 @Module({
   imports: [
@@ -100,6 +101,7 @@ import { ServicePaymentsTableModule } from './service-payments-table/service-pay
     FileTableModule,
     EntityLogTableModule,
     ServicePaymentsTableModule,
+    VServiceInstancesTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -151,6 +153,7 @@ import { ServicePaymentsTableModule } from './service-payments-table/service-pay
     FileTableModule,
     EntityLogTableModule,
     ServicePaymentsTableModule,
+    VServiceInstancesTableModule,
   ],
   providers: [],
 })

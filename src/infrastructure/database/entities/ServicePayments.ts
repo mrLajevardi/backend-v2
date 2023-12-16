@@ -51,6 +51,9 @@ export class ServicePayments {
   @Column('decimal', { name: 'Price', nullable: true, precision: 18, scale: 0 })
   price: number | null;
 
+  @Column('tinyint', { name: 'TaxPercent', nullable: true })
+  taxPercent: number | null;
+
   @Column('nvarchar', { name: 'MetaData', nullable: true })
   metaData: string;
 

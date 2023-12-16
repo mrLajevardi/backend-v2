@@ -389,6 +389,7 @@ export class ExtendServiceService {
         invoiceId,
       },
     });
+
     await this.serviceItemsTable.deleteAll({
       serviceInstanceId,
     });

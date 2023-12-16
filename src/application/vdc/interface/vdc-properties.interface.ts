@@ -5,4 +5,5 @@ export interface VdcProperties {
   genId?: string;
   name: string;
   edgeIpRange?: string;
+  lastVmStates?: string;
 }

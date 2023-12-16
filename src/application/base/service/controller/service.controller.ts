@@ -255,4 +255,9 @@ export class ServiceController {
   ): Promise<any> {
     return this.paygService.getPaygVdcCalculator(dto);
   }
+
+  @Post('/payg/check')
+  async paygCheck(): Promise<any> {
+    return this.paygService.checkAllVdcVmsEvents();
+  }
 }

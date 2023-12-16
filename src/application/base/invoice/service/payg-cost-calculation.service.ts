@@ -13,6 +13,11 @@ import {
 } from '../interface/invoice-item-cost.interface';
 import { CalculateOptions } from '../interface/calculate-options.interface';
 import { CreatePaygVdcServiceDto } from '../../service/dto/create-payg-vdc-service.dto';
+import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
+import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
+import { ServiceChecksService } from '../../service/services/service-checks.service';
+import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
+import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
 
 @Injectable()
 export class PaygCostCalculationService {
@@ -20,6 +25,8 @@ export class PaygCostCalculationService {
     private readonly serviceItemsTableService: ServiceItemsTableService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly costCalculationService: CostCalculationService,
+    private readonly vdcFactoryService: VdcFactoryService,
+    private readonly vServiceInstancesTableService: VServiceInstancesTableService,
   ) {}
   async calculateVdcPaygVm(
     service: ServiceInstances,
@@ -88,6 +95,9 @@ export class PaygCostCalculationService {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       transformedItems,
     );
+    groupedItems.generation.disk = groupedItems.generation.disk.filter(
+      (item) => item.code !== DiskItemCodes.Swap,
+    );
     const diskItemCost = await this.costCalculationService.calculateDisksCosts(
       groupedItems.generation.disk,
       groupedItems.generation.ram[0],
@@ -111,7 +121,7 @@ export class PaygCostCalculationService {
     };
     const supportCosts = groupedItems.guaranty.fee;
     const invoiceTotalCosts =
-      totalInvoiceItemCosts.itemsTotalCosts + supportCosts;
+      (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) * durationInMin;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
@@ -124,6 +134,9 @@ export class PaygCostCalculationService {
   ): Promise<TotalInvoiceItemCosts> {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       dto.itemsTypes,
+    );
+    groupedItems.generation.disk = groupedItems.generation.disk.filter(
+      (item) => item.code !== DiskItemCodes.Swap,
     );
     const totalInvoiceItemCosts =
       await this.costCalculationService.calculateVdcGenerationItems(
@@ -140,5 +153,29 @@ export class PaygCostCalculationService {
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
     };
+  }
+
+  async calculateVdcPaygTimeDuration(serviceInstanceId: string) {
+    const serviceItems: ServiceItems[] =
+      await this.serviceItemsTableService.find({
+        where: {
+          serviceInstanceId: serviceInstanceId,
+        },
+      });
+
+    const invoiceItems: InvoiceItemsDto[] =
+      this.vdcFactoryService.transformItems(serviceItems);
+
+    const dailyCost: TotalInvoiceItemCosts =
+      await this.calculateVdcPaygTypeInvoice({
+        itemsTypes: invoiceItems,
+        duration: 1,
+      });
+
+    const service = await this.vServiceInstancesTableService.findById(
+      serviceInstanceId,
+    );
+
+    return Math.round(service.credit / dailyCost.totalCost);
   }
 }
