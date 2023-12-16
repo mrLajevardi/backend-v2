@@ -10,7 +10,7 @@ import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 import { PaidFromBudgetCreditDto } from '../dto/paid-from-budget-credit.dto';
-import {isNil, toInteger} from 'lodash';
+import { isNil, toInteger } from 'lodash';
 import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
 import { PaidFromUserCreditDto } from '../dto/paid-from-user-credit.dto';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
@@ -19,7 +19,7 @@ import { UserInfoService } from '../../user/service/user-info.service';
 import { ServiceChecksService } from '../../service/services/service-checks.service';
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
-import {SystemSettingsTableService} from "../../crud/system-settings-table/system-settings-table.service";
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 
 @Injectable()
 export class BudgetingService {
@@ -45,7 +45,6 @@ export class BudgetingService {
     console.log(data);
 
     return data;
-
   }
 
   async increaseBudgetingService(
@@ -91,11 +90,10 @@ export class BudgetingService {
     data: PaidFromBudgetCreditDto,
     metaData?: any[],
   ): Promise<boolean> {
-
     const taxPercent = await this.systemSettingsTableService.findOne({
       where: {
-        propertyKey: 'TaxPercent'
-      }
+        propertyKey: 'TaxPercent',
+      },
     });
 
     const vServiceInstance: VServiceInstances =
@@ -114,7 +112,8 @@ export class BudgetingService {
     ) {
       throw new NotEnoughCreditException();
     }
-    const priceWithTax: number = data.paidAmount * ( 1 + (toInteger(taxPercent.value) / 100));
+    const priceWithTax: number =
+      data.paidAmount * (1 + toInteger(taxPercent.value) / 100);
 
     await this.servicePaymentTableService.create({
       userId: vServiceInstance.userId,
@@ -122,10 +121,11 @@ export class BudgetingService {
       price: -priceWithTax,
       paymentType: PaymentTypes.PayToServiceByBudgeting,
       metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
-      taxPercent : toInteger(taxPercent.value)
+      taxPercent: toInteger(taxPercent.value),
     });
 
-    const priceForNextPeriodWithTax : number = data.paidAmountForNextPeriod * (1 + (toInteger(taxPercent.value) / 100));
+    const priceForNextPeriodWithTax: number =
+      data.paidAmountForNextPeriod * (1 + toInteger(taxPercent.value) / 100);
 
     if (vServiceInstance.credit < priceForNextPeriodWithTax) {
       throw new NotEnoughCreditException();
@@ -144,10 +144,11 @@ export class BudgetingService {
     const userCredit = await this.userInfoService.getUserCreditBy(userId);
     const taxPercent = await this.systemSettingsTableService.findOne({
       where: {
-        propertyKey: 'TaxPercent'
-      }
+        propertyKey: 'TaxPercent',
+      },
     });
-    const paidAmountWithTax : number = data.paidAmount * (1 + (toInteger(taxPercent.value)/100));
+    const paidAmountWithTax: number =
+      data.paidAmount * (1 + toInteger(taxPercent.value) / 100);
 
     if (isNil(user)) {
       throw new NotFoundException();
