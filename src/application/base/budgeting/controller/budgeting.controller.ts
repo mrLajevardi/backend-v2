@@ -14,6 +14,7 @@ import {
 } from '../dto/results/budgeting.result.dto';
 import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { WithdrawBudgetCreditToUserCreditDto } from '../dto/withdraw-budget-credit-to-user-credit.dto';
+import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
 
 @ApiTags('Budget')
 @Controller('budgeting')
@@ -29,7 +30,7 @@ export class BudgetingController {
   async getUserBudget(
     @Request() options: SessionRequest,
   ): Promise<BudgetingResultDtoFormat[]> {
-    const data: ServiceInstances[] =
+    const data: VServiceInstances[] =
       await this.budgetingService.getUserBudgeting(options.user.userId);
 
     return new BudgetingResultDto().collection(data);

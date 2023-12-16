@@ -1,4 +1,4 @@
-import { ServiceInstances } from '../../../../../infrastructure/database/entities/ServiceInstances';
+import { VServiceInstances } from '../../../../../infrastructure/database/entities/views/v-serviceInstances';
 
 export class BudgetingResultDtoFormat {
   id: string;
@@ -8,13 +8,13 @@ export class BudgetingResultDtoFormat {
 }
 
 export class BudgetingResultDto {
-  collection(data: ServiceInstances[]): BudgetingResultDtoFormat[] {
-    return data.map((item: ServiceInstances) => {
+  collection(data: VServiceInstances[]): BudgetingResultDtoFormat[] {
+    return data.map((item: VServiceInstances) => {
       return this.toArray(item);
     });
   }
 
-  toArray(item: ServiceInstances): BudgetingResultDtoFormat {
+  toArray(item: VServiceInstances): BudgetingResultDtoFormat {
     return {
       id: item.id,
       serviceType: item.serviceTypeId,

@@ -10,28 +10,31 @@ import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 import { PaidFromBudgetCreditDto } from '../dto/paid-from-budget-credit.dto';
-import { isNil } from 'lodash';
+import {isNil, toInteger} from 'lodash';
 import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
 import { PaidFromUserCreditDto } from '../dto/paid-from-user-credit.dto';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 import { ServicePaymentsTableService } from '../../crud/service-payments-table/service-payments-table.service';
 import { UserInfoService } from '../../user/service/user-info.service';
 import { ServiceChecksService } from '../../service/services/service-checks.service';
+import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
+import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
+import {SystemSettingsTableService} from "../../crud/system-settings-table/system-settings-table.service";
 
 @Injectable()
 export class BudgetingService {
   constructor(
     private readonly transactionsTableService: TransactionsTableService,
-    private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly userTableService: UserTableService,
     private readonly servicePaymentTableService: ServicePaymentsTableService,
     private readonly userInfoService: UserInfoService,
-    private readonly serviceChecksService: ServiceChecksService,
+    private readonly vServiceInstancesTableService: VServiceInstancesTableService,
+    private readonly systemSettingsTableService: SystemSettingsTableService,
   ) {}
 
-  async getUserBudgeting(userId: number): Promise<ServiceInstances[]> {
-    const data: ServiceInstances[] =
-      await this.serviceInstancesTableService.find({
+  async getUserBudgeting(userId: number): Promise<VServiceInstances[]> {
+    const data: VServiceInstances[] =
+      await this.vServiceInstancesTableService.find({
         where: {
           userId: userId,
           servicePlanType: ServicePlanTypeEnum.Payg,
@@ -39,17 +42,10 @@ export class BudgetingService {
         },
       });
 
-    const calculateData: Awaited<ServiceInstances>[] = await Promise.all(
-      data.map(async (item: ServiceInstances) => {
-        item['credit'] = await this.serviceChecksService.getServiceCreditBy(
-          item.id,
-        );
-        return item;
-      }),
-    );
-    console.log(calculateData);
+    console.log(data);
 
-    return calculateData;
+    return data;
+
   }
 
   async increaseBudgetingService(
@@ -60,8 +56,8 @@ export class BudgetingService {
     const userCredit: number = await this.userInfoService.getUserCreditBy(
       userId,
     );
-    const serviceInstance: ServiceInstances =
-      await this.serviceInstancesTableService.findById(serviceInstanceId);
+    const serviceInstance: VServiceInstances =
+      await this.vServiceInstancesTableService.findById(serviceInstanceId);
 
     if (serviceInstance.userId != userId) {
       throw new BadRequestException();
@@ -94,20 +90,17 @@ export class BudgetingService {
     serviceInstanceId: string,
     data: PaidFromBudgetCreditDto,
     metaData?: any[],
-  ) {
-    const serviceInstance: ServiceInstances =
-      await this.serviceInstancesTableService.findOne({
-        where: {
-          id: serviceInstanceId,
-          servicePlanType: ServicePlanTypeEnum.Payg,
-          isDeleted: false,
-        },
-      });
+  ): Promise<boolean> {
 
-    const serviceInstanceCredit: number =
-      await this.serviceChecksService.getServiceCreditBy(serviceInstanceId);
+    const taxPercent = await this.systemSettingsTableService.findOne({
+      where: {
+        propertyKey: 'TaxPercent'
+      }
+    });
 
-    if (isNil(serviceInstance)) {
+    const vServiceInstance: VServiceInstances =
+      await this.vServiceInstancesTableService.findById(serviceInstanceId);
+    if (isNil(vServiceInstance)) {
       throw new NotFoundException();
     }
 
@@ -115,17 +108,28 @@ export class BudgetingService {
               consider if budgeting can pay from user credit,must be call paidFromUserCredit method
              */
 
-    if (serviceInstanceCredit == 0 || data.paidAmount > serviceInstanceCredit) {
+    if (
+      vServiceInstance.credit == 0 ||
+      data.paidAmount > vServiceInstance.credit
+    ) {
       throw new NotEnoughCreditException();
     }
+    const priceWithTax: number = data.paidAmount * ( 1 + (toInteger(taxPercent.value) / 100));
 
-    const servicePayment = await this.servicePaymentTableService.create({
-      userId: serviceInstance.userId,
+    await this.servicePaymentTableService.create({
+      userId: vServiceInstance.userId,
       serviceInstanceId: serviceInstanceId,
-      price: -data.paidAmount,
+      price: -priceWithTax,
       paymentType: PaymentTypes.PayToServiceByBudgeting,
       metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
+      taxPercent : toInteger(taxPercent.value)
     });
+
+    const priceForNextPeriodWithTax : number = data.paidAmountForNextPeriod * (1 + (toInteger(taxPercent.value) / 100));
+
+    if (vServiceInstance.credit < priceForNextPeriodWithTax) {
+      throw new NotEnoughCreditException();
+    }
 
     return true;
   }
@@ -138,19 +142,25 @@ export class BudgetingService {
   ): Promise<boolean> {
     const user: User = await this.userTableService.findById(userId);
     const userCredit = await this.userInfoService.getUserCreditBy(userId);
+    const taxPercent = await this.systemSettingsTableService.findOne({
+      where: {
+        propertyKey: 'TaxPercent'
+      }
+    });
+    const paidAmountWithTax : number = data.paidAmount * (1 + (toInteger(taxPercent.value)/100));
 
     if (isNil(user)) {
       throw new NotFoundException();
     }
 
-    if (userCredit == 0 || data.paidAmount > userCredit) {
+    if (userCredit == 0 || paidAmountWithTax > userCredit) {
       throw new NotEnoughCreditException();
     }
 
     const transactionDto: CreateTransactionsDto = {
       userId: userId.toString(),
       dateTime: new Date(),
-      value: -data.paidAmount,
+      value: -paidAmountWithTax,
       paymentType: PaymentTypes.PayToServiceByUserCredit,
       description: '',
       serviceInstanceId: serviceInstanceId,
@@ -165,14 +175,15 @@ export class BudgetingService {
       userId: userId,
       serviceInstanceId: serviceInstanceId,
       paymentType: PaymentTypes.PayToServiceByUserCredit,
-      price: data.paidAmount,
+      price: paidAmountWithTax,
     });
 
     await this.servicePaymentTableService.create({
       userId: userId,
       serviceInstanceId: serviceInstanceId,
       paymentType: PaymentTypes.PayToServiceByUserCredit,
-      price: -data.paidAmount,
+      price: -paidAmountWithTax,
+      taxPercent: toInteger(taxPercent.value),
       metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
     });
 
@@ -184,20 +195,18 @@ export class BudgetingService {
     serviceInstanceId: string,
     amount: number,
   ) {
-    const serviceInstance: ServiceInstances =
-      await this.serviceInstancesTableService.findOne({
+    const vServiceInstance: VServiceInstances =
+      await this.vServiceInstancesTableService.findOne({
         where: {
           id: serviceInstanceId,
           servicePlanType: ServicePlanTypeEnum.Payg,
           isDeleted: false,
         },
       });
-    const serviceInstanceCredit: number =
-      await this.serviceChecksService.getServiceCreditBy(serviceInstanceId);
-    if (isNil(serviceInstance)) {
+    if (isNil(vServiceInstance)) {
       throw new NotFoundException();
     }
-    if (serviceInstanceCredit == 0 || amount > serviceInstanceCredit) {
+    if (vServiceInstance.credit == 0 || amount > vServiceInstance.credit) {
       throw new NotEnoughCreditException();
     }
 

@@ -6,4 +6,9 @@ export class PaidFromBudgetCreditDto {
   @IsInt()
   @Min(0)
   paidAmount: number;
+
+  @ApiProperty()
+  @IsInt()
+  @Min(0)
+  paidAmountForNextPeriod?: number;
 }
