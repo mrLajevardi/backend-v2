@@ -126,28 +126,33 @@ export class ServiceServiceFactory {
         serviceInstance.createDate,
         serviceInstance.credit,
       );
+    if (
+      serviceInstance.status != ServiceStatusEnum.Error &&
+      serviceInstance.status != ServiceStatusEnum.Pending
+    ) {
+      const {
+        serviceItemCpu,
+        serviceItemRam,
+        serviceItemDisk,
+        serviceItemVM,
+        serviceItemIp,
+        serviceItemMemoryInfo,
+      } = await this.createItemTypesForInstance(
+        vdcItems,
+        cpuSpeed,
+        option,
+        serviceInstance.id,
+      );
 
+      model.serviceItems.push(serviceItemCpu);
+      model.serviceItems.push(serviceItemRam);
+      model.serviceItems.push(serviceItemDisk);
+      model.serviceItems.push(serviceItemVM);
+      model.serviceItems.push(serviceItemIp);
+      model.serviceItems.push(serviceItemMemoryInfo);
+    }
     //Cpu , Ram , Disk , Vm
-    const {
-      serviceItemCpu,
-      serviceItemRam,
-      serviceItemDisk,
-      serviceItemVM,
-      serviceItemIp,
-      serviceItemMemoryInfo,
-    } = await this.createItemTypesForInstance(
-      vdcItems,
-      cpuSpeed,
-      option,
-      serviceInstance.id,
-    );
 
-    model.serviceItems.push(serviceItemCpu);
-    model.serviceItems.push(serviceItemRam);
-    model.serviceItems.push(serviceItemDisk);
-    model.serviceItems.push(serviceItemVM);
-    model.serviceItems.push(serviceItemIp);
-    model.serviceItems.push(serviceItemMemoryInfo);
     return model;
   }
 
