@@ -10,7 +10,7 @@ describe('BudgetingService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule, CrudModule, UserModule, ServiceModule],
+      imports: [DatabaseModule, CrudModule, UserModule],
       providers: [BudgetingService],
     }).compile();
 

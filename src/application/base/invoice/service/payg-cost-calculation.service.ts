@@ -13,6 +13,10 @@ import {
 } from '../interface/invoice-item-cost.interface';
 import { CalculateOptions } from '../interface/calculate-options.interface';
 import { CreatePaygVdcServiceDto } from '../../service/dto/create-payg-vdc-service.dto';
+import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
+import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
+import { ServiceChecksService } from '../../service/services/service-checks.service';
+import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 
 @Injectable()
 export class PaygCostCalculationService {
@@ -20,6 +24,8 @@ export class PaygCostCalculationService {
     private readonly serviceItemsTableService: ServiceItemsTableService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly costCalculationService: CostCalculationService,
+    private readonly vdcFactoryService: VdcFactoryService,
+    private readonly vServiceInstancesTableService: VServiceInstancesTableService,
   ) {}
   async calculateVdcPaygVm(
     service: ServiceInstances,
@@ -140,5 +146,29 @@ export class PaygCostCalculationService {
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
     };
+  }
+
+  async calculateVdcPaygTimeDuration(serviceInstanceId: string) {
+    const serviceItems: ServiceItems[] =
+      await this.serviceItemsTableService.find({
+        where: {
+          serviceInstanceId: serviceInstanceId,
+        },
+      });
+
+    const invoiceItems: InvoiceItemsDto[] =
+      this.vdcFactoryService.transformItems(serviceItems);
+
+    const dailyCost: TotalInvoiceItemCosts =
+      await this.calculateVdcPaygTypeInvoice({
+        itemsTypes: invoiceItems,
+        duration: 1,
+      });
+
+    const service = await this.vServiceInstancesTableService.findById(
+      serviceInstanceId,
+    );
+
+    return Math.round(service.credit / dailyCost.totalCost);
   }
 }
