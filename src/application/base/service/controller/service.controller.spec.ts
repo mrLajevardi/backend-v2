@@ -27,6 +27,7 @@ import { InvoicesModule } from '../../invoice/invoices.module';
 import { VmModule } from '../../../vm/vm.module';
 import { PaygServiceService } from '../services/payg-service.service';
 import { BudgetingModule } from '../../budgeting/budgeting.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('ServiceController', () => {
   let controller: ServiceController;
@@ -52,6 +53,7 @@ describe('ServiceController', () => {
         UvdeskWrapperModule,
         InvoicesModule,
         VmModule,
+        VServiceInstancesTableModule,
         BudgetingModule,
       ],
       providers: [
