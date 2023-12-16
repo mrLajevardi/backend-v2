@@ -120,7 +120,7 @@ export class DatacenterAdminService {
     for (const cpuReservationItem of reservationItems) {
       const dto = {
         code: ItemTypeCodes.CpuReservationItem,
-        fee: 0,
+        fee: cpuReservationItem.percent - 1,
         maxAvailable: null,
         maxPerRequest: cpuReservationItem.value,
         minPerRequest: cpuReservationItem.value,
@@ -182,7 +182,7 @@ export class DatacenterAdminService {
     for (const memoryReservationItem of reservationItems) {
       const dto = {
         code: ItemTypeCodes.MemoryReservationItem,
-        fee: 0,
+        fee: memoryReservationItem.percent - 1,
         maxAvailable: null,
         maxPerRequest: memoryReservationItem.value,
         minPerRequest: memoryReservationItem.value,
@@ -321,8 +321,8 @@ export class DatacenterAdminService {
         code: VdcGenerationItemCodes.Cpu,
         fee: generationItem.items.cpu.basePrice,
         maxAvailable: null,
-        maxPerRequest: null,
-        minPerRequest: null,
+        maxPerRequest: generationItem.items.cpu.baseMax,
+        minPerRequest: generationItem.items.cpu.baseMin,
         title: VdcGenerationItemCodes.Cpu,
         unit: ItemTypeUnits.Cpu,
         datacenterName,
@@ -340,8 +340,8 @@ export class DatacenterAdminService {
         code: VdcGenerationItemCodes.Ram,
         fee: generationItem.items.ram.basePrice,
         maxAvailable: null,
-        maxPerRequest: null,
-        minPerRequest: null,
+        maxPerRequest: generationItem.items.ram.baseMax,
+        minPerRequest: generationItem.items.ram.baseMin,
         title: VdcGenerationItemCodes.Ram,
         unit: ItemTypeUnits.Ram,
         datacenterName,
