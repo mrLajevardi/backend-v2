@@ -21,6 +21,10 @@ export class CreateServicePaymentsDto {
   price: number;
 
   @IsInt()
+  @ApiProperty()
+  taxPercent?: number;
+
+  @IsInt()
   paymentType: number;
 
   @IsString()
