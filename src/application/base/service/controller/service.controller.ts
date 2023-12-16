@@ -140,7 +140,7 @@ export class ServiceController {
     return this.createService.repairService(options, serviceInstanceId);
   }
 
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Update Service (Extendnig !!!!)' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiResponse({
     status: 204,

@@ -25,4 +25,5 @@ export class VdcInvoiceDetailsResultDto extends BaseResultDto {
   rawAmountWithTax?: number;
   rawAmountTax?: number;
   templateId?: string;
+  baseAmount?: number;
 }
