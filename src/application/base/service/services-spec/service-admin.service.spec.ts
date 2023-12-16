@@ -19,6 +19,8 @@ import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { UserModule } from '../../user/user.module';
 import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
+import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -40,6 +42,8 @@ describe('ServiceAdminService', () => {
         UserModule,
         EdgeGatewayModule,
         InvoicesModule,
+        VmModule,
+        VServiceInstancesTableModule,
       ],
       providers: [
         ServiceAdminService,

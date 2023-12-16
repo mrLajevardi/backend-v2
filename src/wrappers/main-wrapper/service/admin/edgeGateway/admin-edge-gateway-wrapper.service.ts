@@ -226,6 +226,7 @@ export class AdminEdgeGatewayWrapperService {
         {
           uplinkId: networkValue.id,
           uplinkName: networkValue.name,
+          connected: config.connected ?? true,
           subnets: {
             values: [
               {
@@ -262,7 +263,6 @@ export class AdminEdgeGatewayWrapperService {
       'AdminEdgeGatewayEndpointService.updateEdgeGatewayEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    console.log('🥖🥖🥖🥖');
     const edgeGateway =
       await this.vcloudWrapperService.request<GetEdgeClusterDto>(
         wrapper(options),

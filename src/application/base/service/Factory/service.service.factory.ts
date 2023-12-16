@@ -27,6 +27,9 @@ import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
 import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { InsufficientResourceException } from 'src/infrastructure/exceptions/insufficient-resource.exception';
+import { VmService } from '../../../vm/service/vm.service';
+import { VdcGenerationItemCodes } from '../../itemType/enum/item-type-codes.enum';
+import { CalcSwapStorage } from '../../../vdc/utils/disk-functions.utils';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -42,6 +45,7 @@ export class ServiceServiceFactory {
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly adminEdgegatewayWrapperService: AdminEdgeGatewayWrapperService,
     private readonly sessionService: SessionsService,
+    private readonly vmService: VmService,
   ) {}
   public async getPropertiesOfServiceInstance(
     serviceInstance: GetServicesReturnDto,
@@ -119,6 +123,8 @@ export class ServiceServiceFactory {
         taskDetail,
         vdcItems.description ? vdcItems.description : '',
         serviceInstance.daysLeft <= extensionDay,
+        serviceInstance.createDate,
+        serviceInstance.credit,
       );
 
     //Cpu , Ram , Disk , Vm
@@ -128,6 +134,7 @@ export class ServiceServiceFactory {
       serviceItemDisk,
       serviceItemVM,
       serviceItemIp,
+      serviceItemMemoryInfo,
     } = await this.createItemTypesForInstance(
       vdcItems,
       cpuSpeed,
@@ -140,6 +147,7 @@ export class ServiceServiceFactory {
     model.serviceItems.push(serviceItemDisk);
     model.serviceItems.push(serviceItemVM);
     model.serviceItems.push(serviceItemIp);
+    model.serviceItems.push(serviceItemMemoryInfo);
     return model;
   }
 
@@ -149,38 +157,69 @@ export class ServiceServiceFactory {
     option: SessionRequest,
     serviceInstanceId: string,
   ) {
+    const allVms = await this.vmService.getAllUserVm(option, serviceInstanceId);
+
+    let allMemoryVms = 0;
+
+    allVms.values.forEach((vm) => (allMemoryVms += vm.memory));
+
     const countIp = await this.edgeGatewayService.getCountOfIpSet(
       option,
       serviceInstanceId,
     );
 
     const serviceItemCpu = new ServiceItemDto(
-      'CPU',
+      VdcGenerationItemCodes.Cpu,
       vdcItems.cpuUsedMhz / Number(cpuSpeed),
       vdcItems.cpuAllocationMhz / Number(cpuSpeed),
     );
 
     const serviceItemRam = new ServiceItemDto(
-      'RAM',
+      VdcGenerationItemCodes.Ram,
       vdcItems.memoryUsedMB,
       vdcItems.memoryAllocationMB,
     );
 
-    // Getting
-    const serviceItemDisk = new ServiceItemDto(
-      'DISK',
-      // vdcItems.storageUsedMB,
-      vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
-      vdcItems.storageLimitMB -
-        vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
+    const storageCalc = await CalcSwapStorage(
+      {
+        memoryAllocation: vdcItems.memoryAllocationMB,
+        serviceInstanceId: serviceInstanceId,
+        storageLimit: vdcItems.storageLimitMB,
+        storageUsed: vdcItems.storageUsedMB,
+      },
+
+      this.vmService,
+      option,
     );
 
-    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
+    // Getting
+    const serviceItemDisk = new ServiceItemDto(
+      VdcGenerationItemCodes.Disk,
+      // vdcItems.storageUsedMB,
+      //   vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
+      // vdcItems.storageUsedMB - allMemoryVms,
+      storageCalc.used,
+      // vdcItems.storageLimitMB -
+      //   vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
+      storageCalc.limit,
+    );
+
+    const serviceItemIp = new ServiceItemDto(
+      VdcGenerationItemCodes.Ip,
+      countIp,
+      countIp,
+    );
 
     const serviceItemVM = new ServiceItemDto(
-      'VM',
+      VdcGenerationItemCodes.Vm,
       vdcItems.numberOfRunningVMs,
       vdcItems.numberOfVMs,
+    );
+
+    const serviceItemMemoryInfo = new ServiceItemDto(
+      VdcGenerationItemCodes.Ram + 'Info',
+      allMemoryVms,
+      allMemoryVms,
     );
 
     return {
@@ -189,6 +228,7 @@ export class ServiceServiceFactory {
       serviceItemDisk,
       serviceItemVM,
       serviceItemIp,
+      serviceItemMemoryInfo,
     };
   }
 

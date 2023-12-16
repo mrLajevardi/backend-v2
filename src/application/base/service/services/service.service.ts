@@ -39,11 +39,14 @@ import { VcloudMetadata } from '../../datacenter/type/vcloud-metadata.type';
 import { UserService } from '../../user/service/user.service';
 import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
+import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 @Injectable()
 export class ServiceService {
   constructor(
     private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
+    private readonly vServiceInstancesTableService: VServiceInstancesTableService,
     private readonly invoicesTable: InvoicesTableService,
     private readonly taskManagerService: TaskManagerService,
     private readonly transactionsTable: TransactionsTableService,
@@ -56,7 +59,6 @@ export class ServiceService {
     private readonly invoiceDiscountsTable: InvoiceDiscountsTableService,
     private readonly plansTable: PlansTableService,
     private readonly itemTypesTable: ItemTypesTableService,
-    private readonly usersTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly serviceTypesTable: ServiceTypesTableService,
     private readonly vdcService: VdcService,
@@ -464,7 +466,7 @@ export class ServiceService {
     let cpuSpeed: VcloudMetadata = 0,
       // daysLeft = 0,
       isTicketSent = false,
-      vdcItems: GetOrgVdcResult = {};
+      vdcItems: GetOrgVdcResult = null;
     let model: GetAllVdcServiceWithItemsResultDto = {};
     for (const serviceInstance of allServicesInstances) {
       if (
@@ -477,7 +479,7 @@ export class ServiceService {
 
         vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
       }
-      if (vdcItems !== null) {
+      if (vdcItems != null) {
         const info = ({ isTicketSent } =
           await this.serviceFactory.getPropertiesOfServiceInstance(
             serviceInstance,
@@ -525,7 +527,7 @@ export class ServiceService {
     if (statuses) {
       serviceStatus = statuses;
     }
-    const where: FindOptionsWhere<ServiceInstances> = {
+    const where: FindOptionsWhere<VServiceInstances> = {
       userId: userId,
       isDeleted: false,
       serviceTypeId: In(serviceTypeIds),
@@ -535,12 +537,12 @@ export class ServiceService {
       where.id = id;
     }
 
-    const services = await this.serviceInstancesTableService.find({
+    const services = await this.vServiceInstancesTableService.find({
       where,
       relations: ['serviceItems', 'serviceType'],
       order: {
-        status: { direction: 'ASC' },
         createDate: { direction: 'DESC' },
+        status: { direction: 'ASC' },
       },
     });
     console.log(services);
@@ -552,6 +554,8 @@ export class ServiceService {
         expired: expired,
         retryCount: service.retryCount,
         daysLeft: service.daysLeft,
+        createDate: service.createDate,
+        credit: service.credit,
       };
     });
     return extendedServiceList;

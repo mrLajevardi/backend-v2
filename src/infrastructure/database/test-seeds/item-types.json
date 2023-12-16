@@ -8,6 +8,8 @@
         "code": "translate",
         "maxPerRequest": 10,
         "minPerRequest": null,
-        "serviceTypeId": "vdc"
+        "serviceTypeId": "vdc",
+        "isDeleted": false,
+        "datacenterName": "arad"
     }
 ]

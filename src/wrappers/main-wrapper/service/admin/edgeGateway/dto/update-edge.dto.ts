@@ -8,6 +8,7 @@ export interface UpdateEdgeGatewayConfigDto {
   alreadyAssignedIpCounts: number;
   vdcId: string;
   alreadyAssignedIpList: Value[];
+  connected?: boolean;
 }
 
 export class UpdateEdgeGatewayCoReturnType extends VcloudTask {

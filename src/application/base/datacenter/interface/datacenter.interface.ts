@@ -6,6 +6,8 @@ import { GetProviderVdcsMetadataDto } from '../../../../wrappers/main-wrapper/se
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { DataCenterList } from '../dto/datacenter-list.dto';
 import { DatacenterDetails } from '../dto/datacenter-details.dto';
+import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
+import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
 
 export const BASE_DATACENTER_SERVICE = 'BASE_DATACENTER_SERVICE';
 
@@ -28,4 +30,12 @@ export interface BaseDatacenterService extends IBaseService {
   getAllDataCenters(): Promise<DataCenterList[]>;
 
   getDatacenterDetails(datacenterName: string): Promise<DatacenterDetails>;
+
+  createDatacenter(dto: CreateDatacenterDto): Promise<void>;
+
+  updateDatacenter(dto: CreateDatacenterDto): Promise<void>;
+
+  getDatacenterConfigs(
+    query: GetDatacenterConfigsQueryDto,
+  ): Promise<CreateDatacenterDto>;
 }
