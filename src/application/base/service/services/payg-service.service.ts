@@ -35,10 +35,19 @@ import { UserInfoService } from '../../user/service/user-info.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { Like } from 'typeorm';
-import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import {
+  DiskItemCodes,
+  ItemTypeCodes,
+} from '../../itemType/enum/item-type-codes.enum';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { VdcService } from 'src/application/vdc/service/vdc.service';
+import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
 
 @Injectable()
 export class PaygServiceService {
@@ -63,9 +72,12 @@ export class PaygServiceService {
     private readonly serviceItemTreeTableService: ServiceItemTypesTreeService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: DatacenterService,
+    private readonly adminVdcWrapperService: AdminVdcWrapperService,
+    private readonly invoiceFactoryService: InvoiceFactoryService,
+    private readonly systemSettingsTableService: SystemSettingsTableService,
   ) {}
 
-  async checkAllVdcVmsEvents(): Promise<void> {
+  async checkAllVdcVmsEvents(service: ServiceInstances = null): Promise<void> {
     const adminSession = await this.sessionService.checkAdminSession();
     const activeServices = await this.serviceInstanceTableService.find({
       where: {
@@ -262,6 +274,10 @@ export class PaygServiceService {
     } catch (err) {
       console.log(err);
     }
+    await this.adminVdcWrapperService.disableVdc(session, props.vdcId);
+    await this.serviceInstanceTableService.update(serviceInstanceId, {
+      status: ServiceStatusEnum.Disabled,
+    });
   }
 
   async createPaygVdcService(
@@ -281,26 +297,43 @@ export class PaygServiceService {
     if (cost.totalCost > credit) {
       throw new NotEnoughCreditException();
     }
+    const lastService = await this.serviceInstanceTableService.findOne({
+      where: {
+        userId,
+      },
+      order: {
+        createDate: { direction: 'DESC' },
+      },
+    });
+    const name = lastService.index + 1 + 'ابر خصوصی';
     const serviceInstanceId = await this.extendService.createServiceInstance(
       userId,
       firstItem.serviceTypeId,
       null,
-      null,
-
+      name,
       firstItem.datacenterName,
       ServicePlanTypeEnum.Payg,
       VmPowerStateEventEnum.PowerOff,
       new Date(),
     );
-    const generationItem = await this.serviceItemTreeTableService.findOne({
+    const groupItems = await this.invoiceFactoryService.groupVdcItems(
+      dto.itemsTypes,
+    );
+    const generationItem = groupItems.generation.vm[0];
+    const swapItem = await this.itemTypeTableService.findOne({
       where: {
-        codeHierarchy: Like(ItemTypeCodes.Generation + '_%'),
+        parentId: groupItems.generation.disk[0].parentId,
+        code: DiskItemCodes.Swap,
       },
     });
-    const genIdKey = 'genId';
+    dto.itemsTypes.push({
+      itemTypeId: swapItem.id,
+      value: groupItems.generation.ram[0].value,
+    });
     const parent = generationItem.codeHierarchy.split(
       ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
     )[1];
+    const genIdKey = 'genId';
     const datacenterList =
       await this.datacenterService.getDatacenterConfigWithGen();
     const targetDc = datacenterList.find((dc) => {
@@ -358,21 +391,33 @@ export class PaygServiceService {
   async getPaygVdcCalculator(dto: CreatePaygVdcServiceDto) {
     const cost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
-
-    const filteredCostItems = cost.itemsSum.map((item) => {
+    const filteredCostItems = [];
+    for (const item of cost.itemsSum) {
+      if (item?.code === undefined) {
+        continue;
+      }
       const parents = item.codeHierarchy.split(
         ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
       );
-      return {
-        cost: item.cost * 60,
-        code: parents[2],
+      filteredCostItems.push({
+        cost: Math.round(item.cost * 60),
+        code: parents[3] ?? parents[2] ?? parents[1],
         value: item.value,
-      };
+      });
+    }
+    const taxPercent = await this.systemSettingsTableService.findOne({
+      where: {
+        propertyKey: SystemSettingsPropertyKeysEnum.TaxPercent,
+      },
     });
     return {
       itemsPer: filteredCostItems,
-      totalCost: cost.totalCost,
-      perHour: cost.totalCost / dto.duration / 24,
+      totalCost: Math.round(cost.totalCost),
+      perHour: Math.round(cost.totalCost / dto.duration / 24),
+      taxIncluded: Math.round(
+        (Number(taxPercent.value) / 100 + 1) * cost.totalCost,
+      ),
+      taxPercent: Number(taxPercent.value),
     };
   }
 }
