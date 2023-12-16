@@ -412,9 +412,12 @@ export class PaygServiceService {
     });
     return {
       itemsPer: filteredCostItems,
-      totalCost: cost.totalCost,
-      perHour: cost.totalCost / dto.duration / 24,
-      taxIncluded: (Number(taxPercent.value) + 1) * cost.totalCost,
+      totalCost: Math.round(cost.totalCost),
+      perHour: Math.round(cost.totalCost / dto.duration / 24),
+      taxIncluded: Math.round(
+        (Number(taxPercent.value) / 100 + 1) * cost.totalCost,
+      ),
+      taxPercent: Number(taxPercent.value),
     };
   }
 }
