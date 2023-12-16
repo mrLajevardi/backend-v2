@@ -124,7 +124,8 @@ export class CostCalculationService {
     newInvoiceCost.totalCost =
       newInvoiceCost.totalCost / (30 * Number(groupedItems.period.value));
     newInvoiceCost.totalCost =
-      (newInvoiceCost.totalCost /*- currentInvoiceCost.totalCost*/) * remainingDays;
+      newInvoiceCost.totalCost /*- currentInvoiceCost.totalCost*/ *
+      remainingDays;
     return newInvoiceCost;
   }
   async calculateComputeResourcesCosts(
