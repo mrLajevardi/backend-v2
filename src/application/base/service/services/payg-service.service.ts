@@ -42,6 +42,7 @@ import {
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
+import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { VdcService } from 'src/application/vdc/service/vdc.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
@@ -73,7 +74,7 @@ export class PaygServiceService {
     private readonly invoiceFactoryService: InvoiceFactoryService,
   ) {}
 
-  async checkAllVdcVmsEvents(): Promise<void> {
+  async checkAllVdcVmsEvents(service: ServiceInstances = null): Promise<void> {
     const adminSession = await this.sessionService.checkAdminSession();
     const activeServices = await this.serviceInstanceTableService.find({
       where: {
@@ -293,12 +294,20 @@ export class PaygServiceService {
     if (cost.totalCost > credit) {
       throw new NotEnoughCreditException();
     }
+    const lastService = await this.serviceInstanceTableService.findOne({
+      where: {
+        userId,
+      },
+      order: {
+        createDate: { direction: 'DESC' },
+      },
+    });
+    const name = lastService.index + 1 + 'ابر خصوصی';
     const serviceInstanceId = await this.extendService.createServiceInstance(
       userId,
       firstItem.serviceTypeId,
       null,
-      null,
-
+      name,
       firstItem.datacenterName,
       ServicePlanTypeEnum.Payg,
       VmPowerStateEventEnum.PowerOff,
@@ -379,17 +388,20 @@ export class PaygServiceService {
   async getPaygVdcCalculator(dto: CreatePaygVdcServiceDto) {
     const cost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
-
-    const filteredCostItems = cost.itemsSum.map((item) => {
+    const filteredCostItems = [];
+    for (const item of cost.itemsSum) {
+      if (item?.code === undefined) {
+        continue;
+      }
       const parents = item.codeHierarchy.split(
         ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
       );
-      return {
-        cost: item.cost * 60,
-        code: parents[2],
+      filteredCostItems.push({
+        cost: Math.round(item.cost * 60),
+        code: parents[3] ?? parents[2] ?? parents[1],
         value: item.value,
-      };
-    });
+      });
+    }
     return {
       itemsPer: filteredCostItems,
       totalCost: cost.totalCost,
