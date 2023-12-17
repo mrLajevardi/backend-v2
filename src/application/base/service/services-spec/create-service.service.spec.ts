@@ -21,6 +21,9 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.module';
 import { VmModule } from '../../../vm/vm.module';
+import { ServiceItemModule } from '../../service-item/service-item.module';
+import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 describe('CreateServiceService', () => {
   let service: CreateServiceService;
@@ -45,6 +48,9 @@ describe('CreateServiceService', () => {
         ServicePropertiesModule,
         UvdeskWrapperModule,
         VmModule,
+        ServiceItemModule,
+        ServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
       ],
       providers: [
         CreateServiceService,

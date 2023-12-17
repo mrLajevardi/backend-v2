@@ -6,4 +6,5 @@ export class DiskCalcSwapStorageModel extends BaseQueryDto {
   storageLimit: number;
   memoryAllocation: number;
   serviceInstanceId: string;
+  numberOfVms: number;
 }

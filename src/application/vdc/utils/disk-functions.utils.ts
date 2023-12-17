@@ -21,14 +21,16 @@ export const CalcSwapStorage = async (
   vmService: VmService,
   option: SessionRequest,
 ) => {
-  const allVms = await vmService.getAllUserVm(option, model.serviceInstanceId);
+  const allVdcVms = await vmService.getAllUserVm(
+    option,
+    model.serviceInstanceId,
+  );
   let limit = 0;
   let used = 0;
   let allMemoryVms = 0;
 
-  allVms.values.forEach((vm) => (allMemoryVms += vm.memory));
+  allVdcVms.values.forEach((vm) => (allMemoryVms += vm.memory));
   (used = model.storageUsed - allMemoryVms),
-    (limit =
-      model.storageLimit - allVms.values.length * model.memoryAllocation);
+    (limit = model.storageLimit - model.numberOfVms * model.memoryAllocation);
   return { used, limit };
 };

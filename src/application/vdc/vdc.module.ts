@@ -31,6 +31,7 @@ import { EdgeGatewayModule } from '../edge-gateway/edge-gateway.module';
 import { NatModule } from '../nat/nat.module';
 import { VmModule } from '../vm/vm.module';
 import { DatacenterModule } from '../base/datacenter/datacenter.module';
+import { VServiceInstancesDetailTableModule } from '../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 @Module({
   imports: [
@@ -59,6 +60,7 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
     // NetworksModule,
     ServiceItemModule,
     ServiceInstancesTableModule,
+    VServiceInstancesDetailTableModule,
   ],
   providers: [
     VdcService,
