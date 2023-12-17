@@ -113,6 +113,13 @@ export class ServiceChecksService {
         serviceInstanceId,
       })
       .getRawOne();
-    return servicePayment.Credit;
+
+    let credit = servicePayment.Credit;
+
+    if (isNil(credit)) {
+      credit = 0;
+    }
+
+    return credit;
   }
 }

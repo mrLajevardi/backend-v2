@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
-import process from 'process';
-import axios from 'axios';
-import * as fs from 'fs';
 
 @Injectable()
 export class VitrificationServiceService {
@@ -55,9 +52,8 @@ MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQBZOZhO0214Wm243NHFcu9cwKizgfx
 cb3ZgOqH2jBb1nxExxjvwS8z7JKBjvdlM9yegAUoG6Q1wxFoaeKB2gl72zEBijiB
 mXcaKtmaB8RB37NywQMibdTHBbNZ9nNSfPYF0x4kSv7wG810N407cUdAJ7qYjRhc
 AfsnkdIhwvexpDflhD4=
------END PUBLIC KEY-----`;
-
-    // const publicKey = fs.readFileSync('./public_key.pem', 'utf8');
+-----END PUBLIC KEY-----
+`;
 
     const asymmetricJwkKey = crypto.createPublicKey({
       key: key2,
@@ -70,21 +66,22 @@ AfsnkdIhwvexpDflhD4=
       iat: inputIat,
     };
 
-    const jsonPayload = JSON.stringify(payload);
+    // const jsonPayload: string = JSON.stringify(payload);
+    //   const jwe = await new jose.CompactEncrypt(
+    //       new TextEncoder().encode('It’s a dangerous business, Frodo, going out your door.'),
+    //   );
 
-    // Encryption part might differ based on the available crypto libraries in JavaScript/TypeScript
-    // Below is a placeholder for encryption using asymmetricJwkKey
-    const encryptedPayload = crypto.publicEncrypt(
-      {
-        key: asymmetricJwkKey,
-        padding: crypto.constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: 'sha256',
-      },
-      Buffer.from(jsonPayload, 'utf8'),
-    );
+    // const asyDescriptorPlainText: JWE.EncryptOptions<JWEHeaderParameters> = {
+    //     key: asymmetricJwkKey,
+    //     format: 'compact',
+    //     fields: {
+    //         alg: 'ECDH-ES+A256KW',
+    //         enc: 'A256GCM'
+    //     },
+    //     plaintext: jsonPayload
+    // };
+    const token3 = 'sdvsdvsdvsdvsdv';
 
-    const encryptedToken = encryptedPayload.toString('base64'); // Convert to base64
-
-    return encryptedToken;
+    return token3;
   }
 }
