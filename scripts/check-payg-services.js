@@ -4,10 +4,10 @@ const getToken = require('./get-token');
 /**
  * send check email request to server
  */
-async function checkServices() {
+async function checkPaygServices() {
   const token = await getToken();
-  await axios.default.put(
-    `http://localhost:${process.env.PORT}/robot/sendEmailToExpiredServices`,
+  await axios.default.post(
+    `http://localhost:${process.env.PORT}/robot/checkPaygServices`,
     null,
     {
       headers: {
@@ -18,7 +18,7 @@ async function checkServices() {
 }
 
 (function () {
-  checkServices().then(() => {
+  checkPaygServices().then(() => {
     console.log('check service request has been sent');
   });
 })();

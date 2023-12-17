@@ -77,6 +77,11 @@ export class Invoices {
   })
   baseAmount: number;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsPreInvoice',
+  })
+  isPreInvoice: boolean;
+
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
   invoiceItems: InvoiceItems[];
   @ManyToOne(() => User, (user) => user.invoices, {

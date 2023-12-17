@@ -83,8 +83,6 @@ export class CostCalculationService {
       groupedItems,
     );
 
-    const basCostItems = totalInvoiceItemCosts.itemsTotalCosts;
-
     const periodItem = groupedItems.period;
     const itemsPeriodCost =
       totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);
@@ -98,7 +96,6 @@ export class CostCalculationService {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
-      basCostItems: basCostItems,
     };
   }
 

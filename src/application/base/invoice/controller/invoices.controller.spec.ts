@@ -14,6 +14,8 @@ import { InvoiceFactoryVdcService } from '../service/invoice-factory-vdc.service
 import { BASE_INVOICE_SERVICE } from '../interface/service/invoice.interface';
 import { UserModule } from '../../user/user.module';
 import { VdcModule } from 'src/application/vdc/vdc.module';
+import { PaygInvoiceService } from '../service/payg-invoice.service';
+import { PaygCostCalculationService } from '../service/payg-cost-calculation.service';
 
 describe('InvoicesController', () => {
   let controller: InvoicesController;
@@ -36,6 +38,8 @@ describe('InvoicesController', () => {
         CostCalculationService,
         InvoiceFactoryService,
         InvoiceFactoryVdcService,
+        PaygInvoiceService,
+        PaygCostCalculationService,
         {
           provide: BASE_INVOICE_SERVICE,
           useClass: InvoicesService,
