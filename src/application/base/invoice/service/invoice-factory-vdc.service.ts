@@ -43,7 +43,7 @@ export class InvoiceFactoryVdcService {
       .addSelect('InvoiceItem.Value , InvoiceItem.ItemID , InvoiceItem.Fee ')
       .innerJoin(ServiceItemTypesTree, 'SIT', 'SIT.ID = InvoiceItem.ItemID')
       .addSelect(
-        'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max , SIT.Price ',
+        'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max , SIT.Price , SIT.Percent ',
       )
       .innerJoin(
         ServiceTypes,
@@ -72,6 +72,7 @@ export class InvoiceFactoryVdcService {
         price: model.Price,
         templateId: model.TemplateID,
         datacenterTitle: model.DatacenterTitle,
+        percent: model.Percent,
       };
 
       return res;
@@ -225,6 +226,10 @@ export class InvoiceFactoryVdcService {
     res.period = new VdcInvoiceDetailsInfoResultDto(period);
 
     res.templateId = ramModel.templateId;
+
+    res.baseAmount =
+      (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
+      (1 + period.percent);
 
     // res.period = { title: period.title, value: period.min };
   }

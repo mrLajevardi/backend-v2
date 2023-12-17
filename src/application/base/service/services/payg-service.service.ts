@@ -14,7 +14,6 @@ import { PaygCostCalculationService } from '../../invoice/service/payg-cost-calc
 import { InvoiceItemCost } from '../../invoice/interface/invoice-item-cost.interface';
 import { cloneDeep } from 'lodash';
 import { VcloudTask } from 'src/infrastructure/dto/vcloud-task.dto';
-import { NatWrapperService } from 'src/wrappers/main-wrapper/service/user/nat/nat-wrapper.service';
 import { BudgetingService } from '../../budgeting/service/budgeting.service';
 import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
@@ -29,25 +28,24 @@ import { ItemTypesTableService } from '../../crud/item-types-table/item-types-ta
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
-import { CostCalculationService } from '../../invoice/service/cost-calculation.service';
 import * as paygConfg from '../configs/payg.conf.json';
 import { UserInfoService } from '../../user/service/user-info.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
-import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
-import { Like } from 'typeorm';
 import {
   DiskItemCodes,
-  ItemTypeCodes,
+  VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
-import { VdcService } from 'src/application/vdc/service/vdc.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
+import { transferItems } from '../../invoice/utils/transfer-items.utils';
+import { LastVmStates } from '../interface/last-vm-states.interface';
+import { In, Not } from 'typeorm';
 
 @Injectable()
 export class PaygServiceService {
@@ -69,7 +67,6 @@ export class PaygServiceService {
     private readonly taskTableService: TasksTableService,
     private readonly taskManagerService: TaskManagerService,
     private readonly userInfoService: UserInfoService,
-    private readonly serviceItemTreeTableService: ServiceItemTypesTreeService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: DatacenterService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
@@ -77,21 +74,25 @@ export class PaygServiceService {
     private readonly systemSettingsTableService: SystemSettingsTableService,
   ) {}
 
-  async checkAllVdcVmsEvents(service: ServiceInstances = null): Promise<void> {
+  async checkAllVdcVmsEvents(
+    services: ServiceInstances[] = null,
+  ): Promise<void> {
     const adminSession = await this.sessionService.checkAdminSession();
-    const activeServices = await this.serviceInstanceTableService.find({
-      where: {
-        status: ServiceStatusEnum.Success,
-        userId: 1043,
-        isDeleted: false,
-        servicePlanType: ServicePlanTypeEnum.Payg,
-      },
-    });
+    const activeServices =
+      services ??
+      (await this.serviceInstanceTableService.find({
+        where: {
+          isDeleted: false,
+          status: Not(In([ServiceStatusEnum.Error])),
+          servicePlanType: ServicePlanTypeEnum.Payg,
+        },
+      }));
     for (const service of activeServices) {
       const props =
         await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
           service.id,
         );
+      const lastVmStates: LastVmStates = JSON.parse(props.lastVmStates);
       const org = await this.organizationTableService.findById(
         Number(props.orgId),
       );
@@ -118,7 +119,9 @@ export class PaygServiceService {
         const urnContainerId =
           'urn:vcloud:vapp:' + containerId.replace('vapp-', '');
         const offset = service.offset;
-        let lastState = service.lastState;
+        let lastState =
+          lastVmStates.vmStates.find((item) => item.id === id)?.state ??
+          VmPowerStateEventEnum.PowerOff;
         const eventType = 'com/vmware/vcloud/event/vm/change_state';
         const filter = `(timestamp=gt=${offset};(eventEntity.id==${urnVmId},eventEntity.id==${urnContainerId});eventType==${eventType})`;
         const events = await this.vmWrapperService.eventVm(
@@ -174,11 +177,23 @@ export class PaygServiceService {
           service,
           durationInMin,
         );
+      const serviceItems = await this.serviceItemsTableService.find({
+        where: {
+          serviceInstanceId: service.id,
+        },
+      });
+      const transferredItems = transferItems(serviceItems);
+      const fullTimeCost =
+        await this.paygCostCalculationService.calculateVdcPaygTypeInvoice({
+          itemsTypes: transferredItems,
+          duration: 1,
+        });
       try {
         await this.budgetingService.paidFromBudgetCredit(
           service.id,
           {
             paidAmount: totalCost.totalCost,
+            paidAmountForNextPeriod: fullTimeCost.totalCost / 24,
           },
           totalCost.itemsSum,
         );
@@ -191,10 +206,16 @@ export class PaygServiceService {
           vmslist.data,
         );
       }
+      await this.serviceInstanceTableService.update(service.id, {
+        offset: new Date(),
+      });
     }
   }
 
   sumComputeItems(invoiceItemsCost: InvoiceItemCost[][]): InvoiceItemCost[] {
+    if (invoiceItemsCost.length === 0) {
+      return [];
+    }
     const sum = cloneDeep(invoiceItemsCost[0]);
     sum[0] = { ...sum[0], cost: 0, value: '0' };
     sum[1] = { ...sum[1], cost: 0, value: '0' };
@@ -342,10 +363,19 @@ export class PaygServiceService {
     const gen = targetDc.gens.find((gen) => {
       return gen.name === parent;
     });
+    const lastVmStates: LastVmStates = {
+      vmStates: [],
+    };
+    const stringifiedStates = JSON.stringify(lastVmStates);
     await this.servicePropertiesTableService.create({
       serviceInstanceId,
       propertyKey: genIdKey,
       value: gen.id,
+    });
+    await this.servicePropertiesTableService.create({
+      serviceInstanceId,
+      propertyKey: VdcServiceProperties.LastVmStates,
+      value: stringifiedStates,
     });
     await this.budgetingService.increaseBudgetingService(
       userId,
@@ -399,9 +429,16 @@ export class PaygServiceService {
       const parents = item.codeHierarchy.split(
         ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
       );
+      let targetCode = parents[3] ?? parents[2] ?? parents[1];
+      if (
+        parents[2] === VdcGenerationItemCodes.Cpu ||
+        parents[2] === VdcGenerationItemCodes.Ram
+      ) {
+        targetCode = parents[2];
+      }
       filteredCostItems.push({
         cost: Math.round(item.cost * 60),
-        code: parents[3] ?? parents[2] ?? parents[1],
+        code: targetCode,
         value: item.value,
       });
     }

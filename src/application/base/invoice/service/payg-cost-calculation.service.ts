@@ -17,6 +17,7 @@ import { ServiceItems } from '../../../../infrastructure/database/entities/Servi
 import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
 import { ServiceChecksService } from '../../service/services/service-checks.service';
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
+import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
 
 @Injectable()
 export class PaygCostCalculationService {
@@ -94,6 +95,9 @@ export class PaygCostCalculationService {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       transformedItems,
     );
+    groupedItems.generation.disk = groupedItems.generation.disk.filter(
+      (item) => item.code !== DiskItemCodes.Swap,
+    );
     const diskItemCost = await this.costCalculationService.calculateDisksCosts(
       groupedItems.generation.disk,
       groupedItems.generation.ram[0],
@@ -117,7 +121,7 @@ export class PaygCostCalculationService {
     };
     const supportCosts = groupedItems.guaranty.fee;
     const invoiceTotalCosts =
-      totalInvoiceItemCosts.itemsTotalCosts + supportCosts;
+      (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) * durationInMin;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
@@ -130,6 +134,9 @@ export class PaygCostCalculationService {
   ): Promise<TotalInvoiceItemCosts> {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       dto.itemsTypes,
+    );
+    groupedItems.generation.disk = groupedItems.generation.disk.filter(
+      (item) => item.code !== DiskItemCodes.Swap,
     );
     const totalInvoiceItemCosts =
       await this.costCalculationService.calculateVdcGenerationItems(

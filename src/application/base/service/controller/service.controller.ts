@@ -140,7 +140,7 @@ export class ServiceController {
     return this.createService.repairService(options, serviceInstanceId);
   }
 
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Update Service (Extendnig !!!!)' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiResponse({
     status: 204,
@@ -254,5 +254,10 @@ export class ServiceController {
     @Request() options: SessionRequest,
   ): Promise<any> {
     return this.paygService.getPaygVdcCalculator(dto);
+  }
+
+  @Post('/payg/check')
+  async paygCheck(): Promise<any> {
+    return this.paygService.checkAllVdcVmsEvents();
   }
 }
