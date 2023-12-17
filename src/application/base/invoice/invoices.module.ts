@@ -14,6 +14,7 @@ import { InvoiceFactoryVdcService } from './service/invoice-factory-vdc.service'
 import { UserModule } from '../user/user.module';
 import { VdcModule } from 'src/application/vdc/vdc.module';
 import { PaygCostCalculationService } from './service/payg-cost-calculation.service';
+import { PaygInvoiceService } from './service/payg-invoice.service';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { PaygCostCalculationService } from './service/payg-cost-calculation.serv
     InvoiceFactoryVdcService,
     InvoiceValidationService,
     PaygCostCalculationService,
+    PaygInvoiceService,
     {
       provide: BASE_INVOICE_SERVICE,
       useClass: InvoicesService,
@@ -45,6 +47,7 @@ import { PaygCostCalculationService } from './service/payg-cost-calculation.serv
     InvoiceFactoryVdcService,
     InvoiceFactoryService,
     PaygCostCalculationService,
+    PaygInvoiceService,
   ],
 })
 export class InvoicesModule {}

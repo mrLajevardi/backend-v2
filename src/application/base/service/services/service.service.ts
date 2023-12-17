@@ -471,6 +471,7 @@ export class ServiceService {
     for (const serviceInstance of allServicesInstances) {
       if (
         serviceInstance.status != ServiceStatusEnum.Error &&
+        serviceInstance.status != ServiceStatusEnum.Deleted &&
         serviceInstance.status != ServiceStatusEnum.Pending
       ) {
         cpuSpeed = (
@@ -479,24 +480,24 @@ export class ServiceService {
 
         vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
       }
-      if (vdcItems != null) {
-        const info = ({ isTicketSent } =
-          await this.serviceFactory.getPropertiesOfServiceInstance(
-            serviceInstance,
-          ));
-        // (daysLeft = info.daysLeft),
-        isTicketSent = info.isTicketSent;
-        model = await this.serviceFactory.configModelServiceInstanceList(
+      // if (vdcItems != null) {
+      const info = ({ isTicketSent } =
+        await this.serviceFactory.getPropertiesOfServiceInstance(
           serviceInstance,
-          options,
-          isTicketSent,
-          vdcItems,
-          cpuSpeed,
-          Number(extensionDaysLeft),
-        );
+        ));
+      // (daysLeft = info.daysLeft),
+      isTicketSent = info.isTicketSent;
+      model = await this.serviceFactory.configModelServiceInstanceList(
+        serviceInstance,
+        options,
+        isTicketSent,
+        vdcItems,
+        cpuSpeed,
+        Number(extensionDaysLeft),
+      );
 
-        res.push(model);
-      }
+      res.push(model);
+      // }
     }
 
     return res;

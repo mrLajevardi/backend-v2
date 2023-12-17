@@ -26,7 +26,7 @@ export class InvoiceFactoryVdcService {
     const invoiceModels = await this.invoicesTable
       .getQueryBuilder()
       .select(
-        'Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime , Invoice.TemplateID',
+        'Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime , Invoice.TemplateID , Invoice.BaseAmount',
       )
       .where(
         'Invoice.ServiceTypeID = :serviceTypeId AND Invoice.ID= :invoiceId ',
@@ -73,6 +73,7 @@ export class InvoiceFactoryVdcService {
         templateId: model.TemplateID,
         datacenterTitle: model.DatacenterTitle,
         percent: model.Percent,
+        baseAmount: model.baseAmount,
       };
 
       return res;
@@ -227,9 +228,9 @@ export class InvoiceFactoryVdcService {
 
     res.templateId = ramModel.templateId;
 
-    res.baseAmount =
-      (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
-      (1 + period.percent);
+    res.baseAmount = ramModel.baseAmount;
+    // (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
+    // (1 + period.percent);
 
     // res.period = { title: period.title, value: period.min };
   }

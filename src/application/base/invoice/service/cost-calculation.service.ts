@@ -68,6 +68,7 @@ export class CostCalculationService {
     return {
       itemsSum,
       itemsTotalCosts: totalCost,
+      basCostItems: 0,
     };
   }
 
@@ -81,6 +82,7 @@ export class CostCalculationService {
     const totalInvoiceItemCosts = await this.calculateVdcGenerationItems(
       groupedItems,
     );
+
     const periodItem = groupedItems.period;
     const itemsPeriodCost =
       totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);

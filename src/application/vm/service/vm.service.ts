@@ -447,6 +447,10 @@ export class VmService {
       await this.servicePropertiesService.getAllServiceProperties(
         serviceInstanceId,
       );
+
+    if (props.vdcId == null)
+      return { values: [], page: 0, pageSize: 0, pageCount: 0, total: 0 };
+
     const session = await this.sessionsServices.checkUserSession(
       userId,
       props.orgId,

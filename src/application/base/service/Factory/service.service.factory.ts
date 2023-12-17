@@ -30,6 +30,7 @@ import { InsufficientResourceException } from 'src/infrastructure/exceptions/ins
 import { VmService } from '../../../vm/service/vm.service';
 import { VdcGenerationItemCodes } from '../../itemType/enum/item-type-codes.enum';
 import { CalcSwapStorage } from '../../../vdc/utils/disk-functions.utils';
+import { PaygCostCalculationService } from '../../invoice/service/payg-cost-calculation.service';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -45,6 +46,8 @@ export class ServiceServiceFactory {
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly adminEdgegatewayWrapperService: AdminEdgeGatewayWrapperService,
     private readonly sessionService: SessionsService,
+    private readonly paygCostCalculationService: PaygCostCalculationService,
+
     private readonly vmService: VmService,
   ) {}
   public async getPropertiesOfServiceInstance(
@@ -109,6 +112,11 @@ export class ServiceServiceFactory {
 
     const taskDetail = await getTask.call(this);
 
+    // const serviceDaysLeft =await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
+    //     serviceInstance.id,
+    // )
+    //
+
     const model: GetAllVdcServiceWithItemsResultDto =
       new GetAllVdcServiceWithItemsResultDto(
         serviceInstance.id,
@@ -118,18 +126,19 @@ export class ServiceServiceFactory {
         serviceInstance.serviceType.id,
         [],
         serviceInstance.daysLeft,
+        // serviceInstance.servicePlanType ? ServicePlanTypeEnum.Static
+        //   await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
+        //     serviceInstance.id,
+        //   ):0 //TODO ==> Check with Mr khalily
         isTicketSent,
-        ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
+        serviceInstance.servicePlanType,
         taskDetail,
-        vdcItems.description ? vdcItems.description : '',
+        vdcItems?.description ? vdcItems.description : '',
         serviceInstance.daysLeft <= extensionDay,
         serviceInstance.createDate,
         serviceInstance.credit,
       );
-    if (
-      serviceInstance.status != ServiceStatusEnum.Error &&
-      serviceInstance.status != ServiceStatusEnum.Pending
-    ) {
+    if (vdcItems != null) {
       const {
         serviceItemCpu,
         serviceItemRam,
