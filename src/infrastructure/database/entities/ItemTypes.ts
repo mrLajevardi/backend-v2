@@ -12,6 +12,7 @@ import { InvoiceItems } from './InvoiceItems';
 import { ServiceItems } from './ServiceItems';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { ServicePlanTypeEnum } from '../../../application/base/service/enum/service-plan-type.enum';
 
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
@@ -99,10 +100,13 @@ export class ItemTypes {
     nullable: true,
   })
   enabled: boolean | null;
-  
 
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;
+
+  @Column('tinyint', { name: 'Type', nullable: true })
+  type: ServicePlanTypeEnum;
+
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
   invoiceItems: InvoiceItems[];
 

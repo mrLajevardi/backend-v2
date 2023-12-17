@@ -68,6 +68,7 @@ export class CostCalculationService {
     return {
       itemsSum,
       itemsTotalCosts: totalCost,
+      basCostItems: 0,
     };
   }
 
@@ -81,6 +82,7 @@ export class CostCalculationService {
     const totalInvoiceItemCosts = await this.calculateVdcGenerationItems(
       groupedItems,
     );
+
     const periodItem = groupedItems.period;
     const itemsPeriodCost =
       totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);
@@ -96,6 +98,7 @@ export class CostCalculationService {
       totalCost: invoiceTotalCosts,
     };
   }
+
   async calculateRemainingPeriod(
     currentInvoiceItems: InvoiceItemsDto[],
     newInvoice: InvoiceItemsDto[],
@@ -103,15 +106,15 @@ export class CostCalculationService {
     groupedOldItems: VdcItemGroup,
     remainingDays: number,
   ): Promise<TotalInvoiceItemCosts> {
-    const currentInvoiceCost = await this.calculateVdcStaticTypeInvoice(
-      {
-        itemsTypes: currentInvoiceItems,
-      },
-      { applyPeriodPercent: false },
-    );
-    currentInvoiceCost.totalCost =
-      currentInvoiceCost.totalCost /
-      (30 * Number(groupedOldItems.period.value));
+    // const currentInvoiceCost = await this.calculateVdcStaticTypeInvoice(
+    //   {
+    //     itemsTypes: currentInvoiceItems,
+    //   },
+    //   { applyPeriodPercent: false },
+    // );
+    // currentInvoiceCost.totalCost =
+    //   currentInvoiceCost.totalCost /
+    //   (30 * Number(groupedOldItems.period.value));
     const newInvoiceCost = await this.calculateVdcStaticTypeInvoice(
       {
         itemsTypes: newInvoice,
@@ -123,7 +126,8 @@ export class CostCalculationService {
     newInvoiceCost.totalCost =
       newInvoiceCost.totalCost / (30 * Number(groupedItems.period.value));
     newInvoiceCost.totalCost =
-      (newInvoiceCost.totalCost - currentInvoiceCost.totalCost) * remainingDays;
+      newInvoiceCost.totalCost /*- currentInvoiceCost.totalCost*/ *
+      remainingDays;
     return newInvoiceCost;
   }
   async calculateComputeResourcesCosts(

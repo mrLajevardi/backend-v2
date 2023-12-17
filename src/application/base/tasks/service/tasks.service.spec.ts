@@ -27,6 +27,7 @@ import { NatModule } from '../../../nat/nat.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { TaskFactoryService } from './task.factory.service';
 import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -59,6 +60,7 @@ describe('TasksService', () => {
         UserModule,
         EdgeGatewayModule,
         VmModule,
+        VServiceInstancesTableModule,
       ],
       providers: [
         TaskManagerService,

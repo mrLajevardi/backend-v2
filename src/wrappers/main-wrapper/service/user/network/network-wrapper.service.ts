@@ -126,6 +126,7 @@ export class NetworkWrapperService {
     page = 1,
     pageSize = 25,
     filter = '',
+    additionalHeaders?: object,
   ): Promise<GetNetworkListDto> {
     const params = {
       page,
@@ -139,7 +140,7 @@ export class NetworkWrapperService {
     const networks = await this.vcloudWrapperService.request<GetNetworkListDto>(
       wrapper({
         params,
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: { Authorization: `Bearer ${authToken}`, ...additionalHeaders },
       }),
     );
     return Promise.resolve(networks.data);
@@ -175,7 +176,7 @@ export class NetworkWrapperService {
             dnsServer1: config.dnsServer1,
             dnsServer2: config.dnsServer2,
             dnsSuffix: config.dnsSuffix,
-            enabled: true,
+            enabled: config.enabled ?? true,
             gateway: config.gateway,
             ipRanges: {
               values: [],

@@ -73,4 +73,6 @@ export class UpdateInvoicesDto {
   @IsString()
   @ApiProperty()
   serviceInstanceId?: string;
+
+  isPreInvoice?: boolean;
 }

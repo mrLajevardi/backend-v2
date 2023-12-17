@@ -33,6 +33,7 @@ import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/
 import { TicketsSubjectEnum } from '../../ticket/enum/tickets-subject.enum';
 import { TicketsMessagesEnum } from '../../ticket/enum/tickets-message.enum';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { UserInfoService } from '../../user/service/user-info.service';
 
 @Injectable()
 export class CreateServiceService {
@@ -51,6 +52,7 @@ export class CreateServiceService {
     private readonly newTaskManagerService: TaskManagerService,
     private readonly ticketingWrapperService: TicketingWrapperService,
     private readonly serviceFactory: ServiceServiceFactory,
+    private readonly userInfoService: UserInfoService,
   ) {}
 
   async createService(
@@ -80,33 +82,29 @@ export class CreateServiceService {
         token: null,
       });
     }
+
+    const userCredit = await this.userInfoService.getUserCreditBy(userId);
+
+    let checkCredit = false;
+
+    if (userCredit < invoice.finalAmount) {
+      throw new NotEnoughCreditException();
+    } else {
+      checkCredit = true;
+    }
+
     const transaction = await this.transactionTableService.create({
       dateTime: new Date(),
       description: '',
       invoiceId: invoice.id,
-      isApproved: null,
+      isApproved: true,
       value: -invoice.finalAmount,
       paymentToken: null,
       paymentType: PaymentTypes.PayByCredit,
       serviceInstanceId: null,
       userId: options.user.userId.toString(),
     });
-    // invoice is not paid
-    const checkCredit = await this.userService.checkUserCredit(
-      invoice.finalAmount,
-      userId,
-      options,
-      invoice.serviceTypeId,
-    );
-    if (!checkCredit) {
-      this.transactionTableService.update(transaction.id, {
-        isApproved: false,
-      });
-      throw new NotEnoughCreditException();
-    }
-    this.transactionTableService.update(transaction.id, {
-      isApproved: true,
-    });
+
     // extend last user service instance
     if (checkCredit && invoice.type === InvoiceTypes.Extend) {
       const extendedService =
@@ -275,6 +273,7 @@ export class CreateServiceService {
     });
     // update user invoice
   }
+
   async repairService(
     options: SessionRequest,
     serviceInstanceId: string,

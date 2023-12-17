@@ -4,15 +4,15 @@ export class TransactionsReturnDto {
   id?: string;
   dateTime: Date;
   value: number;
-  invoiceId: number | null;
-  description: string | null;
+  invoiceId?: number | null;
+  description?: string | null;
   paymentType: number;
-  paymentToken: string | null;
+  paymentToken?: string | null;
   isApproved: boolean;
   serviceInstanceId: string | null;
   userId: number;
 
-  user: {
+  user?: {
     name: string;
     family: string;
     active: boolean;

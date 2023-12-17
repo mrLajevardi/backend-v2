@@ -28,21 +28,24 @@ export class VmWrapperService {
     filter: string,
     page: number,
     pageSize: number,
-    // sortDesc: string,
+    additionalHeaders?: object,
+    sortAsc?: string,
+    sortDesc?: string,
   ): Promise<AxiosResponse<EventVmDto>> {
     const endpoint = 'VmEndpointService.eventVmEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
     const events = await this.vcloudWrapperService.request<EventVmDto>(
       wrapper({
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: { Authorization: `Bearer ${authToken}`, ...additionalHeaders },
         urlParams: {
           filter: filter,
           page: page,
           pageSize: pageSize,
           filterEncoded: true,
           links: true,
-          sortDesc: 'timestamp', //TODO --> We should get sortDesc Column from user
+          ...(sortDesc && { sortDesc: 'timestamp' }),
+          ...(sortAsc && { sortAsc: 'timestamp' }), //TODO --> We should get sortDesc Column from user
         },
       }),
     );
@@ -514,6 +517,7 @@ export class VmWrapperService {
     authToken: string,
     vAppId: string,
     vAppAction: string, // suspend, powerOff, shutdown(shutdown guest)
+    additionalHeaders?: object,
   ): Promise<VcloudTask> {
     const request = {
       'root:UndeployVAppParams': {
@@ -528,7 +532,7 @@ export class VmWrapperService {
     const xmlRequest = builder.buildObject(request);
     const options = {
       urlParams: { vmId: vAppId },
-      headers: { Authorization: `Bearer ${authToken}` },
+      headers: { Authorization: `Bearer ${authToken}`, ...additionalHeaders },
       body: xmlRequest,
     };
     const endpoint = 'VmEndpointService.undeployVmEndpoint';

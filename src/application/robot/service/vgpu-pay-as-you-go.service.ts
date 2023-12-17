@@ -128,40 +128,40 @@ export class VgpuPayAsYouGoService {
   }
 
   async servicePayment(serviceList: any[], plans: any) {
-    for (const service of serviceList) {
-      const serviceInstance: ServiceInstances =
-        await this.serviceInstancesTable.findOne({
-          where: {
-            id: service.id,
-          },
-        });
-      const user = await this.userTable.findById(serviceInstance.userId);
-      console.log('dfdf');
-      const cost = plans[service.plan];
-      console.log(user.credit, '🐉');
-      console.log(service.plan);
-      if (user.credit < cost) {
-        console.log('here');
-        await this.taskManagerService.addTask({
-          serviceInstanceId: service.id,
-          customTaskId: null,
-          requestOptions: {},
-          vcloudTask: null,
-          nextTask: 'turnOffVgpuVms',
-          target: 'task',
-          taskType: 'adminTask',
-        });
-      } else {
-        await this.paygService.payAsYouGoService(service.id, cost);
-        const newDate = new Date(new Date().getTime() + 1000 * 3600);
-        await this.serviceInstancesTable.updateAll(
-          { id: service.id },
-          {
-            lastPayg: new Date(),
-            nextPayg: newDate,
-          },
-        );
-      }
-    }
+    // for (const service of serviceList) {
+    //   const serviceInstance: ServiceInstances =
+    //     await this.serviceInstancesTable.findOne({
+    //       where: {
+    //         id: service.id,
+    //       },
+    //     });
+    //   const user = await this.userTable.findById(serviceInstance.userId);
+    //   // console.log('dfdf');
+    //   const cost = plans[service.plan];
+    //   // console.log(user.credit, '🐉');
+    //   // console.log(service.plan);
+    //   if (user.credit < cost) {
+    //     console.log('here');
+    //     await this.taskManagerService.addTask({
+    //       serviceInstanceId: service.id,
+    //       customTaskId: null,
+    //       requestOptions: {},
+    //       vcloudTask: null,
+    //       nextTask: 'turnOffVgpuVms',
+    //       target: 'task',
+    //       taskType: 'adminTask',
+    //     });
+    //   } else {
+    //     await this.paygService.payAsYouGoService(service.id, cost);
+    //     const newDate = new Date(new Date().getTime() + 1000 * 3600);
+    //     await this.serviceInstancesTable.updateAll(
+    //       { id: service.id },
+    //       {
+    //         lastPayg: new Date(),
+    //         nextPayg: newDate,
+    //       },
+    //     );
+    //   }
+    // }
   }
 }

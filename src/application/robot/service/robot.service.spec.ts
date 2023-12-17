@@ -12,6 +12,8 @@ import { CheckServiceService } from './check-service.service';
 import { PaygInvoiceService } from './payg-invoice.service';
 import { forwardRef } from '@nestjs/common';
 import { VgpuPayAsYouGoService } from './vgpu-pay-as-you-go.service';
+import { PaygRobotService } from './payg-robot.service';
+import { ServiceModule } from 'src/application/base/service/service.module';
 
 describe('RobotService', () => {
   let service: RobotService;
@@ -26,6 +28,7 @@ describe('RobotService', () => {
         ServicePropertiesModule,
         SessionsModule,
         LoggerModule,
+        ServiceModule,
         PayAsYouGoModule,
       ],
       providers: [
@@ -33,6 +36,7 @@ describe('RobotService', () => {
         CheckServiceService,
         PaygInvoiceService,
         VgpuPayAsYouGoService,
+        PaygRobotService,
       ],
     }).compile();
 

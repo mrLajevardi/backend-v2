@@ -4,4 +4,6 @@ export class GetServicesReturnDto extends CreateServiceInstancesDto {
   id: string;
   retryCount: number;
   daysLeft: number;
+  createDate: Date;
+  credit: number;
 }

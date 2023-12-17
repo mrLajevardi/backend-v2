@@ -18,7 +18,7 @@ import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dt
 import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
 import { VmService } from '../../vm/service/vm.service';
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
-import { GetCodeDisk } from '../utils/disk.utils';
+import { GetCodeDisk } from '../utils/disk-functions.utils';
 
 @Injectable()
 export class VdcDetailFactoryService {

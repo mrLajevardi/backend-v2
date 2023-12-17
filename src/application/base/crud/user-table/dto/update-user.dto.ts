@@ -76,10 +76,10 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   emailToken?: string | null;
 
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({ required: false })
-  credit?: number | null;
+  // @IsNumber()
+  // @IsOptional()
+  // @ApiProperty({ required: false })
+  // credit?: number | null;
 
   @IsString()
   @IsOptional()

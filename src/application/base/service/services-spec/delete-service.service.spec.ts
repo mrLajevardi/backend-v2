@@ -34,6 +34,7 @@ import { NetworksModule } from '../../../networks/networks.module';
 import { NatModule } from '../../../nat/nat.module';
 import { TaskFactoryService } from '../../tasks/service/task.factory.service';
 import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -67,6 +68,7 @@ describe('DeleteServiceService', () => {
         TaskManagerModule,
         EdgeGatewayModule,
         UvdeskWrapperModule,
+        VServiceInstancesTableModule,
       ],
       providers: [
         ServiceService,

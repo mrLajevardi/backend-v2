@@ -8,6 +8,7 @@ import {
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 
 export class CreateItemTypesDto {
   @IsInt()
@@ -79,4 +80,6 @@ export class CreateItemTypesDto {
 
   @IsBoolean()
   isDeleted: boolean;
+
+  type: ServicePlanTypeEnum;
 }

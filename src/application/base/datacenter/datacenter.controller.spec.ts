@@ -73,4 +73,3 @@ describe('GroupController', () => {
     expect(result).toStrictEqual(correctResult);
   });
 });
-
