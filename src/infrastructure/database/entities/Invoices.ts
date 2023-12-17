@@ -72,6 +72,11 @@ export class Invoices {
   })
   serviceInstanceId: string;
 
+  @Column('float', {
+    name: 'BaseAmount',
+  })
+  baseAmount: number;
+
   @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'IsPreInvoice',
   })
