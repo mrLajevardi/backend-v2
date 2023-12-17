@@ -18,6 +18,7 @@ import { AuthModule } from '../security/auth/auth.module';
 import { VitrificationServiceService } from './service/vitrification.service.service';
 import { UserInfoService } from './service/user-info.service';
 import { TransactionsModule } from '../transactions/transactions.module';
+import { InvoicesModule } from '../invoice/invoices.module';
 
 @Module({
   imports: [
