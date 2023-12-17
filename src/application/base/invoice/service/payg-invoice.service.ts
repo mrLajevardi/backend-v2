@@ -45,10 +45,11 @@ export class PaygInvoiceService {
       cost,
       groupedItems,
       serviceInstanceId,
-      Number(groupedItems.period.value) * 30,
+      null,
       new Date(),
     );
     const invoice = await this.invoiceTableService.create(dto);
+    cost.itemsSum = cost.itemsSum.filter((item) => item?.code !== undefined);
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,
       cost.itemsSum,
