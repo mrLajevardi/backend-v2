@@ -1,11 +1,11 @@
-// import { Injectable } from '@nestjs/common';
-// import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
+import { Injectable } from '@nestjs/common';
+import { PaygServiceService } from 'src/application/base/service/services/payg-service.service';
 
-// @Injectable()
-// export class PaygRobotService {
-//   constructor(private readonly vmWrapperService: VmWrapperService) {}
+@Injectable()
+export class PaygRobotService {
+  constructor(private readonly paygServiceService: PaygServiceService) {}
 
-//   checkVmEvents() {
-//     const event = await this.vmWrapperService.eventVm()
-//   }
-// }
+  async checkVmEvents(): Promise<void> {
+    return this.paygServiceService.checkAllVdcVmsEvents();
+  }
+}

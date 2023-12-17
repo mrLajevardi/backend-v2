@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
-} from '../../invoice/dto/create-service-invoice.dto';
+} from './create-service-invoice.dto';
 import {
   IsArray,
   IsNumber,

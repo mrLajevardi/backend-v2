@@ -28,9 +28,6 @@ import {
   TemplateItem,
   TemplatesStructure,
 } from 'src/application/vdc/dto/templates.dto';
-import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
-import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
-import { CostCalculationService } from './cost-calculation.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 
 @Injectable()
@@ -143,6 +140,7 @@ export class InvoiceFactoryService {
       description: '',
       datacenterName: groupedItems.generation.vm[0].datacenterName,
       templateId: data.templateId,
+      isPreInvoice: true,
     };
     // data.templateId ? (dto.templateId = data.templateId) : null;
     return dto;
