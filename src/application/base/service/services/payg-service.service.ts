@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { VmWrapperService } from 'src/wrappers/main-wrapper/service/user/vm/vm-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -19,33 +19,28 @@ import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/servic
 import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
 import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
-import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
+import { CreatePaygVdcServiceDto } from '../../invoice/dto/create-payg-vdc-service.dto';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ExtendServiceService } from './extend-service.service';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
 import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
 import { TaskManagerService } from '../../tasks/service/task-manager.service';
-import * as paygConfg from '../configs/payg.conf.json';
 import { UserInfoService } from '../../user/service/user-info.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
-import {
-  DiskItemCodes,
-  VdcGenerationItemCodes,
-} from '../../itemType/enum/item-type-codes.enum';
+import { VdcGenerationItemCodes } from '../../itemType/enum/item-type-codes.enum';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
-import { DatacenterService } from '../../datacenter/service/datacenter.service';
-import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
-import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
 import { transferItems } from '../../invoice/utils/transfer-items.utils';
 import { LastVmStates } from '../interface/last-vm-states.interface';
 import { In, Not } from 'typeorm';
+import { CreateServiceDto } from '../dto/create-service.dto';
+import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 
 @Injectable()
 export class PaygServiceService {
@@ -63,15 +58,13 @@ export class PaygServiceService {
     private readonly edgeWrapperService: EdgeGatewayWrapperService,
     private readonly serviceItemsTableService: ServiceItemsTableService,
     private readonly extendService: ExtendServiceService,
-    private readonly itemTypeTableService: ItemTypesTableService,
     private readonly taskTableService: TasksTableService,
     private readonly taskManagerService: TaskManagerService,
     private readonly userInfoService: UserInfoService,
-    @Inject(BASE_DATACENTER_SERVICE)
-    private readonly datacenterService: DatacenterService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
-    private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly systemSettingsTableService: SystemSettingsTableService,
+    private readonly invoiceTableService: InvoicesTableService,
+    private readonly invoiceItemsTableService: InvoiceItemsTableService,
   ) {}
 
   async checkAllVdcVmsEvents(
@@ -302,76 +295,42 @@ export class PaygServiceService {
   }
 
   async createPaygVdcService(
-    dto: CreatePaygVdcServiceDto,
+    dto: CreateServiceDto,
     options: SessionRequest,
   ): Promise<TaskReturnDto> {
-    if (dto.duration < paygConfg.minimumDuration) {
-      throw new BadRequestException();
-    }
     const userId = options.user.userId;
-    const firstItem = await this.itemTypeTableService.findById(
-      dto.itemsTypes[0].itemTypeId,
-    );
-    const cost =
-      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
-    const credit = await this.userInfoService.getUserCreditBy(userId);
-    if (cost.totalCost > credit) {
-      throw new NotEnoughCreditException();
-    }
-    const lastService = await this.serviceInstanceTableService.findOne({
+    const invoice = await this.invoiceTableService.findById(dto.invoiceId);
+    const invoiceItems = await this.invoiceItemsTableService.find({
       where: {
-        userId,
-      },
-      order: {
-        createDate: { direction: 'DESC' },
+        invoiceId: invoice.id,
       },
     });
-    const name = lastService.index + 1 + 'ابر خصوصی';
+    const credit = await this.userInfoService.getUserCreditBy(userId);
+    if (invoice.finalAmount > credit) {
+      throw new NotEnoughCreditException();
+    }
     const serviceInstanceId = await this.extendService.createServiceInstance(
       userId,
-      firstItem.serviceTypeId,
+      invoice.serviceTypeId,
       null,
-      name,
-      firstItem.datacenterName,
+      invoice.name,
+      invoice.datacenterName,
       ServicePlanTypeEnum.Payg,
       VmPowerStateEventEnum.PowerOff,
       new Date(),
     );
-    const groupItems = await this.invoiceFactoryService.groupVdcItems(
-      dto.itemsTypes,
+    await this.extendService.createServiceItems(
+      invoiceItems,
+      serviceInstanceId,
     );
-    const generationItem = groupItems.generation.vm[0];
-    const swapItem = await this.itemTypeTableService.findOne({
-      where: {
-        parentId: groupItems.generation.disk[0].parentId,
-        code: DiskItemCodes.Swap,
-      },
-    });
-    dto.itemsTypes.push({
-      itemTypeId: swapItem.id,
-      value: groupItems.generation.ram[0].value,
-    });
-    const parent = generationItem.codeHierarchy.split(
-      ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
-    )[1];
-    const genIdKey = 'genId';
-    const datacenterList =
-      await this.datacenterService.getDatacenterConfigWithGen();
-    const targetDc = datacenterList.find((dc) => {
-      return dc.datacenter === generationItem.datacenterName.toLowerCase();
-    });
-    const gen = targetDc.gens.find((gen) => {
-      return gen.name === parent;
-    });
+    await this.extendService.addGenIdToServiceProperties(
+      invoiceItems,
+      serviceInstanceId,
+    );
     const lastVmStates: LastVmStates = {
       vmStates: [],
     };
     const stringifiedStates = JSON.stringify(lastVmStates);
-    await this.servicePropertiesTableService.create({
-      serviceInstanceId,
-      propertyKey: genIdKey,
-      value: gen.id,
-    });
     await this.servicePropertiesTableService.create({
       serviceInstanceId,
       propertyKey: VdcServiceProperties.LastVmStates,
@@ -381,18 +340,9 @@ export class PaygServiceService {
       userId,
       serviceInstanceId,
       {
-        increaseAmount: cost.totalCost,
+        increaseAmount: invoice.finalAmount,
       },
     );
-    for (const item of dto.itemsTypes) {
-      await this.serviceItemsTableService.create({
-        serviceInstanceId,
-        itemTypeId: item.itemTypeId,
-        quantity: 0,
-        value: item.value,
-        itemTypeCode: '',
-      });
-    }
     const task = await this.taskTableService.create({
       userId: userId,
       serviceInstanceId,

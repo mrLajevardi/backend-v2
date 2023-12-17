@@ -12,7 +12,7 @@ import {
   TotalInvoiceItemCosts,
 } from '../interface/invoice-item-cost.interface';
 import { CalculateOptions } from '../interface/calculate-options.interface';
-import { CreatePaygVdcServiceDto } from '../../service/dto/create-payg-vdc-service.dto';
+import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
 import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
 import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
 import { ServiceChecksService } from '../../service/services/service-checks.service';

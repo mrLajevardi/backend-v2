@@ -40,6 +40,7 @@ export class PaygInvoiceService {
           serviceTypeId: service.serviceTypeId,
           name: null,
           userId: service.userId,
+          isPreInvoice: false,
         });
         await this.transactionsTable.deleteAll({
           paymentType: 2,
