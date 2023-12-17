@@ -143,6 +143,7 @@ export class InvoiceFactoryService {
       description: '',
       datacenterName: groupedItems.generation.vm[0].datacenterName,
       templateId: data.templateId,
+      baseAmount: invoiceCost.basCostItems,
     };
     // data.templateId ? (dto.templateId = data.templateId) : null;
     return dto;

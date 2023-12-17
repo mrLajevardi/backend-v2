@@ -72,6 +72,11 @@ export class Invoices {
   })
   serviceInstanceId: string;
 
+  @Column('float', {
+    name: 'BaseAmount',
+  })
+  baseAmount: number;
+
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
   invoiceItems: InvoiceItems[];
   @ManyToOne(() => User, (user) => user.invoices, {
