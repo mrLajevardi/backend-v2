@@ -28,6 +28,9 @@ import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { TaskFactoryService } from './task.factory.service';
 import { VmModule } from '../../../vm/vm.module';
 import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
+import { ServiceItemModule } from '../../service-item/service-item.module';
+import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -61,6 +64,9 @@ describe('TasksService', () => {
         EdgeGatewayModule,
         VmModule,
         VServiceInstancesTableModule,
+        ServiceItemModule,
+        ServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
       ],
       providers: [
         TaskManagerService,

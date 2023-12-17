@@ -34,6 +34,7 @@ import { PaygServiceService } from './services/payg-service.service';
 import { BudgetingModule } from '../budgeting/budgeting.module';
 import { VmModule } from '../../vm/vm.module';
 import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/v-service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/
     EdgeGatewayModule,
     VmModule,
     VServiceInstancesTableModule,
+    VServiceInstancesDetailTableModule,
   ],
   providers: [
     ServiceService,
