@@ -118,4 +118,16 @@ export class Invoices {
     nullable: true,
   })
   templateId: string;
+
+  @Column(isTestingEnv() ? 'int' : 'int', {
+    name: 'ServiceCost',
+    nullable: true,
+  })
+  serviceCost: number;
+
+  @Column(isTestingEnv() ? 'int' : 'tinyint', {
+    name: 'InvoiceTax',
+    nullable: true,
+  })
+  invoiceTax: number;
 }

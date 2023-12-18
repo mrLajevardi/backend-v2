@@ -88,4 +88,8 @@ export class CreateInvoicesDto {
   baseAmount?: number;
 
   isPreInvoice: boolean;
+
+  invoiceTax: number;
+
+  serviceCost: number;
 }

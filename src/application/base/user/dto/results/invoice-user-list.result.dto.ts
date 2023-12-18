@@ -1,9 +1,14 @@
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 import { Invoices } from '../../../../../infrastructure/database/entities/Invoices';
 import { ServiceInstances } from '../../../../../infrastructure/database/entities/ServiceInstances';
 import { BaseResultDto } from '../../../../../infrastructure/dto/base.result.dto';
 import { isNil } from 'lodash';
+import { ServiceTypesEnum } from 'src/application/base/service/enum/service-types.enum';
 
 export class InvoiceUserListResultDtoFormat {
+  id: number;
+  servicePlanType: ServicePlanTypeEnum;
+  serviceTypeId: string;
   name: string;
   finalAmount: number;
   code: number | null;
@@ -41,6 +46,9 @@ export class InvoiceUserList extends BaseResultDto {
   }
   toArray(item: Invoices): InvoiceUserListResultDtoFormat {
     return {
+      id: item.id,
+      servicePlanType: item.servicePlanType,
+      serviceTypeId: item.serviceTypeId,
       name: item.name,
       finalAmount: item.finalAmount,
       code: item.code,
