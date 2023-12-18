@@ -8,5 +8,6 @@ export interface TotalInvoiceItemCosts {
   itemsSum: InvoiceItemCost[];
   itemsTotalCosts: number;
   totalCost: number;
-  basCostItems?: number;
+  serviceCost: number;
+  
 }

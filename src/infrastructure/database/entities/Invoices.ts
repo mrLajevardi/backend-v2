@@ -67,6 +67,9 @@ export class Invoices {
   @Column('tinyint', { name: 'ServicePlanType' })
   servicePlanType: number;
 
+  @Column('int', { name: 'Code', nullable: false })
+  code: number;
+
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'ServiceInstanceID',
   })
@@ -111,4 +114,16 @@ export class Invoices {
     nullable: true,
   })
   templateId: string;
+
+  @Column(isTestingEnv() ? 'int' : 'int', {
+    name: 'ServiceCost',
+    nullable: true,
+  })
+  serviceCost: number;
+
+  @Column(isTestingEnv() ? 'int' : 'tinyint', {
+    name: 'InvoiceTax',
+    nullable: true,
+  })
+  invoiceTax: number;
 }
