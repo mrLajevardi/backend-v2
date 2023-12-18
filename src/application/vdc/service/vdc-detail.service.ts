@@ -193,7 +193,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     if (res2.servicePlanType == ServicePlanTypeEnum.Payg) {
       const vService: VServiceInstances =
         await this.vServiceInstancesTableService.findById(serviceInstanceId);
-      res2.serviceCredit = !isNil(vService.credit) ? vService.credit : 0;
+      res2.serviceCredit = vService.credit;
       res2.daysLeft =
         await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
           serviceInstanceId,

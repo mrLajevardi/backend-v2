@@ -901,8 +901,9 @@ export class UserService {
       take: pageSize,
       where,
       order: {
-        id: 'DESC',
+        dateTime: 'DESC',
       },
+      relations: ['invoice', 'serviceInstance', 'user'],
     });
     const withoutPagination = await this.transactionsTable.find({
       where,
@@ -914,6 +915,6 @@ export class UserService {
       return Promise.reject(new ForbiddenException());
     }
 
-    return Promise.resolve(data);
+    return data;
   }
 }

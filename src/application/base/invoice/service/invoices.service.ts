@@ -24,7 +24,7 @@ import {
 import { TemplatesTableService } from '../../crud/templates/templates-table.service';
 import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
-import { IsNull, Not } from 'typeorm';
+import { FindManyOptions, IsNull, Not } from 'typeorm';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
@@ -35,6 +35,7 @@ import {
 import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
+import { Invoices } from '../../../../infrastructure/database/entities/Invoices';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -386,5 +387,9 @@ export class InvoicesService implements BaseInvoiceService {
       groupedItems,
     );
     return { invoiceId: createdInvoice.id };
+  }
+
+  async getAll(option: FindManyOptions<Invoices>) {
+    return await this.invoicesTable.find(option);
   }
 }
