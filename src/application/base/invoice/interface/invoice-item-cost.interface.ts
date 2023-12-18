@@ -9,5 +9,4 @@ export interface TotalInvoiceItemCosts {
   itemsTotalCosts: number;
   totalCost: number;
   serviceCost: number;
-  
 }
