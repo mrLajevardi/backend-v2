@@ -18,4 +18,7 @@ export class InvoiceDetailVdcModel {
   datacenterTitle?: string;
   percent?: number;
   baseAmount?: number;
+  invoiceCode?: number;
+  serviceCost?: number;
+  invoiceTax?: number;
 }
