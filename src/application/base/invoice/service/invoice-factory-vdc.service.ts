@@ -73,7 +73,7 @@ export class InvoiceFactoryVdcService {
         templateId: model.TemplateID,
         datacenterTitle: model.DatacenterTitle,
         percent: model.Percent,
-        baseAmount: model.baseAmount,
+        baseAmount: model.BaseAmount,
       };
 
       return res;
