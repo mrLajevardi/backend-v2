@@ -125,7 +125,7 @@ export class Invoices {
   })
   serviceCost: number;
 
-  @Column(isTestingEnv() ? 'int' : 'tinyint', {
+  @Column(isTestingEnv() ? 'float' : 'float', {
     name: 'InvoiceTax',
     nullable: true,
   })
