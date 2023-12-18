@@ -92,12 +92,11 @@ export class CreateServiceService {
     } else {
       checkCredit = true;
     }
-
     const transaction = await this.transactionTableService.create({
       dateTime: new Date(),
       description: '',
       invoiceId: invoice.id,
-      isApproved: true,
+      isApproved: false,
       value: -invoice.finalAmount,
       paymentToken: null,
       paymentType: PaymentTypes.PayByCredit,
@@ -162,21 +161,12 @@ export class CreateServiceService {
           invoice.servicePlanType,
         );
       serviceInstanceId = createdService.serviceInstanceId;
-      // options.locals = {
-      //   ...options.locals,
-      //   serviceInstanceId,
-      // };
-      // approve user transaction
-      await this.transactionTableService.updateAll(
-        {
-          userId: userId,
-          invoiceId,
-        },
-        {
-          isApproved: true,
-          serviceInstanceId,
-        },
-      );
+
+      await this.transactionTableService.update(transaction.id, {
+        isApproved: true,
+        serviceInstanceId: serviceInstanceId,
+      });
+
       if (invoice.serviceTypeId === ServiceTypesEnum.Vdc) {
         task = await this.tasksTableService.create({
           userId: userId,
@@ -266,6 +256,7 @@ export class CreateServiceService {
         },
       );
     }
+
     return Promise.resolve({
       id: serviceInstanceId,
       taskId: taskId,

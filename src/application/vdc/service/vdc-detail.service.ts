@@ -32,6 +32,7 @@ import { PaygCostCalculationService } from '../../base/invoice/service/payg-cost
 import { VServiceInstancesTableService } from '../../base/crud/v-service-instances-table/v-service-instances-table.service';
 import { isNil } from 'lodash';
 import { VServiceInstances } from '../../../infrastructure/database/entities/views/v-serviceInstances';
+import { VServiceInstancesDetailTableService } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -43,10 +44,10 @@ export class VdcDetailService implements BaseVdcDetailService {
     @Inject(BASE_SERVICE_ITEM_SERVICE)
     private readonly serviceItemService: BaseServiceItem,
     private readonly serviceService: ServiceService,
-    private readonly organizationTableService: OrganizationTableService,
     private readonly vmService: VmService,
     private readonly vServiceInstancesTableService: VServiceInstancesTableService,
     private readonly paygCostCalculationService: PaygCostCalculationService,
+    private readonly vServiceInstancesDetailTableService: VServiceInstancesDetailTableService,
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
@@ -122,6 +123,14 @@ export class VdcDetailService implements BaseVdcDetailService {
       )) as GetAllVdcServiceWithItemsResultDto[]
     )[0];
 
+    const vmServiceItem =
+      await this.vServiceInstancesDetailTableService.findOne({
+        where: {
+          code: VdcGenerationItemCodes.Vm,
+          serviceInstanceId: serviceInstanceId,
+        },
+      });
+
     this.vdcDetailFactory.getVdcDetailItemModel(vdcModels, res2);
 
     res2.vm.usage = vdcDetails.serviceItems.find(
@@ -165,6 +174,7 @@ export class VdcDetailService implements BaseVdcDetailService {
               storageUsed: res.usage,
               memoryAllocation: Number(res2.ram.value),
               serviceInstanceId: serviceInstanceId,
+              numberOfVms: Number(vmServiceItem.value),
             },
             this.vmService,
             option as SessionRequest,
@@ -183,7 +193,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     if (res2.servicePlanType == ServicePlanTypeEnum.Payg) {
       const vService: VServiceInstances =
         await this.vServiceInstancesTableService.findById(serviceInstanceId);
-      res2.serviceCredit = !isNil(vService.credit) ? vService.credit : 0;
+      res2.serviceCredit = vService.credit;
       res2.daysLeft =
         await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
           serviceInstanceId,

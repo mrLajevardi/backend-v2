@@ -36,6 +36,7 @@ import {
 } from '../../datacenter/interface/datacenter.interface';
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
 import { VmPowerStateEventEnum } from 'src/wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
+import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
 
 @Injectable()
 export class ExtendServiceService {
@@ -358,18 +359,24 @@ export class ExtendServiceService {
   ): Promise<void> {
     const { serviceInstanceId, userId: userId, id: invoiceId } = invoice;
     // approve user transaction
-    await this.transactionTableService.updateAll(
-      {
-        userId: userId,
-        invoiceId: invoiceId,
-      },
-      {
-        isApproved: true,
-        serviceInstanceId,
-      },
-    );
+    // await this.transactionTableService.updateAll(
+    //   {
+    //     userId: userId,
+    //     invoiceId: invoiceId,
+    //   },
+    //   {
+    //     isApproved: true,
+    //     serviceInstanceId,
+    //   },
+    // );
+
+    await this.transactionTableService.update(transaction.id, {
+      isApproved: true,
+      serviceInstanceId: serviceInstanceId,
+    });
+
     // update user invoice
-    this.invoicesTableService.updateAll(
+    await this.invoicesTableService.updateAll(
       {
         userId: userId,
         id: transaction.invoiceId,
@@ -384,20 +391,36 @@ export class ExtendServiceService {
     serviceInstanceId: string,
     invoiceId: number,
   ): Promise<void> {
-    const invoiceItems = await this.invoiceItemsTableService.find({
+    const invoiceItems: InvoiceItems[] =
+      await this.invoiceItemsTableService.find({
+        where: {
+          invoiceId,
+        },
+      });
+    const serviceItems: ServiceItems[] = await this.serviceItemsTable.find({
       where: {
-        invoiceId,
+        serviceInstanceId: serviceInstanceId,
       },
     });
 
-    await this.serviceItemsTable.deleteAll({
-      serviceInstanceId,
-    });
-    await this.createServiceItems(invoiceItems, serviceInstanceId);
-    await this.servicePropertiesTable.deleteAll({
-      propertyKey: VdcServiceProperties.GenerationId,
-      serviceInstanceId,
-    });
-    await this.addGenIdToServiceProperties(invoiceItems, serviceInstanceId);
+    for (const invoiceItem of invoiceItems) {
+      const foundItem = serviceItems.find(
+        (serviceItem) => serviceItem.itemTypeId === invoiceItem.itemId,
+      );
+
+      if (foundItem) {
+        await this.serviceItemsTable.update(foundItem.id, {
+          value: invoiceItem.value,
+        });
+      } else {
+        await this.serviceItemsTable.create({
+          serviceInstanceId: serviceInstanceId,
+          itemTypeId: invoiceItem.itemId,
+          value: invoiceItem.value,
+          itemTypeCode: null,
+          quantity: null,
+        });
+      }
+    }
   }
 }

@@ -23,6 +23,7 @@ import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 import { VmModule } from '../../../vm/vm.module';
 import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 describe('ServiceAdminController', () => {
   let controller: ServiceAdminController;
@@ -46,6 +47,7 @@ describe('ServiceAdminController', () => {
         InvoicesModule,
         VmModule,
         VServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
       ],
       providers: [
         ServiceAdminService,

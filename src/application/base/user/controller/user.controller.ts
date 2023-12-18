@@ -49,6 +49,12 @@ import { RedisCacheService } from '../../../../infrastructure/utils/services/red
 import { ChangeNameDto } from '../dto/change-name.dto';
 import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
 import { VitrificationServiceService } from '../service/vitrification.service.service';
+import {
+  ResultDtoCollectionResponse,
+  TransactionsResultDto,
+} from '../../transactions/dto/results/transactions.result.dto';
+import { UserInfoService } from '../service/user-info.service';
+import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -57,6 +63,7 @@ import { VitrificationServiceService } from '../service/vitrification.service.se
 export class UserController {
   constructor(
     private readonly userService: UserService,
+    private readonly userInfoService: UserInfoService,
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
     private readonly redisCacheService: RedisCacheService,
@@ -447,14 +454,15 @@ export class UserController {
     @Query('ServiceID') ServiceID?: string,
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
-  ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
+  ): Promise<ResultDtoCollectionResponse> {
     if (!page) {
       page = 1;
     }
     if (!pageSize) {
       pageSize = 10;
     }
-    return await this.userService.getTransactions(
+
+    const data = await this.userService.getTransactions(
       options,
       page,
       pageSize,
@@ -465,5 +473,34 @@ export class UserController {
       startDateTime ? new Date(startDateTime) : null,
       endDateTime ? new Date(endDateTime) : null,
     );
+
+    return new TransactionsResultDto().collection(data.transaction, {
+      totalRecords: data.totalRecords,
+    });
+  }
+
+  @Get('invoices')
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  @ApiQuery({ name: 'startDateTime', type: String, required: false })
+  @ApiQuery({ name: 'endDateTime', type: String, required: false })
+  async getUserInvoices(
+    @Req() options: SessionRequest,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('startDateTime') startDateTime?: string,
+    @Query('endDateTime') endDateTime?: string,
+  ) {
+    const data = await this.userInfoService.getInvoices(
+      options,
+      page,
+      pageSize,
+      startDateTime ? new Date(startDateTime) : null,
+      endDateTime ? new Date(endDateTime) : null,
+    );
+
+    return new InvoiceUserList().collection(data.data, {
+      totalRecords: data.total,
+    });
   }
 }
