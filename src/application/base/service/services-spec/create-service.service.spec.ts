@@ -38,7 +38,7 @@ describe('CreateServiceService', () => {
         SessionsModule,
         PaymentModule,
         TaskManagerModule,
-        UserModule,
+        forwardRef(() => UserModule),
         InvoicesModule,
         TasksModule,
         MainWrapperModule,

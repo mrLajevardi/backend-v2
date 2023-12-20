@@ -510,8 +510,8 @@ export class TaskManagerService {
     const nat = await this.natService.createNatRule(
       {
         enabled: true,
-        externalIP: ip[0],
-        internalIP: '192.168.0.0/24',
+        externalIp: ip[0],
+        internalIp: '192.168.0.0/24',
         firewallMatch: NatFirewallMatchEnum.MatchExternalAddress,
         name: 'default_nat',
         priority: 0,

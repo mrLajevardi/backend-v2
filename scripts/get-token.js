@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 const axios = require('axios');
-require('dotenv').config();
+const dotenv = require('dotenv');
+dotenv.config({ path: '../.env' });
 const password = process.env.ROBOT_TOKEN;
 /**
  * get jwt token from server

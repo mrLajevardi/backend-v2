@@ -21,7 +21,7 @@ import { PaygInvoiceService } from './service/payg-invoice.service';
     DatabaseModule,
     CrudModule,
     forwardRef(() => DatacenterModule),
-    UserModule,
+    forwardRef(() => UserModule),
     forwardRef(() => VdcModule),
     // VgpuModule,
     forwardRef(() => VgpuModule),

@@ -61,6 +61,7 @@ import { UserAlreadyExist } from '../../../../infrastructure/exceptions/user-alr
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 import { UserInfoService } from './user-info.service';
 import { TransactionsService } from '../../transactions/transactions.service';
+import { UsersFactoryService } from './user.factory.service';
 
 @Injectable()
 export class UserService {
@@ -79,6 +80,7 @@ export class UserService {
     private readonly redisCacheService: RedisCacheService,
     private readonly fileTableService: FileTableService,
     private readonly userInfoService: UserInfoService,
+    private readonly userFactoryService: UsersFactoryService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -474,7 +476,11 @@ export class UserService {
         },
       );
     }
-
+    if (transaction.invoiceId) {
+      this.userFactoryService
+        .runServiceBasedOnInvoice(transaction.invoiceId, options)
+        .catch(console.log);
+    }
     return Promise.resolve({
       verified: verified,
       refID: refID,
