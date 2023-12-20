@@ -32,7 +32,9 @@ export class PaygInvoiceService {
       throw new BadRequestException();
     }
     const serviceInstanceId = null;
-    await this.createPaygInvoiceFromTemplate(data);
+    if (data.templateId) {
+      await this.createPaygInvoiceFromTemplate(data);
+    }
     const cost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(data);
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
@@ -79,5 +81,6 @@ export class PaygInvoiceService {
         templateStructure,
       );
     data.itemsTypes = invoiceItems;
+    data.duration = templateStructure.duration;
   }
 }
