@@ -113,7 +113,7 @@ export class BudgetingService {
       throw new NotEnoughCreditException();
     }
     const priceWithTax: number =
-      data.paidAmount * (1 + toInteger(taxPercent.value) / 100);
+      data.paidAmount * (1 + Number(taxPercent.value));
 
     await this.servicePaymentTableService.create({
       userId: vServiceInstance.userId,
@@ -125,7 +125,7 @@ export class BudgetingService {
     });
 
     const priceForNextPeriodWithTax: number =
-      data.paidAmountForNextPeriod * (1 + toInteger(taxPercent.value) / 100);
+      data.paidAmountForNextPeriod * (1 + Number(taxPercent.value) / 100);
 
     if (vServiceInstance.credit < priceForNextPeriodWithTax) {
       throw new NotEnoughCreditException();
@@ -148,7 +148,7 @@ export class BudgetingService {
       },
     });
     const paidAmountWithTax: number =
-      data.paidAmount * (1 + toInteger(taxPercent.value) / 100);
+      data.paidAmount * (1 + Number(taxPercent.value) / 100);
 
     if (isNil(user)) {
       throw new NotFoundException();
@@ -184,7 +184,7 @@ export class BudgetingService {
       serviceInstanceId: serviceInstanceId,
       paymentType: PaymentTypes.PayToServiceByUserCredit,
       price: -paidAmountWithTax,
-      taxPercent: toInteger(taxPercent.value),
+      taxPercent: Number(taxPercent.value),
       metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
     });
 
