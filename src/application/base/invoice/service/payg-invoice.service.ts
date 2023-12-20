@@ -9,6 +9,9 @@ import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import * as paygConfg from '../../service/configs/payg.conf.json';
+import { TemplatesTableService } from '../../crud/templates/templates-table.service';
+import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 
 @Injectable()
 export class PaygInvoiceService {
@@ -16,6 +19,8 @@ export class PaygInvoiceService {
     private readonly invoiceTableService: InvoicesTableService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly paygCostCalculationService: PaygCostCalculationService,
+    private readonly templateTableService: TemplatesTableService,
+    private readonly serviceI: ServiceItemTypesTreeService,
   ) {}
 
   async createPaygInvoice(
@@ -27,6 +32,7 @@ export class PaygInvoiceService {
       throw new BadRequestException();
     }
     const serviceInstanceId = null;
+    await this.createPaygInvoiceFromTemplate(data);
     const cost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(data);
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
@@ -59,5 +65,19 @@ export class PaygInvoiceService {
     return {
       invoiceId: invoice.id,
     };
+  }
+
+  async createPaygInvoiceFromTemplate(
+    data: CreatePaygVdcServiceDto,
+  ): Promise<void> {
+    const template = await this.templateTableService.findById(data.templateId);
+    const templateStructure: TemplatesStructure = JSON.parse(
+      template.structure,
+    );
+    const invoiceItems =
+      this.invoiceFactoryService.convertTemplateToInvoiceItems(
+        templateStructure,
+      );
+    data.itemsTypes = invoiceItems;
   }
 }
