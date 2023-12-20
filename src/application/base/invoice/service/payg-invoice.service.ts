@@ -39,6 +39,7 @@ export class PaygInvoiceService {
       templateId: null,
       type: InvoiceTypes.Create,
     };
+    cost.itemsTotalCosts = cost.itemsTotalCosts * 60;
     const dto = await this.invoiceFactoryService.createInvoiceDto(
       userId,
       completeData,

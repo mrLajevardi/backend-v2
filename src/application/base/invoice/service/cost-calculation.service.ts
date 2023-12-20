@@ -26,7 +26,7 @@ export class CostCalculationService {
 
   async calculateVdcGenerationItems(
     groupedItems: VdcItemGroup,
-  ): Promise<Omit<TotalInvoiceItemCosts, 'totalCost'>> {
+  ): Promise<Pick<TotalInvoiceItemCosts, 'itemsSum' | 'itemsTotalCosts'>> {
     const computeResources = {
       cpu: groupedItems.generation.cpu,
       ram: groupedItems.generation.ram,
@@ -68,7 +68,6 @@ export class CostCalculationService {
     return {
       itemsSum,
       itemsTotalCosts: totalCost,
-      basCostItems: 0,
     };
   }
 
@@ -96,6 +95,7 @@ export class CostCalculationService {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
+      serviceCost: periodTotalCost,
     };
   }
 

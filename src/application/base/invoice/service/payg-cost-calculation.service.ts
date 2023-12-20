@@ -115,7 +115,10 @@ export class PaygCostCalculationService {
     itemsSum.forEach((item) => {
       totalCost += item.cost;
     });
-    const totalInvoiceItemCosts: Omit<TotalInvoiceItemCosts, 'totalCost'> = {
+    const totalInvoiceItemCosts: Pick<
+      TotalInvoiceItemCosts,
+      'itemsSum' | 'itemsTotalCosts'
+    > = {
       itemsSum: itemsSum,
       itemsTotalCosts: totalCost,
     };
@@ -126,6 +129,7 @@ export class PaygCostCalculationService {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
+      serviceCost: totalInvoiceItemCosts.itemsTotalCosts * durationInMin,
     };
   }
 
@@ -152,6 +156,8 @@ export class PaygCostCalculationService {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
+      serviceCost:
+        totalInvoiceItemCosts.itemsTotalCosts * 60 * 24 * dto.duration,
     };
   }
 

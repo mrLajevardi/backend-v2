@@ -26,7 +26,9 @@ export class InvoiceFactoryVdcService {
     const invoiceModels = await this.invoicesTable
       .getQueryBuilder()
       .select(
-        'Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime , Invoice.TemplateID , Invoice.BaseAmount',
+        `Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime , Invoice.TemplateID , Invoice.BaseAmount
+         , Invoice.Code as InvoiceCode , 
+        Invoice.ServiceCost , Invoice.InvoiceTax `,
       )
       .where(
         'Invoice.ServiceTypeID = :serviceTypeId AND Invoice.ID= :invoiceId ',
@@ -73,7 +75,10 @@ export class InvoiceFactoryVdcService {
         templateId: model.TemplateID,
         datacenterTitle: model.DatacenterTitle,
         percent: model.Percent,
-        baseAmount: model.baseAmount,
+        baseAmount: model.BaseAmount,
+        invoiceCode: model.InvoiceCode,
+        invoiceTax: model.InvoiceTax,
+        serviceCost: model.ServiceCost,
       };
 
       return res;
@@ -212,15 +217,15 @@ export class InvoiceFactoryVdcService {
     // Math.round((item.fee ? item.fee : item.price) / 1000) * 1000
     res.finalPrice = Math.round(ramModel.finalAmount / 1000) * 1000;
 
-    res.finalPriceWithTax = res.finalPrice * 0.09 + res.finalPrice;
+    res.finalPriceWithTax = res.finalPrice * res.invoiceTax + res.finalPrice;
 
-    res.finalPriceTax = res.finalPrice * 0.09;
+    res.finalPriceTax = res.finalPrice * ramModel.invoiceTax;
 
     res.rawAmount = Math.round(ramModel.rawAmount / 1000) * 1000;
 
-    res.rawAmountTax = res.rawAmount * 0.09;
+    res.rawAmountTax = res.rawAmount * ramModel.invoiceTax;
 
-    res.rawAmountWithTax = res.rawAmount * 0.09 + res.rawAmount;
+    res.rawAmountWithTax = res.rawAmount * ramModel.invoiceTax + res.rawAmount;
 
     res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
 
@@ -229,6 +234,13 @@ export class InvoiceFactoryVdcService {
     res.templateId = ramModel.templateId;
 
     res.baseAmount = ramModel.baseAmount;
+
+    res.serviceCost = ramModel.serviceCost;
+
+    res.invoiceTax = ramModel.invoiceTax;
+
+    res.serviceCostTax = ramModel.serviceCost * ramModel.invoiceTax;
+
     // (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
     // (1 + period.percent);
 

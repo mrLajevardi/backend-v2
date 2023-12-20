@@ -29,6 +29,8 @@ import {
   TemplatesStructure,
 } from 'src/application/vdc/dto/templates.dto';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
 
 @Injectable()
 export class InvoiceFactoryService {
@@ -36,6 +38,7 @@ export class InvoiceFactoryService {
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
     private readonly invoiceItemTableService: InvoiceItemsTableService,
     private readonly serviceInstanceTable: ServiceInstancesTableService,
+    private readonly systemSettingsTableService: SystemSettingsTableService,
   ) {}
   async groupVdcItems(invoiceItems: InvoiceItemsDto[]): Promise<VdcItemGroup> {
     const vdcItemGroup: VdcItemGroup = {} as VdcItemGroup;
@@ -116,6 +119,12 @@ export class InvoiceFactoryService {
     remainingDays: number,
     date: Date,
   ): Promise<CreateInvoicesDto> {
+    const tax = await this.systemSettingsTableService.findOne({
+      where: {
+        propertyKey: SystemSettingsPropertyKeysEnum.TaxPercent,
+      },
+    });
+    const invoiceTax = Number(tax.value);
     const serviceCount = await this.serviceInstanceTable.count({
       where: {
         userId,
@@ -140,8 +149,10 @@ export class InvoiceFactoryService {
       description: '',
       datacenterName: groupedItems.generation.vm[0].datacenterName,
       templateId: data.templateId,
-      baseAmount: invoiceCost.basCostItems,
+      baseAmount: invoiceCost.itemsTotalCosts,
       isPreInvoice: true,
+      serviceCost: invoiceCost.serviceCost,
+      invoiceTax,
     };
     // data.templateId ? (dto.templateId = data.templateId) : null;
     return dto;
