@@ -45,15 +45,18 @@ export class NatRulesListDTO {
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
-  externalIP: string;
+  @ValidateIf((item) => item !== null)
+  externalIp: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
-  internalIP: string;
+  @ValidateIf((item) => item !== null)
+  internalIp: string;
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
   @IsOptional()
+  @ValidateIf((item) => item !== null)
   destinationIp?: string;
 
   @ApiProperty({ type: String, example: 'DNAT' })
@@ -65,6 +68,7 @@ export class NatRulesListDTO {
 
   @ApiProperty({ type: String })
   @IsString()
+  @ValidateIf((item) => item !== null)
   description?: string;
 
   @ApiProperty({ type: Number, example: 22 })

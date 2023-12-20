@@ -12,6 +12,8 @@ import { AbilityModule } from '../../security/ability/ability.module';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserInfoService } from './user-info.service';
+import { UsersFactoryService } from './user.factory.service';
+import { ServiceModule } from '../../service/service.module';
 
 describe('UserAdminService', () => {
   let service: UserAdminService;
@@ -23,6 +25,7 @@ describe('UserAdminService', () => {
         DatabaseModule,
         AbilityModule,
         CrudModule,
+        ServiceModule,
         LoggerModule,
         PaymentModule,
         JwtModule,
@@ -35,6 +38,7 @@ describe('UserAdminService', () => {
         UserAdminService,
         RedisCacheService,
         UserInfoService,
+        UsersFactoryService,
       ],
     }).compile();
 
