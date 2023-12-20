@@ -19,6 +19,8 @@ import { VitrificationServiceService } from './service/vitrification.service.ser
 import { UserInfoService } from './service/user-info.service';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { InvoicesModule } from '../invoice/invoices.module';
+import { UsersFactoryService } from './service/user.factory.service';
+import { ServiceModule } from '../service/service.module';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { InvoicesModule } from '../invoice/invoices.module';
     SecurityToolsModule,
     AbilityModule,
     TransactionsModule,
+    forwardRef(() => ServiceModule),
     forwardRef(() => AuthModule),
   ],
   providers: [
@@ -41,9 +44,15 @@ import { InvoicesModule } from '../invoice/invoices.module';
     RedisCacheService,
     VitrificationServiceService,
     UserInfoService,
+    UsersFactoryService,
     // TwoFaAuthService,
   ],
   controllers: [UserController, UserAdminController],
-  exports: [UserService, RedisCacheService, UserInfoService],
+  exports: [
+    UserService,
+    RedisCacheService,
+    UserInfoService,
+    UsersFactoryService,
+  ],
 })
 export class UserModule {}

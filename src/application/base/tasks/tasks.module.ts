@@ -43,7 +43,7 @@ import { TaskFactoryService } from './service/task.factory.service';
     forwardRef(() => InvoicesModule),
     CrudModule,
     SessionsModule,
-    OrganizationModule,
+    forwardRef(() => OrganizationModule),
     AbilityModule,
     PayAsYouGoModule,
     //NetworksModule,
