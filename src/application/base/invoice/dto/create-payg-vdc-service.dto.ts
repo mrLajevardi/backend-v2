@@ -7,6 +7,7 @@ import {
   IsArray,
   IsNumber,
   IsObject,
+  IsOptional,
   IsString,
   ValidateIf,
   ValidateNested,
@@ -35,6 +36,7 @@ export class CreatePaygVdcServiceDto {
   templateId?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({ type: String })
   @ValidateIf((object, value) => value !== null)
   serviceInstanceId?: string;
