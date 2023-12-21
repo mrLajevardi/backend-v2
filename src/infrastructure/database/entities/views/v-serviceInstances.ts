@@ -117,7 +117,10 @@ export class VServiceInstances {
   @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
   serviceType: ServiceTypes;
 
-  @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.serviceInstance)
+  @OneToMany(
+    () => ServiceItems,
+    (serviceItems) => serviceItems.vServiceInstance,
+  )
   serviceItems: ServiceItems[];
 
   // @OneToMany(() => ServicePlans, (servicePlans) => servicePlans.serviceInstance)

@@ -9,6 +9,7 @@ import {
 import { ServiceInstances } from './ServiceInstances';
 import { ItemTypes } from './ItemTypes';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { VServiceInstances } from './views/v-serviceInstances';
 
 @Index('PK_ServiceResources', ['id'], { unique: true })
 @Entity('ServiceItems', { schema: 'user' })
@@ -40,6 +41,14 @@ export class ServiceItems {
   )
   @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
+
+  @ManyToOne(
+    () => VServiceInstances,
+    (vServiceInstances) => vServiceInstances.serviceItems,
+    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  )
+  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  vServiceInstance: VServiceInstances;
 
   @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.serviceItems, {
     onDelete: 'CASCADE',

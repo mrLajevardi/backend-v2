@@ -30,7 +30,7 @@ export class BudgetingController {
   async getUserBudget(
     @Request() options: SessionRequest,
   ): Promise<BudgetingResultDtoFormat[]> {
-    const data: VServiceInstances[] =
+    const data: BudgetingResultDtoFormat[] =
       await this.budgetingService.getUserBudgeting(options.user.userId);
 
     return new BudgetingResultDto().collection(data);

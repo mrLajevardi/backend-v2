@@ -135,6 +135,7 @@ export class PaygCostCalculationService {
 
   async calculateVdcPaygTypeInvoice(
     dto: CreatePaygVdcServiceDto,
+    minutes: number = 60 * 24,
   ): Promise<TotalInvoiceItemCosts> {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       dto.itemsTypes,
@@ -150,14 +151,13 @@ export class PaygCostCalculationService {
     const invoiceTotalCosts =
       (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) *
       dto.duration *
-      60 *
-      24;
+      minutes;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
       serviceCost:
-        totalInvoiceItemCosts.itemsTotalCosts * 60 * 24 * dto.duration,
+        totalInvoiceItemCosts.itemsTotalCosts * minutes * dto.duration,
     };
   }
 
