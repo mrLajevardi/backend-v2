@@ -78,6 +78,12 @@ export class TemplatesStructure {
 
   @ApiProperty({ type: TemplateItem })
   duration?: number;
+
+  @ApiProperty({ type: TemplateItem })
+  percent?: number;
+
+  @ApiProperty({ type: TemplateItem })
+  price?: number;
 }
 export class TemplatesDto extends TemplatesStructure {
   @ApiProperty({ type: String })

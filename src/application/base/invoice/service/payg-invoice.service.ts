@@ -11,7 +11,8 @@ import { InvoiceTypes } from '../enum/invoice-type.enum';
 import * as paygConfg from '../../service/configs/payg.conf.json';
 import { TemplatesTableService } from '../../crud/templates/templates-table.service';
 import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
-import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { transferItems } from '../utils/transfer-items.utils';
 
 @Injectable()
 export class PaygInvoiceService {
@@ -20,7 +21,7 @@ export class PaygInvoiceService {
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly paygCostCalculationService: PaygCostCalculationService,
     private readonly templateTableService: TemplatesTableService,
-    private readonly serviceI: ServiceItemTypesTreeService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
   ) {}
 
   async createPaygInvoice(
@@ -44,7 +45,7 @@ export class PaygInvoiceService {
       itemsTypes: data.itemsTypes,
       serviceInstanceId,
       servicePlanTypes: ServicePlanTypeEnum.Payg,
-      templateId: null,
+      templateId: data.templateId ?? null,
       type: InvoiceTypes.Create,
     };
     cost.itemsTotalCosts = cost.itemsTotalCosts * 60;
@@ -82,5 +83,34 @@ export class PaygInvoiceService {
       );
     data.itemsTypes = invoiceItems;
     data.duration = templateStructure.duration;
+  }
+
+  async checkAllUserCredit() {
+    return 10000000
+  }
+  async paygUpgradeInvoice(
+    dto: CreatePaygVdcServiceDto,
+  ): Promise<InvoiceIdDto> {
+    const newItemsCost =
+      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
+    const currentItems = await this.serviceItemsTableService.find({
+      where: {
+        serviceInstanceId: dto.serviceInstanceId,
+      },
+    });
+    const transferredItems = transferItems(currentItems);
+    const currentItemsDto: CreatePaygVdcServiceDto = {
+      duration: dto.duration,
+      itemsTypes: transferredItems,
+      serviceInstanceId: null,
+    };
+    const currentItemsCost =
+      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
+        currentItemsDto,
+      );
+    const costsSum = currentItemsCost.totalCost + curr
+    if (currentItemsCost.totalCost + ) {
+      
+    }
   }
 }

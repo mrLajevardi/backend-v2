@@ -41,6 +41,9 @@ import { In, Not } from 'typeorm';
 import { CreateServiceDto } from '../dto/create-service.dto';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
+import { TemplatesTableService } from '../../crud/templates/templates-table.service';
+import { Invoices } from 'src/infrastructure/database/entities/Invoices';
+import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
 
 @Injectable()
 export class PaygServiceService {
@@ -65,6 +68,7 @@ export class PaygServiceService {
     private readonly systemSettingsTableService: SystemSettingsTableService,
     private readonly invoiceTableService: InvoicesTableService,
     private readonly invoiceItemsTableService: InvoiceItemsTableService,
+    private readonly templateTableService: TemplatesTableService,
   ) {}
 
   async checkAllVdcVmsEvents(
@@ -205,6 +209,23 @@ export class PaygServiceService {
     }
   }
 
+  async createServiceDiscount(invoice: Invoices): Promise<void> {
+    if (invoice.templateId) {
+      const template = await this.templateTableService.findById(
+        invoice.templateId,
+      );
+      const templateStructure: TemplatesStructure = JSON.parse(
+        template.structure,
+      );
+      await this.extendService.createServiceDiscount({
+        duration: templateStructure.duration,
+        percent: templateStructure.percent ?? null,
+        price: templateStructure.price ?? null,
+        serviceInstanceId: invoice.serviceInstanceId,
+      });
+    }
+  }
+
   sumComputeItems(invoiceItemsCost: InvoiceItemCost[][]): InvoiceItemCost[] {
     if (invoiceItemsCost.length === 0) {
       return [];
@@ -319,6 +340,8 @@ export class PaygServiceService {
       VmPowerStateEventEnum.PowerOff,
       new Date(),
     );
+    await this.invoiceTableService.update(invoice.id, { serviceInstanceId });
+    await this.createServiceDiscount(invoice);
     await this.extendService.createServiceItems(
       invoiceItems,
       serviceInstanceId,
