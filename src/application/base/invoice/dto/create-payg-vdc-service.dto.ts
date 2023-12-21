@@ -37,5 +37,5 @@ export class CreatePaygVdcServiceDto {
   @IsString()
   @ApiProperty({ type: String })
   @ValidateIf((object, value) => value !== null)
-  serviceInstanceId: string;
+  serviceInstanceId?: string;
 }

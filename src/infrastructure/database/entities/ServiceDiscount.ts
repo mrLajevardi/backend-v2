@@ -1,10 +1,14 @@
 import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../entity/base.entity';
+import { isTestingEnv } from '../../helpers/helpers';
 
 @Index('PK__ServiceD__3214EC07E8961BAC', ['id'], { unique: true })
 @Entity('ServiceDiscount', { schema: 'services' })
 export class ServiceDiscount extends BaseEntity {
-  @Column('uniqueidentifier', { name: 'ServiceInstanceId', nullable: true })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceId',
+    nullable: true,
+  })
   serviceInstanceId: string | null;
 
   @Column('float', { name: 'Percent', nullable: true, precision: 53 })
@@ -19,10 +23,18 @@ export class ServiceDiscount extends BaseEntity {
   @Column('datetime', { name: 'ActivateDate', nullable: true })
   activateDate: Date | null;
 
-  @Column('bit', { name: 'Enabled', nullable: true, default: () => '(1)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'Enabled',
+    nullable: true,
+    default: () => '(1)',
+  })
   enabled: boolean | null;
 
-  @Column('bit', { name: 'Deleted', nullable: true, default: () => '(0)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'Deleted',
+    nullable: true,
+    default: () => '(0)',
+  })
   deleted: boolean | null;
 
   @Column('datetime', { name: 'CreateDate', nullable: true })

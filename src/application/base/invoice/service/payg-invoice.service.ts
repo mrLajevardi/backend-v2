@@ -86,11 +86,9 @@ export class PaygInvoiceService {
   }
 
   async checkAllUserCredit() {
-    return 10000000
+    return 10000000;
   }
-  async paygUpgradeInvoice(
-    dto: CreatePaygVdcServiceDto,
-  ): Promise<InvoiceIdDto> {
+  async paygUpgradeInvoice(dto: CreatePaygVdcServiceDto): Promise<void> {
     const newItemsCost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
     const currentItems = await this.serviceItemsTableService.find({
@@ -108,9 +106,9 @@ export class PaygInvoiceService {
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
         currentItemsDto,
       );
-    const costsSum = currentItemsCost.totalCost + curr
-    if (currentItemsCost.totalCost + ) {
-      
-    }
+    // const costsSum = currentItemsCost.totalCost + curr
+    // if (currentItemsCost.totalCost + ) {
+
+    // }
   }
 }

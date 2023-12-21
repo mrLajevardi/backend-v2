@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { isTestingEnv } from '../helpers/helpers';
 
 @Entity()
 export class BaseEntity {
@@ -7,7 +8,7 @@ export class BaseEntity {
   })
   guid: string;
 
-  @PrimaryGeneratedColumn('increment', {
+  @Column('int', {
     name: 'Id',
   })
   id: number;
