@@ -14,6 +14,7 @@ import { AuthModule } from '../auth.module';
 import { UserPayload } from '../dto/user-payload.dto';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { TwoFaAuthService } from './two-fa-auth.service';
+import {TwoFaAuthTypeEnum} from "../enum/two-fa-auth-type.enum";
 
 describe('LoginService', () => {
   let service: LoginService;
@@ -40,6 +41,13 @@ describe('LoginService', () => {
         hash: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
       };
     }),
+    getUserTwoFactorTypes: jest.fn((userId:number): number[]=>{
+      if(userId == 1060){
+        return [1]
+      }else {
+        return [0]
+      }
+  })
   };
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -82,7 +90,7 @@ describe('LoginService', () => {
     it('should be return access and ai token if user do not have two factor authenticate', async () => {
       const user: UserPayload = {
         userId: 1060,
-        twoFactorAuth: 0,
+        twoFactorAuth: '0',
         aiAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
       };
 
@@ -109,7 +117,7 @@ describe('LoginService', () => {
     it('should be return hash if user have two factor authenticate', async () => {
       const user: UserPayload = {
         userId: 1060,
-        twoFactorAuth: 1,
+        twoFactorAuth: '1',
         aiAccessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
       };
 
@@ -117,7 +125,7 @@ describe('LoginService', () => {
       expect(data.two_factor_authenticate).toEqual(true);
       expect(data).toEqual({
         two_factor_authenticate: expect.any(Boolean),
-        hash: expect.any(String),
+        types: expect.any(Array),
       });
     });
   });

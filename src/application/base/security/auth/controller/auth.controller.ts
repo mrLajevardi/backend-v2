@@ -60,6 +60,13 @@ import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 import { VerifyOtpTwoFactorAuthDto } from '../dto/verify-otp-two-factor-auth.dto';
 import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
 import { EnableTwoFactorAuthenticateDto } from '../dto/enable-two-factor-authenticate.dto';
+import { DisableTwoFactorAuthenticateDto } from '../dto/disable-two-factor-authenticate.dto';
+import { isNil } from 'lodash';
+import { UserDoesNotExistException } from '../../../../../infrastructure/exceptions/user-does-not-exist.exception';
+import { BadRequestException } from '../../../../../infrastructure/exceptions/bad-request.exception';
+import { User } from '../../../../../infrastructure/database/entities/User';
+import { Type } from 'class-transformer';
+import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -93,6 +100,28 @@ export class AuthController {
   }
 
   @Public()
+  @Get('/getTwoFactorTypes/:phoneNumber')
+  @ApiOperation({ summary: 'get user two factor types by phone number' })
+  @ApiParam({
+    name: 'phoneNumber',
+    type: String,
+    description: 'The phone number to get two factor types.',
+    example: '09121121212',
+  })
+  async getUserTwoFactorTypes(@Param() dto: PhoneNumberDto): Promise<number[]> {
+    const user = await this.userService.findByPhoneNumber(dto.phoneNumber);
+    if (isNil(user)) {
+      throw new UserDoesNotExistException();
+    }
+
+    const data: number[] = await this.twoFaAuthService.getUserTwoFactorTypes(
+      user.id,
+    );
+
+    return data;
+  }
+
+  @Public()
   @Post('/verifyOtp')
   @ApiOperation({ summary: 'verify Otp password' })
   async verifyOtp(@Body() dto: VerifyOtpDto): Promise<boolean> {
@@ -114,18 +143,81 @@ export class AuthController {
   }
 
   @Public()
-  @Post('/twoFactorAuth/verify')
+  @Post('/twoFactorAuth/:TwoFactorType/sendOtp')
+  @ApiOperation({
+    summary: 'send otp sent to user two factor authenticate',
+  })
+  @ApiParam({
+    name: 'TwoFactorType',
+    type: Number,
+    description: 'type of two factor authenticate.',
+    example: TwoFaAuthTypeEnum.Sms,
+  })
+  @ApiBody({ type: PhoneNumberDto })
+  async sendTwoFactorAuthenticate(
+    @Body() data: PhoneNumberDto,
+    @Param('TwoFactorType') type: TwoFaAuthTypeEnum,
+  ): Promise<SendOtpTwoFactorAuthDto> {
+    const user: User = await this.userService.findByPhoneNumber(
+      data.phoneNumber,
+    );
+    if (isNil(user)) {
+      throw new UserDoesNotExistException();
+    }
+    const userPayload: UserPayload = {
+      userId: user.id,
+      username: user.username,
+    };
+
+    const twoFactorTypes: number[] =
+      this.twoFaAuthService.parseTwoFactorStrToArray(user.twoFactorAuth);
+
+    if (!twoFactorTypes.includes(Number(type))) {
+      throw new BadRequestException();
+    }
+
+    const sendOtp = await this.twoFaAuthService.sendOtp(
+      userPayload,
+      Number(type),
+    );
+
+    return sendOtp;
+  }
+
+  @Public()
+  @Post('/twoFactorAuth/:TwoFactorType/verify')
   @ApiOperation({
     summary: 'verify otp sent to user two factor authenticate',
   })
+  @ApiParam({
+    name: 'TwoFactorType',
+    type: Number,
+    description: 'type of two factor authenticate.',
+    example: TwoFaAuthTypeEnum.Sms,
+  })
   @ApiBody({ type: VerifyOtpTwoFactorAuthDto })
-  @UseGuards(LocalAuthGuard)
   async verifyTwoFactorAuthenticate(
-    @Request() req: SessionRequest,
     @Body() data: VerifyOtpTwoFactorAuthDto,
-  ) {
+    @Param('TwoFactorType') type: TwoFaAuthTypeEnum,
+  ): Promise<AccessTokenDto> {
+    const user: User = await this.userService.findByPhoneNumber(
+      data.phoneNumber,
+    );
+
+    const twoFactorTypes: number[] =
+      this.twoFaAuthService.parseTwoFactorStrToArray(user.twoFactorAuth);
+
+    if (!twoFactorTypes.includes(Number(type))) {
+      throw new BadRequestException();
+    }
+
+    const userPayload: UserPayload = {
+      userId: user.id,
+      username: user.username,
+    };
     const verifyOtp: boolean = await this.twoFaAuthService.verifyOtp(
-      req.user,
+      userPayload,
+      Number(type),
       data.otp,
       data.hash,
     );
@@ -134,11 +226,7 @@ export class AuthController {
       throw new OtpErrorException();
     }
 
-    return await this.authService.login.getLoginToken(
-      req.user.userId,
-      null,
-      req.user.aiAccessToken,
-    );
+    return await this.authService.login.getLoginToken(userPayload.userId);
   }
 
   @Get('/twoFactorAuth/enable/:twoFactorAuthType')
@@ -165,7 +253,7 @@ export class AuthController {
   async verifyEnableTwoFactorAuthenticate(
     @Request() req: SessionRequest,
     @Param() twoFactorAuthenticateType: EnableTwoFactorAuthenticateDto,
-    @Body() dto: VerifyOtpTwoFactorAuthDto,
+    @Body() dto: EnableVerifyOtpTwoFactorAuthDto,
   ): Promise<boolean> {
     return await this.twoFaAuthService.enableVerification(
       req.user,
@@ -175,12 +263,16 @@ export class AuthController {
     );
   }
 
-  @Get('/twoFactorAuth/disable')
-  @ApiOperation({ summary: 'disable two factor authenticate for current user' })
+  @Post('/twoFactorAuth/disable')
+  @ApiOperation({
+    summary:
+      'disable specific type of two factor authenticate for current user',
+  })
   async disableTwoFactorAuthenticate(
     @Request() req: SessionRequest,
+    @Body() dto: DisableTwoFactorAuthenticateDto,
   ): Promise<boolean> {
-    return await this.twoFaAuthService.disable(req.user);
+    return await this.twoFaAuthService.disable(req.user, dto.twoFactorAuthType);
   }
 
   @Public()

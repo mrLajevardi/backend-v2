@@ -137,12 +137,12 @@ export class User {
   })
   personalVerification: boolean | null;
 
-  @Column('tinyint', {
+  @Column('nvarchar', {
     name: 'twoFactorAuth',
     nullable: true,
-    default: () => 0,
+    default: () => '0',
   })
-  twoFactorAuth: number;
+  twoFactorAuth: string;
 
   @Column('decimal', { name: 'companyId', nullable: true })
   companyId: number | null;

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class VerifyOtpTwoFactorAuthDto {
+export class EnableVerifyOtpTwoFactorAuthDto {
   @ApiProperty()
   @IsString()
   hash: string;
@@ -9,8 +9,4 @@ export class VerifyOtpTwoFactorAuthDto {
   @ApiProperty()
   @IsString()
   otp: string;
-
-  @ApiProperty()
-  @IsString()
-  phoneNumber: string;
 }

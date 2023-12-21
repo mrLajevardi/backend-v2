@@ -160,9 +160,9 @@ export class LoginService {
   }
 
   async loginProcess(user: UserPayload) {
+    // if (!user.twoFactorAuth || user.twoFactorAuth === TwoFaAuthTypeEnum.None) {
     if (
-      user.twoFactorAuth == TwoFaAuthTypeEnum.None ||
-      isNil(user.twoFactorAuth)
+      user.twoFactorAuth.split(',').includes(TwoFaAuthTypeEnum.None.toString())
     ) {
       const tokens: AccessTokenDto = await this.getLoginToken(
         user.userId,
@@ -174,14 +174,14 @@ export class LoginService {
         two_factor_authenticate: false,
         ...tokens,
       };
-    } else {
-      const sendOtp: SendOtpTwoFactorAuthDto =
-        await this.twoFaAuthService.sendOtp(user);
-
-      return {
-        two_factor_authenticate: true,
-        ...sendOtp,
-      };
     }
+
+    const twoFactorTypes: number[] =
+      await this.twoFaAuthService.getUserTwoFactorTypes(user.userId);
+
+    return {
+      two_factor_authenticate: true,
+      types: twoFactorTypes,
+    };
   }
 }
