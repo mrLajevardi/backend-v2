@@ -20,6 +20,12 @@ import { ServiceChecksService } from '../../service/services/service-checks.serv
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { PaygCostCalculationService } from '../../invoice/service/payg-cost-calculation.service';
+import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
+import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
+import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
+import { TotalInvoiceItemCosts } from '../../invoice/interface/invoice-item-cost.interface';
+import { BudgetingResultDtoFormat } from '../dto/results/budgeting.result.dto';
 
 @Injectable()
 export class BudgetingService {
@@ -30,19 +36,40 @@ export class BudgetingService {
     private readonly userInfoService: UserInfoService,
     private readonly vServiceInstancesTableService: VServiceInstancesTableService,
     private readonly systemSettingsTableService: SystemSettingsTableService,
+    private readonly paygCostCalculationService: PaygCostCalculationService,
+    private readonly vdcFactoryService: VdcFactoryService,
   ) {}
 
-  async getUserBudgeting(userId: number): Promise<VServiceInstances[]> {
-    const data: VServiceInstances[] =
+  async getUserBudgeting(userId: number): Promise<BudgetingResultDtoFormat[]> {
+    const vServiceInstances: VServiceInstances[] =
       await this.vServiceInstancesTableService.find({
         where: {
           userId: userId,
           servicePlanType: ServicePlanTypeEnum.Payg,
           isDeleted: false,
         },
+        relations: ['serviceItems'],
       });
 
-    console.log(data);
+    const data: BudgetingResultDtoFormat[] = await Promise.all(
+      vServiceInstances.map(
+        async (item: VServiceInstances): Promise<BudgetingResultDtoFormat> => {
+          const perHour: number = await this.calculateCostPerHour(
+            item.serviceItems,
+          );
+          const hoursLeft: number = Number(item.credit) / perHour;
+
+          return {
+            id: item.id,
+            name: item.name,
+            credit: item.credit,
+            perHour: perHour,
+            hoursLeft: hoursLeft,
+            serviceType: item.serviceTypeId,
+          } as BudgetingResultDtoFormat;
+        },
+      ),
+    );
 
     return data;
   }
@@ -125,7 +152,7 @@ export class BudgetingService {
     });
 
     const priceForNextPeriodWithTax: number =
-      data.paidAmountForNextPeriod * (1 + Number(taxPercent.value) / 100);
+      data.paidAmountForNextPeriod * (1 + Number(taxPercent.value));
 
     if (vServiceInstance.credit < priceForNextPeriodWithTax) {
       throw new NotEnoughCreditException();
@@ -148,7 +175,7 @@ export class BudgetingService {
       },
     });
     const paidAmountWithTax: number =
-      data.paidAmount * (1 + Number(taxPercent.value) / 100);
+      data.paidAmount * (1 + Number(taxPercent.value));
 
     if (isNil(user)) {
       throw new NotFoundException();
@@ -234,5 +261,43 @@ export class BudgetingService {
     });
 
     return true;
+  }
+
+  async getCredit(
+    serviceInstanceId: string,
+  ): Promise<BudgetingResultDtoFormat> {
+    const vServiceInstance: VServiceInstances =
+      await this.vServiceInstancesTableService.findById(serviceInstanceId);
+    const perHour: number = await this.calculateCostPerHour(
+      vServiceInstance.serviceItems,
+    );
+    const hoursLeft: number = Number(vServiceInstance.credit) / perHour;
+
+    const budgetingResult: BudgetingResultDtoFormat = {
+      id: vServiceInstance.id,
+      name: vServiceInstance.name,
+      credit: vServiceInstance.credit,
+      perHour: perHour,
+      hoursLeft: hoursLeft,
+      serviceType: vServiceInstance.serviceTypeId,
+    };
+
+    return budgetingResult;
+  }
+
+  async calculateCostPerHour(serviceItems: ServiceItems[]) {
+    const invoiceItems: InvoiceItemsDto[] =
+      this.vdcFactoryService.transformItems(serviceItems);
+
+    const hourlyCost: TotalInvoiceItemCosts =
+      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
+        {
+          itemsTypes: invoiceItems,
+          duration: 1,
+        },
+        60,
+      );
+
+    return hourlyCost.totalCost;
   }
 }
