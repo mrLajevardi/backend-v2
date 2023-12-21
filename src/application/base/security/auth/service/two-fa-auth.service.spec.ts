@@ -22,6 +22,7 @@ import { SecurityToolsModule } from '../../security-tools/security-tools.module'
 import { UserPayload } from '../dto/user-payload.dto';
 import { TwoFaAuthInterface } from '../classes/interface/two-fa-auth.interface';
 import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 
 describe('TwoFaAuthService', () => {
   let service: TwoFaAuthService;
@@ -49,6 +50,19 @@ describe('TwoFaAuthService', () => {
   const mockUserTableService = {
     update: jest.fn((userId: number, dto: any): Promise<any> => {
       return Promise.resolve({});
+    }),
+    findById: jest.fn((userId: number) => {
+      if (userId == 1060) {
+        return {
+          id: userId,
+          twoFactorAuth: '1',
+        };
+      } else {
+        return {
+          id: userId,
+          twoFactorAuth: '0',
+        };
+      }
     }),
   };
   beforeEach(async () => {
@@ -99,7 +113,7 @@ describe('TwoFaAuthService', () => {
       /*
        *** type can be sms or email
        */
-      const type = 'sms';
+      const type = TwoFaAuthTypeEnum.Sms;
       const data = await service.enable(user, type);
 
       expect(data).not.toBeNull();
@@ -116,7 +130,7 @@ describe('TwoFaAuthService', () => {
        *** type can be sms or email
        */
 
-      const type = 'sms';
+      const type = TwoFaAuthTypeEnum.Sms;
       const data = await service.enableVerification(
         user,
         type,
