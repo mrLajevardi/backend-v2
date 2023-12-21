@@ -57,6 +57,7 @@ import { EntityLog } from '../entities/EntityLog';
 import { ServicePayments } from '../entities/ServicePayments';
 import { VServiceInstances } from '../entities/views/v-serviceInstances';
 import { VServiceInstanceDetail } from '../entities/views/v-serviceInstanceDetail';
+import { ServiceDiscount } from '../entities/ServiceDiscount';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -119,4 +120,5 @@ export const dbEntities = [
   ServicePayments,
   VServiceInstances,
   VServiceInstanceDetail,
+  ServiceDiscount,
 ];

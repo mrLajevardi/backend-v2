@@ -9,6 +9,10 @@ import { CreateServiceInvoiceDto } from '../dto/create-service-invoice.dto';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import * as paygConfg from '../../service/configs/payg.conf.json';
+import { TemplatesTableService } from '../../crud/templates/templates-table.service';
+import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { transferItems } from '../utils/transfer-items.utils';
 
 @Injectable()
 export class PaygInvoiceService {
@@ -16,6 +20,8 @@ export class PaygInvoiceService {
     private readonly invoiceTableService: InvoicesTableService,
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly paygCostCalculationService: PaygCostCalculationService,
+    private readonly templateTableService: TemplatesTableService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
   ) {}
 
   async createPaygInvoice(
@@ -27,6 +33,9 @@ export class PaygInvoiceService {
       throw new BadRequestException();
     }
     const serviceInstanceId = null;
+    if (data.templateId) {
+      await this.createPaygInvoiceFromTemplate(data);
+    }
     const cost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(data);
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
@@ -36,7 +45,7 @@ export class PaygInvoiceService {
       itemsTypes: data.itemsTypes,
       serviceInstanceId,
       servicePlanTypes: ServicePlanTypeEnum.Payg,
-      templateId: null,
+      templateId: data.templateId ?? null,
       type: InvoiceTypes.Create,
     };
     cost.itemsTotalCosts = cost.itemsTotalCosts * 60;
@@ -59,5 +68,47 @@ export class PaygInvoiceService {
     return {
       invoiceId: invoice.id,
     };
+  }
+
+  async createPaygInvoiceFromTemplate(
+    data: CreatePaygVdcServiceDto,
+  ): Promise<void> {
+    const template = await this.templateTableService.findById(data.templateId);
+    const templateStructure: TemplatesStructure = JSON.parse(
+      template.structure,
+    );
+    const invoiceItems =
+      this.invoiceFactoryService.convertTemplateToInvoiceItems(
+        templateStructure,
+      );
+    data.itemsTypes = invoiceItems;
+    data.duration = templateStructure.duration;
+  }
+
+  async checkAllUserCredit() {
+    return 10000000;
+  }
+  async paygUpgradeInvoice(dto: CreatePaygVdcServiceDto): Promise<void> {
+    const newItemsCost =
+      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
+    const currentItems = await this.serviceItemsTableService.find({
+      where: {
+        serviceInstanceId: dto.serviceInstanceId,
+      },
+    });
+    const transferredItems = transferItems(currentItems);
+    const currentItemsDto: CreatePaygVdcServiceDto = {
+      duration: dto.duration,
+      itemsTypes: transferredItems,
+      serviceInstanceId: null,
+    };
+    const currentItemsCost =
+      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
+        currentItemsDto,
+      );
+    // const costsSum = currentItemsCost.totalCost + curr
+    // if (currentItemsCost.totalCost + ) {
+
+    // }
   }
 }
