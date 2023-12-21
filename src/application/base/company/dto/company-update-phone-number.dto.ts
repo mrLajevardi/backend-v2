@@ -5,6 +5,6 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CompanyUpdatePhoneNumberDto {
   @ApiProperty()
   @IsString()
-  @Matches('/^\\d{3}-\\d{8}$/')
+  @Matches('^\\d{3}-\\d{8}$')
   phoneNumber: string;
 }
