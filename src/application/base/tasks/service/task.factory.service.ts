@@ -24,7 +24,11 @@ export class TaskFactoryService {
     }
     let vmVappFilter = '';
     if (query.vmId != null && query.vappId != null) {
-      vmVappFilter = `((object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vmId},object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vappId.trim()}))`;
+      vmVappFilter = `((object==${process.env.VCLOUD_BASE_URL}/api/vApp/${
+        query.vmId
+      },object==${
+        process.env.VCLOUD_BASE_URL
+      }/api/vApp/${query.vappId.trim()}))`;
     }
 
     return `${vmVappFilter}${filterDate}`;
