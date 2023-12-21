@@ -1,4 +1,10 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BeforeInsert, JoinColumn, ManyToOne } from 'typeorm';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { InfoLog } from './InfoLog';
@@ -15,8 +21,7 @@ import { VmPowerStateEventEnum } from '../../../wrappers/main-wrapper/service/us
 @Index('PK_ServiceInstances', ['id'], { unique: true })
 @Entity('ServiceInstances', { schema: 'user' })
 export class ServiceInstances {
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
-    primary: true,
+  @PrimaryGeneratedColumn('uuid', {
     name: 'ID',
   })
   id: string;
@@ -147,9 +152,4 @@ export class ServiceInstances {
 
   @OneToMany(() => Tickets, (tickets) => tickets.serviceInstance)
   tickets: Tickets[];
-
-  @BeforeInsert()
-  setId() {
-    this.id = randomUUID();
-  }
 }

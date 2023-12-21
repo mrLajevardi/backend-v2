@@ -193,7 +193,6 @@ export class InvoicesService implements BaseInvoiceService {
     const invoiceCost =
       await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
     // changed totalCost to template cost
-    invoiceCost.totalCost = templateStructure.finalPrice;
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       data.itemsTypes,
     );
@@ -206,6 +205,7 @@ export class InvoicesService implements BaseInvoiceService {
       Number(groupedItems.period.value) * 30,
       new Date(),
     );
+    dto.finalAmount = templateStructure.finalPrice;
     const invoice = await this.invoicesTable.create(dto);
     await this.invoiceFactoryService.createInvoiceItems(
       invoice.id,

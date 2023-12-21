@@ -7,6 +7,8 @@ import {
   IsArray,
   IsNumber,
   IsObject,
+  IsOptional,
+  IsString,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
@@ -25,5 +27,17 @@ export class CreatePaygVdcServiceDto {
 
   @ApiProperty({ type: Number })
   @IsNumber()
+  @ValidateIf((object: CreateServiceInvoiceDto) => object.templateId === null)
   duration: number;
+
+  @IsString()
+  @ApiProperty({ type: String })
+  @ValidateIf((object, value) => value !== null)
+  templateId?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ type: String })
+  @ValidateIf((object, value) => value !== null)
+  serviceInstanceId?: string;
 }
