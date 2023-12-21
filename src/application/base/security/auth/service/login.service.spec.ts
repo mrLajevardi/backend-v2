@@ -14,7 +14,6 @@ import { AuthModule } from '../auth.module';
 import { UserPayload } from '../dto/user-payload.dto';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { TwoFaAuthService } from './two-fa-auth.service';
-import {TwoFaAuthTypeEnum} from "../enum/two-fa-auth-type.enum";
 
 describe('LoginService', () => {
   let service: LoginService;
@@ -41,13 +40,13 @@ describe('LoginService', () => {
         hash: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
       };
     }),
-    getUserTwoFactorTypes: jest.fn((userId:number): number[]=>{
-      if(userId == 1060){
-        return [1]
-      }else {
-        return [0]
+    getUserTwoFactorTypes: jest.fn((userId: number): number[] => {
+      if (userId == 1060) {
+        return [1];
+      } else {
+        return [0];
       }
-  })
+    }),
   };
   beforeEach(async () => {
     module = await Test.createTestingModule({

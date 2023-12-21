@@ -22,7 +22,7 @@ import { SecurityToolsModule } from '../../security-tools/security-tools.module'
 import { UserPayload } from '../dto/user-payload.dto';
 import { TwoFaAuthInterface } from '../classes/interface/two-fa-auth.interface';
 import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
-import {TwoFaAuthTypeEnum} from "../enum/two-fa-auth-type.enum";
+import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 
 describe('TwoFaAuthService', () => {
   let service: TwoFaAuthService;
@@ -52,19 +52,18 @@ describe('TwoFaAuthService', () => {
       return Promise.resolve({});
     }),
     findById: jest.fn((userId: number) => {
-      if (userId == 1060){
+      if (userId == 1060) {
         return {
-          id: userId ,
-          twoFactorAuth : '1'
-        }
-      }else {
+          id: userId,
+          twoFactorAuth: '1',
+        };
+      } else {
         return {
-          id: userId ,
-          twoFactorAuth : '0'
-        }
+          id: userId,
+          twoFactorAuth: '0',
+        };
       }
-
-    })
+    }),
   };
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
