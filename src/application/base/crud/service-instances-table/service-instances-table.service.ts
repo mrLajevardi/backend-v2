@@ -108,8 +108,7 @@ export class ServiceInstancesTableService {
   async create(dto: CreateServiceInstancesDto): Promise<ServiceInstances> {
     const newItem = plainToClass(ServiceInstances, dto);
     const createdItem = this.repository.create(newItem);
-    const t = await this.repository.save(createdItem);
-    return t;
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
