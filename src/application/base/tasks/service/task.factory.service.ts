@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { VmDetailFactoryService } from '../../../vm/service/vm-detail.factory.service';
 import { VmTasksQueryDto } from '../../../vm/dto/vm-tasks.query.dto';
-import process from 'process';
+// import * as process from 'process';
 
 @Injectable()
 export class TaskFactoryService {
@@ -24,7 +24,7 @@ export class TaskFactoryService {
     }
     let vmVappFilter = '';
     if (query.vmId != null && query.vappId != null) {
-      vmVappFilter = `(object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vmId},object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vappId});`;
+      vmVappFilter = `((object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vmId},object==${process.env.VCLOUD_BASE_URL}/api/vApp/${query.vappId.trim()}))`;
     }
 
     return `${vmVappFilter}${filterDate}`;
