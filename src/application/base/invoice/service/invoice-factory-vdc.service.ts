@@ -250,6 +250,8 @@ export class InvoiceFactoryVdcService {
     } else {
       res.discountAmount = res.serviceCost - res.serviceCostWithDiscount;
     }
+
+    res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
     // (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
     // (1 + period.percent);
 
