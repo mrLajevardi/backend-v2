@@ -28,13 +28,16 @@ describe('GroupController', () => {
     const datacenterConfigWithGenMock: DatacenterConfigGenResultDto[] = [
       {
         datacenter: 'amin',
+        enabled: true,
+        enabledForBusiness: true,
+        storagePolicies: 
         location: 'ایران',
         title: 'امین',
         gens: [{ name: 'g1', id: mockProviderVdcs.values[0].id }],
       },
     ];
     module = await Test.createTestingModule({
-      imports: [MainWrapperModule, CrudModule],
+      imports: [],
       providers: [
         {
           provide: BASE_DATACENTER_SERVICE,

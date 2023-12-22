@@ -595,7 +595,8 @@ export class VdcService {
     const providerVdcList: ProviderVdcResourceList[] = [];
     for (const gen of targetDatacenter.gens) {
       const providerVdc: ProviderVdcResourceList = {
-        ...gen,
+        name: gen.name,
+        id: gen.id,
       } as ProviderVdcResourceList;
       const storageProfiles =
         await this.vdcWrapperService.vcloudQuery<ProviderVdcStorageProfilesDto>(
