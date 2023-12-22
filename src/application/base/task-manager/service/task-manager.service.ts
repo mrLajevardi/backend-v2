@@ -98,7 +98,7 @@ export class TaskManagerService extends WorkerHost {
     options?: TaskManagerOptions,
   ): Promise<Tasks> {
     let task: Tasks;
-    if (!options.reuseTask) {
+    if (!options?.reuseTask) {
       task = await this.initTask(taskName, serviceInstanceId, args);
     } else {
       task = options.task;

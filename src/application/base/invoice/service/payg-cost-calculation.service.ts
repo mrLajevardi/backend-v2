@@ -53,7 +53,7 @@ export class PaygCostCalculationService {
       transformedItems,
     );
     groupedItems.generation.cpu[0].value = cpu.toString();
-    groupedItems.generation.ram[0].value = ram.toString();
+    groupedItems.generation.ram[0].value = (ram / 1024).toString();
     const computeItems = {
       cpu: groupedItems.generation.cpu,
       ram: groupedItems.generation.ram,
@@ -80,6 +80,7 @@ export class PaygCostCalculationService {
     service: ServiceInstances,
     durationInMin: number,
   ): Promise<TotalInvoiceItemCosts> {
+    console.log(durationInMin);
     const serviceItems = await this.serviceItemsTableService.find({
       where: {
         serviceInstanceId: service.id,
@@ -111,10 +112,14 @@ export class PaygCostCalculationService {
       this.costCalculationService.calculateOtherVdcItems(otherItems);
     let itemsSum: InvoiceItemCost[] = [];
     let totalCost = 0;
-    itemsSum = itemsSum.concat(computeItems, diskItemCost, otherItemsCost);
+    itemsSum = itemsSum.concat(diskItemCost, otherItemsCost);
     itemsSum.forEach((item) => {
+      totalCost += item.cost * durationInMin;
+    });
+    computeItems.forEach((item) => {
       totalCost += item.cost;
     });
+    itemsSum = itemsSum.concat(itemsSum, computeItems);
     const totalInvoiceItemCosts: Pick<
       TotalInvoiceItemCosts,
       'itemsSum' | 'itemsTotalCosts'
@@ -122,9 +127,9 @@ export class PaygCostCalculationService {
       itemsSum: itemsSum,
       itemsTotalCosts: totalCost,
     };
-    const supportCosts = groupedItems.guaranty.fee;
+    const supportCosts = groupedItems.guaranty.fee * durationInMin;
     const invoiceTotalCosts =
-      (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) * durationInMin;
+      totalInvoiceItemCosts.itemsTotalCosts + supportCosts;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
