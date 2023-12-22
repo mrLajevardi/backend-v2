@@ -7,7 +7,7 @@ import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
 import { DatacenterFactoryService } from './service/datacenter.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { CrudModule } from '../crud/crud.module';
-import {ServiceItemTypesTreeModule} from "../crud/service-item-types-tree/service-item-types-tree.module";
+import { ServiceItemTypesTreeModule } from '../crud/service-item-types-tree/service-item-types-tree.module';
 
 describe('GroupController', () => {
   let controller: DatacenterController;
