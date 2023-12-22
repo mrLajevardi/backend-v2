@@ -74,10 +74,10 @@ export class InvoicesService implements BaseInvoiceService {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       invoice.itemsTypes,
     );
-    const checkGenerationNotExists = Object.values(
-      groupedItems.generation,
-    ).some((value: VdcGenerationItems[]) => value.length === 0);
-    if (!checkGenerationNotExists) {
+    const checkGenerationExists = Object.values(groupedItems.generation).some(
+      (value: VdcGenerationItems[]) => value.length !== 0,
+    );
+    if (checkGenerationExists) {
       return this.upgradeVdcStaticInvoice(options, invoice); // TODO
     }
     if (groupedItems.period) {
@@ -245,6 +245,7 @@ export class InvoicesService implements BaseInvoiceService {
     const swapItem = groupedOldItems.generation.disk.find(
       (item) => item.code === DiskItemCodes.Swap,
     );
+    const oldSwapValue = Number(swapItem.value);
     const swapItemIndex = transformedItems.findIndex((item) => {
       if (item.itemTypeId === swapItem.id) {
         groupedOldItems.generation.disk.splice(
@@ -271,7 +272,7 @@ export class InvoicesService implements BaseInvoiceService {
     }
 
     // check upgrade vdc
-    await this.validationService.checkUpgradeVdc(data, service);
+    // await this.validationService.checkUpgradeVdc(data, service);
     const finalInvoiceCost =
       await this.costCalculationService.calculateRemainingPeriod(
         transformedItems,
@@ -280,6 +281,17 @@ export class InvoicesService implements BaseInvoiceService {
         groupedOldItems,
         remainingDays,
       );
+    const swap = finalInvoiceCost.itemsSum.find(
+      (item) => item.code === DiskItemCodes.Swap,
+    );
+    const ramSum =
+      Number(groupedOldItems.generation.ram[0].value) +
+      Number(groupedItems.generation.ram[0].value);
+
+    const vmSum =
+      Number(groupedOldItems.generation.vm[0].value) +
+      Number(groupedItems.generation.vm[0].value);
+    swap.value = String(ramSum * vmSum - oldSwapValue);
     const convertedInvoice: CreateServiceInvoiceDto = {
       ...data,
       templateId: null,

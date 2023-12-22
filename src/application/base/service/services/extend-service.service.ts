@@ -164,7 +164,7 @@ export class ExtendServiceService {
     for (const invoiceItem of invoiceItems) {
       await this.serviceItemsTable.create({
         serviceInstanceId,
-        itemTypeId: invoiceItem.id,
+        itemTypeId: invoiceItem.itemId,
         quantity: 0,
         value: invoiceItem.value,
         itemTypeCode: '',
@@ -421,7 +421,7 @@ export class ExtendServiceService {
 
       if (foundItem) {
         await this.serviceItemsTable.update(foundItem.id, {
-          value: invoiceItem.value,
+          value: String(Number(invoiceItem.value) + Number(foundItem.value)),
         });
       } else {
         await this.serviceItemsTable.create({

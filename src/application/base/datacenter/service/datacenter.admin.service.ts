@@ -518,15 +518,16 @@ export class DatacenterAdminService {
     datacenterName: string,
     queryRunner: QueryRunner,
   ): Promise<void> {
-    const guarantyItemParents = await this.itemTypesTableService.find({
-      where: {
-        code: And(
-          Like(ItemTypeCodes.Guaranty + '%'),
-          Not(Like(ItemTypeCodes.GuarantyItem + '%')),
-        ),
-        datacenterName: IsNull(),
-      },
-    });
+    const guarantyItemParents =
+      await this.itemTypesTableService.findWithQueryRunner(queryRunner, {
+        where: {
+          code: And(
+            Like(ItemTypeCodes.Guaranty + '%'),
+            Not(Like(ItemTypeCodes.GuarantyItem + '%')),
+          ),
+          datacenterName: IsNull(),
+        },
+      });
     for (const guarantyItemParent of guarantyItemParents) {
       guarantyItemParent.datacenterName = datacenterName;
       delete guarantyItemParent.id;
@@ -536,12 +537,13 @@ export class DatacenterAdminService {
           guarantyItemParent,
         );
 
-      const guarantyItems = await this.itemTypesTableService.find({
-        where: {
-          code: Like(ItemTypeCodes.GuarantyItem + '%'),
-          datacenterName: IsNull(),
-        },
-      });
+      const guarantyItems =
+        await this.itemTypesTableService.findWithQueryRunner(queryRunner, {
+          where: {
+            code: Like(ItemTypeCodes.GuarantyItem + '%'),
+            datacenterName: IsNull(),
+          },
+        });
       for (const guarantyItem of guarantyItems) {
         guarantyItem.parentId = newGuarantyParent.id;
         guarantyItem.datacenterName = datacenterName;

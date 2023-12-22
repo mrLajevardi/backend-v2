@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UpgradeVdcStepsEnum } from './enum/upgrade-vdc-steps.enum';
 import { BaseTask } from '../../interface/base-task.interface';
 import { Job } from 'bullmq';
@@ -22,6 +22,8 @@ import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wra
 import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-message.enum';
 import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
+import { DatacenterService } from 'src/application/base/datacenter/service/datacenter.service';
+import { BASE_DATACENTER_SERVICE } from 'src/application/base/datacenter/interface/datacenter.interface';
 
 @Injectable()
 export class UpgradeVdcComputeResourcesService
@@ -39,6 +41,8 @@ export class UpgradeVdcComputeResourcesService
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly userService: UserTableService,
     private readonly ticketingWrapperService: TicketingWrapperService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private readonly datacenterService: DatacenterService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.UpgradeComputeResources;
   }
@@ -91,6 +95,10 @@ export class UpgradeVdcComputeResourcesService
       process.env.VCLOUD_BASE_URL +
       '/api/admin/providervdc/' +
       props.genId.split(':').slice(-1)[0];
+    const metadata = await this.datacenterService.getDatacenterMetadata(
+      '',
+      props.genId,
+    );
     const { __vcloudTask } = await this.adminVdcWrapperService.updateVdc(
       {
         cores: Number(groupedItems.generation.cpu[0].value),
@@ -109,6 +117,7 @@ export class UpgradeVdcComputeResourcesService
         allocationModel: AllocationModel.FLEX,
       },
       props.vdcId,
+      Number(metadata.cpuSpeed),
     );
     const checkTaskFilter = `href==${__vcloudTask}`;
     await this.vdcFactoryService.checkVdcTask(

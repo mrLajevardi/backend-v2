@@ -44,6 +44,7 @@ import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice
 import { TemplatesTableService } from '../../crud/templates/templates-table.service';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
+import { VmStatusEnum } from 'src/application/vm/enums/vm-status.enum';
 
 @Injectable()
 export class PaygServiceService {
@@ -85,127 +86,165 @@ export class PaygServiceService {
         },
       }));
     for (const service of activeServices) {
-      const props =
-        await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
-          service.id,
+      try {
+        const props =
+          await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+            service.id,
+          );
+        const newVmStates = [];
+        const lastVmStates: LastVmStates = JSON.parse(props.lastVmStates);
+        const org = await this.organizationTableService.findById(
+          Number(props.orgId),
         );
-      const lastVmStates: LastVmStates = JSON.parse(props.lastVmStates);
-      const org = await this.organizationTableService.findById(
-        Number(props.orgId),
-      );
-      const tenantHeaders = {
-        'X-Vmware-Vcloud-Tenant-Context': org.orgId,
-        'X-Vmware-Vcloud-Auth-Context': org.name,
-      };
-      const vmslist = await this.vdcWrapperService.vcloudQuery<GetVMQueryDto>(
-        adminSession,
-        {
-          type: 'vm',
-          page: 1,
-          pageSize: 128,
-          filter: `(isVAppTemplate==false;vdc==${GetVdcIdBy(props.vdcId)})`,
-        },
-        tenantHeaders,
-      );
-      const totalVpcCost: InvoiceItemCost[][] = [];
-      for (const vm of vmslist.data.record) {
-        const containerId = vm.container.split('/').slice(-1)[0];
-        const id = vm.href.split('/').slice(-1)[0];
-        const sortAsc = 'timestamp';
-        const urnVmId = 'urn:vcloud:vm:' + id.replace('vm-', '');
-        const urnContainerId =
-          'urn:vcloud:vapp:' + containerId.replace('vapp-', '');
-        const offset = service.offset.toISOString();
-        let lastState =
-          lastVmStates.vmStates.find((item) => item.id === id)?.state ??
-          VmPowerStateEventEnum.PowerOff;
-        const eventType = 'com/vmware/vcloud/event/vm/change_state';
-        const filter = `(timestamp=gt=${offset};(eventEntity.id==${urnVmId},eventEntity.id==${urnContainerId});eventType==${eventType})`;
-        const events = await this.vmWrapperService.eventVm(
+        const tenantHeaders = {
+          'X-Vmware-Vcloud-Tenant-Context': org.orgId,
+          'X-Vmware-Vcloud-Auth-Context': org.name,
+        };
+        const vmslist = await this.vdcWrapperService.vcloudQuery<GetVMQueryDto>(
           adminSession,
-          filter,
-          1,
-          128,
+          {
+            type: 'vm',
+            page: 1,
+            pageSize: 128,
+            filter: `(isVAppTemplate==false;vdc==${GetVdcIdBy(props.vdcId)})`,
+          },
           tenantHeaders,
-          sortAsc,
         );
-        let startDate = new Date(offset);
-        let endDate: Date;
-        let checkCompleted = false;
-        for (const event of events.data.values) {
-          const vmState = event.additionalProperties['vm.state'];
-          if (checkCompleted) {
-            continue;
-          }
-          if (
-            lastState === VmPowerStateEventEnum.PowerOff &&
-            vmState !== VmPowerStateEventEnum.PowerOff
-          ) {
-            lastState = vmState;
-            startDate = new Date(event.timestamp);
-            continue;
-          } else if (lastState === VmPowerStateEventEnum.PowerOn) {
-            if (vmState !== VmPowerStateEventEnum.PowerOn) {
-              endDate = new Date(event.timestamp);
-              lastState = vmState;
-            } else {
-              endDate = new Date();
-              checkCompleted = true;
+        const totalVpcCost: InvoiceItemCost[][] = [];
+        for (const vm of vmslist.data.record) {
+          const containerId = vm.container.split('/').slice(-1)[0];
+          const id = vm.href.split('/').slice(-1)[0];
+          const sortAsc = 'timestamp';
+          const convertedVmStatus =
+            VmStatusEnum[vm.status] === VmStatusEnum.POWERED_ON
+              ? VmPowerStateEventEnum.PowerOn
+              : VmPowerStateEventEnum.PowerOff;
+          const newState = {
+            id,
+            state: convertedVmStatus,
+          };
+          newVmStates.push(newState);
+          const urnVmId = 'urn:vcloud:vm:' + id.replace('vm-', '');
+          const urnContainerId =
+            'urn:vcloud:vapp:' + containerId.replace('vapp-', '');
+          const offset = service.offset.toISOString();
+          let lastState =
+            lastVmStates.vmStates.find((item) => item.id === id)?.state ??
+            VmPowerStateEventEnum.PowerOff;
+          const eventType = 'com/vmware/vcloud/event/vm/change_state';
+          const filter = `(timestamp=gt=${offset};(eventEntity.id==${urnVmId},eventEntity.id==${urnContainerId});eventType==${eventType})`;
+          const events = await this.vmWrapperService.eventVm(
+            adminSession,
+            filter,
+            1,
+            128,
+            tenantHeaders,
+            sortAsc,
+          );
+          let startDate = new Date(offset);
+          let endDate: Date;
+          let checkCompleted = false;
+          const hasEvent = events.data.values.length > 0;
+          for (const event of events.data.values) {
+            const vmState = event.additionalProperties['vm.state'];
+            if (checkCompleted) {
+              continue;
             }
+            if (
+              lastState === VmPowerStateEventEnum.PowerOff &&
+              vmState !== VmPowerStateEventEnum.PowerOff
+            ) {
+              lastState = vmState;
+              startDate = new Date(event.timestamp);
+              continue;
+            } else if (lastState === VmPowerStateEventEnum.PowerOn) {
+              if (vmState !== VmPowerStateEventEnum.PowerOn) {
+                endDate = new Date(event.timestamp);
+                lastState = vmState;
+              } else {
+                endDate = new Date();
+                checkCompleted = true;
+              }
+              const computeItems =
+                await this.paygCostCalculationService.calculateVdcPaygVm(
+                  service,
+                  startDate,
+                  endDate,
+                  vm.numberOfCpus,
+                  vm.memoryMB,
+                );
+              totalVpcCost.push(computeItems);
+              startDate = endDate;
+            }
+          }
+          if (!hasEvent && lastState === VmPowerStateEventEnum.PowerOn) {
             const computeItems =
               await this.paygCostCalculationService.calculateVdcPaygVm(
                 service,
-                startDate,
-                endDate,
+                new Date(offset),
+                new Date(),
                 vm.numberOfCpus,
                 vm.memoryMB,
               );
             totalVpcCost.push(computeItems);
-            startDate = endDate;
           }
         }
-      }
-      const sum = this.sumComputeItems(totalVpcCost);
-      const duration = new Date().getTime() - service.offset.getTime();
-      const durationInMin = Math.round(duration / 1000 / 60);
-      const totalCost =
-        await this.paygCostCalculationService.calculateVdcPaygService(
-          sum,
-          service,
-          durationInMin,
-        );
-      const serviceItems = await this.serviceItemsTableService.find({
-        where: {
-          serviceInstanceId: service.id,
-        },
-      });
-      const transferredItems = transferItems(serviceItems);
-      const fullTimeCost =
-        await this.paygCostCalculationService.calculateVdcPaygTypeInvoice({
-          itemsTypes: transferredItems,
-          duration: 1,
-        });
-      try {
-        await this.budgetingService.paidFromBudgetCredit(
-          service.id,
-          {
-            paidAmount: totalCost.totalCost,
-            paidAmountForNextPeriod: fullTimeCost.totalCost / 24,
+        const sum = this.sumComputeItems(totalVpcCost);
+        const duration = new Date().getTime() - service.offset.getTime();
+        const durationInMin = Math.round(duration / 1000 / 60);
+        const totalCost =
+          await this.paygCostCalculationService.calculateVdcPaygService(
+            sum,
+            service,
+            durationInMin,
+          );
+        const serviceItems = await this.serviceItemsTableService.find({
+          where: {
+            serviceInstanceId: service.id,
           },
-          totalCost.itemsSum,
+        });
+        const transferredItems = transferItems(serviceItems);
+        const fullTimeCost =
+          await this.paygCostCalculationService.calculateVdcPaygTypeInvoice({
+            itemsTypes: transferredItems,
+            duration: 1,
+          });
+        try {
+          await this.budgetingService.paidFromBudgetCredit(
+            service.id,
+            {
+              paidAmount: totalCost.totalCost,
+              paidAmountForNextPeriod: fullTimeCost.totalCost / 24,
+            },
+            totalCost.itemsSum,
+          );
+        } catch (err) {
+          await this.disablePaygService(
+            props,
+            service.id,
+            tenantHeaders,
+            adminSession,
+            vmslist.data,
+          );
+        }
+        await this.serviceInstanceTableService.update(service.id, {
+          offset: new Date(),
+        });
+        const newLastVmStates: LastVmStates = {
+          vmStates: newVmStates,
+        };
+        await this.servicePropertiesTableService.updateAll(
+          {
+            propertyKey: VdcServiceProperties.LastVmStates,
+            serviceInstanceId: service.id,
+          },
+          {
+            value: JSON.stringify(newLastVmStates),
+          },
         );
       } catch (err) {
-        await this.disablePaygService(
-          props,
-          service.id,
-          tenantHeaders,
-          adminSession,
-          vmslist.data,
-        );
+        console.log(err);
       }
-      await this.serviceInstanceTableService.update(service.id, {
-        offset: new Date(),
-      });
     }
   }
 
