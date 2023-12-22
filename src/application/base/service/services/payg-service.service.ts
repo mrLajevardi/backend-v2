@@ -345,7 +345,6 @@ export class PaygServiceService {
     await this.extendService.createServiceItems(
       invoiceItems,
       serviceInstanceId,
-      
     );
     await this.extendService.addGenIdToServiceProperties(
       invoiceItems,
