@@ -17,7 +17,6 @@ import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice
 import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { UserTableService } from '../../crud/user-table/user-table.service';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
@@ -41,6 +40,7 @@ import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
+
 @Injectable()
 export class ServiceService {
   constructor(
@@ -514,13 +514,14 @@ export class ServiceService {
     } = options;
     let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
     let serviceStatus: ServiceStatusEnum[] = [
-      // 3, 4, 5, 6,
+      // 3, 4, 5, 6,7
       ServiceStatusEnum.Deleted,
       ServiceStatusEnum.Error,
       ServiceStatusEnum.DisabledByAdmin,
       ServiceStatusEnum.Success,
       ServiceStatusEnum.Expired,
       ServiceStatusEnum.Pending,
+      ServiceStatusEnum.Disabled,
     ];
     if (typeId) {
       serviceTypeIds = [typeId];
