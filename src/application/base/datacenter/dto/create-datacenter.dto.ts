@@ -87,6 +87,11 @@ export class DiskItem extends GenerationItem {
   @IsNumber()
   @Expose()
   price: number;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @Expose()
+  title: string;
 }
 export class GenerationItems {
   @ApiProperty({ type: ComputeItem })

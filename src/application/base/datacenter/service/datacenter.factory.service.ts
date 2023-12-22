@@ -297,6 +297,7 @@ export class DatacenterFactoryService {
               price: diskItem.fee,
               step: diskItem.step,
               percent: diskItem.percent,
+              title: diskItem.title,
             };
             generationDto.items.diskItems.push(diskItemDto);
           }
