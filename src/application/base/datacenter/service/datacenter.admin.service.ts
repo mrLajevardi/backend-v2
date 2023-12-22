@@ -13,7 +13,7 @@ import {
   VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
-import { DataSource, QueryRunner } from 'typeorm';
+import { And, DataSource, IsNull, Like, Not, QueryRunner } from 'typeorm';
 import { CreateItemTypesDto } from '../../crud/item-types-table/dto/create-item-types.dto';
 import { CheckConfigsOptions } from '../interface/check-configs.interface';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
@@ -120,7 +120,7 @@ export class DatacenterAdminService {
     for (const cpuReservationItem of reservationItems) {
       const dto = {
         code: ItemTypeCodes.CpuReservationItem,
-        fee: cpuReservationItem.percent - 1,
+        fee: Number((cpuReservationItem.percent - 1).toPrecision(2)),
         maxAvailable: null,
         maxPerRequest: cpuReservationItem.value,
         minPerRequest: cpuReservationItem.value,
@@ -182,7 +182,7 @@ export class DatacenterAdminService {
     for (const memoryReservationItem of reservationItems) {
       const dto = {
         code: ItemTypeCodes.MemoryReservationItem,
-        fee: memoryReservationItem.percent - 1,
+        fee: Number((memoryReservationItem.percent - 1).toPrecision(2)),
         maxAvailable: null,
         maxPerRequest: memoryReservationItem.value,
         minPerRequest: memoryReservationItem.value,
@@ -463,7 +463,7 @@ export class DatacenterAdminService {
           maxAvailable: null,
           maxPerRequest: diskItem.max,
           minPerRequest: diskItem.min,
-          title: VdcGenerationItemCodes.Disk,
+          title: diskItem.title,
           unit: ItemTypeUnits.Disk,
           datacenterName,
           enabled: diskItem.enabled,
@@ -510,6 +510,46 @@ export class DatacenterAdminService {
       });
       if (!checkPercentAndPrice) {
         throw new BadRequestException('items not sorted');
+      }
+    }
+  }
+
+  async createGuarantyItems(
+    datacenterName: string,
+    queryRunner: QueryRunner,
+  ): Promise<void> {
+    const guarantyItemParents = await this.itemTypesTableService.find({
+      where: {
+        code: And(
+          Like(ItemTypeCodes.Guaranty + '%'),
+          Not(Like(ItemTypeCodes.GuarantyItem + '%')),
+        ),
+        datacenterName: IsNull(),
+      },
+    });
+    for (const guarantyItemParent of guarantyItemParents) {
+      guarantyItemParent.datacenterName = datacenterName;
+      delete guarantyItemParent.id;
+      const newGuarantyParent =
+        await this.itemTypesTableService.createWithQueryRunner(
+          queryRunner,
+          guarantyItemParent,
+        );
+
+      const guarantyItems = await this.itemTypesTableService.find({
+        where: {
+          code: Like(ItemTypeCodes.GuarantyItem + '%'),
+          datacenterName: IsNull(),
+        },
+      });
+      for (const guarantyItem of guarantyItems) {
+        guarantyItem.parentId = newGuarantyParent.id;
+        guarantyItem.datacenterName = datacenterName;
+        delete guarantyItem.id;
+        await this.itemTypesTableService.createWithQueryRunner(
+          queryRunner,
+          guarantyItem,
+        );
       }
     }
   }

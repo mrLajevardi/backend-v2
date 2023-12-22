@@ -115,7 +115,7 @@ export class PaygServiceService {
         const urnVmId = 'urn:vcloud:vm:' + id.replace('vm-', '');
         const urnContainerId =
           'urn:vcloud:vapp:' + containerId.replace('vapp-', '');
-        const offset = service.offset;
+        const offset = service.offset.toISOString();
         let lastState =
           lastVmStates.vmStates.find((item) => item.id === id)?.state ??
           VmPowerStateEventEnum.PowerOff;

@@ -44,6 +44,8 @@ import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto'
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 import { VcloudMetadata } from '../type/vcloud-metadata.type';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
+import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
+import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -57,6 +59,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly itemTypeTableService: ItemTypesTableService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
+    private readonly vdcWrapperService: VdcWrapperService,
   ) {}
 
   async getDatacenterMetadata(
@@ -255,11 +258,37 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         enable: targetMetadata.enabled,
       };
       if (!targetConfig) {
+        const storageProfiles =
+          await this.vdcWrapperService.vcloudQuery<ProviderVdcStorageProfilesDto>(
+            adminSession,
+            {
+              type: 'providerVdcStorageProfile',
+              format: 'records',
+              page: 1,
+              pageSize: 15,
+              sortAsc: 'name',
+              filter: `isEnabled==true;providerVdc==${
+                providerVdc.id.split(':').slice(-1)[0]
+              }`,
+            },
+          );
+        const filteredProviderVdc = storageProfiles.data.record.map(
+          (profile) => {
+            const id = profile.href.split('/').slice(-1)[0];
+            return {
+              id,
+              name: profile.name,
+            };
+          },
+        );
         const config: DatacenterConfigGenResultDto = {
           datacenter: targetMetadata.datacenter,
+          enabled: true,
+          enabledForBusiness: false,
           title: targetMetadata.datacenterTitle,
           location: targetMetadata.location,
           gens: [newGen],
+          storagePolicies: filteredProviderVdc,
         };
 
         // console.log("config:  ",config);
@@ -267,6 +296,8 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         datacenterConfigs.push(config);
       } else {
         targetConfig.gens.push(newGen);
+        targetConfig.enabledForBusiness =
+          targetConfig.enabledForBusiness || newGen.enable;
       }
     }
   }
@@ -462,6 +493,11 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     });
     const queryRunner = await this.itemTypeTableService.getQueryRunner();
     await queryRunner.startTransaction();
+    await this.datacenterAdminService.createGuarantyItems(
+      datacenterName,
+      queryRunner,
+    );
+
     await this.datacenterAdminService.createOrUpdatePeriodItems(
       dto,
       serviceType,
@@ -559,6 +595,10 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       queryRunner,
       {
         datacenterName: Like(`${datacenterName}%`),
+        code: And(
+          Not(Like(ItemTypeCodes.Guaranty + '%')),
+          Not(Like(ItemTypeCodes.GuarantyItem + '%')),
+        ),
       },
       {
         deleteDate: new Date(),
