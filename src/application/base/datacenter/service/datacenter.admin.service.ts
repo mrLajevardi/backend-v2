@@ -120,7 +120,7 @@ export class DatacenterAdminService {
     for (const cpuReservationItem of reservationItems) {
       const dto = {
         code: ItemTypeCodes.CpuReservationItem,
-        fee: cpuReservationItem.percent - 1,
+        fee: Number((cpuReservationItem.percent - 1).toPrecision(2)),
         maxAvailable: null,
         maxPerRequest: cpuReservationItem.value,
         minPerRequest: cpuReservationItem.value,
@@ -182,7 +182,7 @@ export class DatacenterAdminService {
     for (const memoryReservationItem of reservationItems) {
       const dto = {
         code: ItemTypeCodes.MemoryReservationItem,
-        fee: memoryReservationItem.percent - 1,
+        fee: Number((memoryReservationItem.percent - 1).toPrecision(2)),
         maxAvailable: null,
         maxPerRequest: memoryReservationItem.value,
         minPerRequest: memoryReservationItem.value,

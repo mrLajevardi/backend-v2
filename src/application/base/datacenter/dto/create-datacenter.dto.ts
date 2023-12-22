@@ -232,7 +232,7 @@ export class CreateDatacenterDto {
   @IsObject({ each: true })
   @Type(() => Period)
   @ValidateNested({ each: true })
-  @ArrayMaxSize(3)
+  // @ArrayMaxSize(3)
   @ArrayMinSize(1)
   @ApiProperty({ type: [Period] })
   period: Period[];

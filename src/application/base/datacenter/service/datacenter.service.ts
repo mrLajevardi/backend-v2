@@ -559,6 +559,10 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       queryRunner,
       {
         datacenterName: Like(`${datacenterName}%`),
+        code: And(
+          Not(Like(ItemTypeCodes.Guaranty + '%')),
+          Not(Like(ItemTypeCodes.GuarantyItem + '%')),
+        ),
       },
       {
         deleteDate: new Date(),
