@@ -7,6 +7,7 @@ export class BudgetingResultDtoFormat {
   credit: number;
   perHour: number;
   hoursLeft: number;
+  autoPaid: boolean;
   serviceType: string | null | undefined;
 }
 
@@ -25,6 +26,7 @@ export class BudgetingResultDto extends BaseResultDto {
       perHour: item.perHour,
       hoursLeft: Number(item.credit) / item.perHour,
       serviceType: item.serviceType,
+      autoPaid: item.autoPaid,
     };
   }
 }

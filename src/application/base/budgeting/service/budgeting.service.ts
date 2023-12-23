@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { UserTableService } from '../../crud/user-table/user-table.service';
@@ -16,7 +14,6 @@ import { PaidFromUserCreditDto } from '../dto/paid-from-user-credit.dto';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 import { ServicePaymentsTableService } from '../../crud/service-payments-table/service-payments-table.service';
 import { UserInfoService } from '../../user/service/user-info.service';
-import { ServiceChecksService } from '../../service/services/service-checks.service';
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
@@ -26,6 +23,9 @@ import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
 import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
 import { TotalInvoiceItemCosts } from '../../invoice/interface/invoice-item-cost.interface';
 import { BudgetingResultDtoFormat } from '../dto/results/budgeting.result.dto';
+import { NotEnoughServiceCreditForWeekException } from '../../../../infrastructure/exceptions/not-enough-service-credit-for-week.exception';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
 
 @Injectable()
 export class BudgetingService {
@@ -35,11 +35,11 @@ export class BudgetingService {
     private readonly servicePaymentTableService: ServicePaymentsTableService,
     private readonly userInfoService: UserInfoService,
     private readonly vServiceInstancesTableService: VServiceInstancesTableService,
+    private readonly serviceInstancesTableService: ServiceInstancesTableService,
     private readonly systemSettingsTableService: SystemSettingsTableService,
     private readonly paygCostCalculationService: PaygCostCalculationService,
     private readonly vdcFactoryService: VdcFactoryService,
   ) {}
-
   async getUserBudgeting(userId: number): Promise<BudgetingResultDtoFormat[]> {
     const vServiceInstances: VServiceInstances[] =
       await this.vServiceInstancesTableService.find({
@@ -54,19 +54,7 @@ export class BudgetingService {
     const data: BudgetingResultDtoFormat[] = await Promise.all(
       vServiceInstances.map(
         async (item: VServiceInstances): Promise<BudgetingResultDtoFormat> => {
-          const perHour: number = await this.calculateCostPerHour(
-            item.serviceItems,
-          );
-          const hoursLeft: number = Number(item.credit) / perHour;
-
-          return {
-            id: item.id,
-            name: item.name,
-            credit: item.credit,
-            perHour: perHour,
-            hoursLeft: hoursLeft,
-            serviceType: item.serviceTypeId,
-          } as BudgetingResultDtoFormat;
+          return await this.resolveResponse(item);
         },
       ),
     );
@@ -74,10 +62,26 @@ export class BudgetingService {
     return data;
   }
 
+  async resolveResponse(
+    item: VServiceInstances,
+  ): Promise<BudgetingResultDtoFormat> {
+    const perHour: number = await this.calculateCostPerHour(item.serviceItems);
+    const hoursLeft: number = Number(item.credit) / perHour;
+    return {
+      id: item.id,
+      name: item.name,
+      credit: item.credit,
+      perHour: perHour,
+      hoursLeft: hoursLeft,
+      autoPaid: item.autoPaid,
+      serviceType: item.serviceTypeId,
+    } as BudgetingResultDtoFormat;
+  }
   async increaseBudgetingService(
     userId: number,
     serviceInstanceId: string,
     data: IncreaseBudgetCreditDto,
+    type: PaymentTypes = PaymentTypes.PayToBudgetingByUserCredit,
   ) {
     const userCredit: number = await this.userInfoService.getUserCreditBy(
       userId,
@@ -99,17 +103,27 @@ export class BudgetingService {
       isApproved: true,
       dateTime: new Date(),
       value: -data.increaseAmount,
-      paymentType: PaymentTypes.PayToBudgetingByUserCredit,
+      paymentType: type,
     });
 
     await this.servicePaymentTableService.create({
       userId: userId,
       serviceInstanceId: serviceInstanceId,
       price: data.increaseAmount,
-      paymentType: PaymentTypes.PayToBudgetingByUserCredit,
+      paymentType: type,
     });
 
     return true;
+  }
+
+  async getTaxPercent(): Promise<number> {
+    const taxPercent = await this.systemSettingsTableService.findOne({
+      where: {
+        propertyKey: 'TaxPercent',
+      },
+    });
+
+    return Number(taxPercent.value);
   }
 
   async paidFromBudgetCredit(
@@ -117,30 +131,40 @@ export class BudgetingService {
     data: PaidFromBudgetCreditDto,
     metaData?: any[],
   ): Promise<boolean> {
-    const taxPercent = await this.systemSettingsTableService.findOne({
-      where: {
-        propertyKey: 'TaxPercent',
-      },
-    });
+    const taxPercent: number = await this.getTaxPercent();
 
     const vServiceInstance: VServiceInstances =
       await this.vServiceInstancesTableService.findById(serviceInstanceId);
+
+    const userCredit: number = vServiceInstance.userCredit;
+
     if (isNil(vServiceInstance)) {
       throw new NotFoundException();
     }
 
-    /*
-              consider if budgeting can pay from user credit,must be call paidFromUserCredit method
-             */
+    const priceWithTax: number = data.paidAmount * (1 + taxPercent);
 
-    if (
-      vServiceInstance.credit == 0 ||
-      data.paidAmount > vServiceInstance.credit
-    ) {
-      throw new NotEnoughCreditException();
+    const insufficientCredit: boolean =
+      vServiceInstance.credit === 0 || priceWithTax > vServiceInstance.credit;
+    const notEnoughAutoPaidCredit: boolean =
+      vServiceInstance.autoPaid &&
+      userCredit + vServiceInstance.credit < priceWithTax;
+    const increaseBudgetingCredit: boolean =
+      vServiceInstance.autoPaid &&
+      priceWithTax > vServiceInstance.credit &&
+      vServiceInstance.credit + userCredit > priceWithTax;
+
+    if (increaseBudgetingCredit) {
+      await this.transactionsTableService.create({
+        userId: vServiceInstance.userId.toString(),
+        serviceInstanceId: serviceInstanceId,
+        paymentType: PaymentTypes.PayToBudgetingByUserCreditAutoPaid,
+        value: -(priceWithTax - vServiceInstance.credit),
+        isApproved: true,
+        dateTime: new Date(),
+        description: 'auto paid from user credit to service budgeting',
+      });
     }
-    const priceWithTax: number =
-      data.paidAmount * (1 + Number(taxPercent.value));
 
     await this.servicePaymentTableService.create({
       userId: vServiceInstance.userId,
@@ -148,13 +172,36 @@ export class BudgetingService {
       price: -priceWithTax,
       paymentType: PaymentTypes.PayToServiceByBudgeting,
       metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
-      taxPercent: toInteger(taxPercent.value),
+      taxPercent: taxPercent,
     });
 
-    const priceForNextPeriodWithTax: number =
-      data.paidAmountForNextPeriod * (1 + Number(taxPercent.value));
+    if (
+      insufficientCredit &&
+      vServiceInstance.autoPaid &&
+      notEnoughAutoPaidCredit
+    ) {
+      throw new NotEnoughCreditException();
+    } else if (insufficientCredit) {
+      throw new NotEnoughCreditException();
+    }
 
-    if (vServiceInstance.credit < priceForNextPeriodWithTax) {
+    const priceForNextPeriodWithTax: number =
+      data.paidAmountForNextPeriod * (1 + taxPercent);
+
+    const insufficientCreditNextPeriod: boolean =
+      vServiceInstance.credit === 0 ||
+      priceForNextPeriodWithTax > vServiceInstance.credit;
+    const notEnoughAutoPaidCreditNextPeriod: boolean =
+      vServiceInstance.autoPaid &&
+      userCredit + vServiceInstance.credit < priceForNextPeriodWithTax;
+
+    if (
+      insufficientCreditNextPeriod &&
+      vServiceInstance.autoPaid &&
+      notEnoughAutoPaidCreditNextPeriod
+    ) {
+      throw new NotEnoughCreditException();
+    } else if (insufficientCreditNextPeriod) {
       throw new NotEnoughCreditException();
     }
 
@@ -189,7 +236,7 @@ export class BudgetingService {
       userId: userId.toString(),
       dateTime: new Date(),
       value: -paidAmountWithTax,
-      paymentType: PaymentTypes.PayToServiceByUserCredit,
+      paymentType: PaymentTypes.PayToBudgetingByUserCredit,
       description: '',
       serviceInstanceId: serviceInstanceId,
       invoiceId: null,
@@ -202,7 +249,7 @@ export class BudgetingService {
     await this.servicePaymentTableService.create({
       userId: userId,
       serviceInstanceId: serviceInstanceId,
-      paymentType: PaymentTypes.PayToServiceByUserCredit,
+      paymentType: PaymentTypes.PayToServiceByBudgeting,
       price: paidAmountWithTax,
     });
 
@@ -222,7 +269,7 @@ export class BudgetingService {
     userId: number,
     serviceInstanceId: string,
     amount: number,
-  ) {
+  ): Promise<boolean> {
     const vServiceInstance: VServiceInstances =
       await this.vServiceInstancesTableService.findOne({
         where: {
@@ -230,12 +277,21 @@ export class BudgetingService {
           servicePlanType: ServicePlanTypeEnum.Payg,
           isDeleted: false,
         },
+        relations: ['serviceItems'],
       });
     if (isNil(vServiceInstance)) {
       throw new NotFoundException();
     }
     if (vServiceInstance.credit == 0 || amount > vServiceInstance.credit) {
       throw new NotEnoughCreditException();
+    }
+
+    const perHourCost: number = await this.calculateCostPerHour(
+      vServiceInstance.serviceItems,
+    );
+
+    if (vServiceInstance.credit <= perHourCost * 24 * 7) {
+      throw new NotEnoughServiceCreditForWeekException();
     }
 
     const user: User = await this.userTableService.findById(userId);
@@ -273,16 +329,16 @@ export class BudgetingService {
     );
     const hoursLeft: number = Number(vServiceInstance.credit) / perHour;
 
-    const budgetingResult: BudgetingResultDtoFormat = {
-      id: vServiceInstance.id,
-      name: vServiceInstance.name,
-      credit: vServiceInstance.credit,
-      perHour: perHour,
-      hoursLeft: hoursLeft,
-      serviceType: vServiceInstance.serviceTypeId,
-    };
+    // const budgetingResult: BudgetingResultDtoFormat = {
+    //     id: vServiceInstance.id,
+    //     name: vServiceInstance.name,
+    //     credit: vServiceInstance.credit,
+    //     perHour: perHour,
+    //     hoursLeft: hoursLeft,
+    //     serviceType: vServiceInstance.serviceTypeId,
+    // };
 
-    return budgetingResult;
+    return await this.resolveResponse(vServiceInstance);
   }
 
   async calculateCostPerHour(serviceItems: ServiceItems[]) {
@@ -299,5 +355,22 @@ export class BudgetingService {
       );
 
     return hourlyCost.totalCost;
+  }
+
+  async changeAutoPaidState(serviceInstanceId: string, autoPaid: boolean) {
+    const updateServiceInstance: ServiceInstances =
+      await this.serviceInstancesTableService.update(serviceInstanceId, {
+        autoPaid: autoPaid,
+      });
+
+    const vService: VServiceInstances =
+      await this.vServiceInstancesTableService.findOne({
+        where: {
+          id: serviceInstanceId,
+        },
+        relations: ['serviceItems'],
+      });
+
+    return await this.resolveResponse(vService);
   }
 }

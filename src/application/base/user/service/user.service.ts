@@ -637,6 +637,7 @@ export class UserService {
         'company',
         'company.province',
         'company.city',
+        'company.companyLogo',
         'avatar',
         'companyLetter',
       ],

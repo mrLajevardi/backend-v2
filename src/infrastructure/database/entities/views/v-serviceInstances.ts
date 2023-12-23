@@ -87,8 +87,11 @@ export class VServiceInstances {
   })
   retryCount: number | null;
 
-  @Column('int', { name: 'Credit', nullable: true, default: () => '(0)' })
+  @Column('int', { name: 'Credit', nullable: true })
   credit: number | null;
+
+  @Column('int', { name: 'UserCredit', nullable: true })
+  userCredit: number | null;
 
   @Column({
     name: 'DaysLeft',
@@ -97,6 +100,12 @@ export class VServiceInstances {
     readonly: true,
   })
   daysLeft: number | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'AutoPaid',
+    default: () => '(0)',
+  })
+  autoPaid: boolean;
 
   @OneToMany(
     () => AiTransactionsLogs,
