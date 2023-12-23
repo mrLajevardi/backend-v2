@@ -252,6 +252,7 @@ export class InvoiceFactoryVdcService {
     }
 
     res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
+
     // (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
     // (1 + period.percent);
 
