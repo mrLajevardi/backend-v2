@@ -27,6 +27,7 @@ export class PaygInvoiceService {
   async createPaygInvoice(
     data: CreatePaygVdcServiceDto,
     options: SessionRequest,
+    invoiceType: InvoiceTypes,
   ): Promise<InvoiceIdDto> {
     const userId = options.user.userId;
     if (data.duration < paygConfg.minimumDuration) {
@@ -46,7 +47,7 @@ export class PaygInvoiceService {
       serviceInstanceId,
       servicePlanTypes: ServicePlanTypeEnum.Payg,
       templateId: data.templateId ?? null,
-      type: InvoiceTypes.Create,
+      type: invoiceType,
     };
     cost.itemsTotalCosts = cost.itemsTotalCosts * 60;
     const dto = await this.invoiceFactoryService.createInvoiceDto(
@@ -106,6 +107,7 @@ export class PaygInvoiceService {
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
         currentItemsDto,
       );
+
     // const costsSum = currentItemsCost.totalCost + curr
     // if (currentItemsCost.totalCost + ) {
 

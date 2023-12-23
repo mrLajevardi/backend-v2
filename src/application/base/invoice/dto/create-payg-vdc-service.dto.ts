@@ -31,6 +31,7 @@ export class CreatePaygVdcServiceDto {
   duration: number;
 
   @IsString()
+  @IsOptional()
   @ApiProperty({ type: String })
   @ValidateIf((object, value) => value !== null)
   templateId?: string;

@@ -7,6 +7,7 @@ import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
 import { DatacenterFactoryService } from './service/datacenter.factory.service';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { CrudModule } from '../crud/crud.module';
+import { ServiceItemTypesTreeModule } from '../crud/service-item-types-tree/service-item-types-tree.module';
 
 describe('GroupController', () => {
   let controller: DatacenterController;
@@ -28,13 +29,17 @@ describe('GroupController', () => {
     const datacenterConfigWithGenMock: DatacenterConfigGenResultDto[] = [
       {
         datacenter: 'amin',
+        enabled: true,
+        enabledForBusiness: true,
+        // storagePolicies:,
+        storagePolicies: [],
         location: 'ایران',
         title: 'امین',
-        gens: [{ name: 'g1', id: mockProviderVdcs.values[0].id }],
+        gens: [{ name: 'g1', id: mockProviderVdcs.values[0].id, enable: true }],
       },
     ];
     module = await Test.createTestingModule({
-      imports: [MainWrapperModule, CrudModule],
+      imports: [ServiceItemTypesTreeModule],
       providers: [
         {
           provide: BASE_DATACENTER_SERVICE,
@@ -61,8 +66,12 @@ describe('GroupController', () => {
         datacenter: 'amin',
         location: 'ایران',
         title: 'امین',
+        enabled: true,
+        enabledForBusiness: true,
+        storagePolicies: [],
         gens: [
           {
+            enable: true,
             name: 'g1',
             id: mockProviderVdcs.values[0].id,
           },

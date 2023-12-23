@@ -1,20 +1,20 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Inject,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
   Request,
-  Inject,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
@@ -36,6 +36,7 @@ import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 import { PaygInvoiceService } from '../service/payg-invoice.service';
 import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
 import { InvoiceIdDto } from '../dto/invoice-id.dto';
+import { InvoiceTypes } from '../enum/invoice-type.enum';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -89,7 +90,11 @@ export class InvoicesController {
     @Body() dto: CreatePaygVdcServiceDto,
     @Request() options: SessionRequest,
   ): Promise<InvoiceIdDto> {
-    return this.paygInvoiceService.createPaygInvoice(dto, options);
+    return this.paygInvoiceService.createPaygInvoice(
+      dto,
+      options,
+      InvoiceTypes.Create,
+    );
   }
 
   // create new item

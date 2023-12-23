@@ -120,7 +120,8 @@ export class IncreaseNumberOfIpsService
         authToken: adminSession,
         alreadyAssignedIpCounts: assignedIps.length,
         alreadyAssignedIpList: assignedIpList,
-        userIpCount: Number(groupedItems.generation.ip[0].value),
+        userIpCount:
+          Number(groupedItems.generation.ip[0].value) - assignedIpList.length,
         vdcId: props.vdcId,
       },
       edgeId,

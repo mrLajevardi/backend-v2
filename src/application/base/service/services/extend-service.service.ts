@@ -19,7 +19,7 @@ import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.s
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { InvoiceItemListService } from '../../crud/invoice-item-list/invoice-item-list.service';
 import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
-import { Like, UpdateResult } from 'typeorm';
+import { In, Like, UpdateResult } from 'typeorm';
 import { ServiceAiInfoDto } from '../dto/return/service-ai-info.dto';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
@@ -59,6 +59,7 @@ export class ExtendServiceService {
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
     private readonly serviceDiscountTableService: ServiceDiscountTableService,
+    private readonly serviceItemTableTypeTree: ServiceItemTypesTreeService,
   ) {}
 
   async getAiServiceInfo(
@@ -420,7 +421,7 @@ export class ExtendServiceService {
 
       if (foundItem) {
         await this.serviceItemsTable.update(foundItem.id, {
-          value: invoiceItem.value,
+          value: String(Number(invoiceItem.value) + Number(foundItem.value)),
         });
       } else {
         await this.serviceItemsTable.create({
