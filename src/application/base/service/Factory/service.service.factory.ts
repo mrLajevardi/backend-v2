@@ -112,11 +112,6 @@ export class ServiceServiceFactory {
 
     const taskDetail = await getTask.call(this);
 
-    // const serviceDaysLeft =await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
-    //     serviceInstance.id,
-    // )
-    //
-
     const model: GetAllVdcServiceWithItemsResultDto =
       new GetAllVdcServiceWithItemsResultDto(
         serviceInstance.id,
@@ -126,10 +121,6 @@ export class ServiceServiceFactory {
         serviceInstance.serviceType.id,
         [],
         serviceInstance.daysLeft,
-        // serviceInstance.servicePlanType ? ServicePlanTypeEnum.Static
-        //   await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
-        //     serviceInstance.id,
-        //   ):0 //TODO ==> Check with Mr khalily
         isTicketSent,
         serviceInstance.servicePlanType,
         taskDetail,

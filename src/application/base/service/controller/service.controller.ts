@@ -260,4 +260,20 @@ export class ServiceController {
   async paygCheck(): Promise<any> {
     return this.paygService.checkAllVdcVmsEvents();
   }
+
+  @Get('/reports/:serviceType')
+  @ApiQuery({
+    name: 'ServiceType',
+    type: String,
+    required: true,
+    description: 'ServiceType',
+  })
+  async reportService(): Promise<any> {
+    return {
+      unpaidInvoices: 8,
+      activeTickets: 20,
+      servicesExpiringCount: 15,
+      servicesBudgetCount: 16,
+    };
+  }
 }
