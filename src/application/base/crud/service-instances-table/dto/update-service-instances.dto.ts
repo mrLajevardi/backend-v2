@@ -84,6 +84,11 @@ export class UpdateServiceInstancesDto {
   @IsNumber()
   retryCount?: number | null;
 
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty()
+  autoPaid?: boolean;
+
   offset?: Date;
 
   lastState?: VmPowerStateEventEnum;
