@@ -199,7 +199,7 @@ export class VdcDetailService implements BaseVdcDetailService {
           serviceInstanceId,
         );
     }
-
+    res2.extendable = vdcDetails.extendable;
     return res2;
   }
 
