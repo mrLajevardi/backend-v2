@@ -48,6 +48,7 @@ import { FileTableModule } from './file-table/file-table.module';
 import { EntityLogTableModule } from './entity-log-table/entity-log-table.module';
 import { ServicePaymentsTableModule } from './service-payments-table/service-payments-table.module';
 import { VServiceInstancesTableModule } from './v-service-instances-table/v-service-instances-table.module';
+import { ServiceDiscountTableModule } from './service-discount-table/service-discount-table.module';
 // import { VServiceInstancesDetailTableModule } from './v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 @Module({
@@ -102,6 +103,7 @@ import { VServiceInstancesTableModule } from './v-service-instances-table/v-serv
     EntityLogTableModule,
     ServicePaymentsTableModule,
     VServiceInstancesTableModule,
+    ServiceDiscountTableModule,
     // VServiceInstancesDetailTableModule,
   ],
   exports: [
@@ -155,6 +157,7 @@ import { VServiceInstancesTableModule } from './v-service-instances-table/v-serv
     EntityLogTableModule,
     ServicePaymentsTableModule,
     VServiceInstancesTableModule,
+    ServiceDiscountTableModule,
   ],
   providers: [],
 })

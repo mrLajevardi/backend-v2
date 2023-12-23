@@ -186,13 +186,14 @@ export class AdminVdcWrapperService {
   async updateVdc(
     config: UpdateVdcComputePolicyDto,
     vdcId: string,
+    vcpuSpeed: number,
   ): Promise<VcloudTask> {
     const vdcConfig = vcdConfig.admin.vdc;
     // convert from urn:vcloud:org:vdcId -> vdcId
     vdcId = vdcId.split(':').slice(-1)[0];
     const cores = config.cores;
-    const vCpuInMhz: any = vdcConfig.VCpuInMhz;
-    const cpuAllocation = cores * parseInt(vCpuInMhz);
+    const vCpuInMhz = vcpuSpeed;
+    const cpuAllocation = cores * vCpuInMhz;
     const cpuLimit = cpuAllocation;
     const request = {
       type: 'application/vnd.vmware.admin.vdc+json',
@@ -259,7 +260,7 @@ export class AdminVdcWrapperService {
       name: config.name,
       default: config.default,
       units: config.units,
-      limit: config.storage * 1024,
+      limit: config.storage,
       enabled: true,
       providerVdcStorageProfile: config.providerVdcStorageProfile,
     };

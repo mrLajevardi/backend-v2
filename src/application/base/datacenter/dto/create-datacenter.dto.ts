@@ -87,6 +87,11 @@ export class DiskItem extends GenerationItem {
   @IsNumber()
   @Expose()
   price: number;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @Expose()
+  title: string;
 }
 export class GenerationItems {
   @ApiProperty({ type: ComputeItem })
@@ -232,7 +237,7 @@ export class CreateDatacenterDto {
   @IsObject({ each: true })
   @Type(() => Period)
   @ValidateNested({ each: true })
-  @ArrayMaxSize(3)
+  // @ArrayMaxSize(3)
   @ArrayMinSize(1)
   @ApiProperty({ type: [Period] })
   period: Period[];

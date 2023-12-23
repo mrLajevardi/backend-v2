@@ -39,6 +39,7 @@ import {
   StoragePoliciesList,
 } from '../dto/get-resources.dto';
 import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-codes.enum';
+import { LessThan, Not } from 'typeorm';
 
 @Injectable()
 export class VdcService {
@@ -544,6 +545,7 @@ export class VdcService {
       where: {
         servicePlanType: query.servicePlanType,
         serviceType: { id: serviceTypeId },
+        expireDate: Not(LessThan(new Date())),
         // datacenterName: query.datacenterName,
         enabled: true,
       },
@@ -593,7 +595,8 @@ export class VdcService {
     const providerVdcList: ProviderVdcResourceList[] = [];
     for (const gen of targetDatacenter.gens) {
       const providerVdc: ProviderVdcResourceList = {
-        ...gen,
+        name: gen.name,
+        id: gen.id,
       } as ProviderVdcResourceList;
       const storageProfiles =
         await this.vdcWrapperService.vcloudQuery<ProviderVdcStorageProfilesDto>(

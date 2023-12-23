@@ -19,6 +19,7 @@ import { TransactionsModule } from '../../transactions/transactions.module';
 import { ServiceModule } from '../../service/service.module';
 import { UserInfoService } from '../service/user-info.service';
 import { VitrificationServiceService } from '../service/vitrification.service.service';
+import { UsersFactoryService } from '../service/user.factory.service';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -28,6 +29,7 @@ describe('UserController', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
+        ServiceModule,
         DatabaseModule,
         CrudModule,
         LoggerModule,
@@ -48,6 +50,7 @@ describe('UserController', () => {
         RedisCacheService,
         UserInfoService,
         VitrificationServiceService,
+        UsersFactoryService,
       ],
       controllers: [UserController],
     }).compile();

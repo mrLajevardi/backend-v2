@@ -31,4 +31,7 @@ export class VdcInvoiceDetailsResultDto extends BaseResultDto {
   invoiceCode?: number;
   serviceCostWithTax?: number;
   invoiceTax?: number;
+  serviceCostWithDiscount?: number;
+  discountAmount?: number;
+  serviceCostFinal?: number;
 }

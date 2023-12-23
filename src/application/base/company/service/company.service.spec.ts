@@ -200,7 +200,7 @@ describe('CompanyService', () => {
 
     expect(errors.length).not.toBe(0);
     expect(JSON.stringify(errors)).toContain(
-      'phoneNumber must match /^\\\\d{3}-\\\\d{8}$/ regular expression',
+      'phoneNumber must match ^\\\\d{3}-\\\\d{8}$ regular expression',
     );
   });
 

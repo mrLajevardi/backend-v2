@@ -42,7 +42,7 @@ import { VServiceInstancesDetailTableModule } from '../crud/v-service-instances-
     DatabaseModule,
     SessionsModule,
     LoggerModule,
-    UserModule,
+    forwardRef(() => UserModule),
     UvdeskWrapperModule,
     PaymentModule,
     MainWrapperModule,

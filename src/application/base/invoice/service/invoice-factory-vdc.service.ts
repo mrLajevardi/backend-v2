@@ -11,6 +11,7 @@ import { VdcInvoiceDetailsInfoResultDto } from '../../../vdc/dto/vdc-invoice-det
 import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { ServiceTypes } from '../../../../infrastructure/database/entities/ServiceTypes';
+import { isNil } from 'lodash';
 
 @Injectable()
 export class InvoiceFactoryVdcService {
@@ -241,6 +242,16 @@ export class InvoiceFactoryVdcService {
     res.invoiceTax = ramModel.invoiceTax;
 
     res.serviceCostTax = ramModel.serviceCost * ramModel.invoiceTax;
+    res.serviceCostWithDiscount = !isNil(period)
+      ? ramModel.serviceCost * period?.percent + ramModel.serviceCost
+      : ramModel.serviceCost;
+    if (res.templateId) {
+      res.discountAmount = ramModel.rawAmount - ramModel.finalAmount;
+    } else {
+      res.discountAmount = res.serviceCost - res.serviceCostWithDiscount;
+    }
+
+    res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
 
     // (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
     // (1 + period.percent);

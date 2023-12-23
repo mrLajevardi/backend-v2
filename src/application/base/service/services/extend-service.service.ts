@@ -19,7 +19,7 @@ import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.s
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { InvoiceItemListService } from '../../crud/invoice-item-list/invoice-item-list.service';
 import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
-import { Like, UpdateResult } from 'typeorm';
+import { In, Like, UpdateResult } from 'typeorm';
 import { ServiceAiInfoDto } from '../dto/return/service-ai-info.dto';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
@@ -37,6 +37,8 @@ import {
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
 import { VmPowerStateEventEnum } from 'src/wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
 import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
+import { CreateServiceDiscount } from '../interface/create-service-discount.interface';
+import { ServiceDiscountTableService } from '../../crud/service-discount-table/service-discount-table-service.service';
 
 @Injectable()
 export class ExtendServiceService {
@@ -56,6 +58,8 @@ export class ExtendServiceService {
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
+    private readonly serviceDiscountTableService: ServiceDiscountTableService,
+    private readonly serviceItemTableTypeTree: ServiceItemTypesTreeService,
   ) {}
 
   async getAiServiceInfo(
@@ -112,6 +116,13 @@ export class ExtendServiceService {
     return ServiceAiInfo;
   }
 
+  async createServiceDiscount(dto: CreateServiceDiscount): Promise<void> {
+    await this.serviceDiscountTableService.create({
+      ...dto,
+      activateDate: new Date(),
+      enabled: true,
+    });
+  }
   async addGenIdToServiceProperties(
     invoiceItems: InvoiceItems[],
     serviceInstanceId: string,
@@ -410,7 +421,7 @@ export class ExtendServiceService {
 
       if (foundItem) {
         await this.serviceItemsTable.update(foundItem.id, {
-          value: invoiceItem.value,
+          value: String(Number(invoiceItem.value) + Number(foundItem.value)),
         });
       } else {
         await this.serviceItemsTable.create({

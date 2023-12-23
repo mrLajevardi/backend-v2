@@ -1,7 +1,9 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
+  forwardRef,
 } from '@nestjs/common';
 import { isEmpty } from 'lodash';
 import { UserService } from 'src/application/base/user/service/user.service';
@@ -38,6 +40,7 @@ import { UserInfoService } from '../../user/service/user-info.service';
 @Injectable()
 export class CreateServiceService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly transactionTableService: TransactionsTableService,

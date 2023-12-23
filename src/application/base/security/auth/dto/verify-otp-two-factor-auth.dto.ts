@@ -9,4 +9,8 @@ export class VerifyOtpTwoFactorAuthDto {
   @ApiProperty()
   @IsString()
   otp: string;
+
+  @ApiProperty()
+  @IsString()
+  phoneNumber: string;
 }

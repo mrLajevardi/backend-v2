@@ -13,7 +13,7 @@ export class UserProfileResultDtoFormat {
   email: string;
   emailVerified: boolean;
   personalCode: string;
-  twoFactorAuthenticate: number;
+  twoFactorAuthenticate: number[];
   personalVerification: boolean;
   companyOwner: boolean;
   avatar: string;
@@ -41,7 +41,7 @@ export class UserProfileResultDto {
       personalCode: item.personalCode,
       personalVerification: item.personalVerification,
       companyOwner: item.companyOwner,
-      twoFactorAuthenticate: item.twoFactorAuth,
+      twoFactorAuthenticate: this.parseTwoFactorTypes(item.twoFactorAuth),
       avatar: !isNil(item.avatar) ? item.avatar.streamId : null,
       companyLetter: !isNil(item.companyLetter)
         ? item.companyLetter.streamId
@@ -51,5 +51,11 @@ export class UserProfileResultDto {
         ? new CompanyResultDto().toArray(item.company)
         : null,
     };
+  }
+
+  parseTwoFactorTypes(twoFactorTypes: string): number[] {
+    return String(twoFactorTypes)
+      .split(',')
+      .map((item) => Number(item));
   }
 }

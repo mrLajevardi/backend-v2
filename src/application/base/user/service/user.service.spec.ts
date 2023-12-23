@@ -27,6 +27,8 @@ import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserInfoService } from './user-info.service';
+import { UsersFactoryService } from './user.factory.service';
+import { ServiceModule } from '../../service/service.module';
 
 describe('UserService', () => {
   let table: UserTableService;
@@ -104,6 +106,7 @@ describe('UserService', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        ServiceModule,
         CrudModule,
         LoggerModule,
         PaymentModule,
@@ -120,6 +123,7 @@ describe('UserService', () => {
         CompanyTableService,
         OtpService,
         RedisCacheService,
+        UsersFactoryService,
       ],
     })
       // .overrideProvider(UserTableService)

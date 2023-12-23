@@ -95,7 +95,7 @@ export class CostCalculationService {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
-      serviceCost: periodTotalCost,
+      serviceCost: itemsPeriodCost,
     };
   }
 

@@ -20,6 +20,7 @@ import { DatabaseModule } from '@faker-js/faker';
 import { DatacenterAdminService } from './datacenter.admin.service';
 import { forwardRef } from '@nestjs/common';
 import { InvoicesModule } from '../../invoice/invoices.module';
+import { ServiceItemTypesTreeModule } from '../../crud/service-item-types-tree/service-item-types-tree.module';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
@@ -81,6 +82,7 @@ describe('DatacenterService', () => {
         SessionsModule,
         CrudModule,
         forwardRef(() => InvoicesModule),
+        ServiceItemTypesTreeModule,
       ],
       providers: [
         DatacenterService,

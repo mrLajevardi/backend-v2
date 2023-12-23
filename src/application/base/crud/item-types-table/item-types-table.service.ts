@@ -103,4 +103,12 @@ export class ItemTypesTableService {
   ): Promise<UpdateResult> {
     return queryRunner.manager.update(ItemTypes, where, dto);
   }
+
+  async findWithQueryRunner(
+    queryRunner: QueryRunner,
+    options?: FindManyOptions<ItemTypes>,
+  ): Promise<ItemTypes[]> {
+    const result = await queryRunner.manager.find(ItemTypes, options);
+    return result;
+  }
 }

@@ -40,7 +40,7 @@ export class NatDto {
 
   @ApiProperty({ type: String, required: true, example: '192.168.1.1' })
   @IsString()
-  externalIP: string;
+  externalIp: string;
 
   @ApiProperty({ type: Number, default: '', example: '22' })
   @IsNumber()
@@ -49,7 +49,7 @@ export class NatDto {
 
   @ApiProperty({ type: String, required: true, example: '192.168.1.1' })
   @IsString()
-  internalIP: string;
+  internalIp: string;
 
   @ApiProperty({ type: ApplicationRefDto })
   applicationPortProfile?: ApplicationRefDto;
@@ -61,7 +61,7 @@ export class NatDto {
 
   @ApiProperty({ type: String, example: '192.168.1.1' })
   @IsString()
-  destinationIP?: string;
+  destinationIp?: string;
 }
 
 export class NatQueryDto {
