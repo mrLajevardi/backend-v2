@@ -9,6 +9,7 @@ import {
   Param,
   Query,
   Req,
+  Put,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -67,6 +68,10 @@ import { BadRequestException } from '../../../../../infrastructure/exceptions/ba
 import { User } from '../../../../../infrastructure/database/entities/User';
 import { Type } from 'class-transformer';
 import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
+import { UserProfileDto } from '../../../user/dto/user-profile.dto';
+import { RedisCacheService } from '../../../../../infrastructure/utils/services/redis-cache.service';
+import { ChangePasswordDto } from '../../../user/dto/change-password.dto';
+import { ForgotPasswordByOtpDto } from '../dto/forgot-password-by-otp.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -78,6 +83,7 @@ export class AuthController {
     private readonly oauthService: OauthService,
     private readonly securityTools: SecurityToolsService,
     private readonly userService: UserService,
+    private readonly redisCacheService: RedisCacheService,
   ) {}
 
   @Public()
@@ -439,5 +445,85 @@ export class AuthController {
     );
 
     return await this.authService.login.getLoginToken(user.id);
+  }
+
+  @Public()
+  @Get('forgot-password/sendOtp/:phoneNumber')
+  @ApiOperation({ summary: 'send otp to phone number for changing password' })
+  async sendOtpChangingPassword(@Param() dto: PhoneNumberDto) {
+    const user: User = await this.userService.findByPhoneNumber(
+      dto.phoneNumber,
+    );
+
+    if (isNil(user)) {
+      throw new UserDoesNotExistException();
+    }
+
+    const otp = await this.authService.login.generateOtp(user.phoneNumber);
+
+    return {
+      phoneNumber: dto.phoneNumber,
+      hash: otp.hash,
+    };
+  }
+
+  @Public()
+  @Post('forgot-password/verifyOtp')
+  @ApiOperation({
+    summary: 'verify otp sent to phone number for changing password',
+  })
+  async verifyOtpChangingPassword(
+    @Body() data: VerifyOtpDto,
+  ): Promise<boolean> {
+    const user: User = await this.userService.findByPhoneNumber(
+      data.phoneNumber,
+    );
+
+    if (isNil(user)) {
+      throw new UserDoesNotExistException();
+    }
+
+    const verify: boolean = this.securityTools.otp.otpVerifier(
+      data.phoneNumber,
+      data.otp,
+      data.hash,
+    );
+
+    if (!verify) {
+      throw new OtpErrorException();
+    }
+
+    const cacheKey: string = user.id + '_changePassword';
+    await this.redisCacheService.set(cacheKey, data.phoneNumber, 480000);
+
+    return true;
+  }
+
+  @Public()
+  @Put('forgot-password')
+  @ApiOperation({ summary: 'change password for current user ' })
+  async changePassword(
+    @Body() dto: ForgotPasswordByOtpDto,
+  ): Promise<AccessTokenDto> {
+    const user: User = await this.userService.findByPhoneNumber(
+      dto.phoneNumber,
+    );
+
+    if (isNil(user)) {
+      throw new UserDoesNotExistException();
+    }
+    const userPayload: UserPayload = {
+      userId: user.id,
+      username: user.username,
+      twoFactorAuth: user.twoFactorAuth,
+    };
+    const data: ChangePasswordDto = {
+      otpVerification: true,
+      newPassword: dto.password,
+    };
+
+    await this.userService.changePassword(userPayload, data);
+
+    return await this.authService.login.getLoginToken(userPayload.userId);
   }
 }
