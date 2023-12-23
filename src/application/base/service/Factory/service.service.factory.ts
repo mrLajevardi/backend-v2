@@ -112,7 +112,6 @@ export class ServiceServiceFactory {
 
     const taskDetail = await getTask.call(this);
 
-
     const model: GetAllVdcServiceWithItemsResultDto =
       new GetAllVdcServiceWithItemsResultDto(
         serviceInstance.id,
