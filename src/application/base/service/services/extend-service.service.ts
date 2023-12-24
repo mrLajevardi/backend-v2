@@ -421,14 +421,14 @@ export class ExtendServiceService {
         (serviceItem) => serviceItem.itemTypeId === invoiceItem.itemId,
       );
       let newItemValue: string;
-      if (invoiceType === InvoiceTypes.Extend) {
-        newItemValue = invoiceItem.value;
-      } else {
-        newItemValue = String(
-          Number(invoiceItem.value) + Number(foundItem.value),
-        );
-      }
       if (foundItem) {
+        if (invoiceType === InvoiceTypes.Extend) {
+          newItemValue = invoiceItem.value;
+        } else {
+          newItemValue = String(
+            Number(invoiceItem.value) + Number(foundItem.value),
+          );
+        }
         await this.serviceItemsTable.update(foundItem.id, {
           value: newItemValue,
         });
