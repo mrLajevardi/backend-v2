@@ -11,4 +11,5 @@ export class VdcDetailsResultDto extends VdcInvoiceDetailsResultDto {
   serviceName?: string;
   status?: number;
   serviceCredit?: number;
+  extendable?: boolean;
 }
