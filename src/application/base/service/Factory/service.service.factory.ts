@@ -285,7 +285,7 @@ export class ServiceServiceFactory {
         Number(groupItems.generation.ip[0].value),
       );
     } catch {
-      throw new InsufficientResourceException();
+      // throw new InsufficientResourceException();
     }
   }
 }

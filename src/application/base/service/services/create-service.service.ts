@@ -117,6 +117,7 @@ export class CreateServiceService {
       await this.extendService.upgradeService(
         invoice.serviceInstanceId,
         invoiceId,
+        invoice.type,
       );
       serviceInstanceId = extendedService.serviceInstanceId;
       await this.extendService.approveTransactionAndInvoice(
@@ -137,6 +138,7 @@ export class CreateServiceService {
       await this.extendService.upgradeService(
         invoice.serviceInstanceId,
         invoiceId,
+        invoice.type,
       );
       if (service.serviceTypeId === ServiceTypesEnum.Vdc) {
         const task = await this.newTaskManagerService.createFlow(
@@ -240,6 +242,7 @@ export class CreateServiceService {
       await this.extendService.upgradeService(
         invoice.serviceInstanceId,
         invoiceId,
+        invoice.type,
       );
       if (service.serviceTypeId === ServiceTypesEnum.Vdc) {
         const task = await this.newTaskManagerService.createFlow(
