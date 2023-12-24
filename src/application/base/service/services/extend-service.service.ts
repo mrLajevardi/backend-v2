@@ -39,6 +39,7 @@ import { VmPowerStateEventEnum } from 'src/wrappers/main-wrapper/service/user/vm
 import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
 import { CreateServiceDiscount } from '../interface/create-service-discount.interface';
 import { ServiceDiscountTableService } from '../../crud/service-discount-table/service-discount-table-service.service';
+import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
 
 @Injectable()
 export class ExtendServiceService {
@@ -401,6 +402,7 @@ export class ExtendServiceService {
   async upgradeService(
     serviceInstanceId: string,
     invoiceId: number,
+    invoiceType: InvoiceTypes,
   ): Promise<void> {
     const invoiceItems: InvoiceItems[] =
       await this.invoiceItemsTableService.find({
@@ -418,18 +420,25 @@ export class ExtendServiceService {
       const foundItem = serviceItems.find(
         (serviceItem) => serviceItem.itemTypeId === invoiceItem.itemId,
       );
-
+      let newItemValue: string;
+      if (invoiceType === InvoiceTypes.Extend) {
+        newItemValue = invoiceItem.value;
+      } else {
+        newItemValue = String(
+          Number(invoiceItem.value) + Number(foundItem.value),
+        );
+      }
       if (foundItem) {
         await this.serviceItemsTable.update(foundItem.id, {
-          value: String(Number(invoiceItem.value) + Number(foundItem.value)),
+          value: newItemValue,
         });
       } else {
         await this.serviceItemsTable.create({
           serviceInstanceId: serviceInstanceId,
           itemTypeId: invoiceItem.itemId,
           value: invoiceItem.value,
-          itemTypeCode: null,
-          quantity: null,
+          itemTypeCode: '',
+          quantity: 0,
         });
       }
     }
