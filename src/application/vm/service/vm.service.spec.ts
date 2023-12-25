@@ -56,6 +56,8 @@ describe('VmService', () => {
         SessionsModule,
         CrudModule,
         MainWrapperModule,
+
+        forwardRef(() => ServiceModule),
         forwardRef(() => NetworksModule),
       ],
       providers: [VmService, VmDetailFactoryService, VmDetailService],
