@@ -16,7 +16,6 @@ import { Tickets } from '../Tickets';
 })
 export class VServiceInstanceDetail {
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
-    primary: true,
     name: 'ServiceInstanceId',
   })
   serviceInstanceId: string | null;
@@ -157,6 +156,12 @@ export class VServiceInstanceDetail {
     insert: false,
   })
   daysLeft: number | null;
+
+  @Column({ type: 'int', name: 'ServiceItemID', primary: true })
+  serviceItemId: number;
+
+  @Column({ name: 'ItemTypeID' })
+  itemTypeId: number;
 
   // @Column({
   //   name: 'Offset',

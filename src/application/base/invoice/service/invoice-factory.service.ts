@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import {
+  InvoiceGroupItem,
   VdcGenerationItems,
   VdcItemGroup,
 } from '../interface/vdc-item-group.interface.dto';
@@ -13,7 +14,7 @@ import {
   ItemTypeCodes,
   VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
-import { In, Not } from 'typeorm';
+import { In, LessThanOrEqual, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import {
   InvoiceItemCost,
@@ -238,5 +239,78 @@ export class InvoiceFactoryService {
       }
     }
     return invoiceItems;
+  }
+
+  async sumItems(
+    groupedItems: VdcItemGroup,
+    oldGroupItems: VdcItemGroup,
+  ): Promise<void> {
+    for (const item in groupedItems.generation) {
+      const newItem: InvoiceGroupItem[] = groupedItems.generation[item];
+      const oldItem: InvoiceGroupItem[] = oldGroupItems.generation[item];
+      if (
+        item === VdcGenerationItemCodes.Cpu ||
+        item === VdcGenerationItemCodes.Ram
+      ) {
+        const newValue = Number(newItem[0].value) + Number(oldItem[0].value);
+        const newItemType = await this.serviceItemTypeTree.findOne({
+          where: {
+            parentId: newItem[0].parentId,
+            minPerRequest: LessThanOrEqual(newValue),
+            maxPerRequest: MoreThanOrEqual(newValue),
+          },
+        });
+        newItem[0] = { ...newItemType, value: String(newValue) };
+      } else if (item === VdcGenerationItemCodes.Disk) {
+        const sumItems = [...newItem, ...oldItem];
+        const sum = sumItems.reduce((acc, cur) => {
+          const found = acc.find((val) => val.code === cur.code);
+          if (found) {
+            found.value = String(Number(cur.value) + Number(found.value));
+          } else {
+            acc.push({ ...cur, value: cur.value });
+          }
+          return acc;
+        }, []);
+        groupedItems.generation.disk = sum;
+      } else {
+        const newValue = Number(newItem[0].value) + Number(oldItem[0].value);
+        newItem[0].value = String(newValue);
+      }
+    }
+  }
+
+  async recalculateItemTypes(
+    newItems: InvoiceItemsDto[],
+    groupedItems: VdcItemGroup,
+    periodItem: VdcItemGroup['period'],
+    transformedItems: InvoiceItemsDto[],
+  ): Promise<void> {
+    for (const item of transformedItems) {
+      if (item.itemTypeId === groupedItems.period.id) {
+        newItems.push({
+          itemTypeId: periodItem.id,
+          value: periodItem.value,
+        });
+      } else if (
+        item.itemTypeId === groupedItems.generation.cpu[0].id ||
+        item.itemTypeId === groupedItems.generation.ram[0].id
+      ) {
+        const targetItem =
+          item.itemTypeId === groupedItems.generation.cpu[0].id
+            ? groupedItems.generation.cpu[0]
+            : groupedItems.generation.ram[0];
+        const newItem = await this.serviceItemTypeTree.findOne({
+          where: {
+            parentId: targetItem.parentId,
+            maxPerRequest: MoreThanOrEqual(Number(targetItem.value)),
+            minPerRequest: LessThanOrEqual(Number(targetItem.value)),
+          },
+        });
+        newItems.push({ itemTypeId: newItem.id, value: targetItem.value });
+      } else {
+        newItems.push(item);
+      }
+    }
   }
 }

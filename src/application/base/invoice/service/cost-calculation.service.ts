@@ -16,6 +16,7 @@ import {
 import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { CalculateOptions } from '../interface/calculate-options.interface';
+import { InvoiceTypes } from '../enum/invoice-type.enum';
 
 @Injectable()
 export class CostCalculationService {
@@ -74,10 +75,11 @@ export class CostCalculationService {
   async calculateVdcStaticTypeInvoice(
     invoice: Partial<CreateServiceInvoiceDto>,
     options: CalculateOptions = { applyPeriodPercent: true },
+    items?: VdcItemGroup,
   ): Promise<TotalInvoiceItemCosts> {
-    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
-      invoice.itemsTypes,
-    );
+    const groupedItems =
+      items ??
+      (await this.invoiceFactoryService.groupVdcItems(invoice.itemsTypes));
     const totalInvoiceItemCosts = await this.calculateVdcGenerationItems(
       groupedItems,
     );
@@ -105,6 +107,7 @@ export class CostCalculationService {
     groupedItems: VdcItemGroup,
     groupedOldItems: VdcItemGroup,
     remainingDays: number,
+    invoiceType: InvoiceTypes,
   ): Promise<TotalInvoiceItemCosts> {
     // const currentInvoiceCost = await this.calculateVdcStaticTypeInvoice(
     //   {
@@ -123,8 +126,7 @@ export class CostCalculationService {
         applyPeriodPercent: false,
       },
     );
-    newInvoiceCost.totalCost =
-      newInvoiceCost.totalCost / (30 * Number(groupedItems.period.value));
+    newInvoiceCost.totalCost = newInvoiceCost.serviceCost / 30;
     newInvoiceCost.totalCost =
       newInvoiceCost.totalCost /*- currentInvoiceCost.totalCost*/ *
       remainingDays;
