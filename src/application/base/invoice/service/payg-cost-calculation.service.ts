@@ -18,6 +18,7 @@ import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
 import { ServiceChecksService } from '../../service/services/service-checks.service';
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
+import { VdcItemGroup } from '../interface/vdc-item-group.interface.dto';
 
 @Injectable()
 export class PaygCostCalculationService {
@@ -140,10 +141,10 @@ export class PaygCostCalculationService {
 
   async calculateVdcPaygTypeInvoice(
     dto: CreatePaygVdcServiceDto,
+    items?: VdcItemGroup,
   ): Promise<TotalInvoiceItemCosts> {
-    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
-      dto.itemsTypes,
-    );
+    const groupedItems =
+      items ?? (await this.invoiceFactoryService.groupVdcItems(dto.itemsTypes));
     groupedItems.generation.disk = groupedItems.generation.disk.filter(
       (item) => item.code !== DiskItemCodes.Swap,
     );

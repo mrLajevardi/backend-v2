@@ -248,6 +248,14 @@ export class ServiceController {
     return this.paygService.createPaygVdcService(dto, options);
   }
 
+  @Put('/vdc/payg/upgrade')
+  async upgradeVdcPayg(
+    @Body() dto: CreateServiceDto,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return this.paygService.upgradePayg(dto, options);
+  }
+
   @Post('/vdc/payg/calculator')
   async vdcPaygCalculator(
     @Body() dto: CreatePaygVdcServiceDto,
