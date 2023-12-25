@@ -110,7 +110,7 @@ export class IncreaseNumberOfIpsService
         propertyKey: VdcServiceProperties.IpRange,
       },
     });
-    
+
     const assignedIpList = this.convertIpRangeToIpObject(assignedIps);
     if (Number(groupedItems.generation.ip[0].value) === assignedIpList.length) {
       return;
