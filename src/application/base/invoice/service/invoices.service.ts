@@ -389,7 +389,7 @@ export class InvoicesService implements BaseInvoiceService {
       invoiceCost,
       groupedItems,
       serviceInstanceId,
-      Number(groupedItems.period.value) * 30,
+      Number(periodItem.value) * 30,
       date,
     );
     const createdInvoice = await this.invoicesTable.create(dto);
