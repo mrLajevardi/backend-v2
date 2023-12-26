@@ -10,5 +10,5 @@ export class UserPayload {
   robotToken?: string;
   aiAccessToken?: string;
   isPublic?: boolean;
-  twoFactorAuth?: number;
+  twoFactorAuth?: string;
 }

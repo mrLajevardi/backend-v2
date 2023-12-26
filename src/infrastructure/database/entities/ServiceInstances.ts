@@ -116,6 +116,12 @@ export class ServiceInstances {
   })
   offset: Date | null;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'AutoPaid',
+    default: () => '(0)',
+  })
+  autoPaid: boolean;
+
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.serviceInstance,

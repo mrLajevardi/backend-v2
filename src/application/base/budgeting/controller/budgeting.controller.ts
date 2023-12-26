@@ -7,14 +7,13 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
-import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
 import {
   BudgetingResultDto,
   BudgetingResultDtoFormat,
 } from '../dto/results/budgeting.result.dto';
 import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { WithdrawBudgetCreditToUserCreditDto } from '../dto/withdraw-budget-credit-to-user-credit.dto';
-import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
+import { ChangeAutoPaidStateDto } from '../dto/change-auto-paid-state.dto';
 
 @ApiTags('Budget')
 @Controller('budgeting')
@@ -30,7 +29,7 @@ export class BudgetingController {
   async getUserBudget(
     @Request() options: SessionRequest,
   ): Promise<BudgetingResultDtoFormat[]> {
-    const data: VServiceInstances[] =
+    const data: BudgetingResultDtoFormat[] =
       await this.budgetingService.getUserBudgeting(options.user.userId);
 
     return new BudgetingResultDto().collection(data);
@@ -72,5 +71,23 @@ export class BudgetingController {
     );
 
     return paid;
+  }
+
+  @Post('changeAutoPaidState/:serviceInstanceId')
+  @ApiOperation({
+    summary: 'change state auto paid (enable , disable)',
+  })
+  async changeAutoPaidState(
+    @Param('serviceInstanceId') serviceInstanceId: string,
+    @Request() options: SessionRequest,
+    @Body() data: ChangeAutoPaidStateDto,
+  ): Promise<BudgetingResultDtoFormat> {
+    const result: BudgetingResultDtoFormat =
+      await this.budgetingService.changeAutoPaidState(
+        serviceInstanceId,
+        data.autoPaid,
+      );
+
+    return new BudgetingResultDto().toArray(result);
   }
 }

@@ -49,6 +49,7 @@ import { UploadFileDto } from '../dto/upload-file-info.dto';
 import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/dto/upload-file.dto';
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
 import { GetCodeDisk } from '../../vdc/utils/disk-functions.utils';
+import { PaygServiceService } from '../../base/service/services/payg-service.service';
 
 @Injectable()
 export class VmService {
@@ -76,7 +77,7 @@ export class VmService {
     private readonly organizationTableService: OrganizationTableService,
     private readonly loggerService: LoggerService,
     private readonly itemTypesTableService: ItemTypesTableService,
-    private readonly vmDetailService: VmDetailService,
+    private readonly paygService: PaygServiceService,
     private readonly vmWrapperService: VmWrapperService,
   ) {}
 
@@ -341,6 +342,8 @@ export class VmService {
     serviceInstanceId: string,
     vAppId: string,
   ): Promise<TaskReturnDto> {
+    this.paygService.checkAllVdcVmsEvents();
+
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -761,12 +764,19 @@ export class VmService {
       filter: `id==${vmId}`,
     });
 
+    const mediasList = vm.data.section
+      .find((sec) => sec._type == 'VmSpecSectionType')
+      .mediaSection.mediaSettings.filter(
+        (media) => media.mediaState !== 'DISCONNECTED',
+      );
+    // .map((img) => img.mediaImage.name as string);
+
     const medias = vm.data.section
       .find((sec) => sec._type == 'VmSpecSectionType')
       .mediaSection.mediaSettings.filter(
         (media) => media.mediaState !== 'DISCONNECTED',
       )
-      .map((img) => img.mediaImage.name as string);
+      .map((img) => (img.mediaImage ? img.mediaImage.name : 'بهینه ساز')); //Mr.Khalili siad this should be 'بهینه ساز'
 
     const data: any = {
       name: vm.data.name,
@@ -1633,6 +1643,9 @@ export class VmService {
     vmId: string,
     data,
   ): Promise<TaskReturnDto> {
+    //Ali said
+    this.paygService.checkAllVdcVmsEvents();
+
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
