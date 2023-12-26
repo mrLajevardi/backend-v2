@@ -24,7 +24,13 @@ import {
 import { TemplatesTableService } from '../../crud/templates/templates-table.service';
 import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
-import { FindManyOptions, IsNull, Not } from 'typeorm';
+import {
+  FindManyOptions,
+  IsNull,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Not,
+} from 'typeorm';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
@@ -36,6 +42,8 @@ import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
 import { Invoices } from '../../../../infrastructure/database/entities/Invoices';
+import { TotalInvoiceItemCosts } from '../interface/invoice-item-cost.interface';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -50,6 +58,7 @@ export class InvoicesService implements BaseInvoiceService {
     private readonly vdcFactoryService: VdcFactoryService,
     private readonly serviceItemsTableService: ServiceItemsTableService,
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
+    private readonly serviceItemTreeTableService: ServiceItemTypesTreeService,
   ) {}
 
   async createVdcInvoice(
@@ -271,27 +280,41 @@ export class InvoicesService implements BaseInvoiceService {
       });
     }
 
+    let finalInvoiceCost: TotalInvoiceItemCosts;
+    if (invoiceType === InvoiceTypes.UpgradeAndExtend) {
+      await this.invoiceFactoryService.sumItems(groupedItems, groupedOldItems);
+      finalInvoiceCost =
+        await this.costCalculationService.calculateVdcStaticTypeInvoice(
+          data,
+          { applyPeriodPercent: true },
+          groupedItems,
+        );
+      console.log('first');
+    }
     // check upgrade vdc
     // await this.validationService.checkUpgradeVdc(data, service);
-    const finalInvoiceCost =
-      await this.costCalculationService.calculateRemainingPeriod(
-        transformedItems,
-        data.itemsTypes,
-        groupedItems,
-        groupedOldItems,
-        remainingDays,
+    if (invoiceType === InvoiceTypes.Upgrade) {
+      finalInvoiceCost =
+        await this.costCalculationService.calculateRemainingPeriod(
+          transformedItems,
+          data.itemsTypes,
+          groupedItems,
+          groupedOldItems,
+          remainingDays,
+          invoiceType,
+        );
+      const swap = finalInvoiceCost.itemsSum.find(
+        (item) => item.code === DiskItemCodes.Swap,
       );
-    const swap = finalInvoiceCost.itemsSum.find(
-      (item) => item.code === DiskItemCodes.Swap,
-    );
-    const ramSum =
-      Number(groupedOldItems.generation.ram[0].value) +
-      Number(groupedItems.generation.ram[0].value);
+      const ramSum =
+        Number(groupedOldItems.generation.ram[0].value) +
+        Number(groupedItems.generation.ram[0].value);
 
-    const vmSum =
-      Number(groupedOldItems.generation.vm[0].value) +
-      Number(groupedItems.generation.vm[0].value);
-    swap.value = String(ramSum * vmSum - oldSwapValue);
+      const vmSum =
+        Number(groupedOldItems.generation.vm[0].value) +
+        Number(groupedItems.generation.vm[0].value);
+      swap.value = String(ramSum * vmSum - oldSwapValue);
+    }
     const convertedInvoice: CreateServiceInvoiceDto = {
       ...data,
       templateId: null,
@@ -353,15 +376,13 @@ export class InvoicesService implements BaseInvoiceService {
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       transformedItems,
     );
-    const newItems = transformedItems.map((item) => {
-      if (item.itemTypeId === groupedItems.period.id) {
-        return {
-          itemTypeId: periodItem.id,
-          value: periodItem.value,
-        };
-      }
-      return item;
-    });
+    const newItems = [];
+    await this.invoiceFactoryService.recalculateItemTypes(
+      newItems,
+      groupedItems,
+      periodItem,
+      transformedItems,
+    );
     const swapItemIndex = newItems.findIndex((item) => {
       if (
         item.itemTypeId ===

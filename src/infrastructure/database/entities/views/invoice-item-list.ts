@@ -19,8 +19,11 @@ export class InvoiceItemList {
   @Column({ name: 'Code' })
   code: string;
 
+  @Column({ name: 'CodeHierarchy' })
+  codeHierarchy: string;
+
   @Column({ name: 'InvoiceID' })
-  invoiceId: string;
+  invoiceId: number;
 
   @Column({ name: 'UserID' })
   userId: number;
