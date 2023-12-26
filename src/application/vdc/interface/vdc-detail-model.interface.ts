@@ -7,7 +7,7 @@ export class VdcDetailModel implements BaseModelDto {
     this.daysLeft = item.DaysLeft;
     this.servicePlanType = item.ServicePlanType;
     this.value = item.Value;
-    this.itemTypeId = item.ItemTypeId;
+    this.itemTypeId = item.ItemTypeID;
     this.codeHierarchy = item.CodeHierarchy;
     this.datacenterName = item.DatacenterName;
     this.code = item.Code;
