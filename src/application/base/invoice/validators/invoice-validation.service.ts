@@ -24,6 +24,7 @@ import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceIn
 import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 
 @Injectable()
 export class InvoiceValidationService {
@@ -154,7 +155,7 @@ export class InvoiceValidationService {
     let targetGeneration = null;
     let generationHierarchyList = [];
     for (const generation of generaionsList) {
-      const hierarchy = generation.split('_');
+      const hierarchy = generation.split(ITEM_TYPE_CODE_HIERARCHY_SPLITTER);
       targetGeneration = targetGeneration ? targetGeneration : hierarchy[1];
       hierarchy.forEach((value) => {
         generationHierarchyList.push(parseInt(value));
@@ -204,7 +205,9 @@ export class InvoiceValidationService {
     );
     let otherItemsHierarchyList = [];
     for (const otherItem of otherItems) {
-      const hierarchy: string[] = otherItem.split('_');
+      const hierarchy: string[] = otherItem.split(
+        ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+      );
       hierarchy.forEach((value) => {
         otherItemsHierarchyList.push(parseInt(value));
       });
@@ -244,9 +247,11 @@ export class InvoiceValidationService {
         if (itemParent.length === 0) {
           continue;
         }
-        const firstItemParents = itemParent[0].split('_');
+        const firstItemParents = itemParent[0].split(
+          ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+        );
         const itemHasDifferentParents = itemParent.find((value) => {
-          const hierarchy = value.split('_');
+          const hierarchy = value.split(ITEM_TYPE_CODE_HIERARCHY_SPLITTER);
           if (
             hierarchy[0] !== firstItemParents[0] ||
             hierarchy[1] !== firstItemParents[1]
@@ -362,9 +367,13 @@ export class InvoiceValidationService {
         service.id,
       );
     for (const serviceItem of serviceItems) {
-      const hierarchy = serviceItem.codeHierarchy.split('_').slice(-2);
+      const hierarchy = serviceItem.codeHierarchy
+        .split(ITEM_TYPE_CODE_HIERARCHY_SPLITTER)
+        .slice(-2);
       let itemFound =
-        serviceItem.codeHierarchy.split('_')[0] === ItemTypeCodes.Generation
+        serviceItem.codeHierarchy.split(
+          ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+        )[0] === ItemTypeCodes.Generation
           ? false
           : true;
       if (hierarchy[1] === DiskItemCodes.Swap) {
@@ -375,7 +384,7 @@ export class InvoiceValidationService {
           invoiceItem.itemTypeId,
         );
         const invoiceItemHierarchy = serviceItemTree.codeHierarchy
-          .split('_')
+          .split(ITEM_TYPE_CODE_HIERARCHY_SPLITTER)
           .slice(-2);
         const computeItem =
           hierarchy[1] === invoiceItemHierarchy[1] &&
@@ -396,14 +405,15 @@ export class InvoiceValidationService {
           }
 
           if (
-            serviceItemTree.codeHierarchy.split('_')[0] ===
-            ItemTypeCodes.Generation
+            serviceItemTree.codeHierarchy.split(
+              ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+            )[0] === ItemTypeCodes.Generation
           ) {
             const invoiceItemGenerationNumber = serviceItemTree.codeHierarchy
-              .split('_')[1]
+              .split(ITEM_TYPE_CODE_HIERARCHY_SPLITTER)[1]
               .split('g')[1];
             const serviceItemGenerationNumber = serviceItem.codeHierarchy
-              .split('_')[1]
+              .split(ITEM_TYPE_CODE_HIERARCHY_SPLITTER)[1]
               .split('g')[1];
             if (
               Number(invoiceItemGenerationNumber) !==

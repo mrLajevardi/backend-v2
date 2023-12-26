@@ -30,7 +30,10 @@ import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { UserInfoService } from '../../user/service/user-info.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { VdcGenerationItemCodes } from '../../itemType/enum/item-type-codes.enum';
-import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import {
+  IP_SPLITTER,
+  ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+} from '../../itemType/const/item-type-code-hierarchy.const';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
@@ -301,7 +304,7 @@ export class PaygServiceService {
       },
     });
     const alreadyAssignedIpList = ips.map((item) => {
-      const ip = item.value.split('-')[0];
+      const ip = item.value.split(IP_SPLITTER)[0];
       return {
         startAddress: ip,
         endAddress: ip,
