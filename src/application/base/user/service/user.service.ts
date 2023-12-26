@@ -62,6 +62,7 @@ import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.e
 import { UserInfoService } from './user-info.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { UsersFactoryService } from './user.factory.service';
+import { UserPayload } from '../../security/auth/dto/user-payload.dto';
 
 @Injectable()
 export class UserService {
@@ -124,17 +125,17 @@ export class UserService {
   }
 
   async changePassword(
-    options: SessionRequest,
+    userPayload: UserPayload,
     data: ChangePasswordDto,
   ): Promise<boolean> {
     if (data.otpVerification) {
-      const cacheKey = options.user.userId + '_changePassword';
+      const cacheKey = userPayload.userId + '_changePassword';
       const checkCache = await this.redisCacheService.exist(cacheKey);
       if (!checkCache) {
         throw new ForbiddenException();
       }
     } else {
-      const user: User = await this.userTable.findById(options.user.userId);
+      const user: User = await this.userTable.findById(userPayload.userId);
       const isValid = await comparePassword(user.password, data.oldPassword);
       if (!isValid) {
         throw new ForbiddenException();
@@ -143,7 +144,7 @@ export class UserService {
 
     const hashedPassword = await encryptPassword(data.newPassword);
 
-    await this.userTable.update(options.user.userId, {
+    await this.userTable.update(userPayload.userId, {
       password: hashedPassword,
     });
 

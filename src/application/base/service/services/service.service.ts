@@ -139,7 +139,7 @@ export class ServiceService {
     }
     const invoiceItemsList = await this.invoiceItemListTable.find({
       where: {
-        invoiceId: invoiceId.toString(),
+        invoiceId: invoiceId,
         userId: userId,
       },
     });
