@@ -48,6 +48,9 @@ export class TasksService {
       pageSize: Number(query.pageSize),
       sortDesc: 'startDate',
       filter: filter,
+      filterEncoded: true,
+      format: 'records',
+      links: true,
     });
     if (!tasks) {
       throw new VcloudErrorException();
@@ -64,6 +67,18 @@ export class TasksService {
         progress: task.progress,
       });
     }
+    if (!query.vmId && !query.vappId) {
+      data = await this.getTaskFromTaskTable(data, userId, query);
+    }
+
+    return Promise.resolve(data);
+  }
+
+  private async getTaskFromTaskTable(
+    data: any[],
+    userId: number,
+    query: VmTasksQueryDto,
+  ) {
     const filteredTasksList = ['jobEnable'];
     data = data.filter((data) => {
       return !filteredTasksList.includes(data.operation);
@@ -87,6 +102,7 @@ export class TasksService {
         operation: task.operation,
       });
     }
+
     data.sort(function (task1, task2) {
       const task1Date = new Date(task1.startTime).getTime();
       const task2Date = new Date(task2.startTime).getTime();
@@ -98,8 +114,8 @@ export class TasksService {
         return 0;
       }
     });
-    data = data.slice(0, query.pageSize);
-    return Promise.resolve(data);
+
+    return data.slice(0, query.pageSize);
   }
 
   async getLastTaskErrorBy(serviceInstanceId: string): Promise<Tasks> {

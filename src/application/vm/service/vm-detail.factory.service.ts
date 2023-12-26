@@ -20,17 +20,22 @@ export class VmDetailFactoryService {
       const date = new Date();
       switch (Number(dateFilter)) {
         case SortDateTypeEnum.Today:
-          filterDate = `${fieldName}=le=${date2}`;
+          filterDate = `${fieldName}=lt=${date2};${fieldName}=gt=${getDateMinusDay(
+            date,
+            1,
+          )
+            .toISOString()
+            .trim()};`;
           break;
         case SortDateTypeEnum.YesterDay:
           // const tt = date.toISOString();
           //2023-11-13T08:02:40.815Z
           filterDate = `${fieldName}=lt=${date2.trim()};${fieldName}=ge=${getDateMinusDay(
             date,
-            1,
+            2,
           )
             .toISOString()
-            .trim()}`;
+            .trim()};`;
           break;
         case SortDateTypeEnum.LastWeek:
           filterDate = `${fieldName}=le=${date.toISOString()};${fieldName}=ge=${getDateMinusDay(
