@@ -144,7 +144,11 @@ export class ExtendServiceService {
       });
       const generationChild = await this.serviceItemTypeTree.findOne({
         where: {
-          id: Number(generationItem.hierarchy.split('_')[1]),
+          id: Number(
+            generationItem.hierarchy.split(
+              ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+            )[1],
+          ),
         },
       });
       const datacenterList =
