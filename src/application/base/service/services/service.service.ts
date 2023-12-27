@@ -585,6 +585,10 @@ export class ServiceService {
       },
     });
 
+    templates.forEach((template) => {
+      template.structure = JSON.parse(template.structure);
+    });
+
     return templates;
   }
 }
