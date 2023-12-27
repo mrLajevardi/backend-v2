@@ -482,6 +482,16 @@ export class InvoicesService implements BaseInvoiceService {
       const swap = finalInvoiceCost.itemsSum.find(
         (item) => item.code === DiskItemCodes.Swap,
       );
+      finalInvoiceCost.itemsSum.forEach((value) => {
+        if (
+          value.code === ItemTypeCodes.CpuReservationItem ||
+          value.code === ItemTypeCodes.MemoryReservationItem ||
+          value.code === ItemTypeCodes.GuarantyItem ||
+          value.code === ItemTypeCodes.PeriodItem
+        ) {
+          value.value = '0';
+        }
+      });
       const ramSum =
         Number(groupedOldItems.generation.ram[0].value) +
         Number(groupedItems.generation.ram[0].value);
