@@ -16,5 +16,6 @@ export function formatVcloudDate(currentDate: Date): string {
 }
 
 export function getDateMinusDay(date: Date, day: number) {
-  return new Date(date.setDate(date.getDate() - day));
+  const nDate = new Date(date.setDate(date.getDate() - day));
+  return nDate;
 }

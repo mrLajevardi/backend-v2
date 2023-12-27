@@ -32,6 +32,7 @@ import {
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
+import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 
 @Injectable()
 export class InvoiceFactoryService {
@@ -55,7 +56,9 @@ export class InvoiceFactoryService {
       },
     });
     for (const itemType of itemTypes) {
-      const parents = itemType.codeHierarchy.split('_');
+      const parents = itemType.codeHierarchy.split(
+        ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+      );
       const invoiceItem = mappedItemTypes.ItemTypesById[itemType.id];
       const invoiceGroupItem = {
         ...itemType,

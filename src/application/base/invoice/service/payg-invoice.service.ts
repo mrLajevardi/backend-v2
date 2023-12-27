@@ -137,6 +137,7 @@ export class PaygInvoiceService {
     const finalInvoiceCost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
         data,
+        60 * 24,
         groupedItems,
       );
 

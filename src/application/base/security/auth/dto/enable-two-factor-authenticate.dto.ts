@@ -1,12 +1,24 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn, IsString, Matches } from 'class-validator';
+import {
+  IsEnum,
+  IsIn,
+  IsNotIn,
+  IsNumber,
+  IsString,
+  Matches,
+} from 'class-validator';
+import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
+import { Transform } from 'class-transformer';
 
 export class EnableTwoFactorAuthenticateDto {
-  @IsString()
   @ApiProperty({
     description: 'type of two factor authenticate',
-    example: 'email or sms',
   })
-  @IsIn(['email', 'sms'])
-  twoFactorAuthType: string;
+  @Transform(({ value }) => {
+    return Number(value);
+  })
+  @IsNumber()
+  @IsEnum(TwoFaAuthTypeEnum)
+  @IsNotIn([0])
+  twoFactorAuthType: number;
 }

@@ -177,7 +177,7 @@ export class UserController {
   ): Promise<boolean> {
     // const hashedPassword = await encryptPassword('12345678');
     // console.log('password: \n\n\n\n\n\n\n\n' , hashedPassword);
-    return await this.userService.changePassword(options, data);
+    return await this.userService.changePassword(options.user, data);
   }
 
   @Post('/credit/increment')
