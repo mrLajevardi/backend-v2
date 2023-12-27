@@ -11,6 +11,7 @@ import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
 import { GetProviderVdcMetadataDto } from './dto/get-provider-vdc-metadata.dto';
 import { GetProviderVdcDto } from './dto/get-provider-vdc.dto';
 import { UpdateProviderVdcMetadataDto } from './dto/update-provider-vdc-metadata.dto';
+import { AddVdcStorageProfileDto } from './dto/add-storage-policy.dto';
 
 @Injectable()
 export class AdminVdcEndpointService {
@@ -98,16 +99,16 @@ export class AdminVdcEndpointService {
       },
     };
   }
-  updateVdcStorageProfileEndpoint(
-    options: UpdateVdcStorageProfileDto,
+  addVdcStorageProfileEndpoint(
+    options: AddVdcStorageProfileDto,
   ): EndpointInterface {
     return {
-      method: 'put',
-      resource: options.urlParams.fullUrl,
+      method: 'post',
+      resource: `/api/admin/vdc/${options.urlParams.vdcId}/vdcStorageProfiles`,
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: 'application/*+json;version=37.1',
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -166,6 +167,22 @@ export class AdminVdcEndpointService {
       body: options.body,
       headers: {
         Accept: 'application/*+json;version=36.3',
+        'Content-Type': 'application/*+json',
+        ...options.headers,
+      },
+    };
+  }
+
+  updateVdcStorageProfileEndpoint(
+    options: UpdateVdcStorageProfileDto,
+  ): EndpointInterface {
+    return {
+      method: 'put',
+      resource: options.urlParams.fullUrl,
+      params: {},
+      body: options.body,
+      headers: {
+        Accept: 'application/*+json;version=37.1',
         'Content-Type': 'application/*+json',
         ...options.headers,
       },

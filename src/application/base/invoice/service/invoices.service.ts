@@ -40,7 +40,10 @@ import {
 } from '../interface/vdc-item-group.interface.dto';
 import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
+import {
+  DiskItemCodes,
+  ItemTypeCodes,
+} from '../../itemType/enum/item-type-codes.enum';
 import { Invoices } from '../../../../infrastructure/database/entities/Invoices';
 import { TotalInvoiceItemCosts } from '../interface/invoice-item-cost.interface';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
@@ -306,6 +309,16 @@ export class InvoicesService implements BaseInvoiceService {
       const swap = finalInvoiceCost.itemsSum.find(
         (item) => item.code === DiskItemCodes.Swap,
       );
+      finalInvoiceCost.itemsSum.forEach((value) => {
+        if (
+          value.code === ItemTypeCodes.CpuReservationItem ||
+          value.code === ItemTypeCodes.MemoryReservationItem ||
+          value.code === ItemTypeCodes.GuarantyItem ||
+          value.code === ItemTypeCodes.PeriodItem
+        ) {
+          value.value = '0';
+        }
+      });
       const ramSum =
         Number(groupedOldItems.generation.ram[0].value) +
         Number(groupedItems.generation.ram[0].value);

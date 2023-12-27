@@ -120,6 +120,7 @@ export class CostCalculationService {
     // currentInvoiceCost.totalCost =
     //   currentInvoiceCost.totalCost /
     //   (30 * Number(groupedOldItems.period.value));
+
     const newInvoiceCost = await this.calculateVdcStaticTypeInvoice(
       {
         itemsTypes: newInvoice,
@@ -128,7 +129,8 @@ export class CostCalculationService {
         applyPeriodPercent: false,
       },
     );
-    newInvoiceCost.totalCost = newInvoiceCost.serviceCost / 30;
+    newInvoiceCost.totalCost =
+      newInvoiceCost.serviceCost / (30 * Number(groupedOldItems.period.value));
     newInvoiceCost.totalCost =
       newInvoiceCost.totalCost /*- currentInvoiceCost.totalCost*/ *
       remainingDays;
