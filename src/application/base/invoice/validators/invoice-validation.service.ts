@@ -25,6 +25,7 @@ import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 @Injectable()
 export class InvoiceValidationService {
@@ -39,12 +40,36 @@ export class InvoiceValidationService {
     this.vdcCode = 'vdc';
   }
 
-  async vdcInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
+  strategy: any = {
+    [ServiceTypesEnum.Vdc]: this.vdcInvoiceValidator,
+    [ServiceTypesEnum.Ai]: this.aiInvoiceValidator,
+  };
+
+  async invoiceValidator(
+    serviceType: ServiceTypesEnum,
+    invoice: CreateServiceInvoiceDto,
+  ): Promise<void> {
     if (invoice.templateId) {
       return;
     }
-    const itemParentType = new VdcParentType();
+
     this.checkUniquenessOfItems(invoice.itemsTypes);
+
+    await this.strategy[serviceType].bind(this)(invoice);
+  }
+
+  async aiInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
+    if (!invoice.itemsTypes) {
+      throw new BadRequestException('Invoice itemsTypes cannot be empty');
+    }
+
+    for (const invoiceItem of invoice.itemsTypes) {
+      await this.generalInvoiceValidator(invoiceItem);
+    }
+  }
+  async vdcInvoiceValidator(invoice: CreateServiceInvoiceDto): Promise<void> {
+    const itemParentType = new VdcParentType();
+
     let datacenterChecked = false;
     for (const invoiceItem of invoice.itemsTypes) {
       await this.generalInvoiceValidator(invoiceItem);
@@ -302,7 +327,10 @@ export class InvoiceValidationService {
     }
 
     // checks if steps mod is zero
-    if (parseInt(invoiceItemType.value) % itemType.step !== 0) {
+    if (
+      itemType.step &&
+      parseInt(invoiceItemType.value) % itemType.step !== 0
+    ) {
       throw new BadRequestException(
         `item [${itemType.id}] value is not compatible with items step config`,
       );

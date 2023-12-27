@@ -66,6 +66,9 @@ export class Templates {
   @Column('datetime', { name: 'ExpireDate' })
   expireDate: Date;
 
+  @Column('integer', { name: 'Period' })
+  period: number | null;
+
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)
   @JoinColumn([
     { name: 'ServiceTypeId', referencedColumnName: 'id' },
