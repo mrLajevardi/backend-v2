@@ -1,23 +1,23 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  Request,
   Query,
   Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { CreateServiceService } from '../services/create-service.service';
 import { CreateServiceDto } from '../dto/create-service.dto';
@@ -36,6 +36,9 @@ import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
 import { PersonalVerificationGuard } from '../../security/auth/guard/personal-verification.guard';
 import { PaygServiceService } from '../services/payg-service.service';
 import { CreatePaygVdcServiceDto } from '../../invoice/dto/create-payg-vdc-service.dto';
+import { ServiceTypesEnum } from '../enum/service-types.enum';
+import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -283,5 +286,24 @@ export class ServiceController {
       servicesExpiringCount: 15,
       servicesBudgetCount: 16,
     };
+  }
+
+  @ApiOperation({ summary: 'get templates' })
+  @ApiQuery({
+    name: 'serviceTypeId',
+    required: true,
+    type: String,
+    description: ' vdc, ai',
+  })
+  @Get('/templates')
+  async getTemplates(
+    @Request() options: SessionRequest,
+    @Query('serviceTypeId') serviceType: ServiceTypesEnum,
+  ): Promise<any> {
+    return this.serviceService.getTemplates(
+      options,
+      serviceType,
+      ServicePlanTypeEnum.Static,
+    );
   }
 }

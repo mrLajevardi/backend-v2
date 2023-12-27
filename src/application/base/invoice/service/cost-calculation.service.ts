@@ -103,6 +103,25 @@ export class CostCalculationService {
     };
   }
 
+  async calculateAiStaticTypeInvoice(
+    invoice: Partial<CreateServiceInvoiceDto>,
+  ): Promise<TotalInvoiceItemCosts> {
+    type grouped = {
+      itemTypeId: string;
+      fee: number;
+    };
+
+    const groupedItems: string[] =
+      await this.invoiceFactoryService.groupAiItems(invoice.itemsTypes);
+
+    return {
+      itemsTotalCosts: 4554,
+      itemsSum: {} as InvoiceItemCost[],
+      totalCost: 454,
+      serviceCost: 415454,
+    };
+  }
+
   async calculateRemainingPeriod(
     currentInvoiceItems: InvoiceItemsDto[],
     newInvoice: InvoiceItemsDto[],

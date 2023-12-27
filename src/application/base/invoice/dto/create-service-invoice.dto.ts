@@ -1,17 +1,19 @@
 import {
-  IsNumber,
-  IsString,
   IsArray,
+  IsEnum,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
   Matches,
   ValidateIf,
-  IsEnum,
   ValidateNested,
-  IsObject,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 export enum InvoiceNumericTypes {
   Upgrade = 2,
@@ -31,9 +33,25 @@ export class InvoiceItemsDto {
     type: String,
   })
   value: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    type: String,
+  })
+  code?: string;
 }
 
 export class CreateServiceInvoiceDto {
+  @IsEnum(ServiceTypesEnum)
+  @ApiProperty({
+    type: String,
+    example: 'vdc',
+    enum: ServiceTypesEnum,
+  })
+  @IsOptional()
+  serviceType?: ServiceTypesEnum;
+
   @IsEnum(InvoiceTypes)
   @ApiProperty({
     type: Number,
