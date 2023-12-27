@@ -42,6 +42,7 @@ import { FirewallActionValue } from 'src/wrappers/main-wrapper/service/user/fire
 import { TaskQueryTypes } from '../enum/task-query-types.enum';
 import { NatTypes } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-types.enum';
 import { DhcpModeEnum } from '../../../../wrappers/main-wrapper/service/user/dhcp/enum/dhcp-mode.enum';
+import { IP_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 
 // @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
@@ -506,7 +507,7 @@ export class TaskManagerService {
     const options = {
       user: { userId: userId },
     } as SessionRequest;
-    const ip = ipListProps[0].value.split('-');
+    const ip = ipListProps[0].value.split(IP_SPLITTER);
     const nat = await this.natService.createNatRule(
       {
         enabled: true,
@@ -552,7 +553,7 @@ export class TaskManagerService {
       order: { id: { direction: 'DESC' } },
       take: 1,
     });
-    const ip = ipListProps[0].value.split('-')[0];
+    const ip = ipListProps[0].value.split(IP_SPLITTER)[0];
     const ipSet = await this.edgeGatewayService.createIPSet(
       options,
       service.id,

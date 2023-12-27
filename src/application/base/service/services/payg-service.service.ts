@@ -30,7 +30,10 @@ import { TaskManagerService } from '../../tasks/service/task-manager.service';
 import { UserInfoService } from '../../user/service/user-info.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { VdcGenerationItemCodes } from '../../itemType/enum/item-type-codes.enum';
-import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import {
+  IP_SPLITTER,
+  ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+} from '../../itemType/const/item-type-code-hierarchy.const';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
@@ -45,6 +48,8 @@ import { TemplatesTableService } from '../../crud/templates/templates-table.serv
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
 import { VmStatusEnum } from 'src/application/vm/enums/vm-status.enum';
+import { TasksEnum } from '../../task-manager/enum/tasks.enum';
+import { TaskManagerService as NewTaskManagerService } from '../../task-manager/service/task-manager.service';
 
 @Injectable()
 export class PaygServiceService {
@@ -70,6 +75,7 @@ export class PaygServiceService {
     private readonly invoiceTableService: InvoicesTableService,
     private readonly invoiceItemsTableService: InvoiceItemsTableService,
     private readonly templateTableService: TemplatesTableService,
+    private readonly newTaskManagerService: NewTaskManagerService,
   ) {}
 
   async checkAllVdcVmsEvents(
@@ -301,7 +307,7 @@ export class PaygServiceService {
       },
     });
     const alreadyAssignedIpList = ips.map((item) => {
-      const ip = item.value.split('-')[0];
+      const ip = item.value.split(IP_SPLITTER)[0];
       return {
         startAddress: ip,
         endAddress: ip,
@@ -467,6 +473,44 @@ export class PaygServiceService {
         (Number(taxPercent.value) / 100 + 1) * cost.totalCost,
       ),
       taxPercent: Number(taxPercent.value),
+    };
+  }
+
+  async upgradePayg(
+    dto: CreateServiceDto,
+    options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    const userId = options.user.userId;
+    const invoice = await this.invoiceTableService.findById(dto.invoiceId);
+    const credit = await this.userInfoService.getUserCreditBy(userId);
+    const serviceBudgets = await this.budgetingService.getUserBudgeting(userId);
+    const serviceBudget = serviceBudgets.find(
+      (item) => item.id === invoice.serviceInstanceId,
+    );
+    if (invoice.finalAmount > credit + serviceBudget.credit) {
+      throw new NotEnoughCreditException();
+    }
+    if (invoice.finalAmount > serviceBudget.credit) {
+      const cost = invoice.finalAmount - serviceBudget.credit;
+      await this.budgetingService.increaseBudgetingService(
+        userId,
+        invoice.serviceInstanceId,
+        { increaseAmount: cost },
+      );
+    }
+    await this.extendService.upgradeService(
+      invoice.serviceInstanceId,
+      invoice.id,
+      invoice.type,
+    );
+    const task = await this.newTaskManagerService.createFlow(
+      TasksEnum.UpgradeVdc,
+      invoice.serviceInstanceId,
+    );
+    const taskId = task.taskId;
+    await this.invoiceTableService.update(invoice.id, { payed: true });
+    return {
+      taskId,
     };
   }
 }

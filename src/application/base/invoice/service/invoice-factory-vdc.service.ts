@@ -216,14 +216,14 @@ export class InvoiceFactoryVdcService {
     }; // TODO about DatacenterName and DatacenterTitle;
 
     // Math.round((item.fee ? item.fee : item.price) / 1000) * 1000
-    res.finalPrice = Number(ramModel.finalAmount.toFixed(0));
+    res.finalPrice = Number(ramModel.finalAmount?.toFixed(0));
 
     res.finalPriceWithTax =
       res.finalPrice * ramModel.invoiceTax + res.finalPrice;
 
     res.finalPriceTax = res.finalPrice * ramModel.invoiceTax;
 
-    res.rawAmount = Number(ramModel.rawAmount.toFixed(0));
+    res.rawAmount = Number(ramModel.rawAmount?.toFixed(0));
 
     res.rawAmountTax = res.rawAmount * ramModel.invoiceTax;
 

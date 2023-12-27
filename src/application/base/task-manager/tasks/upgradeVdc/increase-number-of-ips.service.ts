@@ -25,6 +25,7 @@ import { UserTableService } from 'src/application/base/crud/user-table/user-tabl
 import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-message.enum';
 import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
+import { IP_SPLITTER } from '../../../itemType/const/item-type-code-hierarchy.const';
 
 @Injectable()
 export class IncreaseNumberOfIpsService
@@ -110,6 +111,7 @@ export class IncreaseNumberOfIpsService
         propertyKey: VdcServiceProperties.IpRange,
       },
     });
+
     const assignedIpList = this.convertIpRangeToIpObject(assignedIps);
     if (Number(groupedItems.generation.ip[0].value) === assignedIpList.length) {
       return;
@@ -147,7 +149,7 @@ export class IncreaseNumberOfIpsService
 
   convertIpRangeToIpObject(IpRangeProps: ServiceProperties[]): IpRangeObject[] {
     const ipRangeObject = IpRangeProps.map((ip) => {
-      const splittedIpRange = ip.value.split('-');
+      const splittedIpRange = ip.value.split(IP_SPLITTER);
       return {
         startAddress: splittedIpRange[0],
         endAddress: splittedIpRange[1],

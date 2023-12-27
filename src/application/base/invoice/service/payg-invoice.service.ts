@@ -13,6 +13,9 @@ import { TemplatesTableService } from '../../crud/templates/templates-table.serv
 import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { transferItems } from '../utils/transfer-items.utils';
+import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { TotalInvoiceItemCosts } from '../interface/invoice-item-cost.interface';
 
 @Injectable()
 export class PaygInvoiceService {
@@ -22,6 +25,7 @@ export class PaygInvoiceService {
     private readonly paygCostCalculationService: PaygCostCalculationService,
     private readonly templateTableService: TemplatesTableService,
     private readonly serviceItemsTableService: ServiceItemsTableService,
+    private readonly serviceInstanceTableService: ServiceInstancesTableService,
   ) {}
 
   async createPaygInvoice(
@@ -89,28 +93,80 @@ export class PaygInvoiceService {
   async checkAllUserCredit() {
     return 10000000;
   }
-  async paygUpgradeInvoice(dto: CreatePaygVdcServiceDto): Promise<void> {
-    const newItemsCost =
-      await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(dto);
-    const currentItems = await this.serviceItemsTableService.find({
+  async paygUpgradeInvoice(
+    data: CreatePaygVdcServiceDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    const userId = options.user.userId;
+    const service = await this.serviceInstanceTableService.findById(
+      data.serviceInstanceId,
+    );
+    const date =
+      new Date().getTime() >= new Date(service.expireDate).getTime()
+        ? new Date()
+        : new Date(service.expireDate);
+    const remainingDays = data.duration;
+    const invoiceType = InvoiceTypes.UpgradeAndExtend;
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      data.itemsTypes,
+    );
+    const serviceItems = await this.serviceItemsTableService.find({
       where: {
-        serviceInstanceId: dto.serviceInstanceId,
+        serviceInstanceId: data.serviceInstanceId,
       },
     });
-    const transferredItems = transferItems(currentItems);
-    const currentItemsDto: CreatePaygVdcServiceDto = {
-      duration: dto.duration,
-      itemsTypes: transferredItems,
-      serviceInstanceId: null,
-    };
-    const currentItemsCost =
+    const transformedItems = transferItems(serviceItems);
+    const groupedOldItems = await this.invoiceFactoryService.groupVdcItems(
+      transformedItems,
+    );
+    const swapItem = groupedOldItems.generation.disk.find(
+      (item) => item.code === DiskItemCodes.Swap,
+    );
+    const swapItemIndex = transformedItems.findIndex((item) => {
+      if (item.itemTypeId === swapItem.id) {
+        groupedOldItems.generation.disk.splice(
+          groupedOldItems.generation.disk.indexOf(swapItem),
+          1,
+        );
+        return item;
+      }
+    });
+    transformedItems.splice(swapItemIndex, 1);
+
+    await this.invoiceFactoryService.sumItems(groupedItems, groupedOldItems);
+    const finalInvoiceCost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
-        currentItemsDto,
+        data,
+        60 * 24,
+        groupedItems,
       );
 
-    // const costsSum = currentItemsCost.totalCost + curr
-    // if (currentItemsCost.totalCost + ) {
-
-    // }
+    // check upgrade vdc
+    // await this.validationService.checkUpgradeVdc(data, service);
+    const convertedInvoice: CreateServiceInvoiceDto = {
+      ...data,
+      templateId: null,
+      type: invoiceType,
+      servicePlanTypes: ServicePlanTypeEnum.Payg,
+      serviceInstanceId: data.serviceInstanceId,
+    };
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      userId,
+      convertedInvoice,
+      finalInvoiceCost,
+      groupedItems,
+      data.serviceInstanceId,
+      remainingDays,
+      date,
+    );
+    const invoice = await this.invoiceTableService.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      invoice.id,
+      finalInvoiceCost.itemsSum,
+      groupedItems,
+    );
+    return {
+      invoiceId: invoice.id,
+    };
   }
 }

@@ -164,4 +164,18 @@ export class InvoicesController {
     );
     return transaction;
   }
+
+  @ApiOperation({ summary: 'creates payg upgrade invoice' })
+  @ApiResponse({ type: InvoiceIdDto })
+  @Put('/payg/upgrade')
+  async upgradePayg(
+    @Request() options: SessionRequest,
+    @Body() dto: CreatePaygVdcServiceDto,
+  ): Promise<InvoiceIdDto> {
+    const invoiceId = await this.paygInvoiceService.paygUpgradeInvoice(
+      dto,
+      options,
+    );
+    return invoiceId;
+  }
 }

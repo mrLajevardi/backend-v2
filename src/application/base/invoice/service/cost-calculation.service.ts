@@ -63,9 +63,11 @@ export class CostCalculationService {
     itemsSum = itemsSum.concat([
       groupedItems.memoryReservation,
       groupedItems.cpuReservation,
-      groupedItems.period,
       groupedItems.guaranty,
     ]);
+    if (groupedItems.period) {
+      itemsSum = itemsSum.concat(groupedItems.period);
+    }
     return {
       itemsSum,
       itemsTotalCosts: totalCost,
