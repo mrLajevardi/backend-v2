@@ -295,7 +295,7 @@ export class ServiceController {
     type: String,
     description: ' vdc, ai',
   })
-  @Get('/templates')
+  @Get('ai/templates')
   async getTemplates(
     @Request() options: SessionRequest,
     @Query('serviceTypeId') serviceType: ServiceTypesEnum,
