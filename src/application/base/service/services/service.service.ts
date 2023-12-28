@@ -591,4 +591,9 @@ export class ServiceService {
 
     return templates;
   }
+
+  async getReports(option: SessionRequest) {
+    const userId = option.user.userId;
+    // thi
+  }
 }

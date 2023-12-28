@@ -101,6 +101,12 @@ export class ItemTypes {
   })
   enabled: boolean | null;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsHidden',
+    nullable: true,
+  })
+  isHidden: boolean | null;
+
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;
 
