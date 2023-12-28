@@ -87,6 +87,6 @@ build image:
     # - echo $CI_REGISTRY_PASSWORD |docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
     # - echo $MY_PASSWORD | docker login -u aliiii0307 $CI_REGISTRY --password-stdin
   script:
-    - echo "$CI_REGISTRY_PASSWORD"
+    - echo "$MY_PASSWORD"
     # - docker build . --tag $CI_REGISTRY/$IMAGE_NAME
     # - docker push $CI_REGISTRY/$IMAGE_NAME
