@@ -1,4 +1,10 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { BeforeInsert, JoinColumn, ManyToOne } from 'typeorm';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { InfoLog } from './InfoLog';
@@ -10,13 +16,12 @@ import { Tasks } from './Tasks';
 import { Tickets } from './Tickets';
 import { randomUUID } from 'crypto';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
-
+import { VmPowerStateEventEnum } from '../../../wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
 @Index('index_zare_IsDeleted', ['isDeleted'], {})
 @Index('PK_ServiceInstances', ['id'], { unique: true })
 @Entity('ServiceInstances', { schema: 'user' })
 export class ServiceInstances {
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
-    primary: true,
+  @PrimaryGeneratedColumn('uuid', {
     name: 'ID',
   })
   id: string;
@@ -89,6 +94,8 @@ export class ServiceInstances {
   })
   retryCount: number | null;
 
+  credit?: number | null;
+
   @Column({
     name: 'DaysLeft',
     nullable: true,
@@ -96,6 +103,24 @@ export class ServiceInstances {
     readonly: true,
   })
   daysLeft: number | null;
+
+  @Column({
+    name: 'LastState',
+    nullable: true,
+  })
+  lastState: VmPowerStateEventEnum | null;
+
+  @Column({
+    name: 'Offset',
+    nullable: true,
+  })
+  offset: Date | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'AutoPaid',
+    default: () => '(0)',
+  })
+  autoPaid: boolean;
 
   @OneToMany(
     () => AiTransactionsLogs,
@@ -133,9 +158,4 @@ export class ServiceInstances {
 
   @OneToMany(() => Tickets, (tickets) => tickets.serviceInstance)
   tickets: Tickets[];
-
-  @BeforeInsert()
-  setId() {
-    this.id = randomUUID();
-  }
 }

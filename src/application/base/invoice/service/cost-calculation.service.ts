@@ -16,6 +16,7 @@ import {
 import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { CalculateOptions } from '../interface/calculate-options.interface';
+import { InvoiceTypes } from '../enum/invoice-type.enum';
 
 @Injectable()
 export class CostCalculationService {
@@ -26,7 +27,7 @@ export class CostCalculationService {
 
   async calculateVdcGenerationItems(
     groupedItems: VdcItemGroup,
-  ): Promise<Omit<TotalInvoiceItemCosts, 'totalCost'>> {
+  ): Promise<Pick<TotalInvoiceItemCosts, 'itemsSum' | 'itemsTotalCosts'>> {
     const computeResources = {
       cpu: groupedItems.generation.cpu,
       ram: groupedItems.generation.ram,
@@ -62,9 +63,11 @@ export class CostCalculationService {
     itemsSum = itemsSum.concat([
       groupedItems.memoryReservation,
       groupedItems.cpuReservation,
-      groupedItems.period,
       groupedItems.guaranty,
     ]);
+    if (groupedItems.period) {
+      itemsSum = itemsSum.concat(groupedItems.period);
+    }
     return {
       itemsSum,
       itemsTotalCosts: totalCost,
@@ -74,44 +77,69 @@ export class CostCalculationService {
   async calculateVdcStaticTypeInvoice(
     invoice: Partial<CreateServiceInvoiceDto>,
     options: CalculateOptions = { applyPeriodPercent: true },
+    items?: VdcItemGroup,
   ): Promise<TotalInvoiceItemCosts> {
-    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
-      invoice.itemsTypes,
-    );
+    const groupedItems =
+      items ??
+      (await this.invoiceFactoryService.groupVdcItems(invoice.itemsTypes));
     const totalInvoiceItemCosts = await this.calculateVdcGenerationItems(
       groupedItems,
     );
+
     const periodItem = groupedItems.period;
     const itemsPeriodCost =
       totalInvoiceItemCosts.itemsTotalCosts * parseInt(periodItem.value);
-    const discountValue = itemsPeriodCost * periodItem.percent;
-    const periodTotalCost = options.applyPeriodPercent
-      ? itemsPeriodCost + discountValue
+    const discountValue = options.applyPeriodPercent
+      ? itemsPeriodCost * periodItem.percent
       : 0;
+    const periodTotalCost = itemsPeriodCost + discountValue;
     const supportCosts = groupedItems.guaranty.fee * parseInt(periodItem.value);
     const invoiceTotalCosts = periodTotalCost + supportCosts;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
+      serviceCost: itemsPeriodCost,
     };
   }
+
+  async calculateAiStaticTypeInvoice(
+    invoice: Partial<CreateServiceInvoiceDto>,
+  ): Promise<TotalInvoiceItemCosts> {
+    type grouped = {
+      itemTypeId: string;
+      fee: number;
+    };
+
+    const groupedItems: string[] =
+      await this.invoiceFactoryService.groupAiItems(invoice.itemsTypes);
+
+    return {
+      itemsTotalCosts: 4554,
+      itemsSum: {} as InvoiceItemCost[],
+      totalCost: 454,
+      serviceCost: 415454,
+    };
+  }
+
   async calculateRemainingPeriod(
     currentInvoiceItems: InvoiceItemsDto[],
     newInvoice: InvoiceItemsDto[],
     groupedItems: VdcItemGroup,
     groupedOldItems: VdcItemGroup,
     remainingDays: number,
+    invoiceType: InvoiceTypes,
   ): Promise<TotalInvoiceItemCosts> {
-    const currentInvoiceCost = await this.calculateVdcStaticTypeInvoice(
-      {
-        itemsTypes: currentInvoiceItems,
-      },
-      { applyPeriodPercent: false },
-    );
-    currentInvoiceCost.totalCost =
-      currentInvoiceCost.totalCost /
-      (30 * Number(groupedOldItems.period.value));
+    // const currentInvoiceCost = await this.calculateVdcStaticTypeInvoice(
+    //   {
+    //     itemsTypes: currentInvoiceItems,
+    //   },
+    //   { applyPeriodPercent: false },
+    // );
+    // currentInvoiceCost.totalCost =
+    //   currentInvoiceCost.totalCost /
+    //   (30 * Number(groupedOldItems.period.value));
+
     const newInvoiceCost = await this.calculateVdcStaticTypeInvoice(
       {
         itemsTypes: newInvoice,
@@ -121,9 +149,10 @@ export class CostCalculationService {
       },
     );
     newInvoiceCost.totalCost =
-      newInvoiceCost.totalCost / (30 * Number(groupedItems.period.value));
+      newInvoiceCost.serviceCost / (30 * Number(groupedOldItems.period.value));
     newInvoiceCost.totalCost =
-      (newInvoiceCost.totalCost - currentInvoiceCost.totalCost) * remainingDays;
+      newInvoiceCost.totalCost /*- currentInvoiceCost.totalCost*/ *
+      remainingDays;
     return newInvoiceCost;
   }
   async calculateComputeResourcesCosts(
@@ -146,13 +175,15 @@ export class CostCalculationService {
     const cpuCost =
       cpuParent.fee *
       parseInt(cpuItem.value) *
-      (cpuItem.percent + 1) *
-      (reservations.cpuReservation.percent + 1);
+      cpuItem.percent *
+      // (reservations.cpuReservation.percent + 1);
+      reservations.cpuReservation.percent;
     const ramCost =
       ramParent.fee *
       parseInt(ramItem.value) *
-      (ramItem.percent + 1) *
-      (reservations.memoryReservation.percent + 1);
+      ramItem.percent *
+      // (reservations.memoryReservation.percent + 1);
+      reservations.memoryReservation.percent;
     const result = [
       { ...cpuItem, cost: cpuCost },
       {
@@ -170,23 +201,21 @@ export class CostCalculationService {
     const diskItemCosts: InvoiceItemCost[] = [];
     for (const diskItem of invoiceItem) {
       const diskItemCost = diskItem.fee * parseInt(diskItem.value);
-      if (diskItem.code === DiskItemCodes.Standard) {
-        const swapValue = parseInt(ramItem.value) * parseInt(vmItem.value);
-        const swapDiskItemCost = diskItem.fee * swapValue;
-        const swapItem = await this.serviceItemTypeTreeService.findOne({
-          where: {
-            parentId: diskItem.parentId,
-            code: DiskItemCodes.Swap,
-          },
-        });
-        diskItemCosts.push({
-          ...swapItem,
-          cost: swapDiskItemCost,
-          value: swapValue.toString(),
-        });
-      }
       diskItemCosts.push({ ...diskItem, cost: diskItemCost });
     }
+    const swapValue = parseInt(ramItem.value) * parseInt(vmItem.value);
+    const swapDiskItemCost = 0;
+    const swapItem = await this.serviceItemTypeTreeService.findOne({
+      where: {
+        parentId: invoiceItem[0].parentId,
+        code: DiskItemCodes.Swap,
+      },
+    });
+    diskItemCosts.push({
+      ...swapItem,
+      cost: swapDiskItemCost,
+      value: swapValue.toString(),
+    });
     return diskItemCosts;
   }
 

@@ -49,6 +49,15 @@ import { ServicePlans } from '../entities/ServicePlans';
 import { ServiceReports } from '../entities/views/service-reports';
 import { ServiceItemTypesTree } from '../entities/views/service-item-types-tree';
 import { Templates } from '../entities/Templates';
+import { Company } from '../entities/Company';
+import { Province } from '../entities/Province';
+import { City } from '../entities/City';
+import { FileUpload } from '../entities/FileUpload';
+import { EntityLog } from '../entities/EntityLog';
+import { ServicePayments } from '../entities/ServicePayments';
+import { VServiceInstances } from '../entities/views/v-serviceInstances';
+import { VServiceInstanceDetail } from '../entities/views/v-serviceInstanceDetail';
+import { ServiceDiscount } from '../entities/ServiceDiscount';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -76,7 +85,9 @@ export const dbEntities = [
   Setting,
   SystemSettings,
   User,
-  // services Schema
+  Company,
+  Province,
+  City,
   Configs,
   Discounts,
   ItemTypes,
@@ -104,4 +115,10 @@ export const dbEntities = [
   Transactions,
   ServiceReports,
   ServiceItems,
+  FileUpload,
+  EntityLog,
+  ServicePayments,
+  VServiceInstances,
+  VServiceInstanceDetail,
+  ServiceDiscount,
 ];

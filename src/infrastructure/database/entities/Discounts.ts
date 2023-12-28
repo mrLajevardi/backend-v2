@@ -38,6 +38,12 @@ export class Discounts {
   @Column('varchar', { name: 'Code', nullable: true, length: 50 })
   code: string | null;
 
+  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.discounts)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
+  serviceTypes: ServiceTypes;
   @Column('varchar', { name: 'ServiceTypeID' })
   serviceTypeId: string;
 
@@ -45,7 +51,10 @@ export class Discounts {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceType: ServiceTypes;
 
   @OneToMany(

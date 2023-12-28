@@ -67,10 +67,27 @@ export class Invoices {
   @Column('tinyint', { name: 'ServicePlanType' })
   servicePlanType: number;
 
+  @Column({
+    type: isTestingEnv() ? 'integer' : 'decimal',
+    name: 'Code',
+    nullable: true,
+  })
+  code: number | null;
+
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'ServiceInstanceID',
   })
   serviceInstanceId: string;
+
+  @Column('float', {
+    name: 'BaseAmount',
+  })
+  baseAmount: number;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsPreInvoice',
+  })
+  isPreInvoice: boolean;
 
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
   invoiceItems: InvoiceItems[];
@@ -101,4 +118,16 @@ export class Invoices {
     nullable: true,
   })
   templateId: string;
+
+  @Column(isTestingEnv() ? 'int' : 'int', {
+    name: 'ServiceCost',
+    nullable: true,
+  })
+  serviceCost: number;
+
+  @Column(isTestingEnv() ? 'float' : 'float', {
+    name: 'InvoiceTax',
+    nullable: true,
+  })
+  invoiceTax: number;
 }

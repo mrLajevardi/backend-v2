@@ -27,6 +27,15 @@ import { ServiceServiceFactory } from '../Factory/service.service.factory';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { InvoicesModule } from '../../invoice/invoices.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
+import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { MainWrapperModule } from '../../../../wrappers/main-wrapper/main-wrapper.module';
+import { NetworksModule } from '../../../networks/networks.module';
+import { NatModule } from '../../../nat/nat.module';
+import { TaskFactoryService } from '../../tasks/service/task.factory.service';
+import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -35,7 +44,10 @@ describe('DeleteServiceService', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
-        CrudModule,
+        VmModule,
+        NetworksModule,
+        NatModule,
+        MainWrapperModule,
         DatabaseModule,
         SessionsModule,
         UserModule,
@@ -55,6 +67,10 @@ describe('DeleteServiceService', () => {
         ServicePropertiesModule,
         DatacenterModule,
         TaskManagerModule,
+        EdgeGatewayModule,
+        UvdeskWrapperModule,
+        VServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
       ],
       providers: [
         ServiceService,
@@ -69,6 +85,7 @@ describe('DeleteServiceService', () => {
         NetworkService,
         VgpuDnatService,
         ServiceServiceFactory,
+        TaskFactoryService,
       ],
     }).compile();
 

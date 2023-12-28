@@ -1,10 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
-import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { SessionsService } from '../base/sessions/sessions.service';
-import { EdgeService } from '../vdc/service/edge.service';
 import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
 import { SessionRequest } from '../../infrastructure/types/session-request.type';
+import { NatWrapperService } from 'src/wrappers/main-wrapper/service/user/nat/nat-wrapper.service';
+import { VdcProperties } from '../vdc/interface/vdc-properties.interface';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { NatQueryDto } from './dto/nat.dto';
+import { NatRulesListDTO } from './dto/nat-rules-list.dto';
 
 @Injectable()
 export class NatService {
@@ -12,9 +15,14 @@ export class NatService {
     private readonly logger: LoggerService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
+    private readonly natWrapperService: NatWrapperService,
   ) {}
 
-  async createNatRule(data, options, serviceInstanceId) {
+  async createNatRule(
+    data: NatRulesListDTO,
+    options: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<TaskReturnDto> {
     // const types = {
     //   DNAT: ["externalAddresses", "dnatExternalPort", "internalAddresses"],
     //   SNAT: ["externalAddresses", "internalAddresses", "snatDestinationAddresses"],
@@ -22,12 +30,13 @@ export class NatService {
     //   NO_SNAT: ["internalAddresses", "snatDestinationAddresses"],
     //   REFLEXIVE: ["externalAddresses", "internalAddresses"]
     // }
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      serviceInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        serviceInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
     const config = {
       enabled: data.enabled,
@@ -35,102 +44,97 @@ export class NatService {
       priority: data.priority,
       firewallMatch: data.firewallMatch,
       dnatExternalPort: data.externalPort,
-      externalAddresses: data.externalIP,
-      internalAddresses: data.internalIP,
+      externalAddresses: data.externalIp,
+      internalAddresses: data.internalIp,
       internalPort: null,
       name: data.name,
-      snatDestinationAddresses: data.destinationIP || null,
+      snatDestinationAddresses: data.destinationIp || null,
       applicationPortProfile: data.applicationPortProfile || null,
       type: data.type,
       description: data?.description || null,
       authToken: session,
     };
-    const nat = await mainWrapper.user.nat.createNatRule(
+    const nat = await this.natWrapperService.createNatRule(
       config,
       props['edgeName'],
     );
-    // await this.logger.info(
-    //   'nat',
-    //   'createNat',
-    //   {
-    //     username: options.locals.username,
-    //     natName: data.name,
-    //     // task id
-    //     _object: nat.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
     return Promise.resolve({
       taskId: nat.__vcloudTask.split('task/')[1],
     });
   }
 
-  async deleteNatRule(options, serviceInstanceId, ruleId) {
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      serviceInstanceId,
-    );
+  async deleteNatRule(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    ruleId: string,
+  ): Promise<TaskReturnDto> {
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        serviceInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const nat = await mainWrapper.user.nat.deleteNatRule(
+    const nat = await this.natWrapperService.deleteNatRule(
       session,
       ruleId,
       props['edgeName'],
     );
-    // await this.logger.info(
-    //   'nat',
-    //   'deleteNat',
-    //   {
-    //     username: options.locals.username,
-    //     // task id
-    //     _object: nat.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
     return Promise.resolve({
       taskId: nat.__vcloudTask.split('task/')[1],
     });
   }
 
-  async getNatRule(options, serviceInstanceId, ruleId) {
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      serviceInstanceId,
-    );
+  async getNatRule(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    ruleId: string,
+  ): Promise<NatRulesListDTO> {
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        serviceInstanceId,
+      );
     const session = await await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    let natRule = await mainWrapper.user.nat.getNatRule(
+    const natRule = await this.natWrapperService.getNatRule(
       session,
       ruleId,
       props['edgeName'],
     );
-    natRule = {
+    const result: NatRulesListDTO = {
       id: natRule.id,
       enabled: natRule.enabled,
       logging: natRule.logging,
       priority: natRule.priority,
       firewallMatch: natRule.firewallMatch,
       name: natRule.name,
-      externalIP: natRule.externalAddresses,
-      internalIP: natRule.internalAddresses,
-      destinationIP: natRule.snatDestinationAddresses,
-      externalPort: natRule.dnatExternalPort,
+      externalIp: natRule.externalAddresses,
+      internalIp: natRule.internalAddresses,
+      destinationIp: natRule.snatDestinationAddresses,
+      externalPort: Number(natRule.dnatExternalPort),
       applicationPortProfile: natRule.applicationPortProfile,
       description: natRule.description,
       type: natRule.type,
     };
-    return Promise.resolve(natRule);
+    return result;
   }
 
-  async getNatRules(options, serviceInstanceId, pageSize = 25, getAll = false) {
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      serviceInstanceId,
-    );
+  async getNatRules(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    query: NatQueryDto,
+  ): Promise<NatRulesListDTO[]> {
+    const { getAll, pageSize } = query;
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        serviceInstanceId,
+      );
     const session = await await this.sessionService.checkUserSession(
       options.user.userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
     const allNatsList = await this.getAllNats(
       session,
@@ -140,7 +144,7 @@ export class NatService {
       [],
       getAll,
     );
-    return Promise.resolve(allNatsList);
+    return allNatsList;
   }
   /**
    * @param {String} session
@@ -150,15 +154,22 @@ export class NatService {
    * @param {Array} allNatsList
    * @param {Boolean} getAll
    */
-  async getAllNats(session, pageSize, nextPage, edgeName, allNatsList, getAll) {
-    const natRules = await mainWrapper.user.nat.getNatRuleList(
+  async getAllNats(
+    session: string,
+    pageSize: number,
+    nextPage: string,
+    edgeName: string,
+    allNatsList: NatRulesListDTO[],
+    getAll: boolean,
+  ): Promise<NatRulesListDTO[]> {
+    const natRules = await this.natWrapperService.getNatRuleList(
       session,
       pageSize,
       nextPage,
       edgeName,
     );
     const natRulesData = natRules.data;
-    const natsList = natRulesData.values.map((value) => {
+    const natsList: NatRulesListDTO[] = natRulesData.values.map((value) => {
       return {
         id: value.id,
         enabled: value.enabled,
@@ -166,12 +177,12 @@ export class NatService {
         priority: value.priority,
         firewallMatch: value.firewallMatch,
         name: value.name,
-        externalIP: value.externalAddresses,
-        internalIP: value.internalAddresses,
-        destinationIP: value.snatDestinationAddresses,
-        externalPort: value.dnatExternalPort,
+        externalIp: value.externalAddresses,
+        internalIp: value.internalAddresses,
+        destinationIp: value.snatDestinationAddresses,
+        externalPort: Number(value.dnatExternalPort),
         applicationPortProfile: value.applicationPortProfile,
-        description: value.description,
+        description: value.description ? value.description : '',
         type: value.type,
       };
     });
@@ -198,7 +209,12 @@ export class NatService {
     );
   }
 
-  async updateNatRule(data, options, serviceInstanceId, ruleId) {
+  async updateNatRule(
+    data: NatRulesListDTO,
+    options: SessionRequest,
+    serviceInstanceId: string,
+    ruleId: string,
+  ): Promise<TaskReturnDto> {
     // const types = {
     //   DNAT: ["externalAddresses", "dnatExternalPort", "internalAddresses"],
     //   SNAT: ["externalAddresses", "internalAddresses", "snatDestinationAddresses"],
@@ -216,22 +232,22 @@ export class NatService {
     );
     const config = {
       dnatExternalPort: data.externalPort,
-      externalAddresses: data.externalIP,
-      internalAddresses: data.internalIP,
+      externalAddresses: data.externalIp,
+      internalAddresses: data.internalIp,
       internalPort: null,
       name: data.name,
       enabled: data.enabled,
       logging: false,
       priority: data.priority,
       firewallMatch: data.firewallMatch,
-      snatDestinationAddresses: data.destinationIP || null,
+      snatDestinationAddresses: data.destinationIp || null,
       applicationPortProfile: data.applicationPortProfile || null,
       type: data.type,
       description: data?.description || null,
       authToken: session,
       ruleId,
     };
-    const nat = await mainWrapper.user.nat.updateNatRule(
+    const nat = await this.natWrapperService.updateNatRule(
       config,
       props['edgeName'],
     );
@@ -255,11 +271,10 @@ export class NatService {
     serviceInstanceId: string,
   ): Promise<number> {
     const pageSize = 1;
-    const page = 10000;
-    const natRules = (await this.getNatRules(
-      options,
-      serviceInstanceId,
-    )) as any[];
+    const natRules = await this.getNatRules(options, serviceInstanceId, {
+      pageSize,
+      getAll: false,
+    });
 
     // console.log('💕', natRules);
 

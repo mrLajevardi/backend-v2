@@ -7,6 +7,7 @@ import { ServiceModule } from '../base/service/service.module';
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { NetworksService } from './networks.service';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('DhcpService', () => {
   let service: DhcpService;
@@ -21,6 +22,7 @@ describe('DhcpService', () => {
         SessionsModule,
         CrudModule,
         ServiceModule,
+        MainWrapperModule,
       ],
       providers: [NetworksService, DhcpService],
     }).compile();

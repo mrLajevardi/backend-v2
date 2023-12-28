@@ -27,7 +27,7 @@ export interface MetadataEntry {
   link: Link[];
   href: string;
   type: string;
-  domain: null;
+  domain: Domain;
   key: MetaDataDatacenterEnum | string;
   typedValue: TypedValue;
   vCloudExtension: [];
@@ -36,4 +36,9 @@ export interface MetadataEntry {
 export interface TypedValue {
   _type: string;
   value: string | boolean | number;
+}
+
+export interface Domain {
+  value: string;
+  visibility: string;
 }

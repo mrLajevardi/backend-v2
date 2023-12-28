@@ -44,9 +44,23 @@ import { BullModule as BullMQModule } from '@nestjs/bullmq';
 import { UvdeskWrapperModule } from './wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
 import { DatacenterModule } from './application/base/datacenter/datacenter.module';
 import { ServiceItemModule } from './application/base/service-item/service-item.module';
+import { CompanyModule } from './application/base/company/company.module';
+import { FileModule } from './application/base/file/file.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ClsModule } from 'nestjs-cls';
+import { EntitySubscriber } from './infrastructure/database/classes/entity.subscriber';
+import { EntityLogModule } from './application/base/entity-log/entity-log.module';
+import { BudgetingModule } from './application/base/budgeting/budgeting.module';
 
 @Module({
   imports: [
+    ClsModule.forRoot({
+      global: true,
+      guard: { mount: true },
+      middleware: { mount: true },
+      interceptor: { mount: true },
+    }),
+    CacheModule.register({ isGlobal: true }),
     // RavenModule,
     ConfigModule.forRoot({
       isGlobal: true,
@@ -101,6 +115,10 @@ import { ServiceItemModule } from './application/base/service-item/service-item.
     UvdeskWrapperModule,
     DatacenterModule,
     ServiceItemModule,
+    CompanyModule,
+    FileModule,
+    EntityLogModule,
+    BudgetingModule,
   ],
   controllers: [AppController],
   providers: [
@@ -120,6 +138,7 @@ import { ServiceItemModule } from './application/base/service-item/service-item.
     },
     NetworkService,
     ApplicationPortProfileService,
+    // EntitySubscriber,
   ],
   exports: [],
 })

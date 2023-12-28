@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   ManyToOne,
   OneToMany,
@@ -11,6 +12,7 @@ import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-p
 import { isTestingEnv } from '../../helpers/helpers';
 import { Invoices } from './Invoices';
 
+@Index('PK__Template__A2B5777CA811BDD6', ['guid'], { unique: true })
 @Entity('Templates', { schema: 'services' })
 export class Templates {
   @PrimaryColumn('decimal', { name: 'ID', precision: 18, scale: 0 })
@@ -64,8 +66,14 @@ export class Templates {
   @Column('datetime', { name: 'ExpireDate' })
   expireDate: Date;
 
+  @Column('integer', { name: 'Period' })
+  period: number | null;
+
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)
-  @JoinColumn([{ name: 'ServiceTypeId', referencedColumnName: 'id' }])
+  @JoinColumn([
+    { name: 'ServiceTypeId', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceType: ServiceTypes;
 
   @OneToMany(() => Invoices, (invoice) => invoice.templates)

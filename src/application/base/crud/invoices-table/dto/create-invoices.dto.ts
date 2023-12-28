@@ -84,4 +84,12 @@ export class CreateInvoicesDto {
   serviceInstanceId: string;
 
   servicePlanType: number;
+
+  baseAmount?: number;
+
+  isPreInvoice: boolean;
+
+  invoiceTax: number;
+
+  serviceCost: number;
 }

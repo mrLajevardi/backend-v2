@@ -4,9 +4,17 @@ import { OrganizationTableService } from '../../base/crud/organization-table/org
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { isNil } from 'lodash';
-import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
+import {
+  ApplicationProfileListDto,
+  ApplicationProfileListQueryDto,
+} from '../dto/application-profile-list.dto';
 import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { ApplicationPortProfileWrapperService } from 'src/wrappers/main-wrapper/service/user/applicationPortProfile/application-port-profile-wrapper.service';
+import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
+import { CreateApplicationPortProfileDto } from '../dto/create-application-port-profile.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { ApplicationPortProfileListValuesDto } from '../dto/application-port-profile-list-values.dto';
 
 @Injectable()
 export class ApplicationPortProfileService {
@@ -15,24 +23,25 @@ export class ApplicationPortProfileService {
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly sessionService: SessionsService,
     private readonly organizationTable: OrganizationTableService,
+    private readonly applicationPortProfileWrapperService: ApplicationPortProfileWrapperService,
   ) {}
 
-  /**
-   * @param {Object} app
-   * @param {Object} options
-   * @param {String} vdcInstanceId
-   * @param {Object} data
-   * @return {Promise}
-   */
-  async createApplicationPortProfile(options, vdcInstanceId, data) {
+  async createApplicationPortProfile(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    data: CreateApplicationPortProfileDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
+    const vcloudOrg = await this.organizationTable.findById(
+      Number(props['orgId']),
     );
-    const vcloudOrg = await this.organizationTable.findById(props['orgId']);
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
     const config = {
       orgId: vcloudOrg.orgId,
@@ -42,75 +51,54 @@ export class ApplicationPortProfileService {
       description: data.description,
     };
     const application =
-      await mainWrapper.user.applicationPortProfile.createApplicationPortProfile(
+      await this.applicationPortProfileWrapperService.createApplicationPortProfile(
         session,
         config,
       );
-    await this.logger.info(
-      'applicationPortProfiles',
-      'createApplicationPortProfiles',
-      {
-        _object: application.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
     return Promise.resolve({
       taskId: application.__vcloudTask.split('task/')[1],
     });
   }
-
-  /**
-   * @param {Object} app
-   * @param {Object} options
-   * @param {String} vdcInstanceId
-   * @param {String} applicationId
-   * @return {Promise}
-   */
-  async deleteApplicationPortProfile(options, vdcInstanceId, applicationId) {
+  async deleteApplicationPortProfile(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    applicationId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
     const application =
-      await mainWrapper.user.applicationPortProfile.deleteApplicationPortProfile(
+      await this.applicationPortProfileWrapperService.deleteApplicationPortProfile(
         session,
         applicationId,
       );
-    await this.logger.info(
-      'applicationPortProfiles',
-      'deleteApplicationPortProfiles',
-      {
-        _object: application.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
     return Promise.resolve({
       taskId: application.__vcloudTask.split('task/')[1],
     });
   }
 
-  /**
-   * @param {Object} app
-   * @param {Object} options
-   * @param {String} vdcInstanceId
-   * @param {String} applicationId
-   * @return {Promise}
-   */
-  async getApplicationPortProfile(options, vdcInstanceId, applicationId) {
+  async getApplicationPortProfile(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    applicationId: string,
+  ): Promise<ApplicationPortProfileListValuesDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    let applicationPortProfile =
-      await mainWrapper.user.applicationPortProfile.getApplicationPortProfile(
+    const applicationPortProfile =
+      await this.applicationPortProfileWrapperService.getSingleApplicationPortProfile(
         session,
         applicationId,
       );
@@ -120,34 +108,24 @@ export class ApplicationPortProfileService {
         protocol: ports.protocol,
       };
     });
-    applicationPortProfile = {
+    const result: ApplicationPortProfileListValuesDto = {
       id: applicationPortProfile.id,
       name: applicationPortProfile.name,
-      description: applicationPortProfile.description,
-      applicationPorts: ports,
+      applicationPortProfile: ports,
+      scope: applicationPortProfile.scope,
+      status: applicationPortProfile.status,
     };
-    return Promise.resolve(applicationPortProfile);
+    return Promise.resolve(result);
   }
 
-  /**
-   * @param {Object} app
-   * @param {Object} options
-   * @param {String} vdcInstanceId
-   * @param {Number} page
-   * @param {Number} pageSize
-   * @param {String} filter
-   * @param {String} search
-   * @return {Promise}
-   */
   async getApplicationPortProfiles(
-    options,
-    vdcInstanceId,
-    page,
-    pageSize,
-    filter,
-    search,
-  ) {
+    options: SessionRequest,
+    vdcInstanceId: string,
+    query: ApplicationProfileListQueryDto,
+  ): Promise<ApplicationProfileListDto> {
     const userId = options.user.userId;
+    const { page, pageSize, search } = query;
+    let { filter } = query;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
@@ -163,10 +141,8 @@ export class ApplicationPortProfileService {
     if (search) {
       filter = filter + `;(name==*${search}*)`;
     }
-
-    console.log(filter, '😊');
     const applicationPortProfiles =
-      await mainWrapper.user.applicationPortProfile.getApplicationPortProfileList(
+      await this.applicationPortProfileWrapperService.getApplicationPortProfiles(
         session,
         {
           page,
@@ -185,8 +161,9 @@ export class ApplicationPortProfileService {
         return {
           id: application.id,
           name: application.name,
-          applicationPorts: ports,
+          applicationPortProfile: ports,
           scope: application.scope,
+          status: application.status,
         };
       });
     const result: ApplicationProfileListDto = {
@@ -200,11 +177,11 @@ export class ApplicationPortProfileService {
   }
 
   async updateApplicationPortProfile(
-    options,
-    vdcInstanceId,
-    data,
-    applicationId,
-  ) {
+    options: SessionRequest,
+    vdcInstanceId: string,
+    data: CreateApplicationPortProfileDto,
+    applicationId: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -227,14 +204,6 @@ export class ApplicationPortProfileService {
         applicationId,
         config,
       );
-    await this.logger.info(
-      'applicationPortProfiles',
-      'updateApplicationPortProfiles',
-      {
-        _object: application.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
     return Promise.resolve({
       taskId: application.__vcloudTask.split('task/')[1],
     });
@@ -251,19 +220,13 @@ export class ApplicationPortProfileService {
     const systemPorts = await this.getApplicationPortProfiles(
       option,
       serviceInstanceId,
-      page,
-      pageSize,
-      `scope==${systemPortFilter}`,
-      '',
+      { page, pageSize, filter: `scope==${systemPortFilter}` },
     );
 
     const costumePorts = await this.getApplicationPortProfiles(
       option,
       serviceInstanceId,
-      page,
-      pageSize,
-      `scope==${customPortFilter}`,
-      '',
+      { page, pageSize, filter: `scope==${customPortFilter}` },
     );
 
     return { default: systemPorts.total, custom: costumePorts.total };

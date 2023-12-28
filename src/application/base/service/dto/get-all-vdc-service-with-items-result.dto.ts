@@ -5,6 +5,13 @@ import { ServiceItemDto } from './service-item.dto';
 import { faker } from '@faker-js/faker';
 import { ServiceStatusEnum } from '../enum/service-status.enum';
 
+export type TaskDetail = {
+  taskId: string;
+  operation: string;
+  details: string;
+  currentStep: string;
+  startTime: Date;
+};
 export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
   @ApiProperty({ type: Number, description: 'ServiceInstanceId' })
   id?: string;
@@ -30,8 +37,18 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
   @ApiProperty({ type: Boolean })
   ticketSent?: boolean;
 
+  taskDetail?: TaskDetail;
+
   // @ApiProperty({  enum: ServicePlanTypeEnum })
   servicePlanType?: ServicePlanTypeEnum;
+
+  description?: string;
+
+  extendable?: boolean;
+
+  createDate?: Date;
+
+  credit?: number;
 
   constructor(
     id: string,
@@ -40,10 +57,14 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     name: string,
     serviceTypeId: string,
     serviceItems: ServiceItemDto[],
-    // expired: boolean,
     daysLeft: number,
     ticketSent: boolean,
     servicePlanType: ServicePlanTypeEnum,
+    taskDetail?: TaskDetail,
+    description?: string,
+    extendable?: boolean,
+    createDate?: Date,
+    credit?: number,
   ) {
     super();
     this.id = id;
@@ -52,10 +73,14 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     this.name = name;
     this.serviceTypeId = serviceTypeId;
     this.serviceItems = serviceItems;
-    // this.expired = expired;
+    this.taskDetail = taskDetail;
     this.daysLeft = daysLeft;
     this.ticketSent = ticketSent;
     this.servicePlanType = servicePlanType;
+    this.description = description;
+    this.extendable = extendable;
+    this.createDate = createDate;
+    this.credit = credit;
   }
 
   static getMock(): GetAllVdcServiceWithItemsResultDto[] {

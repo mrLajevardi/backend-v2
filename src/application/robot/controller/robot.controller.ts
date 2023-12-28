@@ -7,14 +7,13 @@ import { RobotService } from '../service/robot.service';
 
 @Controller('robot')
 @ApiTags('Robot')
-// @ApiBearerAuth()
+@ApiBearerAuth()
 @IsRobot()
 @Public()
 @UseGuards(RobotAuthGuard)
 export class RobotController {
   constructor(private readonly service: RobotService) {}
 
-  @UseGuards(RobotAuthGuard)
   @Put('sendEmailToExpiredServices')
   async sendEmailToExpiredServices() {
     await this.service.checkService.sendEmailToExpiredServices();
@@ -29,5 +28,10 @@ export class RobotController {
   @Put('vgpuPayAsYouGoRobot')
   async vgpuPayAsYouGoRobot() {
     await this.service.vgpuPayAsYouGo.vgpuPayAsYouGoRobot;
+  }
+
+  @Post('checkPaygServices')
+  async paygRobot(): Promise<void> {
+    return this.service.paygRobotService.checkVmEvents();
   }
 }

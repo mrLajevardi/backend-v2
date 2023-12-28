@@ -37,6 +37,7 @@ export async function userUpdateVmGeneralSection(
     if (section._type === 'GuestCustomizationSectionType') {
       // change computer name
       section.computerName = computerName;
+      section.enabled = false;
     }
   });
   if (vmInfoData.bootOptions) {

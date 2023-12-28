@@ -7,7 +7,10 @@ import {
   Put,
   Request,
   Res,
+  UploadedFile,
+  UseInterceptors,
   Req,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,13 +21,13 @@ import {
   ApiCreatedResponse,
   ApiOkResponse,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { CreditIncrementDto } from '../dto/credit-increment.dto';
 import { UserService } from '../service/user.service';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResendEmailDto } from '../dto/resend-email.dto';
 import { ResetPasswordByPhoneDto } from '../dto/reset-password-by-phone.dto';
-import { PostUserCreditDto } from '../dto/post-user-credit.dto';
 import { ChangePasswordDto } from '../dto/change-password.dto';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { PhoneNumberDto } from '../../security/auth/dto/phoneNumber.dto';
@@ -33,12 +36,39 @@ import { Response } from 'express';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { ChangeEmailDto } from '../dto/change-email.dto';
 import { ResetForgottenPasswordDto } from '../dto/reset-forgotten-password.dto';
+import { CreateProfileDto } from '../dto/create-profile.dto';
+import { UserProfileDto } from '../dto/user-profile.dto';
+import { LoginService } from '../../security/auth/service/login.service';
+import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
+import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
+import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
+import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
+import { VerifyEmailDto } from '../dto/verify-email.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
+import { ChangeNameDto } from '../dto/change-name.dto';
+import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
+import { VitrificationServiceService } from '../service/vitrification.service.service';
+import {
+  ResultDtoCollectionResponse,
+  TransactionsResultDto,
+} from '../../transactions/dto/results/transactions.result.dto';
+import { UserInfoService } from '../service/user-info.service';
+import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
 
 @ApiTags('User')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
+// @UseGuards(PersonalVerificationGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userInfoService: UserInfoService,
+    private readonly loginService: LoginService,
+    private readonly securityTools: SecurityToolsService,
+    private readonly redisCacheService: RedisCacheService,
+    private readonly vitrificationServiceService: VitrificationServiceService,
+  ) {}
 
   @Public()
   @Get('/checkPhoneNumber/:phoneNumber')
@@ -88,19 +118,66 @@ export class UserController {
     return { email: info.email };
   }
 
+  // @Put('changePassword')
+  // @ApiOperation({ summary: 'change password ' })
+  // @ApiBody({ type: ChangePasswordDto })
+  // async changePassword(
+  //   @Request() options: SessionRequest,
+  //   @Body() dto: ChangePasswordDto,
+  //   @Res() res: Response,
+  // ): Promise<Response> {
+  //   console.log('change pass');
+  //   console.log(options.user);
+  //   const userId = options.user.userId;
+  //   await this.userService.changePassword(userId, dto.password);
+  //   return res.status(200).json({ message: 'Group created successfully' });
+  // }
+  @Get('changePassword/sendOtp')
+  @ApiOperation({ summary: 'send otp to phone number for changing password' })
+  async sendOtpChangingPassword(@Request() options: SessionRequest) {
+    const user: UserProfileDto = await this.userService.findById(
+      options.user.userId,
+    );
+    const otp = await this.loginService.generateOtp(user.phoneNumber);
+
+    return {
+      phoneNumber: user.phoneNumber,
+      hash: otp.hash,
+    };
+  }
+  @Post('changePassword/verifyOtp')
+  @ApiOperation({
+    summary: 'verify otp sent to phone number for changing password',
+  })
+  async verifyOtpChangingPassword(
+    @Request() options: SessionRequest,
+    @Body() data: VerifyOtpDto,
+  ): Promise<boolean> {
+    const verify: boolean = this.securityTools.otp.otpVerifier(
+      data.phoneNumber,
+      data.otp,
+      data.hash,
+    );
+
+    if (!verify) {
+      throw new OtpErrorException();
+    }
+
+    const cacheKey: string = options.user.userId + '_changePassword';
+    await this.redisCacheService.set(cacheKey, data.phoneNumber, 480000);
+
+    return true;
+  }
+
   @Put('changePassword')
-  @ApiOperation({ summary: 'change password ' })
-  @ApiBody({ type: ChangePasswordDto })
+  @ApiOperation({ summary: 'change password for current user ' })
   async changePassword(
     @Request() options: SessionRequest,
-    @Body() dto: ChangePasswordDto,
-    @Res() res: Response,
-  ): Promise<Response> {
-    console.log('change pass');
-    console.log(options.user);
-    const userId = options.user.userId;
-    await this.userService.changePassword(userId, dto.password);
-    return res.status(200).json({ message: 'Group created successfully' });
+    @Body() data: ChangePasswordDto,
+  ): Promise<boolean> {
+    // const hashedPassword = await encryptPassword('12345678');
+    // console.log('password: \n\n\n\n\n\n\n\n' , hashedPassword);
+    return await this.userService.changePassword(options.user, data);
   }
 
   @Post('/credit/increment')
@@ -156,17 +233,6 @@ export class UserController {
     const userCredit = await this.userService.getUserCredit(options);
     console.log(options.user.userId);
     return userCredit;
-  }
-
-  @Post('/credit')
-  @ApiOperation({ summary: 'update user credit' })
-  @ApiBody({ type: PostUserCreditDto })
-  @ApiCreatedResponse({ description: 'User credit updated successfully' })
-  async updateUserCredit(
-    @Body() body: PostUserCreditDto,
-    @Request() options: SessionRequest,
-  ): Promise<void> {
-    await this.userService.postUserCredit(options, body.credit);
   }
 
   @Get('/info')
@@ -226,5 +292,215 @@ export class UserController {
     @Request() options: SessionRequest,
   ): Promise<void> {
     await this.userService.verifyEmail(options, token);
+  }
+
+  @Post('/createProfile')
+  @ApiOperation({ summary: 'create user profile' })
+  async createProfile(
+    @Request() options: SessionRequest,
+    @Body() data: CreateProfileDto,
+  ): Promise<UserProfileDto> {
+    return await this.userService.createProfile(options, data);
+  }
+
+  @Get('/profile')
+  @ApiOperation({ summary: 'get user profile' })
+  async profile(@Request() options: SessionRequest) {
+    return await this.userService.getUserProfile(options);
+  }
+
+  @Get('/personalVerification')
+  @ApiOperation({
+    summary: 'personal verification , call external api to verification',
+  })
+  async personalVerification(
+    @Request() options: SessionRequest,
+  ): Promise<UserProfileDto> {
+    return await this.userService.personalVerification(options);
+  }
+
+  @Get('/changePhoneNumber')
+  @ApiOperation({
+    summary: 'change current user phone number , send otp to old phone number',
+  })
+  async changePhoneNumber(
+    @Request() options: SessionRequest,
+    // @Body() data: PhoneNumberDto
+  ) {
+    const user: UserProfileDto = await this.userService.findById(
+      options.user.userId,
+    );
+    const otp = await this.loginService.generateOtp(user.phoneNumber);
+
+    return {
+      phoneNumber: user.phoneNumber,
+      hash: otp.hash,
+    };
+  }
+
+  @Post('/changePhoneNumber/old-phone/verify-otp')
+  @ApiOperation({
+    summary: 'verify old phone number otp , send otp to new phone number',
+  })
+  async changePhoneNumberOldNumberVerifyOtp(
+    @Request() options: SessionRequest,
+    @Body() data: ChangePhoneNumberDto,
+  ) {
+    const verify: boolean = this.securityTools.otp.otpVerifier(
+      data.oldPhoneNumber,
+      data.otp,
+      data.hash,
+    );
+
+    if (!verify) {
+      throw new OtpErrorException();
+    }
+
+    const cacheKey: string = options.user.userId + '_changePhoneNumber';
+    await this.redisCacheService.set(cacheKey, data.oldPhoneNumber, 480000);
+
+    const otp = await this.loginService.generateOtp(data.newPhoneNumber);
+
+    return {
+      phoneNumber: data.newPhoneNumber,
+      hash: otp.hash,
+    };
+  }
+
+  @Post('/changePhoneNumber/new-phone/verify-otp')
+  @ApiOperation({ summary: 'change current user phone number' })
+  async changePhoneNumberVerifyOtp(
+    @Request() options: SessionRequest,
+    @Body() data: VerifyOtpDto,
+  ): Promise<UserProfileDto> {
+    return await this.userService.changeUserPhoneNumber(options, data);
+  }
+
+  @Post('/insertEmail')
+  @ApiOperation({ summary: 'insert or update email , then send otp to email' })
+  async insertEmail(
+    @Request() options: SessionRequest,
+    @Body() data: ChangeEmailDto,
+  ) {
+    return await this.userService.sendOtpToEmail(options, data);
+  }
+
+  @Post('/email/verify-otp')
+  @ApiOperation({ summary: 'verify email otp' })
+  async verifyEmailOtp(
+    @Request() options: SessionRequest,
+    @Body() data: VerifyEmailDto,
+  ): Promise<boolean> {
+    return await this.userService.verifyEmailOtp(options, data);
+  }
+
+  @Post('/uploadAvatar')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'upload avatar profile for user' })
+  async uploadAvatar(
+    @Request() options: SessionRequest,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.userService.uploadAvatar(options, file);
+  }
+
+  @Post('/changeName')
+  @ApiOperation({ summary: 'change name , family' })
+  async changeName(
+    @Request() options: SessionRequest,
+    @Body() data: ChangeNameDto,
+  ) {
+    return await this.userService.changeName(options, data);
+  }
+
+  @Post('/uploadCompanyLetter')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({
+    summary: 'upload company letter for introducing the representative',
+  })
+  async uploadCompanyLetter(
+    @Request() options: SessionRequest,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.userService.uploadCompanyLetter(options, file);
+  }
+
+  @Get('/deleteCompanyLetter')
+  @ApiOperation({
+    summary: 'delete company letter',
+  })
+  async deleteCompanyLetter(@Request() options: SessionRequest) {
+    return await this.userService.deleteCompanyLetter(options);
+  }
+
+  @Get('transactions')
+  @ApiOperation({ summary: 'Get all user transactions' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  @ApiQuery({ name: 'serviceType', type: String, required: false })
+  @ApiQuery({ name: 'value', type: String, required: false })
+  @ApiQuery({ name: 'invoiceID', type: String, required: false })
+  @ApiQuery({ name: 'ServiceID', type: String, required: false })
+  @ApiQuery({ name: 'startDateTime', type: String, required: false })
+  @ApiQuery({ name: 'endDateTime', type: String, required: false })
+  @ApiOkResponse({ description: 'The array of user transactions', type: Array })
+  async getTransactions(
+    @Req() options: SessionRequest,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('serviceType') serviceType?: string,
+    @Query('value') value?: number,
+    @Query('invoiceID') invoiceID?: number,
+    @Query('ServiceID') ServiceID?: string,
+    @Query('startDateTime') startDateTime?: string,
+    @Query('endDateTime') endDateTime?: string,
+  ): Promise<ResultDtoCollectionResponse> {
+    if (!page) {
+      page = 1;
+    }
+    if (!pageSize) {
+      pageSize = 10;
+    }
+
+    const data = await this.userService.getTransactions(
+      options,
+      page,
+      pageSize,
+      serviceType,
+      value,
+      invoiceID,
+      ServiceID,
+      startDateTime ? new Date(startDateTime) : null,
+      endDateTime ? new Date(endDateTime) : null,
+    );
+
+    return new TransactionsResultDto().collection(data.transaction, {
+      totalRecords: data.totalRecords,
+    });
+  }
+
+  @Get('invoices')
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  @ApiQuery({ name: 'startDateTime', type: String, required: false })
+  @ApiQuery({ name: 'endDateTime', type: String, required: false })
+  async getUserInvoices(
+    @Req() options: SessionRequest,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('startDateTime') startDateTime?: string,
+    @Query('endDateTime') endDateTime?: string,
+  ) {
+    const data = await this.userInfoService.getInvoices(
+      options,
+      page,
+      pageSize,
+      startDateTime ? new Date(startDateTime) : null,
+      endDateTime ? new Date(endDateTime) : null,
+    );
+
+    return new InvoiceUserList().collection(data.data, {
+      totalRecords: data.total,
+    });
   }
 }

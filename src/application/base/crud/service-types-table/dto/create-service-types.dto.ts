@@ -44,4 +44,7 @@ export class CreateServiceTypesDto {
   @ApiProperty()
   @IsOptional()
   paygScript?: string;
+
+  @IsString()
+  datacenterName: string;
 }

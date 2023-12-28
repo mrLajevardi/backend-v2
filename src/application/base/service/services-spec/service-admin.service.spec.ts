@@ -17,6 +17,11 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
 import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
 import { UserModule } from '../../user/user.module';
+import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
+import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -36,6 +41,11 @@ describe('ServiceAdminService', () => {
         MainWrapperModule,
         DatacenterModule,
         UserModule,
+        EdgeGatewayModule,
+        InvoicesModule,
+        VmModule,
+        VServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
       ],
       providers: [
         ServiceAdminService,

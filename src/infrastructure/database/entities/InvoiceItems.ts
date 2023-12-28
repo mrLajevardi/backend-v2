@@ -29,6 +29,9 @@ export class InvoiceItems {
   @Column('nvarchar', { name: 'Value' })
   value: string;
 
+  @Column('nvarchar', { name: 'CodeHierarchy' })
+  codeHierarchy: string;
+
   @ManyToOne(() => Invoices, (invoices) => invoices.invoiceItems)
   @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
   invoice: Invoices;

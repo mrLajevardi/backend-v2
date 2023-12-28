@@ -1,5 +1,14 @@
-import { IsInt, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 
 export class CreateItemTypesDto {
   @IsInt()
@@ -34,4 +43,43 @@ export class CreateItemTypesDto {
   @IsInt()
   @ApiProperty({ required: false })
   minPerRequest: number | null;
+
+  @IsString()
+  datacenterName?: string;
+
+  @IsString()
+  rule: string;
+
+  @IsNumber()
+  parentId: number;
+
+  @IsNumber()
+  percent: number;
+
+  @IsBoolean()
+  required: boolean;
+
+  @IsBoolean()
+  enabled: boolean;
+
+  @IsString()
+  serviceTypeId?: string;
+
+  @IsNumber()
+  step: number;
+
+  serviceTypes?: Partial<ServiceTypes>;
+
+  @IsDate()
+  @IsOptional()
+  createDate?: Date;
+
+  @IsDate()
+  @IsOptional()
+  deleteDate?: Date;
+
+  @IsBoolean()
+  isDeleted: boolean;
+
+  type: ServicePlanTypeEnum;
 }

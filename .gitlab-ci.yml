@@ -1,7 +1,10 @@
 stages:     # List of stages for jobs, and their order of execution
   - test
   - build
+  - publish
   - deploy
+variables:
+  IMAGE_NAME: $GITLAB_USER_LOGIN/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH:latest
 
 .job-cache:
   cache:  # Cache modules in between jobs
@@ -62,12 +65,25 @@ develop server deploy job:      # This job runs in the deploy stage.
   script:
     - .\deploy.ps1
 
-test server deploy job:
-  stage: deploy
-  tags: 
-   - release
-  only:
+# test server deploy job:
+#   stage: deploy
+#   tags: 
+#    - release
+#   only:
+#     - release
+#   dependencies: []
+#   script: 
+#     - sh deploy.sh
+
+build image:
+  image: docker
+  stage: publish
+  tags:
     - release
-  dependencies: []
-  script: 
-    - sh deploy.sh
+  services:
+    - docker:dind
+  before_script: 
+    - echo $CI_REGISTRY_PASSWORD |docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+  script:
+    - docker build . --tag $CI_REGISTRY/$IMAGE_NAME
+    - docker push $CI_REGISTRY/$IMAGE_NAME

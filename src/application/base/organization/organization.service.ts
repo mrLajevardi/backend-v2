@@ -48,9 +48,16 @@ export class OrganizationService {
         __vcloudTask: null,
       });
     }
-    const orgInfo = await mainWrapper.admin.org.createOrg(name, sessionToken);
+
+    const newFilteredUsername = user.guid;
+    const newName = `${newFilteredUsername}_org`;
+
+    const orgInfo = await mainWrapper.admin.org.createOrg(
+      newName,
+      sessionToken,
+    );
     const createdOrg = await this.organizationTable.create({
-      name,
+      name: newName,
       dsc: 'none',
       createDate: new Date(),
       updateDate: new Date(),
@@ -63,7 +70,7 @@ export class OrganizationService {
       sessionToken,
       {
         type: 'user',
-        filter: `name==${filteredUsername}`,
+        filter: `name==${newFilteredUsername}`,
       },
       {
         'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgInfo.id.split('org:')[1],
@@ -77,10 +84,11 @@ export class OrganizationService {
         __vcloudTask: null,
       });
     }
+
     await mainWrapper.admin.user.createUser({
       orgId: orgInfo.id,
       orgName: createdOrg.name,
-      username: filteredUsername,
+      username: newFilteredUsername,
       authToken: sessionToken,
       password: user.vdcPassword,
       roleId: vcdConfig.admin.users.roleEntityRefs.id,

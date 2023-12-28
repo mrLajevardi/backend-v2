@@ -38,6 +38,8 @@ import { VdcGenerationItemCodes } from '../../base/itemType/enum/item-type-codes
 import { ServiceStatusEnum } from '../../base/service/enum/service-status.enum';
 import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.enum';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
+import { VServiceInstancesDetailTableModule } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
+import { VServiceInstancesTableModule } from '../../base/crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('VdcDetailFactoryService', () => {
   let module: TestingModule;
@@ -112,6 +114,9 @@ describe('VdcDetailFactoryService', () => {
         NetworksModule,
         ServiceItemModule,
         ServiceInstancesTableModule,
+        ServiceItemModule,
+        VServiceInstancesDetailTableModule,
+        VServiceInstancesTableModule,
       ],
       providers: [
         VdcDetailService,

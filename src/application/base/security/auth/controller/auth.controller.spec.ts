@@ -22,7 +22,12 @@ import {
   comparePassword,
   encryptPassword,
 } from 'src/infrastructure/helpers/helpers';
-import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
+import { TwoFaAuthService } from '../service/two-fa-auth.service';
+import { TwoFaAuthStrategy } from '../classes/two-fa-auth.strategy';
+import { TwoFaAuthTypeService } from '../classes/two-fa-auth-type.service';
+import { TwoFaAuthSmsService } from '../classes/two-fa-auth-sms.service';
+import { TwoFaAuthEmailService } from '../classes/two-fa-auth-email.service';
+import { TransactionsModule } from '../../../transactions/transactions.module';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -39,6 +44,7 @@ describe('AuthController', () => {
         CrudModule,
         UserTableModule,
         UserModule,
+        TransactionsModule,
         NotificationModule,
         PaymentModule,
         LoggerModule,
@@ -58,6 +64,11 @@ describe('AuthController', () => {
         OauthService,
         OtpService,
         LoginService,
+        TwoFaAuthService,
+        TwoFaAuthStrategy,
+        TwoFaAuthTypeService,
+        TwoFaAuthSmsService,
+        TwoFaAuthEmailService,
       ],
     }).compile();
 

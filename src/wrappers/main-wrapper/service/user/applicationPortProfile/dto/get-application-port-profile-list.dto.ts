@@ -1,8 +1,11 @@
+import { NetworkStatusEnum } from '../../network/enum/network-status.enum';
+import { ApplicationPortsProtocols } from '../enum/application-ports-protocols.enum';
+
 interface ApplicationPortProfile {
   orgRef: null | string;
   contextEntityId: null | string;
   networkProviderScope: null | string;
-  status: string;
+  status: NetworkStatusEnum;
   id: string;
   name: string;
   description: string;
@@ -13,8 +16,8 @@ interface ApplicationPortProfile {
 
 interface ApplicationPort {
   name: string;
-  protocol: string;
-  destinationPorts: string[];
+  protocol: ApplicationPortsProtocols;
+  destinationPorts: number[];
 }
 
 export interface GetApplicationPortProfileListDto {

@@ -9,6 +9,7 @@ import { DhcpService } from './dhcp.service';
 import { NetworksService } from './networks.service';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 import { forwardRef } from '@nestjs/common';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 
 describe('NetworksController', () => {
   let controller: NetworksController;
@@ -23,6 +24,7 @@ describe('NetworksController', () => {
         SessionsModule,
         CrudModule,
         forwardRef(() => ServiceModule),
+        MainWrapperModule,
       ],
       providers: [NetworksService, DhcpService],
       controllers: [NetworksController],

@@ -1,3 +1,5 @@
+import { NatFirewallMatchEnum } from '../enum/nat-firewall-match.enum';
+
 export interface GetNatRuleDto {
   id: string;
   name: string;
@@ -8,11 +10,11 @@ export interface GetNatRuleDto {
   applicationPortProfile: null | ApplicationPortProfile;
   externalAddresses: string;
   internalAddresses: string;
-  dnatExternalPort: null | string;
+  dnatExternalPort: null | number;
   logging: boolean;
   systemRule: boolean;
   snatDestinationAddresses: null | string;
-  firewallMatch: string;
+  firewallMatch: NatFirewallMatchEnum;
   priority: number;
   version: Version;
   appliedTo: null; // Define the type if available

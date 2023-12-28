@@ -5,11 +5,13 @@ import { CreateItemTypesDto } from './dto/create-item-types.dto';
 import { UpdateItemTypesDto } from './dto/update-item-types.dto';
 import {
   FindManyOptions,
-  FindOneOptions,
+  FindOneOptions, /// entity -> tableService -> service -> controller
   Repository,
   FindOptionsWhere,
   DeleteResult,
   UpdateResult,
+  QueryRunner,
+  DataSource,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -18,6 +20,7 @@ export class ItemTypesTableService {
   constructor(
     @InjectRepository(ItemTypes)
     private readonly repository: Repository<ItemTypes>,
+    private readonly datasource: DataSource,
   ) {}
 
   // Find One Item by its ID
@@ -76,5 +79,36 @@ export class ItemTypesTableService {
     where: FindOptionsWhere<ItemTypes> = {},
   ): Promise<DeleteResult> {
     return await this.repository.delete(where);
+  }
+
+  async getQueryRunner(): Promise<QueryRunner> {
+    const queryRunner = this.datasource.createQueryRunner();
+    await queryRunner.connect();
+    return queryRunner;
+  }
+
+  async createWithQueryRunner(
+    queryRunner: QueryRunner,
+    dto: CreateItemTypesDto,
+  ): Promise<ItemTypes> {
+    const newItem = plainToClass(ItemTypes, dto);
+    const createdItem = queryRunner.manager.create(ItemTypes, newItem);
+    return queryRunner.manager.save(createdItem);
+  }
+
+  updateWithQueryRunner(
+    queryRunner: QueryRunner,
+    where: FindOptionsWhere<ItemTypes>,
+    dto: UpdateItemTypesDto,
+  ): Promise<UpdateResult> {
+    return queryRunner.manager.update(ItemTypes, where, dto);
+  }
+
+  async findWithQueryRunner(
+    queryRunner: QueryRunner,
+    options?: FindManyOptions<ItemTypes>,
+  ): Promise<ItemTypes[]> {
+    const result = await queryRunner.manager.find(ItemTypes, options);
+    return result;
   }
 }

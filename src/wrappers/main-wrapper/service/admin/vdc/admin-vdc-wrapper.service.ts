@@ -12,6 +12,11 @@ import { GetProviderVdcsDto } from './dto/get-provider-vdcs.dto';
 import { GetProviderVdcsParams } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/get-provider-vdcs.dto';
 import { GetProviderVdcsMetadataDto } from './dto/get-provider-vdcs-metadata.dto';
 import { VdcUnits } from 'src/application/vdc/enum/vdc-units.enum';
+import { GetProviderVdcDto } from './dto/get-provider-vdc.dto';
+import { UpdateProviderVdcMetadataBody } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/update-provider-vdc-metadata.dto';
+import { AddVdcStoragePolicyDto } from './dto/add-vdc-storage-policy.dto';
+import { AddVdcStorageProfileBody } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/add-storage-policy.dto';
+import { GetVdcIdBy } from 'src/application/vdc/utils/vdc-properties.utils';
 
 @Injectable()
 export class AdminVdcWrapperService {
@@ -184,13 +189,14 @@ export class AdminVdcWrapperService {
   async updateVdc(
     config: UpdateVdcComputePolicyDto,
     vdcId: string,
+    vcpuSpeed: number,
   ): Promise<VcloudTask> {
     const vdcConfig = vcdConfig.admin.vdc;
     // convert from urn:vcloud:org:vdcId -> vdcId
     vdcId = vdcId.split(':').slice(-1)[0];
     const cores = config.cores;
-    const vCpuInMhz: any = vdcConfig.VCpuInMhz;
-    const cpuAllocation = cores * parseInt(vCpuInMhz);
+    const vCpuInMhz = vcpuSpeed;
+    const cpuAllocation = cores * vCpuInMhz;
     const cpuLimit = cpuAllocation;
     const request = {
       type: 'application/vnd.vmware.admin.vdc+json',
@@ -257,7 +263,7 @@ export class AdminVdcWrapperService {
       name: config.name,
       default: config.default,
       units: config.units,
-      limit: config.storage * 1024,
+      limit: config.storage,
       enabled: true,
       providerVdcStorageProfile: config.providerVdcStorageProfile,
     };
@@ -314,5 +320,75 @@ export class AdminVdcWrapperService {
         }),
       );
     return providerVdcsList.data;
+  }
+
+  async getProviderVdc(
+    authToken: string,
+    providerVdcId: string,
+  ): Promise<GetProviderVdcDto> {
+    const endpoint = 'AdminVdcEndpointService.getProviderVdcEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const formattedId = providerVdcId.split('providervdc:').slice(-1)[0];
+    const providerVdc =
+      await this.vcloudWrapperService.request<GetProviderVdcDto>(
+        wrapper({
+          urlParams: {
+            providerVdcId: formattedId,
+          },
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }),
+      );
+    return providerVdc.data;
+  }
+
+  async updateProviderMetadata(
+    config: UpdateProviderVdcMetadataBody,
+    authToken: string,
+    providerVdcId: string,
+  ): Promise<void> {
+    const formattedId = providerVdcId.split('providervdc:').slice(-1)[0];
+    const endpoint =
+      'AdminVdcEndpointService.updateProviderVdcMetadataEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    await this.vcloudWrapperService.request<GetProviderVdcsMetadataDto>(
+      wrapper({
+        urlParams: {
+          providerVdcId: formattedId,
+        },
+        body: config,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }),
+    );
+  }
+
+  async addVdcStorageProfile(
+    config: AddVdcStoragePolicyDto[],
+    vdcId: string,
+    authToken: string,
+  ): Promise<VcloudTask> {
+    const request: AddVdcStorageProfileBody = {
+      addStorageProfile: config,
+    };
+    const filteredVdcId = GetVdcIdBy(vdcId);
+    const options = {
+      headers: { Authorization: `Bearer ${authToken}` },
+      urlParams: {
+        vdcId: filteredVdcId,
+      },
+      body: request,
+    };
+    const endpoint = 'AdminVdcEndpointService.addVdcStorageProfileEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const result = await this.vcloudWrapperService.request(wrapper(options));
+    return {
+      __vcloudTask: result.headers.location,
+    };
   }
 }

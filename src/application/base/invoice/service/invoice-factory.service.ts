@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
+  InvoiceGroupItem,
   VdcGenerationItems,
   VdcItemGroup,
 } from '../interface/vdc-item-group.interface.dto';
@@ -9,10 +10,11 @@ import {
 } from '../dto/create-service-invoice.dto';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import {
+  DiskItemCodes,
   ItemTypeCodes,
   VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
-import { In } from 'typeorm';
+import { In, LessThanOrEqual, MoreThan, MoreThanOrEqual, Not } from 'typeorm';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
 import {
   InvoiceItemCost,
@@ -27,15 +29,18 @@ import {
   TemplateItem,
   TemplatesStructure,
 } from 'src/application/vdc/dto/templates.dto';
-import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
-import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
-import { CostCalculationService } from './cost-calculation.service';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
+import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 
 @Injectable()
 export class InvoiceFactoryService {
   constructor(
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
     private readonly invoiceItemTableService: InvoiceItemsTableService,
+    private readonly serviceInstanceTable: ServiceInstancesTableService,
+    private readonly systemSettingsTableService: SystemSettingsTableService,
   ) {}
   async groupVdcItems(invoiceItems: InvoiceItemsDto[]): Promise<VdcItemGroup> {
     const vdcItemGroup: VdcItemGroup = {} as VdcItemGroup;
@@ -51,7 +56,9 @@ export class InvoiceFactoryService {
       },
     });
     for (const itemType of itemTypes) {
-      const parents = itemType.codeHierarchy.split('_');
+      const parents = itemType.codeHierarchy.split(
+        ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+      );
       const invoiceItem = mappedItemTypes.ItemTypesById[itemType.id];
       const invoiceGroupItem = {
         ...itemType,
@@ -84,6 +91,18 @@ export class InvoiceFactoryService {
     return vdcItemGroup;
   }
 
+  async groupAiItems(invoiceItems: InvoiceItemsDto[]): Promise<string[]> {
+    const grouped: string[] = [];
+
+    for (const item of invoiceItems) {
+      const itemType: ServiceItemTypesTree =
+        await this.serviceItemTypeTree.findById(item.itemTypeId);
+
+      grouped[itemType.codeHierarchy.split('_')[0]] = item.value;
+    }
+
+    return grouped;
+  }
   groupVdcGenerationItems(
     parents: string[],
     invoiceItem: InvoiceItemsDto,
@@ -116,16 +135,28 @@ export class InvoiceFactoryService {
     remainingDays: number,
     date: Date,
   ): Promise<CreateInvoicesDto> {
+    const tax = await this.systemSettingsTableService.findOne({
+      where: {
+        propertyKey: SystemSettingsPropertyKeysEnum.TaxPercent,
+      },
+    });
+    const invoiceTax = Number(tax.value);
+    const serviceCount = await this.serviceInstanceTable.count({
+      where: {
+        userId,
+      },
+    });
+    const invoiceTitle = 'ابر خصوصی';
     const dto: CreateInvoicesDto = {
       userId: Number(userId),
       servicePlanType: data.servicePlanTypes,
       rawAmount: invoiceCost.totalCost,
       finalAmount: invoiceCost.totalCost,
       type: data.type,
-      endDateTime: addMonths(date, remainingDays),
+      endDateTime: addMonths(date, remainingDays / 30),
       dateTime: new Date(),
       serviceTypeId: groupedItems.generation.ip[0].serviceTypeId,
-      name: 'invoice' + Math.floor(Math.random() * 100),
+      name: invoiceTitle + ' ' + (serviceCount + 1),
       planAmount: 0,
       planRatio: 0,
       payed: false,
@@ -134,6 +165,10 @@ export class InvoiceFactoryService {
       description: '',
       datacenterName: groupedItems.generation.vm[0].datacenterName,
       templateId: data.templateId,
+      baseAmount: invoiceCost.itemsTotalCosts,
+      isPreInvoice: true,
+      serviceCost: invoiceCost.serviceCost,
+      invoiceTax,
     };
     // data.templateId ? (dto.templateId = data.templateId) : null;
     return dto;
@@ -142,7 +177,23 @@ export class InvoiceFactoryService {
   async createInvoiceItems(
     invoiceId: number,
     invoiceItems: InvoiceItemCost[],
+    groupedItems: VdcItemGroup,
   ): Promise<void> {
+    const diskIds = groupedItems.generation.disk.map((item) => item.id);
+    const otherDisks = await this.serviceItemTypeTree.find({
+      where: {
+        parentId: groupedItems.generation.disk[0].parentId,
+        id: Not(In(diskIds)),
+        enabled: true,
+        code: Not(DiskItemCodes.Swap),
+      },
+    });
+    for (const disk of otherDisks) {
+      invoiceItems.push({
+        ...disk,
+        value: '0',
+      });
+    }
     for (const item of invoiceItems) {
       await this.invoiceItemTableService.create({
         itemId: item.id,
@@ -203,5 +254,81 @@ export class InvoiceFactoryService {
       }
     }
     return invoiceItems;
+  }
+
+  async sumItems(
+    groupedItems: VdcItemGroup,
+    oldGroupItems: VdcItemGroup,
+  ): Promise<void> {
+    for (const item in groupedItems.generation) {
+      const newItem: InvoiceGroupItem[] = groupedItems.generation[item];
+      const oldItem: InvoiceGroupItem[] = oldGroupItems.generation[item];
+      if (
+        item === VdcGenerationItemCodes.Cpu ||
+        item === VdcGenerationItemCodes.Ram
+      ) {
+        const newValue = Number(newItem[0].value) + Number(oldItem[0].value);
+        const newItemType = await this.serviceItemTypeTree.findOne({
+          where: {
+            parentId: newItem[0].parentId,
+            minPerRequest: LessThanOrEqual(newValue),
+            maxPerRequest: MoreThanOrEqual(newValue),
+          },
+        });
+        if (!newItemType) {
+          throw new BadRequestException();
+        }
+        newItem[0] = { ...newItemType, value: String(newValue) };
+      } else if (item === VdcGenerationItemCodes.Disk) {
+        const sumItems = [...newItem, ...oldItem];
+        const sum = sumItems.reduce((acc, cur) => {
+          const found = acc.find((val) => val.code === cur.code);
+          if (found) {
+            found.value = String(Number(cur.value) + Number(found.value));
+          } else {
+            acc.push({ ...cur, value: cur.value });
+          }
+          return acc;
+        }, []);
+        groupedItems.generation.disk = sum;
+      } else {
+        const newValue = Number(newItem[0].value) + Number(oldItem[0].value);
+        newItem[0].value = String(newValue);
+      }
+    }
+  }
+
+  async recalculateItemTypes(
+    newItems: InvoiceItemsDto[],
+    groupedItems: VdcItemGroup,
+    periodItem: VdcItemGroup['period'],
+    transformedItems: InvoiceItemsDto[],
+  ): Promise<void> {
+    for (const item of transformedItems) {
+      if (item.itemTypeId === groupedItems.period.id) {
+        newItems.push({
+          itemTypeId: periodItem.id,
+          value: periodItem.value,
+        });
+      } else if (
+        item.itemTypeId === groupedItems.generation.cpu[0].id ||
+        item.itemTypeId === groupedItems.generation.ram[0].id
+      ) {
+        const targetItem =
+          item.itemTypeId === groupedItems.generation.cpu[0].id
+            ? groupedItems.generation.cpu[0]
+            : groupedItems.generation.ram[0];
+        const newItem = await this.serviceItemTypeTree.findOne({
+          where: {
+            parentId: targetItem.parentId,
+            maxPerRequest: MoreThanOrEqual(Number(targetItem.value)),
+            minPerRequest: LessThanOrEqual(Number(targetItem.value)),
+          },
+        });
+        newItems.push({ itemTypeId: newItem.id, value: targetItem.value });
+      } else {
+        newItems.push(item);
+      }
+    }
   }
 }

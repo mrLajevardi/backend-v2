@@ -1,9 +1,9 @@
 import {
+  Connection,
   CreateNetworkBody,
-  IpRanges,
 } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/network/dto/create-network.dto';
 
-class NetworkDto extends CreateNetworkBody {
+export class CreateNetworkDto {
   authToken: string;
   connectionType: string;
   connectionTypeValue: string;
@@ -12,8 +12,9 @@ class NetworkDto extends CreateNetworkBody {
   dnsServer2: string;
   dnsSuffix: string;
   gateway: string;
-  ipRanges: IpRanges;
   prefixLength: number;
+  name: string;
+  networkType: string;
+  description: string;
+  enabled?: boolean;
 }
-
-export type CreateNetworkDto = Omit<NetworkDto, 'connection' | 'enabled'>;

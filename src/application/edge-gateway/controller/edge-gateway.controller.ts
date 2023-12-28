@@ -14,19 +14,27 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { FirewallDto } from '../dto/firewall.dto';
 import { CreateApplicationPortProfileDto } from '../dto/create-application-port-profile.dto';
-import { IPSetDto } from '../dto/ip-set.dto';
-import { ApplicationProfileListDto } from '../dto/application-profile-list.dto';
+import { IPSetDto, UpdateIpSetsDto } from '../dto/ip-set.dto';
+import {
+  ApplicationProfileListDto,
+  ApplicationProfileListQueryDto,
+} from '../dto/application-profile-list.dto';
 import { DnsDto } from '../dto/dns.dto';
 import { IpSetsDto } from '../dto/ip-sets.dto';
 import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
 import { UpdateFirewallDto } from '../dto/update-firewall.dto';
 import { EdgeGatewayService } from '../service/edge-gateway.service';
 import { SingleApplicationPortProfileDto } from '../dto/single-application-port-profile.dto';
-import { FirewalListDto } from '../dto/firewall-list.dto';
+import { FirewallListDto } from '../dto/firewall-list.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { GetIpSetsListQueryDto } from '../dto/ip-set-list.dto';
+import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
+import { ApplicationPortProfileListValuesDto } from '../dto/application-port-profile-list-values.dto';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
@@ -38,8 +46,8 @@ export class EdgeGatewayController {
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   async addToFirewallList(
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Body() data: FirewallDto,
-    @Request() options,
+    @Body() data: FirewallListItemDto,
+    @Request() options: SessionRequest,
   ): Promise<any> {
     return await this.service.firewall.addToFirewallList(
       options,
@@ -51,11 +59,12 @@ export class EdgeGatewayController {
   @Post('/:vdcInstanceId/applicationPortProfiles')
   @ApiOperation({ summary: 'Create an applicationPortProfile' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async createApplicationPortProfile(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Body() data: CreateApplicationPortProfileDto,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.applicationPortProfile.createApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -63,14 +72,15 @@ export class EdgeGatewayController {
     );
   }
 
-  @Post('/:vdcInstanceId/IPSets')
+  @Post('/:vdcInstanceId/ipSets')
   @ApiOperation({ summary: 'Create an IP Set' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async createIPSet(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Body() data: IPSetDto,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.createIPSet(options, vdcInstanceId, data);
   }
 
@@ -78,11 +88,12 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Delete an applicationPortProfile' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'applicationId', description: 'Application ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async deleteApplicationPortProfile(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.applicationPortProfile.deleteApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -94,11 +105,12 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Delete a firewall' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'firewallId', description: 'Firewall ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async deleteFirewall(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('firewallId') firewallId: string,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.firewall.deleteFirewall(
       options,
       vdcInstanceId,
@@ -106,15 +118,16 @@ export class EdgeGatewayController {
     );
   }
 
-  @Delete('/:vdcInstanceId/IPSets/:ipSetId')
+  @Delete('/:vdcInstanceId/ipSets/:ipSetId')
   @ApiOperation({ summary: 'Delete an IP Set' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'ipSetId', description: 'IP Set ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async deleteIPSet(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('ipSetId') ipSetId: string,
-    @Request() options,
-  ): Promise<any> {
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
     return await this.service.deleteIPSet(options, vdcInstanceId, ipSetId);
   }
 
@@ -122,11 +135,12 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Get an applicationPortProfile by ID' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'applicationId', description: 'Application ID' })
+  @ApiResponse({ type: ApplicationPortProfileListValuesDto })
   async getApplicationPortProfile(
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
-    @Request() options,
-  ): Promise<SingleApplicationPortProfileDto> {
+    @Request() options: SessionRequest,
+  ): Promise<ApplicationPortProfileListValuesDto> {
     return await this.service.applicationPortProfile.getApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -137,35 +151,29 @@ export class EdgeGatewayController {
   @Get('/:vdcInstanceId/applicationPortProfiles')
   @ApiOperation({ summary: 'Get a list of applicationPortProfiles' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
-  @ApiQuery({ name: 'page', type: 'number', required: false })
-  @ApiQuery({ name: 'pageSize', type: 'number', required: false })
-  @ApiQuery({ name: 'filter', type: 'string', required: false })
-  @ApiQuery({ name: 'search', type: 'string', required: false })
+  @ApiResponse({ type: ApplicationProfileListDto })
   async getApplicationPortProfiles(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Query('page') page?: number,
-    @Query('pageSize') pageSize?: number,
-    @Query('filter') filter?: string,
-    @Query('search') search?: string,
+    @Query() query: ApplicationProfileListQueryDto,
   ): Promise<ApplicationProfileListDto> {
     return await this.service.applicationPortProfile.getApplicationPortProfiles(
       options,
       vdcInstanceId,
-      page,
-      pageSize,
-      filter,
-      search,
+      query,
     );
   }
 
-  @Get('/:vdcInstanceId/DhcpForwarder')
+  @Get('/:vdcInstanceId/dhcpForwarder')
   @ApiOperation({
     summary: 'Get DHCP Forwarder configuration of an edge gateway',
   })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    type: DhcpForwarderDto,
+  })
   async getDhcpForwarder(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
   ): Promise<DhcpForwarderDto> {
     return await this.service.getDhcpForwarder(options, vdcInstanceId);
@@ -181,52 +189,42 @@ export class EdgeGatewayController {
     return await this.service.getDnsForwarder(options, vdcInstanceId);
   }
 
-  @Get('/:vdcInstanceId/ExternalIPs')
+  @Get('/:vdcInstanceId/userIps')
   @ApiOperation({ summary: 'Get a list of dedicated IPs' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
-  async getExternalIPs(
-    @Request() options,
+  @ApiResponse({
+    type: [String],
+  })
+  async getUserIps(
+    @Request() options: SessionRequest,
 
     @Param('vdcInstanceId') vdcInstanceId: string,
   ): Promise<string[]> {
-    return await this.service.getExternalIPs(options, vdcInstanceId);
+    return await this.service.getUserIps(options, vdcInstanceId);
   }
 
   @Get('/:vdcInstanceId/firewalls')
   @ApiOperation({ summary: 'Get a list of firewalls' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: FirewallListDto })
   async getFirewallList(
-    @Request() options,
+    @Request() options: SessionRequest,
 
     @Param('vdcInstanceId') vdcInstanceId: string,
-  ): Promise<FirewalListDto> {
+  ): Promise<FirewallListDto> {
     return await this.service.firewall.getFirewallList(options, vdcInstanceId);
   }
 
-  @Get('/:vdcInstanceId/IPSets')
+  @Get('/:vdcInstanceId/ipSets')
   @ApiOperation({ summary: 'Get a list of IP Sets' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
-  @ApiQuery({ name: 'page', type: 'number', required: false })
-  @ApiQuery({ name: 'pageSize', type: 'number', required: false })
-  @ApiQuery({ name: 'filter', type: 'string', required: false })
-  @ApiQuery({ name: 'search', type: 'string', required: false })
+  @ApiResponse({ type: IpSetsDto })
   async getIPSetsList(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Query('page') page?: number,
-    @Query('pageSize') pageSize?: number,
-    @Query('filter') filter?: string,
-    @Query('search') search?: string,
-  ): Promise<IpSetsDto[]> {
-    return await this.service.getIPSetsList(
-      options,
-      vdcInstanceId,
-      page,
-      pageSize,
-      filter,
-      search,
-    );
+    @Query() query: GetIpSetsListQueryDto,
+  ): Promise<IpSetsDto> {
+    return await this.service.getIPSetsList(options, vdcInstanceId, query);
   }
 
   @Get('/:vdcInstanceId/firewalls/:firewallId')
@@ -234,11 +232,10 @@ export class EdgeGatewayController {
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'firewallId', description: 'Firewall ID' })
   async getSingleFirewall(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('firewallId') firewallId: string,
-  ): Promise<FirewallDto> {
+  ): Promise<FirewallListItemDto> {
     return await this.service.firewall.getSingleFirewall(
       options,
       vdcInstanceId,
@@ -246,15 +243,14 @@ export class EdgeGatewayController {
     );
   }
 
-  @Get('/:vdcInstanceId/IPSets/:IPSetId')
+  @Get('/:vdcInstanceId/ipSets/:ipSetsId')
   @ApiOperation({ summary: 'Get a single IP Set' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'IPSetId', description: 'IP Set ID' })
   async getSingleIPSet(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
-    @Param('IPSetId') IPSetId: string,
+    @Param('ipSetsId') IPSetId: string,
   ): Promise<IPSetDto> {
     return await this.service.getSingleIPSet(options, vdcInstanceId, IPSetId);
   }
@@ -263,13 +259,13 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Update an applicationPortProfile' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'applicationId', description: 'Application ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateApplicationPortProfile(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('applicationId') applicationId: string,
     @Body() data: CreateApplicationPortProfileDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return await this.service.applicationPortProfile.updateApplicationPortProfile(
       options,
       vdcInstanceId,
@@ -278,17 +274,17 @@ export class EdgeGatewayController {
     );
   }
 
-  @Put('/:vdcInstanceId/DhcpForwarder')
+  @Put('/:vdcInstanceId/dhcpForwarder')
   @ApiOperation({
     summary: 'Update DHCP Forwarder configuration of an edge gateway',
   })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateDhcpForwarderConfig(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Body() data: DhcpForwarderDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return await this.service.updateDhcpForwarder(options, data, vdcInstanceId);
   }
 
@@ -307,12 +303,12 @@ export class EdgeGatewayController {
   @Put('/:vdcInstanceId/firewalls')
   @ApiOperation({ summary: 'Update a list of firewalls' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateFirewallList(
-    @Request() options,
-
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Body() data: UpdateFirewallDto,
-  ): Promise<any> {
+  ): Promise<TaskReturnDto> {
     return await this.service.firewall.updateFirewallList(
       options,
       vdcInstanceId,
@@ -320,16 +316,17 @@ export class EdgeGatewayController {
     );
   }
 
-  @Put('/:vdcInstanceId/IPSets/:ipSetId')
+  @Put('/:vdcInstanceId/ipSets/:ipSetId')
   @ApiOperation({ summary: 'Update an IP Set' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'ipSetId', description: 'IP Set ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateIPSet(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('ipSetId') ipSetId: string,
-    @Body() data: IPSetDto,
-  ): Promise<any> {
+    @Body() data: UpdateIpSetsDto,
+  ): Promise<TaskReturnDto> {
     return await this.service.updateIPSet(
       options,
       vdcInstanceId,
@@ -342,12 +339,13 @@ export class EdgeGatewayController {
   @ApiOperation({ summary: 'Update a single firewall' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiParam({ name: 'firewallId', description: 'Firewall ID' })
+  @ApiResponse({ type: TaskReturnDto })
   async updateSingleFirewall(
-    @Request() options,
+    @Request() options: SessionRequest,
     @Param('vdcInstanceId') vdcInstanceId: string,
     @Param('firewallId') firewallId: string,
-    @Body() data: FirewallDto,
-  ): Promise<any> {
+    @Body() data: FirewallListItemDto,
+  ): Promise<TaskReturnDto> {
     return await this.service.firewall.updateSingleFirewall(
       options,
       vdcInstanceId,

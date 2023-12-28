@@ -1,8 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, Matches } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class ChangePasswordDto {
-  @IsString()
   @ApiProperty()
-  password: string;
+  @IsOptional()
+  oldPassword?: string;
+
+  @ApiProperty()
+  @IsString()
+  // @Matches('^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$')
+  newPassword: string;
+
+  @IsBoolean()
+  @Transform(({ value }) => JSON.parse(value))
+  @ApiProperty({ default: false })
+  otpVerification: boolean;
 }

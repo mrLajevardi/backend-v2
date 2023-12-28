@@ -8,5 +8,5 @@ export class ApplicationPortsDto {
 
   @ApiProperty({ type: [String], example: ['22'] })
   @IsArray()
-  ports: string[];
+  ports: number[];
 }

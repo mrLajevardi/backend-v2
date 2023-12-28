@@ -9,6 +9,8 @@ import { GetHardDiskAdaptors } from './dto/get-hard-disk-adaptors.dto';
 import { GetNamedDiskDto, Records } from './dto/get-named-disk.dto';
 import { GetVdcComputePolicy } from './dto/get-vdc-compute-policy.dto';
 import { GetVMAttachedNamedDiskDto } from './dto/get-vm-attached-named-disk.dto';
+import * as process from 'process';
+// import process from 'process';
 @Injectable()
 export class VdcWrapperService {
   constructor(private readonly vcloudWrapperService: VcloudWrapperService) {}
@@ -83,17 +85,8 @@ export class VdcWrapperService {
     vdcId: string,
     namedDiskProperties: NamedDiskProperties,
   ): Promise<VcloudTask> {
-    const query: any = await this.vcloudQuery(authToken, {
-      type: 'orgVdcStorageProfile',
-      format: 'records',
-      page: 1,
-      pageSize: 128,
-      filterEncoded: true,
-      links: true,
-      filter: `vdc==${vdcId}`,
-    });
-    const vdcStorageProfileLink = query.data.record[0].href;
     const formattedVdcId = vdcId.split(':').slice(-1)[0];
+    const vdcStorageProfileLink = `${process.env.VCLOUD_BASE_URL}/api/vdcStorageProfile/${namedDiskProperties.policyId}`;
     const request: CreateNamedDiskBody = {
       'root:DiskCreateParams': {
         $: {
@@ -144,7 +137,7 @@ export class VdcWrapperService {
   ): Promise<VcloudTask> {
     const request = {
       disk: {
-        href: `https://vcd.aradcloud.com/api/disk/${nameDiskID}`,
+        href: `${process.env.VCLOUD_BASE_URL}/api/disk/${nameDiskID}`,
         type: 'application/vnd.vmware.vcloud.disk+xml',
       },
     };
@@ -314,5 +307,41 @@ export class VdcWrapperService {
     return Promise.resolve({
       __vcloudTask: action.headers['location'],
     });
+  }
+
+  async editGeneralInfo(
+    vdcId: string,
+    vdcName: string,
+    description: string,
+    authToken: string,
+  ): Promise<VcloudTask> {
+    const options = {
+      headers: { Authorization: `Bearer ${authToken}` },
+    };
+    const request = {
+      'root:Vdc': {
+        $: {
+          'xmlns:root': 'http://www.vmware.com/vcloud/v1.5',
+          name: vdcName,
+        },
+        'root:Description': description,
+      },
+    };
+
+    const builder = new Builder();
+    const xmlRequest = builder.buildObject(request);
+
+    const endpoint = 'VdcEndpointService.editGeneralInfo';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const action = await this.vcloudWrapperService.request(
+      wrapper({
+        ...options,
+        headers: { Authorization: `Bearer ${authToken}` },
+        urlParams: { vdcId },
+        body: xmlRequest,
+      }),
+    );
+    return { __vcloudTask: action.data as string };
   }
 }

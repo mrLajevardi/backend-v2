@@ -19,7 +19,6 @@ export class EmailService {
     };
     const secure = process.env.EMAIL_SECURE?.toLowerCase() === 'true';
     this.from = process.env.EMAIL_FROM;
-    console.log(process.env.EMAIL_TLS);
     const tls = process.env.EMAIL_TLS
       ? JSON.parse(process.env.EMAIL_TLS)
       : null;
@@ -60,7 +59,6 @@ export class EmailService {
 
     const jwtService = new JwtService({ secret: process.env.EMAIL_JWT_SECRET });
     const token = jwtService.sign(payload);
-    console.log(token);
     const link = url + token;
     return { link, token };
   }

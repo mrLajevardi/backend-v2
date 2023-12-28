@@ -12,6 +12,8 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
 import { SessionsModule } from '../base/sessions/sessions.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
+import { PaygRobotService } from './service/payg-robot.service';
+import { ServiceModule } from '../base/service/service.module';
 
 @Module({
   imports: [
@@ -23,12 +25,14 @@ import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
     SessionsModule,
     LoggerModule,
     PayAsYouGoModule,
+    ServiceModule,
   ],
   providers: [
     RobotService,
     CheckServiceService,
     PaygInvoiceService,
     VgpuPayAsYouGoService,
+    PaygRobotService,
   ],
   controllers: [RobotController],
 })

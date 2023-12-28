@@ -15,6 +15,8 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { ServicePropertiesModule } from '../service-properties/service-properties.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { TaskManagerEventListenerService } from './service/task-manager-event-listener.service';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { DatacenterModule } from '../datacenter/datacenter.module';
 @Module({
   imports: [
     BullModule.registerQueue({
@@ -30,6 +32,8 @@ import { TaskManagerEventListenerService } from './service/task-manager-event-li
     SessionsModule,
     ServicePropertiesModule,
     MainWrapperModule,
+    UvdeskWrapperModule,
+    DatacenterModule,
   ],
   providers: [
     TaskManagerEventListenerService,

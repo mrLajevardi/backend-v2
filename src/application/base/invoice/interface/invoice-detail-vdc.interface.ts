@@ -15,4 +15,10 @@ export class InvoiceDetailVdcModel {
   max?: number;
   price?: number;
   templateId?: string;
+  datacenterTitle?: string;
+  percent?: number;
+  baseAmount?: number;
+  invoiceCode?: number;
+  serviceCost?: number;
+  invoiceTax?: number;
 }

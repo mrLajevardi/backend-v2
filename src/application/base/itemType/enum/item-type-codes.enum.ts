@@ -7,7 +7,7 @@ export enum ItemTypeCodes {
   CpuReservationItem = 'reservationPercentCpu',
   MemoryReservationItem = 'reservationPercentRam',
   GuarantyItem = 'guarantyItem',
-  PeriodItemItem = 'perioditem',
+  PeriodItem = 'periodItem',
 }
 
 export enum VdcGenerationItemCodes {
@@ -31,10 +31,28 @@ export enum DiskItemCodes {
   Fast = 'fast',
   Swap = 'swap',
 }
+export enum DiskItemName {
+  Standard = 'استاندارد',
+  Archive = 'آرشیو',
+  Vip = 'ویژه',
+  Fast = 'سریع',
+  // Swap = 'swap',
+}
 
 //TODO Convert to English
 export enum GuarantyCode {
   Vip = 'حرفه ای ',
   Base = 'پایه',
   Practical = 'کاربردی',
+}
+
+export enum ItemTypeUnits {
+  PeriodItem = 'Month',
+  CpuReservation = '%',
+  MemoryReservation = '%',
+  VmItem = 'VM',
+  Ip = 'IP',
+  Cpu = 'Cores',
+  Ram = 'GB',
+  Disk = 'GB',
 }

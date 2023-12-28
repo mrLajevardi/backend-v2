@@ -24,6 +24,22 @@ import {
   TemplatesStructure,
   templatesQueryParamsDto,
 } from '../dto/templates.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
+import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
+import { NamedDiskAttachedVms, NamedDiskDto } from '../dto/named-disk.dto';
+import { VdcProperties } from '../interface/vdc-properties.interface';
+import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
+import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
+import {
+  ComputeCapacity,
+  GetAvailableIps,
+  GetAvailableResourcesDto,
+  ProviderVdcResourceList,
+  StoragePoliciesList,
+} from '../dto/get-resources.dto';
+import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-codes.enum';
+import { LessThan, Not } from 'typeorm';
 
 @Injectable()
 export class VdcService {
@@ -40,6 +56,7 @@ export class VdcService {
     private readonly loggerService: LoggerService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
     private readonly templatesTableService: TemplatesTableService,
+    private readonly adminEdgeGatewayWrapperService: AdminEdgeGatewayWrapperService,
   ) {}
 
   async createVdc(
@@ -225,8 +242,8 @@ export class VdcService {
         },
         vdcStorageProfiles,
         networkPoolReference: vcdConfig.admin.vdc.NetworkPoolReference,
-        resourceGuaranteedMemory: Number(data.memoryReservation),
-        resourceGuaranteedCpu: Number(data.cpuReservation),
+        resourceGuaranteedMemory: Number(data.memoryReservation.value) / 100,
+        resourceGuaranteedCpu: Number(data.cpuReservation.value) / 100,
         cores: Number(data.generation.cpu[0].value),
         vCpuInMhz: Number(datacenterMetadata.cpuSpeed),
         ram: Number(data.generation.ram[0].value),
@@ -275,33 +292,35 @@ export class VdcService {
     });
   }
 
-  async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
+  async attachNamedDisk(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    nameDiskID: string,
+    vmID: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const namedDisk = await mainWrapper.user.vdc.attachNamedDisk(
+    const namedDisk = await this.vdcWrapperService.attachNamedDisk(
       session,
       nameDiskID,
       vmID,
     );
-    await this.loggerService.info(
-      'services',
-      'attachNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
+    return {
       taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+    };
   }
-  async createNamedDisk(options, vdcInstanceId, data) {
+  async createNamedDisk(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    data: CreateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const { busType } = data;
     if (busType != 20) {
@@ -314,7 +333,7 @@ export class VdcService {
       userId,
       props['orgId'],
     );
-    const namedDisk = await mainWrapper.user.vdc.createNamedDisk(
+    const namedDisk = await this.vdcWrapperService.createNamedDisk(
       session,
       props['vdcId'],
       data,
@@ -325,20 +344,17 @@ export class VdcService {
       filter: 'object==' + namedDisk.__vcloudTask,
       type: 'task',
     });
-    await this.loggerService.info(
-      'services',
-      'createNamedDisk',
-      {
-        _object: taskId.data.record[0].href.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
+    return {
       taskId: taskId.data.record[0].href.split('task/')[1],
-    });
+    };
   }
 
-  async detachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
+  async detachNamedDisk(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    nameDiskID: string,
+    vmID: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -347,38 +363,34 @@ export class VdcService {
       userId,
       props['orgId'],
     );
-    const namedDisk = await mainWrapper.user.vdc.dettachNamedDisk(
+    const namedDisk = await this.vdcWrapperService.detachNamedDisk(
       session,
       nameDiskID,
       vmID,
     );
-    await this.loggerService.info(
-      'services',
-      'dettachNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
+    return {
       taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+    };
   }
-  async getNamedDisk(options, vdcInstanceId) {
+  async getNamedDisk(
+    options: SessionRequest,
+    vdcInstanceId: string,
+  ): Promise<NamedDiskDto[]> {
     const userId = options.user.userId;
-    const props = await this.servicePropertiesService.getAllServiceProperties(
-      vdcInstanceId,
-    );
+    const props =
+      await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
+        vdcInstanceId,
+      );
     const session = await this.sessionService.checkUserSession(
       userId,
-      props['orgId'],
+      Number(props['orgId']),
     );
-    const recordList = await mainWrapper.user.vdc.getNamedDisk(
+    const recordList = await this.vdcWrapperService.getNamedDisk(
       session,
       props['vdcId'],
     );
-    const recordListForFront = [];
-    recordList.forEach((element) => {
+    const recordListForFront: NamedDiskDto[] = [];
+    for (const element of recordList) {
       const id = element.href.split('disk/')[1];
       const name = element.name;
       const sizeMb = element.sizeMb;
@@ -387,6 +399,17 @@ export class VdcService {
       const ownerName = element.ownerName;
       const status = element.status;
       const attachedVmCount = element.attachedVmCount;
+      let attachedVms: NamedDiskAttachedVms[] = [];
+      if (attachedVmCount > 0) {
+        const attachedVmList =
+          await this.vdcWrapperService.getVmAttachedNamedDisk(session, id);
+        attachedVms = attachedVmList.data.vmReference.map((vm) => {
+          return {
+            name: vm.name,
+            id: vm.href.split('/').slice(-1)[0],
+          };
+        });
+      }
       recordListForFront.push({
         id,
         name,
@@ -396,13 +419,15 @@ export class VdcService {
         ownerName,
         status,
         attachedVmCount,
+        attachedVms,
         busType: element.busType,
         busSubType: element.busSubType,
         sharingType: element.sharingType,
         busTypeDesc: element.busTypeDesc,
+        policyId: element.storageProfile.split('/').slice(-1)[0],
       });
-    });
-    return Promise.resolve(recordListForFront);
+    }
+    return recordListForFront;
   }
 
   /**
@@ -430,13 +455,20 @@ export class VdcService {
       pageSize: 10,
       filter: `id==${props['vdcId']}`,
     });
-
+    if (vdcData.data.total === 0) {
+      // There is no any vdc in vcloud for this vdc Id ==>props['vdcId']
+      return null;
+    }
     const model = this.vdcFactoryService.getVdcOrgVdcModelResult(vdcData);
 
     return Promise.resolve(model);
   }
 
-  async getVmAttachedToNamedDisk(options, vdcInstanceId, nameDiskID) {
+  async getVmAttachedToNamedDisk(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    nameDiskID: string,
+  ): Promise<string> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -445,7 +477,7 @@ export class VdcService {
       userId,
       props['orgId'],
     );
-    const vmData = await mainWrapper.user.vdc.getVmAttachedNamedDisk(
+    const vmData = await this.vdcWrapperService.getVmAttachedNamedDisk(
       session,
       nameDiskID,
     );
@@ -453,10 +485,14 @@ export class VdcService {
     if (vmData.data) {
       return vmData.data.vmReference[0].href.split('vApp/')[1];
     }
-    return Promise.resolve();
+    return null;
   }
 
-  async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
+  async removeNamedDisk(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    nameDiskID: string,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
@@ -465,24 +501,21 @@ export class VdcService {
       userId,
       props['orgId'],
     );
-    const namedDisk = await mainWrapper.user.vdc.removeNamedDisk(
+    const namedDisk = await this.vdcWrapperService.removeNamedDisk(
       session,
       nameDiskID,
-    );
-    await this.loggerService.info(
-      'services',
-      'removeNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
     );
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
   }
 
-  async updateNamedDisk(options, vdcInstanceId, nameDiskID, data) {
+  async updateNamedDisk(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    nameDiskID: string,
+    data: UpdateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
     const userId = options.user.userId;
     const { busType } = data;
     if (busType != 20) {
@@ -501,14 +534,6 @@ export class VdcService {
       nameDiskID,
       data,
     );
-    await this.loggerService.info(
-      'services',
-      'updateNamedDisk',
-      {
-        _object: namedDisk.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
@@ -520,6 +545,7 @@ export class VdcService {
       where: {
         servicePlanType: query.servicePlanType,
         serviceType: { id: serviceTypeId },
+        expireDate: Not(LessThan(new Date())),
         // datacenterName: query.datacenterName,
         enabled: true,
       },
@@ -540,5 +566,97 @@ export class VdcService {
       templatesList.push(templateDto);
     }
     return templatesList;
+  }
+
+  async getAvailableResources(
+    datacenterName: string,
+  ): Promise<GetAvailableResourcesDto> {
+    const adminSession = await this.sessionService.checkAdminSession();
+    const externalNetworks =
+      await this.adminEdgeGatewayWrapperService.findExternalNetwork(
+        adminSession,
+        1,
+        1,
+      );
+    const availableIps: GetAvailableIps = {
+      totalIpCount: 0,
+      usedIpCount: 0,
+    };
+    externalNetworks.values[0].subnets.values.forEach((value) => {
+      availableIps.totalIpCount += value.totalIpCount;
+      availableIps.usedIpCount += value.usedIpCount;
+    });
+
+    const datacenter =
+      await this.datacenterService.getDatacenterConfigWithGen();
+    const targetDatacenter = datacenter.find(
+      (item) => item.datacenter === datacenterName,
+    );
+    const providerVdcList: ProviderVdcResourceList[] = [];
+    for (const gen of targetDatacenter.gens) {
+      const providerVdc: ProviderVdcResourceList = {
+        name: gen.name,
+        id: gen.id,
+      } as ProviderVdcResourceList;
+      const storageProfiles =
+        await this.vdcWrapperService.vcloudQuery<ProviderVdcStorageProfilesDto>(
+          adminSession,
+          {
+            type: 'providerVdcStorageProfile',
+            format: 'records',
+            page: 1,
+            pageSize: 15,
+            sortAsc: 'name',
+            filter: `isEnabled==true;providerVdc==${
+              gen.id.split(':').slice(-1)[0]
+            }`,
+          },
+        );
+      const filteredStorageProfiles: StoragePoliciesList[] = [];
+      for (const profile of storageProfiles.data.record) {
+        const name = Object.values(DiskItemCodes).find((code) =>
+          profile.name.toLocaleLowerCase().includes(code),
+        );
+        if (!name) {
+          continue;
+        }
+        const data: StoragePoliciesList = {
+          name,
+          storageTotalMB: profile.storageTotalMB,
+          storageUsedMB: profile.storageUsedMB,
+        };
+        filteredStorageProfiles.push(data);
+      }
+      providerVdc.storagePolicies = filteredStorageProfiles;
+      const computePolicies = await this.adminVdcWrapperService.getProviderVdc(
+        adminSession,
+        gen.id,
+      );
+      const metadata = await this.datacenterService.getDatacenterMetadata(
+        '',
+        gen.id,
+      );
+      const filteredComputePolicies: ComputeCapacity = {
+        cpu: {
+          allocation: computePolicies.computeCapacity.cpu.allocation,
+          reserved: computePolicies.computeCapacity.cpu.reserved,
+          total: computePolicies.computeCapacity.cpu.total,
+          used: computePolicies.computeCapacity.cpu.used,
+          cpuSpeed: metadata.cpuSpeed as number,
+        },
+        ram: {
+          allocation: computePolicies.computeCapacity.memory.allocation,
+          reserved: computePolicies.computeCapacity.memory.reserved,
+          total: computePolicies.computeCapacity.memory.total,
+          used: computePolicies.computeCapacity.memory.used,
+        },
+      };
+      providerVdc.computeCapacity = filteredComputePolicies;
+      providerVdcList.push(providerVdc);
+    }
+    return {
+      providerGateway: availableIps,
+      providerVdc: providerVdcList,
+    };
   }
 }

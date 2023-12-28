@@ -9,6 +9,11 @@ import { NotificationModule } from '../../notification/notification.module';
 import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { UserAdminService } from '../service/user-admin.service';
 import { UserService } from '../service/user.service';
+import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
+import { TransactionsModule } from '../../transactions/transactions.module';
+import { UserInfoService } from '../service/user-info.service';
+import { UsersFactoryService } from '../service/user.factory.service';
+import { ServiceModule } from '../../service/service.module';
 
 describe('UserAdminController', () => {
   let controller: UserAdminController;
@@ -18,14 +23,22 @@ describe('UserAdminController', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        ServiceModule,
         CrudModule,
         LoggerModule,
         PaymentModule,
         JwtModule,
         NotificationModule,
         SecurityToolsModule,
+        TransactionsModule,
       ],
-      providers: [UserService, UserAdminService],
+      providers: [
+        UserService,
+        UserAdminService,
+        RedisCacheService,
+        UserInfoService,
+        UsersFactoryService,
+      ],
       controllers: [UserAdminController],
     }).compile();
 

@@ -2,6 +2,7 @@ import { InvoiceDetailVdcModel } from '../interface/invoice-detail-vdc.interface
 import { InvoiceItems } from '../../../../infrastructure/database/entities/InvoiceItems';
 import { ServiceItemTypesTree } from '../../../../infrastructure/database/entities/views/service-item-types-tree';
 import {
+  DiskItemCodes,
   ItemTypeCodes,
   VdcGenerationItemCodes,
 } from '../../itemType/enum/item-type-codes.enum';
@@ -9,21 +10,26 @@ import { VdcInvoiceDetailsResultDto } from '../../../vdc/dto/vdc-invoice-details
 import { VdcInvoiceDetailsInfoResultDto } from '../../../vdc/dto/vdc-invoice-details-info.result.dto';
 import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { ServiceTypes } from '../../../../infrastructure/database/entities/ServiceTypes';
+import { isNil } from 'lodash';
 
 @Injectable()
 export class InvoiceFactoryVdcService {
   constructor(private readonly invoicesTable: InvoicesTableService) {}
   async getVdcInvoiceDetailModel(
     invoiceId: string,
+    serviceTypeWhere = 'vdc',
   ): Promise<InvoiceDetailVdcModel[]> {
-    const serviceTypeWhere = 'vdc';
-
+    // const serviceTypeWhere = 'vdc';
+    // serviceTypeWhere = 'vdc';
     // const invoiceModels: any[] = [];
 
     const invoiceModels = await this.invoicesTable
       .getQueryBuilder()
       .select(
-        'Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime , Invoice.TemplateID',
+        `Invoice.RawAmount , Invoice.FinalAmount , Invoice.DateTime , Invoice.TemplateID , Invoice.BaseAmount
+         , Invoice.Code as InvoiceCode , 
+        Invoice.ServiceCost , Invoice.InvoiceTax `,
       )
       .where(
         'Invoice.ServiceTypeID = :serviceTypeId AND Invoice.ID= :invoiceId ',
@@ -40,8 +46,14 @@ export class InvoiceFactoryVdcService {
       .addSelect('InvoiceItem.Value , InvoiceItem.ItemID , InvoiceItem.Fee ')
       .innerJoin(ServiceItemTypesTree, 'SIT', 'SIT.ID = InvoiceItem.ItemID')
       .addSelect(
-        'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max , SIT.Price ',
+        'SIT.CodeHierarchy ,SIT.DatacenterName , SIT.Code , SIT.Title , SIT.Unit , SIT.Min , SIT.Max , SIT.Price , SIT.Percent ',
       )
+      .innerJoin(
+        ServiceTypes,
+        'ST',
+        `ST.ID = N'${serviceTypeWhere}'  AND  ST.DatacenterName = SIT.DatacenterName `,
+      )
+      .addSelect(`ST.Title as DatacenterTitle`)
       .getRawMany();
 
     return invoiceModels.map((model) => {
@@ -62,6 +74,12 @@ export class InvoiceFactoryVdcService {
         min: model.Min,
         price: model.Price,
         templateId: model.TemplateID,
+        datacenterTitle: model.DatacenterTitle,
+        percent: model.Percent,
+        baseAmount: model.BaseAmount,
+        invoiceCode: model.InvoiceCode,
+        invoiceTax: model.InvoiceTax,
+        serviceCost: model.ServiceCost,
       };
 
       return res;
@@ -174,31 +192,42 @@ export class InvoiceFactoryVdcService {
     res.cpu = new VdcInvoiceDetailsInfoResultDto(cpuModel);
 
     res.ram = new VdcInvoiceDetailsInfoResultDto(ramModel);
+    res.ram.value = (Number(res.ram.value) * 1024).toString();
 
-    res.disk = diskModel.map((diskmodel) => {
-      const res: VdcInvoiceDetailsInfoResultDto =
-        new VdcInvoiceDetailsInfoResultDto(diskmodel);
-      return res;
-    });
+    const swapdisk = diskModel.find(
+      (disk) => disk.code.toLowerCase().trim() == DiskItemCodes.Swap,
+    );
 
     res.ip = new VdcInvoiceDetailsInfoResultDto(ipModel);
 
     res.generation = generation;
 
-    res.reservationCpu = reservationCpu.title;
+    res.reservationCpu = `${Number(reservationCpu.value)}`;
 
-    res.reservationRam = reservationRam.title;
+    res.reservationRam = `${Number(reservationRam.value)}`;
 
     res.vm = new VdcInvoiceDetailsInfoResultDto(vmModel);
 
+    res.disk = this.calcDiskInvoice(diskModel, swapdisk);
+
     res.datacenter = {
-      title: vmModel.datacenterName,
+      title: vmModel.datacenterTitle,
       name: vmModel.datacenterName,
     }; // TODO about DatacenterName and DatacenterTitle;
 
-    res.finalPrice = ramModel.finalAmount;
+    // Math.round((item.fee ? item.fee : item.price) / 1000) * 1000
+    res.finalPrice = Number(ramModel.finalAmount?.toFixed(0));
 
-    res.rawAmount = ramModel.rawAmount;
+    res.finalPriceWithTax =
+      res.finalPrice * ramModel.invoiceTax + res.finalPrice;
+
+    res.finalPriceTax = res.finalPrice * ramModel.invoiceTax;
+
+    res.rawAmount = Number(ramModel.rawAmount?.toFixed(0));
+
+    res.rawAmountTax = res.rawAmount * ramModel.invoiceTax;
+
+    res.rawAmountWithTax = res.rawAmount * ramModel.invoiceTax + res.rawAmount;
 
     res.guaranty = new VdcInvoiceDetailsInfoResultDto(guaranty);
 
@@ -206,6 +235,46 @@ export class InvoiceFactoryVdcService {
 
     res.templateId = ramModel.templateId;
 
+    res.baseAmount = ramModel.baseAmount;
+
+    res.serviceCost = ramModel.serviceCost;
+
+    res.invoiceTax = ramModel.invoiceTax;
+
+    res.serviceCostTax = ramModel.serviceCost * ramModel.invoiceTax;
+    res.serviceCostWithDiscount = !isNil(period)
+      ? ramModel.serviceCost * period?.percent + ramModel.serviceCost
+      : ramModel.serviceCost;
+    if (res.templateId) {
+      res.discountAmount = ramModel.rawAmount - ramModel.finalAmount;
+    } else {
+      res.discountAmount = res.serviceCost - res.serviceCostWithDiscount;
+    }
+
+    res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
+
+    // (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
+    // (1 + period.percent);
+
     // res.period = { title: period.title, value: period.min };
+  }
+
+  private calcDiskInvoice(
+    diskModel: InvoiceDetailVdcModel[],
+    swapDisk: InvoiceDetailVdcModel,
+  ): VdcInvoiceDetailsInfoResultDto[] {
+    return diskModel
+      .map((diskmodel) => {
+        if (diskmodel.code.trim() !== DiskItemCodes.Swap) {
+          if (diskmodel.code.toLowerCase().trim() == DiskItemCodes.Standard) {
+            diskmodel.fee += swapDisk.fee;
+          }
+
+          const res: VdcInvoiceDetailsInfoResultDto =
+            new VdcInvoiceDetailsInfoResultDto(diskmodel);
+          return res;
+        }
+      })
+      .filter((disk) => disk != null);
   }
 }

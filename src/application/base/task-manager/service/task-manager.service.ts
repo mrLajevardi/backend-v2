@@ -12,6 +12,7 @@ import { Tasks } from 'src/infrastructure/database/entities/Tasks';
 import { TasksEnum } from '../enum/tasks.enum';
 import { TasksSchema } from '../interface/tasks-schema.interface';
 import { FlowProducers, QueueNames } from '../enum/queue-names.enum';
+import { TaskManagerOptions } from '../interface/task-manager-options.interface';
 
 @Processor('newTask', {
   concurrency: 50,
@@ -94,9 +95,14 @@ export class TaskManagerService extends WorkerHost {
     taskName: TasksEnum,
     serviceInstanceId: string,
     args: Record<string, never> | null = null,
-    options = {},
+    options?: TaskManagerOptions,
   ): Promise<Tasks> {
-    const task = await this.initTask(taskName, serviceInstanceId, args);
+    let task: Tasks;
+    if (!options?.reuseTask) {
+      task = await this.initTask(taskName, serviceInstanceId, args);
+    } else {
+      task = options.task;
+    }
     const { taskId } = task;
     const queueName = QueueNames.NewTaskManager;
     const targetTaskConfig = this.taskManagerTasks[taskName];
@@ -118,7 +124,6 @@ export class TaskManagerService extends WorkerHost {
           taskId,
           serviceInstanceId,
           parent: taskName,
-          options,
         },
       };
       lastChildRef.children = [lastChild];

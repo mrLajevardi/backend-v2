@@ -5,17 +5,19 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { InvoiceItems } from './InvoiceItems';
 import { ServiceItems } from './ServiceItems';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { ServicePlanTypeEnum } from '../../../application/base/service/enum/service-plan-type.enum';
 
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
 export class ItemTypes {
-  @Column('int', { primary: true, name: 'ID' })
+  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
   id: number;
 
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
@@ -54,7 +56,7 @@ export class ItemTypes {
   })
   createDate: Date | null;
 
-  @Column('int', { name: 'Percent', nullable: true })
+  @Column('float', { name: 'Percent', nullable: true, precision: 53 })
   percent: number | null;
 
   @Column('tinyint', { name: 'PrinciplePrice', nullable: true })
@@ -75,6 +77,19 @@ export class ItemTypes {
     nullable: true,
   })
   required: boolean | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsDeleted',
+    nullable: false,
+  })
+  isDeleted: boolean;
+
+  @Column('datetime', {
+    name: 'DeleteDate',
+    nullable: true,
+  })
+  deleteDate: Date | null;
+
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.itemType,
@@ -88,9 +103,23 @@ export class ItemTypes {
 
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;
+
+  @Column('tinyint', { name: 'Type', nullable: true })
+  type: ServicePlanTypeEnum;
+
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
   invoiceItems: InvoiceItems[];
 
+  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
+  serviceTypes: ServiceTypes;
   @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceItems: ServiceItems[];
 }

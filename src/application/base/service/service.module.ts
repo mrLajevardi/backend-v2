@@ -27,6 +27,14 @@ import { ServiceServiceFactory } from './Factory/service.service.factory';
 import { ServiceInstancesTableModule } from '../crud/service-instances-table/service-instances-table.module';
 import { ServiceItemsTableModule } from '../crud/service-items-table/service-items-table.module';
 import { TaskManagerModule } from '../task-manager/task-manager.module';
+import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { PaygServiceService } from './services/payg-service.service';
+import { BudgetingModule } from '../budgeting/budgeting.module';
+import { VmModule } from '../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../crud/v-service-instances-table/v-service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 @Module({
   imports: [
@@ -34,8 +42,11 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     DatabaseModule,
     SessionsModule,
     LoggerModule,
-    UserModule,
+    forwardRef(() => UserModule),
+    UvdeskWrapperModule,
     PaymentModule,
+    MainWrapperModule,
+    BudgetingModule,
     forwardRef(() => InvoicesModule),
     // forwardRef(() => TasksModule),
     // forwardRef(() => TasksModule),
@@ -43,16 +54,21 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     forwardRef(() => VgpuModule),
     // InvoicesModule,
     // VdcModule,
+
     forwardRef(() => TasksModule),
     // VgpuModule,
     AbilityModule,
     ServicePropertiesModule,
     TransactionsModule,
-    DatacenterModule,
+    forwardRef(() => DatacenterModule),
     SystemSettingsTableModule,
     ServiceItemsTableModule,
     ServiceInstancesTableModule,
     TaskManagerModule,
+    EdgeGatewayModule,
+    VmModule,
+    VServiceInstancesTableModule,
+    VServiceInstancesDetailTableModule,
   ],
   providers: [
     ServiceService,
@@ -63,6 +79,7 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     DeleteServiceService,
     ServiceAdminService,
     ServiceServiceFactory,
+    PaygServiceService,
   ],
   controllers: [ServiceController, ServiceAdminController],
   exports: [
@@ -71,6 +88,7 @@ import { TaskManagerModule } from '../task-manager/task-manager.module';
     ExtendServiceService,
     DiscountsService,
     ServiceChecksService,
+    PaygServiceService,
   ],
 })
 export class ServiceModule {}

@@ -38,6 +38,8 @@ import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import { VdcGenerationItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
 import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.enum';
 import { ServiceStatusEnum } from '../../base/service/enum/service-status.enum';
+import { VServiceInstancesDetailTableModule } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
+import { VServiceInstancesTableModule } from '../../base/crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('VdcInvoiceService', () => {
   let service: VdcInvoiceService;
@@ -48,6 +50,7 @@ describe('VdcInvoiceService', () => {
     return {
       disk: [
         {
+          priceWithTax: 0,
           unit: 'GB',
           code: VdcGenerationItemCodes.Disk,
           usage: 10000,
@@ -59,6 +62,7 @@ describe('VdcInvoiceService', () => {
       servicePlanType: ServicePlanTypeEnum.Static,
       status: ServiceStatusEnum.Success,
       ram: {
+        priceWithTax: 0,
         price: 1004,
         title: 'RAM',
         value: '4096',
@@ -67,6 +71,7 @@ describe('VdcInvoiceService', () => {
         unit: 'GB',
       },
       cpu: {
+        priceWithTax: 0,
         price: 123456,
         title: 'CPU',
         value: '8',
@@ -111,6 +116,8 @@ describe('VdcInvoiceService', () => {
         NetworksModule,
         ServiceItemModule,
         ServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
+        VServiceInstancesTableModule,
       ],
       providers: [
         VdcDetailService,

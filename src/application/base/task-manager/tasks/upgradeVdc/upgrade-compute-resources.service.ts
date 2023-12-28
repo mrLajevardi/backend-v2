@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UpgradeVdcStepsEnum } from './enum/upgrade-vdc-steps.enum';
 import { BaseTask } from '../../interface/base-task.interface';
 import { Job } from 'bullmq';
@@ -15,6 +15,15 @@ import { ServiceTypesEnum } from 'src/application/base/service/enum/service-type
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { AllocationModel } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/update-vdc-compute-policy.dto';
 import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
+import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
+import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
+import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
+import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
+import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-message.enum';
+import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
+import { DatacenterService } from 'src/application/base/datacenter/service/datacenter.service';
+import { BASE_DATACENTER_SERVICE } from 'src/application/base/datacenter/interface/datacenter.interface';
 
 @Injectable()
 export class UpgradeVdcComputeResourcesService
@@ -29,11 +38,32 @@ export class UpgradeVdcComputeResourcesService
     private readonly serviceProperties: ServicePropertiesService,
     private readonly configsService: ConfigsTableService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
+    private readonly serviceInstanceTableService: ServiceInstancesTableService,
+    private readonly userService: UserTableService,
+    private readonly ticketingWrapperService: TicketingWrapperService,
+    @Inject(BASE_DATACENTER_SERVICE)
+    private readonly datacenterService: DatacenterService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.UpgradeComputeResources;
   }
-  execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
-    return this.increaseComputeResources(job);
+  async execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
+    try {
+      await this.increaseComputeResources(job);
+    } catch (err) {
+      const service = await this.serviceInstanceTableService.findById(
+        job.data.serviceInstanceId,
+      );
+      const user = await this.userService.findById(service.userId);
+      await this.ticketingWrapperService.createTicket(
+        TicketsMessagesEnum.IncreaseComputeResourcesFailure,
+        ActAsTypeEnum.User,
+        null,
+        user.name,
+        TicketsSubjectEnum.AutomaticTicket,
+        user.username,
+      );
+      return Promise.reject(err);
+    }
   }
 
   async increaseComputeResources(
@@ -65,6 +95,10 @@ export class UpgradeVdcComputeResourcesService
       process.env.VCLOUD_BASE_URL +
       '/api/admin/providervdc/' +
       props.genId.split(':').slice(-1)[0];
+    const metadata = await this.datacenterService.getDatacenterMetadata(
+      '',
+      props.genId,
+    );
     const { __vcloudTask } = await this.adminVdcWrapperService.updateVdc(
       {
         cores: Number(groupedItems.generation.cpu[0].value),
@@ -83,6 +117,7 @@ export class UpgradeVdcComputeResourcesService
         allocationModel: AllocationModel.FLEX,
       },
       props.vdcId,
+      Number(metadata.cpuSpeed),
     );
     const checkTaskFilter = `href==${__vcloudTask}`;
     await this.vdcFactoryService.checkVdcTask(

@@ -1,22 +1,23 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   Put,
-  Delete,
-  Body,
-  Param,
-  Request,
   Query,
   Req,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
   ApiBearerAuth,
+  ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiResponse,
+  ApiTags,
 } from '@nestjs/swagger';
 import { CreateServiceService } from '../services/create-service.service';
 import { CreateServiceDto } from '../dto/create-service.dto';
@@ -32,6 +33,12 @@ import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
 import { GetServicePlansReturnDto } from '../dto/return/get-service-plans.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
 import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
+import { PersonalVerificationGuard } from '../../security/auth/guard/personal-verification.guard';
+import { PaygServiceService } from '../services/payg-service.service';
+import { CreatePaygVdcServiceDto } from '../../invoice/dto/create-payg-vdc-service.dto';
+import { ServiceTypesEnum } from '../enum/service-types.enum';
+import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+
 @ApiTags('Services')
 @Controller('services')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -41,10 +48,12 @@ export class ServiceController {
     private readonly createService: CreateServiceService,
     private readonly deleteService: DeleteServiceService,
     private readonly serviceService: ServiceService,
+    private readonly paygService: PaygServiceService,
   ) {}
 
   // create new item
   @ApiOperation({ summary: 'Create a new item' })
+  @UseGuards(PersonalVerificationGuard)
   @ApiResponse({
     status: 201,
     description: 'The item has been successfully created',
@@ -134,7 +143,7 @@ export class ServiceController {
     return this.createService.repairService(options, serviceInstanceId);
   }
 
-  @ApiOperation({ summary: '' })
+  @ApiOperation({ summary: 'Update Service (Extendnig !!!!)' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiResponse({
     status: 204,
@@ -232,5 +241,69 @@ export class ServiceController {
     @Query('filter') filter: string,
   ): Promise<any> {
     return this.service.getServicetypes(options, filter);
+  }
+
+  @Post('/vdc/payg')
+  async createVdcPayg(
+    @Body() dto: CreateServiceDto,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return this.paygService.createPaygVdcService(dto, options);
+  }
+
+  @Put('/vdc/payg/upgrade')
+  async upgradeVdcPayg(
+    @Body() dto: CreateServiceDto,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return this.paygService.upgradePayg(dto, options);
+  }
+
+  @Post('/vdc/payg/calculator')
+  async vdcPaygCalculator(
+    @Body() dto: CreatePaygVdcServiceDto,
+    @Request() options: SessionRequest,
+  ): Promise<any> {
+    return this.paygService.getPaygVdcCalculator(dto);
+  }
+
+  @Post('/payg/check')
+  async paygCheck(): Promise<any> {
+    return this.paygService.checkAllVdcVmsEvents();
+  }
+
+  @Get('/reports/:serviceType')
+  @ApiQuery({
+    name: 'ServiceType',
+    type: String,
+    required: true,
+    description: 'ServiceType',
+  })
+  async reportService(): Promise<any> {
+    return {
+      unpaidInvoices: 8,
+      activeTickets: 20,
+      servicesExpiringCount: 15,
+      servicesBudgetCount: 16,
+    };
+  }
+
+  @ApiOperation({ summary: 'get templates' })
+  @ApiQuery({
+    name: 'serviceTypeId',
+    required: true,
+    type: String,
+    description: ' vdc, ai',
+  })
+  @Get('ai/templates')
+  async getTemplates(
+    @Request() options: SessionRequest,
+    @Query('serviceTypeId') serviceType: ServiceTypesEnum,
+  ): Promise<any> {
+    return this.serviceService.getTemplates(
+      options,
+      serviceType,
+      ServicePlanTypeEnum.Static,
+    );
   }
 }

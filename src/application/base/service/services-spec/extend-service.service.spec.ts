@@ -13,6 +13,7 @@ import { PaymentModule } from 'src/application/payment/payment.module';
 import { BASE_DATACENTER_SERVICE } from '../../datacenter/interface/datacenter.interface';
 import { DatacenterService } from '../../datacenter/service/datacenter.service';
 import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { forwardRef } from '@nestjs/common';
 
 describe('ExtendServiceService', () => {
   let service: ExtendServiceService;
@@ -25,7 +26,7 @@ describe('ExtendServiceService', () => {
         DatabaseModule,
         DatacenterModule,
         SessionsModule,
-        UserModule,
+        forwardRef(() => UserModule),
         PaymentModule,
         BullModule.registerQueue({
           name: 'tasks',
