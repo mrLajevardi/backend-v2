@@ -580,9 +580,13 @@ export class ServiceService {
 
     const templates = await this.templatesTableService.find({
       where: {
-        serviceType: serviceTypeDB,
+        serviceType: { id: serviceTypeDB.id },
         servicePlanType: servicePlanType,
       },
+    });
+
+    templates.forEach((template) => {
+      template.structure = JSON.parse(template.structure);
     });
 
     return templates;

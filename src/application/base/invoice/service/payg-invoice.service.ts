@@ -142,6 +142,7 @@ export class PaygInvoiceService {
       );
 
     // check upgrade vdc
+
     // await this.validationService.checkUpgradeVdc(data, service);
     const convertedInvoice: CreateServiceInvoiceDto = {
       ...data,

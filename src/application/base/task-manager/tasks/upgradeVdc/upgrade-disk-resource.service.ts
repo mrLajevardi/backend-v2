@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { UpgradeVdcStepsEnum } from './enum/upgrade-vdc-steps.enum';
 import { BaseTask } from '../../interface/base-task.interface';
 import { Job } from 'bullmq';
@@ -18,6 +18,16 @@ import { ServiceStatusEnum } from 'src/application/base/service/enum/service-sta
 import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-message.enum';
 import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
+import {
+  BASE_VDC_DETAIL_SERVICE,
+  BaseVdcDetailService,
+} from 'src/application/vdc/interface/service/base-vdc-detail-service.interface';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { GetAllVdcServiceWithItemsResultDto } from 'src/application/base/service/dto/get-all-vdc-service-with-items-result.dto';
+import { VdcDetailService } from 'src/application/vdc/service/vdc-detail.service';
+import { VdcStorageProfileParams } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/create-vdc.dto';
+import { AddVdcStoragePolicyDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/add-vdc-storage-policy.dto';
+import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
 @Injectable()
 export class UpgradeDiskResourcesService
   implements BaseTask<UpgradeVdcStepsEnum>
@@ -33,6 +43,8 @@ export class UpgradeDiskResourcesService
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly userService: UserTableService,
     private readonly ticketingWrapperService: TicketingWrapperService,
+    @Inject(forwardRef(() => VdcDetailService))
+    private readonly vdcDetailService: VdcDetailService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.UpgradeDiskResources;
   }
@@ -52,6 +64,7 @@ export class UpgradeDiskResourcesService
         TicketsSubjectEnum.AutomaticTicket,
         user.username,
       );
+      console.log(err);
       return Promise.reject(err);
     }
   }
@@ -62,6 +75,9 @@ export class UpgradeDiskResourcesService
     const {
       data: { serviceInstanceId },
     } = job;
+    const service = await this.serviceInstanceTableService.findById(
+      serviceInstanceId,
+    );
     const serviceItems = await this.serviceItemsTableService.find({
       where: {
         serviceInstanceId,
@@ -80,7 +96,31 @@ export class UpgradeDiskResourcesService
       groupedItems.generation.disk,
       props.genId.split(':').slice(-1)[0],
     );
-    const promises = storagePolicies.map((storagePolicy) => {
+    const options: SessionRequest = {
+      user: {
+        userId: service.userId,
+      },
+    } as SessionRequest;
+    const vdcStoragePolicies = await this.vdcDetailService.getVdcItemLimit(
+      serviceInstanceId,
+      options,
+    );
+    const updateList: VdcStorageProfileParams[] = [];
+    const addList: AddVdcStoragePolicyDto[] = [];
+    storagePolicies.forEach((value) => {
+      const policy = vdcStoragePolicies.diskInfo.find(
+        (item) => item.name === value.providerVdcStorageProfile.name,
+      );
+      if (policy) {
+        updateList.push(value);
+      } else {
+        addList.push({
+          ...value,
+          name: value.providerVdcStorageProfile.name,
+        });
+      }
+    });
+    const promises = updateList.map((storagePolicy) => {
       return this.adminVdcWrapperService.updateVdcStorageProfile(
         {
           name: storagePolicy.providerVdcStorageProfile.name,
@@ -95,5 +135,22 @@ export class UpgradeDiskResourcesService
       );
     });
     await Promise.all(promises);
+    if (addList.length === 0) {
+      return;
+    }
+    const { __vcloudTask } =
+      await this.adminVdcWrapperService.addVdcStorageProfile(
+        addList,
+        props.vdcId,
+        adminSession,
+      );
+    const checkTaskFilter = `href==${__vcloudTask}`;
+    await this.vdcFactoryService.checkVdcTask(
+      adminSession,
+      checkTaskFilter,
+      TaskQueryTypes.AdminTask,
+      1500,
+      this.stepName,
+    );
   }
 }

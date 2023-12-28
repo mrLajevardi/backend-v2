@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   InvoiceGroupItem,
   VdcGenerationItems,
@@ -275,6 +275,9 @@ export class InvoiceFactoryService {
             maxPerRequest: MoreThanOrEqual(newValue),
           },
         });
+        if (!newItemType) {
+          throw new BadRequestException();
+        }
         newItem[0] = { ...newItemType, value: String(newValue) };
       } else if (item === VdcGenerationItemCodes.Disk) {
         const sumItems = [...newItem, ...oldItem];
