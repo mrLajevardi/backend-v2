@@ -69,6 +69,7 @@ import { VServiceInstancesDetailTableModule } from '../base/crud/v-service-insta
     NetworkService,
     VdcFactoryService,
     VdcDetailFactoryService,
+    VdcDetailService,
     {
       provide: BASE_VDC_INVOICE_SERVICE,
       useClass: VdcInvoiceService,
@@ -86,6 +87,7 @@ import { VServiceInstancesDetailTableModule } from '../base/crud/v-service-insta
     VdcService,
     NetworkService,
     VdcFactoryService,
+    VdcDetailService,
     BASE_VDC_INVOICE_SERVICE,
     BASE_VDC_DETAIL_SERVICE,
   ],

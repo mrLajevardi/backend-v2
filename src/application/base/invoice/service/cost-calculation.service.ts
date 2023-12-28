@@ -63,9 +63,11 @@ export class CostCalculationService {
     itemsSum = itemsSum.concat([
       groupedItems.memoryReservation,
       groupedItems.cpuReservation,
-      groupedItems.period,
       groupedItems.guaranty,
     ]);
+    if (groupedItems.period) {
+      itemsSum = itemsSum.concat(groupedItems.period);
+    }
     return {
       itemsSum,
       itemsTotalCosts: totalCost,
@@ -101,6 +103,25 @@ export class CostCalculationService {
     };
   }
 
+  async calculateAiStaticTypeInvoice(
+    invoice: Partial<CreateServiceInvoiceDto>,
+  ): Promise<TotalInvoiceItemCosts> {
+    type grouped = {
+      itemTypeId: string;
+      fee: number;
+    };
+
+    const groupedItems: string[] =
+      await this.invoiceFactoryService.groupAiItems(invoice.itemsTypes);
+
+    return {
+      itemsTotalCosts: 4554,
+      itemsSum: {} as InvoiceItemCost[],
+      totalCost: 454,
+      serviceCost: 415454,
+    };
+  }
+
   async calculateRemainingPeriod(
     currentInvoiceItems: InvoiceItemsDto[],
     newInvoice: InvoiceItemsDto[],
@@ -118,6 +139,7 @@ export class CostCalculationService {
     // currentInvoiceCost.totalCost =
     //   currentInvoiceCost.totalCost /
     //   (30 * Number(groupedOldItems.period.value));
+
     const newInvoiceCost = await this.calculateVdcStaticTypeInvoice(
       {
         itemsTypes: newInvoice,
@@ -126,7 +148,8 @@ export class CostCalculationService {
         applyPeriodPercent: false,
       },
     );
-    newInvoiceCost.totalCost = newInvoiceCost.serviceCost / 30;
+    newInvoiceCost.totalCost =
+      newInvoiceCost.serviceCost / (30 * Number(groupedOldItems.period.value));
     newInvoiceCost.totalCost =
       newInvoiceCost.totalCost /*- currentInvoiceCost.totalCost*/ *
       remainingDays;

@@ -40,6 +40,9 @@ import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
+import { ServiceTypesEnum } from '../enum/service-types.enum';
+import { TemplatesTableService } from '../../crud/templates/templates-table.service';
+import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
 
 @Injectable()
 export class ServiceService {
@@ -65,6 +68,7 @@ export class ServiceService {
     private readonly serviceFactory: ServiceServiceFactory,
     private readonly userService: UserService,
     private readonly systemSettingsService: SystemSettingsTableService,
+    private readonly templatesTableService: TemplatesTableService,
   ) {}
 
   async increaseServiceResources(
@@ -561,5 +565,30 @@ export class ServiceService {
       };
     });
     return extendedServiceList;
+  }
+
+  async getTemplates(
+    options: SessionRequest,
+    serviceType: ServiceTypesEnum,
+    servicePlanType: ServicePlanTypeEnum = ServicePlanTypeEnum.Static,
+  ) {
+    const serviceTypeDB = await this.serviceTypesTable.findOne({
+      where: {
+        id: serviceType,
+      },
+    });
+
+    const templates = await this.templatesTableService.find({
+      where: {
+        serviceType: serviceTypeDB,
+        servicePlanType: servicePlanType,
+      },
+    });
+
+    templates.forEach((template) => {
+      template.structure = JSON.parse(template.structure);
+    });
+
+    return templates;
   }
 }

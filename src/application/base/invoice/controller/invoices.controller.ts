@@ -37,6 +37,7 @@ import { PaygInvoiceService } from '../service/payg-invoice.service';
 import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
 import { InvoiceIdDto } from '../dto/invoice-id.dto';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -76,7 +77,11 @@ export class InvoicesController {
     @Body() dto: CreateServiceInvoiceDto,
     @Request() options: SessionRequest,
   ): Promise<any> {
-    return this.invoiceService.createVdcInvoice(dto, options);
+    return await this.invoiceService.createServiceInvoice(
+      dto.serviceType ?? ServiceTypesEnum.Vdc,
+      dto,
+      options,
+    );
   }
 
   // create new item
@@ -163,5 +168,19 @@ export class InvoicesController {
       authorityCode,
     );
     return transaction;
+  }
+
+  @ApiOperation({ summary: 'creates payg upgrade invoice' })
+  @ApiResponse({ type: InvoiceIdDto })
+  @Put('/payg/upgrade')
+  async upgradePayg(
+    @Request() options: SessionRequest,
+    @Body() dto: CreatePaygVdcServiceDto,
+  ): Promise<InvoiceIdDto> {
+    const invoiceId = await this.paygInvoiceService.paygUpgradeInvoice(
+      dto,
+      options,
+    );
+    return invoiceId;
   }
 }

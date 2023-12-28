@@ -14,6 +14,9 @@ import { GetProviderVdcsMetadataDto } from './dto/get-provider-vdcs-metadata.dto
 import { VdcUnits } from 'src/application/vdc/enum/vdc-units.enum';
 import { GetProviderVdcDto } from './dto/get-provider-vdc.dto';
 import { UpdateProviderVdcMetadataBody } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/update-provider-vdc-metadata.dto';
+import { AddVdcStoragePolicyDto } from './dto/add-vdc-storage-policy.dto';
+import { AddVdcStorageProfileBody } from 'src/wrappers/vcloud-wrapper/services/admin/vdc/dto/add-storage-policy.dto';
+import { GetVdcIdBy } from 'src/application/vdc/utils/vdc-properties.utils';
 
 @Injectable()
 export class AdminVdcWrapperService {
@@ -362,5 +365,30 @@ export class AdminVdcWrapperService {
         },
       }),
     );
+  }
+
+  async addVdcStorageProfile(
+    config: AddVdcStoragePolicyDto[],
+    vdcId: string,
+    authToken: string,
+  ): Promise<VcloudTask> {
+    const request: AddVdcStorageProfileBody = {
+      addStorageProfile: config,
+    };
+    const filteredVdcId = GetVdcIdBy(vdcId);
+    const options = {
+      headers: { Authorization: `Bearer ${authToken}` },
+      urlParams: {
+        vdcId: filteredVdcId,
+      },
+      body: request,
+    };
+    const endpoint = 'AdminVdcEndpointService.addVdcStorageProfileEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const result = await this.vcloudWrapperService.request(wrapper(options));
+    return {
+      __vcloudTask: result.headers.location,
+    };
   }
 }

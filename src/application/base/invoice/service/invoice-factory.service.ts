@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   InvoiceGroupItem,
   VdcGenerationItems,
@@ -91,6 +91,18 @@ export class InvoiceFactoryService {
     return vdcItemGroup;
   }
 
+  async groupAiItems(invoiceItems: InvoiceItemsDto[]): Promise<string[]> {
+    const grouped: string[] = [];
+
+    for (const item of invoiceItems) {
+      const itemType: ServiceItemTypesTree =
+        await this.serviceItemTypeTree.findById(item.itemTypeId);
+
+      grouped[itemType.codeHierarchy.split('_')[0]] = item.value;
+    }
+
+    return grouped;
+  }
   groupVdcGenerationItems(
     parents: string[],
     invoiceItem: InvoiceItemsDto,
@@ -263,6 +275,9 @@ export class InvoiceFactoryService {
             maxPerRequest: MoreThanOrEqual(newValue),
           },
         });
+        if (!newItemType) {
+          throw new BadRequestException();
+        }
         newItem[0] = { ...newItemType, value: String(newValue) };
       } else if (item === VdcGenerationItemCodes.Disk) {
         const sumItems = [...newItem, ...oldItem];
