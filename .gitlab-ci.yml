@@ -84,10 +84,10 @@ build image:
     - release
   services:
     - docker:dind
-  # before_script: 
+  before_script: 
     # - echo $CI_REGISTRY_PASSWORD |docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
-    # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
+    - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
   script:
-    - echo "$CI_REGISTRY/"
-    # - docker build . --tag $CI_REGISTRY/$IMAGE_NAME
-    # - docker push $CI_REGISTRY/$IMAGE_NAME
+    # - echo "$CI_REGISTRY/"
+    - docker build . --tag $IMAGE_NAME
+    - docker push $IMAGE_NAME
