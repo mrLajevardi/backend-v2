@@ -1,6 +1,6 @@
 import xml2js, { Builder } from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
-import {vcdConfig} from "../../vcdConfig";
+import { vcdConfig } from '../../vcdConfig';
 /**
  * insert or eject a media from vm
  * @param {String} authToken
