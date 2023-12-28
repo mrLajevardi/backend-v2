@@ -5,6 +5,7 @@ stages:     # List of stages for jobs, and their order of execution
   - deploy
 variables:
   IMAGE_NAME: $GITLAB_USER_LOGIN/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH:latest
+  MY_PASSWORD: $Ali12345678
 
 .job-cache:
   cache:  # Cache modules in between jobs
@@ -83,7 +84,8 @@ build image:
   services:
     - docker:dind
   before_script: 
-    - echo $CI_REGISTRY_PASSWORD |docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    # - echo $CI_REGISTRY_PASSWORD |docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - echo $MY_PASSWORD | docker login -u aliiii0307 $CI_REGISTRY --password-stdin
   script:
     - docker build . --tag $CI_REGISTRY/$IMAGE_NAME
     - docker push $CI_REGISTRY/$IMAGE_NAME
