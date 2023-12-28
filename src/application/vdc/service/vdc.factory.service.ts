@@ -35,6 +35,7 @@ export class VdcFactoryService {
     modelBuilder.WithMemoryUsedMB(record.memoryUsedMB);
     modelBuilder.WithMemoryReservedMB(record.memoryReservedMB);
     modelBuilder.WithStorageLimitMB(record.storageLimitMB);
+    modelBuilder.WithDescription(record.description);
     modelBuilder.WithStorageUsedMB(record.storageUsedMB);
     modelBuilder.WithNumberOfDisks(record.numberOfDisks);
     modelBuilder.WithNumberOfVMs(record.numberOfVMs);
@@ -81,6 +82,7 @@ export class VdcFactoryService {
     const valueSum = Number(standardItem.value) + Number(swapItem.value);
     standardItem.value = valueSum.toString();
     invoiceGroupItem.splice(invoiceGroupItem.indexOf(swapItem), 1);
+
     for (const invoiceItem of invoiceGroupItem) {
       for (const storageProfile of storageProfiles.data.record) {
         if (

@@ -11,6 +11,7 @@ import { NetworksModule } from '../networks/networks.module';
 import { VmDetailService } from './service/vm-detail.service';
 import { VmDetailFactoryService } from './service/vm-detail.factory.service';
 import { VmDetailController } from './controller/vm-detail.controller';
+import { ServiceModule } from '../base/service/service.module';
 
 @Module({
   imports: [
@@ -20,10 +21,12 @@ import { VmDetailController } from './controller/vm-detail.controller';
     SessionsModule,
     CrudModule,
     MainWrapperModule,
+    // ServiceModule,
+    forwardRef(() => ServiceModule),
     forwardRef(() => NetworksModule),
   ],
   controllers: [VmController, VmDetailController],
   providers: [VmService, VmDetailService, VmDetailFactoryService],
-  exports: [VmService],
+  exports: [VmService, VmDetailFactoryService],
 })
 export class VmModule {}

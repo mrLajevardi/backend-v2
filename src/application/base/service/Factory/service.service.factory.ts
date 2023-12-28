@@ -21,6 +21,17 @@ import { EdgeGatewayService } from '../../../edge-gateway/service/edge-gateway.s
 import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
 import { TasksService } from '../../tasks/service/tasks.service';
 import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
+import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
+import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
+import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
+import { AdminEdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/admin/edgeGateway/admin-edge-gateway-wrapper.service';
+import { SessionsService } from '../../sessions/sessions.service';
+import { InsufficientResourceException } from 'src/infrastructure/exceptions/insufficient-resource.exception';
+import { VmService } from '../../../vm/service/vm.service';
+import { VdcGenerationItemCodes } from '../../itemType/enum/item-type-codes.enum';
+import { CalcSwapStorage } from '../../../vdc/utils/disk-functions.utils';
+import { PaygCostCalculationService } from '../../invoice/service/payg-cost-calculation.service';
+import { VServiceInstancesDetailTableService } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
 
 @Injectable()
 export class ServiceServiceFactory {
@@ -31,7 +42,13 @@ export class ServiceServiceFactory {
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
     private readonly edgeGatewayService: EdgeGatewayService,
+    private readonly invoiceItemsTableService: InvoiceItemsTableService,
+    private readonly invoiceFactoryService: InvoiceFactoryService,
+    private readonly adminEdgegatewayWrapperService: AdminEdgeGatewayWrapperService,
+    private readonly sessionService: SessionsService,
+    private readonly vServiceInstancesDetailTableService: VServiceInstancesDetailTableService,
     private readonly taskService: TasksService,
+    private readonly vmService: VmService,
   ) {}
   public async getPropertiesOfServiceInstance(
     serviceInstance: GetServicesReturnDto,
@@ -74,12 +91,14 @@ export class ServiceServiceFactory {
     isTicketSent: boolean,
     vdcItems: GetOrgVdcResult,
     cpuSpeed: string | number | boolean,
+    extensionDay: number,
   ) {
     async function getTask() {
       let task: Tasks = null;
       let taskDetail: TaskDetail = null;
       if (serviceInstance.status == ServiceStatusEnum.Error) {
         task = await this.taskService.getLastTaskErrorBy(serviceInstance.id);
+        if (!task) return taskDetail;
         taskDetail = {
           details: task.details,
           startTime: task.startTime,
@@ -103,29 +122,37 @@ export class ServiceServiceFactory {
         [],
         serviceInstance.daysLeft,
         isTicketSent,
-        ServicePlanTypeEnum.Static, //TODO ==> it is null for all of service instances in our database
+        serviceInstance.servicePlanType,
         taskDetail,
+        vdcItems?.description ? vdcItems.description : '',
+        serviceInstance.daysLeft <= extensionDay,
+        serviceInstance.createDate,
+        serviceInstance.credit,
+      );
+    if (vdcItems != null) {
+      const {
+        serviceItemCpu,
+        serviceItemRam,
+        serviceItemDisk,
+        serviceItemVM,
+        serviceItemIp,
+        serviceItemMemoryInfo,
+      } = await this.createItemTypesForInstance(
+        vdcItems,
+        cpuSpeed,
+        option,
+        serviceInstance.id,
       );
 
+      model.serviceItems.push(serviceItemCpu);
+      model.serviceItems.push(serviceItemRam);
+      model.serviceItems.push(serviceItemDisk);
+      model.serviceItems.push(serviceItemVM);
+      model.serviceItems.push(serviceItemIp);
+      model.serviceItems.push(serviceItemMemoryInfo);
+    }
     //Cpu , Ram , Disk , Vm
-    const {
-      serviceItemCpu,
-      serviceItemRam,
-      serviceItemDisk,
-      serviceItemVM,
-      serviceItemIp,
-    } = await this.createItemTypesForInstance(
-      vdcItems,
-      cpuSpeed,
-      option,
-      serviceInstance.id,
-    );
 
-    model.serviceItems.push(serviceItemCpu);
-    model.serviceItems.push(serviceItemRam);
-    model.serviceItems.push(serviceItemDisk);
-    model.serviceItems.push(serviceItemVM);
-    model.serviceItems.push(serviceItemIp);
     return model;
   }
 
@@ -135,36 +162,79 @@ export class ServiceServiceFactory {
     option: SessionRequest,
     serviceInstanceId: string,
   ) {
+    const allVms = await this.vmService.getAllUserVm(option, serviceInstanceId);
+
+    let allMemoryVms = 0;
+
+    const vmServiceItem =
+      await this.vServiceInstancesDetailTableService.findOne({
+        where: {
+          code: VdcGenerationItemCodes.Vm,
+          serviceInstanceId: serviceInstanceId,
+        },
+      });
+
+    allVms.values.forEach((vm) => (allMemoryVms += vm.memory));
+
     const countIp = await this.edgeGatewayService.getCountOfIpSet(
       option,
       serviceInstanceId,
     );
 
     const serviceItemCpu = new ServiceItemDto(
-      'CPU',
+      VdcGenerationItemCodes.Cpu,
       vdcItems.cpuUsedMhz / Number(cpuSpeed),
       vdcItems.cpuAllocationMhz / Number(cpuSpeed),
     );
 
     const serviceItemRam = new ServiceItemDto(
-      'RAM',
+      VdcGenerationItemCodes.Ram,
       vdcItems.memoryUsedMB,
       vdcItems.memoryAllocationMB,
     );
 
+    const storageCalc = await CalcSwapStorage(
+      {
+        memoryAllocation: vdcItems.memoryAllocationMB,
+        serviceInstanceId: serviceInstanceId,
+        storageLimit: vdcItems.storageLimitMB,
+        storageUsed: vdcItems.storageUsedMB,
+        numberOfVms: Number(vmServiceItem.value),
+      },
+
+      this.vmService,
+      option,
+    );
+
+    // Getting
     const serviceItemDisk = new ServiceItemDto(
-      'DISK',
-      vdcItems.storageUsedMB,
-      vdcItems.storageLimitMB,
+      VdcGenerationItemCodes.Disk,
+      // vdcItems.storageUsedMB,
+      //   vdcItems.storageUsedMB - vdcItems.numberOfVMs * vdcItems.memoryUsedMB,
+      // vdcItems.storageUsedMB - allMemoryVms,
+      storageCalc.used,
+      // vdcItems.storageLimitMB -
+      //   vdcItems.numberOfVMs * vdcItems.memoryAllocationMB,
+      storageCalc.limit,
+    );
+
+    const serviceItemIp = new ServiceItemDto(
+      VdcGenerationItemCodes.Ip,
+      countIp,
+      countIp,
     );
 
     const serviceItemVM = new ServiceItemDto(
-      'VM',
+      VdcGenerationItemCodes.Vm,
       vdcItems.numberOfRunningVMs,
       vdcItems.numberOfVMs,
     );
 
-    const serviceItemIp = new ServiceItemDto('IP', countIp, countIp);
+    const serviceItemMemoryInfo = new ServiceItemDto(
+      VdcGenerationItemCodes.Ram + 'Info',
+      allMemoryVms,
+      allMemoryVms,
+    );
 
     return {
       serviceItemCpu,
@@ -172,6 +242,41 @@ export class ServiceServiceFactory {
       serviceItemDisk,
       serviceItemVM,
       serviceItemIp,
+      serviceItemMemoryInfo,
     };
+  }
+
+  async checkResources(invoiceId: number): Promise<void> {
+    const invoiceItems = await this.invoiceItemsTableService.find({
+      where: {
+        invoiceId,
+      },
+    });
+    const transformedInvoiceItems = invoiceItems.map((item) => {
+      const invoiceItemType: InvoiceItemsDto = {
+        itemTypeId: item.itemId,
+        value: item.value,
+      };
+      return invoiceItemType;
+    });
+    const groupItems = await this.invoiceFactoryService.groupVdcItems(
+      transformedInvoiceItems,
+    );
+    const adminSession = await this.sessionService.checkAdminSession();
+    const externalNetworks =
+      await this.adminEdgegatewayWrapperService.findExternalNetwork(
+        adminSession,
+        1,
+        1,
+      );
+    try {
+      await this.adminEdgegatewayWrapperService.ipAllocation(
+        externalNetworks.values[0].id,
+        adminSession,
+        Number(groupItems.generation.ip[0].value),
+      );
+    } catch {
+      // throw new InsufficientResourceException();
+    }
   }
 }

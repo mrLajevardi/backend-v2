@@ -1,4 +1,5 @@
 import {
+  AfterLoad,
   Column,
   Entity,
   Index,
@@ -136,12 +137,12 @@ export class User {
   })
   personalVerification: boolean | null;
 
-  @Column('tinyint', {
+  @Column('nvarchar', {
     name: 'twoFactorAuth',
     nullable: true,
-    default: () => 0,
+    default: () => '0',
   })
-  twoFactorAuth: number;
+  twoFactorAuth: string;
 
   @Column('decimal', { name: 'companyId', nullable: true })
   companyId: number | null;
@@ -154,6 +155,20 @@ export class User {
   avatarId: string | null;
 
   @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'companyLetterId',
+    nullable: true,
+  })
+  companyLetterId: string | null;
+
+  @Column('tinyint', {
+    name: 'companyLetterStatus',
+    nullable: true,
+    default: () => 0,
+  })
+  companyLetterStatus: number;
+
+  @Column({
     type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
     name: 'guid',
     unique: !isTestingEnv(),
@@ -161,6 +176,11 @@ export class User {
     default: () => (isTestingEnv() ? null : 'newsequentialid()'),
   })
   guid: string;
+
+  // @AfterLoad()
+  // afterLoad1(@Request() options) {
+  //
+  // }
 
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
@@ -181,4 +201,8 @@ export class User {
   @ManyToOne(() => FileUpload, (file) => file.user)
   @JoinColumn({ name: 'avatarId', referencedColumnName: 'streamId' })
   avatar: FileUpload;
+
+  @ManyToOne(() => FileUpload)
+  @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'streamId' })
+  companyLetter: FileUpload;
 }

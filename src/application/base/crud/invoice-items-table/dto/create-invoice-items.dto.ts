@@ -18,6 +18,10 @@ export class CreateInvoiceItemsDto {
   @ApiProperty({ type: String })
   value?: string;
 
+  @IsString()
+  @ApiProperty({ type: String })
+  codeHierarchy?: string;
+
   @IsInt()
   @ApiProperty()
   itemId: number;

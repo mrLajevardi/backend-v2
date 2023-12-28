@@ -15,7 +15,10 @@
       "type": 0,
       "name": "test",
       "userId": 597,
-      "servicePlanType": 0
+      "servicePlanType": 0,
+      "isPreInvoice":true,
+      "baseAmount": 0,
+      "code": 2
     },
     {
       "id": 5919,
@@ -33,7 +36,10 @@
       "type": 0,
       "name": "majid",
       "userId":597,
-      "servicePlanType": 0
+      "servicePlanType": 0,
+      "isPreInvoice":true,
+      "baseAmount": 0,
+      "code": 1
     }
   ]
   

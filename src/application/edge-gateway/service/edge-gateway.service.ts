@@ -15,6 +15,7 @@ import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { IPSetDto, UpdateIpSetsDto } from '../dto/ip-set.dto';
 import { GetIpSetsListQueryDto, IPSetListDto } from '../dto/ip-set-list.dto';
 import { EdgeGatewayWrapperService } from 'src/wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
+import { IP_SPLITTER } from '../../base/itemType/const/item-type-code-hierarchy.const';
 
 @Injectable()
 export class EdgeGatewayService {
@@ -137,7 +138,7 @@ export class EdgeGatewayService {
       },
     });
     const ipAddresses = serviceEdgeIpRanges.map((ip) => {
-      return ip.value.split('-')[0];
+      return ip.value.split(IP_SPLITTER)[0];
     });
     return Promise.resolve(ipAddresses);
   }
@@ -154,6 +155,15 @@ export class EdgeGatewayService {
       await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
         vdcInstanceId,
       );
+    if (!props.orgId) {
+      return Promise.resolve({
+        page: 0,
+        pageSize: 0,
+        values: [],
+        pageCount: 0,
+        resultTotal: 0,
+      });
+    }
     const session = await this.sessionService.checkUserSession(
       userId,
       Number(props.orgId),

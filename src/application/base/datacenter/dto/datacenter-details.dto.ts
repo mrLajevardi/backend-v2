@@ -16,10 +16,12 @@ interface Gen {
   name: string;
   enabled: boolean;
   cpuSpeed: number;
+  id: string;
 }
 
 export class DatacenterDetails {
   name: string;
+  title: string;
   diskList: Disk[];
   periodList: Period[];
   enabled: boolean;
@@ -44,4 +46,5 @@ export class GenDto {
   name: string;
   enabled: boolean;
   cpuSpeed: VcloudMetadata;
+  id: string;
 }

@@ -17,8 +17,6 @@ import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice
 import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
 import { PlansTableService } from '../../crud/plans-table/plans-table.service';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { UserTableService } from '../../crud/user-table/user-table.service';
-import { ZarinpalConfigDto } from 'src/application/payment/dto/zarinpal-config.dto';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { GetInvoiceReturnDto } from '../dto/return/get-invoice.dto';
@@ -39,11 +37,19 @@ import { ServiceStatusEnum } from '../enum/service-status.enum';
 import { VcloudMetadata } from '../../datacenter/type/vcloud-metadata.type';
 import { UserService } from '../../user/service/user.service';
 import { CreditIncrementDto } from '../../user/dto/credit-increment.dto';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
+import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
+import { ServiceTypesEnum } from '../enum/service-types.enum';
+import { TemplatesTableService } from '../../crud/templates/templates-table.service';
+import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+
 @Injectable()
 export class ServiceService {
   constructor(
     private readonly serviceItemsTable: ServiceItemsTableService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
+    private readonly vServiceInstancesTableService: VServiceInstancesTableService,
     private readonly invoicesTable: InvoicesTableService,
     private readonly taskManagerService: TaskManagerService,
     private readonly transactionsTable: TransactionsTableService,
@@ -56,12 +62,13 @@ export class ServiceService {
     private readonly invoiceDiscountsTable: InvoiceDiscountsTableService,
     private readonly plansTable: PlansTableService,
     private readonly itemTypesTable: ItemTypesTableService,
-    private readonly usersTable: UserTableService,
     private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly serviceTypesTable: ServiceTypesTableService,
     private readonly vdcService: VdcService,
     private readonly serviceFactory: ServiceServiceFactory,
     private readonly userService: UserService,
+    private readonly systemSettingsService: SystemSettingsTableService,
+    private readonly templatesTableService: TemplatesTableService,
   ) {}
 
   async increaseServiceResources(
@@ -136,7 +143,7 @@ export class ServiceService {
     }
     const invoiceItemsList = await this.invoiceItemListTable.find({
       where: {
-        invoiceId: invoiceId.toString(),
+        invoiceId: invoiceId,
         userId: userId,
       },
     });
@@ -453,15 +460,22 @@ export class ServiceService {
   > {
     const res: GetAllVdcServiceWithItemsResultDto[] = [];
 
+    //To Do ==> get Config ExtensionDaysLimit from SystemSettings
+    const extensionDaysLeft = (
+      await this.systemSettingsService.findOne({
+        where: { propertyKey: 'ExtensionDaysLimit' },
+      })
+    ).value;
     const allServicesInstances = await this.getServices(options, typeId, id);
     let cpuSpeed: VcloudMetadata = 0,
       // daysLeft = 0,
       isTicketSent = false,
-      vdcItems: GetOrgVdcResult = {};
+      vdcItems: GetOrgVdcResult = null;
     let model: GetAllVdcServiceWithItemsResultDto = {};
     for (const serviceInstance of allServicesInstances) {
       if (
         serviceInstance.status != ServiceStatusEnum.Error &&
+        serviceInstance.status != ServiceStatusEnum.Deleted &&
         serviceInstance.status != ServiceStatusEnum.Pending
       ) {
         cpuSpeed = (
@@ -470,22 +484,24 @@ export class ServiceService {
 
         vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
       }
-      if (vdcItems !== null) {
-        const info = ({ isTicketSent } =
-          await this.serviceFactory.getPropertiesOfServiceInstance(
-            serviceInstance,
-          ));
-        // (daysLeft = info.daysLeft),
-        isTicketSent = info.isTicketSent;
-        model = await this.serviceFactory.configModelServiceInstanceList(
+      // if (vdcItems != null) {
+      const info = ({ isTicketSent } =
+        await this.serviceFactory.getPropertiesOfServiceInstance(
           serviceInstance,
-          options,
-          isTicketSent,
-          vdcItems,
-          cpuSpeed,
-        );
-        res.push(model);
-      }
+        ));
+      // (daysLeft = info.daysLeft),
+      isTicketSent = info.isTicketSent;
+      model = await this.serviceFactory.configModelServiceInstanceList(
+        serviceInstance,
+        options,
+        isTicketSent,
+        vdcItems,
+        cpuSpeed,
+        Number(extensionDaysLeft),
+      );
+
+      res.push(model);
+      // }
     }
 
     return res;
@@ -502,13 +518,14 @@ export class ServiceService {
     } = options;
     let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
     let serviceStatus: ServiceStatusEnum[] = [
-      // 3, 4, 5, 6,
+      // 3, 4, 5, 6,7
       ServiceStatusEnum.Deleted,
       ServiceStatusEnum.Error,
       ServiceStatusEnum.DisabledByAdmin,
       ServiceStatusEnum.Success,
       ServiceStatusEnum.Expired,
       ServiceStatusEnum.Pending,
+      ServiceStatusEnum.Disabled,
     ];
     if (typeId) {
       serviceTypeIds = [typeId];
@@ -516,7 +533,7 @@ export class ServiceService {
     if (statuses) {
       serviceStatus = statuses;
     }
-    const where: FindOptionsWhere<ServiceInstances> = {
+    const where: FindOptionsWhere<VServiceInstances> = {
       userId: userId,
       isDeleted: false,
       serviceTypeId: In(serviceTypeIds),
@@ -526,12 +543,12 @@ export class ServiceService {
       where.id = id;
     }
 
-    const services = await this.serviceInstancesTableService.find({
+    const services = await this.vServiceInstancesTableService.find({
       where,
       relations: ['serviceItems', 'serviceType'],
       order: {
-        status: { direction: 'ASC' },
         createDate: { direction: 'DESC' },
+        status: { direction: 'ASC' },
       },
     });
     console.log(services);
@@ -543,8 +560,40 @@ export class ServiceService {
         expired: expired,
         retryCount: service.retryCount,
         daysLeft: service.daysLeft,
+        createDate: service.createDate,
+        credit: service.credit,
       };
     });
     return extendedServiceList;
+  }
+
+  async getTemplates(
+    options: SessionRequest,
+    serviceType: ServiceTypesEnum,
+    servicePlanType: ServicePlanTypeEnum = ServicePlanTypeEnum.Static,
+  ) {
+    const serviceTypeDB = await this.serviceTypesTable.findOne({
+      where: {
+        id: serviceType,
+      },
+    });
+
+    const templates = await this.templatesTableService.find({
+      where: {
+        serviceType: { id: serviceTypeDB.id },
+        servicePlanType: servicePlanType,
+      },
+    });
+
+    templates.forEach((template) => {
+      template.structure = JSON.parse(template.structure);
+    });
+
+    return templates;
+  }
+
+  async getReports(option: SessionRequest) {
+    const userId = option.user.userId;
+    // thi
   }
 }

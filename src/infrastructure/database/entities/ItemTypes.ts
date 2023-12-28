@@ -5,17 +5,19 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { InvoiceItems } from './InvoiceItems';
 import { ServiceItems } from './ServiceItems';
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { ServicePlanTypeEnum } from '../../../application/base/service/enum/service-plan-type.enum';
 
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
 export class ItemTypes {
-  @Column('int', { primary: true, name: 'ID' })
+  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
   id: number;
 
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
@@ -75,6 +77,19 @@ export class ItemTypes {
     nullable: true,
   })
   required: boolean | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsDeleted',
+    nullable: false,
+  })
+  isDeleted: boolean;
+
+  @Column('datetime', {
+    name: 'DeleteDate',
+    nullable: true,
+  })
+  deleteDate: Date | null;
+
   @OneToMany(
     () => AiTransactionsLogs,
     (aiTransactionsLogs) => aiTransactionsLogs.itemType,
@@ -86,8 +101,18 @@ export class ItemTypes {
   })
   enabled: boolean | null;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsHidden',
+    nullable: true,
+  })
+  isHidden: boolean | null;
+
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;
+
+  @Column('tinyint', { name: 'Type', nullable: true })
+  type: ServicePlanTypeEnum;
+
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
   invoiceItems: InvoiceItems[];
 
@@ -98,5 +123,9 @@ export class ItemTypes {
   ])
   serviceTypes: ServiceTypes;
   @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceItems: ServiceItems[];
 }

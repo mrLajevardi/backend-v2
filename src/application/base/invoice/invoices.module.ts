@@ -13,13 +13,15 @@ import { InvoiceFactoryService } from './service/invoice-factory.service';
 import { InvoiceFactoryVdcService } from './service/invoice-factory-vdc.service';
 import { UserModule } from '../user/user.module';
 import { VdcModule } from 'src/application/vdc/vdc.module';
+import { PaygCostCalculationService } from './service/payg-cost-calculation.service';
+import { PaygInvoiceService } from './service/payg-invoice.service';
 
 @Module({
   imports: [
     DatabaseModule,
     CrudModule,
-    DatacenterModule,
-    UserModule,
+    forwardRef(() => DatacenterModule),
+    forwardRef(() => UserModule),
     forwardRef(() => VdcModule),
     // VgpuModule,
     forwardRef(() => VgpuModule),
@@ -31,6 +33,8 @@ import { VdcModule } from 'src/application/vdc/vdc.module';
     CostCalculationService,
     InvoiceFactoryVdcService,
     InvoiceValidationService,
+    PaygCostCalculationService,
+    PaygInvoiceService,
     {
       provide: BASE_INVOICE_SERVICE,
       useClass: InvoicesService,
@@ -42,6 +46,8 @@ import { VdcModule } from 'src/application/vdc/vdc.module';
     BASE_INVOICE_SERVICE,
     InvoiceFactoryVdcService,
     InvoiceFactoryService,
+    PaygCostCalculationService,
+    PaygInvoiceService,
   ],
 })
 export class InvoicesModule {}

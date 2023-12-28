@@ -47,6 +47,10 @@ export class CreateInvoicesDto {
   @ApiProperty()
   finalAmount: number;
 
+  @IsNumber()
+  @ApiProperty()
+  finalAmountWithTax?: number;
+
   @IsString()
   @ApiProperty()
   description: string;
@@ -84,4 +88,12 @@ export class CreateInvoicesDto {
   serviceInstanceId: string;
 
   servicePlanType: number;
+
+  baseAmount?: number;
+
+  isPreInvoice: boolean;
+
+  invoiceTax: number;
+
+  serviceCost: number;
 }

@@ -18,4 +18,7 @@ export class UpdateServiceItemsDto {
   @IsNumber()
   @ApiProperty()
   itemTypeId?: number;
+
+  @IsString()
+  value?: string;
 }

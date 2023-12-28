@@ -2,25 +2,10 @@ import { Injectable } from '@nestjs/common';
 
 import { SortDateTypeEnum } from '../../../infrastructure/filters/sort-date-type.enum';
 import { getDateMinusDay } from '../../../infrastructure/utils/extensions/date.extension';
+import { VmStatusEnum } from '../enums/vm-status.enum';
 
 @Injectable()
 export class VmDetailFactoryService {
-  // formatDate(date: Date) {
-  //   return (
-  //     [
-  //       date.getFullYear(),
-  //       this.padTo2Digits(date.getMonth() + 1),
-  //       this.padTo2Digits(date.getDate()),
-  //     ].join('-') +
-  //     ' ' +
-  //     [
-  //       this.padTo2Digits(date.getHours()),
-  //       this.padTo2Digits(date.getMinutes()),
-  //       this.padTo2Digits(date.getSeconds()),
-  //     ].join(':')
-  //   );
-  // }
-
   filterDateVmDetails(
     startDate: Date,
     endDate: Date,
@@ -35,17 +20,22 @@ export class VmDetailFactoryService {
       const date = new Date();
       switch (Number(dateFilter)) {
         case SortDateTypeEnum.Today:
-          filterDate = `${fieldName}=le=${date2}`;
+          filterDate = `${fieldName}=lt=${date2};${fieldName}=gt=${getDateMinusDay(
+            date,
+            1,
+          )
+            .toISOString()
+            .trim()};`;
           break;
         case SortDateTypeEnum.YesterDay:
           // const tt = date.toISOString();
           //2023-11-13T08:02:40.815Z
           filterDate = `${fieldName}=lt=${date2.trim()};${fieldName}=ge=${getDateMinusDay(
             date,
-            1,
+            2,
           )
             .toISOString()
-            .trim()}`;
+            .trim()};`;
           break;
         case SortDateTypeEnum.LastWeek:
           filterDate = `${fieldName}=le=${date.toISOString()};${fieldName}=ge=${getDateMinusDay(
@@ -66,5 +56,17 @@ export class VmDetailFactoryService {
     }
 
     return filterDate;
+  }
+
+  async getCountOfNetworksVm(
+    forbiddenStatusVmsList: VmStatusEnum[],
+    recordItem,
+    options,
+    serviceInstanceId: string,
+    id,
+  ) {
+    if (forbiddenStatusVmsList.includes(recordItem.status)) {
+      return 0;
+    }
   }
 }

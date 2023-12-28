@@ -1,14 +1,13 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const axios = require('axios');
-require('dotenv').config();
-const password = process.env.ROBOT_TOKEN;
-
+const getToken = require('./get-token');
 /**
  * send check email request to server
  */
 async function checkServices() {
   const token = await getToken();
   await axios.default.put(
-    'http://localhost:3000/robot/sendEmailToExpiredServices',
+    `http://localhost:${process.env.PORT}/robot/sendEmailToExpiredServices`,
     null,
     {
       headers: {
@@ -16,20 +15,6 @@ async function checkServices() {
       },
     },
   );
-}
-
-/**
- * get jwt token from server
- * @returns {Promise<String>}
- */
-async function getToken() {
-  const response = await axios.default.post(
-    'http://localhost:3000/auth/robot/login',
-    {
-      token: password,
-    },
-  );
-  return response.data.access_token;
 }
 
 (function () {

@@ -25,6 +25,12 @@ import { MainWrapperModule } from '../../../../wrappers/main-wrapper/main-wrappe
 import { NetworksModule } from '../../../networks/networks.module';
 import { NatModule } from '../../../nat/nat.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
+import { TaskFactoryService } from './task.factory.service';
+import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
+import { ServiceItemModule } from '../../service-item/service-item.module';
+import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -56,9 +62,15 @@ describe('TasksService', () => {
         DatacenterModule,
         UserModule,
         EdgeGatewayModule,
+        VmModule,
+        VServiceInstancesTableModule,
+        ServiceItemModule,
+        ServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
       ],
       providers: [
         TaskManagerService,
+        TaskFactoryService,
         TasksService,
         ServiceService,
         VgpuDnatService,

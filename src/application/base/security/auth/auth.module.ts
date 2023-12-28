@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from './controller/auth.controller';
 import { AuthService } from './service/auth.service';
 import { JwtModule } from '@nestjs/jwt';
@@ -28,6 +28,7 @@ import { TwoFaAuthTypeService } from './classes/two-fa-auth-type.service';
 import { TwoFaAuthSmsService } from './classes/two-fa-auth-sms.service';
 import { TwoFaAuthEmailService } from './classes/two-fa-auth-email.service';
 import { TwoFaAuthStrategy } from './classes/two-fa-auth.strategy';
+import { ClsModule, ClsService } from 'nestjs-cls';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { TwoFaAuthStrategy } from './classes/two-fa-auth.strategy';
     AbilityModule,
     PassportModule,
     CrudModule,
-    UserModule,
+    forwardRef(() => UserModule),
+    ClsModule,
     NotificationModule,
     LoggerModule,
     SecurityToolsModule,
@@ -66,6 +68,6 @@ import { TwoFaAuthStrategy } from './classes/two-fa-auth.strategy';
     TwoFaAuthEmailService,
     TwoFaAuthStrategy,
   ],
-  exports: [AuthService],
+  exports: [AuthService, TwoFaAuthService],
 })
 export class AuthModule {}

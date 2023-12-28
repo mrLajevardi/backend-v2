@@ -70,7 +70,9 @@ export class UpdateInvoicesDto {
   @ApiProperty()
   userId?: number;
 
-  @IsInt()
+  @IsString()
   @ApiProperty()
   serviceInstanceId?: string;
+
+  isPreInvoice?: boolean;
 }

@@ -27,6 +27,9 @@ export class AdminEdgeGatewayWrapperService {
       params: {
         page,
         pageSize,
+        sortAsc: 'name',
+        filter:
+          '((networkBackings.values.backingTypeValue==NSXT_TIER0,networkBackings.values.backingTypeValue==NSXT_VRF_TIER0));usingIpSpace==false',
       },
       headers: {
         Authorization: `Bearer ${authToken}`,
@@ -74,7 +77,7 @@ export class AdminEdgeGatewayWrapperService {
    * @param {Number} pageSize
    * @return {Promise}
    */
-  private async findExternalNetwork(
+  public async findExternalNetwork(
     authToken: string,
     page = 1,
     pageSize = 25,
@@ -82,7 +85,7 @@ export class AdminEdgeGatewayWrapperService {
     const network = await this.getExternalNetworks(authToken, page, pageSize);
     return Promise.resolve(network);
   }
-  private async ipAllocation(
+  public async ipAllocation(
     externalNetworkId: string,
     authToken: string,
     userIpCount: number,
@@ -223,6 +226,7 @@ export class AdminEdgeGatewayWrapperService {
         {
           uplinkId: networkValue.id,
           uplinkName: networkValue.name,
+          connected: config.connected ?? true,
           subnets: {
             values: [
               {
@@ -259,7 +263,6 @@ export class AdminEdgeGatewayWrapperService {
       'AdminEdgeGatewayEndpointService.updateEdgeGatewayEndpoint';
     const wrapper =
       this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
-    console.log('🥖🥖🥖🥖');
     const edgeGateway =
       await this.vcloudWrapperService.request<GetEdgeClusterDto>(
         wrapper(options),

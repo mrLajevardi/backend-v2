@@ -19,7 +19,7 @@ import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.s
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { InvoiceItemListService } from '../../crud/invoice-item-list/invoice-item-list.service';
 import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
-import { Like, UpdateResult } from 'typeorm';
+import { In, Like, UpdateResult } from 'typeorm';
 import { ServiceAiInfoDto } from '../dto/return/service-ai-info.dto';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
@@ -27,7 +27,10 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
 import { InvoiceItems } from 'src/infrastructure/database/entities/InvoiceItems';
 import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
-import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import {
+  ItemTypeCodes,
+  VdcGenerationItemCodes,
+} from '../../itemType/enum/item-type-codes.enum';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
 import {
@@ -35,6 +38,13 @@ import {
   BaseDatacenterService,
 } from '../../datacenter/interface/datacenter.interface';
 import { VdcServiceProperties } from 'src/application/vdc/enum/vdc-service-properties.enum';
+import { VmPowerStateEventEnum } from 'src/wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
+import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
+import { CreateServiceDiscount } from '../interface/create-service-discount.interface';
+import { ServiceDiscountTableService } from '../../crud/service-discount-table/service-discount-table-service.service';
+import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
+import { VServiceInstancesDetailTableService } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
+import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 
 @Injectable()
 export class ExtendServiceService {
@@ -54,6 +64,9 @@ export class ExtendServiceService {
     private readonly serviceItemTypeTree: ServiceItemTypesTreeService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
+    private readonly serviceDiscountTableService: ServiceDiscountTableService,
+    private readonly invoiceItemListService: InvoiceItemListService,
+    private readonly vServiceInstancesDetailTableService: VServiceInstancesDetailTableService,
   ) {}
 
   async getAiServiceInfo(
@@ -110,6 +123,13 @@ export class ExtendServiceService {
     return ServiceAiInfo;
   }
 
+  async createServiceDiscount(dto: CreateServiceDiscount): Promise<void> {
+    await this.serviceDiscountTableService.create({
+      ...dto,
+      activateDate: new Date(),
+      enabled: true,
+    });
+  }
   async addGenIdToServiceProperties(
     invoiceItems: InvoiceItems[],
     serviceInstanceId: string,
@@ -124,7 +144,11 @@ export class ExtendServiceService {
       });
       const generationChild = await this.serviceItemTypeTree.findOne({
         where: {
-          id: Number(generationItem.hierarchy.split('_')[1]),
+          id: Number(
+            generationItem.hierarchy.split(
+              ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+            )[1],
+          ),
         },
       });
       const datacenterList =
@@ -163,10 +187,12 @@ export class ExtendServiceService {
   async createServiceInstance(
     userId: number,
     serviceTypeID: string,
-    expireDate: Date,
+    expireDate: Date | null,
     name = null,
     datacenterName: string,
     servicePlanType: number | null = null,
+    lastState: VmPowerStateEventEnum = null,
+    offset: Date = null,
   ): Promise<string> {
     const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
       where: {
@@ -176,7 +202,7 @@ export class ExtendServiceService {
     });
     const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
     const serviceType = await this.serviceTypeTable.findById(serviceTypeID);
-    const serivce = await this.serviceInstancesTable.create({
+    const service = await this.serviceInstancesTable.create({
       userId: userId,
       serviceType: serviceType,
       status: 1,
@@ -187,8 +213,10 @@ export class ExtendServiceService {
       name: name,
       servicePlanType,
       datacenterName,
+      offset,
+      lastState,
     });
-    return Promise.resolve(serivce.id);
+    return Promise.resolve(service.id);
   }
 
   //enable Vdc On Vcloud
@@ -353,18 +381,24 @@ export class ExtendServiceService {
   ): Promise<void> {
     const { serviceInstanceId, userId: userId, id: invoiceId } = invoice;
     // approve user transaction
-    await this.transactionTableService.updateAll(
-      {
-        userId: userId,
-        invoiceId: invoiceId,
-      },
-      {
-        isApproved: true,
-        serviceInstanceId,
-      },
-    );
+    // await this.transactionTableService.updateAll(
+    //   {
+    //     userId: userId,
+    //     invoiceId: invoiceId,
+    //   },
+    //   {
+    //     isApproved: true,
+    //     serviceInstanceId,
+    //   },
+    // );
+
+    await this.transactionTableService.update(transaction.id, {
+      isApproved: true,
+      serviceInstanceId: serviceInstanceId,
+    });
+
     // update user invoice
-    this.invoicesTableService.updateAll(
+    await this.invoicesTableService.updateAll(
       {
         userId: userId,
         id: transaction.invoiceId,
@@ -378,20 +412,70 @@ export class ExtendServiceService {
   async upgradeService(
     serviceInstanceId: string,
     invoiceId: number,
+    invoiceType: InvoiceTypes,
   ): Promise<void> {
-    const invoiceItems = await this.invoiceItemsTableService.find({
+    if (invoiceType === InvoiceTypes.UpgradeAndExtend) {
+      await this.serviceItemsTable.deleteAll({
+        serviceInstanceId,
+      });
+    }
+    const invoiceItems = await this.invoiceItemListService.find({
       where: {
         invoiceId,
       },
     });
-    await this.serviceItemsTable.deleteAll({
-      serviceInstanceId,
+    const serviceItems = await this.vServiceInstancesDetailTableService.find({
+      where: {
+        serviceInstanceId: serviceInstanceId,
+      },
     });
-    await this.createServiceItems(invoiceItems, serviceInstanceId);
-    await this.servicePropertiesTable.deleteAll({
-      propertyKey: VdcServiceProperties.GenerationId,
-      serviceInstanceId,
-    });
-    await this.addGenIdToServiceProperties(invoiceItems, serviceInstanceId);
+    for (const invoiceItem of invoiceItems) {
+      const invoiceParents = invoiceItem.codeHierarchy.split(
+        ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+      );
+      const foundItem = serviceItems.find((serviceItem) => {
+        const serviceItemParents = serviceItem.codeHierarchy.split(
+          ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+        );
+        if (
+          invoiceParents[2] === VdcGenerationItemCodes.Cpu ||
+          invoiceParents[2] === VdcGenerationItemCodes.Ram
+        ) {
+          return serviceItemParents[2] === invoiceParents[2];
+        }
+        return serviceItem.itemTypeId === invoiceItem.itemId;
+      });
+      let newItemValue: string;
+      if (invoiceType === InvoiceTypes.UpgradeAndExtend) {
+        await this.serviceItemsTable.create({
+          serviceInstanceId: serviceInstanceId,
+          itemTypeId: invoiceItem.itemId,
+          value: invoiceItem.value,
+          itemTypeCode: '',
+          quantity: 0,
+        });
+        continue;
+      }
+      if (foundItem) {
+        if (invoiceType === InvoiceTypes.Extend) {
+          newItemValue = invoiceItem.value;
+        } else {
+          newItemValue = String(
+            Number(invoiceItem.value) + Number(foundItem.value),
+          );
+        }
+        await this.serviceItemsTable.update(foundItem.serviceItemId, {
+          value: newItemValue,
+        });
+      } else {
+        await this.serviceItemsTable.create({
+          serviceInstanceId: serviceInstanceId,
+          itemTypeId: invoiceItem.itemId,
+          value: invoiceItem.value,
+          itemTypeCode: '',
+          quantity: 0,
+        });
+      }
+    }
   }
 }

@@ -18,6 +18,7 @@ import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dt
 import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
 import { VmService } from '../../vm/service/vm.service';
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
+import { GetCodeDisk } from '../utils/disk-functions.utils';
 
 @Injectable()
 export class VdcDetailFactoryService {
@@ -219,16 +220,13 @@ export class VdcDetailFactoryService {
     model.ramInfo.maxUsableWithOffAndOnVMs =
       Number(vdcDetail.ram.value) -
       (cpuCoreUsageVmOffs + Number(vdcDetail.ram.usage));
-    const itemsDiskCodes = Object.keys(DiskItemCodes);
+
+    // const itemsDiskCodes = Object.keys(DiskItemCodes);
     let diskCode = '';
     model.diskInfo = diskItemsModel.map((storage) => {
       // there is should be convention here for naming disk policy
+      diskCode = GetCodeDisk(storage.title);
 
-      itemsDiskCodes.forEach((item) => {
-        if (storage.title.includes(item)) {
-          diskCode = item.toLowerCase();
-        }
-      });
       return {
         max: storage.value,
         usage: storage.usage,

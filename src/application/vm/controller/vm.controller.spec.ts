@@ -25,6 +25,7 @@ describe('VmController', () => {
         SessionsModule,
         CrudModule,
         MainWrapperModule,
+        forwardRef(() => ServiceModule),
         forwardRef(() => NetworksModule),
       ],
       providers: [VmService, VmDetailService, VmDetailFactoryService],

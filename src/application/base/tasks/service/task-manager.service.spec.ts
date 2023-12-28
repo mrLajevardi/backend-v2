@@ -21,6 +21,8 @@ import { NatModule } from 'src/application/nat/nat.module';
 import { NetworksModule } from 'src/application/networks/networks.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
 import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { TaskFactoryService } from './task.factory.service';
+import { VmModule } from '../../../vm/vm.module';
 
 describe('TaskManagerService', () => {
   let service: TaskManagerService;
@@ -49,11 +51,13 @@ describe('TaskManagerService', () => {
         NatModule,
         NetworksModule,
         TaskManagerModule,
+        VmModule,
       ],
       providers: [
         TaskManagerService,
         TasksService,
         VgpuDnatService,
+        TaskFactoryService,
         ServicePropertiesService,
       ],
     }).compile();

@@ -4,10 +4,15 @@ import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { NotificationService } from 'src/application/base/notification/notification.service';
 import { comparePassword } from 'src/infrastructure/helpers/helpers';
 import { User } from 'src/infrastructure/database/entities/User';
-import { isEmpty } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { OtpService } from '../../security-tools/otp.service';
 import { AccessTokenDto } from '../dto/access-token.dto';
 import { OtpErrorException } from 'src/infrastructure/exceptions/otp-error-exception';
+import { UserPayload } from '../dto/user-payload.dto';
+import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
+import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import { TwoFaAuthService } from './two-fa-auth.service';
+import axios from 'axios';
 
 @Injectable()
 export class LoginService {
@@ -17,6 +22,7 @@ export class LoginService {
     private jwtService: JwtService,
     private otpService: OtpService,
     private notificationService: NotificationService,
+    private twoFaAuthService: TwoFaAuthService,
   ) {}
 
   // generates a phone otp and return the hash
@@ -61,12 +67,11 @@ export class LoginService {
     if (!user) {
       throw new UnauthorizedException();
     }
-
     // checking the availablity of the user and
     const isValid = await comparePassword(user.password, pass);
     if (user && isValid) {
       // eslint-disable-next-line
-      const { password, ...result } = user;
+      const {password, ...result} = user;
 
       //console.log(result);
       return result;
@@ -127,9 +132,56 @@ export class LoginService {
           }
         : null,
     };
+
+    if (isNil(aiAccessToken)) {
+      const axiosConfig = {
+        headers: {
+          Authorization: 'Bearer c2a3b7f4-2d36-4c3e-93c1-910d635a378a',
+          'Access-Control-Allow-Origin': '*',
+        },
+      };
+      const aiToken: string = null;
+      const aiRequest = await axios.post(
+        'https://aradpanelback.ziaei.ir/api/Auth/SsoLogin',
+        {
+          phoneNumber: user.phoneNumber,
+        },
+        axiosConfig,
+      );
+      if (aiRequest.status == 200) {
+        aiAccessToken = aiRequest.data.token;
+      }
+    }
+
     return {
       access_token: this.jwtService.sign(payload),
       ai_token: aiAccessToken,
+    };
+  }
+
+  async loginProcess(user: UserPayload) {
+    // if (!user.twoFactorAuth || user.twoFactorAuth === TwoFaAuthTypeEnum.None) {
+    if (
+      user.twoFactorAuth.split(',').includes(TwoFaAuthTypeEnum.None.toString())
+    ) {
+      const tokens: AccessTokenDto = await this.getLoginToken(
+        user.userId,
+        null,
+        user.aiAccessToken,
+      );
+
+      return {
+        two_factor_authenticate: false,
+        ...tokens,
+      };
+    }
+
+    const twoFactorTypes: number[] =
+      await this.twoFaAuthService.getUserTwoFactorTypes(user.userId);
+
+    return {
+      two_factor_authenticate: true,
+      types: twoFactorTypes,
     };
   }
 }

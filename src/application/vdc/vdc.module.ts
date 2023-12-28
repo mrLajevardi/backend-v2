@@ -31,12 +31,13 @@ import { EdgeGatewayModule } from '../edge-gateway/edge-gateway.module';
 import { NatModule } from '../nat/nat.module';
 import { VmModule } from '../vm/vm.module';
 import { DatacenterModule } from '../base/datacenter/datacenter.module';
+import { VServiceInstancesDetailTableModule } from '../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 @Module({
   imports: [
     MainWrapperModule,
     DatabaseModule,
-    DatacenterModule,
+    forwardRef(() => DatacenterModule),
     MainWrapperModule,
     CrudModule,
     LoggerModule,
@@ -44,13 +45,13 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
     NatModule,
     VmModule,
     forwardRef(() => ServiceModule),
-
+    forwardRef(() => OrganizationModule),
     // TasksModule,
     forwardRef(() => TasksModule),
     SessionsModule,
     forwardRef(() => InvoicesModule),
-    OrganizationModule,
-    UserModule,
+    forwardRef(() => OrganizationModule),
+    forwardRef(() => UserModule),
     ServicePropertiesModule,
     AbilityModule,
     // forwardRef(() => ServiceModule),
@@ -59,6 +60,7 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
     // NetworksModule,
     ServiceItemModule,
     ServiceInstancesTableModule,
+    VServiceInstancesDetailTableModule,
   ],
   providers: [
     VdcService,
@@ -67,6 +69,7 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
     NetworkService,
     VdcFactoryService,
     VdcDetailFactoryService,
+    VdcDetailService,
     {
       provide: BASE_VDC_INVOICE_SERVICE,
       useClass: VdcInvoiceService,
@@ -84,6 +87,7 @@ import { DatacenterModule } from '../base/datacenter/datacenter.module';
     VdcService,
     NetworkService,
     VdcFactoryService,
+    VdcDetailService,
     BASE_VDC_INVOICE_SERVICE,
     BASE_VDC_DETAIL_SERVICE,
   ],

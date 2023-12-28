@@ -47,7 +47,10 @@ export class InvoicesTableService {
 
   // Create an Item using createDTO
   async create(dto: CreateInvoicesDto): Promise<Invoices> {
+    const maxCode = await this.repository.maximum('code');
     const newItem = plainToClass(Invoices, dto);
+    newItem.code = maxCode + 1 ?? 1;
+
     const createdItem = this.repository.create(newItem);
     const item = await this.repository.save(createdItem);
     return item;

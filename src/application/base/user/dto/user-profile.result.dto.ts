@@ -13,9 +13,12 @@ export class UserProfileResultDtoFormat {
   email: string;
   emailVerified: boolean;
   personalCode: string;
+  twoFactorAuthenticate: number[];
   personalVerification: boolean;
   companyOwner: boolean;
-  avatar: any;
+  avatar: string;
+  companyLetter: string;
+  companyLetterStatus: number;
   company: CompanyResultDtoFormat | null;
 }
 
@@ -38,10 +41,21 @@ export class UserProfileResultDto {
       personalCode: item.personalCode,
       personalVerification: item.personalVerification,
       companyOwner: item.companyOwner,
+      twoFactorAuthenticate: this.parseTwoFactorTypes(item.twoFactorAuth),
       avatar: !isNil(item.avatar) ? item.avatar.streamId : null,
+      companyLetter: !isNil(item.companyLetter)
+        ? item.companyLetter.streamId
+        : null,
+      companyLetterStatus: item.companyLetterStatus,
       company: !isNil(item.company)
         ? new CompanyResultDto().toArray(item.company)
         : null,
     };
+  }
+
+  parseTwoFactorTypes(twoFactorTypes: string): number[] {
+    return String(twoFactorTypes)
+      .split(',')
+      .map((item) => Number(item));
   }
 }

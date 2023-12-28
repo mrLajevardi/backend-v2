@@ -49,7 +49,7 @@ export class TemplateItemsDto {
   guaranty: TemplateItem;
 
   @ApiProperty({ type: TemplateItem })
-  period: TemplateItem;
+  period?: TemplateItem;
 }
 
 export class TemplateDatacenter {
@@ -75,6 +75,15 @@ export class TemplatesStructure {
 
   @ApiProperty({ type: TemplateDatacenter })
   datacenter: TemplateDatacenter;
+
+  @ApiProperty({ type: TemplateItem })
+  duration?: number;
+
+  @ApiProperty({ type: TemplateItem })
+  percent?: number;
+
+  @ApiProperty({ type: TemplateItem })
+  price?: number;
 }
 export class TemplatesDto extends TemplatesStructure {
   @ApiProperty({ type: String })

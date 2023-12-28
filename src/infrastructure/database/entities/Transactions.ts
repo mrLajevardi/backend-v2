@@ -8,6 +8,8 @@ import {
 } from 'typeorm';
 import { User } from './User';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { Invoices } from './Invoices';
+import { ServiceInstances } from './ServiceInstances';
 
 @Index('PK_Transactions', ['id'], { unique: true })
 @Entity('Transactions', { schema: 'user' })
@@ -59,4 +61,12 @@ export class Transactions {
   })
   @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
   user: User;
+
+  @ManyToOne(() => Invoices)
+  @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
+  invoice: Invoices;
+
+  @ManyToOne(() => ServiceInstances)
+  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  serviceInstance: ServiceInstances;
 }

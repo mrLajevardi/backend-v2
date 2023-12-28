@@ -33,8 +33,6 @@ import { DhcpWrapperService } from 'src/wrappers/main-wrapper/service/user/dhcp/
 import { VdcProperties } from 'src/application/vdc/interface/vdc-properties.interface';
 import { NetworksService } from 'src/application/networks/networks.service';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { DhcpModeEnum } from 'src/wrappers/main-wrapper/service/user/dhcp/enum/dhcp-mode.enum';
-import { NatWrapperService } from 'src/wrappers/main-wrapper/service/user/nat/nat-wrapper.service';
 import { NatService } from 'src/application/nat/nat.service';
 import { NatFirewallMatchEnum } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-firewall-match.enum';
 import { EdgeGatewayService } from 'src/application/edge-gateway/service/edge-gateway.service';
@@ -43,6 +41,8 @@ import { FirewallService } from 'src/application/edge-gateway/service/firewall.s
 import { FirewallActionValue } from 'src/wrappers/main-wrapper/service/user/firewall/enum/firewall-action-value.enum';
 import { TaskQueryTypes } from '../enum/task-query-types.enum';
 import { NatTypes } from 'src/wrappers/main-wrapper/service/user/nat/enum/nat-types.enum';
+import { DhcpModeEnum } from '../../../../wrappers/main-wrapper/service/user/dhcp/enum/dhcp-mode.enum';
+import { IP_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
 
 // @Injectable({ scope: Scope.TRANSIENT })
 @Processor('tasks2')
@@ -507,12 +507,12 @@ export class TaskManagerService {
     const options = {
       user: { userId: userId },
     } as SessionRequest;
-    const ip = ipListProps[0].value.split('-');
+    const ip = ipListProps[0].value.split(IP_SPLITTER);
     const nat = await this.natService.createNatRule(
       {
         enabled: true,
-        externalIP: ip[0],
-        internalIP: '192.168.0.0/24',
+        externalIp: ip[0],
+        internalIp: '192.168.0.0/24',
         firewallMatch: NatFirewallMatchEnum.MatchExternalAddress,
         name: 'default_nat',
         priority: 0,
@@ -553,7 +553,7 @@ export class TaskManagerService {
       order: { id: { direction: 'DESC' } },
       take: 1,
     });
-    const ip = ipListProps[0].value.split('-')[0];
+    const ip = ipListProps[0].value.split(IP_SPLITTER)[0];
     const ipSet = await this.edgeGatewayService.createIPSet(
       options,
       service.id,
@@ -943,7 +943,7 @@ export class TaskManagerService {
     const session = await this.sessionService.checkAdminSession();
     // const vdcName = props?.name;
     const user = await this.userTable.findById(userId);
-    const vdcName = user?.username + '_org_vdc_' + service.index;
+    const vdcName = user.guid + '_org_vdc_' + service.index;
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {
       type: 'adminOrgVdc',
       filter: `name==*${vdcName}*`,
@@ -1015,7 +1015,7 @@ export class TaskManagerService {
     let vcloudTask = null;
     const userId = service.userId;
     const user = await this.userTable.findById(userId);
-    const vdcName = user?.username.toLowerCase() + '_org_vdc_' + service.index;
+    const vdcName = user.guid + '_org_vdc_' + service.index;
 
     const session = await this.sessionService.checkAdminSession();
     const query = await mainWrapper.user.vdc.vcloudQuery(session, {

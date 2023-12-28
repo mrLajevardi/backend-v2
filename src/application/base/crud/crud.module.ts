@@ -44,8 +44,12 @@ import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-it
 import { TemplatesTableModule } from './templates/templates-table.module';
 import { CompanyTableModule } from './company-table/company-table.module';
 import { ProvinceTableModule } from './province-table/province-table.module';
-import { FileTableService } from './file-table/file-table.service';
 import { FileTableModule } from './file-table/file-table.module';
+import { EntityLogTableModule } from './entity-log-table/entity-log-table.module';
+import { ServicePaymentsTableModule } from './service-payments-table/service-payments-table.module';
+import { VServiceInstancesTableModule } from './v-service-instances-table/v-service-instances-table.module';
+import { ServiceDiscountTableModule } from './service-discount-table/service-discount-table.module';
+import { VServiceInstancesDetailTableModule } from './v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 @Module({
   imports: [
@@ -96,6 +100,11 @@ import { FileTableModule } from './file-table/file-table.module';
     CompanyTableModule,
     ProvinceTableModule,
     FileTableModule,
+    EntityLogTableModule,
+    ServicePaymentsTableModule,
+    VServiceInstancesTableModule,
+    ServiceDiscountTableModule,
+    VServiceInstancesDetailTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -145,6 +154,12 @@ import { FileTableModule } from './file-table/file-table.module';
     CompanyTableModule,
     ProvinceTableModule,
     FileTableModule,
+    EntityLogTableModule,
+    ServicePaymentsTableModule,
+    VServiceInstancesTableModule,
+    ServiceDiscountTableModule,
+    VServiceInstancesDetailTableModule,
   ],
+  providers: [],
 })
 export class CrudModule {}

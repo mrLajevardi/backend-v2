@@ -17,6 +17,8 @@ import { EdgeGatewayModule } from 'src/application/edge-gateway/edge-gateway.mod
 import { NatModule } from 'src/application/nat/nat.module';
 import { NetworksModule } from 'src/application/networks/networks.module';
 import { TaskManagerModule } from '../../task-manager/task-manager.module';
+import { TaskFactoryService } from '../service/task.factory.service';
+import { VmModule } from '../../../vm/vm.module';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -25,6 +27,7 @@ describe('TasksController', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         DatabaseModule,
+        VmModule,
         AbilityModule,
         BullModule.registerQueue({
           name: 'tasks',
@@ -43,7 +46,7 @@ describe('TasksController', () => {
         TaskManagerModule,
         forwardRef(() => ServiceModule),
       ],
-      providers: [TasksService],
+      providers: [TasksService, TaskFactoryService],
       controllers: [TasksController],
     }).compile();
 

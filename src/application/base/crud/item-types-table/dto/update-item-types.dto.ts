@@ -1,4 +1,11 @@
-import { IsInt, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateItemTypesDto {
@@ -33,4 +40,12 @@ export class UpdateItemTypesDto {
   @IsInt()
   @ApiProperty({ required: false })
   minPerRequest?: number | null;
+
+  @IsDate()
+  @IsOptional()
+  deleteDate?: Date;
+
+  @IsBoolean()
+  @IsOptional()
+  isDeleted?: boolean;
 }

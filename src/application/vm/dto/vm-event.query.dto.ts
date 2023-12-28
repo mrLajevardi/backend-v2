@@ -6,8 +6,8 @@ export class VmEventQueryDto extends BaseQueryDto {
   vappId: string;
   vmId: string;
   dateFilter: SortDateTypeEnum;
-  page: number;
-  pageSize: number;
+  page = 1;
+  pageSize = 10;
   dateBegin?: Date;
   dateEnd?: Date;
 }

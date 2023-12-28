@@ -12,6 +12,8 @@ import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { CheckServiceService } from '../service/check-service.service';
 import { PaygInvoiceService } from '../service/payg-invoice.service';
 import { VgpuPayAsYouGoService } from '../service/vgpu-pay-as-you-go.service';
+import { PaygRobotService } from '../service/payg-robot.service';
+import { ServiceModule } from 'src/application/base/service/service.module';
 
 describe('RobotController', () => {
   let controller: RobotController;
@@ -27,6 +29,7 @@ describe('RobotController', () => {
         SessionsModule,
         LoggerModule,
         PayAsYouGoModule,
+        ServiceModule,
       ],
       controllers: [RobotController],
       providers: [
@@ -34,6 +37,7 @@ describe('RobotController', () => {
         CheckServiceService,
         PaygInvoiceService,
         VgpuPayAsYouGoService,
+        PaygRobotService,
       ],
     }).compile();
 

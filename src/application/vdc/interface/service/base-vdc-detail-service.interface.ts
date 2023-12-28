@@ -6,6 +6,8 @@ import { VdcDetailsResultDto } from '../../dto/vdc-details.result.dto';
 import { VdcDetailItemResultDto } from '../../dto/vdc-detail-item.result.dto';
 import { VdcItemLimitResultDto } from '../../dto/vdc-Item-limit.result.dto';
 import { VdcStoragesDetailResultDto } from '../../dto/vdc-storages-detail.result.dto';
+import { VdcDetailEditGeneralQuery } from '../../dto/vdc-detail-edit-general.query';
+import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 
 export const BASE_VDC_DETAIL_SERVICE = 'BASE_VDC_DETAIL_SERVICE';
 export interface BaseVdcDetailService extends IBaseService {
@@ -27,4 +29,9 @@ export interface BaseVdcDetailService extends IBaseService {
     serviceInstanceId: string,
     option: SessionRequest,
   ): Promise<VdcItemLimitResultDto>;
+
+  editGeneralInfo(
+    option: SessionRequest,
+    query: VdcDetailEditGeneralQuery,
+  ): Promise<string | BadRequestException>; // TODO ==> Refactor Result Of This Service
 }

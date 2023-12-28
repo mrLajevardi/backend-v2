@@ -76,10 +76,10 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   emailToken?: string | null;
 
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({ required: false })
-  credit?: number | null;
+  // @IsNumber()
+  // @IsOptional()
+  // @ApiProperty({ required: false })
+  // credit?: number | null;
 
   @IsString()
   @IsOptional()
@@ -145,4 +145,19 @@ export class UpdateUserDto {
   @IsOptional()
   @ApiProperty({ required: false })
   avatarId?: string | null;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  companyLetterId?: string | null;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  companyLetterStatus?: number | null;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  twoFactorAuth?: string;
 }

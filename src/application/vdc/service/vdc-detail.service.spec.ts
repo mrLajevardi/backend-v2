@@ -43,6 +43,8 @@ import { ServiceStatusEnum } from '../../base/service/enum/service-status.enum';
 import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
 import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
 import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dto';
+import { VServiceInstancesDetailTableModule } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
+import { VServiceInstancesTableModule } from '../../base/crud/v-service-instances-table/v-service-instances-table.module';
 
 describe('VdcDetailService', () => {
   let service: VdcDetailService;
@@ -55,6 +57,7 @@ describe('VdcDetailService', () => {
     return {
       disk: [
         {
+          priceWithTax: 0,
           unit: 'GB',
           code: VdcGenerationItemCodes.Disk,
           usage: 10000,
@@ -66,6 +69,7 @@ describe('VdcDetailService', () => {
       servicePlanType: ServicePlanTypeEnum.Static,
       status: ServiceStatusEnum.Success,
       ram: {
+        priceWithTax: 0,
         price: 1004,
         title: 'RAM',
         value: '4096',
@@ -74,6 +78,7 @@ describe('VdcDetailService', () => {
         unit: 'GB',
       },
       cpu: {
+        priceWithTax: 0,
         price: 123456,
         title: 'CPU',
         value: '8',
@@ -119,6 +124,8 @@ describe('VdcDetailService', () => {
         NetworksModule,
         ServiceItemModule,
         ServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
+        VServiceInstancesTableModule,
       ],
       providers: [
         VdcDetailService,

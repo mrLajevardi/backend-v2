@@ -7,8 +7,8 @@ import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/v
 import { ServicePropertiesService } from '../../base/service-properties/service-properties.service';
 import { VdcInvoiceDetailsInfoResultDto } from '../dto/vdc-invoice-details-info.result.dto';
 import {
+  DiskItemCodes,
   VdcGenerationItemCodes,
-  VdcGenerationItemUnit,
 } from '../../base/itemType/enum/item-type-codes.enum';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import {
@@ -17,14 +17,22 @@ import {
 } from '../../base/service-item/interface/service/service-item.interface';
 import { VdcDetailFactoryService } from './vdc-detail.factory.service';
 import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
-import {
-  DiskTypeItemLimitInfo,
-  VdcItemLimitResultDto,
-} from '../dto/vdc-Item-limit.result.dto';
-import { VdcItemLimitQueryDto } from '../dto/vdc-item-limit.query.dto';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
 import { VmService } from '../../vm/service/vm.service';
 import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dto';
-import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
+import { ServiceService } from '../../base/service/services/service.service';
+import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-all-vdc-service-with-items-result.dto';
+import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
+import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
+import { CalcSwapStorage, GetCodeDisk } from '../utils/disk-functions.utils';
+import { OrganizationTableService } from '../../base/crud/organization-table/organization-table.service';
+import { GetVdcIdBy } from '../utils/vdc-properties.utils';
+import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.enum';
+import { PaygCostCalculationService } from '../../base/invoice/service/payg-cost-calculation.service';
+import { VServiceInstancesTableService } from '../../base/crud/v-service-instances-table/v-service-instances-table.service';
+import { isNil } from 'lodash';
+import { VServiceInstances } from '../../../infrastructure/database/entities/views/v-serviceInstances';
+import { VServiceInstancesDetailTableService } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -35,6 +43,11 @@ export class VdcDetailService implements BaseVdcDetailService {
     private readonly servicePropertiesService: ServicePropertiesService,
     @Inject(BASE_SERVICE_ITEM_SERVICE)
     private readonly serviceItemService: BaseServiceItem,
+    private readonly serviceService: ServiceService,
+    private readonly vmService: VmService,
+    private readonly vServiceInstancesTableService: VServiceInstancesTableService,
+    private readonly paygCostCalculationService: PaygCostCalculationService,
+    private readonly vServiceInstancesDetailTableService: VServiceInstancesDetailTableService,
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
@@ -82,7 +95,10 @@ export class VdcDetailService implements BaseVdcDetailService {
     return Promise.resolve(res);
   }
 
-  async getVdcDetail(serviceInstanceId: string): Promise<VdcDetailsResultDto> {
+  async getVdcDetail(
+    serviceInstanceId: string,
+    option?: SessionRequest,
+  ): Promise<VdcDetailsResultDto> {
     if (!serviceInstanceId) {
       return {};
     }
@@ -99,24 +115,91 @@ export class VdcDetailService implements BaseVdcDetailService {
       res2,
     );
 
+    const vdcDetails = (
+      (await this.serviceService.getServicesWithItems(
+        option,
+        'vdc',
+        serviceInstanceId,
+      )) as GetAllVdcServiceWithItemsResultDto[]
+    )[0];
+
+    const vmServiceItem =
+      await this.vServiceInstancesDetailTableService.findOne({
+        where: {
+          code: VdcGenerationItemCodes.Vm,
+          serviceInstanceId: serviceInstanceId,
+        },
+      });
+
     this.vdcDetailFactory.getVdcDetailItemModel(vdcModels, res2);
+
+    res2.vm.usage = vdcDetails.serviceItems.find(
+      (service) =>
+        service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Vm,
+    ).usage;
+
+    res2.cpu.usage = vdcDetails.serviceItems.find(
+      (service) =>
+        service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Cpu,
+    ).usage;
+
+    res2.ram.usage = vdcDetails.serviceItems.find(
+      (service) =>
+        service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Ram,
+    ).usage;
 
     res2.guaranty.title = await this.serviceItemService.getGuarantyTitleBy(
       serviceInstanceId,
     );
-    res2.disk = (await this.getStorageDetailVdc(serviceInstanceId)).map(
-      (storage) => {
-        return {
+
+    const diskModel = (await this.getStorageDetailVdc(serviceInstanceId)).map(
+      async (storage) => {
+        const diskCode = GetCodeDisk(storage.title);
+
+        const res: VdcInvoiceDetailsInfoResultDto = {
           title: storage.title,
           usage: storage.usage,
           value: storage.value.toString(),
-          code: VdcGenerationItemCodes.Disk,
+          code: diskCode,
           price: 0,
           unit: 'MB',
-        } as VdcInvoiceDetailsInfoResultDto;
+          tax: 0,
+          priceWithTax: 0,
+        };
+
+        if (res.code == DiskItemCodes.Standard) {
+          const storage = await CalcSwapStorage(
+            {
+              storageLimit: Number(res.value),
+              storageUsed: res.usage,
+              memoryAllocation: Number(res2.ram.value),
+              serviceInstanceId: serviceInstanceId,
+              numberOfVms: Number(vmServiceItem.value),
+            },
+            this.vmService,
+            option as SessionRequest,
+          );
+
+          res.usage = Number(storage.used);
+          res.value = storage.limit.toString();
+        }
+
+        return res;
       },
     );
 
+    res2.disk = await Promise.all(diskModel);
+
+    if (res2.servicePlanType == ServicePlanTypeEnum.Payg) {
+      const vService: VServiceInstances =
+        await this.vServiceInstancesTableService.findById(serviceInstanceId);
+      res2.serviceCredit = vService.credit;
+      res2.daysLeft =
+        await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
+          serviceInstanceId,
+        );
+    }
+    res2.extendable = vdcDetails.extendable;
     return res2;
   }
 
@@ -171,7 +254,7 @@ export class VdcDetailService implements BaseVdcDetailService {
         option,
         serviceInstanceId,
       );
-    const vdcDetail = await this.getVdcDetail(serviceInstanceId);
+    const vdcDetail = await this.getVdcDetail(serviceInstanceId, option);
     const diskInfoModel = await this.getStorageDetailVdc(serviceInstanceId);
     this.vdcDetailFactory.fillModelVdcItemLimit(
       model,
@@ -182,5 +265,40 @@ export class VdcDetailService implements BaseVdcDetailService {
     );
 
     return model;
+  }
+
+  async editGeneralInfo(
+    option: SessionRequest,
+    query: VdcDetailEditGeneralQuery,
+  ): Promise<string | BadRequestException> {
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      query.serviceInstanceId,
+    );
+
+    if (
+      props['vdcId'] == null ||
+      props['orgId'] == null ||
+      props['name'] == null
+    )
+      return new BadRequestException(
+        'this vdc does not have any vdc id or org id ',
+      );
+
+    const authToken = (
+      await this.sessionService.createUserSession(
+        props['orgId'],
+        option.user.userId,
+      )
+    ).token;
+
+    const vdcId = GetVdcIdBy(props['vdcId']);
+
+    const task = await this.vdcWrapperService.editGeneralInfo(
+      vdcId,
+      props['name'],
+      query.description,
+      authToken,
+    );
+    return task.__vcloudTask;
   }
 }
