@@ -44,10 +44,26 @@ export class DatacenterFactoryService {
     query: DatacenterConfigGenItemsQueryDto,
   ): FindManyOptions<ItemTypes> {
     const option: FindManyOptions<ItemTypes> = {};
-    const generationName = 'Generation';
+
     const findOptionsItemTypes: FindOptionsWhere<ItemTypes>[] = [];
     option.where = [];
+    this.getItemTypesRule(query, findOptionsItemTypes, option);
+    for (
+      let conditionIndex = 0;
+      conditionIndex < findOptionsItemTypes.length;
+      conditionIndex++
+    ) {
+      option.where.push(findOptionsItemTypes[conditionIndex]);
+    }
+    option.where.concat(findOptionsItemTypes);
+    return option;
+  }
 
+  private getItemTypesRule(
+    query: DatacenterConfigGenItemsQueryDto,
+    findOptionsItemTypes: FindOptionsWhere<ItemTypes>[],
+    option: FindManyOptions<ItemTypes>,
+  ) {
     if (
       query.DataCenterId != undefined &&
       query.DataCenterId.trim().length > 0
@@ -69,16 +85,8 @@ export class DatacenterFactoryService {
         isDeleted: false,
       });
     }
-    for (
-      let conditionIndex = 0;
-      conditionIndex < findOptionsItemTypes.length;
-      conditionIndex++
-    ) {
-      option.where.push(findOptionsItemTypes[conditionIndex]);
-    }
-    option.where.concat(findOptionsItemTypes);
-    return option;
   }
+
   public CreateItemTypeConfigTree(
     ItemTypesConfig: DatacenterConfigGenItemsResultDto[],
     parentId: number,
@@ -86,14 +94,14 @@ export class DatacenterFactoryService {
   ): DatacenterConfigGenItemsResultDto[] {
     const parents = ItemTypesConfig.filter((d) => d.parentId == parentId);
     parents.forEach((e: DatacenterConfigGenItemsResultDto): void => {
-      if (e.enabled) {
-        const res2: DatacenterConfigGenItemsResultDto[] =
-          this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
+      // if (e.enabled) {
+      const res2: DatacenterConfigGenItemsResultDto[] =
+        this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
 
-        e.subItems.concat(res2);
+      e.subItems.concat(res2);
 
-        subItems.push(e);
-      }
+      subItems.push(e);
+      // }
     });
 
     return subItems;

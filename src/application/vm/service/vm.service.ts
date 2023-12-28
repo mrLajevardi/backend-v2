@@ -1344,7 +1344,6 @@ export class VmService {
       vAppId,
       true,
       data.mediaName,
-      data.mediaHref,
       data.mediaId,
     );
     await this.loggerService.info(
