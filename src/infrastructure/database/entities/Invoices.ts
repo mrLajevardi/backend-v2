@@ -61,8 +61,8 @@ export class Invoices {
   @Column('nvarchar', { name: 'Name', nullable: true, length: 50 })
   name: string | null;
 
-  @Column('float', { name: 'FinalAmountWIthTax', precision: 53 })
-  finalAmountWIthTax: number;
+  @Column('float', { name: 'FinalAmountWithTax', nullable: true })
+  finalAmountWithTax: number | null;
   // @Column('tinyint', { name: 'ServicePlanType', nullable: true })
   // servicePlanType: number | null;
 
