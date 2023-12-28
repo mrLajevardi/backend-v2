@@ -38,11 +38,15 @@ export class PaygInvoiceService {
       throw new BadRequestException();
     }
     const serviceInstanceId = null;
+    let template: TemplatesStructure;
     if (data.templateId) {
-      await this.createPaygInvoiceFromTemplate(data);
+      template = await this.createPaygInvoiceFromTemplate(data);
     }
     const cost =
       await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(data);
+    if (template) {
+      cost.totalCost = template.finalPrice;
+    }
     const groupedItems = await this.invoiceFactoryService.groupVdcItems(
       data.itemsTypes,
     );
@@ -77,7 +81,7 @@ export class PaygInvoiceService {
 
   async createPaygInvoiceFromTemplate(
     data: CreatePaygVdcServiceDto,
-  ): Promise<void> {
+  ): Promise<TemplatesStructure> {
     const template = await this.templateTableService.findById(data.templateId);
     const templateStructure: TemplatesStructure = JSON.parse(
       template.structure,
@@ -88,6 +92,7 @@ export class PaygInvoiceService {
       );
     data.itemsTypes = invoiceItems;
     data.duration = templateStructure.duration;
+    return templateStructure;
   }
 
   async checkAllUserCredit() {

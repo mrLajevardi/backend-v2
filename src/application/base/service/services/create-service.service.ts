@@ -89,13 +89,6 @@ export class CreateServiceService {
       throw new ForbiddenException();
     }
 
-    if (!isNil(invoice.serviceInstanceId)) {
-      return {
-        id: invoice.serviceInstanceId,
-        taskId: null,
-      };
-    }
-
     return await this.strategy[invoice.serviceTypeId].bind(this)(
       options,
       invoice,
@@ -106,6 +99,12 @@ export class CreateServiceService {
     options: SessionRequest,
     invoice: Invoices,
   ): Promise<TaskReturnDto> {
+    if (!isNil(invoice.serviceInstanceId)) {
+      return {
+        id: invoice.serviceInstanceId,
+        taskId: null,
+      };
+    }
     const userId = options.user.userId;
     const userCredit = await this.userInfoService.getUserCreditBy(userId);
 
