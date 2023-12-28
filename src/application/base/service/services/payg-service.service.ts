@@ -209,12 +209,21 @@ export class PaygServiceService {
             serviceInstanceId: service.id,
           },
         });
+        const minutes = 60 * 24;
+        const groupedItems = null;
+        const applyTemplateDiscount = true;
         const transferredItems = transferItems(serviceItems);
         const fullTimeCost =
-          await this.paygCostCalculationService.calculateVdcPaygTypeInvoice({
-            itemsTypes: transferredItems,
-            duration: 1,
-          });
+          await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
+            {
+              itemsTypes: transferredItems,
+              duration: 1,
+            },
+            minutes,
+            groupedItems,
+            applyTemplateDiscount,
+            service,
+          );
         try {
           await this.budgetingService.paidFromBudgetCredit(
             service.id,
@@ -386,6 +395,7 @@ export class PaygServiceService {
       new Date(),
     );
     await this.invoiceTableService.update(invoice.id, { serviceInstanceId });
+    invoice.serviceInstanceId = serviceInstanceId;
     await this.createServiceDiscount(invoice);
     await this.extendService.createServiceItems(
       invoiceItems,

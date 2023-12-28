@@ -11,14 +11,15 @@ import {
   InvoiceItemCost,
   TotalInvoiceItemCosts,
 } from '../interface/invoice-item-cost.interface';
-import { CalculateOptions } from '../interface/calculate-options.interface';
 import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
 import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
 import { VdcFactoryService } from '../../../vdc/service/vdc.factory.service';
-import { ServiceChecksService } from '../../service/services/service-checks.service';
 import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 import { DiskItemCodes } from '../../itemType/enum/item-type-codes.enum';
 import { VdcItemGroup } from '../interface/vdc-item-group.interface.dto';
+import { ServiceDiscountTableService } from '../../crud/service-discount-table/service-discount-table-service.service';
+import { ServiceDiscount } from 'src/infrastructure/database/entities/ServiceDiscount';
+import { addDays } from 'src/infrastructure/helpers/date-time.helper';
 
 @Injectable()
 export class PaygCostCalculationService {
@@ -28,6 +29,7 @@ export class PaygCostCalculationService {
     private readonly costCalculationService: CostCalculationService,
     private readonly vdcFactoryService: VdcFactoryService,
     private readonly vServiceInstancesTableService: VServiceInstancesTableService,
+    private readonly serviceDiscountTableService: ServiceDiscountTableService,
   ) {}
   async calculateVdcPaygVm(
     service: ServiceInstances,
@@ -129,27 +131,52 @@ export class PaygCostCalculationService {
       itemsSum: itemsSum,
       itemsTotalCosts: totalCost,
     };
+    const templateDiscount = await this.serviceDiscountTableService.findOne({
+      where: {
+        enabled: true,
+        serviceInstanceId: service.id,
+      },
+    });
     const supportCosts = groupedItems.guaranty.fee * durationInMin;
     itemsSum.push(
       { ...groupedItems.guaranty, cost: supportCosts },
       groupedItems.cpuReservation,
       groupedItems.memoryReservation,
     );
-    const invoiceTotalCosts =
+    const expired = await this.checkTemplateDiscount(templateDiscount);
+    let invoiceTotalCosts =
       totalInvoiceItemCosts.itemsTotalCosts + supportCosts;
+    if (!expired) {
+      invoiceTotalCosts =
+        invoiceTotalCosts - invoiceTotalCosts * templateDiscount.percent;
+    }
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
       serviceCost: totalInvoiceItemCosts.itemsTotalCosts * durationInMin,
+      templateDiscount: !expired ? templateDiscount : null,
     };
   }
 
   async calculateVdcPaygTypeInvoice(
     dto: CreatePaygVdcServiceDto,
     minutes: number = 60 * 24,
-    items?: VdcItemGroup,
+    items?: VdcItemGroup | null,
+    applyTemplateDiscount = false,
+    service?: ServiceInstances,
   ): Promise<TotalInvoiceItemCosts> {
+    let templateDiscount: ServiceDiscount;
+    if (applyTemplateDiscount) {
+      templateDiscount = await this.serviceDiscountTableService.findOne({
+        where: {
+          enabled: true,
+          serviceInstanceId: service.id,
+        },
+      });
+    }
+    const expired = await this.checkTemplateDiscount(templateDiscount);
+    const templateDiscountValue = !expired ? 1 - templateDiscount.percent : 1;
     const groupedItems =
       items ?? (await this.invoiceFactoryService.groupVdcItems(dto.itemsTypes));
     groupedItems.generation.disk = groupedItems.generation.disk.filter(
@@ -163,13 +190,15 @@ export class PaygCostCalculationService {
     const invoiceTotalCosts =
       (totalInvoiceItemCosts.itemsTotalCosts + supportCosts) *
       dto.duration *
-      minutes;
+      minutes *
+      templateDiscountValue;
     return {
       itemsTotalCosts: totalInvoiceItemCosts.itemsTotalCosts,
       itemsSum: totalInvoiceItemCosts.itemsSum,
       totalCost: invoiceTotalCosts,
       serviceCost:
         totalInvoiceItemCosts.itemsTotalCosts * minutes * dto.duration,
+      templateDiscount: !expired ? templateDiscount : null,
     };
   }
 
@@ -195,5 +224,19 @@ export class PaygCostCalculationService {
     );
 
     return Math.round(service.credit / dailyCost.totalCost);
+  }
+
+  async checkTemplateDiscount(item: ServiceDiscount): Promise<boolean> {
+    if (!item) {
+      return true;
+    }
+    const expireDate = addDays(item.activateDate, item.duration);
+    const expired = new Date().getTime() > expireDate.getTime();
+    if (expired) {
+      await this.serviceDiscountTableService.update(item.guid, {
+        enabled: false,
+      });
+    }
+    return expired;
   }
 }
