@@ -94,14 +94,14 @@ export class DatacenterFactoryService {
   ): DatacenterConfigGenItemsResultDto[] {
     const parents = ItemTypesConfig.filter((d) => d.parentId == parentId);
     parents.forEach((e: DatacenterConfigGenItemsResultDto): void => {
-      // if (e.enabled) {
-      const res2: DatacenterConfigGenItemsResultDto[] =
-        this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
+      if (!e.isHidden) {
+        const res2: DatacenterConfigGenItemsResultDto[] =
+          this.CreateItemTypeConfigTree(ItemTypesConfig, e.id, e.subItems);
 
-      e.subItems.concat(res2);
+        e.subItems.concat(res2);
 
-      subItems.push(e);
-      // }
+        subItems.push(e);
+      }
     });
 
     return subItems;
@@ -126,6 +126,7 @@ export class DatacenterFactoryService {
           itemTypeConfig.parentId,
           itemTypeConfig.step,
           itemTypeConfig.enabled,
+          itemTypeConfig.isHidden,
         ),
       );
     });
