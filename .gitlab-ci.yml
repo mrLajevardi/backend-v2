@@ -5,7 +5,7 @@ stages:     # List of stages for jobs, and their order of execution
   - deploy
 variables:
   IMAGE_NAME: $GITLAB_USER_LOGIN/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH:latest
-  MY_PASSWORD: Ali12345678
+  MY_PASSWORD: $$Ali12345678
 
 .job-cache:
   cache:  # Cache modules in between jobs
