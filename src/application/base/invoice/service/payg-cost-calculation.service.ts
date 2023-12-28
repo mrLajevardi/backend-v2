@@ -71,6 +71,7 @@ export class PaygCostCalculationService {
       return {
         ...item,
         cost: item.cost * dateDiffToMin,
+        min: dateDiffToMin,
       };
     });
     return computeItemsCost;
@@ -120,7 +121,7 @@ export class PaygCostCalculationService {
     computeItems.forEach((item) => {
       totalCost += item.cost;
     });
-    itemsSum = itemsSum.concat(itemsSum, computeItems);
+    itemsSum = itemsSum.concat(computeItems);
     const totalInvoiceItemCosts: Pick<
       TotalInvoiceItemCosts,
       'itemsSum' | 'itemsTotalCosts'
@@ -129,6 +130,11 @@ export class PaygCostCalculationService {
       itemsTotalCosts: totalCost,
     };
     const supportCosts = groupedItems.guaranty.fee * durationInMin;
+    itemsSum.push(
+      { ...groupedItems.guaranty, cost: supportCosts },
+      groupedItems.cpuReservation,
+      groupedItems.memoryReservation,
+    );
     const invoiceTotalCosts =
       totalInvoiceItemCosts.itemsTotalCosts + supportCosts;
     return {

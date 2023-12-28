@@ -222,7 +222,7 @@ export class PaygServiceService {
               paidAmount: totalCost.totalCost,
               paidAmountForNextPeriod: fullTimeCost.totalCost / 24,
             },
-            totalCost.itemsSum,
+            [totalCost, { durationInMin }, totalVpcCost],
           );
         } catch (err) {
           await this.disablePaygService(
