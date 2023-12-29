@@ -19,6 +19,9 @@ import { PaginationReturnDto } from 'src/infrastructure/dto/pagination-return.dt
 import { SystemErrorDto } from '../dto/system-error.dto';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
+import { VusersTableService } from '../../crud/vusers-table/vusers-table.service';
+import { VUsers } from 'src/infrastructure/database/entities/views/v-users';
+import { UpdateUserAdminDto } from '../dto/update-user-admin.dto';
 
 @Injectable()
 export class UserAdminService {
@@ -49,6 +52,7 @@ export class UserAdminService {
     private readonly transactionsTable: TransactionsTableService,
     private readonly groupMappingTable: GroupsMappingTableService,
     private readonly groupTable: GroupsTableService,
+    private readonly vUsersTableService: VusersTableService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -136,48 +140,48 @@ export class UserAdminService {
     return retVal;
   }
 
-  async getUsers(
-    // role: string,
-    active: boolean,
-    page: number,
-    pageSize: number,
-    name: string,
-    username: string,
-    family: string,
-  ): Promise<PaginationReturnDto<User>> {
-    let skip = 0;
-    let limit = 10;
-    if (!isEmpty(page)) {
-      skip = pageSize * (page - 1);
-    }
-    const where = isNil(username || name || family || limit)
-      ? {}
-      : {
-          username: username ? Like(`%${username}%`) : undefined,
-          active: active,
-          name: name ? Like(`%${name}%`) : undefined,
-          family: family ? Like(`%${family}%`) : undefined,
-          // roleId: role,
-        };
-    if (!isEmpty(pageSize)) {
-      limit = pageSize;
-    }
-    console.log(where);
+  // async getUsers(
+  //   // role: string,
+  //   active: boolean,
+  //   page: number,
+  //   pageSize: number,
+  //   name: string,
+  //   username: string,
+  //   family: string,
+  // ): Promise<PaginationReturnDto<User>> {
+  //   let skip = 0;
+  //   let limit = 10;
+  //   if (!isEmpty(page)) {
+  //     skip = pageSize * (page - 1);
+  //   }
+  //   const where = isNil(username || name || family || limit)
+  //     ? {}
+  //     : {
+  //         username: username ? Like(`%${username}%`) : undefined,
+  //         active: active,
+  //         name: name ? Like(`%${name}%`) : undefined,
+  //         family: family ? Like(`%${family}%`) : undefined,
+  //         // roleId: role,
+  //       };
+  //   if (!isEmpty(pageSize)) {
+  //     limit = pageSize;
+  //   }
+  //   console.log(where);
 
-    const users = await this.userTable.find({
-      where,
-      take: pageSize,
-      skip,
-      select: this.userFilter,
-    });
-    const countAll = await this.userTable.count({ where: where });
-    return Promise.resolve({
-      total: countAll,
-      page,
-      pageSize,
-      record: users,
-    });
-  }
+  //   const users = await this.userTable.find({
+  //     where,
+  //     take: pageSize,
+  //     skip,
+  //     select: this.userFilter,
+  //   });
+  //   const countAll = await this.userTable.count({ where: where });
+  //   return Promise.resolve({
+  //     total: countAll,
+  //     page,
+  //     pageSize,
+  //     record: users,
+  //   });
+  // }
 
   // async impersonateAsUser(options: SessionRequest, data: ) {
   //   const { userId } = data;
@@ -353,7 +357,7 @@ export class UserAdminService {
   async updateUser(
     options: SessionRequest,
     userId: number,
-    data: UpdateUserDto,
+    data: UpdateUserAdminDto,
   ): Promise<void> {
     const user = await this.userTable.findOne({
       where: {
@@ -363,82 +367,17 @@ export class UserAdminService {
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
     }
-    const newData = { ...data };
-    delete newData.groups;
-    //delete newData.roles;
-    delete newData.username;
-    delete newData.email;
-    console.log('❤️');
-    if (Object.keys(newData).length > 0) {
-      await this.userTable.updateAll({ id: userId }, newData);
-      await this.logger.info(
-        'user',
-        'adminUpdateUser',
-        {
-          username: user.username,
-          data,
-          _object: user.id.toString(),
-        },
-        { ...options.user },
-      );
-    }
-
-    console.log('❤️👌');
-    await this.groupMappingTable.deleteAll({
-      userId: userId,
+    await this.userTable.update(userId, {
+      name: data.name,
+      family: data.family,
+      birthDate: data.birthDate,
+      email: data.email,
     });
-    if (data.groups) {
-      for (const group of data.groups) {
-        const groupMapExists = await this.groupMappingTable.findOne({
-          where: {
-            groupId: group.id,
-            userId: userId,
-          },
-        });
-        if (!groupMapExists) {
-          const groupExists = await this.groupTable.findById(group.id);
-          if (groupExists) {
-            await this.groupMappingTable.create({
-              userId: userId,
-              groupId: group.id,
-              createDate: new Date(),
-            });
-          }
-        }
-      }
-    }
-    console.log('👌');
-    await this.logger.info(
-      'user',
-      'updateUserGroups',
-      {
-        username: user.username,
-        _object: user.id.toString(),
-      },
-      { ...options.user },
-    );
-    // await app.models.RoleMappings.destroyAll({
-    //   principalId: userId,
-    // });
-    // console.log(data.roles, '💀');
-    // for (const role of data.roles) {
-    //   const roleExists = await app.models.RoleMappings.findOne({
-    //     where: {
-    //       and: [
-    //         {roleId: role},
-    //         {principalId: userId},
-    //       ],
-    //     },
-    //   });
-    //   console.log('first');
-    //   if (! roleExists) {
-    //     await app.models.RoleMappings.create({
-    //       principalId: userId,
-    //       roleId: role,
-    //       principalType: 'USER',
-    //     });
-    //   }
-    // }
     return;
+  }
+
+  async getUsers(): Promise<VUsers[]> {
+    const users = await this.vUsersTableService.find();
+    return users;
   }
 }

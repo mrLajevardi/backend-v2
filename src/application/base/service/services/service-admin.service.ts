@@ -37,6 +37,8 @@ import { UpdateConfigsDto } from '../../crud/configs-table/dto/update-configs.dt
 import { FindOptionsWhere, ILike, Like, Not } from 'typeorm';
 import { ItemTypeWithConsumption } from '../types/item-type-with-consumption.type';
 import { TransactionsReturnDto } from '../dto/return/transactions-return.dto';
+import { ServiceStatusEnum } from '../enum/service-status.enum';
+import { UserService } from '../../user/service/user.service';
 
 @Injectable()
 export class ServiceAdminService {
@@ -54,6 +56,7 @@ export class ServiceAdminService {
     private readonly transactionsTable: TransactionsTableService,
     private readonly vgpuService: VgpuService,
     private readonly servicePropertiesService: ServicePropertiesService,
+    private readonly userService: UserService,
   ) {}
 
   async deleteService(
@@ -175,7 +178,10 @@ export class ServiceAdminService {
       return Promise.reject(new ForbiddenException());
     }
     console.log(service);
-    if (service.status === 4 && service.isDisabled) {
+    if (
+      service.status === ServiceStatusEnum.DisabledByAdmin &&
+      service.isDisabled
+    ) {
       const error = new DisabledServiceException('service is already disabled');
       throw error;
     }
@@ -185,7 +191,7 @@ export class ServiceAdminService {
         id: serviceInstanceId,
       },
       {
-        status: 4,
+        status: ServiceStatusEnum.DisabledByAdmin,
       },
     );
     if (serviceType === 'vdc') {
@@ -231,7 +237,6 @@ export class ServiceAdminService {
       },
       { ...options.user },
     );
-    console.log(task, '😘👌👌');
     return Promise.resolve({
       taskId: task.taskId,
       id: serviceInstanceId,
@@ -249,7 +254,7 @@ export class ServiceAdminService {
     if (isNil(service)) {
       return Promise.reject(new ForbiddenException());
     }
-    if (service.status !== 4) {
+    if (service.status !== ServiceStatusEnum.DisabledByAdmin) {
       const error = new NotDisabledServiceException('service is not disabled');
       throw error;
     }
@@ -258,7 +263,7 @@ export class ServiceAdminService {
         id: serviceInstanceId,
       },
       {
-        status: 3,
+        status: ServiceStatusEnum.Success,
         isDisabled: false, // false
       },
     );
@@ -556,76 +561,91 @@ export class ServiceAdminService {
     startDateTime: Date,
     endDateTime: Date,
   ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
-    if (pageSize > 128) {
-      return Promise.reject(new BadRequestException());
-    }
-    if (startDateTime && !endDateTime) {
-      endDateTime = new Date();
-    }
-
-    let where: FindOptionsWhere<Transactions> = {};
-    if (
-      isNil(
-        serviceType ||
-          userId ||
-          value ||
-          invoiceID ||
-          ServiceID ||
-          startDateTime ||
-          endDateTime,
-      )
-    ) {
-      where = {};
-    } else {
-      where = {
-        invoiceId: invoiceID,
-        userId: userId,
-        serviceInstanceId: ServiceID,
-        value: value,
-        description: ILike(`%${serviceType}%`),
-      };
-    }
-    if (startDateTime && endDateTime) {
-      where['DateTime'] = { $between: [startDateTime, endDateTime] };
-    }
-
-    const transaction = await this.transactionsTable.find({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      where,
-      order: {
-        id: 'DESC',
+    const options: SessionRequest = {
+      user: {
+        userId,
       },
-      relations: ['user'],
-      // relations: ["users"],
-    });
-    const withoutPagination = await this.transactionsTable.find({
-      where,
-      relations: ['user'],
-    });
+    } as SessionRequest;
+    return this.userService.getTransactions(
+      options,
+      page,
+      pageSize,
+      serviceType,
+      value,
+      invoiceID,
+      ServiceID,
+      startDateTime,
+      endDateTime,
+    );
+    // if (pageSize > 128) {
+    //   return Promise.reject(new BadRequestException());
+    // }
+    // if (startDateTime && !endDateTime) {
+    //   endDateTime = new Date();
+    // }
 
-    // filter returned user fields
-    const transactionsWithSelectedFields = transaction.map((tx) => {
-      const selectedUserFields = {
-        id: tx.user.id,
-        name: tx.user.name,
-        family: tx.user.family,
-        active: tx.user.active,
-        // Include other user fields you want
-      };
+    // let where: FindOptionsWhere<Transactions> = {};
+    // if (
+    //   isNil(
+    //     serviceType ||
+    //       userId ||
+    //       value ||
+    //       invoiceID ||
+    //       ServiceID ||
+    //       startDateTime ||
+    //       endDateTime,
+    //   )
+    // ) {
+    //   where = {};
+    // } else {
+    //   where = {
+    //     invoiceId: invoiceID,
+    //     userId: userId,
+    //     serviceInstanceId: ServiceID,
+    //     value: value,
+    //     description: ILike(`%${serviceType}%`),
+    //   };
+    // }
+    // if (startDateTime && endDateTime) {
+    //   where['DateTime'] = { $between: [startDateTime, endDateTime] };
+    // }
 
-      return {
-        ...tx,
-        user: selectedUserFields,
-      };
-    });
+    // const transaction = await this.transactionsTable.find({
+    //   skip: (page - 1) * pageSize,
+    //   take: pageSize,
+    //   where,
+    //   order: {
+    //     id: 'DESC',
+    //   },
+    //   relations: ['user'],
+    //   // relations: ["users"],
+    // });
+    // const withoutPagination = await this.transactionsTable.find({
+    //   where,
+    //   relations: ['user'],
+    // });
 
-    const totalRecords = withoutPagination.length;
-    const data = { transaction: transactionsWithSelectedFields, totalRecords };
-    if (!transaction) {
-      return Promise.reject(new ForbiddenException());
-    }
-    return Promise.resolve(data);
+    // // filter returned user fields
+    // const transactionsWithSelectedFields = transaction.map((tx) => {
+    //   const selectedUserFields = {
+    //     id: tx.user.id,
+    //     name: tx.user.name,
+    //     family: tx.user.family,
+    //     active: tx.user.active,
+    //     // Include other user fields you want
+    //   };
+
+    //   return {
+    //     ...tx,
+    //     user: selectedUserFields,
+    //   };
+    // });
+
+    // const totalRecords = withoutPagination.length;
+    // const data = { transaction: transactionsWithSelectedFields, totalRecords };
+    // if (!transaction) {
+    //   return Promise.reject(new ForbiddenException());
+    // }
   }
 
   async updateConfigs(configId: number, data: UpdateConfigsDto): Promise<void> {
