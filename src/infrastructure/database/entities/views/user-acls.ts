@@ -1,12 +1,17 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
-import { isTestingEnv } from '../../helpers/helpers';
-import { HookTypeEnum } from '../../../application/base/crud/acl-table/enum/hook-type.enum';
-import { BaseEntity } from '../../entity/base.entity';
-import { AccessType } from '../../../application/base/crud/acl-table/enum/access-type.enum';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { Entity, Column } from 'typeorm';
+import { BaseEntity } from '../../../entity/base.entity';
+import { HookTypeEnum } from '../../../../application/base/crud/acl-table/enum/hook-type.enum';
+import { AccessType } from '../../../../application/base/crud/acl-table/enum/access-type.enum';
 
-@Index('PK__ACL__3213E83F35E40E26', ['id'], { unique: true })
-@Entity('ACL', { schema: 'security' })
-export class Acl extends BaseEntity {
+@Entity({
+  schema: 'security',
+  name: 'UserAcls',
+})
+export class UserAcls extends BaseEntity {
+  @Column('int', { name: 'UserID' })
+  userId: number;
+
   @Column('nvarchar', { name: 'Model', nullable: true, length: 255 })
   model: string | null;
 

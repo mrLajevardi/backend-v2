@@ -40,7 +40,9 @@ export class PoliciesGuard implements CanActivate {
 
     const realUser = await this.userTable.findById(user.userId);
 
-    const ability = await this.caslAbilityFactory.createForUser(realUser);
+    const ability = await this.caslAbilityFactory.createForUserBeforeHook(
+      realUser,
+    );
     const request: SessionRequest = context.switchToHttp().getRequest();
     const props: PolicyHandlerOptions = {
       payload: request.body,
@@ -61,17 +63,12 @@ export class PoliciesGuard implements CanActivate {
     console.log('exec policy handler');
     console.log(ability.rules[0].conditions, props);
     if (typeof handler === 'function') {
-      const t = ability.relevantRuleFor(
-        Action.Create,
-        subject('Invoices', ability.rules[0].conditions),
-      );
       const retVal: boolean = handler(ability, props);
-      console.log(ability, retVal, t);
+      console.log(ability, retVal);
       return retVal;
       //return handler(ability);
     }
     const retVal = handler.handle(ability, props);
-    console.log(retVal);
     return retVal;
   }
 }

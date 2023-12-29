@@ -122,7 +122,7 @@ export class AbilityController {
   @Post()
   @ApiBody({ type: CreateACLDto })
   @ApiResponse({ status: 201, description: 'Created ACL successfully' })
-  async createAcl(@Body() data: UpdateACLDto): Promise<Acl> {
+  async createAcl(@Body() data: CreateACLDto): Promise<Acl> {
     return await this.aclTable.create(data);
   }
 

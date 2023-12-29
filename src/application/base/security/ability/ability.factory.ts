@@ -18,6 +18,10 @@ import { ReservedVariablesEnum } from './enum/reserved-variables.enum';
 import { isNil } from 'lodash';
 import { ServiceStatusEnum } from '../../service/enum/service-status.enum';
 import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceInstances';
+import { HookTypeEnum } from '../../crud/acl-table/enum/hook-type.enum';
+import { AfterHookHandler } from './type/after-hook-handler.type';
+import { UserAclsTableService } from '../../crud/user-acls-table/user-acls-table.service';
+import { convertAccessTypeToAction } from '../../crud/acl-table/util/convert-accessType-to-action.util';
 
 export type AbilitySubjects =
   | (typeof dbEntities)[number]
@@ -49,6 +53,7 @@ export class AbilityFactory {
   constructor(
     private readonly aclTable: ACLTableService,
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
+    private readonly userAclTableService: UserAclsTableService,
   ) {}
 
   // converts the string name of the entity class
@@ -63,19 +68,20 @@ export class AbilityFactory {
   }
 
   // creates the abilities related to the user .
-  async createForUser(
+  async createForUserBeforeHook(
     user: User,
   ): Promise<MongoAbility<AbilityTuple, MongoQuery>> {
     const builder = new AbilityBuilder(createMongoAbility);
     const simpleAcls = await this.aclTable.find({
       where: {
-        principalType: In([null, '']),
+        // principalType: In([null, '']),
       },
     });
-    const compoundAcls = await this.aclTable.find({
+    const compoundAcls = await this.userAclTableService.find({
       where: {
-        principalType: 'User',
-        principalId: user ? user.id.toString() : null,
+        userId: user.id,
+        // principalId: user ? user.id.toString() : null,
+        hookType: HookTypeEnum.Before,
       },
     });
 
@@ -83,7 +89,7 @@ export class AbilityFactory {
     const dependsOnServiceInstance = acls.some((acl) =>
       acl.property.includes(ReservedVariablesEnum.ServiceInstanceIds),
     );
-    let serviceInstances: Pick<ServiceInstances, 'id'>[];
+    let serviceInstances: Pick<ServiceInstances, 'id'>[] = [];
     if (dependsOnServiceInstance) {
       serviceInstances = await this.serviceInstancesTableService.find({
         where: {
@@ -108,20 +114,32 @@ export class AbilityFactory {
           { serviceInstanceIds, userId: user.id },
           acl.property,
         );
-        propertyCondition = JSON.parse(propertyCondition);
+        try {
+          propertyCondition = JSON.parse(propertyCondition);
+        } catch {
+          propertyCondition = null;
+        }
       }
       // propertyCondition = {
       //   s: 1,
       // };
       //console.log("parsed query: ", propertyCondition);
-      if (acl.permission == 'can') {
+      if (acl.can) {
         // console.log(propertyCondition);
         //console.log('can',acl.accessType,acl.model,propertyCondition);
-        builder.can(acl.accessType, acl.model, propertyCondition);
+        builder.can(
+          convertAccessTypeToAction(acl.accessType),
+          acl.model,
+          propertyCondition,
+        );
       } else {
         // console.log('cannot',acl.accessType,acl.model,propertyCondition);
 
-        builder.cannot(acl.accessType, acl.model, propertyCondition);
+        builder.cannot(
+          convertAccessTypeToAction(acl.accessType),
+          acl.model,
+          propertyCondition,
+        );
       }
     }
     //  builder.can(Action.Read, 'Invoices' , JSON.parse('{ "payed" : false, "user": {}  }') );
@@ -132,6 +150,10 @@ export class AbilityFactory {
 
     return builder.build();
   }
+
+  // async createForUserAfterHook(handler?: AfterHookHandler) {
+
+  // }
 
   private replaceVariables(
     reservedVariables: ReservedVariablesInterface,

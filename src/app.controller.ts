@@ -14,9 +14,6 @@ import { SystemSettings } from './infrastructure/database/entities/SystemSetting
 
 // @UseInterceptors(SentryInterceptor) // This is a test to make sure that sentry is okay !!
 @Controller()
-@CheckPolicies((ability: PureAbility) =>
-  ability.can(Action.Manage, PredefinedRoles.AdminRole),
-)
 export class AppController {
   constructor(
     private readonly appService: AppService,
@@ -33,6 +30,9 @@ export class AppController {
   @ApiResponse({ status: 200, description: 'Returns the user profile' })
   @ApiBearerAuth() // Requires authentication with a JWT token
   @UseGuards(JwtAuthGuard)
+  @CheckPolicies((ability: PureAbility) =>
+    ability.can(Action.Manage, PredefinedRoles.AdminRole),
+  )
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;

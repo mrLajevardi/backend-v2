@@ -1,34 +1,18 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { HookTypeEnum } from '../enum/hook-type.enum';
+import { AccessType } from '../enum/access-type.enum';
 
 export class CreateACLDto {
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  model?: string;
+  model: string | null;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  property?: string;
+  property: string | null;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  accessType?: string;
+  accessType: AccessType;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  permission?: string;
+  can: boolean;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  principalType?: string;
+  roleId: string;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  principalId?: string;
+  hookType: HookTypeEnum;
 }

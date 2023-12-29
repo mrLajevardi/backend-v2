@@ -50,6 +50,7 @@ import { ServicePaymentsTableModule } from './service-payments-table/service-pay
 import { VServiceInstancesTableModule } from './v-service-instances-table/v-service-instances-table.module';
 import { ServiceDiscountTableModule } from './service-discount-table/service-discount-table.module';
 import { VServiceInstancesDetailTableModule } from './v-service-instances-detail-table/v-service-instances-detail-table.module';
+import { UserAclsTableModule } from './user-acls-table/user-acls-table.module';
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { VServiceInstancesDetailTableModule } from './v-service-instances-detail
     VServiceInstancesTableModule,
     ServiceDiscountTableModule,
     VServiceInstancesDetailTableModule,
+    UserAclsTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -159,6 +161,7 @@ import { VServiceInstancesDetailTableModule } from './v-service-instances-detail
     VServiceInstancesTableModule,
     ServiceDiscountTableModule,
     VServiceInstancesDetailTableModule,
+    UserAclsTableModule,
   ],
   providers: [],
 })

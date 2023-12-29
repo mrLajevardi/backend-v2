@@ -51,7 +51,7 @@ import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-h
 @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) => {
   // const t = ability.can(Action.Manage)
   return ability.can(Action.Create, subject('Invoices', props));
-}) // Requires authentication with a JWT token
+})
 export class InvoicesController {
   constructor(
     @Inject(BASE_INVOICE_SERVICE)
