@@ -151,7 +151,7 @@ describe('VdcDetailFactoryService', () => {
     const servicePlanType = ServicePlanTypeEnum.Static;
 
     const vdcDetailModels = getVdcDetailModel();
-    const res: VdcDetailsResultDto = {};
+    const res: VdcDetailsResultDto = new VdcDetailsResultDto();
 
     const model = await service.fillVdcDetailModel(vdcDetailModels, res);
 
@@ -166,7 +166,7 @@ describe('VdcDetailFactoryService', () => {
 
   it('should return null vdc model with null vdc detail model and null vdc details result dto ', async () => {
     const vdcDetailModels: VdcDetailModel[] = [];
-    const res: VdcDetailsResultDto = {};
+    const res: VdcDetailsResultDto = new VdcDetailsResultDto();
 
     const model = await service.fillVdcDetailModel(vdcDetailModels, res);
 

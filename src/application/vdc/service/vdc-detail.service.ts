@@ -33,6 +33,7 @@ import { VServiceInstancesTableService } from '../../base/crud/v-service-instanc
 import { isNil } from 'lodash';
 import { VServiceInstances } from '../../../infrastructure/database/entities/views/v-serviceInstances';
 import { VServiceInstancesDetailTableService } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
+import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -100,15 +101,15 @@ export class VdcDetailService implements BaseVdcDetailService {
     option?: SessionRequest,
   ): Promise<VdcDetailsResultDto> {
     if (!serviceInstanceId) {
-      return {};
+      const res: VdcInvoiceDetailsResultDto = new VdcInvoiceDetailsResultDto();
     }
 
-    const res2: VdcDetailsResultDto = {};
+    const res2: VdcDetailsResultDto = new VdcDetailsResultDto();
     const servicesModels = await this.vdcDetailFactory.getVdcDetailModel(
       serviceInstanceId,
     );
 
-    if (servicesModels.length === 0) return {};
+    if (servicesModels.length === 0) return new VdcDetailsResultDto();
 
     const vdcModels = this.vdcDetailFactory.fillVdcDetailModel(
       servicesModels,

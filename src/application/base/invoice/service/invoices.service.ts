@@ -278,7 +278,7 @@ export class InvoicesService implements BaseInvoiceService {
     invoiceId: string,
     serviceType = 'vdc',
   ): Promise<VdcInvoiceDetailsResultDto> {
-    const res: VdcInvoiceDetailsResultDto = {};
+    const res: VdcInvoiceDetailsResultDto = new VdcInvoiceDetailsResultDto();
 
     //We should Join in this way == > Invoice --> InvoiceItem --> view.ServiceItemTypesTree
     const vdcInvoiceDetailsModels =
