@@ -12,5 +12,4 @@ export interface BaseVdcInvoiceServiceInterface extends IBaseService {
     invoiceId: string,
     serviceType: string,
   ): Promise<VdcInvoiceDetailsResultDto>;
-
 }

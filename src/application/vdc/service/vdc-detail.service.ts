@@ -33,7 +33,7 @@ import { VServiceInstancesTableService } from '../../base/crud/v-service-instanc
 import { isNil } from 'lodash';
 import { VServiceInstances } from '../../../infrastructure/database/entities/views/v-serviceInstances';
 import { VServiceInstancesDetailTableService } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
-import {VdcInvoiceDetailsResultDto} from "../dto/vdc-invoice-details.result.dto";
+import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
