@@ -1,5 +1,6 @@
 import { IBaseService } from '../../../../infrastructure/service/IBaseService';
 import { VdcInvoiceDetailsResultDto } from '../../dto/vdc-invoice-details.result.dto';
+import { InvoiceDetailBaseDto } from '../../dto/invoice-detail-base.dto';
 
 export const BASE_VDC_INVOICE_SERVICE = 'BASE_VDC_INVOICE_SERVICE';
 export interface BaseVdcInvoiceServiceInterface extends IBaseService {
@@ -11,4 +12,5 @@ export interface BaseVdcInvoiceServiceInterface extends IBaseService {
     invoiceId: string,
     serviceType: string,
   ): Promise<VdcInvoiceDetailsResultDto>;
+
 }

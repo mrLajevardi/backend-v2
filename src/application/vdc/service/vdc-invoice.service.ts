@@ -7,6 +7,9 @@ import {
   BASE_INVOICE_SERVICE,
   BaseInvoiceService,
 } from '../../base/invoice/interface/service/invoice.interface';
+import { InvoiceDetailBaseDto } from '../dto/invoice-detail-base.dto';
+import { InvoiceItemList } from '../../../infrastructure/database/entities/views/invoice-item-list';
+import { InvoiceItemListService } from '../../base/crud/invoice-item-list/invoice-item-list.service';
 
 @Injectable()
 export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
@@ -14,6 +17,7 @@ export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
     @Inject(BASE_INVOICE_SERVICE)
     private readonly invoiceVdcService: BaseInvoiceService,
   ) {}
+
   getVdcPreFactor(
     invoiceId: string,
     serviceType: 'vdc',
@@ -27,7 +31,7 @@ export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
     invoiceId: string,
     serviceType = 'vdc',
   ): Promise<VdcInvoiceDetailsResultDto> {
-    if (!invoiceId) return Promise.resolve({});
+    if (!invoiceId) return Promise.resolve(new VdcInvoiceDetailsResultDto());
 
     const res = this.invoiceVdcService.getVdcInvoiceDetails(
       invoiceId,
