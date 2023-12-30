@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
@@ -70,6 +72,7 @@ export class UserService {
     private readonly userTable: UserTableService,
     private readonly companyTable: CompanyTableService,
     private readonly transactionsTable: TransactionsTableService,
+    @Inject(forwardRef(() => TransactionsService))
     private readonly transactionsService: TransactionsService,
     private readonly roleMappingsTable: RoleMappingTableService,
     private readonly systemSettingsTable: SystemSettingsTableService,

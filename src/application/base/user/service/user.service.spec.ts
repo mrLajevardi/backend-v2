@@ -29,6 +29,7 @@ import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserInfoService } from './user-info.service';
 import { UsersFactoryService } from './user.factory.service';
 import { ServiceModule } from '../../service/service.module';
+import { forwardRef } from '@nestjs/common';
 
 describe('UserService', () => {
   let table: UserTableService;
@@ -106,14 +107,14 @@ describe('UserService', () => {
     module = await Test.createTestingModule({
       imports: [
         DatabaseModule,
-        ServiceModule,
         CrudModule,
         LoggerModule,
         PaymentModule,
         JwtModule,
         NotificationModule,
         SecurityToolsModule,
-        TransactionsModule,
+        forwardRef(() => TransactionsModule),
+        forwardRef(() => ServiceModule),
       ],
       providers: [
         UserService,
