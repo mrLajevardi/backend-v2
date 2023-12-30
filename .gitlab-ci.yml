@@ -87,7 +87,7 @@ build image:
     # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
   script:
     - echo "$CI_REGISTRY_IMAGE"
-    - cp /etc/services/configs/.env ./
+    - cp /var/services/configs/.env ./
     - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
     # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
     # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
@@ -95,11 +95,13 @@ build image:
 
 deploy image:
   stage: deploy
+  services:
+    - docker:dind
   tags:
     - release
   before_script:
     - export IMAGE_NAME="$IMAGE_NAME"
   script:
-    - sudo docker compose up
+    - sudo docker compose up -d
 
 
