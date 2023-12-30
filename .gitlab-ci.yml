@@ -102,6 +102,7 @@ deploy image:
   before_script:
     - export IMAGE_NAME="$IMAGE_NAME"
   script:
+    - cp /var/services/configs/.env ./ -f
     - sudo docker compose up -d
 
 
