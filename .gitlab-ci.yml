@@ -4,7 +4,7 @@ stages:     # List of stages for jobs, and their order of execution
   - publish
   - deploy
 variables:
-  IMAGE_NAME: $GITLAB_USER_LOGIN/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH:latest
+  IMAGE_NAME: $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$CI_COMMIT_BRANCH:latest
   MY_PASSWORD: $$Ali12345678
   MY_USER: aliiii0307
 
