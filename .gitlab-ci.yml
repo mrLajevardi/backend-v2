@@ -5,8 +5,6 @@ stages:     # List of stages for jobs, and their order of execution
   - deploy
 variables:
   IMAGE_NAME: $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
-  MY_PASSWORD: $$Ali12345678
-  MY_USER: aliiii0307
 
 .job-cache:
   cache:  # Cache modules in between jobs
@@ -89,7 +87,18 @@ build image:
     # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
   script:
     - echo "$CI_REGISTRY_IMAGE"
-    - docker build . --tag "$CI_REGISTRY_IMAGE"
+    - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
     # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
     # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - docker push "$CI_REGISTRY_IMAGE"
+    - docker push "$CI_REGISTRY/$IMAGE_NAME"
+
+deploy image:
+  stage: deploy
+  tags:
+    - release
+  before_script:
+    - export IMAGE_NAME="$IMAGE_NAME"
+  script:
+    - sudo docker compose up
+
+

@@ -36,9 +36,7 @@ services:
 
   nestjs-api:
 #    image: nestjs-api
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${IMAGE_NAME}
     env_file:
       - .env
     ports:
