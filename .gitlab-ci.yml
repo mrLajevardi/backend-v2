@@ -103,6 +103,7 @@ deploy image:
     - export IMAGE_NAME="$IMAGE_NAME"
   script:
     - cp /var/services/configs/.env ./ -f
+    - echo "$IMAGE_NAME"
     - sudo docker compose up -d
 
 
