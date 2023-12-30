@@ -143,20 +143,19 @@ export class LoginService {
         };
         const aiToken: string = null;
         const aiRequest = await axios.post(
-            'https://aradpanelback.ziaei.ir/Cloud/login/',
-            {
-              phoneNumber: user.phoneNumber,
-            },
-            axiosConfig,
+          'https://aradpanelback.ziaei.ir/Cloud/login/',
+          {
+            phoneNumber: user.phoneNumber,
+          },
+          axiosConfig,
         );
 
         if (aiRequest.status == 200) {
           aiAccessToken = aiRequest.data.token;
         }
-      }catch (error){
+      } catch (error) {
         console.log('Axios request failed:', error);
       }
-
     }
 
     return {
