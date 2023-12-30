@@ -27,4 +27,28 @@ export class InvoiceItemList {
 
   @Column({ name: 'UserID' })
   userId: number;
+
+  @Column({ name: 'InvoiceCode' })
+  invoiceCode: number;
+
+  @Column({ name: 'FinalAmount' })
+  finalAmount: number;
+
+  @Column({ name: 'BaseAmount' })
+  baseAmount: number;
+
+  @Column({ name: 'FinalAmountWithTax' })
+  finalAmountWithTax: number;
+
+  @Column({ name: 'RawAmount' })
+  rawAmount: number;
+
+  @Column({ name: 'InvoiceTax', type: 'float' })
+  invoiceTax: number;
+
+  @Column({ name: 'TemplateID' })
+  templateId: number;
+
+  @Column({ name: 'ServiceCost' })
+  serviceCost: number;
 }

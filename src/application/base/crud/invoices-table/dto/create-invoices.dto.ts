@@ -47,6 +47,10 @@ export class CreateInvoicesDto {
   @ApiProperty()
   finalAmount: number;
 
+  @IsNumber()
+  @ApiProperty()
+  finalAmountWithTax?: number;
+
   @IsString()
   @ApiProperty()
   description: string;

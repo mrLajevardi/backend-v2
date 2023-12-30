@@ -40,6 +40,9 @@ export class DatacenterConfigGenItemsResultDto {
   @ApiProperty({ type: Boolean })
   enabled: boolean;
 
+  @ApiProperty({ type: Boolean })
+  isHidden: boolean;
+
   @ApiProperty({ type: [DatacenterConfigGenItemsResultDto] })
   subItems: DatacenterConfigGenItemsResultDto[] = [];
   constructor(
@@ -55,6 +58,7 @@ export class DatacenterConfigGenItemsResultDto {
     ParentId: number,
     Step: number,
     Enabled: boolean,
+    IsHidden: boolean,
   ) {
     this.itemTypeName = ItemTypeName;
     this.itemTypeCode = ItemTypeCode;
@@ -69,5 +73,6 @@ export class DatacenterConfigGenItemsResultDto {
     this.subItems = [];
     this.step = Step;
     this.enabled = Enabled;
+    this.isHidden = IsHidden;
   }
 }
