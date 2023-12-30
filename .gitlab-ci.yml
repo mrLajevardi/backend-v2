@@ -106,6 +106,6 @@ deploy image:
     - cp /var/services/configs/.env ./ -f
     - export IMAGE_NAME=${IMAGE_FULLPATH}
     - echo $IMAGE_NAME 
-    - sudo docker compose up -d
+    - docker compose up -d
 
 
