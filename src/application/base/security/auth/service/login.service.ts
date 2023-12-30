@@ -138,12 +138,13 @@ export class LoginService {
         const axiosConfig = {
           headers: {
             Authorization: 'Bearer c2a3b7f4-2d36-4c3e-93c1-910d635a378a',
-            'Access-Control-Allow-Origin': '*',
+            Accept: '*',
+            'Content-Type': 'application/json',
           },
         };
         const aiToken: string = null;
         const aiRequest = await axios.post(
-          'https://aradpanelback.ziaei.ir/Cloud/login/',
+          'https://aradpanelback.ziaei.ir/api/Cloud/login',
           {
             phoneNumber: user.phoneNumber,
           },
