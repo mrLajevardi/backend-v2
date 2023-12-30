@@ -44,13 +44,13 @@ import { PureAbility, subject } from '@casl/ability';
 import { Action } from '../../security/ability/enum/action.enum';
 import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
 import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 
 @ApiTags('Invoices')
 @Controller('invoices')
 @ApiBearerAuth()
 @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) => {
-  // const t = ability.can(Action.Manage)
-  return ability.can(Action.Create, subject('Invoices', props));
+  return ability.can(Action.Create, subject(AclSubjectsEnum.Invoices, props));
 })
 export class InvoicesController {
   constructor(

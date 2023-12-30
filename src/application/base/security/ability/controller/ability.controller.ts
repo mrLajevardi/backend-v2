@@ -36,11 +36,18 @@ import { DeleteOptions } from 'typeorm';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { GetAllAclsDto } from '../dto/get-all-acls.dto';
 import { User } from '@sentry/node';
+import { PolicyHandlerOptions } from '../interfaces/policy-handler.interface';
+import { PureAbility, subject } from '@casl/ability';
+import { CheckPolicies } from '../decorators/check-policies.decorator';
+import { AclSubjectsEnum } from '../enum/acl-subjects.enum';
 
 @ApiTags('Ability')
 @Controller('ability')
 @ApiBearerAuth() // Requires authentication with a JWT token
-@Roles(PredefinedRoles.SuperAdminRole)
+// @Roles(PredefinedRoles.SuperAdminRole)
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Ability, props)),
+)
 export class AbilityController {
   constructor(
     private readonly abilityAdminService: AbilityAdminService,

@@ -20,9 +20,17 @@ import { CompanyResultDto } from '../dto/company.result.dto';
 import { CompanyUpdatePhoneNumberDto } from '../dto/company-update-phone-number.dto';
 import { CompanyUpdateAddressDto } from '../dto/company-update-address.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CheckPolicies } from '../../../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../../../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../../../base/security/ability/enum/action.enum';
 
 @ApiTags('Company')
 @Controller('company')
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Company, props)),
+)
 @ApiBearerAuth()
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}

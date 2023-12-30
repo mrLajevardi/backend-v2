@@ -5,9 +5,17 @@ import { EntityLogService } from './service/entity-log.service';
 import { isNil } from 'lodash';
 import { EntityLogResultDto } from './dto/result/entity-log.result.dto';
 import { EntityLog } from '../../../infrastructure/database/entities/EntityLog';
+import { CheckPolicies } from '../../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../../base/security/ability/enum/action.enum';
 
 @Controller('entityLog')
 @ApiTags('EntityLogs')
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.EntityLogs, props)),
+)
 @ApiBearerAuth()
 export class EntityLogController {
   constructor(private readonly EntityLogService: EntityLogService) {}

@@ -11,6 +11,7 @@ import { UserTableService } from 'src/application/base/crud/user-table/user-tabl
 import { guardHelper } from 'src/infrastructure/helpers/guard-helper';
 import { Action } from '../enum/action.enum';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { AclSubjectsEnum } from '../enum/acl-subjects.enum';
 
 @Injectable()
 export class PoliciesGuard implements CanActivate {
@@ -22,10 +23,10 @@ export class PoliciesGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const policyHandlers =
-      this.reflector.get<PolicyHandler[]>(
-        CHECK_POLICIES_KEY,
+      this.reflector.getAllAndOverride<PolicyHandler[]>(CHECK_POLICIES_KEY, [
         context.getHandler(),
-      ) || [];
+        context.getClass(),
+      ]) || [];
 
     const { user } = context.switchToHttp().getRequest();
     // console.dir(policyHandlers, { depth: null });

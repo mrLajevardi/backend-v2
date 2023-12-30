@@ -28,9 +28,17 @@ import { Groups } from 'src/infrastructure/database/entities/Groups';
 import { NotFoundException } from 'src/infrastructure/exceptions/not-found.exception';
 import { CreateErrorException } from 'src/infrastructure/exceptions/create-error.exception';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { CheckPolicies } from '../../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../../base/security/ability/enum/action.enum';
 
 @ApiTags('Group')
 @Controller('group')
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Group, props)),
+)
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class GroupController {
   constructor(

@@ -83,11 +83,12 @@ export class AbilityFactory {
         // principalId: user ? user.id.toString() : null,
         hookType: HookTypeEnum.Before,
       },
+      order: { can: 'DESC' },
     });
 
-    const acls = [...simpleAcls, ...compoundAcls];
+    const acls = [...compoundAcls];
     const dependsOnServiceInstance = acls.some((acl) =>
-      acl.property.includes(ReservedVariablesEnum.ServiceInstanceIds),
+      acl.property?.includes(ReservedVariablesEnum.ServiceInstanceIds),
     );
     let serviceInstances: Pick<ServiceInstances, 'id'>[] = [];
     if (dependsOnServiceInstance) {
@@ -117,7 +118,7 @@ export class AbilityFactory {
         try {
           propertyCondition = JSON.parse(propertyCondition);
         } catch {
-          propertyCondition = null;
+          propertyCondition = '';
         }
       }
       // propertyCondition = {
@@ -127,6 +128,10 @@ export class AbilityFactory {
       if (acl.can) {
         // console.log(propertyCondition);
         //console.log('can',acl.accessType,acl.model,propertyCondition);
+        const args = [convertAccessTypeToAction(acl.accessType), acl.model];
+        if (propertyCondition) {
+          args.push(propertyCondition);
+        }
         builder.can(
           convertAccessTypeToAction(acl.accessType),
           acl.model,

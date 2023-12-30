@@ -17,10 +17,8 @@ import {
   Put,
   Query,
   Request,
-  UseGuards,
 } from '@nestjs/common';
 import { VdcService } from '../service/vdc.service';
-import { TempDto } from '../dto/temp.dto';
 import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
 import {
   BASE_VDC_INVOICE_SERVICE,
@@ -50,13 +48,19 @@ import {
   GetAvailableResourcesDto,
   GetAvailableResourcesQueryDto,
 } from '../dto/get-resources.dto';
-import { PersonalVerificationGuard } from 'src/application/base/security/auth/guard/personal-verification.guard';
 import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
-// import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
+import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
+import { PureAbility, subject } from '@casl/ability';
+import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
+import { Action } from 'src/application/base/security/ability/enum/action.enum';
+import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
 
 @ApiBearerAuth()
 @ApiTags('Vpc')
 @Controller('vdc')
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Vpc, props)),
+)
 export class VdcController {
   constructor(
     @Inject(BASE_VDC_INVOICE_SERVICE)

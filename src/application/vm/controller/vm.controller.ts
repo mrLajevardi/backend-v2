@@ -48,9 +48,17 @@ import { TransferFileHeaderDto } from '../dto/transfer-file.dto';
 import { UploadFileDto } from '../dto/upload-file-info.dto';
 import { RequestHeaders } from 'src/infrastructure/decorators/request-header-decorator';
 import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
+import { PureAbility, subject } from '@casl/ability';
+import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
+import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
+import { Action } from 'src/application/base/security/ability/enum/action.enum';
 
 @ApiTags('VM')
 @Controller('vm')
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Vm, props)),
+)
 // @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VmController {

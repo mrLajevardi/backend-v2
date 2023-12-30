@@ -38,9 +38,17 @@ import { PaygServiceService } from '../services/payg-service.service';
 import { CreatePaygVdcServiceDto } from '../../invoice/dto/create-payg-vdc-service.dto';
 import { ServiceTypesEnum } from '../enum/service-types.enum';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { Action } from '../../security/ability/enum/action.enum';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 
 @ApiTags('Services')
 @Controller('services')
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Services, props)),
+)
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class ServiceController {
   constructor(
