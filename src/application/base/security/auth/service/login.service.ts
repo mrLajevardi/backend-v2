@@ -134,23 +134,29 @@ export class LoginService {
     };
 
     if (isNil(aiAccessToken)) {
-      const axiosConfig = {
-        headers: {
-          Authorization: 'Bearer c2a3b7f4-2d36-4c3e-93c1-910d635a378a',
-          'Access-Control-Allow-Origin': '*',
-        },
-      };
-      const aiToken: string = null;
-      const aiRequest = await axios.post(
-        'https://aradpanelback.ziaei.ir/api/Auth/SsoLogin',
-        {
-          phoneNumber: user.phoneNumber,
-        },
-        axiosConfig,
-      );
-      if (aiRequest.status == 200) {
-        aiAccessToken = aiRequest.data.token;
+      try {
+        const axiosConfig = {
+          headers: {
+            Authorization: 'Bearer c2a3b7f4-2d36-4c3e-93c1-910d635a378a',
+            'Access-Control-Allow-Origin': '*',
+          },
+        };
+        const aiToken: string = null;
+        const aiRequest = await axios.post(
+            'https://aradpanelback.ziaei.ir/Cloud/login/',
+            {
+              phoneNumber: user.phoneNumber,
+            },
+            axiosConfig,
+        );
+
+        if (aiRequest.status == 200) {
+          aiAccessToken = aiRequest.data.token;
+        }
+      }catch (error){
+        console.log('Axios request failed:', error);
       }
+
     }
 
     return {
