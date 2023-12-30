@@ -10,6 +10,7 @@ import {
   FindOptionsWhere,
   DeleteResult,
   UpdateResult,
+  InsertResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -49,6 +50,16 @@ export class InvoiceItemsTableService {
     const newItem = plainToClass(InvoiceItems, dto);
     const createdItem = this.repository.create(newItem);
     return await this.repository.save(createdItem);
+  }
+
+  async createAll(dto: CreateInvoiceItemsDto[]): Promise<InsertResult> {
+    const items: InvoiceItems[] = dto.map(
+      (item: CreateInvoiceItemsDto): InvoiceItems => {
+        return plainToClass(InvoiceItems, item);
+      },
+    );
+
+    return await this.repository.insert(items);
   }
 
   // Update an Item using updateDTO

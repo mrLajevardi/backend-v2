@@ -44,6 +44,7 @@ import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
 import { InvoiceItems } from '../../../../infrastructure/database/entities/InvoiceItems';
 import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 
 @Injectable()
 export class CreateServiceService {
@@ -89,13 +90,6 @@ export class CreateServiceService {
       throw new ForbiddenException();
     }
 
-    if (!isNil(invoice.serviceInstanceId)) {
-      return {
-        id: invoice.serviceInstanceId,
-        taskId: null,
-      };
-    }
-
     return await this.strategy[invoice.serviceTypeId].bind(this)(
       options,
       invoice,
@@ -106,6 +100,12 @@ export class CreateServiceService {
     options: SessionRequest,
     invoice: Invoices,
   ): Promise<TaskReturnDto> {
+    if (!isNil(invoice.serviceInstanceId)) {
+      return {
+        id: invoice.serviceInstanceId,
+        taskId: null,
+      };
+    }
     const userId = options.user.userId;
     const userCredit = await this.userInfoService.getUserCreditBy(userId);
 
@@ -159,18 +159,19 @@ export class CreateServiceService {
     );
 
     const serviceInstanceId = serviceInstance.id;
-
-    await Promise.all(
-      invoice.invoiceItems.map(async (item: InvoiceItems) => {
-        await this.serviceItemsTableService.create({
+    const serviceItemsDto: CreateServiceItemsDto[] = invoice.invoiceItems.map(
+      (item) => {
+        return {
           serviceInstanceId: serviceInstanceId,
           itemTypeId: item.itemId,
           itemTypeCode: item.codeHierarchy,
           value: item.value,
           quantity: item.quantity,
-        });
-      }),
+        } as CreateServiceItemsDto;
+      },
     );
+
+    await this.serviceItemsTableService.createAll(serviceItemsDto);
 
     await this.transactionTableService.update(transaction.id, {
       isApproved: true,
@@ -193,6 +194,7 @@ export class CreateServiceService {
 
     await this.invoicesTableService.update(invoice.id, {
       serviceInstanceId: serviceInstanceId,
+      payed: true,
     });
 
     const taskId = task.taskId;

@@ -145,6 +145,7 @@ export class UserController {
       hash: otp.hash,
     };
   }
+
   @Post('changePassword/verifyOtp')
   @ApiOperation({
     summary: 'verify otp sent to phone number for changing password',
@@ -482,6 +483,7 @@ export class UserController {
   @Get('invoices')
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  @ApiQuery({ name: 'isPreInvoice', type: Boolean, required: false })
   @ApiQuery({ name: 'startDateTime', type: String, required: false })
   @ApiQuery({ name: 'endDateTime', type: String, required: false })
   async getUserInvoices(
@@ -490,11 +492,13 @@ export class UserController {
     @Query('pageSize') pageSize?: number,
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
+    @Query('isPreInvoice') isPreInvoice?: boolean,
   ) {
     const data = await this.userInfoService.getInvoices(
       options,
       page,
       pageSize,
+      isPreInvoice,
       startDateTime ? new Date(startDateTime) : null,
       endDateTime ? new Date(endDateTime) : null,
     );

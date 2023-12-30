@@ -32,7 +32,7 @@ import { ServiceModule } from '../service/service.module';
     NotificationModule,
     SecurityToolsModule,
     AbilityModule,
-    TransactionsModule,
+    forwardRef(() => TransactionsModule),
     forwardRef(() => ServiceModule),
     forwardRef(() => AuthModule),
   ],

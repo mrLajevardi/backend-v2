@@ -209,12 +209,21 @@ export class PaygServiceService {
             serviceInstanceId: service.id,
           },
         });
+        const minutes = 60 * 24;
+        const groupedItems = null;
+        const applyTemplateDiscount = true;
         const transferredItems = transferItems(serviceItems);
         const fullTimeCost =
-          await this.paygCostCalculationService.calculateVdcPaygTypeInvoice({
-            itemsTypes: transferredItems,
-            duration: 1,
-          });
+          await this.paygCostCalculationService.calculateVdcPaygTypeInvoice(
+            {
+              itemsTypes: transferredItems,
+              duration: 1,
+            },
+            minutes,
+            groupedItems,
+            applyTemplateDiscount,
+            service,
+          );
         try {
           await this.budgetingService.paidFromBudgetCredit(
             service.id,
@@ -222,7 +231,7 @@ export class PaygServiceService {
               paidAmount: totalCost.totalCost,
               paidAmountForNextPeriod: fullTimeCost.totalCost / 24,
             },
-            totalCost.itemsSum,
+            [totalCost, { durationInMin }, totalVpcCost],
           );
         } catch (err) {
           await this.disablePaygService(
@@ -372,7 +381,7 @@ export class PaygServiceService {
       },
     });
     const credit = await this.userInfoService.getUserCreditBy(userId);
-    if (invoice.finalAmount > credit) {
+    if (invoice.finalAmountWithTax > credit) {
       throw new NotEnoughCreditException();
     }
     const serviceInstanceId = await this.extendService.createServiceInstance(
@@ -386,6 +395,7 @@ export class PaygServiceService {
       new Date(),
     );
     await this.invoiceTableService.update(invoice.id, { serviceInstanceId });
+    invoice.serviceInstanceId = serviceInstanceId;
     await this.createServiceDiscount(invoice);
     await this.extendService.createServiceItems(
       invoiceItems,
@@ -408,7 +418,7 @@ export class PaygServiceService {
       userId,
       serviceInstanceId,
       {
-        increaseAmount: invoice.finalAmount,
+        increaseAmount: invoice.finalAmountWithTax,
       },
     );
     const task = await this.taskTableService.create({
@@ -487,11 +497,11 @@ export class PaygServiceService {
     const serviceBudget = serviceBudgets.find(
       (item) => item.id === invoice.serviceInstanceId,
     );
-    if (invoice.finalAmount > credit + serviceBudget.credit) {
+    if (invoice.finalAmountWithTax > credit + serviceBudget.credit) {
       throw new NotEnoughCreditException();
     }
-    if (invoice.finalAmount > serviceBudget.credit) {
-      const cost = invoice.finalAmount - serviceBudget.credit;
+    if (invoice.finalAmountWithTax > serviceBudget.credit) {
+      const cost = invoice.finalAmountWithTax - serviceBudget.credit;
       await this.budgetingService.increaseBudgetingService(
         userId,
         invoice.serviceInstanceId,

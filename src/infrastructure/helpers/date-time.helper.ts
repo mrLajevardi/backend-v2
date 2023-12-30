@@ -29,3 +29,7 @@ export function addMonths(input: Date, months: number): Date {
   );
   return date;
 }
+
+export function addDays(theDate: Date, days: number): Date {
+  return new Date(theDate.getTime() + days * 24 * 60 * 60 * 1000);
+}

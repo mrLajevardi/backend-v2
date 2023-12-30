@@ -1,6 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
 } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
@@ -70,6 +72,7 @@ export class UserService {
     private readonly userTable: UserTableService,
     private readonly companyTable: CompanyTableService,
     private readonly transactionsTable: TransactionsTableService,
+    @Inject(forwardRef(() => TransactionsService))
     private readonly transactionsService: TransactionsService,
     private readonly roleMappingsTable: RoleMappingTableService,
     private readonly systemSettingsTable: SystemSettingsTableService,
@@ -462,20 +465,16 @@ export class UserService {
       amount: transaction.value,
       authority: authority,
     };
-    const { verified, refID } =
+    const { verified, refID, metaData } =
       await this.paymentService.zarinpal.paymentVerify(paymentRequestData);
 
     if (verified && !transaction.isApproved) {
       // approve user transaction
-      await this.transactionsTable.updateAll(
-        {
-          userId: userId,
-          paymentToken: authority,
-        },
-        {
-          isApproved: true,
-        },
-      );
+      await this.transactionsTable.update(transaction.id, {
+        isApproved: true,
+        refId: refID,
+        metaData: JSON.stringify(metaData),
+      });
     }
     if (transaction.invoiceId) {
       this.userFactoryService

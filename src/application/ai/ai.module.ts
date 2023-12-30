@@ -9,6 +9,7 @@ import { ServiceModule } from '../base/service/service.module';
 import { LoggerModule } from 'src/infrastructure/logger/logger.module';
 import { JwtModule } from '@nestjs/jwt';
 import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
+import { InvoiceItemListModule } from '../base/crud/invoice-item-list/invoice-item-list.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
     LoggerModule,
     JwtModule,
     PayAsYouGoModule,
+    InvoiceItemListModule,
   ],
   controllers: [AiController],
   providers: [AiService],

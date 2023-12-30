@@ -11,6 +11,7 @@ export class InvoiceUserListResultDtoFormat {
   serviceTypeId: string;
   name: string;
   finalAmount: number;
+  invoiceType: number;
   code: number | null;
   description: string;
   dateTime: Date;
@@ -54,6 +55,7 @@ export class InvoiceUserList extends BaseResultDto {
       code: item.code,
       description: item.description,
       dateTime: item.dateTime,
+      invoiceType: item.type,
       serviceInstance: !isNil(item.serviceInstance)
         ? this.getServiceInstance(item.serviceInstance)
         : null,

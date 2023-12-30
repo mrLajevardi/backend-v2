@@ -17,6 +17,7 @@ import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-tok
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -42,6 +43,7 @@ import {
 import { GetPlanItemsDto } from './dto/get-plan-items.dto';
 import { GetAradAiDashoardChartDto } from './dto/get-arad-ai-dashoard-chart.dto';
 import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
+import { InvoiceDetailBaseDto } from '../vdc/dto/invoice-detail-base.dto';
 
 @ApiTags('AI')
 @ApiBearerAuth() // Requires authentication with a JWT token
@@ -342,5 +344,21 @@ export class AiController {
       };
     });
     return Promise.resolve(planItems);
+  }
+
+  // @ApiOperation({ summary: 'Get AI plans' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Returns ai plans',
+  //   type: 'array',
+  // })
+  @ApiParam({ name: 'invoiceId', description: 'ai invoiceId' })
+  @Get('/Invoice/detail/:invoiceId')
+  async getAiInvoiceDetail(
+    @Param('invoiceId')
+    invoiceId: string,
+  ): Promise<InvoiceDetailBaseDto> {
+    const res = await this.service.getAIInvoiceDetail(invoiceId);
+    return res;
   }
 }

@@ -1,3 +1,4 @@
+import { ServiceDiscount } from 'src/infrastructure/database/entities/ServiceDiscount';
 import { InvoiceGroupItem } from './vdc-item-group.interface.dto';
 
 export interface InvoiceItemCost extends InvoiceGroupItem {
@@ -9,4 +10,5 @@ export interface TotalInvoiceItemCosts {
   itemsTotalCosts: number;
   totalCost: number;
   serviceCost: number;
+  templateDiscount?: ServiceDiscount;
 }
