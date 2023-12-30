@@ -90,4 +90,6 @@ build image:
   script:
     - echo "$CI_REGISTRY/$IMAGE_NAME"
     - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
+    - echo "$CI_REGISTRY_USER" "$CI_REGISTRY"
+    - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     - docker push "$CI_REGISTRY/$IMAGE_NAME"
