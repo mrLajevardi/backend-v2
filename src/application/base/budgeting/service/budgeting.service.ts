@@ -8,7 +8,7 @@ import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 import { PaidFromBudgetCreditDto } from '../dto/paid-from-budget-credit.dto';
-import { isNil, toInteger } from 'lodash';
+import { isNil } from 'lodash';
 import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
 import { PaidFromUserCreditDto } from '../dto/paid-from-user-credit.dto';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
@@ -40,6 +40,7 @@ export class BudgetingService {
     private readonly paygCostCalculationService: PaygCostCalculationService,
     private readonly vdcFactoryService: VdcFactoryService,
   ) {}
+
   async getUserBudgeting(userId: number): Promise<BudgetingResultDtoFormat[]> {
     const vServiceInstances: VServiceInstances[] =
       await this.vServiceInstancesTableService.find({
@@ -77,6 +78,7 @@ export class BudgetingService {
       serviceType: item.serviceTypeId,
     } as BudgetingResultDtoFormat;
   }
+
   async increaseBudgetingService(
     userId: number,
     serviceInstanceId: string,
@@ -136,25 +138,21 @@ export class BudgetingService {
     const vServiceInstance: VServiceInstances =
       await this.vServiceInstancesTableService.findById(serviceInstanceId);
 
-    const userCredit: number = vServiceInstance.userCredit;
-
     if (isNil(vServiceInstance)) {
       throw new NotFoundException();
     }
 
-    const priceWithTax: number = data.paidAmount * (1 + taxPercent);
+    const priceWithTax: number = this.priceWithTax(data.paidAmount, taxPercent);
 
-    const insufficientCredit: boolean =
-      vServiceInstance.credit === 0 || priceWithTax > vServiceInstance.credit;
-    const notEnoughAutoPaidCredit: boolean =
-      vServiceInstance.autoPaid &&
-      userCredit + vServiceInstance.credit < priceWithTax;
-    const increaseBudgetingCredit: boolean =
-      vServiceInstance.autoPaid &&
-      priceWithTax > vServiceInstance.credit &&
-      vServiceInstance.credit + userCredit > priceWithTax;
+    const paymentType: PaymentTypes = this.handleInsufficientCredit(
+      priceWithTax,
+      vServiceInstance.credit,
+      vServiceInstance.userCredit,
+      vServiceInstance.autoPaid,
+      false,
+    );
 
-    if (increaseBudgetingCredit) {
+    if (paymentType == PaymentTypes.PayToBudgetingByUserCreditAutoPaid) {
       await this.transactionsTableService.create({
         userId: vServiceInstance.userId.toString(),
         serviceInstanceId: serviceInstanceId,
@@ -170,42 +168,55 @@ export class BudgetingService {
       userId: vServiceInstance.userId,
       serviceInstanceId: serviceInstanceId,
       price: -priceWithTax,
-      paymentType: PaymentTypes.PayToServiceByBudgeting,
+      paymentType: paymentType,
       metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
       taxPercent: taxPercent,
     });
 
-    if (
-      insufficientCredit &&
-      vServiceInstance.autoPaid &&
-      notEnoughAutoPaidCredit
-    ) {
-      throw new NotEnoughCreditException();
-    } else if (insufficientCredit) {
-      throw new NotEnoughCreditException();
-    }
+    this.handleInsufficientCredit(
+      priceWithTax,
+      vServiceInstance.credit,
+      vServiceInstance.userCredit,
+      vServiceInstance.autoPaid,
+      true,
+    );
 
-    const priceForNextPeriodWithTax: number =
-      data.paidAmountForNextPeriod * (1 + taxPercent);
+    const priceForNextPeriodWithTax: number = this.priceWithTax(
+      data.paidAmountForNextPeriod,
+      taxPercent,
+    );
 
-    const insufficientCreditNextPeriod: boolean =
-      vServiceInstance.credit === 0 ||
-      priceForNextPeriodWithTax > vServiceInstance.credit;
-    const notEnoughAutoPaidCreditNextPeriod: boolean =
-      vServiceInstance.autoPaid &&
-      userCredit + vServiceInstance.credit < priceForNextPeriodWithTax;
-
-    if (
-      insufficientCreditNextPeriod &&
-      vServiceInstance.autoPaid &&
-      notEnoughAutoPaidCreditNextPeriod
-    ) {
-      throw new NotEnoughCreditException();
-    } else if (insufficientCreditNextPeriod) {
-      throw new NotEnoughCreditException();
-    }
+    this.handleInsufficientCredit(
+      priceForNextPeriodWithTax,
+      vServiceInstance.credit,
+      vServiceInstance.userCredit,
+      vServiceInstance.autoPaid,
+      true,
+    );
 
     return true;
+  }
+
+  handleInsufficientCredit(
+    price: number,
+    serviceCredit: number,
+    userCredit: number,
+    autoPaid: boolean,
+    exception: boolean,
+  ): PaymentTypes {
+    if (price < serviceCredit) {
+      return PaymentTypes.PayToServiceByBudgeting;
+    }
+    if (price < userCredit + serviceCredit && autoPaid) {
+      return PaymentTypes.PayToBudgetingByUserCreditAutoPaid;
+    }
+    if (exception) {
+      throw new NotEnoughCreditException();
+    }
+  }
+
+  priceWithTax(price: number, taxPercent: number) {
+    return price * (1 + taxPercent);
   }
 
   async paidFromUserCredit(

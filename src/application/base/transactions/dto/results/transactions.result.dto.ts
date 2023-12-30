@@ -9,9 +9,13 @@ import { BaseResultDto } from '../../../../../infrastructure/dto/base.result.dto
 export class TransactionResultDtoFormat {
   id: string;
   user?: object;
+  name: string | null;
+  invoiceType: number | null;
+  planType: number | null;
+
   invoice?: object;
   serviceInstance?: object;
-  type?: PaymentTypes;
+  paymentType?: PaymentTypes;
   dateTime: Date;
   value: number;
   isApproved: boolean;
@@ -29,6 +33,7 @@ export class PaginationResultDtoFormat {
   currentPage?: number;
   lastPage?: number;
 }
+
 export class TransactionsResultDto extends BaseResultDto {
   collection(
     data: any[],
@@ -45,19 +50,47 @@ export class TransactionsResultDto extends BaseResultDto {
       },
     };
   }
+
   toArray(item: Transactions): TransactionResultDtoFormat {
     return {
       id: item.id,
       user: !isNil(item.user) ? this.getUser(item.user) : null,
+      name: this.getName(item),
+      invoiceType: !isNil(item.invoice) ? item.invoice.type : null,
+      planType: this.getPlanType(item),
+      value: item.value,
+      paymentType: item.paymentType,
+      dateTime: item.dateTime,
+      isApproved: item.isApproved,
       invoice: !isNil(item.invoice) ? this.getInvoice(item.invoice) : null,
       serviceInstance: !isNil(item.serviceInstance)
         ? this.getServiceInstance(item.serviceInstance)
         : null,
-      value: item.value,
-      type: item.paymentType,
-      dateTime: item.dateTime,
-      isApproved: item.isApproved,
     };
+  }
+
+  getPlanType(item: Transactions): number {
+    if (!isNil(item.serviceInstance)) {
+      return item.serviceInstance.servicePlanType;
+    } else if (!isNil(item.invoice)) {
+      return item.invoice.servicePlanType;
+    } else {
+      return null;
+    }
+  }
+
+  getName(item: Transactions): string {
+    if (item.paymentType == PaymentTypes.PayToUserCreditByAdmin) {
+      return 'تراکنش اصلاحی توسط ادمین';
+    } else if (item.paymentType == PaymentTypes.PayToUserCreditByBudgeting) {
+      return 'انتقال از بودجه بندی به کیف پول';
+    } else if (!isNil(item.serviceInstance)) {
+      return item.serviceInstance.name;
+    } else if (!isNil(item.invoice)) {
+      return item.invoice.name;
+    } else {
+      return null;
+    }
   }
 
   getUser(user: User) {
@@ -66,20 +99,23 @@ export class TransactionsResultDto extends BaseResultDto {
       family: user.family,
     };
   }
+
   getInvoice(invoice: Invoices) {
     return {
       id: invoice.id,
       payed: invoice.payed,
       name: invoice.name,
       finalAmount: invoice.finalAmount,
-      //   add base amount to this method
+      invoiceType: invoice.type,
     };
   }
+
   getServiceInstance(serviceInstance: ServiceInstances) {
     return {
       id: serviceInstance.id,
       name: serviceInstance.name,
       serviceType: serviceInstance.serviceTypeId,
+      servicePlanType: serviceInstance.servicePlanType,
     };
   }
 }

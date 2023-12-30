@@ -16,6 +16,7 @@ export class ZarinpalService {
   async paymentVerify(data) {
     let verified;
     let refID = null;
+    let metaData: string;
     await axios
       .post('https://api.zarinpal.com/pg/v4/payment/verify.json', data)
       .then((res) => {
@@ -25,6 +26,7 @@ export class ZarinpalService {
         ) {
           verified = true;
           refID = res.data.data.ref_id;
+          metaData = res.data.data;
         } else verified = false;
       })
       .catch(
@@ -32,6 +34,6 @@ export class ZarinpalService {
           // err.response.data.errors.message,
           (verified = false),
       );
-    return { verified, refID };
+    return { verified, refID, metaData };
   }
 }

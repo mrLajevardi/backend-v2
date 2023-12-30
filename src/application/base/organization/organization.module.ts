@@ -9,6 +9,7 @@ import { CrudModule } from '../crud/crud.module';
   imports: [
     DatabaseModule,
     SessionsModule,
+    // UserModule,
     forwardRef(() => UserModule),
     CrudModule,
   ],
