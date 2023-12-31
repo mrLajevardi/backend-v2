@@ -241,7 +241,7 @@ export class InvoiceFactoryVdcService {
 
     res.invoiceTax = ramModel.invoiceTax;
 
-    res.serviceCostTax = ramModel.serviceCost * ramModel.invoiceTax;
+    // res.serviceCostTax = ramModel.serviceCost * ramModel.invoiceTax;
     res.serviceCostWithDiscount = !isNil(period)
       ? ramModel.serviceCost * period?.percent + ramModel.serviceCost
       : ramModel.serviceCost;
@@ -250,6 +250,8 @@ export class InvoiceFactoryVdcService {
     } else {
       res.discountAmount = res.serviceCost - res.serviceCostWithDiscount;
     }
+
+    res.serviceCostTax = res.serviceCostWithDiscount * ramModel.invoiceTax;
 
     res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
   }
