@@ -10,7 +10,7 @@ RUN npm install  # We have to ignore all packages that is necessary for dev envi
 RUN npm run build
 
 # RUN /usr/bin/crontab /crontab.txt
-RUN echo '0 * * * * node /user/src/app/scripts/check-payg-services.js' >> /etc/crontabs/root
+RUN echo '* * * * * node /user/src/app/scripts/check-payg-services.js' >> /etc/crontabs/root
 RUN echo '0 */12 * * * node /user/src/app/scripts/check-services.js' >> /etc/crontabs/root
 #USER node
 
