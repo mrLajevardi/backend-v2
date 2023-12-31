@@ -10,6 +10,7 @@ import {
   FindOptionsWhere,
   DeleteResult,
   UpdateResult,
+  InsertResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
@@ -54,6 +55,14 @@ export class ServiceItemsTableService {
     const newItem = plainToClass(ServiceItems, dto);
     const createdItem = this.repository.create(newItem);
     return await this.repository.save(createdItem);
+  }
+
+  async createAll(dto: CreateServiceItemsDto[]): Promise<InsertResult> {
+    const items: ServiceItems[] = dto.map((item: CreateServiceItemsDto) => {
+      return plainToClass(ServiceItems, item);
+    });
+
+    return await this.repository.insert(items);
   }
 
   // Update an Item using updateDTO

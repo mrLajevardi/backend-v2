@@ -46,4 +46,12 @@ export class CreateTransactionsDto {
   @IsString()
   @ApiProperty()
   userId?: string;
+
+  @IsString()
+  @ApiProperty()
+  metaData?: string;
+
+  @IsNumber()
+  @ApiProperty()
+  refId?: number;
 }

@@ -30,6 +30,7 @@ export class UserInfoService {
     options: SessionRequest,
     page = 1,
     pageSize = 12,
+    isPreInvoice = false,
     startDateTime?: Date,
     endDateTime?: Date,
   ): Promise<{
@@ -47,6 +48,7 @@ export class UserInfoService {
 
     const where: FindOptionsWhere<Invoices> = {
       userId: options.user.userId,
+      isPreInvoice: isPreInvoice,
     };
 
     if (dateFilter) {

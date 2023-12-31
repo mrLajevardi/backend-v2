@@ -82,6 +82,8 @@ describe('VdcInvoiceService', () => {
       generation: 'G1',
       daysLeft: 40,
       serviceName: 'ValidService',
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      fillTaxAndDiscountProperties() {},
     };
   }
   beforeEach(async () => {
@@ -146,7 +148,7 @@ describe('VdcInvoiceService', () => {
   });
 
   it('should return null vdc invoice detail with invalid invoice id ', async () => {
-    const res: VdcInvoiceDetailsResultDto = {};
+    const res: VdcInvoiceDetailsResultDto = new VdcInvoiceDetailsResultDto();
 
     const myMock = jest
       .spyOn(service, 'getVdcInvoiceDetail')

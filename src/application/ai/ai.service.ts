@@ -21,6 +21,11 @@ import { Between, ILike } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { toInteger } from 'lodash';
 import { GetAradAiDashoardDto } from './dto/get-arad-ai-dashoard.dto';
+import {
+  InvoiceDetailBaseDto,
+  InvoiceItemDetailBase,
+} from '../vdc/dto/invoice-detail-base.dto';
+import { InvoiceItemListService } from '../base/crud/invoice-item-list/invoice-item-list.service';
 
 @Injectable()
 export class AiService {
@@ -33,6 +38,7 @@ export class AiService {
     private readonly configsTable: ConfigsTableService,
     private readonly serviceInstancesSP: ServiceInstancesStoredProcedureService,
     private readonly jwtService: JwtService,
+    private readonly invoiceItemListService: InvoiceItemListService,
   ) {}
 
   async verifyToken(token: string): Promise<object> {
@@ -250,5 +256,37 @@ export class AiService {
       serviceAiInfo[key] = item;
     });
     return serviceAiInfo;
+  }
+
+  async getAIInvoiceDetail(invoiceId: string): Promise<InvoiceDetailBaseDto> {
+    const model = await this.invoiceItemListService.find({
+      where: { invoiceId: Number(invoiceId) },
+    });
+    const res: InvoiceDetailBaseDto = new InvoiceDetailBaseDto();
+    (res.invoiceTax = model[0].invoiceTax),
+      (res.invoiceCode = model[0].invoiceCode),
+      (res.serviceCost = model[0].serviceCost),
+      (res.rawAmount = model[0].rawAmount),
+      (res.baseAmount = model[0].baseAmount),
+      // discountAmount:item.rawAmount,
+      (res.finalPrice = model[0].finalAmount),
+      (res.finalPriceTax = model[0].finalAmountWithTax - model[0].finalAmount),
+      // templateId:model[0],
+      (res.finalPriceWithTax = model[0].finalAmountWithTax),
+      (res.templateId = model[0].templateId?.toString()),
+      // finalPriceWithTax:item.rawAmount,
+      (res.items = []),
+      model.forEach((item) => {
+        res.items.push({
+          fee: item.fee,
+          value: item.value,
+          code: item.code,
+          codeHierarchy: item.codeHierarchy,
+        });
+      });
+    res.fillTaxAndDiscountProperties();
+
+    return res;
+    // throw new Error('Method not implemented.');
   }
 }

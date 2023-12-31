@@ -55,6 +55,7 @@ import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
 import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
 import { Templates } from '../../../../infrastructure/database/entities/Templates';
+import { CreateInvoiceItemsDto } from '../../crud/invoice-items-table/dto/create-invoice-items.dto';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -213,21 +214,22 @@ export class InvoicesService implements BaseInvoiceService {
       planAmount: 0,
       name: ServiceTypesEnum.Ai + ' test ',
       datacenterName: serviceType.datacenterName,
+      templateId: data.templateId,
     });
-
-    await Promise.all(
-      invoiceItems.map(async (item) => {
-        //TODO must be insert in one query
-        await this.invoiceItemsTableService.create({
+    const items: CreateInvoiceItemsDto[] = invoiceItems.map(
+      (item): CreateInvoiceItemsDto => {
+        return {
           invoiceId: invoice.id,
           itemId: item.ItemID,
           value: item.value?.trim() == '' ? null : item.value,
           fee: item.Fee,
           quantity: 0,
           codeHierarchy: item.codeHierarchy,
-        });
-      }),
+        } as CreateInvoiceItemsDto;
+      },
     );
+
+    await this.invoiceItemsTableService.createAll(items);
 
     return { invoiceId: invoice.id };
   }
@@ -278,7 +280,7 @@ export class InvoicesService implements BaseInvoiceService {
     invoiceId: string,
     serviceType = 'vdc',
   ): Promise<VdcInvoiceDetailsResultDto> {
-    const res: VdcInvoiceDetailsResultDto = {};
+    const res: VdcInvoiceDetailsResultDto = new VdcInvoiceDetailsResultDto();
 
     //We should Join in this way == > Invoice --> InvoiceItem --> view.ServiceItemTypesTree
     const vdcInvoiceDetailsModels =

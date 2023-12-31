@@ -89,6 +89,9 @@ describe('VdcDetailService', () => {
       generation: 'G1',
       daysLeft: 40,
       serviceName: 'ValidService',
+      fillTaxAndDiscountProperties() {
+        console.log();
+      },
     };
   }
 
@@ -243,12 +246,12 @@ describe('VdcDetailService', () => {
   });
 
   it('should return null object with invalid instance id ', async () => {
-    const res: VdcDetailsResultDto = {};
+    const res: VdcDetailsResultDto = new VdcDetailsResultDto();
     const myMock = jest
       .spyOn(service, 'getVdcDetail')
       .mockImplementation((serviceInstanceId) => {
         if (serviceInstanceId === invalidServiceInstanceId) {
-          return Promise.resolve({});
+          return Promise.resolve(new VdcDetailsResultDto());
         }
       });
     const resFunction = await service.getVdcDetail(invalidServiceInstanceId);

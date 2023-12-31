@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionsService } from './transactions.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { CrudModule } from '../crud/crud.module';
+import { forwardRef } from '@nestjs/common';
+import { UserModule } from '../user/user.module';
 
 describe('TransactionsService', () => {
   let service: TransactionsService;
@@ -9,7 +11,7 @@ describe('TransactionsService', () => {
   let module: TestingModule;
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [DatabaseModule, CrudModule],
+      imports: [DatabaseModule, CrudModule, forwardRef(() => UserModule)],
       providers: [TransactionsService],
     }).compile();
 
