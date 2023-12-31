@@ -106,6 +106,7 @@ deploy image:
     - cp /var/services/configs/.env ./ -f
     - cp /var/services/sa_password.txt ./ -f
     - cat ./sa_password.txt
+    - cat .env
     - export IMAGE_NAME=${IMAGE_FULLPATH}
     - echo $IMAGE_NAME 
     - docker compose up -d
