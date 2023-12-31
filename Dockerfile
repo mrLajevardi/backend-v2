@@ -15,6 +15,6 @@ RUN echo '* * * * * node /user/src/app/scripts/check-payg-services.js' >> /etc/c
 #USER node
 
 # CMD ["npm", "run", "start:prod", "/usr/sbin/crond", "-l", "2"]
-CMD [ "sh", "-c", "echo '444' && npm run start:dev && /usr/sbin/crond -f -l 2 > /dev/stdout"]
+CMD [ "sh", "-c", "echo '444' && npm run start:dev & /usr/sbin/crond -f -l 2 > /dev/stdout"]
 # CMD ["/user/src/app/deploy-test.sh"]
 # CMD [ "/usr/bin/crontab", "./crontab.txt" ]
