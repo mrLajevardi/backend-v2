@@ -1,3 +1,3 @@
-/usr/sbin/crond
+# /usr/sbin/crond
 echo "hello"
 npm run start:prod
