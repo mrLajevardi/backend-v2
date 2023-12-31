@@ -76,7 +76,7 @@ develop server deploy job:      # This job runs in the deploy stage.
 #   script: 
 #     - sh deploy.sh
 
-# build image:
+build image:
   image: docker
   stage: publish
   tags:
