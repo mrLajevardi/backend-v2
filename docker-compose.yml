@@ -12,9 +12,9 @@ services:
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
-      - "1444:1433"
+      - "1443:1433"
     expose:
-      - "1444"
+      - "1443"
     environment:
       MSSQL_SA_PASSWORD_FILE: /run/secrets/sa_password
 #      MSSQL_SA_PASSWORD: 'U5h]J7Aj$AY-'
