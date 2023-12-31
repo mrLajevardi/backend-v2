@@ -8,7 +8,7 @@ export class VdcInvoiceDetailsInfoResultDto extends BaseResultDto {
     this.price = item?.fee ? item?.fee : item?.price;
     this.title = item?.title;
     this.unit = item?.unit;
-    this.value = item?.value.toString();
+    this.value = item?.value?.toString();
     this.taxPercent = item?.invoiceTax;
     this.usage = 0;
     this.code = item?.code;
@@ -16,13 +16,13 @@ export class VdcInvoiceDetailsInfoResultDto extends BaseResultDto {
     this.tax = this.price * this.taxPercent;
   }
 
-  price: number;
-  title: string;
-  unit: string;
-  value: string; // InvoiceItem
-  usage: number;
-  code: string;
-  priceWithTax: number;
+  price?: number;
+  title?: string;
+  unit?: string;
+  value?: string; // InvoiceItem
+  usage?: number;
+  code?: string;
+  priceWithTax?: number;
   tax?: number;
   taxPercent?: number;
 }

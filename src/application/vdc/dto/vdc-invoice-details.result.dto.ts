@@ -1,10 +1,16 @@
 import { BaseResultDto } from '../../../infrastructure/dto/base.result.dto';
 import { VdcInvoiceDetailsInfoResultDto } from './vdc-invoice-details-info.result.dto';
-import { GuarantyCode } from '../../base/itemType/enum/item-type-codes.enum';
 
 export class VdcInvoiceDetailsResultDto extends BaseResultDto {
   constructor() {
     super();
+    this.period = new VdcInvoiceDetailsInfoResultDto({});
+    this.disk = [];
+    this.ram = new VdcInvoiceDetailsInfoResultDto({});
+    this.vm = new VdcInvoiceDetailsInfoResultDto({});
+    this.ip = new VdcInvoiceDetailsInfoResultDto({});
+    this.ip = new VdcInvoiceDetailsInfoResultDto({});
+    this.guaranty = new VdcInvoiceDetailsInfoResultDto({});
   }
 
   datacenter?: { name?: string; title?: string };
