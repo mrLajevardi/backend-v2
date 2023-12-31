@@ -174,7 +174,9 @@ describe('VdcDetailService', () => {
       .spyOn(service, 'getStorageDetailVdc')
       .mockImplementation(() => Promise.resolve(res));
 
-    expect(await service.getStorageDetailVdc(validServiceInstanceId)).toBe(res);
+    expect(
+      await service.getStorageDetailVdc(validServiceInstanceId, 0, 0, null),
+    ).toBe(res);
   });
 
   it('should return axios error with invalid instanceId', async () => {
@@ -183,7 +185,12 @@ describe('VdcDetailService', () => {
     myMock.mockImplementation(
       (invalidInstanceId: string) => new AxiosError(invalidInstanceId),
     );
-    const res = await service.getStorageDetailVdc(invalidServiceInstanceId);
+    const res = await service.getStorageDetailVdc(
+      invalidServiceInstanceId,
+      0,
+      0,
+      null,
+    );
     expect(res).toBeInstanceOf(AxiosError);
   });
 
@@ -213,7 +220,12 @@ describe('VdcDetailService', () => {
       .spyOn(service, 'getStorageDetailVdc')
       .mockImplementation(() => Promise.resolve(res));
 
-    const models = await service.getStorageDetailVdc(validServiceInstanceId);
+    const models = await service.getStorageDetailVdc(
+      validServiceInstanceId,
+      0,
+      0,
+      null,
+    );
 
     expect(models).toHaveLength(3);
     expect(models).toContain(res[2]);
