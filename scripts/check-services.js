@@ -7,7 +7,7 @@ const getToken = require('./get-token');
 async function checkServices() {
   const token = await getToken();
   await axios.default.put(
-    `http://localhost:${process.env.PORT}/robot/sendEmailToExpiredServices`,
+    `http://${process.env.HOST}:${process.env.PORT}/robot/sendEmailToExpiredServices`,
     null,
     {
       headers: {
