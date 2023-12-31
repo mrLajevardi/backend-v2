@@ -11,7 +11,7 @@ RUN npm run build
 
 # RUN /usr/bin/crontab /crontab.txt
 RUN echo '* * * * * node /user/src/app/scripts/check-payg-services.js' >> /etc/crontabs/root
-RUN echo '0 */12 * * * node /user/src/app/scripts/check-services.js' >> /etc/crontabs/root
+# RUN echo '0 */12 * * * node /user/src/app/scripts/check-services.js' >> /etc/crontabs/root
 #USER node
 
 # CMD ["npm", "run", "start:prod", "/usr/sbin/crond", "-l", "2"]
