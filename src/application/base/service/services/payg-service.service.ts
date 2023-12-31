@@ -183,6 +183,20 @@ export class PaygServiceService {
               startDate = endDate;
             }
           }
+          if (
+            events.data.values.length % 2 === 1 &&
+            lastState === VmPowerStateEventEnum.PowerOn
+          ) {
+            const computeItems =
+              await this.paygCostCalculationService.calculateVdcPaygVm(
+                service,
+                startDate,
+                new Date(),
+                vm.numberOfCpus,
+                vm.memoryMB,
+              );
+            totalVpcCost.push(computeItems);
+          }
           if (!hasEvent && lastState === VmPowerStateEventEnum.PowerOn) {
             const computeItems =
               await this.paygCostCalculationService.calculateVdcPaygVm(
