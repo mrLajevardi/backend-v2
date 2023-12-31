@@ -6,6 +6,13 @@ import { InvoiceDetailBaseDto } from './invoice-detail-base.dto';
 export class VdcInvoiceDetailsResultDto extends InvoiceDetailBaseDto {
   constructor() {
     super();
+    this.period = new VdcInvoiceDetailsInfoResultDto({});
+    this.disk = [];
+    this.ram = new VdcInvoiceDetailsInfoResultDto({});
+    this.vm = new VdcInvoiceDetailsInfoResultDto({});
+    this.ip = new VdcInvoiceDetailsInfoResultDto({});
+    this.ip = new VdcInvoiceDetailsInfoResultDto({});
+    this.guaranty = new VdcInvoiceDetailsInfoResultDto({});
   }
 
   datacenter?: { name?: string; title?: string };
