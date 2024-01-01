@@ -44,6 +44,7 @@ import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
 import { InvoiceItems } from '../../../../infrastructure/database/entities/InvoiceItems';
 import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 
 @Injectable()
 export class CreateServiceService {
@@ -158,18 +159,19 @@ export class CreateServiceService {
     );
 
     const serviceInstanceId = serviceInstance.id;
-
-    await Promise.all(
-      invoice.invoiceItems.map(async (item: InvoiceItems) => {
-        await this.serviceItemsTableService.create({
+    const serviceItemsDto: CreateServiceItemsDto[] = invoice.invoiceItems.map(
+      (item) => {
+        return {
           serviceInstanceId: serviceInstanceId,
           itemTypeId: item.itemId,
           itemTypeCode: item.codeHierarchy,
           value: item.value,
           quantity: item.quantity,
-        });
-      }),
+        } as CreateServiceItemsDto;
+      },
     );
+
+    await this.serviceItemsTableService.createAll(serviceItemsDto);
 
     await this.transactionTableService.update(transaction.id, {
       isApproved: true,
@@ -192,6 +194,7 @@ export class CreateServiceService {
 
     await this.invoicesTableService.update(invoice.id, {
       serviceInstanceId: serviceInstanceId,
+      payed: true,
     });
 
     const taskId = task.taskId;

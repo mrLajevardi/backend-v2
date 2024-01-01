@@ -43,6 +43,12 @@ export class Transactions {
   @Column('int', { name: 'UserID' })
   userId: number;
 
+  @Column('decimal', { name: 'RefID', nullable: true })
+  refId: number | null;
+
+  @Column('nvarchar', { name: 'MetaData', nullable: true })
+  metaData: string | null;
+
   @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'isApproved',
     default: () => "'0'",

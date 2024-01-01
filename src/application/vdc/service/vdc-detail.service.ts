@@ -33,6 +33,7 @@ import { VServiceInstancesTableService } from '../../base/crud/v-service-instanc
 import { isNil } from 'lodash';
 import { VServiceInstances } from '../../../infrastructure/database/entities/views/v-serviceInstances';
 import { VServiceInstancesDetailTableService } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
+import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
 
 @Injectable()
 export class VdcDetailService implements BaseVdcDetailService {
@@ -51,18 +52,16 @@ export class VdcDetailService implements BaseVdcDetailService {
   ) {}
   async getStorageDetailVdc(
     serviceInstanceId: string,
+    memoryAllocation: number,
+    numberOfvms: number,
+    option: SessionRequest,
   ): Promise<VdcStoragesDetailResultDto[]> {
     const res: VdcStoragesDetailResultDto[] = [];
 
-    // const userId = options.user.userId; //TODO Check With Ali !!!!
     const props = await this.servicePropertiesService.getAllServiceProperties(
       serviceInstanceId,
     );
 
-    // const authToken = await this.sessionService.checkUserSession(
-    //   userId,
-    //   props['orgId'],
-    // ); //TODO Check With Ali !!!!
     const authToken = await this.sessionService.checkAdminSession();
     const vdcData =
       await this.vdcWrapperService.vcloudQuery<AdminOrgVdcStorageProfileQuery>(
@@ -77,20 +76,27 @@ export class VdcDetailService implements BaseVdcDetailService {
           filter: `vdc==${props['vdcId']}`,
         },
       );
-
-    vdcData.data.record.forEach((disk) => {
+    for (const disk of vdcData.data.record) {
       const splitHref = disk.href.split('/');
       const diskId = splitHref[splitHref.length - 1];
+      const fres = await CalcSwapStorage(
+        {
+          memoryAllocation: memoryAllocation,
+          storageLimit: disk.storageLimitMB,
+          storageUsed: disk.storageUsedMB,
+          serviceInstanceId: serviceInstanceId,
+          numberOfVms: numberOfvms,
+        },
+        this.vmService,
+        option,
+      );
       res.push({
         title: disk.name,
-        usage: disk.storageUsedMB,
-        value: disk.storageLimitMB,
-        // code: VdcGenerationItemCodes.Disk,
-        // price: 0,
-        // unit: 'MB',
+        usage: fres.used,
+        value: fres.limit,
         id: diskId,
       });
-    });
+    }
 
     return Promise.resolve(res);
   }
@@ -100,15 +106,15 @@ export class VdcDetailService implements BaseVdcDetailService {
     option?: SessionRequest,
   ): Promise<VdcDetailsResultDto> {
     if (!serviceInstanceId) {
-      return {};
+      const res: VdcInvoiceDetailsResultDto = new VdcInvoiceDetailsResultDto();
     }
 
-    const res2: VdcDetailsResultDto = {};
+    const res2: VdcDetailsResultDto = new VdcDetailsResultDto();
     const servicesModels = await this.vdcDetailFactory.getVdcDetailModel(
       serviceInstanceId,
     );
 
-    if (servicesModels.length === 0) return {};
+    if (servicesModels.length === 0) return new VdcDetailsResultDto();
 
     const vdcModels = this.vdcDetailFactory.fillVdcDetailModel(
       servicesModels,
@@ -123,15 +129,37 @@ export class VdcDetailService implements BaseVdcDetailService {
       )) as GetAllVdcServiceWithItemsResultDto[]
     )[0];
 
-    const vmServiceItem =
-      await this.vServiceInstancesDetailTableService.findOne({
-        where: {
-          code: VdcGenerationItemCodes.Vm,
-          serviceInstanceId: serviceInstanceId,
-        },
-      });
-
     this.vdcDetailFactory.getVdcDetailItemModel(vdcModels, res2);
+    await this.tttttt(vdcDetails, res2, serviceInstanceId, option);
+
+    if (res2.servicePlanType == ServicePlanTypeEnum.Payg) {
+      const vService: VServiceInstances =
+        await this.vServiceInstancesTableService.findById(serviceInstanceId);
+      res2.serviceCredit = vService.credit;
+      res2.daysLeft =
+        await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
+          serviceInstanceId,
+        );
+    }
+    res2.extendable = vdcDetails.extendable;
+    return res2;
+  }
+
+  private async tttttt(
+    vdcDetails: GetAllVdcServiceWithItemsResultDto,
+    res2: VdcDetailsResultDto,
+    serviceInstanceId: string,
+    option: SessionRequest,
+  ) {
+    // if (vdcDetails == null) {
+    //   vdcDetails = (
+    //     (await this.serviceService.getServicesWithItems(
+    //       option,
+    //       'vdc',
+    //       serviceInstanceId,
+    //     )) as GetAllVdcServiceWithItemsResultDto[]
+    //   )[0];
+    // }
 
     res2.vm.usage = vdcDetails.serviceItems.find(
       (service) =>
@@ -152,55 +180,36 @@ export class VdcDetailService implements BaseVdcDetailService {
       serviceInstanceId,
     );
 
-    const diskModel = (await this.getStorageDetailVdc(serviceInstanceId)).map(
-      async (storage) => {
-        const diskCode = GetCodeDisk(storage.title);
+    const diskModel = (
+      await this.getStorageDetailVdc(
+        serviceInstanceId,
+        Number(res2.ram.value),
+        Number(res2.vm.value),
+        option,
+      )
+    ).map((storage) => {
+      const diskCode = GetCodeDisk(storage.title);
 
-        const res: VdcInvoiceDetailsInfoResultDto = {
-          title: storage.title,
-          usage: storage.usage,
-          value: storage.value.toString(),
-          code: diskCode,
-          price: 0,
-          unit: 'MB',
-          tax: 0,
-          priceWithTax: 0,
-        };
+      const res: VdcInvoiceDetailsInfoResultDto = {
+        title: storage.title,
+        usage: storage.usage,
+        value: storage.value.toString(),
+        code: diskCode,
+        price: 0,
+        unit: 'MB',
+        tax: 0,
+        priceWithTax: 0,
+      };
 
-        if (res.code == DiskItemCodes.Standard) {
-          const storage = await CalcSwapStorage(
-            {
-              storageLimit: Number(res.value),
-              storageUsed: res.usage,
-              memoryAllocation: Number(res2.ram.value),
-              serviceInstanceId: serviceInstanceId,
-              numberOfVms: Number(vmServiceItem.value),
-            },
-            this.vmService,
-            option as SessionRequest,
-          );
+      if (res.code == DiskItemCodes.Standard) {
+        res.usage = Number(storage.usage);
+        res.value = storage.value.toString();
+      }
 
-          res.usage = Number(storage.used);
-          res.value = storage.limit.toString();
-        }
-
-        return res;
-      },
-    );
+      return res;
+    });
 
     res2.disk = await Promise.all(diskModel);
-
-    if (res2.servicePlanType == ServicePlanTypeEnum.Payg) {
-      const vService: VServiceInstances =
-        await this.vServiceInstancesTableService.findById(serviceInstanceId);
-      res2.serviceCredit = vService.credit;
-      res2.daysLeft =
-        await this.paygCostCalculationService.calculateVdcPaygTimeDuration(
-          serviceInstanceId,
-        );
-    }
-    res2.extendable = vdcDetails.extendable;
-    return res2;
   }
 
   async getVdcDetailItems(
@@ -254,8 +263,18 @@ export class VdcDetailService implements BaseVdcDetailService {
         option,
         serviceInstanceId,
       );
+
     const vdcDetail = await this.getVdcDetail(serviceInstanceId, option);
-    const diskInfoModel = await this.getStorageDetailVdc(serviceInstanceId);
+    // const vdcModel = new VdcDetailsResultDto();
+    // await this.tttttt(vdcDetail, vdcModel, serviceInstanceId, option);
+
+    const diskInfoModel = await this.getStorageDetailVdc(
+      serviceInstanceId,
+      Number(vdcDetail.ram.value),
+      Number(vdcDetail.vm.value),
+      option,
+    );
+
     this.vdcDetailFactory.fillModelVdcItemLimit(
       model,
       vdcDetail,

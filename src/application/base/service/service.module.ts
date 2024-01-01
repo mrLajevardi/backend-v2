@@ -59,7 +59,7 @@ import { VServiceInstancesDetailTableModule } from '../crud/v-service-instances-
     // VgpuModule,
     AbilityModule,
     ServicePropertiesModule,
-    TransactionsModule,
+    forwardRef(() => TransactionsModule),
     forwardRef(() => DatacenterModule),
     SystemSettingsTableModule,
     ServiceItemsTableModule,

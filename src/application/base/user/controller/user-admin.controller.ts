@@ -38,6 +38,8 @@ import { Response } from 'express';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { FilteredUser } from '../types/filtered-user.type';
 import { ChangePasswordAdminDto } from '../dto/change-password-admin.dto';
+import { VUsers } from 'src/infrastructure/database/entities/views/v-users';
+import { UpdateUserAdminDto } from '../dto/update-user-admin.dto';
 import { PureAbility, subject } from '@casl/ability';
 import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
 import { Action } from '../../security/ability/enum/action.enum';
@@ -199,16 +201,17 @@ export class UserAdminController {
     @Query('name') name?: string,
     @Query('username') username?: string,
     @Query('family') family?: string,
-  ): Promise<PaginationReturnDto<User>> {
-    const users = await this.userAdminService.getUsers(
-      // role,
-      active,
-      page,
-      pageSize,
-      name,
-      username,
-      family,
-    );
+  ): Promise<VUsers[]> {
+    const users = await this.userAdminService
+      .getUsers
+      // // role,
+      // active,
+      // page,
+      // pageSize,
+      // name,
+      // username,
+      // family,
+      ();
     return users;
   }
 
@@ -290,7 +293,7 @@ export class UserAdminController {
   async updateUser(
     @Req() options: SessionRequest,
     @Param('id') userId: number,
-    @Body() updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserAdminDto,
     @Res() res: Response,
   ): Promise<Response> {
     await this.userAdminService.updateUser(options, userId, updateUserDto);
