@@ -55,6 +55,7 @@ import {
 } from '../../transactions/dto/results/transactions.result.dto';
 import { UserInfoService } from '../service/user-info.service';
 import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
+import { OtpNotMatchException } from '../../../../infrastructure/exceptions/otp-not-match-exception';
 
 @ApiTags('User')
 @Controller('users')
@@ -161,7 +162,7 @@ export class UserController {
     );
 
     if (!verify) {
-      throw new OtpErrorException();
+      throw new OtpNotMatchException();
     }
 
     const cacheKey: string = options.user.userId + '_changePassword';
@@ -354,7 +355,7 @@ export class UserController {
     );
 
     if (!verify) {
-      throw new OtpErrorException();
+      throw new OtpNotMatchException();
     }
 
     const cacheKey: string = options.user.userId + '_changePhoneNumber';
