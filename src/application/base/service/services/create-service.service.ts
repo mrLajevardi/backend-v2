@@ -258,7 +258,7 @@ export class CreateServiceService {
 
       const aiUserId: number = aiGetUserIdRequest.data.userId;
       const aiUserToken = aiGetUserIdRequest.data.token;
-      const aiCreateServiceUrl = process.env.AI_BACK_URL + '/api/QaLists';
+      const aiCreateServiceUrl = process.env.AI_BACK_URL + '/api/Cloud/QaLists';
 
       const aiCreateServiceData = {
         name: invoice.name,
@@ -275,14 +275,9 @@ export class CreateServiceService {
         requestLimit: requestNumber.value,
         expiration: serviceInstance.expireDate,
       };
-      const axiosConfigCreate = {
-        headers: {
-          Authorization: 'Bearer ' + aiUserToken,
-          'Access-Control-Allow-Origin': '*',
-        },
-      };
+
       await axios
-        .post(aiCreateServiceUrl, aiCreateServiceData, axiosConfigCreate)
+        .post(aiCreateServiceUrl, aiCreateServiceData, axiosConfig)
         .catch((error) => {
           return new AiApiException();
         });
