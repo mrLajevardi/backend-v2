@@ -88,8 +88,10 @@ export async function userUpdateDiskSection(
           adapterType: settings.adapterType.legacyId.toString(),
           sizeMb: settings.size,
         };
+        updatedSetting.overrideVmDefault = true;
         updatedSetting.storageProfile.href = `${vcdConfig.baseUrl}/${vcdConfig.user.storageProfile.name}/${settings.storageId}`;
         updatedSetting.storageProfile.id = `urn:vcloud:vdcstorageProfile:${settings.storageId}`;
+        // updatedSetting.storageProfile.name = 'ssffs';
         // updatedSetting.storageProfile.name = 'ARAD-Tier-Fast-Amin';
         updatedDiskSettings.push(updatedSetting);
       }
