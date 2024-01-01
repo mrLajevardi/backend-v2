@@ -15,7 +15,7 @@ export class SmsService {
         params: {
           receptor: phoneNumber,
           token: otp,
-          template: 'AradOTP',
+          template: 'DFA-OTP',
         },
       });
 
