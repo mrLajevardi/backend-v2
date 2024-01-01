@@ -133,7 +133,7 @@ build prod image:
     - cp /var/services/configs/.env ./ -f
     - cp /var/services/configs/vcdConfig.ts ./src/wrappers/mainWrapper/vcdConfig.ts -f
     - cp /var/services/configs/vcdAuthConfig.ts ./src/wrappers/mainWrapper/vcdAuthConfig.ts -f
-    - cp /var/services/configs/vcdConfig.ts ./src/wrappers/main-wrapper/vcdConfig.ts -f
+    - cp /var/services/vcdConfig.ts ./src/wrappers/main-wrapper/vcdConfig.ts -f
     - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
     # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
     # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
