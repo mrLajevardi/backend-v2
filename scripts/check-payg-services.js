@@ -7,7 +7,7 @@ const getToken = require('./get-token');
 async function checkPaygServices() {
   const token = await getToken();
   await axios.default.post(
-    `http://localhost:${process.env.PORT}/robot/checkPaygServices`,
+    `http://${process.env.HOST}:${process.env.PORT}/robot/checkPaygServices`,
     null,
     {
       headers: {
@@ -22,3 +22,5 @@ async function checkPaygServices() {
     console.log('check service request has been sent');
   });
 })();
+
+console.log('working');
