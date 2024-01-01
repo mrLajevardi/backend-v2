@@ -34,11 +34,14 @@ import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { ServiceReports } from 'src/infrastructure/database/entities/views/service-reports';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { UpdateConfigsDto } from '../../crud/configs-table/dto/update-configs.dto';
-import { FindOptionsWhere, ILike, Like, Not } from 'typeorm';
+import { FindOptionsWhere, ILike, In, Like, Not } from 'typeorm';
 import { ItemTypeWithConsumption } from '../types/item-type-with-consumption.type';
 import { TransactionsReturnDto } from '../dto/return/transactions-return.dto';
 import { ServiceStatusEnum } from '../enum/service-status.enum';
 import { UserService } from '../../user/service/user.service';
+import { GetServicesReturnDto } from '../dto/return/get-services.dto';
+import { VServiceInstances } from '../../../../infrastructure/database/entities/views/v-serviceInstances';
+import { VServiceInstancesTableService } from '../../crud/v-service-instances-table/v-service-instances-table.service';
 
 @Injectable()
 export class ServiceAdminService {
@@ -57,6 +60,7 @@ export class ServiceAdminService {
     private readonly vgpuService: VgpuService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly userService: UserService,
+    private readonly vServiceInstancesTableService: VServiceInstancesTableService,
   ) {}
 
   async deleteService(
@@ -733,5 +737,38 @@ export class ServiceAdminService {
       { ...options.user },
     );
     return;
+  }
+
+  async getServices(userId: number): Promise<VServiceInstances[]> {
+    const serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
+    const serviceStatus: ServiceStatusEnum[] = [
+      // 3, 4, 5, 6,7
+      ServiceStatusEnum.Deleted,
+      ServiceStatusEnum.Error,
+      ServiceStatusEnum.DisabledByAdmin,
+      ServiceStatusEnum.Success,
+      ServiceStatusEnum.Expired,
+      ServiceStatusEnum.Pending,
+      ServiceStatusEnum.Disabled,
+    ];
+
+    const where: FindOptionsWhere<VServiceInstances> = {
+      userId: userId,
+      isDeleted: false,
+      serviceTypeId: In(serviceTypeIds),
+      status: In(serviceStatus),
+    };
+
+    const services: VServiceInstances[] =
+      await this.vServiceInstancesTableService.find({
+        where,
+        relations: ['serviceItems', 'serviceType', 'vServiceItems'],
+        order: {
+          createDate: { direction: 'DESC' },
+          status: { direction: 'ASC' },
+        },
+      });
+
+    return services;
   }
 }

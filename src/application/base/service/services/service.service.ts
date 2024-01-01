@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -43,6 +43,9 @@ import { VServiceInstancesTableService } from '../../crud/v-service-instances-ta
 import { ServiceTypesEnum } from '../enum/service-types.enum';
 import { TemplatesTableService } from '../../crud/templates/templates-table.service';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+import { User } from '../../../../infrastructure/database/entities/User';
+import axios from 'axios';
+import * as process from 'process';
 
 @Injectable()
 export class ServiceService {
@@ -543,15 +546,16 @@ export class ServiceService {
       where.id = id;
     }
 
-    const services = await this.vServiceInstancesTableService.find({
-      where,
-      relations: ['serviceItems', 'serviceType'],
-      order: {
-        createDate: { direction: 'DESC' },
-        status: { direction: 'ASC' },
-      },
-    });
-    console.log(services);
+    const services: VServiceInstances[] =
+      await this.vServiceInstancesTableService.find({
+        where,
+        relations: ['serviceItems', 'serviceType', 'vServiceItems'],
+        order: {
+          createDate: { direction: 'DESC' },
+          status: { direction: 'ASC' },
+        },
+      });
+
     const extendedServiceList = services.map((service) => {
       const expired =
         new Date(service.expireDate).getTime() <= new Date().getTime();
@@ -595,5 +599,38 @@ export class ServiceService {
   async getReports(option: SessionRequest) {
     const userId = option.user.userId;
     // thi
+  }
+
+  async getAiServices(option: SessionRequest) {
+    const user: User = await this.userService.findById(option.user.userId);
+
+    const services: ServiceInstances[] =
+      await this.serviceInstancesTableService.find({
+        where: {
+          userId: user.id,
+          status: 3,
+          serviceTypeId: ServiceTypesEnum.Ai,
+          isDeleted: false,
+        },
+      });
+    console.log(services);
+    if (services.length == 0) {
+      return [];
+    }
+
+    const axiosConfig = {
+      headers: {
+        Authorization: process.env.AI_BACK_TOKEN,
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    };
+
+    const aiUrl =
+      process.env.AI_BACK_URL + '/api/Cloud/UserQaLists/' + user.phoneNumber;
+
+    const getListRequest = await axios.get(aiUrl, axiosConfig);
+
+    return getListRequest.data;
   }
 }
