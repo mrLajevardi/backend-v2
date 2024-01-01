@@ -599,7 +599,7 @@ export class VmController {
     @Param('vmId') vmId: string,
     @Body() data: CreateVmFromTemplate,
     @Request() options,
-  ): Promise<TaskReturnDto> {
+  ): Promise<void> {
     return this.vmService.postAnswer(options, serviceInstanceId, vmId, data);
   }
 

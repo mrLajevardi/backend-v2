@@ -4,11 +4,8 @@ import {
   UseGuards,
   Request,
   Get,
-  Res,
   Body,
   Param,
-  Query,
-  Req,
   Put,
 } from '@nestjs/common';
 import {
@@ -16,7 +13,6 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -25,14 +21,10 @@ import { LoginDto } from '../dto/login.dto';
 import { LocalAuthGuard } from '../guard/local-auth.guard';
 import { AuthService } from '../service/auth.service';
 import { OtpLoginDto } from '../dto/otp-login.dto';
-import { GithubLoginDto } from '../dto/github-login.dto';
-import { LinkedInAuthGuard } from '../guard/linked-in-auth.guard';
-import { LinkedInLoginDto } from '../dto/linked-in-login.dto';
 import { GithubAuthGuard } from '../guard/github-auth.guard';
 import { OtpAuthGuard } from '../guard/otp-auth.guard';
 import { LoginAsUserDto } from '../dto/login-as-user.dto';
 import { RegisterByOauthDto } from '../dto/register-by-oauth.dto';
-import { GoogleLoginDto } from '../dto/google-login.dto';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { PhoneNumberDto } from '../dto/phoneNumber.dto';
 import { SecurityToolsService } from '../../security-tools/security-tools.service';
@@ -45,26 +37,16 @@ import { RobotLoginDto } from '../dto/robot-login.dto';
 import { AccessTokenDto } from '../dto/access-token.dto';
 import { UserPayload } from '../dto/user-payload.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
-import { Response } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { OauthService } from '../service/oauth.service';
 import { VerifyOauthDto } from '../dto/verify-oauth.dto';
-import { GoogleStrategy } from '../strategy/google.strategy';
 import { GoogleOAuthGuard } from '../guard/google.auth.guard';
 import {
   // LinkedinAuthGuard,
   LinkedinGuardAuth,
 } from '../guard/linkedin.auth.guard';
-import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { TwoFaAuthService } from '../service/two-fa-auth.service';
-import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
-import { VerifyOtpTwoFactorAuthDto } from '../dto/verify-otp-two-factor-auth.dto';
-import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
-import { EnableTwoFactorAuthenticateDto } from '../dto/enable-two-factor-authenticate.dto';
-import { DisableTwoFactorAuthenticateDto } from '../dto/disable-two-factor-authenticate.dto';
 import { isNil } from 'lodash';
 import { UserDoesNotExistException } from '../../../../../infrastructure/exceptions/user-does-not-exist.exception';
-import { BadRequestException } from '../../../../../infrastructure/exceptions/bad-request.exception';
 import { User } from '../../../../../infrastructure/database/entities/User';
 import { Type } from 'class-transformer';
 import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
@@ -76,6 +58,7 @@ import { PureAbility, subject } from '@casl/ability';
 import { Action } from '../../ability/enum/action.enum';
 import { AclSubjectsEnum } from '../../ability/enum/acl-subjects.enum';
 import { CheckPolicies } from '../../ability/decorators/check-policies.decorator';
+import { OtpNotMatchException } from '../../../../../infrastructure/exceptions/otp-not-match-exception';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -497,7 +480,7 @@ export class AuthController {
     );
 
     if (!verify) {
-      throw new OtpErrorException();
+      throw new OtpNotMatchException();
     }
 
     const cacheKey: string = user.id + '_changePassword';

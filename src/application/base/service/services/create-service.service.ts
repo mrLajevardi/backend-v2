@@ -4,6 +4,8 @@ import {
   Inject,
   Injectable,
   forwardRef,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { isEmpty, isNil } from 'lodash';
 import { UserService } from 'src/application/base/user/service/user.service';
@@ -45,6 +47,15 @@ import { InvoiceItems } from '../../../../infrastructure/database/entities/Invoi
 import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
+import { DataSource, QueryRunner } from 'typeorm';
+import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
+import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
+import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
+import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
+import axios from 'axios';
+import * as process from 'process';
+import { User } from '../../../../infrastructure/database/entities/User';
+import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
 
 @Injectable()
 export class CreateServiceService {
@@ -68,6 +79,7 @@ export class CreateServiceService {
     private readonly serviceTypesTableService: ServiceTypesTableService,
     private readonly serviceItemsTableService: ServiceItemsTableService,
     private readonly invoicesTableService: InvoicesTableService,
+    private dataSource: DataSource,
   ) {}
 
   private strategy: any = {
@@ -99,110 +111,191 @@ export class CreateServiceService {
   async createAiService(
     options: SessionRequest,
     invoice: Invoices,
-  ): Promise<TaskReturnDto> {
-    if (!isNil(invoice.serviceInstanceId)) {
-      return {
-        id: invoice.serviceInstanceId,
-        taskId: null,
-      };
-    }
-    const userId = options.user.userId;
-    const userCredit = await this.userInfoService.getUserCreditBy(userId);
+  ): Promise<any> {
+    const queryRunner: QueryRunner = this.dataSource.createQueryRunner();
 
-    if (userCredit < invoice.finalAmount) {
-      throw new NotEnoughCreditException();
-    }
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
 
-    const transaction: Transactions = await this.transactionTableService.create(
-      {
-        dateTime: new Date(),
-        description: '',
-        invoiceId: invoice.id,
-        isApproved: false,
-        value: -invoice.finalAmount,
-        paymentToken: null,
-        paymentType: PaymentTypes.PayByCredit,
-        serviceInstanceId: null,
-        userId: userId.toString(),
-      },
-    );
-    const serviceType = await this.serviceTypesTableService.findOne({
-      where: {
-        id: ServiceTypesEnum.Ai,
-      },
-    });
-
-    const periodItem: InvoiceItems = invoice.invoiceItems.find((item) =>
-      item.codeHierarchy.includes(ItemTypeCodes.Period),
-    );
-
-    if (isNil(periodItem)) {
-      throw new ForbiddenException();
-    }
-
-    const endDate = addMonths(new Date(), Number(periodItem.value));
-
-    const serviceInstanceDto: CreateServiceInstancesDto = {
-      name: invoice.name,
-      servicePlanType: invoice.servicePlanType,
-      datacenterName: invoice.datacenterName,
-      createDate: new Date(),
-      expireDate: endDate,
-      serviceType: serviceType,
-      status: 1,
-      userId: invoice.userId,
-      lastUpdateDate: new Date(),
-    };
-
-    const serviceInstance = await this.serviceInstancesTable.create(
-      serviceInstanceDto,
-    );
-
-    const serviceInstanceId = serviceInstance.id;
-    const serviceItemsDto: CreateServiceItemsDto[] = invoice.invoiceItems.map(
-      (item) => {
+    try {
+      if (!isNil(invoice.serviceInstanceId)) {
         return {
+          id: invoice.serviceInstanceId,
+          taskId: null,
+        };
+      }
+      const userId = options.user.userId;
+      const userCredit = await this.userInfoService.getUserCreditBy(userId);
+      const user: User = await this.userService.findById(userId);
+      if (userCredit < invoice.finalAmount) {
+        return new NotEnoughCreditException();
+      }
+
+      const transaction: Transactions = await queryRunner.manager.save(
+        Transactions,
+        {
+          dateTime: new Date(),
+          description: '',
+          invoiceId: invoice.id,
+          isApproved: false,
+          value: -invoice.finalAmount,
+          paymentToken: null,
+          paymentType: PaymentTypes.PayByCredit,
+          serviceInstanceId: null,
+          userId: userId,
+        },
+      );
+
+      const serviceType = await this.serviceTypesTableService.findOne({
+        where: {
+          id: ServiceTypesEnum.Ai,
+        },
+      });
+
+      const periodItem: InvoiceItems = invoice.invoiceItems.find((item) =>
+        item.codeHierarchy.includes(ItemTypeCodes.Period),
+      );
+
+      const requestNumber: InvoiceItems = invoice.invoiceItems.find((item) =>
+        item.codeHierarchy.includes(ItemTypeCodes.RequestNumber),
+      );
+
+      if (isNil(periodItem)) {
+        return new ForbiddenException();
+      }
+
+      const endDate = addMonths(new Date(), Number(periodItem.value));
+
+      const serviceInstanceDto: CreateServiceInstancesDto = {
+        name: invoice.name,
+        servicePlanType: invoice.servicePlanType,
+        datacenterName: invoice.datacenterName,
+        createDate: new Date(),
+        expireDate: endDate,
+        serviceType: serviceType,
+        status: 1,
+        userId: invoice.userId,
+        lastUpdateDate: new Date(),
+      };
+
+      const serviceInstance: ServiceInstances = await queryRunner.manager.save(
+        ServiceInstances,
+        serviceInstanceDto,
+      );
+
+      const serviceInstanceId = serviceInstance.id;
+      const serviceItemsDto: CreateServiceItemsDto[] = invoice.invoiceItems.map(
+        (item) => {
+          return {
+            serviceInstanceId: serviceInstanceId,
+            itemTypeId: item.itemId,
+            itemTypeCode: item.codeHierarchy,
+            value: item.value,
+            quantity: item.quantity,
+          } as CreateServiceItemsDto;
+        },
+      );
+
+      await queryRunner.manager.insert(ServiceItems, serviceItemsDto);
+
+      await queryRunner.manager.update(
+        Transactions,
+        {
+          id: transaction.id,
+        },
+        {
+          isApproved: true,
           serviceInstanceId: serviceInstanceId,
-          itemTypeId: item.itemId,
-          itemTypeCode: item.codeHierarchy,
-          value: item.value,
-          quantity: item.quantity,
-        } as CreateServiceItemsDto;
-      },
-    );
+        },
+      );
 
-    await this.serviceItemsTableService.createAll(serviceItemsDto);
+      const task: Tasks = await queryRunner.manager.save(Tasks, {
+        userId: options.user.userId,
+        serviceInstanceId: serviceInstanceId,
+        operation: ServiceTypesEnum.Ai,
+        details: null,
+        startTime: new Date(),
+        endTime: new Date(),
+        status: 'success',
+      });
 
-    await this.transactionTableService.update(transaction.id, {
-      isApproved: true,
-      serviceInstanceId: serviceInstanceId,
-    });
+      await queryRunner.manager.update(
+        ServiceInstances,
+        {
+          id: serviceInstanceId,
+        },
+        {
+          status: 3,
+        },
+      );
 
-    const task = await this.tasksTableService.create({
-      userId: options.user.userId,
-      serviceInstanceId: serviceInstanceId,
-      operation: ServiceTypesEnum.Ai,
-      details: null,
-      startTime: new Date(),
-      endTime: new Date(),
-      status: 'success',
-    });
+      await queryRunner.manager.update(
+        Invoices,
+        {
+          id: invoice.id,
+        },
+        {
+          serviceInstanceId: serviceInstanceId,
+          payed: true,
+        },
+      );
+      const aiGetUserIdUrl = process.env.AI_BACK_URL + '/api/Auth/LoginAs';
 
-    await this.serviceInstancesTable.update(serviceInstanceId, {
-      status: 3,
-    });
+      const axiosConfig = {
+        headers: {
+          Authorization: process.env.AI_BACK_TOKEN,
+          'Access-Control-Allow-Origin': '*',
+        },
+      };
 
-    await this.invoicesTableService.update(invoice.id, {
-      serviceInstanceId: serviceInstanceId,
-      payed: true,
-    });
+      const aiGetUserIdRequest = await axios.post(
+        aiGetUserIdUrl,
+        {
+          phoneNumber: user.phoneNumber,
+        },
+        axiosConfig,
+      );
 
-    const taskId = task.taskId;
+      const aiUserId: number = aiGetUserIdRequest.data.userId;
+      const aiUserToken = aiGetUserIdRequest.data.token;
+      const aiCreateServiceUrl = process.env.AI_BACK_URL + '/api/Cloud/QaLists';
 
-    return {
-      taskId: taskId,
-      id: serviceInstanceId,
-    };
+      const aiCreateServiceData = {
+        name: invoice.name,
+        description: invoice.description,
+        robotName: 'پشتیبان هوشمند',
+        robotRole: 'پاسخگویی خودکار به سولات کاربران',
+        robotDomain: 'دامنه سوالات به عنوان نمونه: مشکلات رایج در رژیم کتوژنیک',
+        iDontKnowResponse:
+          'به این سوال نمی توانم پاسخ دهم. لطفا دقیق تر بپرسید.',
+        userId: aiUserId,
+        version: 'v2',
+        language: 'fa',
+        welcomeMessage: 'سلام. وقت به خیر.',
+        requestLimit: requestNumber.value,
+        expiration: serviceInstance.expireDate,
+      };
+
+      await axios
+        .post(aiCreateServiceUrl, aiCreateServiceData, axiosConfig)
+        .catch((error) => {
+          return new AiApiException();
+        });
+
+      const taskId = task.taskId;
+
+      await queryRunner.commitTransaction();
+
+      return {
+        taskId: taskId,
+        id: serviceInstanceId,
+      };
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      return new BadRequestException();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async createVdcService(

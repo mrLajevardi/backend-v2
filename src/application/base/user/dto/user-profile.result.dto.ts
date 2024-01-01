@@ -42,9 +42,9 @@ export class UserProfileResultDto {
       personalVerification: item.personalVerification,
       companyOwner: item.companyOwner,
       twoFactorAuthenticate: this.parseTwoFactorTypes(item.twoFactorAuth),
-      avatar: !isNil(item.avatar) ? item.avatar.streamId : null,
+      avatar: !isNil(item.avatar) ? item.avatar.guid : null,
       companyLetter: !isNil(item.companyLetter)
-        ? item.companyLetter.streamId
+        ? item.companyLetter.guid
         : null,
       companyLetterStatus: item.companyLetterStatus,
       company: !isNil(item.company)
