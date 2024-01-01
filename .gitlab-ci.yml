@@ -81,10 +81,8 @@ build image:
   stage: publish
   only: 
    - release
-   - main
   tags:
     - release
-    - production
   services:
     - docker:dind
   before_script: 
@@ -102,12 +100,10 @@ deploy image:
   stage: deploy
   only: 
    - release
-   - main
   services:
     - docker:dind
   tags:
     - release
-    - production
   before_script:
     - export IMAGE_NAME="$IMAGE_NAME"
   script:
@@ -120,3 +116,41 @@ deploy image:
     - docker compose up -d
 
 
+build prod image:
+  image: docker
+  stage: publish
+  only: 
+   - main
+  tags:
+    - production
+  services:
+    - docker:dind
+  before_script: 
+    - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
+  script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - cp /var/services/configs/.env ./ -f
+    - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
+    # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
+    # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push "$CI_REGISTRY/$IMAGE_NAME"
+
+deploy prod image:
+  stage: deploy
+  only: 
+   - main
+  services:
+    - docker:dind
+  tags:
+    - production
+  before_script:
+    - export IMAGE_NAME="$IMAGE_NAME"
+  script:
+    - cp /var/services/configs/.env ./ -f
+    - cp /var/services/sa_password.txt ./ -f
+    - cat ./sa_password.txt
+    - cat .env
+    - export IMAGE_NAME=${IMAGE_FULLPATH}
+    - echo $IMAGE_NAME 
+    - docker compose up -d
