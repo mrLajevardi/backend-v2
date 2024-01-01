@@ -29,6 +29,7 @@ import { TwoFaAuthSmsService } from './classes/two-fa-auth-sms.service';
 import { TwoFaAuthEmailService } from './classes/two-fa-auth-email.service';
 import { TwoFaAuthStrategy } from './classes/two-fa-auth.strategy';
 import { ClsModule, ClsService } from 'nestjs-cls';
+import { TwoFactorAuthController } from './controller/two-factor-auth.controller';
 
 @Module({
   imports: [
@@ -47,7 +48,7 @@ import { ClsModule, ClsService } from 'nestjs-cls';
       signOptions: { expiresIn: '28800s' },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, TwoFactorAuthController],
   providers: [
     OauthServiceFactory,
     OauthService,
