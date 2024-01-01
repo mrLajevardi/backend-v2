@@ -21,9 +21,17 @@ import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.e
 import { GetVgpuPlansDto } from './dto/return/get-vgpu-plans.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { CheckPolicies } from '../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../base/security/ability/enum/action.enum';
 
 @ApiTags('vgpu')
 @Controller('vgpu')
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Vgpu, props)),
+)
 // @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VgpuController {
