@@ -8,8 +8,8 @@ import { DeleteResult } from 'typeorm';
 export class FileService {
   constructor(private readonly fileTableService: FileTableService) {}
 
-  async getFileContent(streamId: string) {
-    const data = await this.fileTableService.findByStreamId(streamId);
+  async getFileContent(guid: string) {
+    const data = await this.fileTableService.findByGuid(guid);
     if (isNil(data)) {
       throw ApiNotFoundResponse();
     }
@@ -17,8 +17,8 @@ export class FileService {
     return data;
   }
 
-  async deleteFile(streamId: string): Promise<DeleteResult> {
-    const file = await this.fileTableService.delete(streamId);
+  async deleteFile(guid: string): Promise<DeleteResult> {
+    const file = await this.fileTableService.delete(guid);
 
     return file;
   }

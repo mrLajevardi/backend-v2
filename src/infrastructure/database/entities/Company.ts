@@ -11,7 +11,7 @@ import { Province } from './Province';
 import { City } from './City';
 import { User } from './User';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
-import { FileUpload } from './FileUpload';
+import { Files } from './Files';
 
 @Index('PK__Company__3213E83F6DC356F4', ['id'], { unique: true })
 @Entity('Company', { schema: 'security' })
@@ -89,7 +89,7 @@ export class Company {
   @OneToMany(() => User, (user) => user.company)
   users: User[];
 
-  @ManyToOne(() => FileUpload, (file) => file.company)
-  @JoinColumn({ name: 'LogoId', referencedColumnName: 'streamId' })
-  companyLogo: FileUpload;
+  @ManyToOne(() => Files)
+  @JoinColumn({ name: 'LogoId', referencedColumnName: 'guid' })
+  companyLogo: Files;
 }
