@@ -17,5 +17,3 @@ export function createDhcpBindingEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = createDhcpBindingEndpoint;

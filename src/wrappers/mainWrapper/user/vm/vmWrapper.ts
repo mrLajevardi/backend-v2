@@ -69,5 +69,3 @@ export const vmWrapper = {
   updateVAppTemplate: userUpdateVAppTemplate,
   updateMedia: userUpdateMedia,
 };
-
-module.exports = vmWrapper;

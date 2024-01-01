@@ -1,19 +1,30 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { isEmpty } from 'lodash';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
-import { ServiceService } from 'src/application/base/service/services/service.service';
+import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
+import { Roles } from 'src/application/base/security/ability/decorators/roles.decorator';
+import { PredefinedRoles } from 'src/application/base/security/ability/enum/predefined-enum.type';
+import { PoliciesGuard } from 'src/application/base/security/ability/guards/policies.guard';
+import { ServicePropertiesService } from 'src/application/base/service-properties/service-properties.service';
 import { SessionsService } from 'src/application/base/sessions/sessions.service';
+import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
+import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 
-@Controller('vdc-admin')
+@Controller('vdc/admin')
+@ApiBearerAuth()
+@UseGuards(PoliciesGuard)
+@Roles(PredefinedRoles.AdminRole)
 export class VdcAdminController {
   constructor(
     private readonly serviceInstancesTableService: ServiceInstancesTableService,
-    // private readonly tasksService: TasksService,
+    private readonly tasksTable: TasksTableService,
     private readonly sessionService: SessionsService,
-    // private readonly taskManagerService: TaskManagerService,
-    private readonly serviceService: ServiceService,
+    private readonly taskManagerService: TaskManagerService,
+    private readonly servicePropertiesService: ServicePropertiesService,
+    private readonly logger: LoggerService,
   ) {}
   /**
    * delete vdc by admin
@@ -26,7 +37,7 @@ export class VdcAdminController {
     const userId = options.accessToken.userId;
     const serviceInstance = await this.serviceInstancesTableService.findOne({
       where: {
-        ID: vdcInstanceId,
+        id: vdcInstanceId,
       },
     });
     if (serviceInstance.status === 1) {
@@ -37,31 +48,36 @@ export class VdcAdminController {
       return Promise.reject(error);
     }
 
-    // const task = await this.tasksService.create({
-    //     userId: userId,
-    //     serviceInstanceId: vdcInstanceId,
-    //     operation: 'deleteVdcService',
-    //     details: null,
-    //     startTime: new Date(),
-    //     endTime: null,
-    //     status: 'running',
-    // });
+    const task = await this.tasksTable.create({
+      userId: userId,
+      serviceInstanceId: vdcInstanceId,
+      operation: 'deleteVdcService',
+      details: null,
+      startTime: new Date(),
+      endTime: null,
+      status: 'running',
+    });
 
-    // await this.taskManagerService.addTask({
-    //     serviceInstanceId: vdcInstanceId,
-    //     customTaskId: task['TaskID'],
-    //     vcloudTask: null,
-    //     target: 'task',
-    //     nextTask: 'deleteVdc',
-    //     taskType: 'adminTask',
-    //     requestOptions: options,
-    // });
+    await this.taskManagerService.addTask({
+      serviceInstanceId: vdcInstanceId,
+      customTaskId: task['TaskID'],
+      vcloudTask: null,
+      target: 'task',
+      nextTask: 'deleteVdc',
+      taskType: 'adminTask',
+      requestOptions: options,
+    });
 
-    // await logger.info('vdc', 'deleteVdc', { _object: vdcInstanceId }, options.locals);
-    // return Promise.resolve({
-    //     id: vdcInstanceId,
-    //     taskId: task['TaskID'],
-    // });
+    await this.logger.info(
+      'vdc',
+      'deleteVdc',
+      { _object: vdcInstanceId },
+      options.locals,
+    );
+    return Promise.resolve({
+      id: vdcInstanceId,
+      taskId: task['TaskID'],
+    });
   }
 
   /**
@@ -73,12 +89,12 @@ export class VdcAdminController {
   async adminGetVdcInfo(options, vdcInstanceId) {
     const service = await this.serviceInstancesTableService.findOne({
       where: {
-        ID: vdcInstanceId,
+        id: vdcInstanceId,
       },
     });
     console.log(service);
     const userId = service.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+    const props = await this.servicePropertiesService.getAllServiceProperties(
       vdcInstanceId,
     );
     const session = await this.sessionService.checkUserSession(
@@ -128,7 +144,9 @@ export class VdcAdminController {
     const vdcServices = await this.serviceInstancesTableService.find({
       relations: ['Users', 'ServiceItems'],
       where: {
-        and: [{ IsDeleted: false }, { ServiceTypeID: 'vdc' }, parsedFilter],
+        isDeleted: false,
+        serviceTypeId: 'vdc',
+        ...parsedFilter,
       },
       take: limit,
       skip: skip,
@@ -152,7 +170,7 @@ export class VdcAdminController {
   async adminRepairVdc(options, vdcInstanceId) {
     const service = await this.serviceInstancesTableService.findOne({
       where: {
-        ID: vdcInstanceId,
+        id: vdcInstanceId,
       },
     });
     const error = new BadRequestException('nable to repair vdc');

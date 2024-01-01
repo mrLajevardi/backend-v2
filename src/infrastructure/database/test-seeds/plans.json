@@ -1,1 +1,10 @@
-[]
+[
+    {
+        "code": "aiPersonal",
+        "additionRatio": 0,
+        "additionAmount": 0,
+        "description": "Description",
+        "condition": "@ServiceTypeID='aradAi'",
+        "enabled": 1
+    }
+]

@@ -63,5 +63,25 @@
     "serviceInstanceId": "1A20E61D-21D9-414F-B5D9-814BB5C220CE",
     "propertyKey": "disk",
     "value": "59.71"
+  },
+  {
+    "serviceInstanceId": "5578AF82-7B09-4AC4-B0B1-10684981591F",
+    "propertyKey": "aradAiDemo.token",
+    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaURlbW8iLCJjcmVhdGVkRGF0ZSI6IjIwMjMtMDYtMDFUMjM6Mjg6MzcuNjY0WiIsInVzZXJJZCI6IjU4NyIsImR1cmF0aW9uIjoxMiwiZXhwaXJlRGF0ZSI6IjIwMjQtMDUtMjZUMjM6Mjg6MzcuNjY0WiIsImNvc3RQZXJSZXF1ZXN0IjoxMDAsImNvc3RQZXJNb250aCI6MCwiaWF0IjoxNjg1NjYyMTE4fQ.dfU6LoZ1T2nYcBoIQhkXCfSUVsu64Ks-OrjplmGqpNA"
+  },
+  {
+    "serviceInstanceId": "5578AF82-7B09-4AC4-B0B1-1068498159r4",
+    "propertyKey": "aradAiDemo.token",
+    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaURlbW8iLCJjcmVhdGVkRGF0ZSI6IjIwMjMtMDctMTBUMDg6NDk6MzguNzExWiIsInVzZXJJZCI6IjYzNyIsImR1cmF0aW9uIjoxMiwiZXhwaXJlRGF0ZSI6IjIwMjQtMDctMDRUMDg6NDk6MzguNzExWiIsImNvc3RQZXJSZXF1ZXN0IjoxMDAsImNvc3RQZXJNb250aCI6MCwiaWF0IjoxNjg4OTc4OTc4fQ.DGJgbA6X981DWG9KyWxobjN3ojv0DPYChKKlYee9TpE"
+  },
+  {
+    "serviceInstanceId": "B66F95BB-F018-4346-8B02-4CD4535D9F11",
+    "propertyKey": "aradAi.token",
+    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDA5OjIzOjExLjA5N1oiLCJ1c2VySWQiOiI2MzciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxMDoyMzoxMS4wOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4ODk4MDk5MX0.4-m0t-dSKOw0Fd_oo07XsbnFA8eqO0yrvtwc5W5vE2I"
+  },
+  {
+    "serviceInstanceId": "7451E733-D18D-4329-B3FD-76429E4EDBEA",
+    "propertyKey": "aradAi.token",
+    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJxdWFsaXR5UGxhbkNvZGUiOiJhaVBlcnNvbmFsIiwiY3JlYXRlZERhdGUiOiIyMDIzLTA3LTEwVDE2OjQ2OjEzLjQwMFoiLCJ1c2VySWQiOiI1ODciLCJkdXJhdGlvbiI6MTgwLCJleHBpcmVEYXRlIjoiMjAyNC0wMS0wNlQxNzo0NjoxMy4zOTdaIiwiY29zdFBlclJlcXVlc3QiOjUwLCJjb3N0UGVyTW9udGgiOjAsImlhdCI6MTY4OTAwNzU3NH0.kNp8f61qDC-ZhZp9WMfuV4nlO7C6hFgGF0UeoWzR3rw"
   }
 ]

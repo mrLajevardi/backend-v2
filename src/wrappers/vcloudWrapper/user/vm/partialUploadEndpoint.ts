@@ -22,5 +22,3 @@ export function partialUploadEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = partialUploadEndpoint;

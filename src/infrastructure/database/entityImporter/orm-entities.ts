@@ -44,11 +44,30 @@ import { ErrorLog } from '../entities/ErrorLog';
 import { Sysdiagrams } from '../entities/Sysdiagrams';
 import { QualityPlans } from '../entities/views/quality-plans';
 import { ServiceItemsSum } from '../entities/views/service-items-sum';
+import { InvoiceItemList } from '../entities/views/invoice-item-list';
+import { ServicePlans } from '../entities/ServicePlans';
+import { ServiceReports } from '../entities/views/service-reports';
+import { ServiceItemTypesTree } from '../entities/views/service-item-types-tree';
+import { Templates } from '../entities/Templates';
+import { Company } from '../entities/Company';
+import { Province } from '../entities/Province';
+import { City } from '../entities/City';
+import { FileUpload } from '../entities/FileUpload';
+import { EntityLog } from '../entities/EntityLog';
+import { ServicePayments } from '../entities/ServicePayments';
+import { VServiceInstances } from '../entities/views/v-serviceInstances';
+import { VServiceInstanceDetail } from '../entities/views/v-serviceInstanceDetail';
+import { ServiceDiscount } from '../entities/ServiceDiscount';
+import { VUsers } from '../entities/views/v-users';
+// import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
   //Views
   QualityPlans,
   ServiceItemsSum,
+  InvoiceItemList,
+  ServiceItemTypesTree,
+  VUsers,
   // Logs Schema
   DebugLog,
   InfoLog,
@@ -68,18 +87,21 @@ export const dbEntities = [
   Setting,
   SystemSettings,
   User,
-  // services Schema
+  Company,
+  Province,
+  City,
   Configs,
   Discounts,
   ItemTypes,
   Plans,
   ServiceTypes,
-  // VDC Schema
+  Templates,
   Organization,
   Sessions,
   Sysdiagrams,
   // User Schema
   AiTransactionsLogs,
+  ServicePlans,
   Groups,
   GroupsMapping,
   InvoiceDiscounts,
@@ -93,4 +115,12 @@ export const dbEntities = [
   Tasks,
   Tickets,
   Transactions,
+  ServiceReports,
+  ServiceItems,
+  FileUpload,
+  EntityLog,
+  ServicePayments,
+  VServiceInstances,
+  VServiceInstanceDetail,
+  ServiceDiscount,
 ];

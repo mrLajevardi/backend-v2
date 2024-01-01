@@ -21,5 +21,3 @@ export function getNetworkEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getNetworkEndpoint;

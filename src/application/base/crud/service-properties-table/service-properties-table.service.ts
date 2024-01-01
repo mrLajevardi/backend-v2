@@ -8,11 +8,17 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteResult,
+  UpdateResult,
+  Like,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { BaseServicePropertiesService } from './interfaces/service-properties.service.interface';
 
 @Injectable()
-export class ServicePropertiesTableService {
+export class ServicePropertiesTableService
+  implements BaseServicePropertiesService
+{
   constructor(
     @InjectRepository(ServiceProperties)
     private readonly repository: Repository<ServiceProperties>,
@@ -25,52 +31,80 @@ export class ServicePropertiesTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<ServiceProperties[]> {
+  async find(
+    options?: FindManyOptions<ServiceProperties>,
+  ): Promise<ServiceProperties[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<ServiceProperties>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<ServiceProperties> {
+  async findOne(
+    options?: FindOneOptions<ServiceProperties>,
+  ): Promise<ServiceProperties> {
     const result = await this.repository.findOne(options);
     return result;
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateServicePropertiesDto) {
+  async create(dto: CreateServicePropertiesDto): Promise<ServiceProperties> {
     const newItem = plainToClass(ServiceProperties, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateServicePropertiesDto) {
+  async update(
+    id: number,
+    dto: UpdateServicePropertiesDto,
+  ): Promise<ServiceProperties> {
     const item = await this.findById(id);
     const updateItem: Partial<ServiceProperties> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<ServiceProperties>,
     dto: UpdateServicePropertiesDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: number) {
-    await this.repository.delete(id);
+  async delete(id: number): Promise<DeleteResult> {
+    return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll(options: FindOptionsWhere<ServiceProperties>) {
-    await this.repository.delete(options);
+  async deleteAll(
+    where: FindOptionsWhere<ServiceProperties>,
+  ): Promise<DeleteResult> {
+    return await this.repository.delete(where);
+  }
+
+  async getValueBy(
+    serviceInstanceId: string,
+    keyName: string,
+  ): Promise<string> {
+    const serviceProperties = await this.findOne({
+      where: {
+        serviceInstanceId: serviceInstanceId,
+        propertyKey: Like(`${keyName.toLowerCase()}`),
+      },
+      select: { value: true },
+    });
+
+    if (serviceProperties == null) {
+      return Promise.resolve('');
+    }
+
+    return Promise.resolve(serviceProperties.value);
   }
 }

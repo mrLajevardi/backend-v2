@@ -12,5 +12,3 @@ export const userPostAnswer = async (authToken, vmId, questionId, choiceId) => {
     __vcloudTask: answer.headers['location'],
   });
 };
-
-module.exports = userPostAnswer;

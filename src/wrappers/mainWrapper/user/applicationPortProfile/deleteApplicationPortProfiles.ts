@@ -20,5 +20,3 @@ export async function userDeleteApplicationPortProfile(
     __vcloudTask: applicationPortProfile.headers['location'],
   });
 }
-
-module.exports = userDeleteApplicationPortProfile;

@@ -6,5 +6,3 @@ export const cancelTask = async (authToken, taskId) => {
   });
   return;
 };
-
-module.exports = cancelTask;

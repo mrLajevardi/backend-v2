@@ -13,5 +13,3 @@ export function getListOfTicketsEndpoint(options?: any) {
     headers: options.headers,
   };
 }
-
-module.exports = getListOfTicketsEndpoint;

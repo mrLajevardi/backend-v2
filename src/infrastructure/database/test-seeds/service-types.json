@@ -1,2 +1,44 @@
 [
+    {
+        "id" : "vdc",
+        "title": "test",
+        "baseFee": 1,
+        "maxAvailable": 100,
+        "createInstanceScript": "",
+        "verifyInstance": true,
+        "datacenterName": "arad",
+        "isPayg": false
+    },
+    {
+        "id" : "aradAi",
+        "title": "test",
+        "baseFee": 1,
+        "maxAvailable": 100,
+        "createInstanceScript": "",
+        "verifyInstance": true,
+        "datacenterName": "arad",
+        "isPayg": false
+    },
+    {
+        "id": "AradAiDemo",
+        "title": "AradAiDemo",
+        "baseFee": 0,
+        "createInstanceScript": "",
+        "verifyInstance": 0,
+        "maxAvailable": 10,
+        "type": 0,
+        "datacenterName": "arad",
+        "isPayg": 0
+    },
+    {
+        "id": "AradAi",
+        "title": "AradAi",
+        "baseFee": 0,
+        "createInstanceScript": "",
+        "verifyInstance": 0,
+        "maxAvailable": 1000,
+        "datacenterName": "arad",
+        "type": 0,
+        "isPayg": 1
+    }
 ]

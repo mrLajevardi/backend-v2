@@ -28,11 +28,11 @@ export class Wrapper {
    * @return {Promise}
    */
   posts(path = '', options = {}) {
+    //console.log(this.endPoints, path);
     const existingEndPoint = lodash.get(this.endPoints, path);
     if (!isNil(existingEndPoint)) {
       const endpoint = existingEndPoint(options);
       // console.log(endpoint);
-
       return this.#request(endpoint);
     } else {
       throw new Error(`method [${path}] not found`);
@@ -59,11 +59,18 @@ export class Wrapper {
         onUploadProgress: (progressEvent) =>
           console.log('file progress', progressEvent.loaded),
       });
-      console.log(endpoint);
+      //console.log(endpoint);
       return Promise.resolve(request);
     } catch (err) {
-      console.log(err);
-      return Promise.reject(new WrapperErrorException(err));
+      console.dir(err);
+      return Promise.reject(
+        new WrapperErrorException(
+          err.response?.status,
+          err.response?.data?.message,
+          err.stack,
+          err.response?.data?.minorErrorCode,
+        ),
+      );
     }
   }
 }

@@ -24,5 +24,3 @@ export async function vcloudQuery(
   );
   return Promise.resolve(response);
 }
-
-module.exports = vcloudQuery;

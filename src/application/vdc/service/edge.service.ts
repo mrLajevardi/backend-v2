@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { TasksService } from '../../base/tasks/service/tasks.service';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { OrganizationService } from '../../base/organization/organization.service';
-import { UserService } from '../../base/user/user.service';
+import { UserService } from '../../base/user/service/user.service';
 import { isNil } from 'lodash';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
@@ -28,29 +28,30 @@ export class EdgeService {
    * @param {String} userId
    * @return {Promise}
    */
-  async createEdge(vdcId, ip, vdcName, ServiceInstanceID, orgId, userId) {
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
+  async createEdge(vdcId, ip, vdcName, serviceInstanceId, orgId, userId) {
+    const sessionToken = await this.sessionService.checkAdminSession();
     const edgeName = vdcName + '_edge';
 
     const service = await this.serviceInstanceTable.findOne({
       where: {
-        ID: ServiceInstanceID,
+        id: serviceInstanceId,
       },
     });
     const checkEdge = await this.checkEdgeExistence(userId, edgeName);
     if (service.status == 2 && !checkEdge) {
       const edgeNameProps = this.servicePropertiesTable.findOne({
         where: {
-          and: [{ ServiceInstanceID }, { PropertyKey: 'edgeName' }],
+          serviceInstanceId,
+          propertyKey: 'edgeName',
         },
       });
-      if (edgeNameProps && !isNil(ServiceInstanceID)) {
+      if (edgeNameProps && !isNil(serviceInstanceId)) {
         await this.servicePropertiesTable.deleteAll({
-          serviceInstanceId: ServiceInstanceID,
+          serviceInstanceId,
           propertyKey: 'edgeName',
         });
         await this.servicePropertiesTable.deleteAll({
-          serviceInstanceId: ServiceInstanceID,
+          serviceInstanceId,
           propertyKey: 'edgeIpRange',
         });
       }
@@ -67,14 +68,15 @@ export class EdgeService {
         name: edgeName,
         vdcId,
       });
+    console.log('🥞');
     await this.servicePropertiesTable.create({
-      serviceInstanceId: ServiceInstanceID,
+      serviceInstanceId: serviceInstanceId,
       propertyKey: 'edgeName',
       value: edgeGateway.name,
     });
     for (const ipRange of edgeGateway.ipRange) {
       await this.servicePropertiesTable.create({
-        serviceInstanceId: ServiceInstanceID,
+        serviceInstanceId,
         propertyKey: 'edgeIpRange',
         value: `${ipRange.startAddress}-${ipRange.endAddress}`,
       });

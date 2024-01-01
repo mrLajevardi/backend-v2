@@ -3,7 +3,6 @@ import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-tok
 import { isEmpty } from 'class-validator';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
 import { InvalidUseRequestPerDayException } from 'src/infrastructure/exceptions/invalid-use-request-per-day.exception';
-import { InvalidUseRequestPerMonthException } from 'src/infrastructure/exceptions/invalid-use-request-per-month.exception';
 import { InvalidServiceInstanceIdException } from 'src/infrastructure/exceptions/invalid-service-instance-id.exception';
 import {
   addMonths,
@@ -11,8 +10,6 @@ import {
   monthDiff,
 } from 'src/infrastructure/helpers/date-time.helper';
 import { InvalidAradAIConfigException } from 'src/infrastructure/exceptions/invalid-arad-ai-config.exception';
-import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
-import jwt from 'jsonwebtoken';
 import { UserTableService } from '../base/crud/user-table/user-table.service';
 import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
 import { SettingTableService } from '../base/crud/setting-table/setting-table.service';
@@ -20,6 +17,15 @@ import { AITransactionsLogsTableService } from '../base/crud/aitransactions-logs
 import { ServiceInstancesTableService } from '../base/crud/service-instances-table/service-instances-table.service';
 import { ServicePropertiesTableService } from '../base/crud/service-properties-table/service-properties-table.service';
 import { ServiceInstancesStoredProcedureService } from '../base/crud/service-instances-table/service-instances-stored-procedure.service';
+import { Between, ILike } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { toInteger } from 'lodash';
+import { GetAradAiDashoardDto } from './dto/get-arad-ai-dashoard.dto';
+import {
+  InvoiceDetailBaseDto,
+  InvoiceItemDetailBase,
+} from '../vdc/dto/invoice-detail-base.dto';
+import { InvoiceItemListService } from '../base/crud/invoice-item-list/invoice-item-list.service';
 
 @Injectable()
 export class AiService {
@@ -31,21 +37,24 @@ export class AiService {
     private readonly settingTable: SettingTableService,
     private readonly configsTable: ConfigsTableService,
     private readonly serviceInstancesSP: ServiceInstancesStoredProcedureService,
+    private readonly jwtService: JwtService,
+    private readonly invoiceItemListService: InvoiceItemListService,
   ) {}
 
-  async verifyToken(token: string) {
-    const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
-    return jwt.verify(token, JWT_SECRET_KEY);
+  async verifyToken(token: string): Promise<object> {
+    const JWT_SECRET_KEY = process.env.ARAD_AI_JWT_SECRET_KEY;
+    //console.log(token, JWT_SECRET_KEY);
+    //console.log(this.jwtService.verify(token, { secret: JWT_SECRET_KEY }));
+    return this.jwtService.verify(token, { secret: JWT_SECRET_KEY });
   }
 
   async checkAIToken(token: string): Promise<boolean> {
-    return false;
     const verified = await this.verifyToken(token)
       .then((res) => {
         return res;
       })
       .catch((err) => {
-        throw new InvalidTokenException(err);
+        return err;
       });
 
     if (!verified) {
@@ -63,10 +72,8 @@ export class AiService {
 
     const serviceProperties = await this.servicePropertiesTable.findOne({
       where: {
-        and: [
-          { Value: { like: '%' + token + '%' } },
-          { PropertyKey: { like: '%aradAi%' } },
-        ],
+        propertyKey: ILike(`%aradAi%`),
+        value: ILike(`%${token}%`),
       },
     });
 
@@ -76,14 +83,15 @@ export class AiService {
 
     const serviceInstance = await this.serviceInstancesTable.findOne({
       where: {
-        ID: serviceProperties.serviceInstanceId,
+        id: serviceProperties.serviceInstanceId,
       },
     });
-
+    //console.log(serviceInstance);
+    //console.log(verified,serviceInstance);
     if (
       isEmpty(verified['costPerRequest']) ||
       isEmpty(verified['createdDate']) ||
-      (verified['qualityPlanCode'] != 'demo' &&
+      (verified['qualityPlanCode'] != 'aiDemo' &&
         (serviceInstance.isDisabled || serviceInstance.isDeleted))
     ) {
       throw new InvalidTokenException();
@@ -93,46 +101,41 @@ export class AiService {
     if (constPerRequest > user.credit) {
       throw new NotEnoughCreditException();
     }
-    if (verified['qualityPlanCode'] == 'demo') {
+    if (verified['qualityPlanCode'] == 'aiDemo') {
       // Muximum use per day
       const usePerDay = await this.usedPerDay(
         serviceProperties.serviceInstanceId,
       );
-      if (
-        verified['maxRequestPerDay'] != 'unlimited' &&
-        verified['maxRequestPerDay'] < usePerDay
-      ) {
+
+      const maxRequestPerDay = await this.configsTable.findOne({
+        where: {
+          propertyKey: ILike(`%QualityPlans.demo.maxRequestPerDay%`),
+        },
+      });
+      if (toInteger(maxRequestPerDay.value) < usePerDay) {
         throw new InvalidUseRequestPerDayException();
-      }
-      // Muximum use pre month
-      const usePerMonth = await this.usedPerMonth(
-        serviceProperties.serviceInstanceId,
-        verified['createdDate'],
-      );
-      if (
-        verified['maxRequestPerMonth'] != 'unlimited' &&
-        verified['maxRequestPerMonth'] < usePerMonth
-      ) {
-        throw new InvalidUseRequestPerMonthException();
       }
     }
     return true;
   }
 
-  async usedPerDay(serviceInstanceId: string) {
+  async usedPerDay(serviceInstanceId: string): Promise<number> {
     const todayDate = new Date().toISOString().slice(0, 10);
     return await this.aiTransactionLogsTable.count({
       where: {
-        and: [
-          { ServiceInstanceID: serviceInstanceId },
-          { DateTime: { gte: todayDate + 'T00:00:00' } },
-          { DateTime: { lte: todayDate + 'T23:11:59' } },
-        ],
+        serviceInstanceId: serviceInstanceId,
+        dateTime: Between(
+          new Date(`${todayDate}T00:00:00`),
+          new Date(`${todayDate}T23:11:59`),
+        ),
       },
     });
   }
 
-  async usedPerMonth(serviceInstanceId: string, createdDate: Date) {
+  async usedPerMonth(
+    serviceInstanceId: string,
+    createdDate: Date,
+  ): Promise<number> {
     const todayDate = new Date().toISOString().slice(0, 10);
     const difference = monthDiff(new Date(createdDate), new Date(todayDate));
     const fromDay = new Date(addMonths(createdDate, difference))
@@ -141,19 +144,18 @@ export class AiService {
     const endDay = addMonths(createdDate, difference + 1)
       .toISOString()
       .slice(0, 10);
-
     return await this.aiTransactionLogsTable.count({
       where: {
-        and: [
-          { ServiceInstanceID: serviceInstanceId },
-          { DateTime: { gte: fromDay + 'T00:00:00' } },
-          { DateTime: { lte: endDay + 'T23:11:59' } },
-        ],
+        serviceInstanceId: serviceInstanceId,
+        dateTime: Between(
+          new Date(`${fromDay}T00:00:00`),
+          new Date(`${endDay}T23:11:59`),
+        ),
       },
     });
   }
 
-  async allRequestused(serviceInstanceID) {
+  async allRequestused(serviceInstanceID: string): Promise<number> {
     return await this.aiTransactionLogsTable.count({
       where: {
         serviceInstanceId: serviceInstanceID,
@@ -161,19 +163,7 @@ export class AiService {
     });
   }
 
-  sumAllServiceUsed(eachServiceUsed) {
-    let numberOfAllServiceUsed = 0;
-    eachServiceUsed.forEach((service) => {
-      for (const key in service) {
-        if (key == 'used') {
-          numberOfAllServiceUsed += service[key];
-        }
-      }
-    });
-    return numberOfAllServiceUsed;
-  }
-
-  async createDemoToken(userId, token) {
+  async createDemoToken(userId: number, token: string): Promise<any> {
     return await this.settingTable.create({
       userId: userId,
       key: 'aradAi.tokenDemo',
@@ -183,11 +173,13 @@ export class AiService {
     });
   }
 
-  async getAradAIDashboard(userId: number, serviceInstanceId: string) {
+  async getAradAIDashboard(
+    userId: number,
+    serviceInstanceId: string,
+  ): Promise<GetAradAiDashoardDto> {
     const serviceProperties = await this.servicePropertiesTable.findOne({
-      where: { ServiceInstanceID: serviceInstanceId },
+      where: { serviceInstanceId: serviceInstanceId },
     });
-
     if (isEmpty(serviceProperties)) {
       throw new InvalidServiceInstanceIdException();
     }
@@ -211,7 +203,7 @@ export class AiService {
     );
     const remainingDays = await dayDiff(verified.expireDate);
     const numberOfServiceCalled =
-      this.serviceInstancesSP.spCountAradAiUsedEachService(
+      await this.serviceInstancesSP.spCountAradAiUsedEachService(
         serviceProperties.serviceInstanceId,
       );
     const allRequestuse = await this.allRequestused(
@@ -233,22 +225,27 @@ export class AiService {
     };
   }
 
-  async getAiServiceInfo(userId, serviceId, qualityPlanCode, duration) {
+  async getAiServiceInfo(
+    userId: number,
+    serviceId: string,
+    qualityPlanCode: string,
+    duration: number,
+  ): Promise<object> {
     const aiServiceConfigs = await this.configsTable.find({
       where: {
-        and: [
-          { PropertyKey: { like: '%' + qualityPlanCode + '%' } },
-          { ServiceTypeID: serviceId },
-        ],
+        propertyKey: ILike(`%${qualityPlanCode}%`),
+        serviceTypeId: serviceId,
       },
     });
-    const ServiceAiInfo = {
+
+    const serviceAiInfo = {
       qualityPlanCode,
       createdDate: new Date().toISOString(),
       userId,
       duration,
       expireDate: addMonths(new Date(), duration),
     };
+
     if (isEmpty(aiServiceConfigs)) {
       throw new InvalidAradAIConfigException();
     }
@@ -256,8 +253,40 @@ export class AiService {
     aiServiceConfigs.forEach((element) => {
       const key = element.propertyKey.split('.').slice(-1)[0];
       const item = element.value;
-      ServiceAiInfo[key] = item;
+      serviceAiInfo[key] = item;
     });
-    return ServiceAiInfo;
+    return serviceAiInfo;
+  }
+
+  async getAIInvoiceDetail(invoiceId: string): Promise<InvoiceDetailBaseDto> {
+    const model = await this.invoiceItemListService.find({
+      where: { invoiceId: Number(invoiceId) },
+    });
+    const res: InvoiceDetailBaseDto = new InvoiceDetailBaseDto();
+    (res.invoiceTax = model[0].invoiceTax),
+      (res.invoiceCode = model[0].invoiceCode),
+      (res.serviceCost = model[0].serviceCost),
+      (res.rawAmount = model[0].rawAmount),
+      (res.baseAmount = model[0].baseAmount),
+      // discountAmount:item.rawAmount,
+      (res.finalPrice = model[0].finalAmount),
+      (res.finalPriceTax = model[0].finalAmountWithTax - model[0].finalAmount),
+      // templateId:model[0],
+      (res.finalPriceWithTax = model[0].finalAmountWithTax),
+      (res.templateId = model[0].templateId?.toString()),
+      // finalPriceWithTax:item.rawAmount,
+      (res.items = []),
+      model.forEach((item) => {
+        res.items.push({
+          fee: item.fee,
+          value: item.value,
+          code: item.code,
+          codeHierarchy: item.codeHierarchy,
+        });
+      });
+    res.fillTaxAndDiscountProperties();
+
+    return res;
+    // throw new Error('Method not implemented.');
   }
 }

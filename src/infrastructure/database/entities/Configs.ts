@@ -8,7 +8,8 @@ import {
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 
-@Index('PK_services.Config', ['id'], { unique: true })
+@Index('PK_Configs', ['id'], { unique: true })
+// @Index('PK_services.Config', ['id'], { unique: true })
 @Entity('Configs', { schema: 'services' })
 export class Configs {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
@@ -20,10 +21,22 @@ export class Configs {
   @Column('varchar', { name: 'Value', length: 100 })
   value: string;
 
+  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.configs)
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
+  serviceTypes: ServiceTypes;
+  @Column('varchar', { name: 'ServiceTypeID' })
+  serviceTypeId: string;
+
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.configs, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
-  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
+  @JoinColumn([
+    { name: 'ServiceTypeID', referencedColumnName: 'id' },
+    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  ])
   serviceType: ServiceTypes;
 }

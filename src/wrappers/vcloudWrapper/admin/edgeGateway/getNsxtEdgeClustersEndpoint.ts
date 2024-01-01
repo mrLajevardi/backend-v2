@@ -17,5 +17,3 @@ export function getNsxtEdgeClustersEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getNsxtEdgeClustersEndpoint;

@@ -18,5 +18,3 @@ export function instantiateVmFromTemplateEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = instantiateVmFromTemplateEndpoint;

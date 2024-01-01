@@ -1,33 +1,37 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VgpuService } from './vgpu.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { SessionsService } from '../base/sessions/sessions.service';
-import { UserService } from '../base/user/user.service';
-import { OrganizationService } from '../base/organization/organization.service';
-import { ConfigsTableService } from '../base/crud/configs-table/configs-table.service';
-import { UserTableService } from '../base/crud/user-table/user-table.service';
-import { SessionsTableService } from '../base/crud/sessions-table/sessions-table.service';
-import { OrganizationTableService } from '../base/crud/organization-table/organization-table.service';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { CrudModule } from '../base/crud/crud.module';
+import { SessionsModule } from '../base/sessions/sessions.module';
+import { TasksModule } from '../base/tasks/tasks.module';
+import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
+import { forwardRef } from '@nestjs/common';
+
+/// test instance 28697f62-a319-4e22-af49-075c34a14bb2
 
 describe('VgpuService', () => {
   let service: VgpuService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
-      providers: [
-        VgpuService,
-        SessionsService,
-        UserService,
-        OrganizationService,
-        ConfigsTableService,
-        UserTableService,
-        SessionsTableService,
-        OrganizationTableService,
+    module = await Test.createTestingModule({
+      imports: [
+        CrudModule,
+        DatabaseModule,
+        JwtModule,
+        SessionsModule,
+        PayAsYouGoModule,
+        forwardRef(() => TasksModule),
       ],
+      providers: [VgpuService, JwtService],
     }).compile();
 
     service = module.get<VgpuService>(VgpuService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

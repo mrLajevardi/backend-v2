@@ -4,17 +4,12 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
-
+import { VmPowerStateEventEnum } from 'src/wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
 export class CreateServiceInstancesDto {
-  @IsNumber()
-  @ApiProperty()
-  @IsOptional()
-  id?: number;
-
-  @IsNumber()
   @ApiProperty()
   userId: number;
 
@@ -63,7 +58,7 @@ export class CreateServiceInstancesDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty()
-  isDisabled?: number;
+  isDisabled?: boolean;
 
   @IsOptional()
   @IsString()
@@ -84,4 +79,18 @@ export class CreateServiceInstancesDto {
   @IsDate()
   @ApiProperty()
   nextPayg?: Date;
+
+  @IsOptional()
+  @IsNumber()
+  @ValidateIf((object, value) => value !== null)
+  servicePlanType: number | null;
+
+  @IsOptional()
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  datacenterName: string | null;
+
+  offset?: Date;
+
+  lastState?: VmPowerStateEventEnum;
 }

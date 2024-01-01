@@ -1,288 +1,400 @@
-import { Controller } from '@nestjs/common';
-import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
-import { CreateServiceService } from 'src/application/base/service/services/create-service.service';
-import { ServiceService } from 'src/application/base/service/services/service.service';
-import { SessionsService } from 'src/application/base/sessions/sessions.service';
-import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
-import { TasksService } from 'src/application/base/tasks/service/tasks.service';
-import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
-import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
+import { VdcService } from '../service/vdc.service';
+import { TempDto } from '../dto/temp.dto';
+import { GetOrgVdcResult } from '../../../wrappers/main-wrapper/service/user/vdc/dto/get-vdc-orgVdc.result.dt';
+import {
+  BASE_VDC_INVOICE_SERVICE,
+  BaseVdcInvoiceServiceInterface,
+} from '../interface/service/base-vdc-invoice-service.interface';
+import {
+  BASE_VDC_DETAIL_SERVICE,
+  BaseVdcDetailService,
+} from '../interface/service/base-vdc-detail-service.interface';
+import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
+import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
+import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
+import { TemplatesTableService } from 'src/application/base/crud/templates/templates-table.service';
+import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
+import { TemplatesDto, templatesQueryParamsDto } from '../dto/templates.dto';
+import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { CreateNamedDiskDto } from '../dto/create-named-disk.dto';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { NamedDiskDto } from '../dto/named-disk.dto';
+import { UpdateNamedDiskDto } from '../dto/update-named-disk.dto';
+import {
+  DiskItemCodes,
+  DiskItemName,
+} from '../../base/itemType/enum/item-type-codes.enum';
+import {
+  GetAvailableResourcesDto,
+  GetAvailableResourcesQueryDto,
+} from '../dto/get-resources.dto';
+import { PersonalVerificationGuard } from 'src/application/base/security/auth/guard/personal-verification.guard';
+import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
+// import { Public } from 'src/application/base/security/auth/decorators/ispublic.decorator';
 
+@ApiBearerAuth()
+@ApiTags('Vpc')
 @Controller('vdc')
 export class VdcController {
   constructor(
+    @Inject(BASE_VDC_INVOICE_SERVICE)
+    private readonly baseVdcInvoiceService: BaseVdcInvoiceServiceInterface,
+    @Inject(BASE_VDC_DETAIL_SERVICE)
+    private readonly baseVdcDetailService: BaseVdcDetailService,
+
+    private readonly r: TemplatesTableService,
     // private readonly tasksService: TasksService,
-    private readonly sessionService: SessionsService,
-    private readonly serviceService: ServiceService,
+    private readonly vdcService: VdcService,
   ) {}
 
-  async attachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
+  @Post('/:serviceInstanceId/namedDisk/:namedDiskId/attach/:vmId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async attachNamedDisk(
+    @Request()
+    options: any,
+    @Param('serviceInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+    @Param('vmId')
+    vmId: string,
+  ) {
+    return this.vdcService.attachNamedDisk(
+      options,
       vdcInstanceId,
+      namedDiskId,
+      vmId,
     );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.attachNamedDisk(
-      session,
-      nameDiskID,
-      vmID,
-    );
-    // await logger.info(
-    //   'services',
-    //   'attachNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
   }
 
-  async createNamedDisk(options, vdcInstanceId, data) {
-    const userId = options.accessToken.userId;
-    const { busType } = data;
-    if (busType != 20) {
-      return Promise.reject(new BadRequestException());
-    }
-    const props = await this.serviceService.getAllServiceProperties(
+  @Post('/:serviceInstanceId/namedDisk')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: TaskReturnDto,
+  })
+  async createNamedDisk(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    vdcInstanceId: string,
+    @Body()
+    data: CreateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
+    return this.vdcService.createNamedDisk(options, vdcInstanceId, data);
+  }
+
+  @Post('/:serviceInstanceId/namedDisk/:namedDiskId/detach/:vmId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: TaskReturnDto,
+  })
+  async detachNamedDisk(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+    @Param('vmId')
+    vmId: string,
+  ): Promise<TaskReturnDto> {
+    return this.vdcService.detachNamedDisk(
+      options,
       vdcInstanceId,
+      namedDiskId,
+      vmId,
     );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
+  }
+
+  @Get('/:serviceInstanceId/namedDisk')
+  @ApiOperation({ summary: 'get all service named disks' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: [NamedDiskDto],
+  })
+  async getNamedDisk(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<NamedDiskDto[]> {
+    return this.vdcService.getNamedDisk(options, serviceInstanceId);
+  }
+
+  @Get('/:serviceInstanceId')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: 'object',
+  })
+  async getVdc(
+    @Request()
+    options: any,
+    @Param('serviceInstanceId')
+    vdcInstanceId: string,
+  ): Promise<GetOrgVdcResult> {
+    return this.vdcService.getVdc(options, vdcInstanceId);
+  }
+
+  @Get('/:serviceInstanceId/namedDisk/:namedDiskId/attachedVm')
+  @ApiOperation({ summary: 'get attached vm of a named disk' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: String,
+  })
+  async getVmAttachedToNamedDisk(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+  ): Promise<string> {
+    return this.vdcService.getVmAttachedToNamedDisk(
+      options,
+      vdcInstanceId,
+      namedDiskId,
     );
-    const namedDisk = await mainWrapper.user.vdc.createNamedDisk(
-      session,
-      props['vdcId'],
+  }
+
+  @Delete('/:serviceInstanceId/namedDisk/:namedDiskId')
+  @ApiOperation({ summary: 'remove named disk' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: TaskReturnDto,
+  })
+  async removeNamedDisk(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+  ): Promise<TaskReturnDto> {
+    return this.vdcService.removeNamedDisk(options, vdcInstanceId, namedDiskId);
+  }
+
+  @Put('/:serviceInstanceId/namedDisk/:namedDiskId')
+  @ApiOperation({ summary: 'update named Disk' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'namedDiskId', description: 'named disk id' })
+  @ApiResponse({
+    status: 201,
+    description: 'create a vm from template',
+    type: TaskReturnDto,
+  })
+  async updateNamedDisk(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    vdcInstanceId: string,
+    @Param('namedDiskId')
+    namedDiskId: string,
+    @Body()
+    data: UpdateNamedDiskDto,
+  ): Promise<TaskReturnDto> {
+    return this.vdcService.updateNamedDisk(
+      options,
+      vdcInstanceId,
+      namedDiskId,
       data,
     );
-    const taskId = await mainWrapper.user.vdc.vcloudQuery(session, {
-      page: 1,
-      pageSize: 10,
-      filter: 'object==' + namedDisk.__vcloudTask,
-      type: 'task',
-    });
-    // await logger.info(
-    //   'services',
-    //   'createNamedDisk',
-    //   {
-    //     _object: taskId.data.record[0].href.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
-    return Promise.resolve({
-      taskId: taskId.data.record[0].href.split('task/')[1],
-    });
   }
 
-  // async createVdc(Services, data, options) {
-  //     const createdService = await this.createServiceSvc.createBillingService(data, options,  'vdc');
-  //     const serviceInstanceId = createdService.serviceInstanceId;
-  //     options.locals = {
-  //       ...options.locals,
-  //       serviceInstanceId,
-  //     };
-  //     // await logger.info('vdc', 'createBillingService', { _object: serviceInstanceId }, options.locals);
-  //     const task = await this.tasksService.create({
-  //       userId: options.locals.userId,
-  //       serviceInstanceId: serviceInstanceId,
-  //       operation: 'createDataCenter',
-  //       details: null,
-  //       startTime: new Date(),
-  //       endTime: null,
-  //       status: 'running',
-  //     });
-  //     await this.taskManagerService.addTask({
-  //       serviceInstanceId,
-  //       customTaskId: task['TaskID'],
-  //       vcloudTask: null,
-  //       nextTask: 'createOrg',
-  //       requestOptions: options.locals,
-  //       target: 'object',
-  //     });
-  //     console.log(task);
-  //     return Promise.resolve({
-  //       id: serviceInstanceId,
-  //       taskId: task['TaskID'],
-  //     });
-  //   };
-
-  async dettachNamedDisk(options, vdcInstanceId, nameDiskID, vmID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
+  @Get('invoice/:invoiceId/details')
+  @ApiOperation({ summary: 'get created invoice details' })
+  @ApiParam({ name: 'invoiceId', description: 'VDC instance ID' })
+  async getVdcInvoiceDetail(
+    @Param('invoiceId')
+    invoiceId: string,
+  ): Promise<VdcInvoiceDetailsResultDto> {
+    return await this.baseVdcInvoiceService.getVdcInvoiceDetail(
+      invoiceId,
+      'vdc',
     );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.dettachNamedDisk(
-      session,
-      nameDiskID,
-      vmID,
-    );
-    // await logger.info(
-    //   'services',
-    //   'dettachNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
   }
 
-  async getNamedDisk(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
+  @Get('invoice/:invoiceId/preFactor')
+  @ApiOperation({ summary: 'get pre factor PDF' })
+  @ApiParam({ name: 'invoiceId', description: 'Invoice ID' })
+  async getVdcPreFactor(
+    @Param('invoiceId')
+    invoiceId: string,
+  ) {
+    const res = await this.baseVdcInvoiceService.getVdcPreFactor(
+      invoiceId,
+      'vdc',
     );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const recordList = await mainWrapper.user.vdc.getNamedDisk(
-      session,
-      props['vdcId'],
-    );
-    const recordListForFront = [];
-    recordList.forEach((element) => {
-      const id = element.href.split('https://vpc.aradcloud.com/api/disk/')[1];
-      const name = element.name;
-      const sizeMb = element.sizeMb;
-      const description = element.description;
-      const isAttached = element.isAttached;
-      const ownerName = element.ownerName;
-      const status = element.status;
-      const attachedVmCount = element.attachedVmCount;
-      recordListForFront.push({
-        id,
-        name,
-        sizeMb,
-        description,
-        isAttached,
-        ownerName,
-        status,
-        attachedVmCount,
-        busType: element.busType,
-        busSubType: element.busSubType,
-        sharingType: element.sharingType,
-        busTypeDesc: element.busTypeDesc,
-      });
-    });
-    return Promise.resolve(recordListForFront);
+    return res;
   }
 
-  /**
-   * @param {Object} app
-   * @param {Object} options
-   * @param {String} vdcInstanceId
-   * @return {Promise}
-   */
-  async getVdc(options, vdcInstanceId) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const vdcData = await mainWrapper.user.vdc.vcloudQuery(session, {
-      type: 'orgVdc',
-      format: 'records',
-      page: 1,
-      pageSize: 10,
-      filter: `id==${props['vdcId']}`,
-    });
-    return Promise.resolve({
-      instanceId: vdcInstanceId,
-      records: vdcData.data.record,
-    });
+  @Get(':serviceInstanceId/details')
+  @ApiOperation({
+    summary: 'get details of vdc',
+    description: 'servicePlanTypes: \n0: static, 1: pay as you go',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcDetails(
+    @Request()
+    options: any,
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<VdcDetailsResultDto> {
+    return this.baseVdcDetailService.getVdcDetail(serviceInstanceId, options);
   }
 
-  async getVmAttachedNamedDisk(options, vdcInstanceId, nameDiskID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
+  @Get(':serviceInstanceId/internalSettings')
+  @ApiOperation({
+    summary: 'get internal settings of vdc',
+  })
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcInternalSettings(
+    @Request()
+    options: any,
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<VdcDetailItemResultDto> {
+    return await this.baseVdcDetailService.getVdcDetailItems(
+      options,
+      serviceInstanceId,
     );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const vmData = await mainWrapper.user.vdc.getVmAttachedNamedDisk(
-      session,
-      nameDiskID,
-    );
-
-    if (vmData.data) {
-      return vmData.data.vmReference[0].href.split('vApp/')[1];
-    }
-    return Promise.resolve();
+    // return vpcInternalSettingsMock;
   }
 
-  async removeNamedDisk(options, vdcInstanceId, nameDiskID) {
-    const userId = options.accessToken.userId;
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
-    );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.removeNamedDisk(
-      session,
-      nameDiskID,
-    );
-    // await logger.info(
-    //   'services',
-    //   'removeNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+  @ApiOperation({
+    summary: 'get templates list',
+  })
+  @ApiResponse({ type: [TemplatesDto] })
+  // @ApiParam({ name: 'serviceInstanceId' })
+  @Get('serviceInstances/templates')
+  @Public()
+  async getVdcTemplates(
+    @Query() templatesQueryDto: templatesQueryParamsDto,
+  ): Promise<TemplatesDto[]> {
+    return this.vdcService.getTemplates(templatesQueryDto);
   }
 
-  async updateNamedDisk(options, vdcInstanceId, nameDiskID, data) {
-    const userId = options.accessToken.userId;
-    const { busType } = data;
-    if (busType != 20) {
-      return Promise.reject(new BadRequestException());
-    }
-    const props = await this.serviceService.getAllServiceProperties(
-      vdcInstanceId,
+  @Get(':serviceInstanceId/limitItems')
+  // @Public()
+  @ApiParam({
+    type: String,
+    name: 'serviceInstanceId',
+  })
+  async getVdcItemLimit(
+    @Request()
+    options: SessionRequest,
+    @Param('serviceInstanceId')
+    serviceInstanceId: string,
+  ): Promise<VdcItemLimitResultDto> {
+    return this.baseVdcDetailService.getVdcItemLimit(
+      serviceInstanceId,
+      options,
     );
-    const session = await this.sessionService.checkUserSession(
-      userId,
-      props['orgId'],
-    );
-    const namedDisk = await mainWrapper.user.vdc.updateNamedDisk(
-      session,
-      props['vdcId'],
-      nameDiskID,
-      data,
-    );
-    // await logger.info(
-    //   'services',
-    //   'updateNamedDisk',
-    //   {
-    //     _object: namedDisk.__vcloudTask.split('task/')[1],
-    //   },
-    //   { ...options.locals },
-    // );
-    return Promise.resolve({
-      taskId: namedDisk.__vcloudTask.split('task/')[1],
-    });
+  }
+
+  @Get('/disk/diskTypes')
+  async getDiskTypes(): Promise<any> {
+    return [
+      { code: DiskItemCodes.Standard, name: DiskItemName.Standard },
+      { code: DiskItemCodes.Archive, name: DiskItemName.Archive },
+      { code: DiskItemCodes.Fast, name: DiskItemName.Fast },
+      { code: DiskItemCodes.Vip, name: DiskItemName.Vip },
+    ];
+  }
+
+  @Get('resources/availableResources')
+  // @UseGuards(PersonalVerificationGuard)
+  @ApiOperation({ summary: 'Returns available resources' })
+  @ApiResponse({
+    status: 200,
+    description: 'available resources',
+    type: GetAvailableResourcesDto,
+  })
+  async get(
+    @Query() query: GetAvailableResourcesQueryDto,
+  ): Promise<GetAvailableResourcesDto> {
+    return await this.vdcService.getAvailableResources(query.datacenterName);
+  }
+
+  @Put('general/edit/')
+  @ApiQuery({
+    type: String,
+    name: 'serviceInstanceId',
+    required: true,
+  })
+  @ApiQuery({
+    type: String,
+    name: 'description',
+    required: false,
+  })
+  // @ApiOperation({ summary: 'Returns available resources' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'available resources',
+  //   type: GetAvailableResourcesDto,
+  // })
+  async editGeneralInfo(
+    @Request()
+    options: SessionRequest,
+    @Query() query: VdcDetailEditGeneralQuery,
+  ): Promise<string> {
+    return (await this.baseVdcDetailService.editGeneralInfo(
+      options,
+      query,
+    )) as string;
   }
 }

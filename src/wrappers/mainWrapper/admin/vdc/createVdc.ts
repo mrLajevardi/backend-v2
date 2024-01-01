@@ -81,5 +81,3 @@ export async function createVdc(config, orgId) {
     __vcloudTask: vdc.headers['location'],
   });
 }
-
-module.exports = createVdc;

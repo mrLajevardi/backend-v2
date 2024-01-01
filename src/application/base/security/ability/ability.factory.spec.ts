@@ -1,84 +1,29 @@
-import { AbilityFactory, Action } from './ability.factory';
+import { AbilityFactory } from './ability.factory';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { TestDataService } from 'src/infrastructure/database/test-data.service';
-import { InvoicesService } from '../../invoice/service/invoices.service';
-import { User } from 'src/infrastructure/database/test-entities/User';
-import { InvoicesChecksService } from 'src/application/base/invoice/service/invoices-checks.service';
-import { CostCalculationService } from 'src/application/base/invoice/service/cost-calculation.service';
-import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { ServiceChecksService } from '../../service/services/service-checks/service-checks.service';
-import { SessionsService } from 'src/application/base/sessions/sessions.service';
-import { DiscountsService } from 'src/application/base/service/services/discounts.service';
-import { OrganizationService } from 'src/application/base/organization/organization.service';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
-import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
-import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
-import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
-import { InvoicePropertiesTableService } from '../../crud/invoice-properties-table/invoice-properties-table.service';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { PlansTableService } from '../../crud/plans-table/plans-table.service';
-import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { UserTableService } from '../../crud/user-table/user-table.service';
-import { UserService } from '../../user/user.service';
-import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { PlansQueryService } from '../../crud/plans-table/plans-query.service';
-import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
-import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
-import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
+import { Action } from './enum/action.enum';
+import { CrudModule } from '../../crud/crud.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
 
 describe('AbilityFactory', () => {
   let abilityFactory: AbilityFactory;
   let userTable: UserTableService;
-  let testDataService: TestDataService;
   let aclTable: ACLTableService;
-  let invoiceService: InvoicesService;
+  let module: TestingModule;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
-      providers: [
-        ACLTableService,
-        AbilityFactory,
-        UserTableService,
-        UserService,
-        InvoicesService,
-        TestDataService,
-        PlansTableService,
-        ItemTypesTableService,
-        ServiceTypesTableService,
-        InvoicesChecksService,
-        CostCalculationService,
-        InvoiceItemsTableService,
-        TransactionsService,
-        InvoicePlansTableService,
-        InvoicePropertiesTableService,
-        VgpuService,
-        ServiceChecksService,
-        ConfigsTableService,
-        SessionsService,
-        DiscountsService,
-        ServiceInstancesTableService,
-        OrganizationService,
-        InvoicesTableService,
-        TransactionsTableService,
-        PlansQueryService,
-        SessionsTableService,
-        DiscountsTableService,
-        OrganizationTableService,
-      ],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule, CrudModule, InvoicesModule],
+      providers: [AbilityFactory],
     }).compile();
 
     abilityFactory = module.get<AbilityFactory>(AbilityFactory);
     userTable = module.get<UserTableService>(UserTableService);
     aclTable = module.get<ACLTableService>(ACLTableService);
-    testDataService = module.get<TestDataService>(TestDataService);
-    invoiceService = module.get<InvoicesService>(InvoicesService);
-    //await testDataService.seedTestData();
   });
 
   describe('Generic Access Tests, that are not based on specific user ', () => {
@@ -96,6 +41,7 @@ describe('AbilityFactory', () => {
       user.id = 2;
       await userTable.create(user);
 
+      await await aclTable.deleteAll({});
       await aclTable.create({
         model: 'Acl',
         accessType: 'read',
@@ -110,7 +56,7 @@ describe('AbilityFactory', () => {
         accessType: 'read',
         principalType: '',
         principalId: '',
-        property: 'issueId',
+        property: 'id',
         permission: 'cannot',
       });
 
@@ -126,7 +72,7 @@ describe('AbilityFactory', () => {
 
     afterAll(() => {
       userTable.deleteAll();
-      aclTable.deleteAll();
+      aclTable.deleteAll({});
     });
 
     it('should return 2 for users.getAll', async () => {
@@ -136,7 +82,7 @@ describe('AbilityFactory', () => {
 
     it('should return 2 for acl.getAll', async () => {
       const acls = await aclTable.find();
-      console.log(acls);
+      //console.log(acls.length);
       expect(acls.length).toBe(3);
     });
 
@@ -152,7 +98,7 @@ describe('AbilityFactory', () => {
     it('should return false', async () => {
       const user1 = await userTable.findById(1);
       const ability = await abilityFactory.createForUser(user1);
-      const result = ability.can(Action.Read, 'User', 'issueId');
+      const result = ability.can(Action.Read, 'User', 'id');
       expect(result).toBeFalsy();
     });
 
@@ -210,7 +156,7 @@ describe('AbilityFactory', () => {
 
     afterAll(async () => {
       await userTable.deleteAll();
-      await aclTable.deleteAll();
+      await aclTable.deleteAll({});
     });
 
     it('should return 2 for users.getAll', async () => {
@@ -220,7 +166,7 @@ describe('AbilityFactory', () => {
 
     it('should return 3 for acl.getAll', async () => {
       const acls = await aclTable.find();
-      console.log(acls);
+      // console.log(acls);
       expect(acls.length).toBe(3);
     });
 
@@ -236,7 +182,9 @@ describe('AbilityFactory', () => {
     it('should return false', async () => {
       const user2 = await userTable.findById(2);
       const ability = await abilityFactory.createForUser(user2);
+      console.log(ability.rulesFor(Action.Read, 'Acl'));
       const result = ability.can(Action.Read, 'Acl');
+      // console.log(ability.rules);
       expect(result).toBeFalsy();
     });
 
@@ -276,7 +224,7 @@ describe('AbilityFactory', () => {
 
     afterAll(async () => {
       await userTable.deleteAll();
-      await aclTable.deleteAll();
+      await aclTable.deleteAll({});
     });
 
     // user 1 access to invoice of user 1
@@ -334,11 +282,13 @@ describe('AbilityFactory', () => {
       let err = undefined;
       try {
         const user = new User();
+        user.id = 100100;
         user.name = 'test';
         const ability = await abilityFactory.createForUser(user);
         ability.can(Action.Create, 'Acl');
       } catch (error) {
         err = error;
+        console.log(err);
       }
       expect(err).toBeUndefined();
     });

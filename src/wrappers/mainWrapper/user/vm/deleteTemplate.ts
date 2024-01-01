@@ -17,4 +17,3 @@ export async function userDeleteTemplate(authToken, templateId) {
     __vcloudTask: deletedTemplate.headers['location'],
   });
 }
-module.exports = userDeleteTemplate;

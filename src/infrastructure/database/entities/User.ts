@@ -1,14 +1,20 @@
 import {
+  AfterLoad,
   Column,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Company } from './Company';
 import { GroupsMapping } from './GroupsMapping';
 import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { FileUpload } from './FileUpload';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
@@ -28,14 +34,17 @@ export class User {
   @Column('nvarchar', { name: 'email', nullable: true, length: 255 })
   email: string | null;
 
-  @Column('bit', {
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'emailVerified',
     nullable: true,
     default: () => '(0)',
   })
   emailVerified: boolean | null;
 
-  @Column('bit', { name: 'active', default: () => '(1)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'active',
+    default: () => '(1)',
+  })
   active: boolean;
 
   @Column('nvarchar', { name: 'name', length: 255 })
@@ -44,27 +53,31 @@ export class User {
   @Column('nvarchar', { name: 'family', length: 255 })
   family: string;
 
-  @Column('bit', {
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
     name: 'verificationToken',
     nullable: true,
     default: () => '(0)',
   })
   verificationToken: boolean | null;
 
-  @Column('bit', { name: 'deleted', nullable: true, default: () => '(0)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'deleted',
+    nullable: true,
+    default: () => '(0)',
+  })
   deleted: boolean | null;
 
   @Column('datetime', {
     name: 'createDate',
     nullable: true,
-    default: () => 'getdate()',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
   })
   createDate: Date | null;
 
   @Column('datetime', {
     name: 'updateDate',
     nullable: true,
-    default: () => 'getdate()',
+    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
   })
   updateDate: Date | null;
 
@@ -80,7 +93,10 @@ export class User {
   @Column('nvarchar', { name: 'vdcPassword', nullable: true })
   vdcPassword: string | null;
 
-  @Column('bit', { name: 'hasVdc', nullable: true })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'hasVdc',
+    nullable: true,
+  })
   hasVdc: boolean | null;
 
   @Column('nvarchar', { name: 'phoneNumber', nullable: true, length: 15 })
@@ -89,11 +105,82 @@ export class User {
   @Column('nvarchar', { name: 'orgName', nullable: true, length: 50 })
   orgName: string | null;
 
-  @Column('bit', { name: 'acceptTermsOfService', nullable: true })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'acceptTermsOfService',
+    nullable: true,
+  })
   acceptTermsOfService: boolean | null;
 
-  @Column('bit', { name: 'phoneVerified', default: () => '(0)' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'phoneVerified',
+    default: () => '(0)',
+  })
   phoneVerified: boolean;
+
+  @Column('date', { name: 'birthDate', nullable: true })
+  birthDate: Date | null;
+
+  @Column('nvarchar', { name: 'personalCode', nullable: true, length: 100 })
+  personalCode: string | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'companyOwner',
+    nullable: true,
+    default: () => '(0)',
+  })
+  companyOwner: boolean | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'personalVerification',
+    nullable: true,
+    default: () => 1,
+  })
+  personalVerification: boolean | null;
+
+  @Column('nvarchar', {
+    name: 'twoFactorAuth',
+    nullable: true,
+    default: () => '0',
+  })
+  twoFactorAuth: string;
+
+  @Column('decimal', { name: 'companyId', nullable: true })
+  companyId: number | null;
+
+  @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'avatarId',
+    nullable: true,
+  })
+  avatarId: string | null;
+
+  @Column({
+    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+    name: 'companyLetterId',
+    nullable: true,
+  })
+  companyLetterId: string | null;
+
+  @Column('tinyint', {
+    name: 'companyLetterStatus',
+    nullable: true,
+    default: () => 0,
+  })
+  companyLetterStatus: number;
+
+  @Column({
+    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
+    name: 'guid',
+    unique: !isTestingEnv(),
+    nullable: isTestingEnv(),
+    default: () => (isTestingEnv() ? null : 'newsequentialid()'),
+  })
+  guid: string;
+
+  // @AfterLoad()
+  // afterLoad1(@Request() options) {
+  //
+  // }
 
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
@@ -106,4 +193,16 @@ export class User {
 
   @OneToMany(() => Transactions, (transactions) => transactions.user)
   transactions: Transactions[];
+
+  @ManyToOne(() => Company, (company) => company.users)
+  @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])
+  company: Company;
+
+  @ManyToOne(() => FileUpload, (file) => file.user)
+  @JoinColumn({ name: 'avatarId', referencedColumnName: 'streamId' })
+  avatar: FileUpload;
+
+  @ManyToOne(() => FileUpload)
+  @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'streamId' })
+  companyLetter: FileUpload;
 }

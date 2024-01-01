@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AITransactionsLogs';
+import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
 import { CreateAITransactionsLogsDto } from './dto/create-aitransactions-logs.dto';
 import { UpdateAITransactionsLogsDto } from './dto/update-aitransactions-logs.dto';
 import {
@@ -8,6 +8,8 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -25,52 +27,61 @@ export class AITransactionsLogsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<AiTransactionsLogs[]> {
+  async find(
+    options?: FindManyOptions<AiTransactionsLogs>,
+  ): Promise<AiTransactionsLogs[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<AiTransactionsLogs>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<AiTransactionsLogs> {
+  async findOne(
+    options?: FindOneOptions<AiTransactionsLogs>,
+  ): Promise<AiTransactionsLogs> {
     const result = await this.repository.findOne(options);
     return result;
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateAITransactionsLogsDto) {
+  async create(dto: CreateAITransactionsLogsDto): Promise<AiTransactionsLogs> {
     const newItem = plainToClass(AiTransactionsLogs, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
   }
 
   // Update an Item using updateDTO
-  async update(id: string, dto: UpdateAITransactionsLogsDto) {
+  async update(
+    id: string,
+    dto: UpdateAITransactionsLogsDto,
+  ): Promise<AiTransactionsLogs> {
     const item = await this.findById(id);
     const updateItem: Partial<AiTransactionsLogs> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<AiTransactionsLogs>,
     dto: UpdateAITransactionsLogsDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: string) {
-    await this.repository.delete(id);
+  async delete(id: string): Promise<DeleteResult> {
+    return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(
+    where: FindOptionsWhere<AiTransactionsLogs>,
+  ): Promise<DeleteResult> {
+    return await this.repository.delete(where);
   }
 }

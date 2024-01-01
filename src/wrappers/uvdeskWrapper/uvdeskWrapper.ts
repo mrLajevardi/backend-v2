@@ -12,9 +12,7 @@ export class UvDeskWrapper extends Wrapper {
     const endPoints = {
       ticket: ticketEndpoints,
     };
-    const baseUrl = 'http://172.20.51.14/public/api/v1';
+    const baseUrl = 'http://172.20.51.14/api/v1';
     super(httpsAgent, endPoints, baseUrl, 'uvdesk');
   }
 }
-
-module.exports = UvDeskWrapper;

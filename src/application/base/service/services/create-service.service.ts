@@ -1,261 +1,499 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { isEmpty } from 'lodash';
-import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
-import { ServiceChecksService } from './service-checks/service-checks.service';
-import { InvalidServiceParamsException } from 'src/infrastructure/exceptions/invalid-service-params.exception';
-import { InvalidServiceIdException } from 'src/infrastructure/exceptions/invalid-service-id.exception';
-import { MaxAvailableServiceException } from 'src/infrastructure/exceptions/max-available-service.exception';
-import { InvalidDiscountIdException } from 'src/infrastructure/exceptions/invalid-discount-id.exception';
-import { InvalidQualityPlanException } from 'src/infrastructure/exceptions/invalid-quality-plan.exception';
-import Costs from '../classes/costs';
-import aradAIConfig from 'src/infrastructure/config/aradAIConfig';
-
-import { AiService } from 'src/application/ai/ai.service';
-import { ServiceItemsSumService } from 'src/application/base/crud/service-items-sum/service-items-sum.service';
-import { UserService } from 'src/application/base/user/user.service';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
+import { isEmpty, isNil } from 'lodash';
+import { UserService } from 'src/application/base/user/service/user.service';
 import { NotEnoughCreditException } from 'src/infrastructure/exceptions/not-enough-credit.exception';
-import { InvoicesService } from 'src/application/base/invoice/service/invoices.service';
-import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { importScript } from 'src/infrastructure/helpers/import-script.helper';
-import { CreateServiceInstancesDto } from '../../crud/service-instances-table/dto/create-service-instances.dto';
 import { DiscountsTableService } from '../../crud/discounts-table/discounts-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
-import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
-import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
-import { InvoiceDiscountsTableService } from '../../crud/invoice-discounts-table/invoice-discounts-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { UserTableService } from '../../crud/user-table/user-table.service';
-import { QualityPlansService } from '../../crud/quality-plans/quality-plans.service';
-import { DiscountsService } from './discounts.service';
-import { ServiceService } from './service.service';
+import { ExtendServiceService } from './extend-service.service';
+import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
+import { TaskManagerService as oldTaskManager } from '../../tasks/service/task-manager.service';
+import { VgpuService } from 'src/application/vgpu/vgpu.service';
+import { CreateServiceDto } from '../dto/create-service.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
+import { Discounts } from 'src/infrastructure/database/entities/Discounts';
+import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
+import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
+import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
+import { ServiceTypesEnum } from '../enum/service-types.enum';
+import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
+import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
+import { TaskManagerService } from '../../task-manager/service/task-manager.service';
+import { TasksEnum } from '../../task-manager/enum/tasks.enum';
+import { ServiceStatusEnum } from '../enum/service-status.enum';
+import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
+import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
+import { TicketsSubjectEnum } from '../../ticket/enum/tickets-subject.enum';
+import { TicketsMessagesEnum } from '../../ticket/enum/tickets-message.enum';
+import { ServiceServiceFactory } from '../Factory/service.service.factory';
+import { UserInfoService } from '../../user/service/user-info.service';
+import { Invoices } from '../../../../infrastructure/database/entities/Invoices';
+import { Transactions } from '../../../../infrastructure/database/entities/Transactions';
+import { CreateServiceInstancesDto } from '../../crud/service-instances-table/dto/create-service-instances.dto';
+import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import { InvoiceItems } from '../../../../infrastructure/database/entities/InvoiceItems';
+import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 
 @Injectable()
 export class CreateServiceService {
   constructor(
-    private readonly discountsTable: DiscountsTableService,
-    private readonly discountsService: DiscountsService,
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
-    private readonly invoiceService: InvoicesService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly serviceChecksService: ServiceChecksService,
-    private readonly qualityPlansService: QualityPlansService,
+    private readonly transactionTableService: TransactionsTableService,
+    private readonly InvoiceTableService: InvoicesTableService,
+    private readonly extendService: ExtendServiceService,
+    private readonly tasksTableService: TasksTableService,
+    private readonly taskManagerService: oldTaskManager,
+    private readonly serviceInstancesTableService: ServiceInstancesTableService,
+    private readonly vgpuService: VgpuService,
+    private readonly discountsTable: DiscountsTableService,
     private readonly itemTypesTable: ItemTypesTableService,
-    private readonly serviceItemsSumService: ServiceItemsSumService,
-    private readonly serviceTypeTable: ServiceTypesTableService,
-    private readonly servicePropertiesTable: ServicePropertiesTableService,
-    private readonly invoiceDiscountsTable: InvoiceDiscountsTableService,
-    private readonly transactionService: TransactionsService,
-    private readonly serviceService: ServiceService,
+    private readonly newTaskManagerService: TaskManagerService,
+    private readonly ticketingWrapperService: TicketingWrapperService,
+    private readonly serviceFactory: ServiceServiceFactory,
+    private readonly userInfoService: UserInfoService,
+    private readonly serviceTypesTableService: ServiceTypesTableService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
+    private readonly invoicesTableService: InvoicesTableService,
   ) {}
 
-  //create service instance
-  async createServiceInstance(
-    userId: number,
-    serviceTypeID: string,
-    duration: number,
-  ): Promise<string> {
-    let expireDate = null;
-    if (!isEmpty(duration)) {
-      expireDate = addMonths(new Date(), duration);
-    }
-    const lastServiceInstanceId = await this.serviceInstancesTable.findOne({
+  private strategy: any = {
+    [ServiceTypesEnum.Vdc]: this.createVdcService,
+    [ServiceTypesEnum.Ai]: this.createAiService,
+  };
+
+  async createService(
+    options: SessionRequest,
+    dto: CreateServiceDto,
+  ): Promise<TaskReturnDto> {
+    const invoice: Invoices = await this.InvoiceTableService.findOne({
       where: {
-        UserID: userId,
+        id: dto.invoiceId,
       },
-      order: { Index: -1 },
+      relations: ['invoiceItems'],
     });
 
-    const index = lastServiceInstanceId ? lastServiceInstanceId.index + 1 : 0;
-    const serviceType = await this.serviceTypeTable.findById(serviceTypeID);
-    const dto: CreateServiceInstancesDto = {
-      id: 1,
-      userId: userId,
-      serviceType: serviceType,
-      status: 1,
-      createDate: new Date(),
-      lastUpdateDate: new Date(),
-      expireDate: expireDate,
-      index: index,
-    };
-    const service = await this.serviceInstancesTable.create(dto);
-    return service.id;
-  }
-
-  //checks if any of service params is not sent by client
-  async runScript(
-    path: string,
-    services: any,
-    serviceInstanceId: string,
-    data: any,
-    itemTypes: any,
-    options: any,
-  ): Promise<any> {
-    const script: any = await importScript(path);
-    console.log(script);
-    return new script(services, serviceInstanceId, data, itemTypes, options);
-  }
-
-  // create billing service
-  // moved from services/creteservice.js
-  async createBillingService(data, options, serviceId) {
-    let totalCosts = null;
-    const unlimitedService = 0;
-    const userId = options.accessToken.userId;
-    const checkParams = this.serviceChecksService.checkServiceParams(data, [
-      'qualityPlanCode',
-      'duration',
-    ]);
-    if (checkParams) {
-      throw new InvalidServiceParamsException();
-    }
-    const serviceType = await this.serviceTypeTable.findOne({
-      where: { ID: serviceId },
-    });
-    //check validity of serviceId
-    if (isEmpty(serviceType)) {
-      throw new InvalidServiceIdException();
-    }
-    const isMaxAvailable = await this.serviceChecksService.checkMaxService(
-      unlimitedService,
-      serviceType.maxAvailable,
-      serviceId,
-      userId,
-    );
-    if (!isMaxAvailable) {
-      throw new MaxAvailableServiceException();
-    }
-    let discount = await this.discountsTable.findOne({
-      where: {
-        and: [{ ServiceTypeID: serviceId }, { Code: data.disocuntCode }],
-      },
-    });
-    if (isEmpty(discount)) {
-      throw new InvalidDiscountIdException();
-    }
-    const discountId = discount.id;
-    if (discount.isBuiltIn || isEmpty(discountId)) {
-      discount = null;
+    if (isNil(invoice) || invoice.userId != options.user.userId) {
+      throw new ForbiddenException();
     }
 
-    const qualityPlan = await this.qualityPlansService.findOne({
-      where: { ServiceTypeID: serviceId, Code: data.qualityPlanCode },
-    });
-
-    // checks if qualityPlan id is correct
-    if (isEmpty(qualityPlan)) {
-      throw new InvalidQualityPlanException();
-    }
-
-    const builtInDiscount = await this.discountsService.findBuiltInDiscount(
-      data.duration,
-    );
-    const costs = new Costs();
-    let itemTypes = null;
-    const token = null;
-    throw new InternalServerErrorException('Must be resolved');
-    if (serviceId == 'aradAi') {
-      const JWT_SECRET_KEY = aradAIConfig.JWT_SECRET_KEY;
-
-      // Should  be resolved
-      // we should not acccess aiservice here
-
-      // const serviceAiInfo = await this.aiService.getAiServiceInfo(userId, serviceId, qualityPlan.Code, data.duration);
-      // const jwt = require('jsonwebtoken');
-      //  token =  jwt.sign(serviceAiInfo, JWT_SECRET_KEY);
-      //  totalCosts = costs.totalCostsAi(parseInt(serviceAiInfo['costPerMonth']), discount, qualityPlan, builtInDiscount, data.duration);
-    } else {
-      itemTypes = await this.itemTypesTable.find({
-        where: { ServiceTypeID: serviceId },
-      });
-
-      const serviceItemsSum = await this.serviceItemsSumService.find({});
-
-      const checkItems = await this.serviceChecksService.checkServiceItems(
-        data,
-        itemTypes,
-        serviceItemsSum,
-      );
-      if (checkItems) {
-        throw new InvalidServiceParamsException();
-        // const error = new HttpExceptions().invalidServiceParams(checkItems)
-      }
-      totalCosts = costs.totalCosts(
-        data,
-        discount,
-        qualityPlan,
-        itemTypes,
-        data.duration,
-        builtInDiscount,
-      );
-    }
-    const checkCredit = await this.userService.checkUserCredit(
-      totalCosts.finalAmount,
-      userId,
+    return await this.strategy[invoice.serviceTypeId].bind(this)(
       options,
-      serviceType.id,
+      invoice,
     );
-    if (!checkCredit) {
+  }
+
+  async createAiService(
+    options: SessionRequest,
+    invoice: Invoices,
+  ): Promise<TaskReturnDto> {
+    if (!isNil(invoice.serviceInstanceId)) {
+      return {
+        id: invoice.serviceInstanceId,
+        taskId: null,
+      };
+    }
+    const userId = options.user.userId;
+    const userCredit = await this.userInfoService.getUserCreditBy(userId);
+
+    if (userCredit < invoice.finalAmount) {
       throw new NotEnoughCreditException();
     }
-    const serviceInstanceId = await this.createServiceInstance(
-      userId,
-      serviceId,
-      data.duration,
+
+    const transaction: Transactions = await this.transactionTableService.create(
+      {
+        dateTime: new Date(),
+        description: '',
+        invoiceId: invoice.id,
+        isApproved: false,
+        value: -invoice.finalAmount,
+        paymentToken: null,
+        paymentType: PaymentTypes.PayByCredit,
+        serviceInstanceId: null,
+        userId: userId.toString(),
+      },
     );
-    const invoiceId = await this.invoiceService.createInvoice(
-      userId,
-      serviceInstanceId,
-      totalCosts,
-      qualityPlan.ID,
-      true,
-    );
-
-    if (serviceId == 'aradAi') {
-      await this.servicePropertiesTable.create({
-        serviceInstanceId: serviceInstanceId,
-        propertyKey: serviceId + '.token',
-        value: token,
-      });
-    } else {
-      await this.serviceService.createServiceItems(
-        serviceInstanceId,
-        itemTypes,
-        data,
-      );
-      await this.invoiceService.createInvoiceItems(invoiceId, itemTypes, data);
-    }
-
-    if (!isEmpty(discount)) {
-      await this.invoiceDiscountsTable.create({
-        invoiceId: invoiceId,
-        discountId: discount.id,
-      });
-    }
-    if (!isEmpty(builtInDiscount)) {
-      await this.invoiceDiscountsTable.create({
-        invoiceId: invoiceId,
-        discountId: builtInDiscount.id,
-      });
-    }
-
-    await this.transactionService.createTransaction(
-      totalCosts.finalAmount,
-      invoiceId,
-      serviceType.title,
-      userId,
-    );
-
-    if (serviceId == 'aradAi') {
-      return token;
-    }
-    return Promise.resolve({
-      scriptPath: serviceType.createInstanceScript,
-      serviceInstanceId,
-      itemTypes,
+    const serviceType = await this.serviceTypesTableService.findOne({
+      where: {
+        id: ServiceTypesEnum.Ai,
+      },
     });
+
+    const periodItem: InvoiceItems = invoice.invoiceItems.find((item) =>
+      item.codeHierarchy.includes(ItemTypeCodes.Period),
+    );
+
+    if (isNil(periodItem)) {
+      throw new ForbiddenException();
+    }
+
+    const endDate = addMonths(new Date(), Number(periodItem.value));
+
+    const serviceInstanceDto: CreateServiceInstancesDto = {
+      name: invoice.name,
+      servicePlanType: invoice.servicePlanType,
+      datacenterName: invoice.datacenterName,
+      createDate: new Date(),
+      expireDate: endDate,
+      serviceType: serviceType,
+      status: 1,
+      userId: invoice.userId,
+      lastUpdateDate: new Date(),
+    };
+
+    const serviceInstance = await this.serviceInstancesTable.create(
+      serviceInstanceDto,
+    );
+
+    const serviceInstanceId = serviceInstance.id;
+    const serviceItemsDto: CreateServiceItemsDto[] = invoice.invoiceItems.map(
+      (item) => {
+        return {
+          serviceInstanceId: serviceInstanceId,
+          itemTypeId: item.itemId,
+          itemTypeCode: item.codeHierarchy,
+          value: item.value,
+          quantity: item.quantity,
+        } as CreateServiceItemsDto;
+      },
+    );
+
+    await this.serviceItemsTableService.createAll(serviceItemsDto);
+
+    await this.transactionTableService.update(transaction.id, {
+      isApproved: true,
+      serviceInstanceId: serviceInstanceId,
+    });
+
+    const task = await this.tasksTableService.create({
+      userId: options.user.userId,
+      serviceInstanceId: serviceInstanceId,
+      operation: ServiceTypesEnum.Ai,
+      details: null,
+      startTime: new Date(),
+      endTime: new Date(),
+      status: 'success',
+    });
+
+    await this.serviceInstancesTable.update(serviceInstanceId, {
+      status: 3,
+    });
+
+    await this.invoicesTableService.update(invoice.id, {
+      serviceInstanceId: serviceInstanceId,
+      payed: true,
+    });
+
+    const taskId = task.taskId;
+
+    return {
+      taskId: taskId,
+      id: serviceInstanceId,
+    };
+  }
+
+  async createVdcService(
+    options: SessionRequest,
+    invoice: Invoices,
+  ): Promise<TaskReturnDto> {
+    const userId = options.user.userId;
+    const invoiceId = invoice.id;
+
+    await this.serviceFactory.checkResources(invoice.id);
+    let serviceInstanceId = null;
+    let task = null;
+    let taskId = null;
+    if (invoice.payed) {
+      return Promise.resolve({
+        id: serviceInstanceId,
+        taskId: taskId,
+        token: null,
+      });
+    }
+
+    const userCredit = await this.userInfoService.getUserCreditBy(userId);
+
+    let checkCredit = false;
+
+    if (userCredit < invoice.finalAmount) {
+      throw new NotEnoughCreditException();
+    } else {
+      checkCredit = true;
+    }
+    const transaction = await this.transactionTableService.create({
+      dateTime: new Date(),
+      description: '',
+      invoiceId: invoice.id,
+      isApproved: false,
+      value: -invoice.finalAmount,
+      paymentToken: null,
+      paymentType: PaymentTypes.PayByCredit,
+      serviceInstanceId: null,
+      userId: options.user.userId.toString(),
+    });
+
+    // extend last user service instance
+    if (checkCredit && invoice.type === InvoiceTypes.Extend) {
+      const extendedService =
+        await this.extendService.extendServiceInstanceAndToken(
+          options,
+          invoice,
+        );
+      await this.extendService.upgradeService(
+        invoice.serviceInstanceId,
+        invoiceId,
+        invoice.type,
+      );
+      serviceInstanceId = extendedService.serviceInstanceId;
+      await this.extendService.approveTransactionAndInvoice(
+        invoice,
+        transaction,
+      );
+    }
+    if (checkCredit && invoice.type === InvoiceTypes.UpgradeAndExtend) {
+      const extendedService =
+        await this.extendService.extendServiceInstanceAndToken(
+          options,
+          invoice,
+        );
+      serviceInstanceId = extendedService.serviceInstanceId;
+      const service = await this.serviceInstancesTable.findById(
+        invoice.serviceInstanceId,
+      );
+      await this.extendService.upgradeService(
+        invoice.serviceInstanceId,
+        invoiceId,
+        invoice.type,
+      );
+      if (service.serviceTypeId === ServiceTypesEnum.Vdc) {
+        const task = await this.newTaskManagerService.createFlow(
+          TasksEnum.UpgradeVdc,
+          invoice.serviceInstanceId,
+        );
+        taskId = task.taskId;
+      }
+      await this.extendService.approveTransactionAndInvoice(
+        invoice,
+        transaction,
+      );
+    }
+    // creating new service instance
+    if (checkCredit && invoice.type === InvoiceTypes.Create) {
+      // make user service instance
+      const createdService =
+        await this.extendService.createServiceInstanceAndToken(
+          options,
+          invoice.endDateTime,
+          invoice.serviceTypeId,
+          transaction,
+          invoice.name,
+          invoice.datacenterName,
+          invoice.servicePlanType,
+        );
+      serviceInstanceId = createdService.serviceInstanceId;
+
+      await this.transactionTableService.update(transaction.id, {
+        isApproved: true,
+        serviceInstanceId: serviceInstanceId,
+      });
+
+      if (invoice.serviceTypeId === ServiceTypesEnum.Vdc) {
+        task = await this.tasksTableService.create({
+          userId: userId,
+          serviceInstanceId,
+          operation: 'createDataCenter',
+          details: null,
+          startTime: new Date(),
+          endTime: null,
+          status: 'running',
+        });
+        await this.taskManagerService.addTask({
+          serviceInstanceId,
+          customTaskId: task.taskId,
+          vcloudTask: null,
+          nextTask: 'createOrg',
+          requestOptions: {
+            ...options.user,
+            serviceInstanceId: serviceInstanceId,
+          },
+          target: 'object',
+        });
+        taskId = task.taskId;
+      }
+      if (invoice.serviceTypeId === 'vgpu') {
+        taskId = await this.vgpuService.createVgpu(
+          options.user.userId,
+          invoiceId,
+          serviceInstanceId,
+          options,
+        );
+      }
+      if (invoice.serviceTypeId == 'aradAi') {
+        task = await this.tasksTableService.create({
+          userId: options.user.userId,
+          serviceInstanceId: serviceInstanceId,
+          operation: 'aradAi',
+          details: null,
+          startTime: new Date(),
+          endTime: new Date(),
+          status: 'success',
+        });
+        await this.serviceInstancesTable.updateAll(
+          {
+            id: serviceInstanceId,
+          },
+          {
+            status: 3,
+          },
+        );
+        taskId = task.taskId;
+      }
+      // update user invoice
+      await this.InvoiceTableService.updateAll(
+        {
+          userId: userId,
+          id: invoice.id,
+        },
+        {
+          serviceInstanceId,
+          payed: true,
+        },
+      );
+    }
+    if (checkCredit && invoice.type === InvoiceTypes.Upgrade) {
+      const service = await this.serviceInstancesTable.findById(
+        invoice.serviceInstanceId,
+      );
+      await this.extendService.upgradeService(
+        invoice.serviceInstanceId,
+        invoiceId,
+        invoice.type,
+      );
+      if (service.serviceTypeId === ServiceTypesEnum.Vdc) {
+        const task = await this.newTaskManagerService.createFlow(
+          TasksEnum.UpgradeVdc,
+          invoice.serviceInstanceId,
+        );
+        taskId = task.taskId;
+      }
+      this.InvoiceTableService.updateAll(
+        {
+          userId: userId,
+          id: invoice.id,
+        },
+        {
+          payed: true,
+          serviceInstanceId: invoice.serviceInstanceId,
+        },
+      );
+    }
+
+    return Promise.resolve({
+      id: serviceInstanceId,
+      taskId: taskId,
+      token: null,
+    });
+    // update user invoice
+  }
+
+  async repairService(
+    options: SessionRequest,
+    serviceInstanceId: string,
+  ): Promise<TaskReturnDto> {
+    const service = await this.serviceInstancesTableService.findOne({
+      where: {
+        id: serviceInstanceId,
+      },
+    });
+    const user = await this.userService.findById(options.user.userId);
+    const retryCount = service.retryCount === null ? 0 : service.retryCount;
+    if (service.status !== ServiceStatusEnum.Error || retryCount > 2) {
+      throw new BadRequestException();
+    }
+    if (retryCount === 1) {
+      await this.ticketingWrapperService.createTicket(
+        TicketsMessagesEnum.VdcCreationFailure,
+        ActAsTypeEnum.User,
+        null,
+        user.name,
+        TicketsSubjectEnum.AutomaticTicket,
+        user.username,
+      );
+    }
+    const task = await this.tasksTableService.create({
+      userId: options.user.userId,
+      serviceInstanceId: serviceInstanceId,
+      operation: 'createDataCenter',
+      details: null,
+      startTime: new Date(),
+      endTime: null,
+      status: 'running',
+    });
+    await this.serviceInstancesTableService.updateAll(
+      {
+        id: serviceInstanceId,
+      },
+      {
+        status: 1,
+        retryCount: retryCount + 1,
+      },
+    );
+    await this.taskManagerService.addTask({
+      serviceInstanceId,
+      customTaskId: task.taskId,
+      vcloudTask: null,
+      nextTask: 'createOrg',
+      target: 'object',
+      requestOptions: options.user,
+    });
+    return Promise.resolve({
+      taskId: task.taskId,
+    });
+  }
+
+  async updateServiceInfo(
+    serviceInstanceId: string,
+    data: UpdateServiceInstancesDto,
+  ): Promise<void> {
+    const { name } = data;
+    await this.serviceInstancesTable.updateAll(
+      {
+        id: serviceInstanceId,
+      },
+      {
+        name: name,
+      },
+    );
+  }
+
+  async getDiscounts(filter: string): Promise<Discounts[]> {
+    let parsedFilter;
+    if (!isEmpty(filter)) {
+      parsedFilter = JSON.parse(filter);
+    }
+    const discounts = await this.discountsTable.find(parsedFilter);
+    return Promise.resolve(discounts);
+  }
+
+  async getItemTypes(filter: string): Promise<ItemTypes[]> {
+    let parsedFilter;
+    if (!isEmpty(filter)) {
+      parsedFilter = JSON.parse(filter);
+    }
+    const itemTypes = await this.itemTypesTable.find(parsedFilter);
+    return Promise.resolve(itemTypes);
   }
 }

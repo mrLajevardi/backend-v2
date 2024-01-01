@@ -1,19 +1,42 @@
-import { createMongoAbility, Subject, AbilityBuilder } from '@casl/ability';
+import {
+  createMongoAbility,
+  AbilityBuilder,
+  MongoAbility,
+  AbilityTuple,
+  MongoQuery,
+} from '@casl/ability';
 import { Injectable } from '@nestjs/common';
 import { User } from 'src/infrastructure/database/entities/User';
 import { ACLTableService } from '../../crud/acl-table/acl-table.service';
 import { dbEntities } from 'src/infrastructure/database/entityImporter/orm-entities';
+import { PredefinedRoles } from './enum/predefined-enum.type';
+import { Action } from './enum/action.enum';
+import { In } from 'typeorm';
 
-export enum Action {
-  Manage = 'manage',
-  Create = 'create',
-  Read = 'read',
-  Update = 'update',
-  Delete = 'delete',
+export type AbilitySubjects =
+  | (typeof dbEntities)[number]
+  | PredefinedRoles.AdminRole
+  | PredefinedRoles.SuperAdminRole
+  | PredefinedRoles.UserRole
+  | 'all';
+
+export function getStringListOfAbilities(): string[] {
+  const retVal: string[] = ['all'];
+
+  const roles = Object.values(PredefinedRoles);
+  roles.forEach((role) => {
+    retVal.push(role);
+  });
+  retVal.concat(roles);
+
+  for (const entity of dbEntities) {
+    retVal.push((entity as any).name);
+  }
+
+  return retVal;
 }
 
-export type Subjects = (typeof dbEntities)[number] | 'all';
-export const ability = createMongoAbility<[Action, Subject]>();
+export const ability = createMongoAbility<[Action, AbilitySubjects]>();
 
 @Injectable()
 export class AbilityFactory {
@@ -31,31 +54,42 @@ export class AbilityFactory {
   }
 
   // creates the abilities related to the user .
-  async createForUser(user: User) {
+  async createForUser(
+    user: User,
+  ): Promise<MongoAbility<AbilityTuple, MongoQuery>> {
     const builder = new AbilityBuilder(createMongoAbility);
-
-    const acls = await this.aclTable.find({
-      where: [
-        { principalType: '' },
-        { principalType: 'User', principalId: user ? user.id : '' },
-      ],
+    const simpleAcls = await this.aclTable.find({
+      where: {
+        principalType: In([null, '']),
+      },
+    });
+    const compoundAcls = await this.aclTable.find({
+      where: {
+        principalType: 'User',
+        principalId: user ? user.id.toString() : null,
+      },
     });
 
+    const acls = [...simpleAcls, ...compoundAcls];
+    //console.log('for userId' , user.id, 'simples', simpleAcls, 'com', compoundAcls);
     for (const acl of acls) {
       let propertyCondition = '';
       try {
-        console.log(acl.property);
+        // console.log(acl.property);
         eval('propertyCondition=' + acl.property);
         //console.log("parsed query: ", propertyCondition);
       } catch (error) {
         propertyCondition = acl.property;
-        console.log(error);
-        console.log('Error parsing query, treat as simple field list ');
+        //console.log(error);
+        //console.log('Error parsing query, treat as simple field list ');
       }
       if (acl.permission == 'can') {
-        console.log(propertyCondition);
+        // console.log(propertyCondition);
+        //console.log('can',acl.accessType,acl.model,propertyCondition);
         builder.can(acl.accessType, acl.model, propertyCondition);
       } else {
+        // console.log('cannot',acl.accessType,acl.model,propertyCondition);
+
         builder.cannot(acl.accessType, acl.model, propertyCondition);
       }
     }

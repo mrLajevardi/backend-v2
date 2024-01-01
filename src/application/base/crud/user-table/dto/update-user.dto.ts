@@ -1,29 +1,29 @@
 import {
+  IsArray,
   IsBoolean,
   IsDate,
+  IsDecimal,
   IsEmail,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-
+import { Groups } from 'src/infrastructure/database/entities/Groups';
 export class UpdateUserDto {
-  @IsNumber()
-  @ApiProperty()
-  id?: number;
-
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
   realm?: string | null;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   username?: string;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   password?: string;
 
   @IsEmail()
@@ -37,15 +37,18 @@ export class UpdateUserDto {
   emailVerified?: boolean | null;
 
   @IsBoolean()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   active?: boolean;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   name?: string;
 
   @IsString()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   family?: string;
 
   @IsBoolean()
@@ -73,10 +76,10 @@ export class UpdateUserDto {
   @ApiProperty({ required: false })
   emailToken?: string | null;
 
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty({ required: false })
-  credit?: number | null;
+  // @IsNumber()
+  // @IsOptional()
+  // @ApiProperty({ required: false })
+  // credit?: number | null;
 
   @IsString()
   @IsOptional()
@@ -104,6 +107,57 @@ export class UpdateUserDto {
   acceptTermsOfService?: boolean | null;
 
   @IsBoolean()
-  @ApiProperty()
+  @IsOptional()
+  @ApiProperty({ required: false })
   phoneVerified?: boolean;
+
+  @IsArray()
+  @IsOptional()
+  @ApiProperty({ type: [Groups], required: false })
+  groups?: Groups[];
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  personalCode?: string | null;
+
+  @IsDate()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  birthDate?: Date;
+
+  @IsDecimal()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  companyId?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ default: false, required: false })
+  companyOwner?: boolean | null;
+
+  @IsBoolean()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  personalVerification?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  avatarId?: string | null;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  companyLetterId?: string | null;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  companyLetterStatus?: number | null;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  twoFactorAuth?: string;
 }

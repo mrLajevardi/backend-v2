@@ -17,5 +17,3 @@ export function getHardwareInfoEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getHardwareInfoEndpoint;

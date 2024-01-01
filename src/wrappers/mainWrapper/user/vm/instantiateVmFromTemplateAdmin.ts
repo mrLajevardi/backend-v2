@@ -1,4 +1,4 @@
-import xml2js from 'xml2js';
+import xml2js, { Builder } from 'xml2js';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 import { isEmpty } from 'class-validator';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
@@ -101,7 +101,7 @@ export async function instantiateVmFromTemplateAdmin(
       },
     },
   };
-  const builder = new xml2js.Builder();
+  const builder = new Builder();
 
   const xmlRequest = builder.buildObject(request);
   const options = {
@@ -117,5 +117,3 @@ export async function instantiateVmFromTemplateAdmin(
     __vcloudTask: createdVm.headers['location'],
   });
 }
-
-module.exports = instantiateVmFromTemplateAdmin;

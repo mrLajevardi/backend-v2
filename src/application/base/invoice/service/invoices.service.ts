@@ -1,317 +1,616 @@
-import {
-  Inject,
-  Injectable,
-  InternalServerErrorException,
-  forwardRef,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Invoices } from 'src/infrastructure/database/entities/Invoices';
-import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
-import { plainToClass } from 'class-transformer';
-import { isEmpty, isNil } from 'lodash';
-import { InvalidServiceIdException } from 'src/infrastructure/exceptions/invalid-service-id.exception';
-import { InvoicesChecksService } from './invoices-checks.service';
+import { Injectable } from '@nestjs/common';
 import { CostCalculationService } from './cost-calculation.service';
-import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
-
-import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
-import { VgpuService } from 'src/application/vgpu/vgpu.service';
-import { PlansTableService } from '../../crud/plans-table/plans-table.service';
-import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
-import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { InvoicePlansTableService } from '../../crud/invoice-plans-table/invoice-plans-table.service';
-import { InvoicePropertiesTableService } from '../../crud/invoice-properties-table/invoice-properties-table.service';
-import { CreateInvoiceItemsDto } from '../../crud/invoice-items-table/dto/create-invoice-items.dto';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
-import { CreateInvoicePluralDto } from '../../crud/invoices-table/dto/create-invoice-plural.dto';
-import { VgpuPcNamePassRequired } from 'src/infrastructure/exceptions/vgpu-pc-name-pass-required.exception';
+import {
+  CreateServiceInvoiceDto,
+  InvoiceItemsDto,
+} from '../dto/create-service-invoice.dto';
+import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { InvoiceIdDto } from '../dto/invoice-id.dto';
+
+import { InvoiceValidationService } from '../validators/invoice-validation.service';
+import { InvoiceFactoryService } from './invoice-factory.service';
+import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
+
+import { BaseInvoiceService } from '../interface/service/invoice.interface';
+import { VdcInvoiceDetailsResultDto } from '../../../vdc/dto/vdc-invoice-details.result.dto';
+import { InvoiceFactoryVdcService } from './invoice-factory-vdc.service';
+import { InvoiceDetailVdcModel } from '../interface/invoice-detail-vdc.interface';
+import {
+  VdcInvoiceCalculatorDto,
+  VdcInvoiceCalculatorResultDto,
+} from '../dto/vdc-invoice-calculator.dto';
+import { TemplatesTableService } from '../../crud/templates/templates-table.service';
+import { TemplatesStructure } from 'src/application/vdc/dto/templates.dto';
+import { Transactions } from 'src/infrastructure/database/entities/Transactions';
+import { FindManyOptions, In, IsNull, Like, Not } from 'typeorm';
+import { InvoiceTypes } from '../enum/invoice-type.enum';
+import { VdcFactoryService } from 'src/application/vdc/service/vdc.factory.service';
+import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
+import {
+  VdcGenerationItems,
+  VdcItemGroup,
+} from '../interface/vdc-item-group.interface.dto';
+import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import {
+  DiskItemCodes,
+  ItemTypeCodes,
+} from '../../itemType/enum/item-type-codes.enum';
+import { Invoices } from '../../../../infrastructure/database/entities/Invoices';
+import { TotalInvoiceItemCosts } from '../interface/invoice-item-cost.interface';
+import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
+import { contains } from 'class-validator';
+import { indexOf, isNil } from 'lodash';
+import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
+import { InvoiceItems } from '../../../../infrastructure/database/entities/InvoiceItems';
+import { InvoiceItemsTableService } from '../../crud/invoice-items-table/invoice-items-table.service';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
 import { CreateInvoicesDto } from '../../crud/invoices-table/dto/create-invoices.dto';
+import { ServiceItemTypesTree } from '../../../../infrastructure/database/entities/views/service-item-types-tree';
+import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
+import { ServiceTypesTableService } from '../../crud/service-types-table/service-types-table.service';
+import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
+import { Templates } from '../../../../infrastructure/database/entities/Templates';
+import { CreateInvoiceItemsDto } from '../../crud/invoice-items-table/dto/create-invoice-items.dto';
 
 @Injectable()
-export class InvoicesService {
+export class InvoicesService implements BaseInvoiceService {
   constructor(
+    private readonly validationService: InvoiceValidationService,
+    private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly invoicesTable: InvoicesTableService,
-    private readonly plansTable: PlansTableService,
-    private readonly itemTypesTable: ItemTypesTableService,
-    private readonly serviceTypesTable: ServiceTypesTableService,
-    private readonly invoiceChecksService: InvoicesChecksService,
+    private readonly invoiceItemsTableService: InvoiceItemsTableService,
     private readonly costCalculationService: CostCalculationService,
-    private readonly invoiceItemsTable: InvoiceItemsTableService,
     private readonly transactionTable: TransactionsTableService,
-    private readonly invoicePlansTable: InvoicePlansTableService,
-    private readonly invoicePropertiesTable: InvoicePropertiesTableService,
-    private readonly vgpuService: VgpuService,
+    private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
+    private readonly templateTableService: TemplatesTableService,
+    private readonly vdcFactoryService: VdcFactoryService,
+    private readonly serviceItemsTableService: ServiceItemsTableService,
+    private readonly serviceInstanceTableService: ServiceInstancesTableService,
+    private readonly serviceItemTreeTableService: ServiceItemTypesTreeService,
+    private readonly systemSettingsTableService: SystemSettingsTableService,
+    private readonly serviceTypesTableService: ServiceTypesTableService,
   ) {}
 
-  // Create invoice items
-  async createInvoiceItems(invoiceID: number, items, data) {
-    for (const item of Object.keys(items)) {
-      let dto: CreateInvoiceItemsDto;
-      const itemTitle = items[item].Code;
-      dto.fee = items[item].Fee;
-      dto.invoiceId = invoiceID;
-      dto.itemId = items[item].ID;
-      dto.quantity = data[itemTitle];
-      await this.invoiceItemsTable.create(dto);
+  private strategy: any = {
+    [ServiceTypesEnum.Vdc]: this.createVdcInvoice,
+    [ServiceTypesEnum.Ai]: this.createAiInvoice,
+  };
+
+  async createServiceInvoice(
+    serviceType: ServiceTypesEnum,
+    dto: CreateServiceInvoiceDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    await this.validationService.invoiceValidator(serviceType, dto);
+
+    return await this.strategy[serviceType].bind(this)(dto, options);
+  }
+
+  async createAiInvoice(
+    dto: CreateServiceInvoiceDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    switch (dto.type) {
+      case InvoiceTypes.Create:
+        return this.createAiStaticInvoice(dto, options);
+      default:
+        throw new Error(`Unsupported invoice type: ${dto.type}`);
     }
   }
 
-  async createInvoiceProperties(data, InvoiceID, serviceType) {
-    if (serviceType == 'vgpu') {
-      const pcProp = {
-        pcName: data.pcName,
-        pcPassword: data.pcPassword,
-      };
-      if (isNil(data.pcName) || isNil(data.pcPassword)) {
-        return Promise.reject(new VgpuPcNamePassRequired());
-      }
-      for (const item of Object.keys(pcProp)) {
-        await this.invoicePropertiesTable.create({
-          invoiceId: InvoiceID,
-          propertyKey: item,
-          value: pcProp[item],
-        });
-      }
+  async convertAiTemplateToItemType(
+    templateId: string,
+  ): Promise<InvoiceItemsDto[]> {
+    const template: Templates = await this.templateTableService.findById(
+      templateId,
+    );
+
+    // TODO must be check template belongs to ai templates
+    if (isNil(template)) {
+      throw new BadRequestException();
     }
-  }
+    const decode = JSON.parse(template.structure);
+    const invoiceItemsDto: InvoiceItemsDto[] = [];
 
-  // Create multiple invoice plans
-  async createInvoicePlans(dto: CreateInvoicePluralDto) {
-    for (const plan of dto.plans) {
-      await this.invoicePlansTable.create({
-        invoiceId: dto.invoiceId,
-        planCode: plan.planCode,
-        ratio: plan.ratio,
-        amount: plan.amount,
-      });
-    }
-  }
-
-  async createInvoice(
-    userId,
-    ServiceInstanceID,
-    totalCost,
-    qualityPlanId,
-    payed,
-  ) {
-    throw new InternalServerErrorException('Not Implemented');
-    await this.invoicesTable.create({
-      userId: userId,
-      serviceInstanceId: ServiceInstanceID,
-      rawAmount: totalCost.rawAmount,
-      finalAmount: totalCost.finalAmount,
-      description: 'dsc',
-      dateTime: new Date(),
-      payed: payed,
-      voided: false,
-      //qualityPlan: qualityPlanId ??????
-    });
-    const invoice = await this.invoicesTable.findOne({
-      where: { ServiceInstanceID },
-    });
-    return Promise.resolve(invoice.id);
-  }
-
-  async createServiceInvoice(data, options, serviceId) {
-    const userId = options.accessToken.userId;
-    const unlimitedService = 0;
-    const plans = await this.plansTable.find({});
-    let itemTypes = null;
-    itemTypes = await this.itemTypesTable.find({
-      where: { ServiceTypeID: serviceId },
-    });
-    // get service type info
-    const serviceType = await this.serviceTypesTable.findOne({
-      where: { ID: serviceId },
-    });
-    //check validity of serviceId
-    if (isEmpty(serviceType)) {
-      throw new InvalidServiceIdException();
+    for (const key of Object.keys(decode.items)) {
+      invoiceItemsDto.push({
+        itemTypeId: decode.items[key].id,
+        value: decode.items[key].value,
+        code: decode.items[key].code,
+      } as InvoiceItemsDto);
     }
 
-    throw new InternalServerErrorException('Must be resolved');
-    // check Availablity of creating new Service
-    // await this.serviceChecksService.checkServiceMaxAvailable(
-    //   unlimitedService,
-    //   serviceType.maxAvailable,
-    //   serviceId,
-    //   userId,
-    // );
-    // checking plans condition
-    const approvedPlans = await this.invoiceChecksService.checkPlanCondition(
-      data.plans,
-      serviceId,
-      data.duration * 30,
-    );
-    // calculate costs
-    const itemCost = this.costCalculationService.itemsCost(
-      itemTypes,
-      data,
-      serviceType,
-    );
-    const plansCost = this.costCalculationService.plansCost(plans, data);
-    const plansRatioForInvoice =
-      this.costCalculationService.plansRatioForInvoice(plans, data);
-    const plansRatioForItems = this.costCalculationService.plansRatioForItems(
-      plans,
-      data,
-    );
-    const totalCosts = this.costCalculationService.totalCosts(
-      serviceType,
-      data,
-      plans,
-      itemTypes,
-    );
-    let duration = data.duration;
-    if (data.ServiceTypeID == 'vgpu') {
-      await this.vgpuService.chackAvalibleToPowerOnVgpu(userId);
-      duration = 36;
+    return invoiceItemsDto;
+  }
+
+  async createAiStaticInvoice(
+    data: CreateServiceInvoiceDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    const userId = options.user.userId;
+
+    let dataItemType: InvoiceItemsDto[];
+
+    if (data.templateId) {
+      dataItemType = await this.convertAiTemplateToItemType(data.templateId);
+    } else {
+      dataItemType = data.itemsTypes;
     }
-    // create service Invoice
-    let dto: CreateInvoicesDto;
-    dto.userId = userId;
-    dto.rawAmount = itemCost;
-    dto.finalAmount = totalCosts;
-    dto.type = 0;
-    dto.endDateTime = addMonths(new Date(), duration);
-    dto.dateTime = new Date();
-    dto.serviceTypeId = data.serviceTypeID;
-    dto.name = data.name;
-    dto.planAmount = plansCost;
-    dto.planRatio = plansRatioForItems;
-    const invoiceId = await this.invoicesTable.create(dto);
 
-    await this.createInvoiceItems(invoiceId, itemTypes, data.items);
-    await this.transactionTable.create({
-      userId: userId,
-      dateTime: new Date(),
-      paymentType: 0,
-      paymentToken: '-',
-      isApproved: false,
-      value: totalCosts,
-      invoiceId: invoiceId,
-      description: serviceType.title,
-      serviceInstanceId: serviceId,
-    });
-    await this.createInvoicePlans({
-      plans: approvedPlans,
-      invoiceId: invoiceId,
-    });
-    await this.createInvoiceProperties(data, invoiceId, data.ServiceTypeID);
-    return Promise.resolve({ invoiceId: invoiceId });
-  }
-
-  async getExpiredInvoice(userId, serviceInstanceId) {
-    return await this.invoicesTable.findOne({
-      where: {
-        and: [
-          { UserID: userId },
-          { ServiceInstanceID: serviceInstanceId },
-          { Type: 0 },
-          { Payed: true },
-        ],
-      },
-    });
-  }
-
-  async getUserLastInvoices(userId, serviceInstanceId) {
-    return await this.invoicesTable.find({
-      where: {
-        and: [
-          { UserID: userId },
-          { ServiceInstanceID: serviceInstanceId },
-          { Type: 1 },
-          { Payed: true },
-        ],
-      },
-    });
-  }
-
-  async findAlreadyInvoiceCreated(userId, serviceInstanceId) {
-    return await this.invoicesTable.findOne({
-      where: {
-        and: [
-          { UserID: userId },
-          { ServiceInstanceID: serviceInstanceId },
-          { Type: 1 },
-          { Payed: false },
-        ],
-      },
-    });
-  }
-
-  async extendServiceInvoice(app, options, serviceInstanceId) {
-    const userId = options.accessToken.userId;
-    let expiredInvoice = null;
-    // find user expired service invoice
-    expiredInvoice = await this.getExpiredInvoice(userId, serviceInstanceId);
-    const lastUserInvoicesList = await this.getUserLastInvoices(
-      userId,
-      serviceInstanceId,
+    const periodItem = dataItemType.find(
+      (item) => item.code === ItemTypeCodes.Period,
     );
-    let lastUserInvoiceID;
-    lastUserInvoicesList.forEach((element) => {
-      lastUserInvoiceID = Math.max(element.id);
-    });
-    const lastUserInvoice = lastUserInvoicesList.find(
-      (el) => el.id == lastUserInvoiceID,
-    );
-    // find already created invoice or not
-    const alreadyInvoiceCreated = await this.findAlreadyInvoiceCreated(
-      userId,
-      serviceInstanceId,
-    );
-    if (expiredInvoice === null) {
-      return Promise.reject(new ForbiddenException());
+    if (!periodItem) {
+      throw new BadRequestException('Period item not found');
     }
-    if (alreadyInvoiceCreated) {
-      return Promise.resolve({ invoiceId: alreadyInvoiceCreated.id });
+    const checkPeriodItem = await this.serviceItemTreeTableService.findById(
+      periodItem.itemTypeId,
+    );
+    if (checkPeriodItem.codeHierarchy.split('_')[0] !== ItemTypeCodes.Period) {
+      throw new BadRequestException('Invalid period item type');
     }
-    if (!alreadyInvoiceCreated) {
-      const duration = Math.round(
-        (expiredInvoice.EndDateTime - expiredInvoice.DateTime) / 86400000,
+
+    const itemTypesId = dataItemType.map((item) => item.itemTypeId);
+    const itemTypes = await this.serviceItemTreeTableService.find({
+      where: { id: In(itemTypesId) },
+    });
+
+    const invoiceItems = dataItemType.map((item) => {
+      const itemType = itemTypes.find(
+        (serviceItem) => serviceItem.id === item.itemTypeId,
       );
-      let DateTime;
-      let EndDateTime;
-      if (lastUserInvoice) {
-        DateTime = lastUserInvoice.endDateTime;
-        EndDateTime = addMonths(lastUserInvoice.endDateTime, duration / 30);
-      } else {
-        DateTime = expiredInvoice.EndDateTime;
-        EndDateTime = addMonths(expiredInvoice.EndDateTime, duration / 30);
+      const fee =
+        item.itemTypeId !== checkPeriodItem.id
+          ? this.calculateFee(item.value, itemType.fee)
+          : null;
+      return {
+        ItemID: item.itemTypeId,
+        Fee: fee,
+        value: item.value,
+        codeHierarchy: itemType.codeHierarchy,
+      };
+    });
+
+    const baseAmount = invoiceItems.reduce(
+      (acc, item) => acc + item.Fee || 0,
+      0,
+    );
+    const rawAmount = baseAmount * checkPeriodItem.maxPerRequest;
+    const finalAmount = rawAmount * (1 + checkPeriodItem.percent);
+
+    // Retrieve tax percent
+    const taxPercent = await this.systemSettingsTableService.findOne({
+      where: { propertyKey: SystemSettingsPropertyKeysEnum.TaxPercent },
+    });
+
+    // const endDate = addMonths(new Date(), checkPeriodItem.maxPerRequest);
+    const serviceType = await this.serviceTypesTableService.findOne({
+      where: {
+        id: ServiceTypesEnum.Ai,
+      },
+    });
+
+    const invoice = await this.invoicesTable.create({
+      userId,
+      baseAmount,
+      rawAmount,
+      finalAmount,
+      dateTime: new Date(),
+      // endDateTime: endDate,
+      payed: false,
+      serviceTypeId: ServiceTypesEnum.Ai,
+      invoiceTax: Number(taxPercent.value),
+      isPreInvoice: true,
+      serviceInstanceId: null,
+      description: '',
+      serviceCost: rawAmount,
+      servicePlanType: ServicePlanTypeEnum.Static,
+      voided: false,
+      planAmount: 0,
+      name: ServiceTypesEnum.Ai + ' test ',
+      datacenterName: serviceType.datacenterName,
+      templateId: data.templateId,
+    });
+    const items: CreateInvoiceItemsDto[] = invoiceItems.map(
+      (item): CreateInvoiceItemsDto => {
+        return {
+          invoiceId: invoice.id,
+          itemId: item.ItemID,
+          value: item.value?.trim() == '' ? null : item.value,
+          fee: item.Fee,
+          quantity: 0,
+          codeHierarchy: item.codeHierarchy,
+        } as CreateInvoiceItemsDto;
+      },
+    );
+
+    await this.invoiceItemsTableService.createAll(items);
+
+    return { invoiceId: invoice.id };
+  }
+
+  calculateFee(value: string | undefined, fee: number): number {
+    return !isNil(value) && value.trim() !== '' && Number(value) !== 0
+      ? Number(value) * fee
+      : fee;
+  }
+
+  async createVdcInvoice(
+    dto: CreateServiceInvoiceDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    if (dto.servicePlanTypes === ServicePlanTypeEnum.Static) {
+      switch (dto.type) {
+        case InvoiceTypes.Create:
+          return this.createVdcStaticInvoice(dto, options, null);
       }
-      const itemTypes = await app.models.InvoiceItems.find({
-        where: {
-          InvoiceID: expiredInvoice.ID,
-        },
-      });
 
-      throw new InternalServerErrorException('MOVE: Plans cost undefined ');
-      const invoiceId = await this.invoicesTable.create({
-        userId: userId,
-        rawAmount: expiredInvoice.rawAmount, // Total cost of service items
-        finalAmount: expiredInvoice.FinalAmount,
-        description: 'description',
-        dateTime: DateTime,
-        payed: false,
-        voided: false,
-        endDateTime: EndDateTime,
-        type: 1,
-        serviceTypeId: expiredInvoice.ServiceTypeID,
-        name: expiredInvoice.ServiceTypeID.Name,
-        //  planAmount: plansCost,
-        //  planRatio: plansRatio,
-        serviceInstanceId: serviceInstanceId,
-      });
-
-      throw new InternalServerErrorException('MOVE: data undefined  ');
-
-      //   await createInvoiceItems(invoiceId, itemTypes, data, app);
-      //   await createTransaction(expiredInvoice.FinalAmount,invoiceId,expiredInvoice.ServiceTypeID.Title,userId,app);
-      return Promise.resolve({ invoiceId: invoiceId });
+      return InvoiceIdDto.generateMock();
     }
-    return Promise.resolve({ invoiceId: null });
+  }
+
+  async upgradeAndExtendInvoice(
+    invoice: UpgradeAndExtendDto,
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      invoice.itemsTypes,
+    );
+    const checkGenerationExists = Object.values(groupedItems.generation).some(
+      (value: VdcGenerationItems[]) => value.length !== 0,
+    );
+    if (checkGenerationExists) {
+      return this.upgradeVdcStaticInvoice(options, invoice); // TODO
+    }
+    if (groupedItems.period) {
+      return this.extendService(
+        invoice.serviceInstanceId,
+        groupedItems.period,
+        options,
+      );
+    }
+  }
+
+  async getVdcInvoiceDetails(
+    invoiceId: string,
+    serviceType = 'vdc',
+  ): Promise<VdcInvoiceDetailsResultDto> {
+    const res: VdcInvoiceDetailsResultDto = new VdcInvoiceDetailsResultDto();
+
+    //We should Join in this way == > Invoice --> InvoiceItem --> view.ServiceItemTypesTree
+    const vdcInvoiceDetailsModels =
+      await this.invoiceVdcFactory.getVdcInvoiceDetailModel(
+        invoiceId,
+        serviceType,
+      );
+
+    const {
+      cpuModel,
+      ramModel,
+      diskModel,
+      ipModel,
+      vmModel,
+      generation,
+      reservationRam,
+      reservationCpu,
+      period,
+      guaranty,
+    } = this.invoiceVdcFactory.getVdcInvoiceDetailInfo(vdcInvoiceDetailsModels);
+
+    this.invoiceVdcFactory.fillRes(
+      res,
+      cpuModel as InvoiceDetailVdcModel,
+      ramModel as InvoiceDetailVdcModel,
+      diskModel as InvoiceDetailVdcModel[],
+      ipModel as InvoiceDetailVdcModel,
+      generation,
+      reservationCpu,
+      reservationRam,
+      vmModel as InvoiceDetailVdcModel,
+      guaranty,
+      period,
+    );
+
+    return res;
+  }
+
+  async createVdcStaticInvoice(
+    data: CreateServiceInvoiceDto,
+    options: SessionRequest,
+    serviceInstanceId: string | null,
+  ): Promise<InvoiceIdDto> {
+    const userId = options.user.userId;
+    if (data.templateId) {
+      return this.createStaticInvoiceByTemplate(data, userId);
+    }
+    const invoiceCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      data.itemsTypes,
+    );
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      userId,
+      data,
+      invoiceCost,
+      groupedItems,
+      serviceInstanceId,
+      Number(groupedItems.period.value) * 30,
+      new Date(),
+    );
+    const invoice = await this.invoicesTable.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      invoice.id,
+      invoiceCost.itemsSum,
+      groupedItems,
+    );
+    return { invoiceId: invoice.id };
+  }
+
+  async vdcInvoiceCalculator(
+    dto: VdcInvoiceCalculatorDto,
+  ): Promise<VdcInvoiceCalculatorResultDto> {
+    const calculatedCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(dto);
+    if (dto.servicePlanTypes === ServicePlanTypeEnum.Static) {
+      const resultDto: VdcInvoiceCalculatorResultDto = {
+        cost: calculatedCost.totalCost,
+      };
+      return resultDto;
+    }
+  }
+
+  async createStaticInvoiceByTemplate(
+    data: CreateServiceInvoiceDto,
+    userId: number,
+  ): Promise<InvoiceIdDto> {
+    const template = await this.templateTableService.findById(data.templateId);
+    const templateStructure: TemplatesStructure = JSON.parse(
+      template.structure,
+    );
+    const invoiceItems =
+      this.invoiceFactoryService.convertTemplateToInvoiceItems(
+        templateStructure,
+      );
+    data.itemsTypes = invoiceItems;
+    const invoiceCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(data);
+    // changed totalCost to template cost
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      data.itemsTypes,
+    );
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      userId,
+      data,
+      invoiceCost,
+      groupedItems,
+      data.serviceInstanceId || null,
+      Number(groupedItems.period.value) * 30,
+      new Date(),
+    );
+    dto.finalAmount = templateStructure.finalPrice;
+    const invoice = await this.invoicesTable.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      invoice.id,
+      invoiceCost.itemsSum,
+      groupedItems,
+    );
+    return { invoiceId: invoice.id };
+  }
+
+  async upgradeVdcStaticInvoice(
+    options: SessionRequest,
+    data: UpgradeAndExtendDto,
+  ): Promise<InvoiceIdDto> {
+    const userId = options.user.userId;
+    const service = await this.serviceInstanceTableService.findById(
+      data.serviceInstanceId,
+    );
+    const date =
+      new Date().getTime() >= new Date(service.expireDate).getTime()
+        ? new Date()
+        : new Date(service.expireDate);
+    let remainingDays = service.daysLeft;
+    let invoiceType = InvoiceTypes.Upgrade;
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      data.itemsTypes,
+    );
+    const serviceItems = await this.serviceItemsTableService.find({
+      where: {
+        serviceInstanceId: data.serviceInstanceId,
+      },
+    });
+    const transformedItems =
+      this.vdcFactoryService.transformItems(serviceItems);
+    const groupedOldItems = await this.invoiceFactoryService.groupVdcItems(
+      transformedItems,
+    );
+    const swapItem = groupedOldItems.generation.disk.find(
+      (item) => item.code === DiskItemCodes.Swap,
+    );
+    const oldSwapValue = Number(swapItem.value);
+    const swapItemIndex = transformedItems.findIndex((item) => {
+      if (item.itemTypeId === swapItem.id) {
+        groupedOldItems.generation.disk.splice(
+          groupedOldItems.generation.disk.indexOf(swapItem),
+          1,
+        );
+        return item;
+      }
+    });
+    transformedItems.splice(swapItemIndex, 1);
+    if (groupedItems.period) {
+      invoiceType = InvoiceTypes.UpgradeAndExtend;
+      remainingDays = Number(groupedItems.period.value) * 30 + remainingDays;
+      await this.validationService.checkExtendVdcInvoice(
+        groupedItems.period,
+        service,
+      );
+    } else {
+      groupedItems.period = groupedOldItems.period;
+      data.itemsTypes.push({
+        itemTypeId: groupedItems.period.id,
+        value: groupedItems.period.value,
+      });
+    }
+
+    let finalInvoiceCost: TotalInvoiceItemCosts;
+    if (invoiceType === InvoiceTypes.UpgradeAndExtend) {
+      await this.invoiceFactoryService.sumItems(groupedItems, groupedOldItems);
+      finalInvoiceCost =
+        await this.costCalculationService.calculateVdcStaticTypeInvoice(
+          data,
+          { applyPeriodPercent: true },
+          groupedItems,
+        );
+      console.log('first');
+    }
+    // check upgrade vdc
+    // await this.validationService.checkUpgradeVdc(data, service);
+    if (invoiceType === InvoiceTypes.Upgrade) {
+      finalInvoiceCost =
+        await this.costCalculationService.calculateRemainingPeriod(
+          transformedItems,
+          data.itemsTypes,
+          groupedItems,
+          groupedOldItems,
+          remainingDays,
+          invoiceType,
+        );
+      const swap = finalInvoiceCost.itemsSum.find(
+        (item) => item.code === DiskItemCodes.Swap,
+      );
+      finalInvoiceCost.itemsSum.forEach((value) => {
+        if (
+          value.code === ItemTypeCodes.CpuReservationItem ||
+          value.code === ItemTypeCodes.MemoryReservationItem ||
+          value.code === ItemTypeCodes.GuarantyItem ||
+          value.code === ItemTypeCodes.PeriodItem
+        ) {
+          value.value = '0';
+        }
+      });
+      const ramSum =
+        Number(groupedOldItems.generation.ram[0].value) +
+        Number(groupedItems.generation.ram[0].value);
+
+      const vmSum =
+        Number(groupedOldItems.generation.vm[0].value) +
+        Number(groupedItems.generation.vm[0].value);
+      swap.value = String(ramSum * vmSum - oldSwapValue);
+    }
+    const convertedInvoice: CreateServiceInvoiceDto = {
+      ...data,
+      templateId: null,
+      type: invoiceType,
+    };
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      userId,
+      convertedInvoice,
+      finalInvoiceCost,
+      groupedItems,
+      data.serviceInstanceId,
+      remainingDays,
+      date,
+    );
+    const invoice = await this.invoicesTable.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      invoice.id,
+      finalInvoiceCost.itemsSum,
+      groupedItems,
+    );
+    return {
+      invoiceId: invoice.id,
+    };
+  }
+
+  async getTransaction(
+    options: SessionRequest,
+    authorityCode: string,
+  ): Promise<Transactions> {
+    return this.transactionTable.findOne({
+      where: {
+        paymentToken: authorityCode,
+        invoiceId: Not(IsNull()),
+        userId: options.user.userId,
+      },
+    });
+  }
+
+  async extendService(
+    serviceInstanceId: string,
+    periodItem: VdcItemGroup['period'],
+    options: SessionRequest,
+  ): Promise<InvoiceIdDto> {
+    const service = await this.serviceInstanceTableService.findById(
+      serviceInstanceId,
+    );
+    await this.validationService.checkExtendVdcInvoice(periodItem, service);
+    const date =
+      new Date().getTime() >= new Date(service.expireDate).getTime()
+        ? new Date()
+        : new Date(service.expireDate);
+    const serviceItems = await this.serviceItemsTableService.find({
+      where: {
+        serviceInstanceId,
+      },
+    });
+    const transformedItems =
+      this.vdcFactoryService.transformItems(serviceItems);
+    const groupedItems = await this.invoiceFactoryService.groupVdcItems(
+      transformedItems,
+    );
+    const newItems = [];
+    await this.invoiceFactoryService.recalculateItemTypes(
+      newItems,
+      groupedItems,
+      periodItem,
+      transformedItems,
+    );
+    const swapItemIndex = newItems.findIndex((item) => {
+      if (
+        item.itemTypeId ===
+        groupedItems.generation.disk.find(
+          (item) => item.code === DiskItemCodes.Swap,
+        ).id
+      ) {
+        return item;
+      }
+    });
+    newItems.splice(swapItemIndex, 1);
+    const invoice: CreateServiceInvoiceDto = {
+      itemsTypes: newItems,
+      serviceInstanceId,
+      servicePlanTypes: service.servicePlanType,
+      templateId: null,
+      type: InvoiceTypes.Extend,
+    };
+
+    const invoiceCost =
+      await this.costCalculationService.calculateVdcStaticTypeInvoice(invoice);
+    const dto = await this.invoiceFactoryService.createInvoiceDto(
+      options.user.userId,
+      invoice,
+      invoiceCost,
+      groupedItems,
+      serviceInstanceId,
+      Number(periodItem.value) * 30,
+      date,
+    );
+    const createdInvoice = await this.invoicesTable.create(dto);
+    await this.invoiceFactoryService.createInvoiceItems(
+      createdInvoice.id,
+      invoiceCost.itemsSum,
+      groupedItems,
+    );
+    return { invoiceId: createdInvoice.id };
+  }
+
+  async getAll(option: FindManyOptions<Invoices>) {
+    return await this.invoicesTable.find(option);
   }
 }

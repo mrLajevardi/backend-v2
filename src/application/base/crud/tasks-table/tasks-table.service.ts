@@ -8,6 +8,8 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteResult,
+  UpdateResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
@@ -27,49 +29,53 @@ export class TasksTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<Tasks[]> {
+  async find(options?: FindManyOptions<Tasks>): Promise<Tasks[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<Tasks>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<Tasks> {
+  async findOne(options?: FindOneOptions<Tasks>): Promise<Tasks> {
     const result = await this.repository.findOne(options);
     return result;
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateTasksDto) {
+  async create(dto: CreateTasksDto): Promise<Tasks> {
     const newItem = plainToClass(Tasks, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    const task = await this.repository.save(createdItem);
+    return task;
   }
 
   // Update an Item using updateDTO
-  async update(id: string, dto: UpdateTasksDto) {
+  async update(id: string, dto: UpdateTasksDto): Promise<Tasks> {
     const item = await this.findById(id);
     const updateItem: Partial<Tasks> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
   }
 
   // update many items
-  async updateAll(where: FindOptionsWhere<Tasks>, dto: UpdateTasksDto) {
-    await this.repository.update(where, dto);
+  async updateAll(
+    where: FindOptionsWhere<Tasks>,
+    dto: UpdateTasksDto,
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: string) {
-    await this.repository.delete(id);
+  async delete(id: string): Promise<DeleteResult> {
+    return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(where: FindOptionsWhere<Tasks> = {}): Promise<DeleteResult> {
+    return await this.repository.delete(where);
   }
 }

@@ -1,24 +1,27 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ACLTableService } from './acl-table.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { TestDataService } from 'src/infrastructure/database/test-data.service';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('ACLTableService', () => {
   let service: ACLTableService;
-  let testDataService: TestDataService;
+  let module: TestingModule;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
-      providers: [ACLTableService, TestDataService],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
+      providers: [ACLTableService],
     }).compile();
 
     service = module.get<ACLTableService>(ACLTableService);
-    testDataService = module.get<TestDataService>(TestDataService);
-    await testDataService.seedTestData();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {
+    expect(process.env.NODE_ENV).toBe('test');
+
     expect(service).toBeDefined();
   });
 });

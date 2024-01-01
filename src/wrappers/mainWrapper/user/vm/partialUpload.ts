@@ -13,5 +13,3 @@ export async function userPartialUpload(authToken, fullAddress, data, header) {
   });
   return file;
 }
-
-module.exports = userPartialUpload;

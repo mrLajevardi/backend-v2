@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsDate } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateGroupsDto {
@@ -12,10 +12,7 @@ export class CreateGroupsDto {
   description?: string;
 
   @IsString()
+  @IsOptional()
   @ApiProperty()
-  color: string;
-
-  @IsDate()
-  @ApiProperty()
-  createDate: Date;
+  color?: string;
 }

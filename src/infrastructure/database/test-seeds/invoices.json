@@ -2,6 +2,7 @@
     {
       "id": 5671,
       "serviceTypeId": "vdc",
+      "serviceInstanceId": "D1E47C43-3900-4F2F-B709-ACDE93F2D280",
       "rawAmount": 270000,
       "planAmount": 0,
       "planRatio": 1,
@@ -13,11 +14,16 @@
       "endDateTime": 1679706473430,
       "type": 0,
       "name": "test",
-      "userId": 597
+      "userId": 597,
+      "servicePlanType": 0,
+      "isPreInvoice":true,
+      "baseAmount": 0,
+      "code": 2
     },
     {
       "id": 5919,
       "serviceTypeId": "aradAi",
+      "serviceInstanceId": "D1E47C43-3900-4F2F-B709-ACDE93F2D280",
       "rawAmount": 0,
       "planAmount": 0,
       "planRatio": 1,
@@ -29,7 +35,11 @@
       "endDateTime": 1679828852680,
       "type": 0,
       "name": "majid",
-      "userId":597
+      "userId":597,
+      "servicePlanType": 0,
+      "isPreInvoice":true,
+      "baseAmount": 0,
+      "code": 1
     }
   ]
   

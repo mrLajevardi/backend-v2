@@ -11,5 +11,3 @@ export const natWrapper = {
   getNatRuleList: userGetNatRuleList,
   updateNatRule: userUpdateNatRule,
 };
-
-module.exports = natWrapper;

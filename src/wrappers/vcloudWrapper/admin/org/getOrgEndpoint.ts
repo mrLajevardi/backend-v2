@@ -16,5 +16,3 @@ export function getOrgEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getOrgEndpoint;

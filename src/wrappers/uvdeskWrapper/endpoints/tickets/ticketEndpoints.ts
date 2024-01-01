@@ -11,5 +11,3 @@ export const ticketEndpoints = {
   updateTicket: updateTicketEndpoint,
   getTicket: getTicketEndpoint,
 };
-
-module.exports = ticketEndpoints;

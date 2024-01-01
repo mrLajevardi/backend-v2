@@ -18,12 +18,12 @@ export class CreateTransactionsDto {
   @IsNumber()
   @IsOptional()
   @ApiProperty({ required: false })
-  invoiceId: number | null;
+  invoiceId?: number | null;
 
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  description: string | null;
+  description?: string | null;
 
   @IsNumber()
   @ApiProperty()
@@ -32,7 +32,7 @@ export class CreateTransactionsDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  paymentToken: string | null;
+  paymentToken?: string | null;
 
   @IsOptional()
   @ApiProperty({ required: false })
@@ -41,9 +41,17 @@ export class CreateTransactionsDto {
   @IsString()
   @IsOptional()
   @ApiProperty({ required: false })
-  serviceInstanceId: string | null;
+  serviceInstanceId?: string | null;
 
   @IsString()
   @ApiProperty()
-  userId: string;
+  userId?: string;
+
+  @IsString()
+  @ApiProperty()
+  metaData?: string;
+
+  @IsNumber()
+  @ApiProperty()
+  refId?: number;
 }

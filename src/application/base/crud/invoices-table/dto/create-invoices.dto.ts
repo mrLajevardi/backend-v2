@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsDate,
   IsOptional,
+  ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -13,6 +14,11 @@ export class CreateInvoicesDto {
   @ApiProperty()
   @IsOptional()
   id?: number;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @IsOptional()
+  templateId?: string;
 
   @IsString()
   @ApiProperty()
@@ -30,9 +36,20 @@ export class CreateInvoicesDto {
   @ApiProperty({ required: false })
   planRatio?: number | null;
 
+  @IsString()
+  @IsOptional()
+  @ValidateIf((object, value) => {
+    return value !== null;
+  })
+  datacenterName?: string | null;
+
   @IsNumber()
   @ApiProperty()
   finalAmount: number;
+
+  @IsNumber()
+  @ApiProperty()
+  finalAmountWithTax?: number;
 
   @IsString()
   @ApiProperty()
@@ -66,7 +83,17 @@ export class CreateInvoicesDto {
   @ApiProperty()
   userId: number;
 
-  @IsInt()
+  @IsString()
   @ApiProperty()
-  serviceInstanceId: number;
+  serviceInstanceId: string;
+
+  servicePlanType: number;
+
+  baseAmount?: number;
+
+  isPreInvoice: boolean;
+
+  invoiceTax: number;
+
+  serviceCost: number;
 }

@@ -21,4 +21,3 @@ export async function getEdgeCluster(vdcId, authToken) {
   );
   return Promise.resolve(edgeClusters.data.values[0]?.id);
 }
-module.exports = getEdgeCluster;

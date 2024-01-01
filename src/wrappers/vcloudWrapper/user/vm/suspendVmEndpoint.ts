@@ -17,5 +17,3 @@ export function suspendVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = suspendVmEndpoint;

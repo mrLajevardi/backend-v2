@@ -1,62 +1,88 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TasksService } from './tasks.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
-import { EdgeService } from 'src/application/vdc/service/edge.service';
-import { NetworkService } from 'src/application/vdc/service/network.service';
-import { OrgService } from 'src/application/vdc/service/org.service';
-import { VdcService } from 'src/application/vdc/service/vdc.service';
-import { ConfigsTableService } from '../../crud/configs-table/configs-table.service';
-import { OrganizationTableService } from '../../crud/organization-table/organization-table.service';
-import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
-import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
-import { ServicePropertiesTableService } from '../../crud/service-properties-table/service-properties-table.service';
-import { SessionsTableService } from '../../crud/sessions-table/sessions-table.service';
-import { TasksTableService } from '../../crud/tasks-table/tasks-table.service';
-import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
-import { UserTableService } from '../../crud/user-table/user-table.service';
-import { OrganizationService } from '../../organization/organization.service';
-import { SessionsService } from '../../sessions/sessions.service';
-import { TransactionsService } from '../../transactions/transactions.service';
-import { UserService } from '../../user/user.service';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TaskManagerService } from './task-manager.service';
 import { BullModule } from '@nestjs/bull';
+import { forwardRef } from '@nestjs/common';
+import { VdcModule } from 'src/application/vdc/vdc.module';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { CrudModule } from '../../crud/crud.module';
+import { OrganizationModule } from '../../organization/organization.module';
+import { SessionsModule } from '../../sessions/sessions.module';
+import { ServiceService } from '../../service/services/service.service';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { ServicePropertiesModule } from '../../service-properties/service-properties.module';
+import { ServiceModule } from '../../service/service.module';
+import { PaymentModule } from 'src/application/payment/payment.module';
+import { ServiceServiceFactory } from '../../service/Factory/service.service.factory';
+import { DatacenterModule } from '../../datacenter/datacenter.module';
+import { InvoicesModule } from '../../invoice/invoices.module';
+import { UserModule } from '../../user/user.module';
+import { EdgeGatewayModule } from '../../../edge-gateway/edge-gateway.module';
+import { UvdeskWrapperModule } from 'src/wrappers/uvdesk-wrapper/uvdesk-wrapper.module';
+import { MainWrapperModule } from '../../../../wrappers/main-wrapper/main-wrapper.module';
+import { NetworksModule } from '../../../networks/networks.module';
+import { NatModule } from '../../../nat/nat.module';
+import { TaskManagerModule } from '../../task-manager/task-manager.module';
+import { TaskFactoryService } from './task.factory.service';
+import { VmModule } from '../../../vm/vm.module';
+import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
+import { ServiceItemModule } from '../../service-item/service-item.module';
+import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
+import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 
 describe('TasksService', () => {
   let service: TasksService;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
+        DatabaseModule,
         BullModule.registerQueue({
-          name: 'tasks',
+          name: 'tasks2',
         }),
+        TaskManagerModule,
+        MainWrapperModule,
+        ServicePropertiesModule,
+        EdgeGatewayModule,
+        NetworksModule,
+        NatModule,
+        LoggerModule,
+        InvoicesModule,
+        forwardRef(() => VgpuModule),
+        CrudModule,
+        SessionsModule,
+        OrganizationModule,
+        ServiceModule,
+        PaymentModule,
+        ServicePropertiesModule,
+        VdcModule,
+        DatacenterModule,
+        UserModule,
+        EdgeGatewayModule,
+        VmModule,
+        VServiceInstancesTableModule,
+        ServiceItemModule,
+        ServiceInstancesTableModule,
+        VServiceInstancesDetailTableModule,
       ],
       providers: [
-        TasksService,
-        TransactionsService,
-        TasksService,
         TaskManagerService,
-        SessionsService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        ServiceItemsTableService,
-        ConfigsTableService,
-        OrganizationService,
-        UserService,
-        EdgeService,
-        OrgService,
-        NetworkService,
-        VdcService,
-        TransactionsTableService,
-        TasksTableService,
-        OrganizationTableService,
-        UserTableService,
-        SessionsTableService,
+        TaskFactoryService,
+        TasksService,
+        ServiceService,
+        VgpuDnatService,
+        ServiceServiceFactory,
       ],
     }).compile();
 
     service = module.get<TasksService>(TasksService);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

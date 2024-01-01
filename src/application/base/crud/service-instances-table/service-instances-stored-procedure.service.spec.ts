@@ -1,19 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceInstancesStoredProcedureService } from './service-instances-stored-procedure.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('ServiceInstancesStoredProcedureService', () => {
   let service: ServiceInstancesStoredProcedureService;
+  let module: TestingModule;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [ServiceInstancesStoredProcedureService],
     }).compile();
 
     service = module.get<ServiceInstancesStoredProcedureService>(
       ServiceInstancesStoredProcedureService,
     );
+  });
+
+  afterAll(async () => {
+    await module.close();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

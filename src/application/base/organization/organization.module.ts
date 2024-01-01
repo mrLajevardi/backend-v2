@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { SessionsModule } from '../sessions/sessions.module';
@@ -6,7 +6,13 @@ import { UserModule } from '../user/user.module';
 import { CrudModule } from '../crud/crud.module';
 
 @Module({
-  imports: [DatabaseModule, SessionsModule, UserModule, CrudModule],
+  imports: [
+    DatabaseModule,
+    SessionsModule,
+    // UserModule,
+    forwardRef(() => UserModule),
+    CrudModule,
+  ],
   providers: [OrganizationService],
   controllers: [],
   exports: [OrganizationService],

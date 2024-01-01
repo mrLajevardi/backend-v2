@@ -1,45 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Groups } from './test-entities/Groups';
-import { GroupsMapping } from './test-entities/GroupsMapping';
-import { Invoices } from './test-entities/Invoices';
-import { PermissionGroups } from './test-entities/PermissionGroups';
-import { PermissionGroupsMappings } from './test-entities/PermissionGroupsMappings';
-import { InvoiceDiscounts } from './test-entities/InvoiceDiscounts';
-import { AccessToken } from './test-entities/AccessToken';
-import { Acl } from './test-entities/Acl';
-import { Permissions } from './test-entities/Permissions';
-import { PermissionMappings } from './test-entities/PermissionMappings';
-import { Configs } from './test-entities/Configs';
-import { ServiceTypes } from './test-entities/ServiceTypes';
-import { Scope } from './test-entities/Scope';
-import { ServiceInstances } from './test-entities/ServiceInstances';
-import { Setting } from './test-entities/Setting';
-import { Discounts } from './test-entities/Discounts';
-import { ServiceProperties } from './test-entities/ServiceProperties';
-import { Plans } from './test-entities/Plans';
-import { Tickets } from './test-entities/Tickets';
-import { User } from './test-entities/User';
-import { Role } from './test-entities/Role';
-import { ServiceItems } from './test-entities/ServiceItems';
-import { RoleMapping } from './test-entities/RoleMapping';
-import { InvoiceItems } from './test-entities/InvoiceItems';
-import { Organization } from './test-entities/Organization';
-import { InvoicePlans } from './test-entities/InvoicePlans';
-import { ItemTypes } from './test-entities/ItemTypes';
-import { Sysdiagrams } from './test-entities/Sysdiagrams';
-import { Sessions } from './test-entities/Sessions';
-import { InvoiceProperties } from './test-entities/InvoiceProperties';
-import { SystemSettings } from './test-entities/SystemSettings';
-import { InfoLog } from './test-entities/InfoLog';
-import { Migrations } from './test-entities/Migrations';
-import { AiTransactionsLogs } from './test-entities/AiTransactionsLogs';
-import { ErrorLog } from './test-entities/ErrorLog';
-import { DebugLog } from './test-entities/DebugLog';
-import { Transactions } from './test-entities/Transactions';
-import { Tasks } from './test-entities/Tasks';
+import { Groups } from './entities/Groups';
+import { GroupsMapping } from './entities/GroupsMapping';
+import { Invoices } from './entities/Invoices';
+import { PermissionGroups } from './entities/PermissionGroups';
+import { PermissionGroupsMappings } from './entities/PermissionGroupsMappings';
+import { InvoiceDiscounts } from './entities/InvoiceDiscounts';
+import { AccessToken } from './entities/AccessToken';
+import { Acl } from './entities/Acl';
+import { Permissions } from './entities/Permissions';
+import { PermissionMappings } from './entities/PermissionMappings';
+import { Configs } from './entities/Configs';
+import { ServiceTypes } from './entities/ServiceTypes';
+import { Scope } from './entities/Scope';
+import { ServiceInstances } from './entities/ServiceInstances';
+import { Setting } from './entities/Setting';
+import { Discounts } from './entities/Discounts';
+import { ServiceProperties } from './entities/ServiceProperties';
+import { Plans } from './entities/Plans';
+import { Tickets } from './entities/Tickets';
+import { User } from './entities/User';
+import { Role } from './entities/Role';
+import { ServiceItems } from './entities/ServiceItems';
+import { RoleMapping } from './entities/RoleMapping';
+import { InvoiceItems } from './entities/InvoiceItems';
+import { Organization } from './entities/Organization';
+import { InvoicePlans } from './entities/InvoicePlans';
+import { ItemTypes } from './entities/ItemTypes';
+import { Sysdiagrams } from './entities/Sysdiagrams';
+import { Sessions } from './entities/Sessions';
+import { InvoiceProperties } from './entities/InvoiceProperties';
+import { SystemSettings } from './entities/SystemSettings';
+import { InfoLog } from './entities/InfoLog';
+import { Migrations } from './entities/Migrations';
+import { AiTransactionsLogs } from './entities/AiTransactionsLogs';
+import { ErrorLog } from './entities/ErrorLog';
+import { DebugLog } from './entities/DebugLog';
+import { Transactions } from './entities/Transactions';
+import { Tasks } from './entities/Tasks';
 
 import * as fs from 'fs';
 
@@ -128,18 +128,30 @@ export class TestDataService {
     filename: string,
     repository: Repository<T>,
   ): Promise<void> {
-    // console.log("seeding table ",filename);
     const path = 'src/infrastructure/database/test-seeds/' + filename;
     const jsonData = fs.readFileSync(path, 'utf8');
     const items = JSON.parse(jsonData);
-    for (const item of items) {
-      const entity = item as T;
-      // console.log("inserting ... ", entity);
-      await repository.save(entity);
+    try {
+      for (const item of items) {
+        const entity = item as T;
+        // console.log("inserting ... ", entity);
+        await repository.save(entity);
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
     }
   }
 
   async seedTestData(): Promise<void> {
+    await this.seedTable('user.json', this.userRepository);
+    await this.seedTable('service-types.json', this.serviceTypesRepository);
+
+    await this.seedTable(
+      'service-instances.json',
+      this.serviceInstancesRepository,
+    );
+
     await this.seedTable('groups.json', this.groupsRepository);
     await this.seedTable('groups-mapping.json', this.groupsMappingRepository);
     await this.seedTable('invoices.json', this.invoicesRepository);
@@ -163,12 +175,8 @@ export class TestDataService {
       this.permissionMappingsRepository,
     );
     await this.seedTable('configs.json', this.configsRepository);
-    await this.seedTable('service-types.json', this.serviceTypesRepository);
     await this.seedTable('scope.json', this.scopeRepository);
-    await this.seedTable(
-      'service-instances.json',
-      this.serviceInstancesRepository,
-    );
+
     await this.seedTable('setting.json', this.settingRepository);
     await this.seedTable('discounts.json', this.discountsRepository);
     await this.seedTable(
@@ -177,7 +185,6 @@ export class TestDataService {
     );
     await this.seedTable('plans.json', this.plansRepository);
     await this.seedTable('tickets.json', this.ticketsRepository);
-    await this.seedTable('user.json', this.userRepository);
     await this.seedTable('role.json', this.roleRepository);
     await this.seedTable('service-items.json', this.serviceItemsRepository);
     await this.seedTable('role-mapping.json', this.roleMappingRepository);

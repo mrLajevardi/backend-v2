@@ -7,11 +7,14 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { Invoices } from './Invoices';
+import { ServiceInstances } from './ServiceInstances';
 
 @Index('PK_Transactions', ['id'], { unique: true })
 @Entity('Transactions', { schema: 'user' })
 export class Transactions {
-  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
+  @PrimaryGeneratedColumn({ type: 'integer', name: 'ID' })
   id: string;
 
   @Column('datetime', { name: 'DateTime' })
@@ -37,11 +40,26 @@ export class Transactions {
   })
   paymentToken: string | null;
 
-  @Column('bit', { name: 'isApproved', default: () => "'0'" })
+  @Column('int', { name: 'UserID' })
+  userId: number;
+
+  @Column('decimal', { name: 'RefID', nullable: true })
+  refId: number | null;
+
+  @Column('nvarchar', { name: 'MetaData', nullable: true })
+  metaData: string | null;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'isApproved',
+    default: () => "'0'",
+  })
   isApproved: boolean;
 
-  @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
-  serviceInstanceId: string | null;
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceID',
+    nullable: true,
+  })
+  serviceInstanceId: string;
 
   @ManyToOne(() => User, (user) => user.transactions, {
     onDelete: 'CASCADE',
@@ -49,4 +67,12 @@ export class Transactions {
   })
   @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
   user: User;
+
+  @ManyToOne(() => Invoices)
+  @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
+  invoice: Invoices;
+
+  @ManyToOne(() => ServiceInstances)
+  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  serviceInstance: ServiceInstances;
 }

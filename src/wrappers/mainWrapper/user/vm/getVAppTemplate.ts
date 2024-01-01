@@ -8,5 +8,3 @@ export const userGetVAppTemplate = (authToken, templateId) => {
   });
   return vmTemplate;
 };
-
-module.exports = userGetVAppTemplate;

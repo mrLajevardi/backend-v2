@@ -1,23 +1,25 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemSettingsTableService } from './system-settings-table.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { TestDataService } from 'src/infrastructure/database/test-data.service';
 
 describe('SystemSettingsTableService', () => {
   let service: SystemSettingsTableService;
-  let testDataService: TestDataService;
+  let module: TestingModule;
 
   beforeAll(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [TestDatabaseModule],
+    module = await Test.createTestingModule({
+      imports: [DatabaseModule],
       providers: [SystemSettingsTableService, TestDataService],
     }).compile();
 
     service = module.get<SystemSettingsTableService>(
       SystemSettingsTableService,
     );
-    testDataService = module.get<TestDataService>(TestDataService);
-    await testDataService.seedTestData();
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

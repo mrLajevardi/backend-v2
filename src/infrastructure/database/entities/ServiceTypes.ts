@@ -2,9 +2,11 @@ import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { Configs } from './Configs';
 import { Discounts } from './Discounts';
 import { ItemTypes } from './ItemTypes';
+import { Templates } from './Templates';
 import { ServiceInstances } from './ServiceInstances';
+import { isTestingEnv } from '../../helpers/helpers';
 
-@Index('PK_ServiceTypes', ['id'], { unique: true })
+@Index('PK_ServiceTypes', ['id', 'datacenterName'], { unique: true })
 @Entity('ServiceTypes', { schema: 'services' })
 export class ServiceTypes {
   @Column('varchar', { primary: true, name: 'ID', length: 50 })
@@ -13,13 +15,21 @@ export class ServiceTypes {
   @Column('nvarchar', { name: 'Title' })
   title: string;
 
+  @Column('nvarchar', {
+    primary: true,
+    name: 'DatacenterName',
+    nullable: true,
+    length: 50,
+  })
+  datacenterName: string | null;
+
   @Column('float', { name: 'BaseFee', precision: 53 })
   baseFee: number;
 
   @Column('varchar', { name: 'CreateInstanceScript', length: 255 })
   createInstanceScript: string;
 
-  @Column('bit', { name: 'VerifyInstance' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'VerifyInstance' })
   verifyInstance: boolean;
 
   @Column('int', { name: 'MaxAvailable' })
@@ -28,7 +38,7 @@ export class ServiceTypes {
   @Column('tinyint', { name: 'Type', default: () => '(0)' })
   type: number;
 
-  @Column('bit', { name: 'IsPAYG' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'IsPAYG' })
   isPayg: boolean;
 
   @Column('time', { name: 'PAYGInterval', nullable: true })
@@ -37,14 +47,20 @@ export class ServiceTypes {
   @Column('varchar', { name: 'PAYGScript', nullable: true, length: 255 })
   paygScript: string | null;
 
-  @OneToMany(() => Configs, (configs) => configs.serviceType)
+  @Column('datetime', { name: 'CreateDate', nullable: true })
+  createDate: Date | null;
+
+  @OneToMany(() => Configs, (configs) => configs.serviceTypes)
   configs: Configs[];
 
-  @OneToMany(() => Discounts, (discounts) => discounts.serviceType)
+  @OneToMany(() => Discounts, (discounts) => discounts.serviceTypes)
   discounts: Discounts[];
 
-  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceType)
+  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceTypes)
   itemTypes: ItemTypes[];
+
+  @OneToMany(() => Templates, (templates) => templates.serviceType)
+  templates: Templates[];
 
   @OneToMany(
     () => ServiceInstances,

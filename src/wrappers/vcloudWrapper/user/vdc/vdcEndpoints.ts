@@ -19,5 +19,3 @@ export const vdcEndpoints = {
   dettachNamedDisk: dettachNamedDisk,
   vmAttachedNamedDisk: vmAttachedNamedDisk,
 };
-
-module.exports = vdcEndpoints;

@@ -1,4 +1,4 @@
-import xml2js from 'xml2js';
+import xml2js, { Builder } from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 import { vcloudQuery } from '../vdc/vcloudQuery';
 /**
@@ -44,7 +44,7 @@ export async function userUpdateNamedDisk(
       },
     },
   };
-  const builder = new xml2js.Builder();
+  const builder = new Builder();
   const xmlRequest = builder.buildObject(request);
   const options = {
     headers: { Authorization: `Bearer ${authToken}` },
@@ -60,4 +60,3 @@ export async function userUpdateNamedDisk(
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userUpdateNamedDisk;

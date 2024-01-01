@@ -12,6 +12,9 @@ export async function getExternalNetworks(authToken, page = 1, pageSize = 25) {
     params: {
       page,
       pageSize,
+      sortAsc: 'name',
+      filter:
+        '((networkBackings.values.backingTypeValue==NSXT_TIER0,networkBackings.values.backingTypeValue==NSXT_VRF_TIER0));usingIpSpace==false',
     },
     headers: {
       Authorization: `Bearer ${authToken}`,
@@ -23,5 +26,3 @@ export async function getExternalNetworks(authToken, page = 1, pageSize = 25) {
   );
   return Promise.resolve(externalNetworks.data);
 }
-
-module.exports = getExternalNetworks;

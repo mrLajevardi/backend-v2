@@ -36,8 +36,21 @@ import { TasksTableModule } from './tasks-table/tasks-table.module';
 import { TicketsTableModule } from './tickets-table/tickets-table.module';
 import { TransactionsTableModule } from './transactions-table/transactions-table.module';
 import { UserTableModule } from './user-table/user-table.module';
-import { QualityPlansModule } from './quality-plans/quality-plans.module';
 import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.module';
+import { ServicePlansTableModule } from './service-plans-table/service-plans-table.module';
+import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.module';
+import { ServiceReportsViewModule } from './service-reports-view/service-reports-view.module';
+import { ServiceItemTypesTreeModule } from './service-item-types-tree/service-item-types-tree.module';
+import { TemplatesTableModule } from './templates/templates-table.module';
+import { CompanyTableModule } from './company-table/company-table.module';
+import { ProvinceTableModule } from './province-table/province-table.module';
+import { FileTableModule } from './file-table/file-table.module';
+import { EntityLogTableModule } from './entity-log-table/entity-log-table.module';
+import { ServicePaymentsTableModule } from './service-payments-table/service-payments-table.module';
+import { VServiceInstancesTableModule } from './v-service-instances-table/v-service-instances-table.module';
+import { ServiceDiscountTableModule } from './service-discount-table/service-discount-table.module';
+import { VServiceInstancesDetailTableModule } from './v-service-instances-detail-table/v-service-instances-detail-table.module';
+import { VusersTableModule } from './vusers-table/vusers-table.module';
 
 @Module({
   imports: [
@@ -79,8 +92,21 @@ import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.mod
     TicketsTableModule,
     TransactionsTableModule,
     UserTableModule,
-    QualityPlansModule,
     ServiceItemsSumModule,
+    ServicePlansTableModule,
+    InvoiceItemListModule,
+    ServiceReportsViewModule,
+    ServiceItemTypesTreeModule,
+    TemplatesTableModule,
+    CompanyTableModule,
+    ProvinceTableModule,
+    FileTableModule,
+    EntityLogTableModule,
+    ServicePaymentsTableModule,
+    VServiceInstancesTableModule,
+    ServiceDiscountTableModule,
+    VServiceInstancesDetailTableModule,
+    VusersTableModule,
   ],
   exports: [
     AccessTokenTableModule,
@@ -121,8 +147,22 @@ import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.mod
     TicketsTableModule,
     TransactionsTableModule,
     UserTableModule,
-    QualityPlansModule,
     ServiceItemsSumModule,
+    ServicePlansTableModule,
+    InvoiceItemListModule,
+    ServiceReportsViewModule,
+    ServiceItemTypesTreeModule,
+    TemplatesTableModule,
+    CompanyTableModule,
+    ProvinceTableModule,
+    FileTableModule,
+    EntityLogTableModule,
+    ServicePaymentsTableModule,
+    VServiceInstancesTableModule,
+    ServiceDiscountTableModule,
+    VServiceInstancesDetailTableModule,
+    VusersTableModule,
   ],
+  providers: [],
 })
 export class CrudModule {}

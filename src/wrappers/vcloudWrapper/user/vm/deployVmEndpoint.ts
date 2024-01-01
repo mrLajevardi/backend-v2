@@ -18,5 +18,3 @@ export function deployVmEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = deployVmEndpoint;

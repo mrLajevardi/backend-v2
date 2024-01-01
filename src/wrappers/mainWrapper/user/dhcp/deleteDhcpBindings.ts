@@ -18,5 +18,3 @@ export async function userDeleteDhcpBinding(authToken, networkId, bindingId) {
     __vcloudTask: dhcp.headers['location'],
   });
 }
-
-module.exports = userDeleteDhcpBinding;

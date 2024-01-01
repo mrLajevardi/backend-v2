@@ -3,9 +3,9 @@ import { Reflector } from '@nestjs/core';
 import { PolicyHandler } from '../interfaces/policy-handler.interface';
 import { CHECK_POLICIES_KEY } from '../decorators/check-policies.decorator';
 import { AbilityFactory } from '../ability.factory';
-import { UserService } from '../../../user/user.service';
 import { PureAbility } from '@casl/ability';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
+import { guardHelper } from 'src/infrastructure/helpers/guard-helper';
 
 @Injectable()
 export class PoliciesGuard implements CanActivate {
@@ -23,6 +23,16 @@ export class PoliciesGuard implements CanActivate {
       ) || [];
 
     const { user } = context.switchToHttp().getRequest();
+
+    // check always valid modes, like public modes or when user is admin
+    if (guardHelper.checkValidModes(this.reflector, context, user)) {
+      return true;
+    }
+
+    if (!user || !user.userId) {
+      return false;
+    }
+
     const realUser = await this.userTable.findById(user.userId);
 
     const ability = await this.caslAbilityFactory.createForUser(realUser);
@@ -32,10 +42,19 @@ export class PoliciesGuard implements CanActivate {
     );
   }
 
-  private execPolicyHandler(handler: PolicyHandler, ability: PureAbility) {
+  private execPolicyHandler(
+    handler: PolicyHandler,
+    ability: PureAbility,
+  ): boolean {
+    console.log('exec policy handler');
     if (typeof handler === 'function') {
-      return handler(ability);
+      const retVal: boolean = handler(ability);
+      //console.log(retVal);
+      return retVal;
+      //return handler(ability);
     }
-    return handler.handle(ability);
+    const retVal = handler.handle(ability);
+    console.log(retVal);
+    return retVal;
   }
 }

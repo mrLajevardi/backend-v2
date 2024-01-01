@@ -49,4 +49,3 @@ export async function userUpdateNatRule(config, edgeName) {
     __vcloudTask: nat.headers['location'],
   });
 }
-module.exports = userUpdateNatRule;

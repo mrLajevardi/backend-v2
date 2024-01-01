@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { SessionsService } from '../sessions/sessions.service';
-import { UserService } from '../user/user.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { OrganizationTableService } from '../crud/organization-table/organization-table.service';
 import { UserTableService } from '../crud/user-table/user-table.service';
+import { InitOrgReturnDto } from './dto/init-org-return.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -14,8 +14,9 @@ export class OrganizationService {
     private readonly userTable: UserTableService,
   ) {}
 
-  async initOrg(userId) {
-    const sessionToken = await this.sessionService.checkAdminSession(userId);
+  async initOrg(userId: number): Promise<InitOrgReturnDto> {
+    console.log('init org');
+    const sessionToken = await this.sessionService.checkAdminSession();
     const user = await this.userTable.findById(userId);
     const filteredUsername = user.username.replace('@', '_').replace('.', '_');
     const name = `${filteredUsername}_org`;
@@ -27,11 +28,11 @@ export class OrganizationService {
       },
       sessionToken,
     );
-    console.log(checkOrg);
+    console.log('org gotten from wrapper', checkOrg);
     // if org exists in cloud save it into database
     if (checkOrg.values.length > 0) {
       const createdOrg = await this.organizationTable.create({
-        name,
+        name: name,
         dsc: 'none',
         createDate: new Date(),
         updateDate: new Date(),
@@ -47,9 +48,16 @@ export class OrganizationService {
         __vcloudTask: null,
       });
     }
-    const orgInfo = await mainWrapper.admin.org.createOrg(name, sessionToken);
+
+    const newFilteredUsername = user.guid;
+    const newName = `${newFilteredUsername}_org`;
+
+    const orgInfo = await mainWrapper.admin.org.createOrg(
+      newName,
+      sessionToken,
+    );
     const createdOrg = await this.organizationTable.create({
-      name,
+      name: newName,
       dsc: 'none',
       createDate: new Date(),
       updateDate: new Date(),
@@ -57,11 +65,12 @@ export class OrganizationService {
       orgId: orgInfo.id,
       status: '1',
     });
+    console.log('created org ', createdOrg);
     const checkUser = await mainWrapper.user.vdc.vcloudQuery(
       sessionToken,
       {
         type: 'user',
-        filter: `name==${filteredUsername}`,
+        filter: `name==${newFilteredUsername}`,
       },
       {
         'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgInfo.id.split('org:')[1],
@@ -75,10 +84,11 @@ export class OrganizationService {
         __vcloudTask: null,
       });
     }
+
     await mainWrapper.admin.user.createUser({
       orgId: orgInfo.id,
       orgName: createdOrg.name,
-      username: filteredUsername,
+      username: newFilteredUsername,
       authToken: sessionToken,
       password: user.vdcPassword,
       roleId: vcdConfig.admin.users.roleEntityRefs.id,

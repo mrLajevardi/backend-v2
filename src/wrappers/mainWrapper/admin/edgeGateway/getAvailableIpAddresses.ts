@@ -18,8 +18,8 @@ export async function getAvailableIpAddresses(externalNetworkId, authToken) {
     'admin.edgeGateway.getAvailableIpAddresses',
     options,
   );
+  console.log(availableIpAddressesList);
   return Promise.resolve(
     availableIpAddressesList.data.values[0]?.ipRanges?.values,
   );
 }
-module.exports = getAvailableIpAddresses;

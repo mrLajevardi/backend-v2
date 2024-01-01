@@ -32,5 +32,3 @@ export async function userCreateApplicationPortProfile(authToken, config) {
     __vcloudTask: applicationPortProfile.headers['location'],
   });
 }
-
-module.exports = userCreateApplicationPortProfile;

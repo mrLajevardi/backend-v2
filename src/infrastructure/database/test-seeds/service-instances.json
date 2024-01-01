@@ -14,7 +14,8 @@
       "name": "ss",
       "planRatio": null,
       "lastPayg": null,
-      "nextPayg": null
+      "nextPayg": null,
+      "serviceTypeId": "vdc"
     },
     {
       "id": "D1E47C43-3900-4F2F-B709-ACDE93F2D280",
@@ -31,7 +32,81 @@
       "name": "test",
       "planRatio": null,
       "lastPayg": null,
-      "nextPayg": null
+      "nextPayg": null,
+      "serviceTypeId": "vdc"
+    },
+    {
+      "id": "5578AF82-7B09-4AC4-B0B1-10684981591F",
+      "userId": 551,
+      "status": 3,
+      "createDate": 1679764128513,
+      "lastUpdateDate": 1679764128513,
+      "expireDate": 1679706473430,
+      "deletedDate": 1679871780527,
+      "isDeleted": true,
+      "index": 1,
+      "warningSent": 0,
+      "isDisabled": 0,
+      "name": "test",
+      "planRatio": null,
+      "lastPayg": null,
+      "nextPayg": null,
+      "serviceTypeId": "vdc"
+    },
+    {
+      "id": "B66F95BB-F018-4346-8B02-4CD4535D9F11",
+      "userId": 551,
+      "status": 3,
+      "createDate": 1679764128513,
+      "lastUpdateDate": 1679764128513,
+      "expireDate": 1679706473430,
+      "deletedDate": 1679871780527,
+      "isDeleted": true,
+      "index": 1,
+      "warningSent": 0,
+      "isDisabled": 0,
+      "name": "test",
+      "planRatio": null,
+      "lastPayg": null,
+      "nextPayg": null,
+      "serviceTypeId": "vdc"
+    },
+    {
+      "id": "7451E733-D18D-4329-B3FD-76429E4EDBEA",
+      "userId": 551,
+      "status": 3,
+      "createDate": 1679764128513,
+      "lastUpdateDate": 1679764128513,
+      "expireDate": 1679706473430,
+      "deletedDate": 1679871780527,
+      "isDeleted": false,
+      "index": 1,
+      "warningSent": 0,
+      "isDisabled": 0,
+      "name": "test",
+      "planRatio": null,
+      "lastPayg": null,
+      "nextPayg": null,
+      "serviceTypeId": "AradAiDemo"
+    },
+    {
+      "id": "5578AF82-7B09-4AC4-B0B1-1068498159r4",
+      "userId": 637,
+      "status": 3,
+      "createDate": 1679764128513,
+      "lastUpdateDate": 1679764128513,
+      "expireDate": 1679706473430,
+      "deletedDate": 1679871780527,
+      "isDeleted": true,
+      "index": 1,
+      "warningSent": 0,
+      "isDisabled": 0,
+      "name": "test",
+      "planRatio": null,
+      "lastPayg": null,
+      "nextPayg": null,
+      "serviceTypeId": "aradAi"
     }
+
   ]
   

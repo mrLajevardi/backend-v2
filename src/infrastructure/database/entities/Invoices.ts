@@ -4,10 +4,14 @@ import {
   Index,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { InvoiceItems } from './InvoiceItems';
 import { User } from './User';
 import { ServiceInstances } from './ServiceInstances';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { Templates } from './Templates';
 
 @Index('PK_Invoices', ['id'], { unique: true })
 @Entity('Invoices', { schema: 'user' })
@@ -17,6 +21,12 @@ export class Invoices {
 
   @Column('varchar', { name: 'ServiceTypeID', length: 50, default: () => "''" })
   serviceTypeId: string;
+
+  @Column('nvarchar', { name: 'DatacenterName', length: 50, nullable: true })
+  datacenterName: string | null;
+
+  @Column('int', { name: 'UserID' })
+  userId: number;
 
   @Column('float', { name: 'RawAmount', precision: 53 })
   rawAmount: number;
@@ -36,10 +46,10 @@ export class Invoices {
   @Column('datetime', { name: 'DateTime' })
   dateTime: Date;
 
-  @Column('bit', { name: 'Payed' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Payed' })
   payed: boolean;
 
-  @Column('bit', { name: 'Voided' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Voided' })
   voided: boolean;
 
   @Column('datetime', { name: 'EndDateTime', default: () => 'getdate()' })
@@ -51,6 +61,42 @@ export class Invoices {
   @Column('nvarchar', { name: 'Name', nullable: true, length: 50 })
   name: string | null;
 
+  @Column({
+    name: 'FinalAmountWithTax',
+    nullable: true,
+    insert: false,
+  })
+  finalAmountWithTax: number | null;
+  // @Column('tinyint', { name: 'ServicePlanType', nullable: true })
+  // servicePlanType: number | null;
+
+  @Column('tinyint', { name: 'ServicePlanType' })
+  servicePlanType: number;
+
+  @Column({
+    type: isTestingEnv() ? 'integer' : 'decimal',
+    name: 'Code',
+    nullable: true,
+  })
+  code: number | null;
+
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceID',
+  })
+  serviceInstanceId: string;
+
+  @Column('float', {
+    name: 'BaseAmount',
+  })
+  baseAmount: number;
+
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsPreInvoice',
+  })
+  isPreInvoice: boolean;
+
+  @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
+  invoiceItems: InvoiceItems[];
   @ManyToOne(() => User, (user) => user.invoices, {
     onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
@@ -65,4 +111,29 @@ export class Invoices {
   )
   @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
+
+  @ManyToOne(() => Templates, (template) => template.invoices, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn([{ name: 'TemplateID', referencedColumnName: 'guid' }])
+  templates: Templates;
+
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'TemplateID',
+    nullable: true,
+  })
+  templateId: string;
+
+  @Column(isTestingEnv() ? 'int' : 'int', {
+    name: 'ServiceCost',
+    nullable: true,
+  })
+  serviceCost: number;
+
+  @Column(isTestingEnv() ? 'float' : 'float', {
+    name: 'InvoiceTax',
+    nullable: true,
+  })
+  invoiceTax: number;
 }

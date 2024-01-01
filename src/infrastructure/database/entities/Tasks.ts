@@ -1,10 +1,23 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+import { randomUUID } from 'crypto';
+import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__tasks__7C6949D195E39C4E', ['taskId'], { unique: true })
 @Entity('Tasks', { schema: 'user' })
 export class Tasks {
-  @Column('uniqueidentifier', { primary: true, name: 'TaskID' })
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'TaskID',
+    primary: true,
+  })
   taskId: string;
 
   @Column('int', { name: 'UserID' })
@@ -31,8 +44,13 @@ export class Tasks {
   @Column('int', { name: 'StepCounts', nullable: true })
   stepCounts: number | null;
 
-  @Column('varchar', { name: 'CurrrentStep', nullable: true, length: 60 })
-  currrentStep: string | null;
+  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+    name: 'ServiceInstanceID',
+  })
+  serviceInstanceId: string;
+
+  @Column('varchar', { name: 'CurrentStep', nullable: true, length: 60 })
+  currentStep: string | null;
 
   @ManyToOne(
     () => ServiceInstances,
@@ -41,4 +59,8 @@ export class Tasks {
   )
   @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
   serviceInstance: ServiceInstances;
+  @BeforeInsert()
+  setId() {
+    this.taskId = randomUUID();
+  }
 }

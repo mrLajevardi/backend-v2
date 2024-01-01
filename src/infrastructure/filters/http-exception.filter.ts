@@ -13,6 +13,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
+    const stack = exception.stack;
     const cause = exception.cause;
     const message = exception.message;
     response.status(status).json({
@@ -20,6 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: message,
+      stack,
       cause: cause,
     });
   }

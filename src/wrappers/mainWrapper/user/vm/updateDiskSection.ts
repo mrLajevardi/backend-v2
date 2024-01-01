@@ -4,6 +4,9 @@ import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.e
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 import { vdcWrapper } from '../vdc/vdcWrapper';
 import { userGetVApp } from './getVapp';
+import { vcdConfig } from '../../vcdConfig';
+import { groupBy } from '../../../../infrastructure/utils/extensions/array.extensions';
+import { DiskBusUnitBusNumberSpace } from './diskBusUnitBusNumberSpace';
 /**
  *
  * @param {String} authToken
@@ -11,61 +14,131 @@ import { userGetVApp } from './getVapp';
  * @param {Object} diskSettings user disk settings
  * @return {Promise}
  */
+function getBusUnitBusNumberFree(
+  disksBusnumberBusUnitGrouped: Record<string, unknown[]>,
+  // adapterType: string,
+): Record<string, { busUnit: number; busNumber: number }[]> {
+  const res: Record<string, { busUnit: number; busNumber: number }[]> = {};
+  for (const adapterType in disksBusnumberBusUnitGrouped) {
+    const model = disksBusnumberBusUnitGrouped[adapterType].map((d) => {
+      return {
+        busNumber: (d as any).busNumber,
+        unitNumber: (d as any).unitNumber,
+      };
+    });
+    const freeSpace = DiskBusUnitBusNumberSpace.find(
+      (bus) => bus.legacyId == adapterType,
+    ).info.filter((s) => {
+      const x = model.filter(
+        (f) => f.unitNumber == s.busNumber && f.busNumber == s.busUnit,
+      );
+      if (x.length <= 0) {
+        return s;
+      }
+    });
+    res[adapterType] = freeSpace;
+  }
+  return res;
+}
 export async function userUpdateDiskSection(
   authToken,
   vmId,
   diskSettings,
   vdcId,
-) {
+): Promise<{ __vcloudTask: any }> {
   const vmInfo = await userGetVApp(authToken, vmId);
+  // const hardwareInfo = await this.vdcWrapperService.getHardwareInfo(
+  //   authToken,
+  //   vdcId,
+  // );
   const vmInfoData = vmInfo.data;
-  const controllers = await calcBusCombination(diskSettings, authToken, vdcId);
-  vmInfoData.section.forEach((section) => {
-    if (section._type === 'VmSpecSectionType') {
-      const updatedDiskSettings = [];
-      section.modified = true;
-      section.diskSection.diskSettings.forEach((diskSection) => {
-        diskSettings.forEach((settings) => {
-          if (settings.diskId === diskSection.diskId) {
-            const updatedSetting = {
-              ...diskSection,
-              busNumber: diskSection.busNumber,
-              unitNumber: diskSection.unitNumber,
-              sizeMb: settings.sizeMb,
-            };
-            updatedDiskSettings.push(updatedSetting);
-          }
-        });
-      });
-      diskSettings.forEach((settings) => {
-        let targetAdaptor = settings.adapterType;
-        if (
-          targetAdaptor == '3' ||
-          targetAdaptor == '5' ||
-          targetAdaptor == 2
-        ) {
-          targetAdaptor = '4';
-        }
-        if (settings.diskId === null) {
-          console.log(targetAdaptor, controllers, '👌👌');
-          const newSetting = {
-            sizeMb: settings.sizeMb,
-            unitNumber: controllers[targetAdaptor][0].unitNumber,
-            busNumber: controllers[targetAdaptor][0].busNumber,
-            adapterType: settings.adapterType,
-            thinProvisioned: true,
-            overrideVmDefault: false,
-            virtualQuantityUnit: 'byte',
-            iops: 0,
-          };
-          updatedDiskSettings.push(newSetting);
-          controllers[targetAdaptor].splice(0, 1);
-        }
-      });
-      section.diskSection.diskSettings = updatedDiskSettings;
-      console.log(updatedDiskSettings, '❤️❤️❤️');
+  // const controllers = await calcBusCombination(diskSettings, authToken, vdcId);
+
+  const vmSpecSection = vmInfoData.section.find(
+    (section) => section._type === 'VmSpecSectionType',
+  );
+
+  const disksGroupedByAdapterType = groupBy(
+    diskSettings,
+    (disk) => (disk as any).adapterType.legacyId,
+  );
+
+  const diskFreeByAdaptorType = getBusUnitBusNumberFree(
+    disksGroupedByAdapterType,
+    // settings.adapterType,
+  );
+
+  // vmInfoData.section.forEach((section) => {
+  //   if (section._type === 'VmSpecSectionType') {
+  const updatedDiskSettings = [];
+  vmSpecSection.modified = true;
+  vmSpecSection.diskSection.diskSettings.forEach((diskSection) => {
+    diskSettings.forEach((settings) => {
+      if (settings.id === diskSection.diskId) {
+        const updatedSetting = {
+          ...diskSection,
+          // busNumber: diskSection.busNumber,
+          // unitNumber: diskSection.unitNumber,
+          // storageProfile: {
+          //   _href: `${vcdConfig.baseUrl}/${vcdConfig.user.storageProfile.name}/${settings.storageId}`,
+          //   _type: diskSection.storageProfile.type,
+          //   __prefix: diskSection.storageProfile.prefix,
+          //   // "__prefix": "root"?
+          // },
+          adapterType: settings.adapterType.legacyId.toString(),
+          sizeMb: settings.size,
+        };
+        updatedSetting.storageProfile.href = `${vcdConfig.baseUrl}/${vcdConfig.user.storageProfile.name}/${settings.storageId}`;
+        updatedSetting.storageProfile.id = `urn:vcloud:vdcstorageProfile:${settings.storageId}`;
+        // updatedSetting.storageProfile.name = 'ARAD-Tier-Fast-Amin';
+        updatedDiskSettings.push(updatedSetting);
+      }
+    });
+  });
+
+  // const xx = t.map(d=>)
+
+  diskSettings.forEach((settings) => {
+    // let targetAdaptor = settings.adapterType;
+    // if (targetAdaptor == '3' || targetAdaptor == '5' || targetAdaptor == 2) {
+    //   targetAdaptor = '4';
+    // }
+    if (settings.id === null) {
+      // const free = getBusUnitBusNumberFree(
+      //   disksGroupedByAdapterType,
+      //   // settings.adapterType,
+      // );
+
+      const uniNumber = (
+        diskFreeByAdaptorType[settings.adapterType.legacyId] as any[]
+      )[0].busNumber;
+
+      const busNumber = (
+        diskFreeByAdaptorType[settings.adapterType.legacyId] as any[]
+      )[0].busUnit;
+      // console.log(targetAdaptor, controllers, '👌👌');
+      const newSetting = {
+        sizeMb: settings.size,
+        // unitNumber: controllers[targetAdaptor][0].unitNumber,
+        unitNumber: uniNumber,
+        // busNumber: controllers[targetAdaptor][0].busNumber,
+        busNumber: busNumber,
+        adapterType: settings.adapterType.legacyId,
+        thinProvisioned: true,
+        overrideVmDefault: false,
+        virtualQuantityUnit: 'byte',
+        iops: 0,
+      };
+      updatedDiskSettings.push(newSetting);
+      // controllers[targetAdaptor].splice(0, 1);
     }
   });
+  vmSpecSection.diskSection.diskSettings = updatedDiskSettings;
+  console.log(updatedDiskSettings, '❤️❤️❤️');
+
+  // vmInfoData.storageProfile = updatedDiskSettings[0];
+  // }
+  // });
   const diskSection = await new VcloudWrapper().posts('user.vm.updateVm', {
     headers: { Authorization: `Bearer ${authToken}` },
     urlParams: { vmId },
@@ -126,7 +199,7 @@ async function calcBusCombination(settings, authToken, vdcId) {
       validBusNumberRange.length * validUnitNumberRange.length;
     if (bus.reservedBusUnitNumber) {
       validCombCount--;
-    }
+    } // 32
     // check if there is enough combinations for given disks
     if (validCombCount < element.length) {
       const err = new BadRequestException();
@@ -254,4 +327,3 @@ async function getHardDiskControllers(authToken, vdcId) {
   });
   return controllers;
 }
-module.exports = userUpdateDiskSection;

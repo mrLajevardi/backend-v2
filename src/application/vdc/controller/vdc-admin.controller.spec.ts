@@ -1,72 +1,76 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { VdcAdminController } from './vdc-admin.controller';
-import { OrganizationService } from 'src/application/base/organization/organization.service';
-import { SessionsService } from 'src/application/base/sessions/sessions.service';
-import { TransactionsService } from 'src/application/base/transactions/transactions.service';
-import { UserService } from 'src/application/base/user/user.service';
-import { TestDatabaseModule } from 'src/infrastructure/database/test-database.module';
+import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { EdgeService } from '../service/edge.service';
 import { VdcService } from '../service/vdc.service';
-import { TasksService } from 'src/application/base/tasks/service/tasks.service';
-import { TaskManagerService } from 'src/application/base/tasks/service/task-manager.service';
-import { BullModule } from '@nestjs/bull';
 import { OrgService } from '../service/org.service';
 import { NetworkService } from '../service/network.service';
-import { ConfigsTableService } from 'src/application/base/crud/configs-table/configs-table.service';
-import { ServiceItemsTableService } from 'src/application/base/crud/service-items-table/service-items-table.service';
-import { ServicePropertiesTableService } from 'src/application/base/crud/service-properties-table/service-properties-table.service';
-import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
-import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
-import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
-import { DiscountsTableService } from 'src/application/base/crud/discounts-table/discounts-table.service';
-import { InvoicesTableService } from 'src/application/base/crud/invoices-table/invoices-table.service';
-import { PlansQueryService } from 'src/application/base/crud/plans-table/plans-query.service';
-import { SessionsTableService } from 'src/application/base/crud/sessions-table/sessions-table.service';
-import { ServiceService } from 'src/application/base/service/services/service.service';
-import { TransactionsTableService } from 'src/application/base/crud/transactions-table/transactions-table.service';
-import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
+import { CrudModule } from 'src/application/base/crud/crud.module';
+import { OrganizationModule } from 'src/application/base/organization/organization.module';
+import { SessionsModule } from 'src/application/base/sessions/sessions.module';
+import { UserModule } from 'src/application/base/user/user.module';
+import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
+import { AbilityModule } from 'src/application/base/security/ability/ability.module';
+import { BullModule } from '@nestjs/bull';
+import { forwardRef } from '@nestjs/common';
+import { VgpuModule } from 'src/application/vgpu/vgpu.module';
+import { ServiceModule } from 'src/application/base/service/service.module';
+import { VdcModule } from '../vdc.module';
+import { VgpuDnatService } from 'src/application/vgpu/vgpu-dnat.service';
+import { TasksModule } from 'src/application/base/tasks/tasks.module';
+import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
+import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { VcloudWrapperModule } from 'src/wrappers/vcloud-wrapper/vcloud-wrapper.module';
+import { DatacenterModule } from 'src/application/base/datacenter/datacenter.module';
+import { InvoicesModule } from 'src/application/base/invoice/invoices.module';
 
 describe('VdcAdminController', () => {
   let controller: VdcAdminController;
 
+  let module: TestingModule;
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
-        TestDatabaseModule,
+        DatabaseModule,
+        AbilityModule,
+        CrudModule,
+        LoggerModule,
+        VcloudWrapperModule,
+        TasksModule,
+        InvoicesModule,
+        SessionsModule,
+        OrganizationModule,
+        DatacenterModule,
+        UserModule,
+        ServicePropertiesModule,
         BullModule.registerQueue({
-          name: 'tasks',
+          name: 'tasks2',
         }),
+        // VdcModule,
+        forwardRef(() => VgpuModule),
+        ServiceModule,
+        VdcModule,
+        MainWrapperModule,
       ],
       providers: [
         VdcService,
-        OrganizationService,
-        ServiceInstancesTableService,
-        ServicePropertiesTableService,
-        ServiceItemsTableService,
-        ConfigsTableService,
-        OrganizationService,
-        UserService,
-        SessionsService,
-        TransactionsService,
-        TasksService,
-        EdgeService,
-        TaskManagerService,
         OrgService,
+        EdgeService,
         NetworkService,
-        OrganizationTableService,
-        UserTableService,
-        SessionsTableService,
-        DiscountsTableService,
-        ServiceService,
-        InvoicesTableService,
-        PlansQueryService,
-        TransactionsTableService,
-        TasksTableService,
+        // TaskManagerService,
+        VgpuDnatService,
+        VdcWrapperService,
       ],
+
       controllers: [VdcAdminController],
     }).compile();
 
     controller = module.get<VdcAdminController>(VdcAdminController);
+  });
+
+  afterAll(async () => {
+    await module.close();
   });
 
   it('should be defined', () => {

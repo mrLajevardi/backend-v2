@@ -1,4 +1,4 @@
-import xml2js from 'xml2js';
+import xml2js, { Builder } from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 /**
  * take resources from vm
@@ -16,7 +16,7 @@ export async function userUndeployvApp(authToken, vAppId, vAppAction) {
       'root:UndeployPowerAction': vAppAction,
     },
   };
-  const builder = new xml2js.Builder();
+  const builder = new Builder();
 
   const xmlRequest = builder.buildObject(request);
   const options = {
@@ -29,4 +29,3 @@ export async function userUndeployvApp(authToken, vAppId, vAppAction) {
     __vcloudTask: action.headers['location'],
   });
 }
-module.exports = userUndeployvApp;

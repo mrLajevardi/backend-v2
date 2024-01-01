@@ -3,6 +3,8 @@ import { OrganizationService } from '../../base/organization/organization.servic
 import { isEmpty } from 'lodash';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { OrganizationTableService } from 'src/application/base/crud/organization-table/organization-table.service';
+import { Organization } from 'src/infrastructure/database/entities/Organization';
+import { InitOrgReturnDto } from 'src/application/base/organization/dto/init-org-return.dto';
 
 @Injectable()
 export class OrgService {
@@ -11,17 +13,17 @@ export class OrgService {
     private readonly organizationService: OrganizationService,
   ) {}
 
-  async checkOrg(userId) {
-    let org: any;
+  async checkOrg(userId: number) {
+    let org: Organization | InitOrgReturnDto;
     org = await this.organizationTable.findOne({
-      where: { userId },
+      where: { userId: userId },
     });
     if (isEmpty(org)) {
       org = await this.organizationService.initOrg(userId);
-      // org.isNew = true;
+      org.isNew = true;
     } else {
       org = {
-        //  isNew: false,
+        isNew: false,
         id: org.id,
         vcloudOrgId: org.orgId,
         name: org.name,

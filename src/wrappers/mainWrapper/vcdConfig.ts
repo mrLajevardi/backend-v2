@@ -1,8 +1,12 @@
 export const vcdConfig = {
+  baseUrl: 'https://labvpc.aradcloud.com',
   user: {
     network: {
       connectionType: 'INTERNAL',
       connectionTypeValue: 'INTERNAL',
+    },
+    storageProfile: {
+      name: 'vdcStorageProfile',
     },
   },
   admin: {
@@ -39,19 +43,20 @@ export const vcdConfig = {
         enabled: true,
         units: 'MB',
         providerVdcStorageProfile: {
-          href: 'https://vpc.aradcloud.com/api/admin/pvdcStorageProfile/fb21f4af-22c3-4733-958b-633526529e74',
+          href: 'https://labvpc.aradcloud.com/api/admin/pvdcStorageProfile/e4ae65dc-56dc-4313-a2a1-65d19ddda545',
           name: 'SSD',
         },
       },
       ProviderVdcReference: {
-        href: 'https://vpc.aradcloud.com/cloudapi/1.0.0/providerVdcs/2c618f39-a98c-45e9-8ea0-a5189702325b',
-        name: 'V1-Provider-VDC',
+        href: 'https://labvpc.aradcloud.com/api/admin/providervdc/8ecd2ff8-ae69-4463-8356-d1ab7f00b97a',
+        name: 'LAB-PVDC1',
       },
       NetworkPoolReference: {
-        name: 'V1-Network-Pool',
-        href: 'https://vpc.aradcloud.com/api/admin/extension/networkPool/078fa1a3-b607-4055-85e7-00d6af5a42d0',
+        name: 'LAB-Network-Pool',
+        href: 'https://labvpc.aradcloud.com/api/admin/extension/networkPool/39c366f5-b874-4a2a-b599-b7bc4d99e73b',
       },
       NetworkQuota: 1000,
+      nicQuota: 0,
       isThinProvision: false,
       usesFastProvisioning: false,
     },

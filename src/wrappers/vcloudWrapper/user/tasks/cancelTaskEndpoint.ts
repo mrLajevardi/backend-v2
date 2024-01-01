@@ -17,5 +17,3 @@ export function cancelTaskEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = cancelTaskEndpoint;

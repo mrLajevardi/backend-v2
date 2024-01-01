@@ -1,5 +1,6 @@
-import xml2js from 'xml2js';
+import xml2js, { Builder } from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
+import { vcdConfig } from '../../vcdConfig';
 /**
  * insert or eject a media from vm
  * @param {String} authToken
@@ -15,7 +16,6 @@ export async function userInsertOrEjectVappMedia(
   vAppId,
   insert,
   mediaName = null,
-  mediaHref = null,
   mediaId = null,
 ) {
   const request = {
@@ -29,14 +29,14 @@ export async function userInsertOrEjectVappMedia(
   if (insert) {
     request['root:MediaInsertOrEjectParams']['root:Media'] = {
       $: {
-        href: mediaHref,
+        href: `${vcdConfig.baseUrl}/api/media/${mediaId}`,
         id: mediaId,
         name: mediaName,
       },
     };
     action = 'insertMedia';
   }
-  const builder = new xml2js.Builder();
+  const builder = new Builder();
   const xmlRequest = builder.buildObject(request);
   const response = await new VcloudWrapper().posts('user.vm.insertOrEjectVm', {
     urlParams: {
@@ -50,5 +50,3 @@ export async function userInsertOrEjectVappMedia(
     __vcloudTask: response.headers['location'],
   });
 }
-
-module.exports = userInsertOrEjectVappMedia;

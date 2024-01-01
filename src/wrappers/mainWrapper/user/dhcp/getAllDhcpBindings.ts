@@ -25,5 +25,3 @@ export async function userGetAllDhcpBindings(
   });
   return Promise.resolve(dhcp);
 }
-
-module.exports = userGetAllDhcpBindings;

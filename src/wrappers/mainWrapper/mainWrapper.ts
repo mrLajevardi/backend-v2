@@ -33,5 +33,3 @@ export const mainWrapper = {
     dhcp: dhcpWrapper,
   },
 };
-
-module.exports = mainWrapper;

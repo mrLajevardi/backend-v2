@@ -19,5 +19,3 @@ export function getMediaItemEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = getMediaItemEndpoint;

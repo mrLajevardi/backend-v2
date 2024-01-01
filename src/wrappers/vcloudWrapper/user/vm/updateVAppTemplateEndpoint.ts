@@ -18,5 +18,3 @@ export function updateVAppTemplateEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = updateVAppTemplateEndpoint;

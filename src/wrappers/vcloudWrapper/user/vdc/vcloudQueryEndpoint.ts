@@ -17,5 +17,3 @@ export function vcloudQueryEndpoint(options?: any) {
     },
   };
 }
-
-module.exports = vcloudQueryEndpoint;

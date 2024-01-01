@@ -44,5 +44,13 @@ export class UpdateTransactionsDto {
 
   @IsString()
   @ApiProperty()
-  userId?: string;
+  userId?: number;
+
+  @IsString()
+  @ApiProperty()
+  metaData?: string;
+
+  @IsNumber()
+  @ApiProperty()
+  refId?: number;
 }

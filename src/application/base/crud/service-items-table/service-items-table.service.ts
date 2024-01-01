@@ -8,8 +8,16 @@ import {
   FindOneOptions,
   Repository,
   FindOptionsWhere,
+  DeleteResult,
+  UpdateResult,
+  InsertResult,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
+import { ServiceItemTypesTree } from 'src/infrastructure/database/entities/views/service-item-types-tree';
+import {
+  JoinServiceItemsAndServiceItemsTypeTreeModelDto,
+  JoinServiceItemsAndServiceItemsTypeTreeReturnType,
+} from './dto/join-service-item-and-service-items-tree.dto';
 
 @Injectable()
 export class ServiceItemsTableService {
@@ -25,52 +33,95 @@ export class ServiceItemsTableService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<ServiceItems[]> {
+  async find(options?: FindManyOptions<ServiceItems>): Promise<ServiceItems[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<ServiceItems>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<ServiceItems> {
+  async findOne(options?: FindOneOptions<ServiceItems>): Promise<ServiceItems> {
     const result = await this.repository.findOne(options);
     return result;
   }
 
   // Create an Item using createDTO
-  async create(dto: CreateServiceItemsDto) {
+  async create(dto: CreateServiceItemsDto): Promise<ServiceItems> {
     const newItem = plainToClass(ServiceItems, dto);
     const createdItem = this.repository.create(newItem);
-    await this.repository.save(createdItem);
+    return await this.repository.save(createdItem);
+  }
+
+  async createAll(dto: CreateServiceItemsDto[]): Promise<InsertResult> {
+    const items: ServiceItems[] = dto.map((item: CreateServiceItemsDto) => {
+      return plainToClass(ServiceItems, item);
+    });
+
+    return await this.repository.insert(items);
   }
 
   // Update an Item using updateDTO
-  async update(id: number, dto: UpdateServiceItemsDto) {
+  async update(id: number, dto: UpdateServiceItemsDto): Promise<ServiceItems> {
     const item = await this.findById(id);
     const updateItem: Partial<ServiceItems> = Object.assign(item, dto);
-    await this.repository.save(updateItem);
+    return await this.repository.save(updateItem);
+  }
+
+  getQueryBuilder() {
+    return this.repository.createQueryBuilder('ServiceItem');
   }
 
   // update many items
   async updateAll(
     where: FindOptionsWhere<ServiceItems>,
     dto: UpdateServiceItemsDto,
-  ) {
-    await this.repository.update(where, dto);
+  ): Promise<UpdateResult> {
+    return await this.repository.update(where, dto);
   }
 
   // delete an Item
-  async delete(id: number) {
-    await this.repository.delete(id);
+  async delete(id: number): Promise<DeleteResult> {
+    return await this.repository.delete(id);
   }
 
   // delete all items
-  async deleteAll() {
-    await this.repository.delete({});
+  async deleteAll(
+    where: FindOptionsWhere<ServiceItems>,
+  ): Promise<DeleteResult> {
+    return await this.repository.delete(where);
+  }
+
+  async joinServiceItemsAndServiceItemsTypeTree(
+    serviceInstanceId: string,
+  ): Promise<
+    Omit<JoinServiceItemsAndServiceItemsTypeTreeReturnType, 'build'>[]
+  > {
+    const queryBuilder = this.repository.createQueryBuilder('ServiceItems');
+    const result: JoinServiceItemsAndServiceItemsTypeTreeModelDto[] =
+      await queryBuilder
+        .select(
+          'ServiceItems.ID as ServiceItemsID, ServiceItems.ItemTypeID, ServiceItems.ServiceInstanceID, ServiceItems.Value',
+        )
+        .where('ServiceItems.ServiceInstanceID = :serviceInstanceId', {
+          serviceInstanceId,
+        })
+        .innerJoin(
+          ServiceItemTypesTree,
+          'ServiceItemsTree',
+          'ServiceItemsTree.ID = ServiceItems.ItemTypeID',
+        )
+        .addSelect('ServiceItemsTree.CodeHierarchy')
+        .printSql()
+        .getRawMany();
+    const transformedResult: JoinServiceItemsAndServiceItemsTypeTreeReturnType[] =
+      result.map((value) =>
+        new JoinServiceItemsAndServiceItemsTypeTreeReturnType(value).build(),
+      );
+    return transformedResult;
   }
 }

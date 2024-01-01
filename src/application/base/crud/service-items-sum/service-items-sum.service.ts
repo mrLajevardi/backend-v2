@@ -19,19 +19,23 @@ export class ServiceItemsSumService {
   }
 
   // Find Items using search criteria
-  async find(options?: FindManyOptions): Promise<ServiceItemsSum[]> {
+  async find(
+    options?: FindManyOptions<ServiceItemsSum>,
+  ): Promise<ServiceItemsSum[]> {
     const result = await this.repository.find(options);
     return result;
   }
 
   // Count the items
-  async count(options?: FindManyOptions): Promise<number> {
+  async count(options?: FindManyOptions<ServiceItemsSum>): Promise<number> {
     const result = await this.repository.count(options);
     return result;
   }
 
   // Find one item
-  async findOne(options?: FindOneOptions): Promise<ServiceItemsSum> {
+  async findOne(
+    options?: FindOneOptions<ServiceItemsSum>,
+  ): Promise<ServiceItemsSum> {
     const result = await this.repository.findOne(options);
     return result;
   }
