@@ -31,10 +31,18 @@ import { TempDto } from '../vdc/dto/temp.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { DhcpService } from './dhcp.service';
+import { CheckPolicies } from '../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../base/security/ability/enum/action.enum';
 
 @ApiTags('Networks')
 @ApiBearerAuth()
 @Controller('networks')
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Networks, props)),
+// )
 export class NetworksController {
   constructor(
     private readonly service: NetworksService,

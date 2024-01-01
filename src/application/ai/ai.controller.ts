@@ -44,10 +44,18 @@ import { GetPlanItemsDto } from './dto/get-plan-items.dto';
 import { GetAradAiDashoardChartDto } from './dto/get-arad-ai-dashoard-chart.dto';
 import { AiTransactionsLogs } from 'src/infrastructure/database/entities/AiTransactionsLogs';
 import { InvoiceDetailBaseDto } from '../vdc/dto/invoice-detail-base.dto';
+import { CheckPolicies } from '../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../base/security/ability/enum/action.enum';
 
 @ApiTags('AI')
 @ApiBearerAuth() // Requires authentication with a JWT token
 @Controller('ai')
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Ai, props)),
+// )
 @Injectable()
 export class AiController {
   constructor(

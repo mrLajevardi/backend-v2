@@ -11,11 +11,19 @@ import { SingleTaskDTO } from '../dto/single-task.dto';
 import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
 import { Roles } from '../../security/ability/decorators/roles.decorator';
 import { GetTasksReturnDto } from '../dto/return/get-tasks-return.dto';
+import { CheckPolicies } from '../../../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../../../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../../../base/security/ability/enum/action.enum';
 
 @Controller('/tasks/admin')
 @ApiBearerAuth()
 @ApiTags('Task-admin')
-@Roles(PredefinedRoles.AdminRole)
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.AdminTask, props)),
+)
+// @Roles(PredefinedRoles.AdminRole)
 export class TaskAdminController {
   constructor(private readonly service: TaskAdminService) {}
 

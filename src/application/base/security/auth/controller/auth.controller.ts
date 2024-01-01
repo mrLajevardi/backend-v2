@@ -68,13 +68,20 @@ import { BadRequestException } from '../../../../../infrastructure/exceptions/ba
 import { User } from '../../../../../infrastructure/database/entities/User';
 import { Type } from 'class-transformer';
 import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
-import { UserProfileDto } from '../../../user/dto/user-profile.dto';
 import { RedisCacheService } from '../../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangePasswordDto } from '../../../user/dto/change-password.dto';
 import { ForgotPasswordByOtpDto } from '../dto/forgot-password-by-otp.dto';
+import { PolicyHandlerOptions } from '../../ability/interfaces/policy-handler.interface';
+import { PureAbility, subject } from '@casl/ability';
+import { Action } from '../../ability/enum/action.enum';
+import { AclSubjectsEnum } from '../../ability/enum/acl-subjects.enum';
+import { CheckPolicies } from '../../ability/decorators/check-policies.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Auth, props)),
+// )
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class AuthController {
   constructor(

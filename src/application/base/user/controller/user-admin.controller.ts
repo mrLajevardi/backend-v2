@@ -40,11 +40,19 @@ import { FilteredUser } from '../types/filtered-user.type';
 import { ChangePasswordAdminDto } from '../dto/change-password-admin.dto';
 import { VUsers } from 'src/infrastructure/database/entities/views/v-users';
 import { UpdateUserAdminDto } from '../dto/update-user-admin.dto';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { Action } from '../../security/ability/enum/action.enum';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 
 @ApiTags('User-admin')
 @Controller('admin/users')
 @ApiBearerAuth() // Requires authentication with a JWT token
-@Roles(PredefinedRoles.AdminRole)
+// @Roles(PredefinedRoles.AdminRole)
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.AdminUser, props)),
+)
 export class UserAdminController {
   constructor(
     private readonly userAdminService: UserAdminService,

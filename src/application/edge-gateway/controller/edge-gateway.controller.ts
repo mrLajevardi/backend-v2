@@ -35,9 +35,17 @@ import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { GetIpSetsListQueryDto } from '../dto/ip-set-list.dto';
 import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
 import { ApplicationPortProfileListValuesDto } from '../dto/application-port-profile-list-values.dto';
+import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
+import { Action } from 'src/application/base/security/ability/enum/action.enum';
+import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.EdgeGateway, props)),
+// )
 @ApiBearerAuth()
 export class EdgeGatewayController {
   constructor(private readonly service: EdgeGatewayService) {}

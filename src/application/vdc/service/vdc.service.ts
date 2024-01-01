@@ -534,6 +534,7 @@ export class VdcService {
       nameDiskID,
       data,
     );
+
     return Promise.resolve({
       taskId: namedDisk.__vcloudTask.split('task/')[1],
     });
