@@ -15,6 +15,7 @@ import {
   ApiParam,
   ApiResponse,
   ApiTags,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
@@ -38,10 +39,19 @@ import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
 import { InvoiceIdDto } from '../dto/invoice-id.dto';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { Action } from '../../security/ability/enum/action.enum';
+import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 
 @ApiTags('Invoices')
 @Controller('invoices')
-@ApiBearerAuth() // Requires authentication with a JWT token
+@ApiBearerAuth()
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) => {
+//   return ability.can(Action.Create, subject(AclSubjectsEnum.Invoices, props));
+// })
 export class InvoicesController {
   constructor(
     @Inject(BASE_INVOICE_SERVICE)

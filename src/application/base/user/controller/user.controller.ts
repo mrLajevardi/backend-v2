@@ -47,7 +47,6 @@ import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
-import { TransactionsReturnDto } from '../../service/dto/return/transactions-return.dto';
 import { VitrificationServiceService } from '../service/vitrification.service.service';
 import {
   ResultDtoCollectionResponse,
@@ -55,10 +54,18 @@ import {
 } from '../../transactions/dto/results/transactions.result.dto';
 import { UserInfoService } from '../service/user-info.service';
 import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { Action } from '../../security/ability/enum/action.enum';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 
 @ApiTags('User')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Users, props)),
+// )
 // @UseGuards(PersonalVerificationGuard)
 export class UserController {
   constructor(

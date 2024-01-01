@@ -21,10 +21,18 @@ import { NatService } from './nat.service';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { NatRulesListDTO } from './dto/nat-rules-list.dto';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../base/security/ability/enum/action.enum';
+import { CheckPolicies } from '../base/security/ability/decorators/check-policies.decorator';
 
 @ApiTags('Nat')
 @Controller('nat')
 @ApiBearerAuth()
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.Nat, props)),
+)
 export class NatController {
   constructor(private readonly service: NatService) {}
 
