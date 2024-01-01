@@ -78,7 +78,8 @@ export class GetAllVdcServiceWithItemsResultDto extends BaseResultDto {
     this.ticketSent = ticketSent;
     this.servicePlanType = servicePlanType;
     this.description = description;
-    this.extendable = extendable;
+    this.extendable =
+      servicePlanType == ServicePlanTypeEnum.Payg ? false : extendable;
     this.createDate = createDate;
     this.credit = credit;
   }

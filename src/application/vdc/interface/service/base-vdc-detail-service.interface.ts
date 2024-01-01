@@ -13,6 +13,9 @@ export const BASE_VDC_DETAIL_SERVICE = 'BASE_VDC_DETAIL_SERVICE';
 export interface BaseVdcDetailService extends IBaseService {
   getStorageDetailVdc(
     serviceInstanceId: string,
+    memoryAllocation: number,
+    numberOfvms: number,
+    option: SessionRequest,
   ): Promise<VdcStoragesDetailResultDto[]>;
 
   getVdcDetail(

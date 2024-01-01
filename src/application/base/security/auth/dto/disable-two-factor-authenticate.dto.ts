@@ -6,7 +6,7 @@ export class DisableTwoFactorAuthenticateDto {
   @IsNumber()
   @ApiProperty({
     description: 'type of two factor authenticate',
-    example: '1 , 2 , ...',
+    example: 1,
   })
   @IsEnum(TwoFaAuthTypeEnum)
   twoFactorAuthType: number;

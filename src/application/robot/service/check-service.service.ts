@@ -10,6 +10,9 @@ import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { User } from 'src/infrastructure/database/entities/User';
 import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
+import { ServiceTypesEnum } from 'src/application/base/service/enum/service-types.enum';
+import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
+import { Not } from 'typeorm';
 
 @Injectable()
 export class CheckServiceService {
@@ -111,7 +114,8 @@ export class CheckServiceService {
               service.id,
             );
           await this.serviceInstancesTable.update(service.id, {
-            status: ServiceStatusEnum.Disabled,
+            status: ServiceStatusEnum.Expired,
+            isDisabled: true,
           });
           const session = await this.sessionService.checkAdminSession();
           await mainWrapper.admin.vdc.disableVdc(session, props['vdcId']);

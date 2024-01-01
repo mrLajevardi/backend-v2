@@ -241,7 +241,7 @@ export class InvoiceFactoryVdcService {
 
     res.invoiceTax = ramModel.invoiceTax;
 
-    res.serviceCostTax = ramModel.serviceCost * ramModel.invoiceTax;
+    // res.serviceCostTax = ramModel.serviceCost * ramModel.invoiceTax;
     res.serviceCostWithDiscount = !isNil(period)
       ? ramModel.serviceCost * period?.percent + ramModel.serviceCost
       : ramModel.serviceCost;
@@ -251,12 +251,9 @@ export class InvoiceFactoryVdcService {
       res.discountAmount = res.serviceCost - res.serviceCostWithDiscount;
     }
 
+    res.serviceCostTax = res.serviceCostWithDiscount * ramModel.invoiceTax;
+
     res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
-
-    // (res.rawAmount / Number(res.period.value) - res.guaranty.price) /
-    // (1 + period.percent);
-
-    // res.period = { title: period.title, value: period.min };
   }
 
   private calcDiskInvoice(
