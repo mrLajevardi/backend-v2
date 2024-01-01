@@ -54,7 +54,7 @@ import { ServiceWithItemsResultDto } from '../dto/result/service-with-items.resu
 // @Roles(PredefinedRoles.AdminRole)
 @UseGuards(PoliciesGuard)
 @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-    ability.can(Action.Manage, subject(AclSubjectsEnum.AdminServices, props)),
+  ability.can(Action.Manage, subject(AclSubjectsEnum.AdminServices, props)),
 )
 export class ServiceAdminController {
   constructor(private readonly service: ServiceAdminService) {}
@@ -64,7 +64,7 @@ export class ServiceAdminController {
   @ApiParam({
     name: 'serviceInstanceId',
     type: 'string',
-    description: 'Service instance ID'
+    description: 'Service instance ID',
   })
   @ApiOkResponse({ description: 'The deleted service data' })
   async adminDeleteService(

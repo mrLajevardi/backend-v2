@@ -108,7 +108,6 @@ export class ServiceController {
     @Query('id') id?: string,
   ): Promise<GetServicesReturnDto[]> {
     return this.serviceService.getServices(options, typeId, id);
-    // await this.invoicesTable.create(dto);
   }
 
   @ApiOperation({ summary: 'get services with Items for a user' })
@@ -133,9 +132,17 @@ export class ServiceController {
       typeId,
       id,
     )) as GetAllVdcServiceWithItemsResultDto[];
-    // await this.invoicesTable.create(dto);
   }
 
+  @ApiOperation({ summary: 'get ai services' })
+  @ApiResponse({
+    status: 200,
+    description: 'user services have been fetched successfully',
+  })
+  @Get('/ai/list')
+  async getAiServices(@Request() options: SessionRequest): Promise<any> {
+    return await this.serviceService.getAiServices(options);
+  }
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({
     status: 201,
