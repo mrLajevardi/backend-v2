@@ -56,9 +56,9 @@ import { Action } from 'src/application/base/security/ability/enum/action.enum';
 
 @ApiTags('VM')
 @Controller('vm')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Vm, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Vm, props)),
+// )
 // @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VmController {

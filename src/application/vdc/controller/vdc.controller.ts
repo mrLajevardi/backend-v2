@@ -58,9 +58,9 @@ import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-
 @ApiBearerAuth()
 @ApiTags('Vpc')
 @Controller('vdc')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Vpc, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Vpc, props)),
+// )
 export class VdcController {
   constructor(
     @Inject(BASE_VDC_INVOICE_SERVICE)

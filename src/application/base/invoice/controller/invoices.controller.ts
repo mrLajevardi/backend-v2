@@ -49,9 +49,9 @@ import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 @ApiTags('Invoices')
 @Controller('invoices')
 @ApiBearerAuth()
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) => {
-  return ability.can(Action.Create, subject(AclSubjectsEnum.Invoices, props));
-})
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) => {
+//   return ability.can(Action.Create, subject(AclSubjectsEnum.Invoices, props));
+// })
 export class InvoicesController {
   constructor(
     @Inject(BASE_INVOICE_SERVICE)

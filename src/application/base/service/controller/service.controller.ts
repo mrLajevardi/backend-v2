@@ -46,9 +46,9 @@ import { CheckPolicies } from '../../security/ability/decorators/check-policies.
 
 @ApiTags('Services')
 @Controller('services')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Services, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Services, props)),
+// )
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class ServiceController {
   constructor(

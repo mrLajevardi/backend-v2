@@ -63,9 +63,9 @@ import { CheckPolicies } from '../../security/ability/decorators/check-policies.
 @ApiTags('User')
 @Controller('users')
 @ApiBearerAuth() // Requires authentication with a JWT token
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Users, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Users, props)),
+// )
 // @UseGuards(PersonalVerificationGuard)
 export class UserController {
   constructor(

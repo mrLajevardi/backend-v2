@@ -37,9 +37,9 @@ import { CheckPolicies } from '../security/ability/decorators/check-policies.dec
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Datacenter, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Datacenter, props)),
+// )
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class DatacenterController {
   constructor(

@@ -22,9 +22,9 @@ import { CheckPolicies } from 'src/application/base/security/ability/decorators/
 
 @ApiTags('VM-Detail')
 @Controller('vm-detail')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.VmDetail, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.VmDetail, props)),
+// )
 // @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VmDetailController {

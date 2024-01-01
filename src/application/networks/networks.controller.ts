@@ -40,9 +40,9 @@ import { Action } from '../base/security/ability/enum/action.enum';
 @ApiTags('Networks')
 @ApiBearerAuth()
 @Controller('networks')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Networks, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Networks, props)),
+// )
 export class NetworksController {
   constructor(
     private readonly service: NetworksService,

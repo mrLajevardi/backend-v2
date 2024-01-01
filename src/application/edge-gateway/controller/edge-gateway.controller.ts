@@ -43,9 +43,9 @@ import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.EdgeGateway, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.EdgeGateway, props)),
+// )
 @ApiBearerAuth()
 export class EdgeGatewayController {
   constructor(private readonly service: EdgeGatewayService) {}

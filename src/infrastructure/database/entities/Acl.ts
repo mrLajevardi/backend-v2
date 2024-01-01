@@ -16,7 +16,7 @@ export class Acl extends BaseEntity {
   @Column('tinyint', { name: 'AccessType', nullable: true })
   accessType: AccessType;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Can' })
+  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Can', nullable: true })
   can: boolean;
 
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
@@ -27,7 +27,7 @@ export class Acl extends BaseEntity {
 
   @Column(!isTestingEnv() ? 'tinyint' : 'tinyint', {
     name: 'HookType',
-    nullable: false,
+    nullable: true,
   })
   hookType: HookTypeEnum;
 }

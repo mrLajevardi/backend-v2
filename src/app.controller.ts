@@ -16,9 +16,9 @@ import { PolicyHandlerOptions } from './application/base/security/ability/interf
 
 // @UseInterceptors(SentryInterceptor) // This is a test to make sure that sentry is okay !!
 @Controller()
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Default, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Default, props)),
+// )
 export class AppController {
   constructor(
     private readonly appService: AppService,

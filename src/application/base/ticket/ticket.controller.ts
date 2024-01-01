@@ -19,9 +19,9 @@ import { Action } from '../../base/security/ability/enum/action.enum';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Tickets, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Tickets, props)),
+// )
 @Controller('ticket')
 export class TicketController {
   constructor(private readonly service: TicketService) {}

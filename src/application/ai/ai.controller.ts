@@ -53,9 +53,9 @@ import { Action } from '../base/security/ability/enum/action.enum';
 @ApiTags('AI')
 @ApiBearerAuth() // Requires authentication with a JWT token
 @Controller('ai')
-@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.Ai, props)),
-)
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Ai, props)),
+// )
 @Injectable()
 export class AiController {
   constructor(
