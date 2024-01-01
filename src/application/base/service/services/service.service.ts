@@ -543,15 +543,16 @@ export class ServiceService {
       where.id = id;
     }
 
-    const services = await this.vServiceInstancesTableService.find({
-      where,
-      relations: ['serviceItems', 'serviceType'],
-      order: {
-        createDate: { direction: 'DESC' },
-        status: { direction: 'ASC' },
-      },
-    });
-    console.log(services);
+    const services: VServiceInstances[] =
+      await this.vServiceInstancesTableService.find({
+        where,
+        relations: ['serviceItems', 'serviceType', 'vServiceItems'],
+        order: {
+          createDate: { direction: 'DESC' },
+          status: { direction: 'ASC' },
+        },
+      });
+
     const extendedServiceList = services.map((service) => {
       const expired =
         new Date(service.expireDate).getTime() <= new Date().getTime();

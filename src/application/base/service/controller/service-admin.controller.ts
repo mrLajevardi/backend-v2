@@ -9,6 +9,7 @@ import {
   Put,
   Query,
   Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -19,6 +20,7 @@ import {
   ApiBody,
   ApiTags,
   ApiBearerAuth,
+  ApiResponse,
 } from '@nestjs/swagger';
 import { ServiceAdminService } from '../services/service-admin.service';
 import { Configs } from 'src/infrastructure/database/entities/Configs';
@@ -42,14 +44,17 @@ import { PureAbility, subject } from '@casl/ability';
 import { Action } from '../../security/ability/enum/action.enum';
 import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { GetServicesReturnDto } from '../dto/return/get-services.dto';
+import { ServiceService } from '../services/service.service';
+import { ServiceWithItemsResultDto } from '../dto/result/service-with-items.result.dto';
 
 @ApiTags('Services-admin')
 @Controller('admin/services')
 @ApiBearerAuth() // Requires authentication with a JWT token
-@UseGuards(PoliciesGuard)
 // @Roles(PredefinedRoles.AdminRole)
+@UseGuards(PoliciesGuard)
 @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-  ability.can(Action.Manage, subject(AclSubjectsEnum.AdminServices, props)),
+    ability.can(Action.Manage, subject(AclSubjectsEnum.AdminServices, props)),
 )
 export class ServiceAdminController {
   constructor(private readonly service: ServiceAdminService) {}
@@ -59,7 +64,7 @@ export class ServiceAdminController {
   @ApiParam({
     name: 'serviceInstanceId',
     type: 'string',
-    description: 'Service instance ID',
+    description: 'Service instance ID'
   })
   @ApiOkResponse({ description: 'The deleted service data' })
   async adminDeleteService(
@@ -386,5 +391,17 @@ export class ServiceAdminController {
       serviceTypeId,
       data,
     );
+  }
+
+  @ApiOperation({ summary: 'get services of a user' })
+  @ApiQuery({ name: 'userId', required: false })
+  @Get('/:userId/getList')
+  async getServices(
+    @Request() options: SessionRequest,
+    @Query('userId') userId?: number,
+  ): Promise<any> {
+    const data = await this.service.getServices(userId);
+
+    return new ServiceWithItemsResultDto().collection(data);
   }
 }
