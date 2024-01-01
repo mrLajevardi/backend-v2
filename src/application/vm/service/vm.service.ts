@@ -781,7 +781,7 @@ export class VmService {
     const data: any = {
       name: vm.data.name,
       description: vm.data.description,
-      bootDelay: vm.data?.bootOptions?.bootDelay,
+      bootDelay: vm.data?.bootOptions?.bootDelay ?? 0,
       enterBIOSSetup: vm.data?.bootOptions?.enterBIOSSetup,
       status: VmStatusEnum[vmList.data.record[0].status],
       snapshot: vmList.data.record[0].snapshot,
