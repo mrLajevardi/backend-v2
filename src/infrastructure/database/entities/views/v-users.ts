@@ -69,4 +69,10 @@ export class VUsers {
 
   @Column('int', { name: 'Credit', nullable: true })
   credit: number | null;
+
+  @Column('int', { name: 'ServiceCount', nullable: true })
+  serviceCount: number | null;
+
+  @Column('int', { name: 'TicketCount', nullable: true })
+  ticketCount: number | null;
 }
