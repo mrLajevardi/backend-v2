@@ -8,6 +8,7 @@ import { getStringListOfAbilities } from '../ability.factory';
 import { GetAllAclsDto } from '../dto/get-all-acls.dto';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { User } from 'src/infrastructure/database/entities/User';
+import { HookTypeEnum } from 'src/application/base/crud/acl-table/enum/hook-type.enum';
 
 @Injectable()
 export class AbilityAdminService {
@@ -22,14 +23,14 @@ export class AbilityAdminService {
 
   async getUsersWithPredefinedRole(role: string): Promise<User[]> {
     const aclEntries = await this.aclTable.find({
-      select: ['principalId'],
+      select: ['roleId'],
       where: {
         model: role,
-        principalType: 'User',
-        permission: 'can',
+        // principalType: 'User',
+        // permission: 'can',
       },
     });
-    const userIds = aclEntries.map((entry) => entry.principalId);
+    const userIds = aclEntries.map((entry) => entry.roleId);
 
     // Remove duplicate user IDs
     const uniqueUserIds = Array.from(new Set(userIds));
@@ -65,8 +66,8 @@ export class AbilityAdminService {
     const result = await this.aclTable.find({
       where: {
         model: In(predefinedRoles),
-        principalType: 'User',
-        principalId: userId.toString(),
+        // principalType: 'User',
+        // principalId: userId.toString(),
       },
     });
     result.forEach((item) => {
@@ -86,17 +87,18 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: 'User',
-      principalId: userId.toString(),
+      // principalType: 'User',
+      // principalId: userId.toString(),
     });
 
-    await this.aclTable.create({
-      model: role,
-      principalType: 'User',
-      principalId: userId.toString(),
-      accessType: Action.Manage,
-      permission: 'can',
-    });
+    // await this.aclTable.create({
+    //   model: role,
+    //   principalType: 'User',
+    //   principalId: userId.toString(),
+    //   accessType: Action.Manage,
+    //   permission: 'can',
+    //   hookType: HookTypeEnum.Before,
+    // });
   }
 
   async deletePredefinedRole(
@@ -109,8 +111,8 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: 'User',
-      principalId: userId.toString(),
+      // principalType: 'User',
+      // principalId: userId.toString(),
     });
   }
 
@@ -124,17 +126,18 @@ export class AbilityAdminService {
 
     await this.aclTable.deleteAll({
       model: role,
-      principalType: 'User',
-      principalId: userId.toString(),
+      // principalType: 'User',
+      // principalId: userId.toString(),
     });
 
-    await this.aclTable.create({
-      model: role,
-      principalType: 'User',
-      principalId: userId.toString(),
-      accessType: Action.Manage,
-      permission: 'cannot',
-    });
+    // await this.aclTable.create({
+    //   model: role,
+    //   principalType: 'User',
+    //   principalId: userId.toString(),
+    //   accessType: Action.Manage,
+    //   permission: 'cannot',
+    //   hookType: HookTypeEnum.Before,
+    // });
   }
 
   async permitAccessToUser(
@@ -144,17 +147,18 @@ export class AbilityAdminService {
   ): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
-      accessType: accessType,
-      principalType: 'User',
-      principalId: to.toString(),
+      // accessType: accessType,
+      // principalType: 'User',
+      // principalId: to.toString(),
     });
-    await this.aclTable.create({
-      model: on,
-      accessType: accessType,
-      principalType: 'User',
-      principalId: to.toString(),
-      permission: 'can',
-    });
+    // await this.aclTable.create({
+    //   model: on,
+    //   accessType: accessType,
+    //   principalType: 'User',
+    //   principalId: to.toString(),
+    //   permission: 'can',
+    //   hookType: HookTypeEnum.Before,
+    // });
   }
 
   async denyAccessFromUser(
@@ -164,17 +168,18 @@ export class AbilityAdminService {
   ): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
-      accessType: accessType,
-      principalType: 'User',
-      principalId: from.toString(),
+      // accessType: accessType,
+      // principalType: 'User',
+      // principalId: from.toString(),
     });
-    await this.aclTable.create({
-      model: on,
-      accessType: accessType,
-      principalType: 'User',
-      principalId: from.toString(),
-      permission: 'cannot',
-    });
+    // await this.aclTable.create({
+    //   model: on,
+    //   accessType: accessType,
+    //   principalType: 'User',
+    //   principalId: from.toString(),
+    //   permission: 'cannot',
+    //   hookType: HookTypeEnum.Before,
+    // });
   }
 
   async deleteAccessForUser(
@@ -184,44 +189,46 @@ export class AbilityAdminService {
   ): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
-      accessType: accessType,
-      principalType: 'User',
-      principalId: userId.toString(),
+      // accessType: accessType,
+      // principalType: 'User',
+      // principalId: userId.toString(),
     });
   }
 
   async permitAccess(accessType: Action, on: string): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
-      accessType: accessType,
-      principalType: '',
-      principalId: '',
+      // accessType: accessType,
+      // principalType: '',
+      // principalId: '',
     });
 
-    await this.aclTable.create({
-      model: on,
-      accessType: accessType,
-      principalType: '',
-      principalId: '',
-      permission: 'can',
-    });
+    // await this.aclTable.create({
+    //   model: on,
+    //   accessType: accessType,
+    //   principalType: '',
+    //   principalId: '',
+    //   permission: 'can',
+    //   hookType: HookTypeEnum.Before,
+    // });
   }
 
   async denyAccess(accessType: Action, on: string): Promise<void> {
     await this.aclTable.deleteAll({
       model: on,
-      accessType: accessType,
-      principalType: '',
-      principalId: '',
+      // accessType: accessType,
+      // principalType: '',
+      // principalId: '',
     });
 
-    await this.aclTable.create({
-      model: on,
-      accessType: accessType,
-      principalType: '',
-      principalId: '',
-      permission: 'cannot',
-    });
+    // await this.aclTable.create({
+    //   model: on,
+    //   accessType: accessType,
+    //   principalType: '',
+    //   principalId: '',
+    //   permission: 'cannot',
+    //   hookType: HookTypeEnum.Before,
+    // });
   }
 
   async getAllAcls(

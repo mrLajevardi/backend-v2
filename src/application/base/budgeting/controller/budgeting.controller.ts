@@ -14,10 +14,18 @@ import {
 import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { WithdrawBudgetCreditToUserCreditDto } from '../dto/withdraw-budget-credit-to-user-credit.dto';
 import { ChangeAutoPaidStateDto } from '../dto/change-auto-paid-state.dto';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { Action } from '../../security/ability/enum/action.enum';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 
 @ApiTags('Budget')
 @Controller('budgeting')
 @ApiBearerAuth()
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Budget, props)),
+// )
 export class BudgetingController {
   constructor(private readonly budgetingService: BudgetingService) {}
 

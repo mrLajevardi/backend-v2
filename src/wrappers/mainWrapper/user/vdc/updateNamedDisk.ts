@@ -14,16 +14,9 @@ export async function userUpdateNamedDisk(
   nameDiskID,
   namedDiskProperties,
 ) {
-  const query = await vcloudQuery(authToken, {
-    type: 'orgVdcStorageProfile',
-    format: 'records',
-    page: 1,
-    pageSize: 128,
-    filterEncoded: true,
-    links: true,
-    filter: `vdc==${vdcId}`,
-  });
-  const vdcStorageProfileLink = query.data.record[0].href;
+  // const vdcStorageProfileLink = query.data.record[0].href;
+  const vdcStorageProfileLink = `${process.env.VCLOUD_BASE_URL}/api/vdcStorageProfile/${namedDiskProperties.policyId}`;
+
   const formattedVdcId = vdcId.split(':').slice(-1);
   const request = {
     'root:Disk': {

@@ -29,9 +29,17 @@ import { DataCenterList } from './dto/datacenter-list.dto';
 import { DatacenterDetails } from './dto/datacenter-details.dto';
 import { GetDatacenterConfigsQueryDto } from './dto/get-datacenter-configs.dto';
 import { ServicePlanTypeEnum } from '../service/enum/service-plan-type.enum';
+import { PolicyHandlerOptions } from '../security/ability/interfaces/policy-handler.interface';
+import { PureAbility, subject } from '@casl/ability';
+import { AclSubjectsEnum } from '../security/ability/enum/acl-subjects.enum';
+import { Action } from '../security/ability/enum/action.enum';
+import { CheckPolicies } from '../security/ability/decorators/check-policies.decorator';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Datacenter, props)),
+// )
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class DatacenterController {
   constructor(

@@ -58,6 +58,7 @@ import { VServiceInstances } from '../entities/views/v-serviceInstances';
 import { VServiceInstanceDetail } from '../entities/views/v-serviceInstanceDetail';
 import { ServiceDiscount } from '../entities/ServiceDiscount';
 import { VUsers } from '../entities/views/v-users';
+import { UserAcls } from '../entities/views/user-acls';
 import { Files } from '../entities/Files';
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
@@ -68,6 +69,7 @@ export const dbEntities = [
   InvoiceItemList,
   ServiceItemTypesTree,
   VUsers,
+  UserAcls,
   // Logs Schema
   DebugLog,
   InfoLog,

@@ -37,12 +37,20 @@ import { Transactions } from 'src/infrastructure/database/entities/Transactions'
 import { ItemTypeWithConsumption } from '../types/item-type-with-consumption.type';
 import { UpdateConfigsDto } from '../../crud/configs-table/dto/update-configs.dto';
 import { TransactionsReturnDto } from '../dto/return/transactions-return.dto';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { Action } from '../../security/ability/enum/action.enum';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
 
 @ApiTags('Services-admin')
 @Controller('admin/services')
 @ApiBearerAuth() // Requires authentication with a JWT token
 @UseGuards(PoliciesGuard)
-@Roles(PredefinedRoles.AdminRole)
+// @Roles(PredefinedRoles.AdminRole)
+@CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+  ability.can(Action.Manage, subject(AclSubjectsEnum.AdminServices, props)),
+)
 export class ServiceAdminController {
   constructor(private readonly service: ServiceAdminService) {}
 
