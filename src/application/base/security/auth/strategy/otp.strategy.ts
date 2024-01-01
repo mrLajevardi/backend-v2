@@ -12,6 +12,7 @@ import { ParsedQs } from 'qs';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { ClsService } from 'nestjs-cls';
 import axios from 'axios';
+import process from 'process';
 
 @Injectable()
 export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
@@ -59,14 +60,15 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
       if (verify) {
         const axiosConfig = {
           headers: {
-            Authorization: 'Bearer c2a3b7f4-2d36-4c3e-93c1-910d635a378a',
+            Authorization: process.env.AI_BACK_TOKEN,
             'Access-Control-Allow-Origin': '*',
           },
         };
         let aiToken: string = null;
+        const aiUrl = process.env.AI_BACK_URL + '/api/Auth/SsoLogin';
         const aiRequest = await axios
           .post(
-            'https://aradpanelback.ziaei.ir/api/Auth/SsoLogin',
+            aiUrl,
             {
               phoneNumber: user.phoneNumber,
             },
