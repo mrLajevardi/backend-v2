@@ -25,7 +25,7 @@ unit-test-job:   # This job runs in the test stage.
   only:
     - develop
     - merge_requests
-    - main
+    # - main
   script:
     - npm run test
   dependencies: []
@@ -44,7 +44,7 @@ lint-test-job:
     - .job-cache
   only:
     - develop
-    - main
+    # - main
     - merge_requests
   dependencies: []
   script:
@@ -61,7 +61,7 @@ develop server deploy job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   only:
     - develop
-    - main
+    # - main
   dependencies: []
   script:
     - .\deploy.ps1
@@ -79,8 +79,12 @@ develop server deploy job:      # This job runs in the deploy stage.
 build image:
   image: docker
   stage: publish
+  only: 
+   - release
+   - main
   tags:
     - release
+    - production
   services:
     - docker:dind
   before_script: 
@@ -96,10 +100,14 @@ build image:
 
 deploy image:
   stage: deploy
+  only: 
+   - release
+   - main
   services:
     - docker:dind
   tags:
     - release
+    - production
   before_script:
     - export IMAGE_NAME="$IMAGE_NAME"
   script:
