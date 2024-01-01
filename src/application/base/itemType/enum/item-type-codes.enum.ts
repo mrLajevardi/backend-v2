@@ -8,6 +8,7 @@ export enum ItemTypeCodes {
   MemoryReservationItem = 'reservationPercentRam',
   GuarantyItem = 'guarantyItem',
   PeriodItem = 'periodItem',
+  RequestNumber = 'requestNumber',
 }
 
 export enum VdcGenerationItemCodes {
