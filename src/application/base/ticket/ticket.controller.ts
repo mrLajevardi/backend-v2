@@ -11,9 +11,17 @@ import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { ReplyTicketDto } from './dto/reply-ticket.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { CheckPolicies } from '../../base/security/ability/decorators/check-policies.decorator';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from '../../base/security/ability/enum/acl-subjects.enum';
+import { Action } from '../../base/security/ability/enum/action.enum';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Tickets, props)),
+// )
 @Controller('ticket')
 export class TicketController {
   constructor(private readonly service: TicketService) {}

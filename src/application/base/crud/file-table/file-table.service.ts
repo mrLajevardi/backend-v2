@@ -6,26 +6,30 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { FileUpload } from '../../../../infrastructure/database/entities/FileUpload';
+import { Files } from '../../../../infrastructure/database/entities/Files';
 
 @Injectable()
 export class FileTableService {
   constructor(
-    @InjectRepository(FileUpload)
-    private readonly repository: Repository<FileUpload>,
+    @InjectRepository(Files)
+    private readonly repository: Repository<Files>,
   ) {}
 
-  async findByStreamId(streamId: string): Promise<FileUpload | null> {
-    return await this.repository.findOne({ where: { streamId: streamId } });
+  async findByStreamId(streamId: string): Promise<Files | null> {
+    return await this.repository.findOne({ where: { guid: streamId } });
   }
 
-  async find(options?: FindManyOptions<FileUpload>): Promise<FileUpload[]> {
+  async findByGuid(guid: string): Promise<Files | null> {
+    return await this.repository.findOne({ where: { guid: guid } });
+  }
+
+  async find(options?: FindManyOptions<Files>): Promise<Files[]> {
     return await this.repository.find(options);
   }
 
-  async delete(streamId: string): Promise<DeleteResult> {
-    const where: FindOptionsWhere<FileUpload> = {
-      streamId: streamId,
+  async delete(guid: string): Promise<DeleteResult> {
+    const where: FindOptionsWhere<Files> = {
+      guid: guid,
     };
 
     return await this.repository.delete(where);

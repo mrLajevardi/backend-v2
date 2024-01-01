@@ -764,19 +764,13 @@ export class UserService {
     const avatar = await this.connection
       .createQueryBuilder()
       .insert()
-      .into('FileUpload')
-      .values({ fileStream: fileStream, name: fileName })
-      .returning('Inserted.stream_id')
+      .into('Files')
+      .values({ fileStream: fileStream, fileName: fileName })
+      .returning('Inserted.guid')
       .execute();
 
-    console.log(
-      '\n\n\n\n file: \n\n',
-      avatar,
-      '\n\n\n\n name: \n\n',
-      avatar.raw[0].stream_id,
-    );
     const updateUserData: UpdateUserDto = {
-      avatarId: avatar.raw[0].stream_id,
+      avatarId: avatar.raw[0].guid,
     };
 
     const updatedUser: User = await this.userTable.update(
@@ -788,8 +782,6 @@ export class UserService {
       where: { id: options.user.userId },
       relations: ['company', 'avatar'],
     });
-
-    console.log('\n\n\n\n\n\n\n', user);
 
     return new UserProfileResultDto().toArray(user);
   }
@@ -826,13 +818,13 @@ export class UserService {
     const letter = await this.connection
       .createQueryBuilder()
       .insert()
-      .into('FileUpload')
-      .values({ fileStream: fileStream, name: fileName })
-      .returning('Inserted.stream_id')
+      .into('Files')
+      .values({ fileStream: fileStream, fileName: fileName })
+      .returning('Inserted.guid')
       .execute();
 
     const updateUserData: UpdateUserDto = {
-      companyLetterId: letter.raw[0].stream_id,
+      companyLetterId: letter.raw[0].guid,
       companyLetterStatus: CompanyLetterStatusEnum.Uploaded,
     };
 

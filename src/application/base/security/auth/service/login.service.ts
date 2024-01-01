@@ -13,6 +13,7 @@ import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 import { TwoFaAuthService } from './two-fa-auth.service';
 import axios from 'axios';
+import process from 'process';
 
 @Injectable()
 export class LoginService {
@@ -137,14 +138,15 @@ export class LoginService {
       try {
         const axiosConfig = {
           headers: {
-            Authorization: 'Bearer c2a3b7f4-2d36-4c3e-93c1-910d635a378a',
+            Authorization: process.env.AI_BACK_TOKEN,
             Accept: '*',
             'Content-Type': 'application/json',
           },
         };
         const aiToken: string = null;
+        const aiUrl = process.env.AI_BACK_URL + '/api/Auth/SsoLogin';
         const aiRequest = await axios.post(
-          'https://aradpanelback.ziaei.ir/api/Cloud/login',
+          aiUrl,
           {
             phoneNumber: user.phoneNumber,
           },

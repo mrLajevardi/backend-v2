@@ -364,8 +364,9 @@ export class BudgetingService {
         },
         60,
       );
+    const taxPercent = await this.getTaxPercent();
 
-    return hourlyCost.totalCost;
+    return this.priceWithTax(hourlyCost.totalCost, taxPercent);
   }
 
   async changeAutoPaidState(serviceInstanceId: string, autoPaid: boolean) {

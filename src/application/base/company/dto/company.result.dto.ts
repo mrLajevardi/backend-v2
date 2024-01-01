@@ -40,7 +40,7 @@ export class CompanyResultDto {
       submittedCode: item.submittedCode,
       companyLogo:
         item.companyLogo !== undefined && item.companyLogo !== null
-          ? item.companyLogo.streamId
+          ? item.companyLogo.guid
           : null,
       province: !isNil(item.province)
         ? new ProvinceResultDto().toArray(item.province)
