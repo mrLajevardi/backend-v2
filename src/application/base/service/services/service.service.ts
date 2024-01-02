@@ -43,6 +43,7 @@ import { VServiceInstancesTableService } from '../../crud/v-service-instances-ta
 import { ServiceTypesEnum } from '../enum/service-types.enum';
 import { TemplatesTableService } from '../../crud/templates/templates-table.service';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+import { VReportsUserTableService } from '../../crud/v-reports-user-table/v-reports-user-table.service';
 import { User } from '../../../../infrastructure/database/entities/User';
 import axios from 'axios';
 import * as process from 'process';
@@ -72,6 +73,7 @@ export class ServiceService {
     private readonly userService: UserService,
     private readonly systemSettingsService: SystemSettingsTableService,
     private readonly templatesTableService: TemplatesTableService,
+    private readonly vReportsUserTableService: VReportsUserTableService,
   ) {}
 
   async increaseServiceResources(
@@ -598,7 +600,16 @@ export class ServiceService {
 
   async getReports(option: SessionRequest) {
     const userId = option.user.userId;
-    // thi
+    const res = await this.vReportsUserTableService.findOne({
+      where: { userId: userId },
+    });
+
+    return {
+      unpaidInvoices: res?.activeInvoices,
+      activeTickets: res?.activeInvoices,
+      servicesExpiringCount: res?.serviceExpiredCount,
+      servicesBudgetCount: res?.serviceNeedBudgetCount,
+    };
   }
 
   async getAiServices(option: SessionRequest) {

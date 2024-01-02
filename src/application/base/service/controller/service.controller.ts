@@ -297,13 +297,8 @@ export class ServiceController {
     required: true,
     description: 'ServiceType',
   })
-  async reportService(): Promise<any> {
-    return {
-      unpaidInvoices: 8,
-      activeTickets: 20,
-      servicesExpiringCount: 15,
-      servicesBudgetCount: 16,
-    };
+  async reportService(@Request() options: SessionRequest): Promise<any> {
+    return this.serviceService.getReports(options);
   }
 
   @ApiOperation({ summary: 'get templates' })
