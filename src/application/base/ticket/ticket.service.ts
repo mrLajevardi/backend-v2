@@ -12,6 +12,7 @@ import { replyTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/replyTi
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 
+
 @Injectable()
 export class TicketService {
   constructor(
@@ -43,9 +44,10 @@ export class TicketService {
     console.log('create ticket');
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
+    const defaultUserId = -1;
     const service = await this.serviceInstancesTable.findOne({
       where: {
-        userId: userId,
+        userId: userId | defaultUserId,
         id: data.serviceInstanceId,
       },
     });
