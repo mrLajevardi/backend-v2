@@ -75,6 +75,9 @@ export class ServiceController {
   }
 
   // create new item
+  @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+    ability.can(Action.Delete, subject(AclSubjectsEnum.Services, props)),
+  )
   @ApiOperation({ summary: 'Deletes a service' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiResponse({
