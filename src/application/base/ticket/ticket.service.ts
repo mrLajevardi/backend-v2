@@ -12,7 +12,6 @@ import { replyTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/replyTi
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 
-
 @Injectable()
 export class TicketService {
   constructor(
