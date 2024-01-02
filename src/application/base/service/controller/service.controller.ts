@@ -75,6 +75,9 @@ export class ServiceController {
   }
 
   // create new item
+  @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+    ability.can(Action.Delete, subject(AclSubjectsEnum.Services, props)),
+  )
   @ApiOperation({ summary: 'Deletes a service' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiResponse({
@@ -294,13 +297,8 @@ export class ServiceController {
     required: true,
     description: 'ServiceType',
   })
-  async reportService(): Promise<any> {
-    return {
-      unpaidInvoices: 8,
-      activeTickets: 20,
-      servicesExpiringCount: 15,
-      servicesBudgetCount: 16,
-    };
+  async reportService(@Request() options: SessionRequest): Promise<any> {
+    return this.serviceService.getReports(options);
   }
 
   @ApiOperation({ summary: 'get templates' })

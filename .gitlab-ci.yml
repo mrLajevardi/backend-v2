@@ -1,7 +1,11 @@
 stages:     # List of stages for jobs, and their order of execution
   - test
   - build
+  - publish
   - deploy
+variables:
+  IMAGE_NAME: $CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME:latest
+  IMAGE_FULLPATH: $CI_REGISTRY/$IMAGE_NAME
 
 .job-cache:
   cache:  # Cache modules in between jobs
@@ -21,7 +25,7 @@ unit-test-job:   # This job runs in the test stage.
   only:
     - develop
     - merge_requests
-    - main
+    # - main
   script:
     - npm run test
   dependencies: []
@@ -40,7 +44,7 @@ lint-test-job:
     - .job-cache
   only:
     - develop
-    - main
+    # - main
     - merge_requests
   dependencies: []
   script:
@@ -57,17 +61,99 @@ develop server deploy job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   only:
     - develop
-    - main
+    # - main
   dependencies: []
   script:
     - .\deploy.ps1
 
-test server deploy job:
-  stage: deploy
-  tags: 
+# test server deploy job:
+#   stage: deploy
+#   tags: 
+#    - release
+#   only:
+#     - release
+#   dependencies: []
+#   script: 
+#     - sh deploy.sh
+
+build image:
+  image: docker
+  stage: publish
+  only: 
    - release
-  only:
+  tags:
     - release
-  dependencies: []
-  script: 
-    - sh deploy.sh
+  services:
+    - docker:dind
+  before_script: 
+    - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
+  script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - cp /var/services/configs/.env ./ -f
+    - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
+    # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
+    # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push "$CI_REGISTRY/$IMAGE_NAME"
+
+deploy image:
+  stage: deploy
+  only: 
+   - release
+  services:
+    - docker:dind
+  tags:
+    - release
+  before_script:
+    - export IMAGE_NAME="$IMAGE_NAME"
+  script:
+    - cp /var/services/configs/.env ./ -f
+    - cp /var/services/sa_password.txt ./ -f
+    - cat ./sa_password.txt
+    - cat .env
+    - export IMAGE_NAME=${IMAGE_FULLPATH}
+    - echo $IMAGE_NAME 
+    - docker compose up -d
+
+
+build prod image:
+  image: docker
+  stage: publish
+  only: 
+   - main
+  tags:
+    - production
+  services:
+    - docker:dind
+  before_script: 
+    - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
+  script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - cp /var/services/configs/.env ./ -f
+    - cp /var/services/configs/vcdConfig.ts ./src/wrappers/mainWrapper/vcdConfig.ts -f
+    - cp /var/services/configs/vcdAuthConfig.ts ./src/wrappers/mainWrapper/vcdAuthConfig.ts -f
+    - cp /var/services/vcdConfig.ts ./src/wrappers/main-wrapper/vcdConfig.ts -f
+    - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
+    # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
+    # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push "$CI_REGISTRY/$IMAGE_NAME"
+
+deploy prod image:
+  stage: deploy
+  only: 
+   - main
+  services:
+    - docker:dind
+  tags:
+    - production
+  before_script:
+    - export IMAGE_NAME="$IMAGE_NAME"
+  script:
+    - cp /var/services/configs/.env ./ -f
+    - cp /var/services/sa_password.txt ./ -f
+    - cat ./sa_password.txt
+    - cat .env
+    - export IMAGE_NAME=${IMAGE_FULLPATH}
+    - echo $IMAGE_NAME 
+    - docker compose up -d

@@ -62,7 +62,7 @@ export class PoliciesGuard implements CanActivate {
     props: PolicyHandlerOptions,
   ): boolean {
     console.log('exec policy handler');
-    console.log(ability.rules[0].conditions, props);
+    // console.log(ability.rules[0].conditions, props);
     if (typeof handler === 'function') {
       const retVal: boolean = handler(ability, props);
       console.log(ability, retVal);
