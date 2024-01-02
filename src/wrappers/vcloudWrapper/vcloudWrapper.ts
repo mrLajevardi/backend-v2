@@ -46,7 +46,7 @@ export class VcloudWrapper extends Wrapper {
         user: userEndpoints,
       },
     };
-    const baseUrl = 'https://labvpc.aradcloud.com';
+    const baseUrl = process.env.VCLOUD_BASE_URL;
     super(httpsAgent, endPoints, baseUrl);
   }
 }
