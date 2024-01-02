@@ -135,10 +135,23 @@ export class InvoicesService implements BaseInvoiceService {
     const userId = options.user.userId;
 
     let dataItemType: InvoiceItemsDto[];
+    let invoiceName = null;
 
     if (data.templateId) {
+      const template: Templates = await this.templateTableService.findById(
+        data.templateId,
+      );
+      invoiceName = template.name;
       dataItemType = await this.convertAiTemplateToItemType(data.templateId);
     } else {
+      const count =
+        (await this.invoicesTable.count({
+          where: {
+            userId: userId,
+            serviceTypeId: ServiceTypesEnum.Ai,
+          },
+        })) + 1;
+      invoiceName = 'سرویس هوش مصنوعی ' + count;
       dataItemType = data.itemsTypes;
     }
 
@@ -212,7 +225,7 @@ export class InvoicesService implements BaseInvoiceService {
       servicePlanType: ServicePlanTypeEnum.Static,
       voided: false,
       planAmount: 0,
-      name: ServiceTypesEnum.Ai + ' test ',
+      name: invoiceName,
       datacenterName: serviceType.datacenterName,
       templateId: data.templateId,
     });
@@ -535,7 +548,7 @@ export class InvoicesService implements BaseInvoiceService {
     return this.transactionTable.findOne({
       where: {
         paymentToken: authorityCode,
-        invoiceId: Not(IsNull()),
+        // invoiceId: Not(IsNull()),
         userId: options.user.userId,
       },
     });
