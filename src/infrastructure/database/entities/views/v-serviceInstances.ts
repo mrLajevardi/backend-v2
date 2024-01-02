@@ -8,6 +8,7 @@ import { ServiceItems } from '../ServiceItems';
 import { ServiceProperties } from '../ServiceProperties';
 import { Tasks } from '../Tasks';
 import { Tickets } from '../Tickets';
+import { VServiceInstanceDetail } from './v-serviceInstanceDetail';
 
 // @Index('index_zare_IsDeleted', ['isDeleted'], {})
 // @Index('PK_ServiceInstances', ['id'], { unique: true })
@@ -131,6 +132,13 @@ export class VServiceInstances {
     (serviceItems) => serviceItems.vServiceInstance,
   )
   serviceItems: ServiceItems[];
+
+  @OneToMany(
+    () => VServiceInstanceDetail,
+    (VServiceInstanceDetail) => VServiceInstanceDetail.vServiceInstance,
+  )
+  @JoinColumn([{ name: 'id', referencedColumnName: 'serviceInstanceId' }])
+  vServiceItems: VServiceInstanceDetail[];
 
   // @OneToMany(() => ServicePlans, (servicePlans) => servicePlans.serviceInstance)
   // servicePlans: ServicePlans[];

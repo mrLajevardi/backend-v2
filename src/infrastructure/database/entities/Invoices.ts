@@ -125,7 +125,7 @@ export class Invoices {
   })
   templateId: string;
 
-  @Column(isTestingEnv() ? 'int' : 'int', {
+  @Column(isTestingEnv() ? 'decimal' : 'decimal', {
     name: 'ServiceCost',
     nullable: true,
   })

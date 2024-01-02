@@ -10,6 +10,7 @@ import { ServiceItems } from '../ServiceItems';
 import { ServiceProperties } from '../ServiceProperties';
 import { Tasks } from '../Tasks';
 import { Tickets } from '../Tickets';
+import { VServiceInstances } from './v-serviceInstances';
 
 @Entity({
   name: 'V_ServiceDetail',
@@ -202,4 +203,16 @@ export class VServiceInstanceDetail {
 
   @OneToMany(() => Tickets, (tickets) => tickets.serviceInstance)
   tickets: Tickets[];
+
+  @ManyToOne(
+    () => VServiceInstances,
+    (vServiceInstances) => vServiceInstances.vServiceItems,
+  )
+  @JoinColumn([
+    {
+      name: isTestingEnv() ? 'serviceInstanceId2' : 'serviceInstanceId',
+      referencedColumnName: 'id',
+    },
+  ])
+  vServiceInstance: VServiceInstances;
 }
