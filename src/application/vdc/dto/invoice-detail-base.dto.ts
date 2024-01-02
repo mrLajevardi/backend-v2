@@ -12,6 +12,7 @@ export class InvoiceDetailBaseDto extends BaseResultDto {
   rawAmountWithTax?: number;
   rawAmountTax?: number;
   templateId?: string;
+  name?: string;
   baseAmount?: number;
   serviceCost?: number;
   serviceCostTax?: number;

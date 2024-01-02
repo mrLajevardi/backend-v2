@@ -273,6 +273,7 @@ export class AiService {
       (res.finalPriceTax = model[0].finalAmountWithTax - model[0].finalAmount),
       // templateId:model[0],
       (res.finalPriceWithTax = model[0].finalAmountWithTax),
+      (res.name = model[0].name),
       (res.templateId = model[0].templateId?.toString()),
       // finalPriceWithTax:item.rawAmount,
       (res.items = []),

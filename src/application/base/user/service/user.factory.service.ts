@@ -20,9 +20,9 @@ export class UsersFactoryService {
   ): Promise<void> {
     const invoice = await this.invoiceTableService.findById(invoiceId);
     if (invoice.serviceTypeId === ServiceTypesEnum.Vdc) {
-      if (invoice.servicePlanType === ServicePlanTypeEnum.Payg) {
+      if (invoice.servicePlanType === ServicePlanTypeEnum.Static) {
         await this.createServiceService.createService(options, { invoiceId });
-      } else if (invoice.servicePlanType === ServicePlanTypeEnum.Static) {
+      } else if (invoice.servicePlanType === ServicePlanTypeEnum.Payg) {
         await this.paygServiceService.createPaygVdcService(
           {
             invoiceId,
