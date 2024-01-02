@@ -28,6 +28,9 @@ export class InvoiceItemList {
   @Column({ name: 'UserID' })
   userId: number;
 
+  @Column({ name: 'Name' })
+  name: string;
+
   @Column({ name: 'InvoiceCode' })
   invoiceCode: number;
 
