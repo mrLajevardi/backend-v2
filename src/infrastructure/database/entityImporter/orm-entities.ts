@@ -60,6 +60,7 @@ import { ServiceDiscount } from '../entities/ServiceDiscount';
 import { VUsers } from '../entities/views/v-users';
 import { UserAcls } from '../entities/views/user-acls';
 import { Files } from '../entities/Files';
+import {VReportsUser} from "../entities/views/v-reports-user";
 // import { ItemTypesConfig } from '../entities/ItemTypesConfig';
 
 export const dbEntities = [
@@ -125,4 +126,5 @@ export const dbEntities = [
   VServiceInstanceDetail,
   ServiceDiscount,
   Files,
+  VReportsUser,
 ];
