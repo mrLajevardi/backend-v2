@@ -22,6 +22,7 @@ import { InvoicesModule } from '../../invoice/invoices.module';
 import { VmModule } from '../../../vm/vm.module';
 import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
+import { VReportsUserModule } from '../../crud/v-reports-user-table/v-reports-user.module';
 
 describe('ServiceAdminService', () => {
   let service: ServiceAdminService;
@@ -46,6 +47,7 @@ describe('ServiceAdminService', () => {
         VmModule,
         VServiceInstancesTableModule,
         VServiceInstancesDetailTableModule,
+        VReportsUserModule,
       ],
       providers: [
         ServiceAdminService,
