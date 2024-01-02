@@ -9,7 +9,7 @@ const password = process.env.ROBOT_TOKEN;
  */
 module.exports = async function getToken() {
   const response = await axios.default.post(
-    'http://localhost:3000/auth/robot/login',
+    `http://${process.env.HOST}:${process.env.PORT}/auth/robot/login`,
     {
       token: password,
     },
