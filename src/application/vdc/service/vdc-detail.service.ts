@@ -92,8 +92,8 @@ export class VdcDetailService implements BaseVdcDetailService {
       );
       res.push({
         title: disk.name,
-        usage: fres.used,
-        value: fres.limit,
+        usage: disk.storageUsedMB,
+        value: disk.storageLimitMB,
         id: diskId,
       });
     }
