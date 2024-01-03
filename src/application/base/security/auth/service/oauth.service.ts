@@ -463,7 +463,7 @@ export class OauthService {
     newUser.family = lastname || 'گرامی';
     newUser.phoneNumber = phoneNumber;
     newUser.email = email;
-    newUser.active = data.active;
+    newUser.active = true;
     newUser.phoneVerified = true;
     newUser.acceptTermsOfService = data.acceptTermsOfService;
     newUser.code = null;
