@@ -258,7 +258,7 @@ export class CreateServiceService {
 
       const aiUserId: number = aiGetUserIdRequest.data.userId;
       const aiUserToken = aiGetUserIdRequest.data.token;
-      const aiCreateServiceUrl = process.env.AI_BACK_URL + '/api/Cloud/QaLists';
+      const aiCreateServiceUrl = process.env.AI_BACK_URL + '/api/Cloud/QaList';
 
       const aiCreateServiceData = {
         name: invoice.name,
@@ -276,11 +276,15 @@ export class CreateServiceService {
         expiration: serviceInstance.expireDate,
       };
 
-      await axios
-        .post(aiCreateServiceUrl, aiCreateServiceData, axiosConfig)
-        .catch((error) => {
-          return new AiApiException();
-        });
+      const createQaList = await axios.post(
+        aiCreateServiceUrl,
+        aiCreateServiceData,
+        axiosConfig,
+      );
+
+      if (![200, 201].includes(createQaList.status)) {
+        throw new AiApiException();
+      }
 
       const taskId = task.taskId;
 
