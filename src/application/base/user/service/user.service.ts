@@ -208,7 +208,7 @@ export class UserService {
       deleted: false,
       email: null,
       password: await encryptPassword(password),
-      active: false,
+      active: true,
       phoneVerified: true,
       acceptTermsOfService: true,
     };
