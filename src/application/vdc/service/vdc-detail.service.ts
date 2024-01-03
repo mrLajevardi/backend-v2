@@ -55,6 +55,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     memoryAllocation: number,
     numberOfvms: number,
     option: SessionRequest,
+    bit = 0,
   ): Promise<VdcStoragesDetailResultDto[]> {
     const res: VdcStoragesDetailResultDto[] = [];
 
@@ -90,12 +91,21 @@ export class VdcDetailService implements BaseVdcDetailService {
         this.vmService,
         option,
       );
-      res.push({
-        title: disk.name,
-        usage: disk.storageUsedMB,
-        value: disk.storageLimitMB,
-        id: diskId,
-      });
+      if (bit == 0) {
+        res.push({
+          title: disk.name,
+          usage: disk.storageUsedMB,
+          value: disk.storageLimitMB,
+          id: diskId,
+        });
+      } else {
+        res.push({
+          title: disk.name,
+          usage: fres.used,
+          value: fres.limit,
+          id: diskId,
+        });
+      }
     }
 
     return Promise.resolve(res);
@@ -268,13 +278,17 @@ export class VdcDetailService implements BaseVdcDetailService {
     // const vdcModel = new VdcDetailsResultDto();
     // await this.tttttt(vdcDetail, vdcModel, serviceInstanceId, option);
 
+    //TechnicalDebt ==> Exihibtion
+
     const diskInfoModel = await this.getStorageDetailVdc(
       serviceInstanceId,
       Number(vdcDetail.ram.value),
       Number(vdcDetail.vm.value),
       option,
+      1,
     );
 
+    // await this.tttttt(vdcDetail, vdcModel, serviceInstanceId, option);
     this.vdcDetailFactory.fillModelVdcItemLimit(
       model,
       vdcDetail,
