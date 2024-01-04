@@ -55,7 +55,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     memoryAllocation: number,
     numberOfvms: number,
     option: SessionRequest,
-    bit = 0,
+    // bit = 0,
   ): Promise<VdcStoragesDetailResultDto[]> {
     const res: VdcStoragesDetailResultDto[] = [];
 
@@ -80,32 +80,35 @@ export class VdcDetailService implements BaseVdcDetailService {
     for (const disk of vdcData.data.record) {
       const splitHref = disk.href.split('/');
       const diskId = splitHref[splitHref.length - 1];
-      const fres = await CalcSwapStorage(
-        {
-          memoryAllocation: memoryAllocation,
-          storageLimit: disk.storageLimitMB,
-          storageUsed: disk.storageUsedMB,
-          serviceInstanceId: serviceInstanceId,
-          numberOfVms: numberOfvms,
-        },
-        this.vmService,
-        option,
-      );
-      if (bit == 0) {
-        res.push({
-          title: disk.name,
-          usage: disk.storageUsedMB,
-          value: disk.storageLimitMB,
-          id: diskId,
-        });
-      } else {
-        res.push({
-          title: disk.name,
-          usage: fres.used,
-          value: fres.limit,
-          id: diskId,
-        });
+
+      const name = GetCodeDisk(disk.name);
+
+      let fres: { used: number; limit: number } = {
+        limit: disk.storageLimitMB,
+        used: disk.storageUsedMB,
+      };
+
+      if (name == DiskItemCodes.Standard) {
+        const calcSwap = await CalcSwapStorage(
+          {
+            memoryAllocation: memoryAllocation,
+            storageLimit: disk.storageLimitMB,
+            storageUsed: disk.storageUsedMB,
+            serviceInstanceId: serviceInstanceId,
+            numberOfVms: numberOfvms,
+          },
+          this.vmService,
+          option,
+        );
+        fres = calcSwap;
       }
+
+      res.push({
+        title: disk.name,
+        usage: fres.used,
+        value: fres.limit,
+        id: diskId,
+      });
     }
 
     return Promise.resolve(res);
@@ -285,7 +288,7 @@ export class VdcDetailService implements BaseVdcDetailService {
       Number(vdcDetail.ram.value),
       Number(vdcDetail.vm.value),
       option,
-      1,
+      // 1,
     );
 
     // await this.tttttt(vdcDetail, vdcModel, serviceInstanceId, option);
