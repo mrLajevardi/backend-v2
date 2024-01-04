@@ -85,13 +85,13 @@ export class CompanyService {
     const logo = await this.connection
       .createQueryBuilder()
       .insert()
-      .into('FileUpload')
-      .values({ fileStream: fileStream, name: fileName })
-      .returning('Inserted.stream_id')
+      .into('Files')
+      .values({ fileStream: fileStream, fileName: fileName })
+      .returning('Inserted.guid')
       .execute();
 
     const updateCompanyData: UpdateCompanyDto = {
-      LogoId: logo.raw[0].stream_id,
+      LogoId: logo.raw[0].guid,
     };
 
     const updatedCompany: Company = await this.companyTable.update(

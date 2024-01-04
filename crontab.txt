@@ -1,0 +1,1 @@
+* * * * * node ./scripts/check-payg-services.js > /dev/stdout

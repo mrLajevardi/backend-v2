@@ -29,7 +29,8 @@ export const CalcSwapStorage = async (
   let used = 0;
   let allVmStorages = 0;
 
-  allVdcVms.values.forEach((vm) => (allVmStorages += vm.storage - vm.memory));
+  // allVdcVms.values.forEach((vm) => (allVmStorages += vm.storage - vm.memory));
+  allVdcVms.values.forEach((vm) => (allVmStorages += vm.storage));
   // (used = model.storageUsed - allMemoryVms),
   (used = allVmStorages),
     (limit = model.storageLimit - model.numberOfVms * model.memoryAllocation);

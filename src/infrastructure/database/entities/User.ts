@@ -14,7 +14,7 @@ import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
-import { FileUpload } from './FileUpload';
+import { Files } from './Files';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
@@ -177,11 +177,6 @@ export class User {
   })
   guid: string;
 
-  // @AfterLoad()
-  // afterLoad1(@Request() options) {
-  //
-  // }
-
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
 
@@ -198,11 +193,11 @@ export class User {
   @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])
   company: Company;
 
-  @ManyToOne(() => FileUpload, (file) => file.user)
-  @JoinColumn({ name: 'avatarId', referencedColumnName: 'streamId' })
-  avatar: FileUpload;
+  @ManyToOne(() => Files /*, (file) => file.user*/)
+  @JoinColumn({ name: 'avatarId', referencedColumnName: 'guid' })
+  avatar: Files;
 
-  @ManyToOne(() => FileUpload)
-  @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'streamId' })
-  companyLetter: FileUpload;
+  @ManyToOne(() => Files)
+  @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'guid' })
+  companyLetter: Files;
 }

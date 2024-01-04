@@ -25,6 +25,9 @@ import { NatRulesListDTO } from './dto/nat-rules-list.dto';
 @ApiTags('Nat')
 @Controller('nat')
 @ApiBearerAuth()
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Nat, props)),
+// )
 export class NatController {
   constructor(private readonly service: NatService) {}
 

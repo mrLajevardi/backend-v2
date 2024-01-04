@@ -45,7 +45,7 @@ export class ApplicationProfileListQueryDto {
   @Transform((item) => Number(item.value))
   @IsNumber()
   @Min(1)
-  @Max(128)
+  @Max(500)
   pageSize: number;
 
   @ApiProperty({ type: String, required: false })

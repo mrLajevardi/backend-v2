@@ -38,9 +38,17 @@ import { PaygServiceService } from '../services/payg-service.service';
 import { CreatePaygVdcServiceDto } from '../../invoice/dto/create-payg-vdc-service.dto';
 import { ServiceTypesEnum } from '../enum/service-types.enum';
 import { ServicePlanTypeEnum } from '../enum/service-plan-type.enum';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
+import { Action } from '../../security/ability/enum/action.enum';
+import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
+import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 
 @ApiTags('Services')
 @Controller('services')
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.Services, props)),
+// )
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class ServiceController {
   constructor(
@@ -67,6 +75,9 @@ export class ServiceController {
   }
 
   // create new item
+  @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+    ability.can(Action.Delete, subject(AclSubjectsEnum.Services, props)),
+  )
   @ApiOperation({ summary: 'Deletes a service' })
   @ApiParam({ name: 'serviceInstanceId', description: 'service instance ID' })
   @ApiResponse({
@@ -100,7 +111,6 @@ export class ServiceController {
     @Query('id') id?: string,
   ): Promise<GetServicesReturnDto[]> {
     return this.serviceService.getServices(options, typeId, id);
-    // await this.invoicesTable.create(dto);
   }
 
   @ApiOperation({ summary: 'get services with Items for a user' })
@@ -125,9 +135,17 @@ export class ServiceController {
       typeId,
       id,
     )) as GetAllVdcServiceWithItemsResultDto[];
-    // await this.invoicesTable.create(dto);
   }
 
+  @ApiOperation({ summary: 'get ai services' })
+  @ApiResponse({
+    status: 200,
+    description: 'user services have been fetched successfully',
+  })
+  @Get('/ai/list')
+  async getAiServices(@Request() options: SessionRequest): Promise<any> {
+    return await this.serviceService.getAiServices(options);
+  }
   @ApiOperation({ summary: 'Create a new item' })
   @ApiResponse({
     status: 201,
@@ -279,13 +297,8 @@ export class ServiceController {
     required: true,
     description: 'ServiceType',
   })
-  async reportService(): Promise<any> {
-    return {
-      unpaidInvoices: 8,
-      activeTickets: 20,
-      servicesExpiringCount: 15,
-      servicesBudgetCount: 16,
-    };
+  async reportService(@Request() options: SessionRequest): Promise<any> {
+    return this.serviceService.getReports(options);
   }
 
   @ApiOperation({ summary: 'get templates' })

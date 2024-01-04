@@ -68,15 +68,15 @@ import { BudgetingModule } from './application/base/budgeting/budgeting.module';
 
     BullModule.forRoot({
       redis: {
-        host: '127.0.0.1',
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
       },
     }),
 
     BullMQModule.forRoot({
       connection: {
-        host: '127.0.0.1',
-        port: 6379,
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
       },
     }),
     //infrastructure

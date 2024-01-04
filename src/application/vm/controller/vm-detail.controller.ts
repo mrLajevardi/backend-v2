@@ -13,10 +13,18 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { SortDateTypeEnum } from '../../../infrastructure/filters/sort-date-type.enum';
+import { PureAbility, subject } from '@casl/ability';
+import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
+import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
+import { Action } from 'src/application/base/security/ability/enum/action.enum';
+import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
 // import { toNumber } from 'lodash';
 
 @ApiTags('VM-Detail')
 @Controller('vm-detail')
+// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
+//   ability.can(Action.Manage, subject(AclSubjectsEnum.VmDetail, props)),
+// )
 // @UseFilters(new HttpExceptionFilter())
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class VmDetailController {

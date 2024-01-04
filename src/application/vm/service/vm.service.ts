@@ -781,7 +781,7 @@ export class VmService {
     const data: any = {
       name: vm.data.name,
       description: vm.data.description,
-      bootDelay: vm.data?.bootOptions?.bootDelay,
+      bootDelay: vm.data?.bootOptions?.bootDelay ?? 0,
       enterBIOSSetup: vm.data?.bootOptions?.enterBIOSSetup,
       status: VmStatusEnum[vmList.data.record[0].status],
       snapshot: vmList.data.record[0].snapshot,
@@ -968,24 +968,24 @@ export class VmService {
     );
     const question = await mainWrapper.user.vm.getQuestion(session, vmId);
     let questionText = null;
-    try {
-      const translatedQuestion = await axios.post(
-        'http://172.20.51.101:3000/translate',
-        {
-          text: question.question,
-          lang: 'fa',
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.ARAD_TRANSLATION_TOKEN}`,
-          },
-        },
-      );
-      questionText = translatedQuestion.data.translatedText;
-    } catch (err) {
-      questionText = question.question;
-    }
-    console.log(question.choices, question.questionId, questionText);
+    // try {
+    //   const translatedQuestion = await axios.post(
+    //     'http://172.20.51.101:3000/translate',
+    //     {
+    //       text: question.question,
+    //       lang: 'fa',
+    //     },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${process.env.ARAD_TRANSLATION_TOKEN}`,
+    //       },
+    //     },
+    //   );
+    //   questionText = translatedQuestion.data.translatedText;
+    // } catch (err) {
+    // }
+    questionText = question.question;
+    // console.log(question.choices, question.questionId, questionText);
 
     return Promise.resolve({
       choices: question.choices,
@@ -1392,7 +1392,7 @@ export class VmService {
     serviceInstanceId: string,
     vmId: string,
     data,
-  ): Promise<TaskReturnDto> {
+  ): Promise<void> {
     const userId = options.user.userId;
     const props: any =
       await this.servicePropertiesService.getAllServiceProperties(
@@ -1402,23 +1402,21 @@ export class VmService {
       userId,
       props.orgId,
     );
-    const answer = await mainWrapper.user.vm.postAnswer(
+    await mainWrapper.user.vm.postAnswer(
       session,
       vmId,
       data.questionId,
       data.choiceId,
     );
-    await this.loggerService.info(
-      'vm',
-      'answer',
-      {
-        _object: answer.__vcloudTask.split('task/')[1],
-      },
-      { ...options.locals },
-    );
-    return Promise.resolve({
-      taskId: answer.__vcloudTask.split('task/')[1],
-    });
+    // await this.loggerService.info(
+    //   'vm',
+    //   'answer',
+    //   {
+    //     _object: answer.__vcloudTask.split('task/')[1],
+    //   },
+    //   { ...options.locals },
+    // );
+    return;
   }
 
   async powerOnVm(
