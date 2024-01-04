@@ -127,7 +127,7 @@ export class CreateServiceService {
       const userId = options.user.userId;
       const userCredit = await this.userInfoService.getUserCreditBy(userId);
       const user: User = await this.userService.findById(userId);
-      if (userCredit < invoice.finalAmount) {
+      if (userCredit < invoice.finalAmountWithTax) {
         return new NotEnoughCreditException();
       }
 
@@ -138,7 +138,7 @@ export class CreateServiceService {
           description: '',
           invoiceId: invoice.id,
           isApproved: false,
-          value: -invoice.finalAmount,
+          value: -invoice.finalAmountWithTax,
           paymentToken: null,
           paymentType: PaymentTypes.PayByCredit,
           serviceInstanceId: null,

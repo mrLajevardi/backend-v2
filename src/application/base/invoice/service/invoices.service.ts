@@ -102,14 +102,29 @@ export class InvoicesService implements BaseInvoiceService {
         throw new Error(`Unsupported invoice type: ${dto.type}`);
     }
   }
+  async calculateTemplateDiscount(templateId: string): Promise<number> {
+    const template: Templates = await this.templateTableService.findById(
+      templateId,
+    );
 
+    if (isNil(template)) {
+      throw new BadRequestException();
+    }
+
+    const decode = JSON.parse(template.structure);
+
+    if (!isNil(decode.percent)) {
+      return Number(decode.percent);
+    } else {
+      return 0;
+    }
+  }
   async convertAiTemplateToItemType(
     templateId: string,
   ): Promise<InvoiceItemsDto[]> {
     const template: Templates = await this.templateTableService.findById(
       templateId,
     );
-
     // TODO must be check template belongs to ai templates
     if (isNil(template)) {
       throw new BadRequestException();
@@ -136,12 +151,18 @@ export class InvoicesService implements BaseInvoiceService {
 
     let dataItemType: InvoiceItemsDto[];
     let invoiceName = null;
+    let discountPercent = 1;
 
     if (data.templateId) {
       const template: Templates = await this.templateTableService.findById(
         data.templateId,
       );
       invoiceName = template.name;
+      const calculateDiscountTemplate: number =
+        await this.calculateTemplateDiscount(data.templateId);
+
+      discountPercent = discountPercent - calculateDiscountTemplate;
+
       dataItemType = await this.convertAiTemplateToItemType(data.templateId);
     } else {
       const count =
@@ -194,7 +215,8 @@ export class InvoicesService implements BaseInvoiceService {
       0,
     );
     const rawAmount = baseAmount * checkPeriodItem.maxPerRequest;
-    const finalAmount = rawAmount * (1 + checkPeriodItem.percent);
+    const finalAmount =
+      rawAmount * (1 + checkPeriodItem.percent) * discountPercent;
 
     // Retrieve tax percent
     const taxPercent = await this.systemSettingsTableService.findOne({
