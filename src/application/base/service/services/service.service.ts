@@ -606,7 +606,7 @@ export class ServiceService {
 
     return {
       unpaidInvoices: res?.activeInvoices,
-      activeTickets: res?.activeInvoices,
+      activeTickets: res?.ticketCount,
       servicesExpiringCount: res?.serviceExpiredCount,
       servicesBudgetCount: res?.serviceNeedBudgetCount,
     };
