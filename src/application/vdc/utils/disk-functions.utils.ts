@@ -45,26 +45,3 @@ export const CalcSwapStorageVdc = async (
     (limit = model.storageLimit - swapStorageLimit);
   return { used, limit };
 };
-
-export const CalcSwapStorageDisk = async (
-  model: DiskCalcSwapStorageModel,
-  vmService: VmService,
-  option: SessionRequest,
-) => {
-  const allVdcVms = await vmService.getAllUserVm(
-    option,
-    model.serviceInstanceId,
-  );
-  let limit = 0;
-  let used = 0;
-  let allVmStorages = 0;
-
-  const swapStorage = model.numberOfVms * model.memoryAllocation;
-
-  // allVdcVms.values.forEach((vm) => (allVmStorages += vm.storage - vm.memory));
-  allVdcVms.values.forEach((vm) => (allVmStorages += vm.storage));
-  // (used = model.storageUsed - allMemoryVms),
-  (used = model.storageUsed - swapStorage),
-    (limit = model.storageLimit - swapStorage);
-  return { used, limit };
-};

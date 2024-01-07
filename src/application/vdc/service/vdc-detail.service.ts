@@ -24,10 +24,7 @@ import { ServiceService } from '../../base/service/services/service.service';
 import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-all-vdc-service-with-items-result.dto';
 import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
 import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
-import {
-  CalcSwapStorageDisk, CalcSwapStorageVdc,
-  GetCodeDisk,
-} from '../utils/disk-functions.utils';
+import { CalcSwapStorageVdc, GetCodeDisk } from '../utils/disk-functions.utils';
 import { GetVdcIdBy } from '../utils/vdc-properties.utils';
 import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.enum';
 import { PaygCostCalculationService } from '../../base/invoice/service/payg-cost-calculation.service';
