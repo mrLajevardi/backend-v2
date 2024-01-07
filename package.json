@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "author": "",
-  "private": true,  
+  "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -43,6 +43,7 @@
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.3.0",
+    "@nestjs/throttler": "^5.1.1",
     "@nestjs/typeorm": "^9.0.1",
     "@sentry/node": "^5.30.0",
     "@sentry/tracing": "^7.64.0",
