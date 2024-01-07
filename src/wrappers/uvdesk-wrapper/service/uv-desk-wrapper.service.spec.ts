@@ -1,18 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { UvDeskWrapperService } from './uv-desk-wrapper.service';
-import { UvDeskEndpointsService } from './endpoints/uv-desk-endpoints.service';
-import { ConfigModule } from '@nestjs/config';
+import { TestBed } from '@automock/jest';
 
 describe('UvDeskWrapperService', () => {
   let service: UvDeskWrapperService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule],
-      providers: [UvDeskWrapperService, UvDeskEndpointsService],
-    }).compile();
-
-    service = module.get<UvDeskWrapperService>(UvDeskWrapperService);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(UvDeskWrapperService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

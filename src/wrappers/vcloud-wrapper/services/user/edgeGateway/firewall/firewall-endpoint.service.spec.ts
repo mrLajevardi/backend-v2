@@ -1,15 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestBed } from '@automock/jest';
 import { FirewallEndpointService } from './firewall-endpoint.service';
 
 describe('FirewallEndpointService', () => {
   let service: FirewallEndpointService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [FirewallEndpointService],
-    }).compile();
-
-    service = module.get<FirewallEndpointService>(FirewallEndpointService);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(FirewallEndpointService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

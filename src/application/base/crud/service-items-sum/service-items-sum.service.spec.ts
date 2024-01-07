@@ -1,26 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceItemsSumService } from './service-items-sum.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { TestBed } from '@automock/jest';
 
 describe('ServiceItemsSumService', () => {
   let service: ServiceItemsSumService;
-  let module: TestingModule;
-
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [ServiceItemsSumService],
-    }).compile();
-
-    service = module.get<ServiceItemsSumService>(ServiceItemsSumService);
-  });
-
-  afterAll(async () => {
-    await module.close();
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(ServiceItemsSumService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

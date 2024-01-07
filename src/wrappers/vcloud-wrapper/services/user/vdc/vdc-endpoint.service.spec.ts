@@ -1,15 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { VdcEndpointService } from './vdc-endpoint.service';
+import { TestBed } from '@automock/jest';
 
 describe('VdcEndpointService', () => {
   let service: VdcEndpointService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [VdcEndpointService],
-    }).compile();
-
-    service = module.get<VdcEndpointService>(VdcEndpointService);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(VdcEndpointService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

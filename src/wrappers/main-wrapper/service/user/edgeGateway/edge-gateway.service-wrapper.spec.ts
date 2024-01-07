@@ -1,17 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { EdgeGatewayWrapperService } from './edge-gateway-wrapper.service';
-import { VcloudWrapperModule } from 'src/wrappers/vcloud-wrapper/vcloud-wrapper.module';
+import { TestBed } from '@automock/jest';
 
 describe('EdgeGatewayService', () => {
   let service: EdgeGatewayWrapperService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [VcloudWrapperModule],
-      providers: [EdgeGatewayWrapperService],
-    }).compile();
-
-    service = module.get<EdgeGatewayWrapperService>(EdgeGatewayWrapperService);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(EdgeGatewayWrapperService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

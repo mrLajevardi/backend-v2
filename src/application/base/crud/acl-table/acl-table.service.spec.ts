@@ -1,22 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ACLTableService } from './acl-table.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { TestBed } from '@automock/jest';
 
 describe('ACLTableService', () => {
   let service: ACLTableService;
-  let module: TestingModule;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [ACLTableService],
-    }).compile();
-
-    service = module.get<ACLTableService>(ACLTableService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+    const { unit } = TestBed.create(ACLTableService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {
