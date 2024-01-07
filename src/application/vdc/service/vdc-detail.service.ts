@@ -24,13 +24,11 @@ import { ServiceService } from '../../base/service/services/service.service';
 import { GetAllVdcServiceWithItemsResultDto } from '../../base/service/dto/get-all-vdc-service-with-items-result.dto';
 import { VdcDetailEditGeneralQuery } from '../dto/vdc-detail-edit-general.query';
 import { BadRequestException } from '../../../infrastructure/exceptions/bad-request.exception';
-import { CalcSwapStorage, GetCodeDisk } from '../utils/disk-functions.utils';
-import { OrganizationTableService } from '../../base/crud/organization-table/organization-table.service';
+import { CalcSwapStorageVdc, GetCodeDisk } from '../utils/disk-functions.utils';
 import { GetVdcIdBy } from '../utils/vdc-properties.utils';
 import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.enum';
 import { PaygCostCalculationService } from '../../base/invoice/service/payg-cost-calculation.service';
 import { VServiceInstancesTableService } from '../../base/crud/v-service-instances-table/v-service-instances-table.service';
-import { isNil } from 'lodash';
 import { VServiceInstances } from '../../../infrastructure/database/entities/views/v-serviceInstances';
 import { VServiceInstancesDetailTableService } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
 import { VdcInvoiceDetailsResultDto } from '../dto/vdc-invoice-details.result.dto';
@@ -89,7 +87,7 @@ export class VdcDetailService implements BaseVdcDetailService {
       };
 
       if (name == DiskItemCodes.Standard) {
-        const calcSwap = await CalcSwapStorage(
+        fres = await CalcSwapStorageVdc(
           {
             memoryAllocation: memoryAllocation,
             storageLimit: disk.storageLimitMB,
@@ -100,7 +98,6 @@ export class VdcDetailService implements BaseVdcDetailService {
           this.vmService,
           option,
         );
-        fres = calcSwap;
       }
 
       res.push({
@@ -143,7 +140,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     )[0];
 
     this.vdcDetailFactory.getVdcDetailItemModel(vdcModels, res2);
-    await this.tttttt(vdcDetails, res2, serviceInstanceId, option);
+    await this.fillVdcItemDetailBy(vdcDetails, res2, serviceInstanceId, option);
 
     if (res2.servicePlanType == ServicePlanTypeEnum.Payg) {
       const vService: VServiceInstances =
@@ -158,22 +155,12 @@ export class VdcDetailService implements BaseVdcDetailService {
     return res2;
   }
 
-  private async tttttt(
+  private async fillVdcItemDetailBy(
     vdcDetails: GetAllVdcServiceWithItemsResultDto,
     res2: VdcDetailsResultDto,
     serviceInstanceId: string,
     option: SessionRequest,
   ) {
-    // if (vdcDetails == null) {
-    //   vdcDetails = (
-    //     (await this.serviceService.getServicesWithItems(
-    //       option,
-    //       'vdc',
-    //       serviceInstanceId,
-    //     )) as GetAllVdcServiceWithItemsResultDto[]
-    //   )[0];
-    // }
-
     res2.vm.usage = vdcDetails.serviceItems.find(
       (service) =>
         service.itemTypeCode.toLowerCase().trim() == VdcGenerationItemCodes.Vm,
@@ -291,7 +278,6 @@ export class VdcDetailService implements BaseVdcDetailService {
       // 1,
     );
 
-    // await this.tttttt(vdcDetail, vdcModel, serviceInstanceId, option);
     this.vdcDetailFactory.fillModelVdcItemLimit(
       model,
       vdcDetail,
