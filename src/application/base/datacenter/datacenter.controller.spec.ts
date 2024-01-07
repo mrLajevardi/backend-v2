@@ -5,14 +5,13 @@ import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result
 import { mockProviderVdcs } from './mock/providers-vdcs.mock';
 import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
 import { DatacenterFactoryService } from './service/datacenter.factory.service';
-import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
-import { CrudModule } from '../crud/crud.module';
-import { ServiceItemTypesTreeModule } from '../crud/service-item-types-tree/service-item-types-tree.module';
+import { TestBed } from '@automock/jest';
+import { UnitReference } from '@automock/core';
 
 describe('GroupController', () => {
   let controller: DatacenterController;
 
-  let module: TestingModule;
+  let module: UnitReference;
   function datacenterServiceMockFactory(
     getDatacenterConfigWithGenResult: DatacenterConfigGenResultDto[],
   ): Partial<DatacenterService> {
@@ -38,23 +37,12 @@ describe('GroupController', () => {
         gens: [{ name: 'g1', id: mockProviderVdcs.values[0].id, enable: true }],
       },
     ];
-    module = await Test.createTestingModule({
-      imports: [ServiceItemTypesTreeModule],
-      providers: [
-        {
-          provide: BASE_DATACENTER_SERVICE,
-          useValue: datacenterServiceMockFactory(datacenterConfigWithGenMock),
-        },
-        DatacenterFactoryService,
-      ],
-      controllers: [DatacenterController],
-    }).compile();
-
-    controller = module.get<DatacenterController>(DatacenterController);
-  });
-
-  afterAll(async () => {
-    await module.close();
+    const { unit, unitRef } = TestBed.create(DatacenterController)
+      .mock(BASE_DATACENTER_SERVICE)
+      .using(datacenterServiceMockFactory(datacenterConfigWithGenMock))
+      .compile();
+    module = unitRef;
+    controller = unit;
   });
 
   it('should be defined', () => {

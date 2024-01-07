@@ -1,28 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { SmsService } from './sms.service';
-import { EmailContentService } from './email-content.service';
-import { EmailService } from './email.service';
-import { NotificationService } from './notification.service';
+import { TestBed } from '@automock/jest';
 
 describe('SmsService', () => {
   let service: SmsService;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      providers: [
-        EmailContentService,
-        EmailService,
-        SmsService,
-        NotificationService,
-      ],
-    }).compile();
-
-    service = module.get<SmsService>(SmsService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(SmsService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

@@ -1,26 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
 import { InvoiceItemListService } from './invoice-item-list.service';
+import { TestBed } from '@automock/jest';
 
 describe('InvoiceItemLlist', () => {
   let service: InvoiceItemListService;
-  let module: TestingModule;
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [InvoiceItemListService],
-    }).compile();
-
-    service = module.get<InvoiceItemListService>(InvoiceItemListService);
-  });
-
-  afterAll(async () => {
-    await module.close();
-  });
-
-  afterAll(async () => {
-    await module.close();
+    const { unit } = TestBed.create(InvoiceItemListService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

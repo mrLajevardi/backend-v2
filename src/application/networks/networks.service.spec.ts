@@ -1,12 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NetworksService } from './networks.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { LoggerModule } from 'src/infrastructure/logger/logger.module';
-import { CrudModule } from '../base/crud/crud.module';
-import { ServiceModule } from '../base/service/service.module';
-import { SessionsModule } from '../base/sessions/sessions.module';
-import { DhcpService } from './dhcp.service';
-import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 import { SessionsService } from '../base/sessions/sessions.service';
 import { ServicePropertiesService } from '../base/service-properties/service-properties.service';
 import { NetworkWrapperService } from 'src/wrappers/main-wrapper/service/user/network/network-wrapper.service';
@@ -16,17 +8,18 @@ import { NetworkDto } from './dto/network.dto';
 import { NetworksTypesEnum } from 'src/wrappers/main-wrapper/service/user/network/enum/network-types.enum';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
-import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { CreateNetworkDto } from 'src/wrappers/main-wrapper/service/user/network/dto/create-network.dto';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
 import { generateNetworkMock } from './mock/networks.mock';
+import { TestBed } from '@automock/jest';
+import { UnitReference } from '@automock/core';
 
 describe('NetworksService', () => {
   let service: NetworksService;
   let sessionService: SessionsService;
   let servicePropertiesService: ServicePropertiesService;
   let networkWrapperService: NetworkWrapperService;
-  let module: TestingModule;
+  let module: UnitReference;
   let options: SessionRequest;
   const taskId = 'a7bbd087-0ed0-42f3-9380-a4ac3deb381b';
   const vcloudTask =
@@ -41,20 +34,9 @@ describe('NetworksService', () => {
   };
   const authToken = 'jwt';
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        LoggerModule,
-        ServicePropertiesModule,
-        SessionsModule,
-        CrudModule,
-        ServiceModule,
-        MainWrapperModule,
-      ],
-      providers: [NetworksService, DhcpService],
-    }).compile();
-
-    service = module.get<NetworksService>(NetworksService);
+    const { unit, unitRef } = TestBed.create(NetworksService).compile();
+    service = unit;
+    module = unitRef;
     sessionService = module.get<SessionsService>(SessionsService);
     servicePropertiesService = module.get<ServicePropertiesService>(
       ServicePropertiesService,
@@ -76,10 +58,6 @@ describe('NetworksService', () => {
         userId: 26,
       },
     } as SessionRequest;
-  });
-
-  afterAll(async () => {
-    await module.close();
   });
 
   it('should be defined', () => {

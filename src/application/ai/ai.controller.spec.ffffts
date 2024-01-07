@@ -23,6 +23,8 @@ import { InvoicesModule } from '../base/invoice/invoices.module';
 import { ServiceModule } from '../base/service/service.module';
 import { UserModule } from '../base/user/user.module';
 import { PayAsYouGoModule } from '../base/pay-as-you-go/pay-as-you-go.module';
+import { TestBed } from '@automock/jest';
+import { UnitReference } from '@automock/core';
 // import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 
 describe('AiController', () => {
@@ -39,27 +41,11 @@ describe('AiController', () => {
   let config: ConfigsTableService;
   let plan: PlansTableService;
 
-  let module: TestingModule;
+  let module: UnitReference;
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-        }),
-        DatabaseModule,
-        UserModule,
-        CrudModule,
-        InvoicesModule,
-        ServiceModule,
-        LoggerModule,
-        PayAsYouGoModule,
-        JwtModule,
-      ],
-      controllers: [AiController],
-      providers: [AiService],
-    }).compile();
-
-    controller = module.get<AiController>(AiController);
+    const { unit, unitRef } = TestBed.create(AiController).compile();
+    module = unitRef;
+    controller = unit;
     service = module.get<AiService>(AiService);
     user = module.get<UserService>(UserService);
     config = module.get<ConfigsTableService>(ConfigsTableService);
@@ -80,10 +66,6 @@ describe('AiController', () => {
     plan = module.get<PlansTableService>(PlansTableService);
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
-  });
-
-  afterAll(async () => {
-    await module.close();
   });
 
   it('should be defined', () => {

@@ -51,6 +51,7 @@ import { ClsModule } from 'nestjs-cls';
 import { EntitySubscriber } from './infrastructure/database/classes/entity.subscriber';
 import { EntityLogModule } from './application/base/entity-log/entity-log.module';
 import { BudgetingModule } from './application/base/budgeting/budgeting.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -65,6 +66,12 @@ import { BudgetingModule } from './application/base/budgeting/budgeting.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 40,
+      },
+    ]),
 
     BullModule.forRoot({
       redis: {

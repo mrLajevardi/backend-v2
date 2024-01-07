@@ -1,28 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { AitransactionsLogsStoredProcedureService } from './aitransactions-logs-stored-procedure.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { TestBed } from '@automock/jest';
 
 describe('AitransactionsLogsStoredProcedureService', () => {
   let service: AitransactionsLogsStoredProcedureService;
-  let module: TestingModule;
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [AitransactionsLogsStoredProcedureService],
-    }).compile();
-
-    service = module.get<AitransactionsLogsStoredProcedureService>(
+    const { unit } = TestBed.create(
       AitransactionsLogsStoredProcedureService,
-    );
-  });
-
-  afterAll(async () => {
-    await module.close();
-  });
-
-  afterAll(async () => {
-    await module.close();
+    ).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

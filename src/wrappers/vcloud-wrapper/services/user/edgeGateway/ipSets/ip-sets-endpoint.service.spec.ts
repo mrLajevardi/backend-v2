@@ -1,15 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { IpSetsEndpointService } from './ip-sets-endpoint.service';
+import { TestBed } from '@automock/jest';
 
 describe('IpSetsEndpointService', () => {
   let service: IpSetsEndpointService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [IpSetsEndpointService],
-    }).compile();
-
-    service = module.get<IpSetsEndpointService>(IpSetsEndpointService);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(IpSetsEndpointService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

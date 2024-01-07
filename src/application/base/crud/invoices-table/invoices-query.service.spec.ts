@@ -1,24 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicesQueryService } from './invoices-query.service';
+import { TestBed } from '@automock/jest';
 
 describe('InvoicesQueryService', () => {
   let service: InvoicesQueryService;
-  let module: TestingModule;
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      providers: [InvoicesQueryService],
-    }).compile();
-
-    service = module.get<InvoicesQueryService>(InvoicesQueryService);
-  });
-
-  afterAll(async () => {
-    await module.close();
-  });
-
-  afterAll(async () => {
-    await module.close();
+    const { unit } = TestBed.create(InvoicesQueryService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {
