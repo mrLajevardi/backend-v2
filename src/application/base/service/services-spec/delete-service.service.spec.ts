@@ -37,6 +37,7 @@ import { VmModule } from '../../../vm/vm.module';
 import { VServiceInstancesTableModule } from '../../crud/v-service-instances-table/v-service-instances-table.module';
 import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 import { VReportsUserModule } from '../../crud/v-reports-user-table/v-reports-user.module';
+import {TicketModule} from "../../ticket/ticket.module";
 
 describe('DeleteServiceService', () => {
   let service: DeleteServiceService;
@@ -73,6 +74,7 @@ describe('DeleteServiceService', () => {
         VServiceInstancesTableModule,
         VServiceInstancesDetailTableModule,
         VReportsUserModule,
+        TicketModule,
       ],
       providers: [
         ServiceService,
