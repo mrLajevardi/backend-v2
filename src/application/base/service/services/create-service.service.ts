@@ -127,7 +127,7 @@ export class CreateServiceService {
       const userId = options.user.userId;
       const userCredit = await this.userInfoService.getUserCreditBy(userId);
       const user: User = await this.userService.findById(userId);
-      if (userCredit < invoice.finalAmount) {
+      if (userCredit < invoice.finalAmountWithTax) {
         return new NotEnoughCreditException();
       }
 
@@ -138,7 +138,7 @@ export class CreateServiceService {
           description: '',
           invoiceId: invoice.id,
           isApproved: false,
-          value: -invoice.finalAmount,
+          value: -invoice.finalAmountWithTax,
           paymentToken: null,
           paymentType: PaymentTypes.PayByCredit,
           serviceInstanceId: null,
@@ -258,7 +258,7 @@ export class CreateServiceService {
 
       const aiUserId: number = aiGetUserIdRequest.data.userId;
       const aiUserToken = aiGetUserIdRequest.data.token;
-      const aiCreateServiceUrl = process.env.AI_BACK_URL + '/api/Cloud/QaLists';
+      const aiCreateServiceUrl = process.env.AI_BACK_URL + '/api/Cloud/QaList';
 
       const aiCreateServiceData = {
         name: invoice.name,
@@ -276,11 +276,15 @@ export class CreateServiceService {
         expiration: serviceInstance.expireDate,
       };
 
-      await axios
-        .post(aiCreateServiceUrl, aiCreateServiceData, axiosConfig)
-        .catch((error) => {
-          return new AiApiException();
-        });
+      const createQaList = await axios.post(
+        aiCreateServiceUrl,
+        aiCreateServiceData,
+        axiosConfig,
+      );
+
+      if (![200, 201].includes(createQaList.status)) {
+        throw new AiApiException();
+      }
 
       const taskId = task.taskId;
 

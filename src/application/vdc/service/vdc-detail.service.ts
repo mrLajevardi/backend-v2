@@ -55,6 +55,7 @@ export class VdcDetailService implements BaseVdcDetailService {
     memoryAllocation: number,
     numberOfvms: number,
     option: SessionRequest,
+    // bit = 0,
   ): Promise<VdcStoragesDetailResultDto[]> {
     const res: VdcStoragesDetailResultDto[] = [];
 
@@ -79,17 +80,29 @@ export class VdcDetailService implements BaseVdcDetailService {
     for (const disk of vdcData.data.record) {
       const splitHref = disk.href.split('/');
       const diskId = splitHref[splitHref.length - 1];
-      const fres = await CalcSwapStorage(
-        {
-          memoryAllocation: memoryAllocation,
-          storageLimit: disk.storageLimitMB,
-          storageUsed: disk.storageUsedMB,
-          serviceInstanceId: serviceInstanceId,
-          numberOfVms: numberOfvms,
-        },
-        this.vmService,
-        option,
-      );
+
+      const name = GetCodeDisk(disk.name);
+
+      let fres: { used: number; limit: number } = {
+        limit: disk.storageLimitMB,
+        used: disk.storageUsedMB,
+      };
+
+      if (name == DiskItemCodes.Standard) {
+        const calcSwap = await CalcSwapStorage(
+          {
+            memoryAllocation: memoryAllocation,
+            storageLimit: disk.storageLimitMB,
+            storageUsed: disk.storageUsedMB,
+            serviceInstanceId: serviceInstanceId,
+            numberOfVms: numberOfvms,
+          },
+          this.vmService,
+          option,
+        );
+        fres = calcSwap;
+      }
+
       res.push({
         title: disk.name,
         usage: fres.used,
@@ -268,13 +281,17 @@ export class VdcDetailService implements BaseVdcDetailService {
     // const vdcModel = new VdcDetailsResultDto();
     // await this.tttttt(vdcDetail, vdcModel, serviceInstanceId, option);
 
+    //TechnicalDebt ==> Exihibtion
+
     const diskInfoModel = await this.getStorageDetailVdc(
       serviceInstanceId,
       Number(vdcDetail.ram.value),
       Number(vdcDetail.vm.value),
       option,
+      // 1,
     );
 
+    // await this.tttttt(vdcDetail, vdcModel, serviceInstanceId, option);
     this.vdcDetailFactory.fillModelVdcItemLimit(
       model,
       vdcDetail,

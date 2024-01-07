@@ -65,7 +65,7 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
           },
         };
         let aiToken: string = null;
-        const aiUrl = process.env.AI_BACK_URL + '/api/Auth/SsoLogin';
+        const aiUrl = process.env.AI_BACK_URL + '/api/Cloud/login';
         const aiRequest = await axios
           .post(
             aiUrl,

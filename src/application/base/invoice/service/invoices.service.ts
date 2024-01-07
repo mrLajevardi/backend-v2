@@ -102,14 +102,29 @@ export class InvoicesService implements BaseInvoiceService {
         throw new Error(`Unsupported invoice type: ${dto.type}`);
     }
   }
+  async calculateTemplateDiscount(templateId: string): Promise<number> {
+    const template: Templates = await this.templateTableService.findById(
+      templateId,
+    );
 
+    if (isNil(template)) {
+      throw new BadRequestException();
+    }
+
+    const decode = JSON.parse(template.structure);
+
+    if (!isNil(decode.percent)) {
+      return Number(decode.percent);
+    } else {
+      return 0;
+    }
+  }
   async convertAiTemplateToItemType(
     templateId: string,
   ): Promise<InvoiceItemsDto[]> {
     const template: Templates = await this.templateTableService.findById(
       templateId,
     );
-
     // TODO must be check template belongs to ai templates
     if (isNil(template)) {
       throw new BadRequestException();
@@ -135,10 +150,29 @@ export class InvoicesService implements BaseInvoiceService {
     const userId = options.user.userId;
 
     let dataItemType: InvoiceItemsDto[];
+    let invoiceName = null;
+    let discountPercent = 1;
 
     if (data.templateId) {
+      const template: Templates = await this.templateTableService.findById(
+        data.templateId,
+      );
+      invoiceName = template.name;
+      const calculateDiscountTemplate: number =
+        await this.calculateTemplateDiscount(data.templateId);
+
+      discountPercent = discountPercent - calculateDiscountTemplate;
+
       dataItemType = await this.convertAiTemplateToItemType(data.templateId);
     } else {
+      const count =
+        (await this.invoicesTable.count({
+          where: {
+            userId: userId,
+            serviceTypeId: ServiceTypesEnum.Ai,
+          },
+        })) + 1;
+      invoiceName = 'سرویس هوش مصنوعی ' + count;
       dataItemType = data.itemsTypes;
     }
 
@@ -181,7 +215,8 @@ export class InvoicesService implements BaseInvoiceService {
       0,
     );
     const rawAmount = baseAmount * checkPeriodItem.maxPerRequest;
-    const finalAmount = rawAmount * (1 + checkPeriodItem.percent);
+    const finalAmount =
+      rawAmount * (1 + checkPeriodItem.percent) * discountPercent;
 
     // Retrieve tax percent
     const taxPercent = await this.systemSettingsTableService.findOne({
@@ -212,7 +247,7 @@ export class InvoicesService implements BaseInvoiceService {
       servicePlanType: ServicePlanTypeEnum.Static,
       voided: false,
       planAmount: 0,
-      name: ServiceTypesEnum.Ai + ' test ',
+      name: invoiceName,
       datacenterName: serviceType.datacenterName,
       templateId: data.templateId,
     });
@@ -535,7 +570,7 @@ export class InvoicesService implements BaseInvoiceService {
     return this.transactionTable.findOne({
       where: {
         paymentToken: authorityCode,
-        invoiceId: Not(IsNull()),
+        // invoiceId: Not(IsNull()),
         userId: options.user.userId,
       },
     });

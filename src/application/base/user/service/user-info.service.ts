@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { SessionRequest } from '../../../../infrastructure/types/session-request.type';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 import { isNil } from 'lodash';
-import { FindOptionsWhere } from 'typeorm';
+import { FindOptionsWhere, IsNull } from 'typeorm';
 import { Invoices } from '../../../../infrastructure/database/entities/Invoices';
 import { InvoicesService } from '../../invoice/service/invoices.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
@@ -49,6 +49,7 @@ export class UserInfoService {
     const where: FindOptionsWhere<Invoices> = {
       userId: options.user.userId,
       isPreInvoice: isPreInvoice,
+      serviceInstanceId: IsNull(),
     };
 
     if (dateFilter) {

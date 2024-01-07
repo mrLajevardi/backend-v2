@@ -47,6 +47,7 @@ import { VReportsUserTableService } from '../../crud/v-reports-user-table/v-repo
 import { User } from '../../../../infrastructure/database/entities/User';
 import axios from 'axios';
 import * as process from 'process';
+import { TicketService } from '../../ticket/ticket.service';
 
 @Injectable()
 export class ServiceService {
@@ -74,6 +75,7 @@ export class ServiceService {
     private readonly systemSettingsService: SystemSettingsTableService,
     private readonly templatesTableService: TemplatesTableService,
     private readonly vReportsUserTableService: VReportsUserTableService,
+    private readonly ticketService: TicketService,
   ) {}
 
   async increaseServiceResources(
@@ -604,9 +606,12 @@ export class ServiceService {
       where: { userId: userId },
     });
 
+    const ticketCount = (await this.ticketService.getAllTickets(option))
+      ?.tickets?.length;
+
     return {
       unpaidInvoices: res?.activeInvoices,
-      activeTickets: res?.activeInvoices,
+      activeTickets: ticketCount,
       servicesExpiringCount: res?.serviceExpiredCount,
       servicesBudgetCount: res?.serviceNeedBudgetCount,
     };
