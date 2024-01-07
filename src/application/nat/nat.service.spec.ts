@@ -1,36 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { NatService } from './nat.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { LoggerModule } from 'src/infrastructure/logger/logger.module';
-import { CrudModule } from '../base/crud/crud.module';
-import { ServiceModule } from '../base/service/service.module';
-import { SessionsModule } from '../base/sessions/sessions.module';
-import { ServiceProperties } from 'src/infrastructure/database/entities/ServiceProperties';
-import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
-import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { TestBed } from '@automock/jest';
 
 describe('NatService', () => {
   let service: NatService;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        LoggerModule,
-        ServicePropertiesModule,
-        SessionsModule,
-        CrudModule,
-        MainWrapperModule,
-      ],
-      providers: [NatService],
-    }).compile();
-
-    service = module.get<NatService>(NatService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(NatService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

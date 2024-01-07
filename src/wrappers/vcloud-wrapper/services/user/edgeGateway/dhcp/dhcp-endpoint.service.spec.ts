@@ -1,15 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { DhcpEndpointService } from './dhcp-endpoint.service';
+import { TestBed } from '@automock/jest';
 
 describe('DhcpEndpointService', () => {
   let service: DhcpEndpointService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [DhcpEndpointService],
-    }).compile();
-
-    service = module.get<DhcpEndpointService>(DhcpEndpointService);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(DhcpEndpointService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

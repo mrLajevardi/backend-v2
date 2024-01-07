@@ -1,17 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { TestBed } from '@automock/jest';
 import { TemplatesTableService } from './templates-table.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
 
 describe('TemplatesTableService', () => {
   let service: TemplatesTableService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [TemplatesTableService],
-    }).compile();
-
-    service = module.get<TemplatesTableService>(TemplatesTableService);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(TemplatesTableService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

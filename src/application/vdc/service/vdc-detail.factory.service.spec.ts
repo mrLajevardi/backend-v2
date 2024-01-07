@@ -40,9 +40,10 @@ import { ServicePlanTypeEnum } from '../../base/service/enum/service-plan-type.e
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import { VServiceInstancesDetailTableModule } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 import { VServiceInstancesTableModule } from '../../base/crud/v-service-instances-table/v-service-instances-table.module';
+import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@automock/jest';
 
 describe('VdcDetailFactoryService', () => {
-  let module: TestingModule;
   let service: VdcDetailFactoryService;
   const validServiceInstanceId = '3C0E83BA-7883-445F-9BC4-1EFCA602CC51';
   const inValidServiceInstanceId = 'asdkal;dksa5456878adasd';
@@ -83,65 +84,8 @@ describe('VdcDetailFactoryService', () => {
   }
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        SessionsModule,
-        MainWrapperModule,
-        VdcModule,
-        ServicePropertiesModule,
-        UserTableModule,
-        OrganizationTableModule,
-        VcloudWrapperModule,
-        InvoicesModule,
-        ServiceInstancesTableModule,
-        MainWrapperModule,
-        DatabaseModule,
-        DatacenterModule,
-        MainWrapperModule,
-        CrudModule,
-        LoggerModule,
-        EdgeGatewayModule,
-        NatModule,
-        VmModule,
-        forwardRef(() => ServiceModule),
-        forwardRef(() => TasksModule),
-        SessionsModule,
-        forwardRef(() => InvoicesModule),
-        OrganizationModule,
-        UserModule,
-        ServicePropertiesModule,
-        AbilityModule,
-        NetworksModule,
-        ServiceItemModule,
-        ServiceInstancesTableModule,
-        ServiceItemModule,
-        VServiceInstancesDetailTableModule,
-        VServiceInstancesTableModule,
-      ],
-      providers: [
-        VdcDetailService,
-        SessionsService,
-        VdcWrapperService,
-        VdcDetailFactoryService,
-        VdcDetailFecadeService,
-        VdcInvoiceService,
-        ServicePropertiesService,
-        {
-          provide: BASE_SERVICE_ITEM_SERVICE,
-          useClass: ServiceItemService,
-        },
-        {
-          provide: BASE_VDC_INVOICE_SERVICE,
-          useClass: VdcInvoiceService,
-        },
-      ],
-      exports: [BASE_VDC_INVOICE_SERVICE],
-    }).compile();
-
-    service = module.get<VdcDetailFactoryService>(VdcDetailFactoryService);
-  });
-  afterAll(async () => {
-    await module.close();
+    const { unit, unitRef } = TestBed.create(VdcDetailFactoryService).compile();
+    service = unit;
   });
 
   it('should return vdc model with vdc detail model and Vdc details result dto ', async () => {

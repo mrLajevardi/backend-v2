@@ -1,37 +1,3 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { SessionsModule } from '../../base/sessions/sessions.module';
-import { MainWrapperModule } from '../../../wrappers/main-wrapper/main-wrapper.module';
-import { VdcModule } from '../vdc.module';
-import { ServicePropertiesModule } from '../../base/service-properties/service-properties.module';
-import { SessionsService } from '../../base/sessions/sessions.service';
-import { VdcWrapperService } from '../../../wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
-import { VdcDetailFactoryService } from './vdc-detail.factory.service';
-import { ServicePropertiesService } from '../../base/service-properties/service-properties.service';
-import { BASE_SERVICE_ITEM_SERVICE } from '../../base/service-item/interface/service/service-item.interface';
-import { ServiceItemService } from '../../base/service-item/service/service-item.service';
-import { VdcDetailService } from './vdc-detail.service';
-import { VdcInvoiceDetailsInfoResultDto } from '../dto/vdc-invoice-details-info.result.dto';
-import { forwardRef } from '@nestjs/common';
-import { UserTableModule } from '../../base/crud/user-table/user-table.module';
-import { OrganizationTableModule } from '../../base/crud/organization-table/organization-table.module';
-import { VcloudWrapperModule } from '../../../wrappers/vcloud-wrapper/vcloud-wrapper.module';
-import { InvoicesModule } from '../../base/invoice/invoices.module';
-import { ServiceInstancesTableModule } from '../../base/crud/service-instances-table/service-instances-table.module';
-import { VdcDetailFecadeService } from './vdc-detail.fecade.service';
-import { DatabaseModule } from '../../../infrastructure/database/database.module';
-import { DatacenterModule } from '../../base/datacenter/datacenter.module';
-import { CrudModule } from '../../base/crud/crud.module';
-import { LoggerModule } from '../../../infrastructure/logger/logger.module';
-import { EdgeGatewayModule } from '../../edge-gateway/edge-gateway.module';
-import { NatModule } from '../../nat/nat.module';
-import { VmModule } from '../../vm/vm.module';
-import { ServiceModule } from '../../base/service/service.module';
-import { TasksModule } from '../../base/tasks/tasks.module';
-import { OrganizationModule } from '../../base/organization/organization.module';
-import { UserModule } from '../../base/user/user.module';
-import { AbilityModule } from '../../base/security/ability/ability.module';
-import { NetworksModule } from '../../networks/networks.module';
-import { ServiceItemModule } from '../../base/service-item/service-item.module';
 import { AxiosError } from 'axios';
 import { VdcDetailsResultDto } from '../dto/vdc-details.result.dto';
 import {
@@ -43,12 +9,11 @@ import { ServiceStatusEnum } from '../../base/service/enum/service-status.enum';
 import { VdcDetailItemResultDto } from '../dto/vdc-detail-item.result.dto';
 import { VdcItemLimitResultDto } from '../dto/vdc-Item-limit.result.dto';
 import { VdcStoragesDetailResultDto } from '../dto/vdc-storages-detail.result.dto';
-import { VServiceInstancesDetailTableModule } from '../../base/crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
-import { VServiceInstancesTableModule } from '../../base/crud/v-service-instances-table/v-service-instances-table.module';
+import { TestBed } from '@automock/jest';
+import { VdcDetailService } from './vdc-detail.service';
 
 describe('VdcDetailService', () => {
   let service: VdcDetailService;
-  let module: TestingModule;
   const validServiceInstanceId = '3C0E83BA-7883-445F-9BC4-1EFCA602CC51';
   const invalidServiceInstanceId =
     '3C0E834546adsBA-7asdasd883-44asdasd5F-9BC4-1EFCA602CC51';
@@ -96,59 +61,8 @@ describe('VdcDetailService', () => {
   }
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        SessionsModule,
-        MainWrapperModule,
-        VdcModule,
-        ServicePropertiesModule,
-        UserTableModule,
-        OrganizationTableModule,
-        VcloudWrapperModule,
-        InvoicesModule,
-        ServiceInstancesTableModule,
-        MainWrapperModule,
-        DatabaseModule,
-        DatacenterModule,
-        MainWrapperModule,
-        CrudModule,
-        LoggerModule,
-        EdgeGatewayModule,
-        NatModule,
-        VmModule,
-        forwardRef(() => ServiceModule),
-        forwardRef(() => TasksModule),
-        SessionsModule,
-        forwardRef(() => InvoicesModule),
-        OrganizationModule,
-        UserModule,
-        ServicePropertiesModule,
-        AbilityModule,
-        NetworksModule,
-        ServiceItemModule,
-        ServiceInstancesTableModule,
-        VServiceInstancesDetailTableModule,
-        VServiceInstancesTableModule,
-      ],
-      providers: [
-        VdcDetailService,
-        SessionsService,
-        VdcWrapperService,
-        VdcDetailFactoryService,
-        VdcDetailFecadeService,
-        ServicePropertiesService,
-        {
-          provide: BASE_SERVICE_ITEM_SERVICE,
-          useClass: ServiceItemService,
-        },
-      ],
-    }).compile();
-
-    service = module.get<VdcDetailService>(VdcDetailService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+    const { unit } = TestBed.create(VdcDetailService).compile();
+    service = unit;
   });
 
   it('should return a storage detail with valid instance id', async () => {

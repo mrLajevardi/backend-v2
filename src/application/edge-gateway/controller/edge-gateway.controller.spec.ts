@@ -10,34 +10,15 @@ import { EdgeGatewayService } from '../service/edge-gateway.service';
 import { FirewallService } from '../service/firewall.service';
 import { ServicePropertiesModule } from 'src/application/base/service-properties/service-properties.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@automock/jest';
 
 describe('EdgeGatewayController', () => {
   let controller: EdgeGatewayController;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        LoggerModule,
-        SessionsModule,
-        CrudModule,
-        ServicePropertiesModule,
-        MainWrapperModule,
-      ],
-      providers: [
-        EdgeGatewayService,
-        ApplicationPortProfileService,
-        FirewallService,
-      ],
-      controllers: [EdgeGatewayController],
-    }).compile();
-
-    controller = module.get<EdgeGatewayController>(EdgeGatewayController);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(EdgeGatewayController).compile();
+    controller = unit;
   });
 
   it('should be defined', () => {

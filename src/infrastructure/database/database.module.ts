@@ -21,8 +21,9 @@ import { EntityManager } from 'typeorm';
     }),
     CacheModule.register({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      useFactory: () =>
-        !isTestingEnv()
+      useFactory: () => {
+        console.log('🥨🥨🥨');
+        return !isTestingEnv()
           ? ({
               type: process.env.DB_TYPE,
               host: process.env.DB_HOST,
@@ -43,7 +44,8 @@ import { EntityManager } from 'typeorm';
               autoLoadEntities: true,
               entities: dbEntities,
               synchronize: true,
-            } as TypeOrmModuleOptions),
+            } as TypeOrmModuleOptions);
+      },
     }),
     TypeOrmModule.forFeature(dbEntities),
   ],

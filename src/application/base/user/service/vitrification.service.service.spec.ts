@@ -1,17 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { VitrificationServiceService } from './vitrification.service.service';
+import { TestBed } from '@automock/jest';
 
 describe('VitrificationServiceService', () => {
   let service: VitrificationServiceService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [VitrificationServiceService],
-    }).compile();
-
-    service = module.get<VitrificationServiceService>(
-      VitrificationServiceService,
-    );
+  beforeAll(async () => {
+    const { unit } = TestBed.create(VitrificationServiceService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

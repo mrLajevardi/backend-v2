@@ -13,40 +13,14 @@ import { RedisCacheService } from '../../../../infrastructure/utils/services/red
 import { TransactionsModule } from '../../transactions/transactions.module';
 import { UserInfoService } from './user-info.service';
 import { UsersFactoryService } from './user.factory.service';
-import { ServiceModule } from '../../service/service.module';
+import { TestBed } from '@automock/jest';
 
 describe('UserAdminService', () => {
   let service: UserAdminService;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        AbilityModule,
-        CrudModule,
-        ServiceModule,
-        LoggerModule,
-        PaymentModule,
-        JwtModule,
-        NotificationModule,
-        SecurityToolsModule,
-        TransactionsModule,
-      ],
-      providers: [
-        UserService,
-        UserAdminService,
-        RedisCacheService,
-        UserInfoService,
-        UsersFactoryService,
-      ],
-    }).compile();
-
-    service = module.get<UserAdminService>(UserAdminService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(UserAdminService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

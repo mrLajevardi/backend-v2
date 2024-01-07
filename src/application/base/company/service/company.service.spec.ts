@@ -1,22 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CompanyService } from './company.service';
 import { CompanyTableService } from '../../crud/company-table/company-table.service';
-import { DatabaseModule } from '../../../../infrastructure/database/database.module';
 import { ProvinceTableService } from '../../crud/province-table/province-table.service';
-import { CrudModule } from '../../crud/crud.module';
-import { LoggerModule } from '../../../../infrastructure/logger/logger.module';
-import { PaymentModule } from '../../../payment/payment.module';
-import { JwtModule } from '@nestjs/jwt';
-import { NotificationModule } from '../../notification/notification.module';
-import { SecurityToolsModule } from '../../security/security-tools/security-tools.module';
 import { ProvinceResultDtoFormat } from '../dto/province.result.dto';
 import { isNil } from 'lodash';
 import { UpdateCompanyDto } from '../../crud/company-table/dto/update-company.dto';
-import { Company } from '../../../../infrastructure/database/entities/Company';
 import { CompanyUpdatePhoneNumberDto } from '../dto/company-update-phone-number.dto';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { CompanyUpdateAddressDto } from '../dto/company-update-address.dto';
+import { createMock } from '@golevelup/ts-jest';
+import { TestBed } from '@automock/jest';
 // import { Connection } from 'typeorm';
 
 describe('CompanyService', () => {
@@ -109,30 +103,13 @@ describe('CompanyService', () => {
     }),
   };
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      imports: [
-        DatabaseModule,
-        CrudModule,
-        LoggerModule,
-        PaymentModule,
-        JwtModule,
-        NotificationModule,
-        SecurityToolsModule,
-      ],
-      providers: [
-        ProvinceTableService,
-        CompanyTableService,
-        CompanyService,
-        // Connection,
-      ],
-    })
-      .overrideProvider(ProvinceTableService)
-      .useValue(mockProvinceServiceTable)
-      .overrideProvider(CompanyTableService)
-      .useValue(mockCompanyTableService)
+    const { unit } = TestBed.create(CompanyService)
+      .mock(ProvinceTableService)
+      .using(mockProvinceServiceTable)
+      .mock(CompanyTableService)
+      .using(mockCompanyTableService)
       .compile();
-
-    service = module.get<CompanyService>(CompanyService);
+    service = unit;
   });
 
   it('should be defined', () => {

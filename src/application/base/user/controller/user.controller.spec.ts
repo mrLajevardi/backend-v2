@@ -20,48 +20,14 @@ import { ServiceModule } from '../../service/service.module';
 import { UserInfoService } from '../service/user-info.service';
 import { VitrificationServiceService } from '../service/vitrification.service.service';
 import { UsersFactoryService } from '../service/user.factory.service';
+import { TestBed } from '@automock/jest';
 
 describe('UserController', () => {
   let controller: UserController;
-  let testDataService: TestDataService;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        ServiceModule,
-        DatabaseModule,
-        CrudModule,
-        LoggerModule,
-        PaymentModule,
-        JwtModule,
-        NotificationModule,
-        TransactionsModule,
-        ServiceModule,
-        SecurityToolsModule,
-        forwardRef(() => AuthModule),
-        // AuthModule ,
-      ],
-      providers: [
-        UserService,
-        UserAdminService,
-        LoginService,
-        OtpService,
-        RedisCacheService,
-        UserInfoService,
-        VitrificationServiceService,
-        UsersFactoryService,
-      ],
-      controllers: [UserController],
-    }).compile();
-
-    controller = module.get<UserController>(UserController);
-    testDataService = module.get<TestDataService>(TestDataService);
-    await testDataService.seedTestData();
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(UserController).compile();
+    controller = unit;
   });
 
   it('should be defined', () => {
