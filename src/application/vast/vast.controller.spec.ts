@@ -1,18 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { VastController } from './vast.controller';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { TestBed } from '@automock/jest';
 
 describe('VastController', () => {
   let controller: VastController;
-  let module: TestingModule;
 
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      controllers: [VastController],
-    }).compile();
-
-    controller = module.get<VastController>(VastController);
+    const { unit } = TestBed.create(VastController).compile();
+    controller = unit;
   });
 
   it('should be defined', () => {

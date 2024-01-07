@@ -4,6 +4,7 @@ import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { User } from '../../../../infrastructure/database/entities/User';
+
 import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/not-enough-credit.exception';
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';

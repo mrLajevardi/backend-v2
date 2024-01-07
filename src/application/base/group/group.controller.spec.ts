@@ -1,26 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { GroupController } from './group.controller';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { GroupsTableModule } from '../crud/groups-table/groups-table.module';
-import { GroupService } from './group.service';
-import { LoggerModule } from 'src/infrastructure/logger/logger.module';
+import { TestBed } from '@automock/jest';
 
 describe('GroupController', () => {
   let controller: GroupController;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule, GroupsTableModule, LoggerModule],
-      providers: [GroupService],
-      controllers: [GroupController],
-    }).compile();
-
-    controller = module.get<GroupController>(GroupController);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(GroupController).compile();
+    controller = unit;
   });
 
   it('should be defined', () => {

@@ -1,22 +1,11 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceItemTypesTreeService } from './service-item-types-tree.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { TestBed } from '@automock/jest';
 
 describe('ServiceItemTypesTreeService', () => {
   let service: ServiceItemTypesTreeService;
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [ServiceItemTypesTreeService],
-    }).compile();
-
-    service = module.get<ServiceItemTypesTreeService>(
-      ServiceItemTypesTreeService,
-    );
-  });
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(ServiceItemTypesTreeService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {
