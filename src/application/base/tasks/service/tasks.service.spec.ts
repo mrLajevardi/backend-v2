@@ -32,6 +32,7 @@ import { ServiceItemModule } from '../../service-item/service-item.module';
 import { ServiceInstancesTableModule } from '../../crud/service-instances-table/service-instances-table.module';
 import { VServiceInstancesDetailTableModule } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.module';
 import { VReportsUserModule } from '../../crud/v-reports-user-table/v-reports-user.module';
+import { TicketModule } from '../../ticket/ticket.module';
 
 describe('TasksService', () => {
   let service: TasksService;
@@ -69,6 +70,7 @@ describe('TasksService', () => {
         ServiceInstancesTableModule,
         VServiceInstancesDetailTableModule,
         VReportsUserModule,
+        TicketModule,
       ],
       providers: [
         TaskManagerService,
