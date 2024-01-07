@@ -5,7 +5,6 @@ import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result
 import { mockProviderVdcs } from './mock/providers-vdcs.mock';
 import { BASE_DATACENTER_SERVICE } from './interface/datacenter.interface';
 import { DatacenterFactoryService } from './service/datacenter.factory.service';
-import { createMock } from '@golevelup/ts-jest';
 import { TestBed } from '@automock/jest';
 import { UnitReference } from '@automock/core';
 

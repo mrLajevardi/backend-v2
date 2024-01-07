@@ -9,7 +9,6 @@ import { CompanyUpdatePhoneNumberDto } from '../dto/company-update-phone-number.
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { CompanyUpdateAddressDto } from '../dto/company-update-address.dto';
-import { createMock } from '@golevelup/ts-jest';
 import { TestBed } from '@automock/jest';
 // import { Connection } from 'typeorm';
 
