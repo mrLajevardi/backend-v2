@@ -27,7 +27,7 @@ import { EnableTwoFactorAuthenticateDto } from '../dto/enable-two-factor-authent
 import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
 import { DisableTwoFactorAuthenticateDto } from '../dto/disable-two-factor-authenticate.dto';
 import { AuthService } from '../service/auth.service';
-import {Throttle} from "@nestjs/throttler";
+import { Throttle } from '@nestjs/throttler';
 @ApiTags('TwoFactorAuthentication')
 @Controller('auth/twoFactorAuth')
 @ApiBearerAuth()

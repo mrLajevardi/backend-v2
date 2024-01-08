@@ -60,7 +60,7 @@ import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-h
 import { Action } from '../../security/ability/enum/action.enum';
 import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
-import {Throttle} from "@nestjs/throttler";
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('User')
 @Controller('users')
