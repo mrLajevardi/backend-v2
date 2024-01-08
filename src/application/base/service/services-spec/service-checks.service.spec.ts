@@ -1,25 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ServiceChecksService } from '../services/service-checks.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
-import { CrudModule } from 'src/application/base/crud/crud.module';
-import { SessionsModule } from 'src/application/base/sessions/sessions.module';
-import { UserModule } from 'src/application/base/user/user.module';
+import { TestBed } from '@automock/jest';
 
 describe('ServiceChecksService', () => {
   let service: ServiceChecksService;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [CrudModule, DatabaseModule, SessionsModule, UserModule],
-      providers: [ServiceChecksService],
-    }).compile();
-
-    service = module.get<ServiceChecksService>(ServiceChecksService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(ServiceChecksService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

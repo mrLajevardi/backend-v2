@@ -48,9 +48,9 @@ import { CompanyModule } from './application/base/company/company.module';
 import { FileModule } from './application/base/file/file.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ClsModule } from 'nestjs-cls';
-import { EntitySubscriber } from './infrastructure/database/classes/entity.subscriber';
 import { EntityLogModule } from './application/base/entity-log/entity-log.module';
 import { BudgetingModule } from './application/base/budgeting/budgeting.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -65,6 +65,12 @@ import { BudgetingModule } from './application/base/budgeting/budgeting.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 40,
+      },
+    ]),
 
     BullModule.forRoot({
       redis: {
@@ -123,6 +129,11 @@ import { BudgetingModule } from './application/base/budgeting/budgeting.module';
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,

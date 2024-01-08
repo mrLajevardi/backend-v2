@@ -18,6 +18,8 @@ import { CrudModule } from '../base/crud/crud.module';
 import { InvoicesModule } from '../base/invoice/invoices.module';
 import { ServiceModule } from '../base/service/service.module';
 import { UserModule } from '../base/user/user.module';
+import { TestBed } from '@automock/jest';
+import { UnitReference } from '@automock/core';
 // import { addMonths } from 'src/infrastructure/helpers/date-time.helper';
 
 describe('AiService', () => {
@@ -32,24 +34,11 @@ describe('AiService', () => {
   let user: UserService;
   let config: ConfigsTableService;
 
-  let module: TestingModule;
+  let module: UnitReference;
   beforeAll(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-        }),
-        DatabaseModule,
-        UserModule,
-        CrudModule,
-        InvoicesModule,
-        ServiceModule,
-        LoggerModule,
-        JwtModule,
-      ],
-      providers: [AiService],
-    }).compile();
-
+    const { unit, unitRef } = TestBed.create(AiService).compile();
+    service = unit;
+    module = unitRef;
     service = module.get<AiService>(AiService);
     user = module.get<UserService>(UserService);
     config = module.get<ConfigsTableService>(ConfigsTableService);
@@ -69,10 +58,6 @@ describe('AiService', () => {
     );
     testDataService = module.get<TestDataService>(TestDataService);
     await testDataService.seedTestData();
-  });
-
-  afterAll(async () => {
-    await module.close();
   });
 
   it('should be defined', () => {

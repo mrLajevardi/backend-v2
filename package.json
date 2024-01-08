@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "author": "",
-  "private": true,  
+  "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -18,7 +18,7 @@
     "lint:devq": "eslint  --quiet  \"{src,apps,libs,test}/**/*.ts\"  --fix --rulesdir eslint-rules/",
     "lint:dev": "eslint   \"{src,apps,libs,test}/**/*.ts\"  --fix --rulesdir eslint-rules/",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" -f ./node_modules/eslint-junit/index.js --rulesdir eslint-rules/",
-    "test:dev": "cross-env NODE_ENV=test jest -max-workers=3",
+    "test:dev": "cross-env NODE_ENV=test jest -max-workers=50%",
     "test:leak": "cross-env NODE_ENV=test node   ./node_modules/.bin/jest    --detectLeaks --runInBand --logHeapUsage",
     "test:leak2": "cross-env NODE_ENV=test node  ./node_modules/.bin/jest --runInBand --logHeapUsage ",
     "test:clearCache": "NODE_ENV=test jest --clear-cache",
@@ -43,6 +43,7 @@
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.3.0",
+    "@nestjs/throttler": "^5.1.1",
     "@nestjs/typeorm": "^9.0.1",
     "@sentry/node": "^5.30.0",
     "@sentry/tracing": "^7.64.0",
@@ -90,6 +91,8 @@
     "xml2js": "^0.6.0"
   },
   "devDependencies": {
+    "@automock/adapters.nestjs": "^2.1.0",
+    "@automock/jest": "^2.1.0",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",

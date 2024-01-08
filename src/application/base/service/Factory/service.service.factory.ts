@@ -29,7 +29,7 @@ import { SessionsService } from '../../sessions/sessions.service';
 import { InsufficientResourceException } from 'src/infrastructure/exceptions/insufficient-resource.exception';
 import { VmService } from '../../../vm/service/vm.service';
 import { VdcGenerationItemCodes } from '../../itemType/enum/item-type-codes.enum';
-import { CalcSwapStorage } from '../../../vdc/utils/disk-functions.utils';
+import { CalcSwapStorageVdc } from '../../../vdc/utils/disk-functions.utils';
 import { PaygCostCalculationService } from '../../invoice/service/payg-cost-calculation.service';
 import { VServiceInstancesDetailTableService } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
 
@@ -193,7 +193,7 @@ export class ServiceServiceFactory {
       vdcItems.memoryAllocationMB,
     );
 
-    const storageCalc = await CalcSwapStorage(
+    const storageCalc = await CalcSwapStorageVdc(
       {
         memoryAllocation: vdcItems.memoryAllocationMB,
         serviceInstanceId: serviceInstanceId,

@@ -1,20 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { EntityLogController } from './entity-log.controller';
-import { DatabaseModule } from '../../../infrastructure/database/database.module';
-import { CrudModule } from '../crud/crud.module';
-import { EntityLogService } from './service/entity-log.service';
+import { TestBed } from '@automock/jest';
 
 describe('EntityLogController', () => {
   let controller: EntityLogController;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [EntityLogController],
-      imports: [DatabaseModule, CrudModule],
-      providers: [EntityLogService],
-    }).compile();
-
-    controller = module.get<EntityLogController>(EntityLogController);
+  beforeAll(async () => {
+    const { unit } = TestBed.create(EntityLogController).compile();
+    controller = unit;
   });
 
   it('should be defined', () => {

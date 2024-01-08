@@ -1,41 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { ServiceService } from '../services/service.service';
+import { TestBed } from '@automock/jest';
 
 describe('ServiceService', () => {
-  //let service: ServiceService;
+  let service: ServiceService;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        // CrudModule,
-        // DatabaseModule,
-        // SessionsModule,
-        // LoggerModule,
-        // UserModule,
-        // PaymentModule,
-        // forwardRef(() => InvoicesModule),
-        // forwardRef(() => VgpuModule),
-        // forwardRef(() => TasksModule),
-        // TransactionsModule,
-      ],
-      providers: [
-        // PayAsYouGoService,
-        // CreateServiceService,
-        // ExtendServiceService,
-        // DiscountsService,
-        // ServiceChecksService,
-        // DeleteServiceService,
-      ],
-    }).compile();
-
-    //service = module.get<ServiceService>(ServiceService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(ServiceService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {
-    //expect(service).toBeDefined();
+    expect(service).toBeDefined();
   });
 });

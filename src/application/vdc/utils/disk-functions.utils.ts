@@ -16,7 +16,7 @@ export const GetCodeDisk = (diskTitle: string) => {
   return diskCode;
 };
 
-export const CalcSwapStorage = async (
+export const CalcSwapStorageVdc = async (
   model: DiskCalcSwapStorageModel,
   vmService: VmService,
   option: SessionRequest,
@@ -28,11 +28,20 @@ export const CalcSwapStorage = async (
   let limit = 0;
   let used = 0;
   let allVmStorages = 0;
+  let allVmMemories = 0;
+  const countVm = allVdcVms.total;
+
+  const swapStorageLimit = model.numberOfVms * model.memoryAllocation;
 
   // allVdcVms.values.forEach((vm) => (allVmStorages += vm.storage - vm.memory));
-  allVdcVms.values.forEach((vm) => (allVmStorages += vm.storage));
+  allVdcVms.values.forEach((vm) => {
+    allVmStorages += vm.storage;
+    allVmMemories += vm.memory;
+  });
   // (used = model.storageUsed - allMemoryVms),
-  (used = allVmStorages),
-    (limit = model.storageLimit - model.numberOfVms * model.memoryAllocation);
+  const swapStorageUsed = allVmMemories * countVm;
+
+  (used = model.storageUsed - swapStorageUsed),
+    (limit = model.storageLimit - swapStorageLimit);
   return { used, limit };
 };

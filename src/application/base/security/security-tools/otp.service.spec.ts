@@ -1,22 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { OtpService } from './otp.service';
-import { DatabaseModule } from 'src/infrastructure/database/database.module';
+import { TestBed } from '@automock/jest';
 
 describe('OtpService', () => {
   let service: OtpService;
 
-  let module: TestingModule;
-  beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [DatabaseModule],
-      providers: [OtpService],
-    }).compile();
-
-    service = module.get<OtpService>(OtpService);
-  });
-
-  afterAll(async () => {
-    await module.close();
+  beforeAll(async () => {
+    const { unit } = TestBed.create(OtpService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {

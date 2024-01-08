@@ -1,8 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { DatacenterService } from './datacenter.service';
-import { DatacenterTableModule } from '../../crud/datacenter-table/datacenter-table.module';
-import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
-import { SessionsModule } from '../../sessions/sessions.module';
 import { mockDatacenterMetadata } from '../mock/datacenter-metadata.mock';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { GetProviderVdcsDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs.dto';
@@ -10,21 +6,13 @@ import { GetProviderVdcsParams } from 'src/wrappers/vcloud-wrapper/services/admi
 import { mockProviderVdcs } from '../mock/providers-vdcs.mock';
 import { GetProviderVdcsMetadataDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs-metadata.dto';
 import { SessionsService } from '../../sessions/sessions.service';
-import { cloneDeep } from 'lodash';
-import { DatacenterFactoryService } from './datacenter.factory.service';
-import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
-import { DatacenterDetails } from '../dto/datacenter-details.dto';
-import { CrudModule } from '../../crud/crud.module';
-import { DatabaseModule } from '@faker-js/faker';
-import { DatacenterAdminService } from './datacenter.admin.service';
-import { forwardRef } from '@nestjs/common';
-import { InvoicesModule } from '../../invoice/invoices.module';
-import { ServiceItemTypesTreeModule } from '../../crud/service-item-types-tree/service-item-types-tree.module';
+import { TestBed } from '@automock/jest';
+import { UnitReference } from '@automock/core';
 
 describe('DatacenterService', () => {
   let service: DatacenterService;
-  let module: TestingModule;
+  let module: UnitReference;
 
   function datacenterMetadataMockFactory(
     datacenter: string | null,
@@ -75,37 +63,14 @@ describe('DatacenterService', () => {
   };
 
   beforeEach(async () => {
-    module = await Test.createTestingModule({
-      imports: [
-        DatacenterTableModule,
-        MainWrapperModule,
-        SessionsModule,
-        CrudModule,
-        forwardRef(() => InvoicesModule),
-        ServiceItemTypesTreeModule,
-      ],
-      providers: [
-        DatacenterService,
-        DatacenterFactoryService,
-        DatacenterAdminService,
-        {
-          provide: AdminVdcWrapperService,
-          useValue: createWrapperMockService(
-            mockProviderVdcs,
-            mockDatacenterMetadata,
-          ),
-        },
-        {
-          provide: SessionsService,
-          useValue: mockSessionService,
-        },
-      ],
-    }).compile();
-    service = module.get<DatacenterService>(DatacenterService);
-  });
-
-  afterEach(async () => {
-    await module.close();
+    const { unit, unitRef } = TestBed.create(DatacenterService)
+      .mock(AdminVdcWrapperService)
+      .using(createWrapperMockService(mockProviderVdcs, mockDatacenterMetadata))
+      .mock(SessionsService)
+      .using(mockSessionService)
+      .compile();
+    service = unit;
+    module = unitRef;
   });
 
   it('should be defined', () => {

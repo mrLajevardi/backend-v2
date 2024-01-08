@@ -59,6 +59,7 @@ import { Action } from '../../ability/enum/action.enum';
 import { AclSubjectsEnum } from '../../ability/enum/acl-subjects.enum';
 import { CheckPolicies } from '../../ability/decorators/check-policies.decorator';
 import { OtpNotMatchException } from '../../../../../infrastructure/exceptions/otp-not-match-exception';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -77,6 +78,7 @@ export class AuthController {
   ) {}
 
   @Public()
+  @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('/sendOtp/:phoneNumber')
   @ApiOperation({ summary: 'generate otp and send it to user' })
   @ApiParam({
@@ -438,6 +440,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('forgot-password/sendOtp/:phoneNumber')
   @ApiOperation({ summary: 'send otp to phone number for changing password' })
   async sendOtpChangingPassword(@Param() dto: PhoneNumberDto) {

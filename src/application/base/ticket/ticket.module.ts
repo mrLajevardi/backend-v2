@@ -7,6 +7,7 @@ import { CrudModule } from '../crud/crud.module';
 @Module({
   imports: [DatabaseModule, CrudModule],
   providers: [TicketService],
+  exports: [TicketService],
   controllers: [TicketController],
 })
 export class TicketModule {}
