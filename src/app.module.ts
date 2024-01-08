@@ -48,10 +48,9 @@ import { CompanyModule } from './application/base/company/company.module';
 import { FileModule } from './application/base/file/file.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ClsModule } from 'nestjs-cls';
-import { EntitySubscriber } from './infrastructure/database/classes/entity.subscriber';
 import { EntityLogModule } from './application/base/entity-log/entity-log.module';
 import { BudgetingModule } from './application/base/budgeting/budgeting.module';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -130,6 +129,11 @@ import { ThrottlerModule } from '@nestjs/throttler';
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
