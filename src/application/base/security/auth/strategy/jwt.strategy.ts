@@ -5,6 +5,7 @@ import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exce
 import { ImpersonateAs } from '../dto/impersonate-as.interface';
 import { UserPayload } from '../dto/user-payload.dto';
 import { ClsService } from 'nestjs-cls';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
