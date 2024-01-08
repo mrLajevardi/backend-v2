@@ -27,6 +27,7 @@ import { EnableTwoFactorAuthenticateDto } from '../dto/enable-two-factor-authent
 import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
 import { DisableTwoFactorAuthenticateDto } from '../dto/disable-two-factor-authenticate.dto';
 import { AuthService } from '../service/auth.service';
+import {Throttle} from "@nestjs/throttler";
 @ApiTags('TwoFactorAuthentication')
 @Controller('auth/twoFactorAuth')
 @ApiBearerAuth()
@@ -38,6 +39,7 @@ export class TwoFactorAuthController {
   ) {}
 
   @Public()
+  @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Post('/:TwoFactorType/sendOtp')
   @ApiOperation({
     summary: 'send otp sent to user two factor authenticate',
