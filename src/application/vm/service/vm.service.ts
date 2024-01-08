@@ -710,9 +710,11 @@ export class VmService {
           storageName,
           code: storageCode.toLowerCase(),
         },
+        isDefault: false,
       };
       data.push(diskSection);
     });
+    data[0].isDefault = true;
     return Promise.resolve(data);
   }
 
