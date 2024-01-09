@@ -714,7 +714,9 @@ export class VmService {
       };
       data.push(diskSection);
     });
-    data[0]?.isDefault = true;
+    if (data[0]) {
+      data[0].isDefault = true;
+    }
     return Promise.resolve(data);
   }
 
