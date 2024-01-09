@@ -65,6 +65,7 @@ import { UserInfoService } from './user-info.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { UsersFactoryService } from './user.factory.service';
 import { UserPayload } from '../../security/auth/dto/user-payload.dto';
+import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
 
 @Injectable()
 export class UserService {
@@ -855,65 +856,38 @@ export class UserService {
     page: number,
     pageSize: number,
     serviceType: string,
-    value: number,
     invoiceID: number,
-    ServiceID: string,
+    serviceID: string,
     startDateTime: Date,
     endDateTime: Date,
   ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
-    if (pageSize > 128) {
-      return Promise.reject(new BadRequestException());
-    }
-    if (startDateTime && !endDateTime) {
-      endDateTime = new Date();
-    }
+    const where: FindOptionsWhere<Transactions> = {
+      userId: options.user.userId,
+    };
 
-    let where: FindOptionsWhere<Transactions> = {};
-    if (
-      isNil(
-        serviceType ||
-          value ||
-          invoiceID ||
-          ServiceID ||
-          startDateTime ||
-          endDateTime,
-      )
-    ) {
-      where = {
-        userId: options.user.userId,
-      };
-    } else {
-      where = {
-        invoiceId: invoiceID,
-        userId: options.user.userId,
-        serviceInstanceId: ServiceID,
-        value: value,
-        description: ILike(`%${serviceType}%`),
+    if (!isNil(invoiceID)) {
+      where.invoiceId = invoiceID;
+    }
+    if (!isNil(serviceID)) {
+      where.serviceInstanceId = serviceID;
+    }
+    if (!isNil(serviceType)) {
+      where.invoice = {
+        serviceTypeId: serviceType,
       };
     }
-    if (startDateTime && endDateTime) {
-      where['DateTime'] = { $between: [startDateTime, endDateTime] };
-    }
 
-    const transaction = await this.transactionsTable.find({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      where,
-      order: {
-        dateTime: 'DESC',
-      },
-      relations: ['invoice', 'serviceInstance', 'user'],
-    });
-    const withoutPagination = await this.transactionsTable.find({
-      where,
-    });
+    const transaction: PaginationReturnDto<Transactions> =
+      await this.transactionsService.paginate(
+        page,
+        pageSize,
+        where,
+        startDateTime,
+        endDateTime,
+      );
 
-    const totalRecords = withoutPagination.length;
-    const data = { transaction: transaction, totalRecords };
-    if (!transaction) {
-      return Promise.reject(new ForbiddenException());
-    }
+    const totalRecords = transaction.total;
 
-    return data;
+    return { transaction: transaction.record, totalRecords };
   }
 }
