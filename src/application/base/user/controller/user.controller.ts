@@ -61,6 +61,7 @@ import { Action } from '../../security/ability/enum/action.enum';
 import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 import { Throttle } from '@nestjs/throttler';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 @ApiTags('User')
 @Controller('users')
@@ -459,8 +460,7 @@ export class UserController {
     @Req() options: SessionRequest,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
-    @Query('serviceType') serviceType?: string,
-    @Query('value') value?: number,
+    @Query('serviceType') serviceType?: ServiceTypesEnum,
     @Query('invoiceID') invoiceID?: number,
     @Query('ServiceID') ServiceID?: string,
     @Query('startDateTime') startDateTime?: string,
@@ -478,7 +478,6 @@ export class UserController {
       page,
       pageSize,
       serviceType,
-      value,
       invoiceID,
       ServiceID,
       startDateTime ? new Date(startDateTime) : null,
