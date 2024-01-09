@@ -41,7 +41,6 @@ import { UserProfileDto } from '../dto/user-profile.dto';
 import { LoginService } from '../../security/auth/service/login.service';
 import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
-import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -317,7 +316,11 @@ export class UserController {
   @Get('/profile')
   @ApiOperation({ summary: 'get user profile' })
   async profile(@Request() options: SessionRequest) {
-    return await this.userService.getUserProfile(options);
+    const data = await this.vitrificationServiceService.checkUserVerification(
+      '09128524065',
+      '0372337031',
+    );
+    // return await this.userService.getUserProfile(options);
   }
 
   @Get('/personalVerification')
