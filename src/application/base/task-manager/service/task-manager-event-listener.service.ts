@@ -18,6 +18,7 @@ export class TaskManagerEventListenerService extends QueueEventsHost {
   ) {
     super();
   }
+
   @OnQueueEvent('failed')
   async onFailed(job: FailedJob): Promise<void> {
     const jobDetails: Job<TaskDataType> =
@@ -25,6 +26,7 @@ export class TaskManagerEventListenerService extends QueueEventsHost {
     await this.tasksTableService.update(jobDetails.data.taskId, {
       status: TasksStatusEnum.Error,
       details: job.failedReason,
+      endTime: new Date(),
     });
   }
 
@@ -44,6 +46,7 @@ export class TaskManagerEventListenerService extends QueueEventsHost {
     if (type === JobTypesEnum.task) {
       await this.tasksTableService.update(taskId, {
         status: TasksStatusEnum.Success,
+        endTime: new Date(),
       });
     } else {
       const currentStep = this.taskManagerService.taskManagerTasks[
