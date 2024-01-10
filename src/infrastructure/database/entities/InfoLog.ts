@@ -20,7 +20,7 @@ export class InfoLog {
   @Column('int', { name: 'TypeID', nullable: true })
   typeId: number | null;
 
-  @Column('int', { name: 'ActionID', nullable: true })
+  @Column('decimal', { name: 'ActionID', nullable: true })
   actionId: number | null;
 
   @Column('datetime', { name: 'TimeStamp', nullable: true })
