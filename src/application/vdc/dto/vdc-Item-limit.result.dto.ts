@@ -26,4 +26,5 @@ export class ItemLimitInfo {
 export class DiskTypeItemLimitInfo {
   name?: string;
   id?: string;
+  max?: number;
 }

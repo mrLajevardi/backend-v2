@@ -75,7 +75,7 @@ export interface Record {
 }
 
 export interface RecordOtherAttributes {
-  vmToolsVersion: string;
+  vmToolsVersion: number;
   taskStatusName: string;
   task: string;
   isVdcEnabled: string;

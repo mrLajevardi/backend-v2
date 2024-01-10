@@ -1,4 +1,9 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
 import { vcdConfig } from 'src/wrappers/mainWrapper/vcdConfig';
@@ -40,6 +45,10 @@ import {
 } from '../dto/get-resources.dto';
 import { DiskItemCodes } from 'src/application/base/itemType/enum/item-type-codes.enum';
 import { LessThan, Not } from 'typeorm';
+import {
+  BASE_VDC_DETAIL_SERVICE,
+  BaseVdcDetailService,
+} from '../interface/service/base-vdc-detail-service.interface';
 
 @Injectable()
 export class VdcService {
@@ -57,6 +66,8 @@ export class VdcService {
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
     private readonly templatesTableService: TemplatesTableService,
     private readonly adminEdgeGatewayWrapperService: AdminEdgeGatewayWrapperService,
+    @Inject(forwardRef(() => BASE_VDC_DETAIL_SERVICE))
+    private readonly VdcDetailService: BaseVdcDetailService,
   ) {}
 
   async createVdc(
@@ -333,6 +344,19 @@ export class VdcService {
       userId,
       props['orgId'],
     );
+    const itemLimits = await this.VdcDetailService.getVdcItemLimit(
+      vdcInstanceId,
+      options,
+    );
+    for (const item of itemLimits.diskInfo) {
+      if (
+        item.id === data.policyId &&
+        item.name.toLowerCase().includes(DiskItemCodes.Standard) &&
+        item.max < data.size
+      ) {
+        throw new BadRequestException();
+      }
+    }
     const namedDisk = await this.vdcWrapperService.createNamedDisk(
       session,
       props['vdcId'],
@@ -528,6 +552,19 @@ export class VdcService {
       userId,
       props['orgId'],
     );
+    const itemLimits = await this.VdcDetailService.getVdcItemLimit(
+      vdcInstanceId,
+      options,
+    );
+    for (const item of itemLimits.diskInfo) {
+      if (
+        item.id === data.policyId &&
+        item.name.toLowerCase().includes(DiskItemCodes.Standard) &&
+        item.max < data.size
+      ) {
+        throw new BadRequestException();
+      }
+    }
     const namedDisk = await mainWrapper.user.vdc.updateNamedDisk(
       session,
       props['vdcId'],
