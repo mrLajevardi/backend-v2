@@ -41,13 +41,11 @@ import { UserProfileDto } from '../dto/user-profile.dto';
 import { LoginService } from '../../security/auth/service/login.service';
 import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
-import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
-import { VitrificationServiceService } from '../service/vitrification.service.service';
 import {
   ResultDtoCollectionResponse,
   TransactionsResultDto,
@@ -77,7 +75,6 @@ export class UserController {
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
     private readonly redisCacheService: RedisCacheService,
-    private readonly vitrificationServiceService: VitrificationServiceService,
   ) {}
 
   @Public()

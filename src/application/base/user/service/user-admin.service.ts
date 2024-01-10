@@ -377,7 +377,12 @@ export class UserAdminService {
   }
 
   async getUsers(): Promise<VUsers[]> {
-    const users = await this.vUsersTableService.find();
+    const users = await this.vUsersTableService.find({
+      where: {
+        deleted: false,
+      },
+    });
+
     return users;
   }
 }
