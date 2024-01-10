@@ -257,8 +257,8 @@ export class UserService {
     settings.forEach((setting) => {
       filteredSettings[setting.propertyKey] = setting.value;
     });
-    console.log(filteredSettings);
     const { amount } = data;
+
     if (
       amount < filteredSettings['credit.minValue'] ||
       amount > filteredSettings['credit.maxValue']
