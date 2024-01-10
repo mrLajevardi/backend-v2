@@ -4,7 +4,11 @@ Importing this module in the app.module.ts is sufficient for loading the databse
 
 */
 
-import { Module, OnModuleInit } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  Module,
+  OnModuleInit,
+} from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
@@ -22,7 +26,9 @@ import { EntityManager } from 'typeorm';
     CacheModule.register({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: () => {
-        console.log('🥨🥨🥨');
+        if (isTestingEnv()) {
+          throw new InternalServerErrorException();
+        }
         return !isTestingEnv()
           ? ({
               type: process.env.DB_TYPE,
