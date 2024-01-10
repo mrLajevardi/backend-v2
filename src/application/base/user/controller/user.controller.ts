@@ -46,7 +46,6 @@ import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
-import { VitrificationServiceService } from '../service/vitrification.service.service';
 import {
   ResultDtoCollectionResponse,
   TransactionsResultDto,
@@ -76,7 +75,6 @@ export class UserController {
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
     private readonly redisCacheService: RedisCacheService,
-    private readonly vitrificationServiceService: VitrificationServiceService,
   ) {}
 
   @Public()
@@ -317,11 +315,7 @@ export class UserController {
   @Get('/profile')
   @ApiOperation({ summary: 'get user profile' })
   async profile(@Request() options: SessionRequest) {
-    const data = await this.vitrificationServiceService.checkUserVerification(
-      '09128524065',
-      '0372337031',
-    );
-    // return await this.userService.getUserProfile(options);
+    return await this.userService.getUserProfile(options);
   }
 
   @Get('/personalVerification')

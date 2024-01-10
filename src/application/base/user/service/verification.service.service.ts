@@ -3,20 +3,21 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as jose from 'node-jose';
 import axios from 'axios';
+import * as moment from 'moment';
 
 @Injectable()
-export class VitrificationServiceService {
-  async checkUserVerification(phoneNumber: string, nationalCode: string) {
+export class VerificationServiceService {
+  async checkUserVerification(
+    phoneNumber: string,
+    nationalCode: string,
+  ): Promise<{ message: any; status: any }> {
     const secondsSinceEpoch: number = Math.floor(Date.now() / 1000);
+    const timeString = moment().format('YYYYMMDDHHmmssSSS');
+    const requestId = `1279${timeString}000`;
 
-    const timeString = new Date()
-      .toISOString()
-      .slice(11, -1)
-      .replace(/[:.]/g, '');
-
-    const requestId = `127920231213${timeString}000`;
     const basicAuth =
       'Basic MmRjNmU3ZWEwNTNjNGEzZmEyYTJjZWUxMWJiYjkwZmM6QzVocEwwMGxtREpSbndFTQ==';
+
     const getAccessToken = await axios.post(
       'https://op1.pgsb.ir/oauth/token',
       {
@@ -32,8 +33,7 @@ export class VitrificationServiceService {
       },
     );
 
-    const accessToken =
-      getAccessToken.data.token_type + ' ' + getAccessToken.data.access_token;
+    const accessToken = 'Bearer ' + getAccessToken.data.access_token;
 
     const hashedPhoneNumber: string = await this.getEncryptedToken(
       phoneNumber,
@@ -44,8 +44,8 @@ export class VitrificationServiceService {
       secondsSinceEpoch,
     );
 
-    const testReq = await axios.post(
-      'https://op1.pgsb.ir/api/client/apim/v1/shahkaar/gwsh/ser-viceIDmatchingencrypted',
+    const verificationRequest = await axios.post(
+      'https://op1.pgsb.ir/api/client/apim/v1/shahkaar/gwsh/serviceIDmatchingencrypted',
       {
         requestId: requestId,
         serviceNumber: hashedPhoneNumber,
@@ -57,16 +57,32 @@ export class VitrificationServiceService {
         headers: {
           'Content-Type': 'application/json',
           pid: '656b2931951e980c88fc5983',
-          ext_username: 'Arad_cloud_pgsb',
-          ext_password: 'PhrJYy98WX8B',
           Authorization: accessToken,
-          basicAuthorization: basicAuth,
+          basicAuthorization: 'Basic QXJhZF9jbG91ZF9wZ3NiOlBockpZeTk4V1g4Qg==',
         },
       },
     );
 
-    return true;
-    // return testReq;
+    const status = verificationRequest.data.result.data.result.data.response;
+
+    const comment = verificationRequest.data.result.data.result.data.comment;
+
+    const data: any = {
+      status: status,
+      message: comment,
+    };
+
+    switch (status) {
+      case 200:
+        return data;
+      case 600:
+        return data;
+      default:
+        return {
+          status: 400,
+          message: 'فرآیند احرازهویت با اختلال مواجه شده است.',
+        };
+    }
   }
 
   async getEncryptedToken(inputData: string, inputIat: number) {
@@ -81,19 +97,32 @@ export class VitrificationServiceService {
 
     const jsonPayload = JSON.stringify(payload);
 
-    const asyDescriptorPlainText = {
-      key: asymmetricJwkKey,
-      fields: {
-        alg: 'ECDH-ES+A256KW',
-        enc: 'A256GCM',
+    const jwe = await jose.JWE.createEncrypt(
+      {
+        format: 'compact',
+        fields: {
+          alg: 'ECDH-ES+A256KW',
+          enc: 'A256GCM',
+        },
       },
-      plaintext: Buffer.from(jsonPayload),
-    };
+      asymmetricJwkKey,
+    )
+      .update(Buffer.from(jsonPayload))
+      .final();
 
-    const jwe = (await jose.JWE.createEncrypt(asyDescriptorPlainText as any)
-      .update(asymmetricJwkKey)
-      .final()) as any;
+    console.log(jwe);
 
-    return jwe.protected.toString();
+    return jwe;
+  }
+
+  isValidIranianNationalCode(input: string) {
+    if (!/^\d{10}$/.test(input)) return false;
+    const check = +input[9];
+    const sum =
+      input
+        .split('')
+        .slice(0, 9)
+        .reduce((acc, x, i) => acc + +x * (10 - i), 0) % 11;
+    return sum < 2 ? check === sum : check + sum === 11;
   }
 }
