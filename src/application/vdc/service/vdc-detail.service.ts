@@ -86,7 +86,7 @@ export class VdcDetailService implements BaseVdcDetailService {
         used: disk.storageUsedMB,
       };
 
-      if (name == DiskItemCodes.Standard ) {
+      if (name == DiskItemCodes.Standard) {
         fres = await CalcSwapStorageVdc(
           {
             memoryAllocation: memoryAllocation,
