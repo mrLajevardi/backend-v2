@@ -18,9 +18,12 @@ import {
   FindManyOptions,
   FindOptionsRelations,
   FindOptionsWhere,
+  Like,
 } from 'typeorm';
 import { FindOptionsOrder } from 'typeorm/find-options/FindOptionsOrder';
 import { PaginationReturnDto } from '../../../infrastructure/dto/pagination-return.dto';
+import { UnprocessableEntity } from '../../../infrastructure/exceptions/unprocessable-entity.exception';
+import { SystemSettingsTableService } from '../crud/system-settings-table/system-settings-table.service';
 
 @Injectable()
 export class TransactionsService {
@@ -28,6 +31,7 @@ export class TransactionsService {
     private readonly transactionTable: TransactionsTableService,
     @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
+    private readonly systemSettingsTable: SystemSettingsTableService,
   ) {}
 
   // Moved from createService
@@ -76,9 +80,29 @@ export class TransactionsService {
       throw new NotFoundException();
     }
 
+    const settings = await this.systemSettingsTable.find({
+      where: {
+        propertyKey: Like('%credit.%'),
+      },
+    });
+
+    const filteredSettings = {};
+    settings.forEach((setting) => {
+      filteredSettings[setting.propertyKey] = setting.value;
+    });
+    const { amount } = dto;
+
+    if (
+      amount < filteredSettings['credit.minValue'] ||
+      amount > filteredSettings['credit.maxValue']
+    ) {
+      return Promise.reject(new UnprocessableEntity());
+    }
+
     const value =
       dto.amount *
       (dto.transactionType == TransactionAmountTypeEnum.decrease ? -1 : 1);
+
     const createTransactionDto: CreateTransactionsDto = {
       userId: userId.toString(),
       value: value,

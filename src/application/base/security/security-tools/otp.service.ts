@@ -5,15 +5,14 @@ import { OtpHashDto } from './dto/otp-hash.dto';
 
 @Injectable()
 export class OtpService {
-  otpGenerator(phoneNumber: string): OtpHashDto {
+  otpGenerator(phoneNumber: string, mtl = 2): OtpHashDto {
     const otp = otpGen.generate(6, {
       lowerCaseAlphabets: false,
       upperCaseAlphabets: false,
       specialChars: false,
     });
     const key = process.env.OTP_SECRET_KEY;
-
-    const hash = otpTool.createNewOTP(phoneNumber, otp, key);
+    const hash = otpTool.createNewOTP(phoneNumber, otp, key, mtl);
     return { otp: otp, hash };
   }
 
