@@ -24,12 +24,17 @@ export class VmFactoryService {
       await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
         serviceInstanceId,
       );
-    if (props.vdcId == null)
+    if (!props?.vdcId)
       return { values: [], page: 0, pageSize: 0, pageCount: 0, total: 0 };
     const session = await this.sessionService.checkUserSession(
       userId,
       Number(props.orgId),
     );
+    if (filter !== '') {
+      filter = `(isVAppTemplate==false;vdc==${props.vdcId});` + `(${filter})`;
+    } else {
+      filter = `(isVAppTemplate==false;vdc==${props.vdcId})`;
+    }
     const vmList = await this.vdcWrapperService.vcloudQuery<GetVMQueryDto>(
       session,
       {
@@ -37,11 +42,6 @@ export class VmFactoryService {
         filter,
       },
     );
-    if (filter !== '') {
-      filter = `(isVAppTemplate==false;vdc==${props.vdcId});` + `(${filter})`;
-    } else {
-      filter = `(isVAppTemplate==false;vdc==${props.vdcId})`;
-    }
     const vmValues: VmListValue[] = [];
     for (const recordItem of vmList.data.record) {
       const id = recordItem.href.split('vApp/')[1];
@@ -68,11 +68,15 @@ export class VmFactoryService {
         snapshot: recordItem.snapshot,
       });
     }
+    let pageCount = Math.floor(vmList.data.total / vmList.data.pageSize) + 1;
+    if (vmList.data.total === 0) {
+      pageCount = 0;
+    }
     const data = {
       total: vmList.data.total,
       pageSize: vmList.data.pageSize,
       page: vmList.data.page,
-      pageCount: Math.floor(vmList.data.total / vmList.data.pageSize) + 1,
+      pageCount,
       values: vmValues,
     };
     return Promise.resolve(data);
