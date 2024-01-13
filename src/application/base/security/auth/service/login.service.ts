@@ -54,11 +54,8 @@ export class LoginService {
   // Validate user performs using Local.strategy
   async validateUser(username: string, pass: string): Promise<any> {
     console.log('validate user');
-    if (!username) {
-      throw new UnauthorizedException();
-    }
 
-    if (!pass) {
+    if (!username || !pass) {
       throw new UnauthorizedException();
     }
 
@@ -71,18 +68,23 @@ export class LoginService {
     }
 
     if (user.deleted) {
+      await this.userTable.update(user.id, {
+        deleted: false,
+        active: false,
+      });
+    }
+
+    if (!user || user.deleted || !user.active) {
       throw new UserIsDeletedException();
     }
 
-    // checking the availablity of the user and
     const isValid = await comparePassword(user.password, pass);
     if (user && isValid) {
-      // eslint-disable-next-line
-      const {password, ...result} = user;
+      const { password, ...result } = user;
 
-      //console.log(result);
       return result;
     }
+
     return null;
   }
 
