@@ -42,7 +42,7 @@ import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 import { InvoiceDetailBaseDto } from '../../../vdc/dto/invoice-detail-base.dto';
 import { InvoiceDetailsQueryDto } from '../dto/invoice-details-query.dto';
-import {ForbiddenException} from "../../../../infrastructure/exceptions/forbidden.exception";
+import { ForbiddenException } from '../../../../infrastructure/exceptions/forbidden.exception';
 
 @ApiTags('Invoices')
 @Controller('invoices')
