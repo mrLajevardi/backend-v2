@@ -25,11 +25,4 @@ export class PermissionGroupsMappings {
   )
   @JoinColumn([{ name: 'PermissionGroupID', referencedColumnName: 'id' }])
   permissionGroup: PermissionGroups;
-
-  @ManyToOne(() => Role, (role) => role.permissionGroupsMappings, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'RoleID', referencedColumnName: 'id' }])
-  role: Role;
 }

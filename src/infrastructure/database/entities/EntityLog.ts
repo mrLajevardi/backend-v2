@@ -1,4 +1,12 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from './User';
 
 @Index('PK__EntityLo__3214EC07CC271E87', ['id'], { unique: true })
 @Entity('EntityLog', { schema: 'logs' })
@@ -8,6 +16,7 @@ export class EntityLog {
     name: 'Id',
     precision: 18,
     scale: 0,
+    primary: true,
   })
   id: number;
   @Column('nvarchar', { name: 'Before', nullable: true })
@@ -43,4 +52,8 @@ export class EntityLog {
     default: () => 'getdate()',
   })
   createDate: Date | null;
+
+  @ManyToOne(() => User, (user) => user.entityLog)
+  @JoinColumn([{ name: 'UserId', referencedColumnName: 'id' }])
+  user: User;
 }

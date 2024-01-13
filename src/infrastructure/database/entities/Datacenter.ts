@@ -28,6 +28,7 @@ export class Datacenter {
     nullable: true,
     precision: 18,
     scale: 0,
+    primary: true,
   })
   creatorId: number | null;
 

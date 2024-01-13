@@ -58,10 +58,10 @@ export class ServiceTypes {
   @OneToMany(() => Discounts, (discounts) => discounts.serviceTypes)
   discounts: Discounts[];
 
-  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceTypes)
+  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceType)
   itemTypes: ItemTypes[];
 
-  @OneToMany(() => Templates, (templates) => templates.serviceTypes)
+  @OneToMany(() => Templates, (templates) => templates.serviceType)
   templates: Templates[];
 
   @OneToMany(

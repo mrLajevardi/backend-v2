@@ -13,11 +13,12 @@ import { Company } from './Company';
 @Index('PK__City__3214EC07AF53D481', ['id'], { unique: true })
 @Entity('City', { schema: 'security' })
 export class City {
-  @PrimaryGeneratedColumn({
-    type: 'decimal',
+  @PrimaryGeneratedColumn()
+  @Column('decimal', {
     name: 'Id',
     precision: 18,
     scale: 0,
+    primary: true,
   })
   id: number;
 

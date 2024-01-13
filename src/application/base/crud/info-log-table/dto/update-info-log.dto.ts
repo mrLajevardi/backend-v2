@@ -39,5 +39,5 @@ export class UpdateInfoLogDto {
 
   @IsInt()
   @ApiProperty()
-  serviceInstanceId?: number;
+  serviceInstanceId?: string;
 }

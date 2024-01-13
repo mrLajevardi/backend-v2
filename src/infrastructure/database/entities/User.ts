@@ -13,6 +13,7 @@ import { GroupsMapping } from './GroupsMapping';
 import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
+import { EntityLog } from './EntityLog';
 
 @Index('IX_User', ['phoneNumber'], {})
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
@@ -151,6 +152,9 @@ export class User {
 
   @OneToMany(() => Transactions, (transactions) => transactions.user)
   transactions: Transactions[];
+
+  @OneToMany(() => EntityLog, (entityLog) => entityLog.user)
+  entityLog: EntityLog[];
 
   @ManyToOne(() => Company, (company) => company.users)
   @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])

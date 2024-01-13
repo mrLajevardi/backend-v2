@@ -21,8 +21,8 @@ export class RoleTableService {
   ) {}
 
   // Find One Item by its ID
-  async findById(id: string): Promise<Role> {
-    const serviceType = await this.repository.findOne({ where: { id: id } });
+  async findById(guid: string): Promise<Role> {
+    const serviceType = await this.repository.findOne({ where: { guid } });
     return serviceType;
   }
 

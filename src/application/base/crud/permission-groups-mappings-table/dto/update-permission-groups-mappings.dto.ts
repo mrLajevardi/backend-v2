@@ -12,5 +12,5 @@ export class UpdatePermissionGroupsMappingsDto {
 
   @IsInt()
   @ApiProperty()
-  roleId?: number;
+  roleId?: string;
 }

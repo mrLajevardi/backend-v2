@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class UpdateRoleDto {
   @IsString()
   @ApiProperty()
-  id?: string;
+  id?: number;
 
   @IsString()
   @ApiProperty()

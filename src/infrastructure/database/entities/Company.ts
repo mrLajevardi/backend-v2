@@ -46,6 +46,7 @@ export class Company {
     name: 'Id',
     precision: 18,
     scale: 0,
+    primary: true,
   })
   id: number;
 
@@ -60,7 +61,7 @@ export class Company {
 
   @Column('decimal', { name: 'ProvinceId', nullable: true })
   provinceId: number | null;
-  
+
   @Column('decimal', { name: 'CityId', nullable: true })
   cityId: number | null;
   @Column('nvarchar', { name: 'PhoneNumber', nullable: true, length: 50 })

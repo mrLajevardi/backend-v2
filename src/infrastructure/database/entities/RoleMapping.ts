@@ -16,6 +16,7 @@ export class RoleMapping {
     name: 'Id',
     precision: 18,
     scale: 0,
+    primary: true,
   })
   id: number;
 
