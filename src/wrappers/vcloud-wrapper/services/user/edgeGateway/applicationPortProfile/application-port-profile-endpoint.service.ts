@@ -5,6 +5,8 @@ import { UpdateApplicationPortProfilesDto } from './dto/update-application-port-
 import { DeleteApplicationPortProfilesDto } from './dto/delete-application-port-profile.dto';
 import { GetApplicationPortProfilesDto } from './dto/get-application-port-profiles.dto';
 import { GetApplicationPortProfilesListDto } from './dto/get-application-port-profiles-list.dto';
+import { getAccept } from '../../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class ApplicationPortProfileEndpointService {
@@ -22,7 +24,7 @@ export class ApplicationPortProfileEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         ...options.headers,
       },
     };
@@ -36,7 +38,7 @@ export class ApplicationPortProfileEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         ...options.headers,
       },
     };
@@ -50,7 +52,7 @@ export class ApplicationPortProfileEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -64,7 +66,7 @@ export class ApplicationPortProfileEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -78,7 +80,7 @@ export class ApplicationPortProfileEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         ...options.headers,
       },
     };

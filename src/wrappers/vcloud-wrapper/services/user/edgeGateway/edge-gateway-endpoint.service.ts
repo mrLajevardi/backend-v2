@@ -5,6 +5,8 @@ import { GetDnsForwarderDto } from './dto/get-dns-forwarder.dto';
 import { GetEdgeGatewayDto } from './dto/get-edge-gateway.dto';
 import { UpdateDhcpForwarderDto } from './dto/update-dhcp-forwarder.dto';
 import { UpdateDnsForwarderDto } from './dto/update-dns-forwarder.dto';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
 
 @Injectable()
 export class EdgeGatewayEndpointService {
@@ -20,7 +22,7 @@ export class EdgeGatewayEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -33,7 +35,7 @@ export class EdgeGatewayEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -46,7 +48,7 @@ export class EdgeGatewayEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -61,7 +63,7 @@ export class EdgeGatewayEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -76,7 +78,7 @@ export class EdgeGatewayEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
