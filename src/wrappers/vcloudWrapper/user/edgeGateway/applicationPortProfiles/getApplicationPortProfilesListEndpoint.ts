@@ -12,7 +12,7 @@ export function getApplicationPortProfilesListEndpoint(options?: any) {
     params: options.params,
     body: null,
     headers: {
-      Accept: 'application/json;version=38.0.0-alpha',
+      Accept: 'application/json;version=38.1',
       ...options.headers,
     },
   };

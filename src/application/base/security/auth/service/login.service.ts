@@ -13,6 +13,7 @@ import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 import { TwoFaAuthService } from './two-fa-auth.service';
 import axios from 'axios';
+import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
 // import process from 'process';
 
 @Injectable()
@@ -53,11 +54,8 @@ export class LoginService {
   // Validate user performs using Local.strategy
   async validateUser(username: string, pass: string): Promise<any> {
     console.log('validate user');
-    if (!username) {
-      throw new UnauthorizedException();
-    }
 
-    if (!pass) {
+    if (!username || !pass) {
       throw new UnauthorizedException();
     }
 
@@ -68,15 +66,25 @@ export class LoginService {
     if (!user) {
       throw new UnauthorizedException();
     }
-    // checking the availablity of the user and
+
+    if (user.deleted) {
+      await this.userTable.update(user.id, {
+        deleted: false,
+        active: false,
+      });
+    }
+
+    if (!user || user.deleted || !user.active) {
+      throw new UserIsDeletedException();
+    }
+
     const isValid = await comparePassword(user.password, pass);
     if (user && isValid) {
-      // eslint-disable-next-line
-      const {password, ...result} = user;
+      const { password, ...result } = user;
 
-      //console.log(result);
       return result;
     }
+
     return null;
   }
 
@@ -125,6 +133,7 @@ export class LoginService {
     const payload = {
       username: user.username,
       userId: user.id,
+      guid: user.guid,
       personalVerification: user.personalVerification,
       impersonateAs: !isEmpty(impersonateAs)
         ? {

@@ -8,6 +8,8 @@ import { GetDhcpBindingsDto } from './dto/get-dhcp-binding.dto';
 import { UpdateDhcpBindingDto } from './dto/update-dhcp-bindings.dto';
 import { UpdateDhcpDto } from './dto/update-dhcp.dto';
 import { GetDhcpDto } from './dto/get-dhcp.dto';
+import { getAccept } from '../../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class DhcpEndpointService {
@@ -23,7 +25,7 @@ export class DhcpEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -35,7 +37,7 @@ export class DhcpEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -47,7 +49,7 @@ export class DhcpEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -59,7 +61,7 @@ export class DhcpEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -71,7 +73,7 @@ export class DhcpEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -83,7 +85,7 @@ export class DhcpEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -96,7 +98,7 @@ export class DhcpEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -108,7 +110,7 @@ export class DhcpEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
