@@ -1,6 +1,7 @@
 import { Column, Entity, Index } from 'typeorm';
 
 @Index('PK__AccessTo__3213E83F2F499218', ['id'], { unique: true })
+@Index('PK__AccessTo__3213E83F2F4992d18', ['id'], { unique: true })
 @Entity('AccessToken', { schema: 'security' })
 export class AccessToken {
   @Column('nvarchar', { primary: true, name: 'id', length: 255 })

@@ -1,20 +1,11 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { City } from './City';
 import { Company } from './Company';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__Province__CDEB13F8B25813F1', ['id'], { unique: true })
 @Entity('Province', { schema: 'security' })
 export class Province {
-  @PrimaryGeneratedColumn({
-    name: 'Id',
-  })
+  @Column('decimal', { primary: true, name: 'Id', precision: 18, scale: 0 })
   id: number;
 
   @Column('nvarchar', { name: 'ProvinceName', nullable: true, length: 50 })
@@ -56,8 +47,7 @@ export class Province {
   @Column('nvarchar', { name: 'IntegCode', nullable: true })
   integCode: string | null;
 
-  @Column({
-    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+  @Column('uniqueidentifier', {
     name: 'Guid',
     nullable: true,
     default: () => 'newsequentialid()',

@@ -9,13 +9,15 @@ import {
 } from 'typeorm';
 import { Province } from './Province';
 import { Company } from './Company';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__City__3214EC07AF53D481', ['id'], { unique: true })
 @Entity('City', { schema: 'security' })
 export class City {
   @PrimaryGeneratedColumn({
+    type: 'decimal',
     name: 'Id',
+    precision: 18,
+    scale: 0,
   })
   id: number;
 
@@ -55,8 +57,7 @@ export class City {
   @Column('nvarchar', { name: 'IntegCode', nullable: true })
   integCode: string | null;
 
-  @Column({
-    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
+  @Column('uniqueidentifier', {
     name: 'Guid',
     nullable: true,
     default: () => 'newsequentialid()',

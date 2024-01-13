@@ -1,5 +1,4 @@
 import {
-  AfterLoad,
   Column,
   Entity,
   Index,
@@ -9,13 +8,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Company } from './Company';
+import { Files } from './Files';
 import { GroupsMapping } from './GroupsMapping';
 import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
-import { Files } from './Files';
 
+@Index('IX_User', ['phoneNumber'], {})
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
 export class User {
@@ -34,17 +33,14 @@ export class User {
   @Column('nvarchar', { name: 'email', nullable: true, length: 255 })
   email: string | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+  @Column('bit', {
     name: 'emailVerified',
     nullable: true,
     default: () => '(0)',
   })
   emailVerified: boolean | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'active',
-    default: () => '(1)',
-  })
+  @Column('bit', { name: 'active', default: () => '(1)' })
   active: boolean;
 
   @Column('nvarchar', { name: 'name', length: 255 })
@@ -53,31 +49,27 @@ export class User {
   @Column('nvarchar', { name: 'family', length: 255 })
   family: string;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+  @Column('bit', {
     name: 'verificationToken',
     nullable: true,
     default: () => '(0)',
   })
   verificationToken: boolean | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'deleted',
-    nullable: true,
-    default: () => '(0)',
-  })
+  @Column('bit', { name: 'deleted', nullable: true, default: () => '(0)' })
   deleted: boolean | null;
 
   @Column('datetime', {
     name: 'createDate',
     nullable: true,
-    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
+    default: () => 'getdate()',
   })
   createDate: Date | null;
 
   @Column('datetime', {
     name: 'updateDate',
     nullable: true,
-    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
+    default: () => 'getdate()',
   })
   updateDate: Date | null;
 
@@ -93,10 +85,7 @@ export class User {
   @Column('nvarchar', { name: 'vdcPassword', nullable: true })
   vdcPassword: string | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'hasVdc',
-    nullable: true,
-  })
+  @Column('bit', { name: 'hasVdc', nullable: true })
   hasVdc: boolean | null;
 
   @Column('nvarchar', { name: 'phoneNumber', nullable: true, length: 15 })
@@ -105,16 +94,10 @@ export class User {
   @Column('nvarchar', { name: 'orgName', nullable: true, length: 50 })
   orgName: string | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'acceptTermsOfService',
-    nullable: true,
-  })
+  @Column('bit', { name: 'acceptTermsOfService', nullable: true })
   acceptTermsOfService: boolean | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'phoneVerified',
-    default: () => '(0)',
-  })
+  @Column('bit', { name: 'phoneVerified', default: () => '(0)' })
   phoneVerified: boolean;
 
   @Column('date', { name: 'birthDate', nullable: true })
@@ -123,60 +106,40 @@ export class User {
   @Column('nvarchar', { name: 'personalCode', nullable: true, length: 100 })
   personalCode: string | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'companyOwner',
-    nullable: true,
-    default: () => '(0)',
-  })
+  @Column('bit', { name: 'companyOwner', nullable: true, default: () => '(0)' })
   companyOwner: boolean | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+  @Column('uniqueidentifier', {
+    name: 'guid',
+    nullable: true,
+    default: () => 'newsequentialid()',
+  })
+  guid: string | null;
+
+  @Column('bit', {
     name: 'personalVerification',
     nullable: true,
-    default: () => 1,
+    default: () => '(0)',
   })
   personalVerification: boolean | null;
 
   @Column('nvarchar', {
     name: 'twoFactorAuth',
     nullable: true,
-    default: () => '0',
+    length: 50,
+    default: () => '(0)',
   })
-  twoFactorAuth: string;
-
+  twoFactorAuth: string | null;
   @Column('decimal', { name: 'companyId', nullable: true })
   companyId: number | null;
-
-  @Column({
-    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
-    name: 'avatarId',
-    nullable: true,
-  })
+  @Column('uniqueidentifier', { name: 'avatarId', nullable: true })
   avatarId: string | null;
 
-  @Column({
-    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
-    name: 'companyLetterId',
-    nullable: true,
-  })
+  @Column('uniqueidentifier', { name: 'companyLetterId', nullable: true })
   companyLetterId: string | null;
 
-  @Column('tinyint', {
-    name: 'companyLetterStatus',
-    nullable: true,
-    default: () => 0,
-  })
-  companyLetterStatus: number;
-
-  @Column({
-    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
-    name: 'guid',
-    unique: !isTestingEnv(),
-    nullable: isTestingEnv(),
-    default: () => (isTestingEnv() ? null : 'newsequentialid()'),
-  })
-  guid: string;
-
+  @Column('tinyint', { name: 'companyLetterStatus', nullable: true })
+  companyLetterStatus: number | null;
   @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
   groupsMappings: GroupsMapping[];
 

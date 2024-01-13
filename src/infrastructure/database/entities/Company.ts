@@ -10,7 +10,6 @@ import {
 import { Province } from './Province';
 import { City } from './City';
 import { User } from './User';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Files } from './Files';
 
 @Index('PK__Company__3213E83F6DC356F4', ['id'], { unique: true })
@@ -42,8 +41,11 @@ export class Company {
   })
   updateDate: Date | null;
 
-  @PrimaryGeneratedColumn({
+  @PrimaryGeneratedColumn()
+  @Column('decimal', {
     name: 'Id',
+    precision: 18,
+    scale: 0,
   })
   id: number;
 
@@ -58,25 +60,27 @@ export class Company {
 
   @Column('decimal', { name: 'ProvinceId', nullable: true })
   provinceId: number | null;
-
+  
   @Column('decimal', { name: 'CityId', nullable: true })
   cityId: number | null;
-
-  @Column('nvarchar', { name: 'PhoneNumber', nullable: true })
+  @Column('nvarchar', { name: 'PhoneNumber', nullable: true, length: 50 })
   companyPhoneNumber: string | null;
 
-  @Column('nvarchar', { name: 'PostalCode', nullable: true })
+  @Column('nvarchar', { name: 'PostalCode', nullable: true, length: 100 })
   companyPostalCode: string | null;
 
   @Column('nvarchar', { name: 'Address', nullable: true })
   companyAddress: string | null;
 
-  @Column({
-    type: isTestingEnv() ? 'varchar' : 'uniqueidentifier',
-    name: 'LogoId',
-    nullable: true,
-  })
+  @Column('uniqueidentifier', { name: 'LogoId', nullable: true })
   LogoId: string | null;
+
+  @Column('uniqueidentifier', {
+    name: 'Guid',
+    nullable: true,
+    default: () => 'newsequentialid()',
+  })
+  guid: string | null;
 
   @ManyToOne(() => Province, (province) => province.companies)
   @JoinColumn([{ name: 'ProvinceId', referencedColumnName: 'id' }])

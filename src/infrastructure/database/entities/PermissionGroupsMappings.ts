@@ -1,4 +1,5 @@
 import {
+  Column,
   Entity,
   Index,
   JoinColumn,
@@ -13,6 +14,9 @@ import { Role } from './Role';
 export class PermissionGroupsMappings {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
+
+  @Column('nvarchar', { name: 'RoleID', length: 50 })
+  roleId: string;
 
   @ManyToOne(
     () => PermissionGroups,

@@ -1,33 +1,51 @@
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
-import { isTestingEnv } from '../../helpers/helpers';
-import { HookTypeEnum } from '../../../application/base/crud/acl-table/enum/hook-type.enum';
+import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { Role } from './Role';
 import { BaseEntity } from '../../entity/base.entity';
+import { HookTypeEnum } from '../../../application/base/crud/acl-table/enum/hook-type.enum';
 import { AccessType } from '../../../application/base/crud/acl-table/enum/access-type.enum';
-
-@Index('PK__ACL__3213E83F35E40E26', ['id'], { unique: true })
+@Index('PK__ACL__3213E83F4E95AFC9', ['guid'], { unique: true })
 @Entity('ACL', { schema: 'security' })
 export class Acl extends BaseEntity {
-  @Column('nvarchar', { name: 'Model', nullable: true, length: 255 })
+  @Column('nvarchar', { name: 'Model', nullable: true, length: 100 })
   model: string | null;
 
-  @Column('nvarchar', { name: 'Property', nullable: true, length: 255 })
+  @Column('nvarchar', { name: 'Property', nullable: true })
   property: string | null;
 
   @Column('tinyint', { name: 'AccessType', nullable: true })
-  accessType: AccessType;
+  accessType: AccessType | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'Can', nullable: true })
-  can: boolean;
+  @Column('bit', { name: 'Can', nullable: true })
+  can: boolean | null;
 
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+  @Column('datetime', { name: 'CreateDate' })
+  createDate: Date;
+
+  @Column('datetime', { name: 'UpdateDate' })
+  updateDate: Date;
+
+  @Column('decimal', { name: 'CreatorId', precision: 18, scale: 0 })
+  creatorId: number;
+
+  @Column('decimal', { name: 'LastEditorId', precision: 18, scale: 0 })
+  lastEditorId: number;
+
+  @Column('nvarchar', { name: 'IntegCode', nullable: true })
+  integCode: string | null;
+
+  @Column('tinyint', { name: 'HookType' })
+  hookType: HookTypeEnum;
+
+  @Column('uniqueidentifier', {
     name: 'RoleId',
     nullable: true,
   })
   roleId: string;
 
-  @Column(!isTestingEnv() ? 'tinyint' : 'tinyint', {
-    name: 'HookType',
-    nullable: true,
+  @ManyToOne(() => Role, (role) => role.acls, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
-  hookType: HookTypeEnum;
+  @JoinColumn([{ name: 'RoleId', referencedColumnName: 'guid' }])
+  role: Role;
 }

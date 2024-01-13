@@ -1,13 +1,17 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('migrations', { schema: 'dbo' })
+@Index('PK__Migratio__3213E83FC60BF224', ['id'], { unique: true })
+@Entity('Migrations', { schema: 'security' })
 export class Migrations {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
 
-  @Column('bigint', { name: 'timestamp' })
-  timestamp: string;
+  @Column('nvarchar', { name: 'name', nullable: true, length: 255 })
+  name: string | null;
 
-  @Column('varchar', { name: 'name', length: 255 })
-  name: string;
+  @Column('int', { name: 'batch', nullable: true })
+  batch: number | null;
+
+  @Column('datetime2', { name: 'migration_time', nullable: true })
+  migrationTime: Date | null;
 }

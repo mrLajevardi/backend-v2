@@ -1,39 +1,56 @@
-import { Column, Entity, Index, OneToMany } from 'typeorm';
-import { PermissionGroupsMappings } from './PermissionGroupsMappings';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Acl } from './Acl';
 import { RoleMapping } from './RoleMapping';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
-@Index('PK__Role__3213E83F33C5C466', ['id'], { unique: true })
+@Index('PK_Role', ['guid'], { unique: true })
 @Entity('Role', { schema: 'security' })
 export class Role {
-  @Column('nvarchar', { primary: true, name: 'id', length: 50 })
-  id: string;
+  @PrimaryGeneratedColumn()
+  @Column('decimal', {
+    name: 'Id',
+    precision: 18,
+    scale: 0,
+  })
+  id: number;
 
-  @Column('nvarchar', { name: 'name', length: 255 })
+  @Column('nvarchar', { name: 'Name', length: 100 })
   name: string;
 
-  @Column('nvarchar', { name: 'description', nullable: true, length: 255 })
+  @Column('nvarchar', { name: 'Description', nullable: true, length: 200 })
   description: string | null;
 
-  @Column('datetime', {
-    name: 'created',
-    nullable: true,
-    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
-  })
-  created: Date | null;
+  @Column('datetime', { name: 'UpdateDate' })
+  updateDate: Date;
 
-  @Column('datetime', {
-    name: 'modified',
-    nullable: true,
-    default: () => (isTestingEnv() ? 'CURRENT_TIMESTAMP' : 'getdate()'),
-  })
-  modified: Date | null;
+  @Column('datetime', { name: 'CreateDate' })
+  createDate: Date;
 
-  @OneToMany(
-    () => PermissionGroupsMappings,
-    (permissionGroupsMappings) => permissionGroupsMappings.role,
-  )
-  permissionGroupsMappings: PermissionGroupsMappings[];
+  @Column('uniqueidentifier', {
+    primary: true,
+    name: 'Guid',
+    default: () => 'newsequentialid()',
+  })
+  guid: string;
+
+  @Column('decimal', {
+    name: 'LastEditorId',
+    nullable: true,
+    precision: 18,
+    scale: 0,
+  })
+  lastEditorId: number | null;
+
+  @Column('nvarchar', { name: 'IntegCode', nullable: true })
+  integCode: string | null;
+
+  @OneToMany(() => Acl, (acl) => acl.role)
+  acls: Acl[];
 
   @OneToMany(() => RoleMapping, (roleMapping) => roleMapping.role)
   roleMappings: RoleMapping[];
