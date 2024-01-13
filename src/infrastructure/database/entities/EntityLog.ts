@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from './User';
+console.log('entity log working');
 
 @Index('PK__EntityLo__3214EC07CC271E87', ['id'], { unique: true })
 @Entity('EntityLog', { schema: 'logs' })

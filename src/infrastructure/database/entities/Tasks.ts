@@ -1,5 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+console.log('tasks working');
 
 @Index('PK__tasks__7C6949D195E39C4E', ['taskId'], { unique: true })
 @Entity('Tasks', { schema: 'user' })

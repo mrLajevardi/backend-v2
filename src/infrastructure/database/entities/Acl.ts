@@ -3,6 +3,8 @@ import { Role } from './Role';
 import { BaseEntity } from '../../entity/base.entity';
 import { HookTypeEnum } from '../../../application/base/crud/acl-table/enum/hook-type.enum';
 import { AccessType } from '../../../application/base/crud/acl-table/enum/access-type.enum';
+console.log('im here Acl');
+
 @Index('PK__ACL__3213E83F4E95AFC9', ['guid'], { unique: true })
 @Entity('ACL', { schema: 'security' })
 export class Acl extends BaseEntity {

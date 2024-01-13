@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Discounts } from './Discounts';
+console.log('invoiceDiscount working');
 
 @Index('PK_InvoiceDiscounts', ['id'], { unique: true })
 @Entity('InvoiceDiscounts', { schema: 'user' })

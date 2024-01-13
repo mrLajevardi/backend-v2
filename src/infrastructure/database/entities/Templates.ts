@@ -1,7 +1,17 @@
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
-import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
 import { Invoices } from './Invoices';
+import { ServicePlanTypeEnum } from '../../../application/base/service/enum/service-plan-type.enum';
+
+console.log('templates working');
+
 
 @Index('PK__Template__A2B5777CA811BDD6', ['guid'], { unique: true })
 @Entity('Templates', { schema: 'services' })

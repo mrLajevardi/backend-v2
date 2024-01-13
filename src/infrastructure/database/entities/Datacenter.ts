@@ -1,4 +1,5 @@
 import { Column, Entity } from 'typeorm';
+console.log('im here data');
 
 @Entity('Datacenter', { schema: 'dbo' })
 export class Datacenter {

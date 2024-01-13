@@ -10,6 +10,7 @@ import {
 import { ServiceInstances } from './ServiceInstances';
 import { VServiceInstances } from './views/v-serviceInstances';
 import { ItemTypes } from './ItemTypes';
+console.log('serviceItems working');
 
 @Index('PK_ServiceResources', ['id'], { unique: true })
 @Entity('ServiceItems', { schema: 'user' })
@@ -33,22 +34,22 @@ export class ServiceItems {
   })
   serviceInstanceId: string;
 
-  @ManyToOne(
-    () => ServiceInstances,
-    (serviceInstances) => serviceInstances.serviceItems,
-    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
-  serviceInstance: ServiceInstances;
+  // @ManyToOne(
+  //   () => ServiceInstances,
+  //   (serviceInstances) => serviceInstances.serviceItems,
+  //   { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  // serviceInstance: ServiceInstances;
 
   // @OneToMany(() => VServiceInstances, (vServiceInstance) => vServiceInstance.serviceInstance)
   // servicePlans: ServicePlans[];)
   // vServiceInstance: VServiceInstances;
 
-  @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.serviceItems, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
+  // @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.serviceItems, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
   @JoinColumn([{ name: 'ItemTypeID', referencedColumnName: 'id' }])
   itemType: ItemTypes;
 }

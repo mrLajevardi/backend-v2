@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { Acl } from './Acl';
 import { RoleMapping } from './RoleMapping';
+console.log('role working');
 
 @Index('PK_Role', ['guid'], { unique: true })
 @Entity('Role', { schema: 'security' })

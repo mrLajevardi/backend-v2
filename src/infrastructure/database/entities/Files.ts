@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('files working');
 
 @Index('PK_Files', ['guid'], { unique: true })
 @Entity('Files', { schema: 'dbo' })

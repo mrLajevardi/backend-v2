@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('scope working');
 
 @Index('PK__Scope__3213E83F6ECDAE1D', ['id'], { unique: true })
 @Entity('Scope', { schema: 'security' })

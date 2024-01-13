@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
 import { ItemTypes } from './ItemTypes';
+console.log('im here aiTra');
 
 @Index('PK_AITransactionsLogs', ['id'], { unique: true })
 @Entity('AITransactionsLogs', { schema: 'user' })

@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('im here debug');
 
 @Index('PK__DataLog__3214EC2711DC71D1', ['id'], { unique: true })
 @Entity('DebugLog', { schema: 'logs' })

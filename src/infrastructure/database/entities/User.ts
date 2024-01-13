@@ -14,6 +14,7 @@ import { Invoices } from './Invoices';
 import { Organization } from './Organization';
 import { Transactions } from './Transactions';
 import { EntityLog } from './EntityLog';
+console.log('user working');
 
 @Index('IX_User', ['phoneNumber'], {})
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })

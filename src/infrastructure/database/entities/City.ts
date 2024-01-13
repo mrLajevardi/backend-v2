@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Province } from './Province';
 import { Company } from './Company';
+console.log('im here city');
 
 @Index('PK__City__3214EC07AF53D481', ['id'], { unique: true })
 @Entity('City', { schema: 'security' })

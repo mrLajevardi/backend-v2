@@ -8,6 +8,8 @@ import {
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
 
+console.log('service plans working');
+
 @Index('PK__ServiceP__3214EC279395D59C', ['id'], { unique: true })
 @Entity('ServicePlans', { schema: 'user' })
 export class ServicePlans {

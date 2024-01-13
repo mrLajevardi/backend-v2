@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Groups } from './Groups';
 import { User } from './User';
+console.log('group map working');
 
 @Index('PK__GroupsMa__3214EC2799DAAC74', ['id'], { unique: true })
 @Entity('GroupsMapping', { schema: 'user' })

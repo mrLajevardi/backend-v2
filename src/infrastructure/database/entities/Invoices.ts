@@ -11,6 +11,7 @@ import { InvoiceItems } from './InvoiceItems';
 import { ServiceInstances } from './ServiceInstances';
 import { User } from './User';
 import { Templates } from './Templates';
+console.log('invoices working');
 
 @Index('PK_Invoices', ['id'], { unique: true })
 @Entity('Invoices', { schema: 'user' })

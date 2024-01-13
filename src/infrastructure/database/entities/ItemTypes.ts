@@ -12,6 +12,8 @@ import { ServicePlanTypeEnum } from '../../../application/base/service/enum/serv
 import { AiTransactionsLogs } from './AiTransactionsLogs';
 import { InvoiceItems } from './InvoiceItems';
 import { ServiceItems } from './ServiceItems';
+console.log('itemtypes working');
+
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
 export class ItemTypes {
@@ -99,6 +101,6 @@ export class ItemTypes {
   @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
   invoiceItems: InvoiceItems[];
 
-  @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
-  serviceItems: ServiceItems[];
+  // @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
+  // serviceItems: ServiceItems[];
 }

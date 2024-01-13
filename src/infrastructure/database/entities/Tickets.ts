@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+console.log('tickets working');
 
 @Index('PK__Tickets__3214EC2736EDC157', ['id'], { unique: true })
 @Entity('Tickets', { schema: 'user' })

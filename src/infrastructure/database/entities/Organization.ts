@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Sessions } from './Sessions';
 import { User } from './User';
+console.log('organization working');
 
 @Index('PK__organiza__3213E83F513E7650', ['id'], { unique: true })
 @Entity('Organization', { schema: 'vdc' })

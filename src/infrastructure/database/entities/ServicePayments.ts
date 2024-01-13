@@ -1,4 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
+console.log('servicePayments working');
 
 @Index('PK_ServicePayments', ['id'], { unique: true })
 @Entity('ServicePayments', { schema: 'dbo' })

@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { InvoiceDiscounts } from './InvoiceDiscounts';
+console.log('im here discount');
+
 
 @Index('PK_Discounts', ['id'], { unique: true })
 @Entity('Discounts', { schema: 'services' })

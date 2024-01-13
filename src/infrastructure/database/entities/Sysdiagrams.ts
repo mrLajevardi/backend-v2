@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('sysdiagram working');
 
 @Index('PK__sysdiagr__C2B05B61356F80C3', ['diagramId'], { unique: true })
 @Index('UK_principal_name', ['principalId', 'name'], { unique: true })

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { PermissionGroupsMappings } from './PermissionGroupsMappings';
 import { PermissionMappings } from './PermissionMappings';
+console.log('permission working');
 
 @Index('PK__Permissi__3214EC2736890AFB', ['id'], { unique: true })
 @Entity('PermissionGroups', { schema: 'security' })

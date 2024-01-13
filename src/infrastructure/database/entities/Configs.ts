@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
+console.log('im here config');
 
 @Index('PK_services.Config', ['id'], { unique: true })
 @Entity('Configs', { schema: 'services' })

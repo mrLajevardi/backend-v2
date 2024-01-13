@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('invoiceProperties working');
 
 @Index('PK_InvoiceProperties', ['id'], { unique: true })
 @Entity('InvoiceProperties', { schema: 'user' })

@@ -15,6 +15,7 @@ import { Tickets } from './Tickets';
 import { InfoLog } from './InfoLog';
 import { ServiceTypes } from './ServiceTypes';
 import { Tasks } from './Tasks';
+console.log('service instances working');
 
 @Index('index_zare_IsDeleted', ['isDeleted'], {})
 @Index('PK_ServiceInstances', ['id'], { unique: true })
@@ -84,7 +85,6 @@ export class ServiceInstances {
     nullable: true,
     default: () => '(0)',
   })
-  
   retryCount: number | null;
 
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
@@ -130,8 +130,8 @@ export class ServiceInstances {
   @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
   serviceType: ServiceTypes;
 
-  @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.serviceInstance)
-  serviceItems: ServiceItems[];
+  // @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.serviceInstance)
+  // serviceItems: ServiceItems[];
 
   @OneToMany(() => ServicePlans, (servicePlans) => servicePlans.serviceInstance)
   servicePlans: ServicePlans[];

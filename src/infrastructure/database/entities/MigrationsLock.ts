@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('migration lock working');
 
 @Index('PK__Migratio__1D0A334817D136CF', ['index'], { unique: true })
 @Entity('Migrations_lock', { schema: 'security' })

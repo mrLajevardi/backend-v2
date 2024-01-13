@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('system setting working');
 
 @Index('PK__SystemSe__3214EC271FD0CEF8', ['id'], { unique: true })
 @Entity('SystemSettings', { schema: 'security' })

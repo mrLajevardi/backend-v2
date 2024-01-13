@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Invoices } from './Invoices';
 import { ItemTypes } from './ItemTypes';
+console.log('invoiceItems working');
 
 @Index('PK_InvoiceItems', ['id'], { unique: true })
 @Entity('InvoiceItems', { schema: 'user' })

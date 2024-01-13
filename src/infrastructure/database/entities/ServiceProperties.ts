@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+console.log('service properties working');
 
 @Index('IX_ServiceProperties', ['serviceInstanceId'], {})
 @Index('PK_ServiceProperties', ['id'], { unique: true })

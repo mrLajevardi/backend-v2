@@ -4,6 +4,7 @@ import { Discounts } from './Discounts';
 import { ItemTypes } from './ItemTypes';
 import { Templates } from './Templates';
 import { ServiceInstances } from './ServiceInstances';
+console.log('serviceTypes working');
 
 @Index('PK_ServiceTypes', ['id', 'datacenterName'], { unique: true })
 @Entity('ServiceTypes', { schema: 'services' })

@@ -1,4 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
+console.log('plans working');
 
 @Index('PK_QualityPlans', ['code'], { unique: true })
 @Entity('Plans', { schema: 'services' })

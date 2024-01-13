@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceInstances } from './ServiceInstances';
+console.log('info log working');
 
 @Index('PK__infoLogs__3213E83F1713A44E', ['id'], { unique: true })
 @Entity('InfoLog', { schema: 'logs' })
@@ -20,7 +21,7 @@ export class InfoLog {
   @Column('int', { name: 'TypeID', nullable: true })
   typeId: number | null;
 
-  @Column('int', { name: 'ActionID', nullable: true })
+  @Column('decimal', { name: 'ActionID', nullable: true })
   actionId: number | null;
 
   @Column('datetime', { name: 'TimeStamp', nullable: true })

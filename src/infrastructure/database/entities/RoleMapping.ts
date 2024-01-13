@@ -7,6 +7,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from './Role';
+console.log('role mapping working');
+
 
 @Index('PK__RoleMapp__3213E83F75DAA2FC', ['id'], { unique: true })
 @Entity('RoleMapping', { schema: 'security' })

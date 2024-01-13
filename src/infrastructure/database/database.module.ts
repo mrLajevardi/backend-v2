@@ -12,45 +12,29 @@ import {
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { dbEntities } from './entityImporter/orm-entities';
 import { TestDataService } from './test-data.service';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { isTestingEnv } from '../helpers/helpers';
 import { CacheModule } from '@nestjs/cache-manager';
 import { EntitySubscriber } from './classes/entity.subscriber';
 import { EntityManager } from 'typeorm';
+import datasource from './datasource';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [datasource],
     }),
     CacheModule.register({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
-      useFactory: () => {
-        if (isTestingEnv()) {
-          throw new InternalServerErrorException();
-        }
-        return !isTestingEnv()
-          ? ({
-              type: process.env.DB_TYPE,
-              host: process.env.DB_HOST,
-              port: Number(process.env.DB_PORT),
-              username: process.env.DB_USERNAME,
-              password: process.env.DB_PASSWORD,
-              database: process.env.DB_NAME,
-              entities: dbEntities,
-              uuidExtension: true,
-              extra: {
-                trustServerCertificate: true,
-              },
-              // subscribers: [EntitySubscriber],
-            } as TypeOrmModuleOptions)
-          : ({
-              type: 'sqlite',
-              database: ':memory:',
-              autoLoadEntities: true,
-              entities: dbEntities,
-              synchronize: true,
-            } as TypeOrmModuleOptions);
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        const config = configService.get('typeorm');
+        const datasource: TypeOrmModuleOptions = {
+          ...config,
+          entities: [dbEntities],
+        };
+        return datasource;
       },
     }),
     TypeOrmModule.forFeature(dbEntities),
@@ -60,6 +44,7 @@ import { EntityManager } from 'typeorm';
     TypeOrmModule,
     ConfigModule.forRoot({
       isGlobal: true,
+      load: [datasource],
     }),
   ],
 })

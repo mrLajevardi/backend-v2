@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('invoice plans working');
 
 @Index('PK_InvoicePlans', ['id'], { unique: true })
 @Entity('InvoicePlans', { schema: 'user' })

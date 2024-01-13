@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+console.log('migrations working');
 
 @Index('PK__Migratio__3213E83FC60BF224', ['id'], { unique: true })
 @Entity('Migrations', { schema: 'security' })

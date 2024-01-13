@@ -1,5 +1,6 @@
 import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../entity/base.entity';
+console.log('service discounts working');
 
 @Index('PK__ServiceD__3214EC07E8961BAC', ['guid'], { unique: true })
 @Entity('ServiceDiscount', { schema: 'services' })

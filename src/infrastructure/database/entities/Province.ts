@@ -1,6 +1,7 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 import { City } from './City';
 import { Company } from './Company';
+console.log('province working');
 
 @Index('PK__Province__CDEB13F8B25813F1', ['id'], { unique: true })
 @Entity('Province', { schema: 'security' })

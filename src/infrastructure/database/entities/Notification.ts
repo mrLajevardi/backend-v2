@@ -1,4 +1,5 @@
 import { Column, Entity, Index } from 'typeorm';
+console.log('notification working');
 
 @Index('PK__Notifica__3214EC07FBA37F19', ['id'], { unique: true })
 @Entity('Notification', { schema: 'user' })

@@ -6,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { GroupsMapping } from './GroupsMapping';
+console.log('groups working');
 
 @Index('PK__Groups__3214EC27686FB04E', ['id'], { unique: true })
 @Entity('Groups', { schema: 'user' })

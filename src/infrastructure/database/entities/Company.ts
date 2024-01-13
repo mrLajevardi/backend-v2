@@ -11,6 +11,7 @@ import { Province } from './Province';
 import { City } from './City';
 import { User } from './User';
 import { Files } from './Files';
+console.log('im here company');
 
 @Index('PK__Company__3213E83F6DC356F4', ['id'], { unique: true })
 @Entity('Company', { schema: 'security' })
