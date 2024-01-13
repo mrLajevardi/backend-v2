@@ -8,16 +8,13 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
-import { InvoiceItems } from './InvoiceItems';
-import { ServiceItems } from './ServiceItems';
-import { AiTransactionsLogs } from './AiTransactionsLogs';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { ServicePlanTypeEnum } from '../../../application/base/service/enum/service-plan-type.enum';
-
+import { AiTransactionsLogs } from './AiTransactionsLogs';
+import { InvoiceItems } from './InvoiceItems';
 @Index('PK_ResourceTypes', ['id'], { unique: true })
 @Entity('ItemTypes', { schema: 'services' })
 export class ItemTypes {
-  @PrimaryGeneratedColumn({ name: 'ID', type: 'int' })
+  @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
   @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
@@ -53,6 +50,7 @@ export class ItemTypes {
   @Column('datetime', {
     name: 'CreateDate',
     nullable: true,
+    default: () => 'getdate()',
   })
   createDate: Date | null;
 
@@ -62,59 +60,28 @@ export class ItemTypes {
   @Column('tinyint', { name: 'PrinciplePrice', nullable: true })
   principlePrice: number | null;
 
-  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
-  serviceType: ServiceTypes;
-
   @Column('varchar', { name: 'ServiceTypeID', length: 50 })
   serviceTypeId: string;
-
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'Required',
-    nullable: true,
-  })
+  @Column('bit', { name: 'Required', nullable: true })
   required: boolean | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'IsDeleted',
-    nullable: false,
-  })
-  isDeleted: boolean;
-
-  @Column('datetime', {
-    name: 'DeleteDate',
-    nullable: true,
-  })
-  deleteDate: Date | null;
-
-  @OneToMany(
-    () => AiTransactionsLogs,
-    (aiTransactionsLogs) => aiTransactionsLogs.itemType,
-  )
-  aiTransactionsLogs: AiTransactionsLogs[];
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'Enabled',
-    nullable: true,
-  })
+  @Column('bit', { name: 'Enabled', nullable: true })
   enabled: boolean | null;
-
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'IsHidden',
-    nullable: true,
-  })
-  isHidden: boolean | null;
 
   @Column('int', { name: 'Step', nullable: true })
   step: number | null;
 
-  @Column('tinyint', { name: 'Type', nullable: true })
-  type: ServicePlanTypeEnum;
+  @Column('bit', { name: 'IsDeleted', default: () => '(0)' })
+  isDeleted: boolean;
 
-  @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
-  invoiceItems: InvoiceItems[];
+  @Column('datetime', { name: 'DeleteDate', nullable: true })
+  deleteDate: Date | null;
+
+  @Column('tinyint', { name: 'Type', nullable: true })
+  type: ServicePlanTypeEnum | null;
+
+  @Column('bit', { name: 'IsHidden', nullable: true })
+  isHidden: boolean | null;
 
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes)
   @JoinColumn([
@@ -122,10 +89,12 @@ export class ItemTypes {
     { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
   ])
   serviceTypes: ServiceTypes;
-  @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
-  @JoinColumn([
-    { name: 'ServiceTypeID', referencedColumnName: 'id' },
-    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
-  ])
-  serviceItems: ServiceItems[];
+  @OneToMany(
+    () => AiTransactionsLogs,
+    (aiTransactionsLogs) => aiTransactionsLogs.itemType,
+  )
+  aiTransactionsLogs: AiTransactionsLogs[];
+
+  @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
+  invoiceItems: InvoiceItems[];
 }

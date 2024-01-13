@@ -9,7 +9,6 @@ import {
 } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { InvoiceDiscounts } from './InvoiceDiscounts';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_Discounts', ['id'], { unique: true })
 @Entity('Discounts', { schema: 'services' })
@@ -26,7 +25,7 @@ export class Discounts {
   @Column('float', { name: 'Amount', precision: 53 })
   amount: number;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'IsBuiltIn' })
+  @Column('bit', { name: 'IsBuiltIn' })
   isBuiltIn: boolean;
 
   @Column('datetime', { name: 'ValidDate', nullable: true })
@@ -44,19 +43,9 @@ export class Discounts {
     { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
   ])
   serviceTypes: ServiceTypes;
+
   @Column('varchar', { name: 'ServiceTypeID' })
   serviceTypeId: string;
-
-  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.discounts, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([
-    { name: 'ServiceTypeID', referencedColumnName: 'id' },
-    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
-  ])
-  serviceType: ServiceTypes;
-
   @OneToMany(
     () => InvoiceDiscounts,
     (invoiceDiscounts) => invoiceDiscounts.discount,

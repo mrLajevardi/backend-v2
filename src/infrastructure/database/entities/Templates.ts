@@ -1,21 +1,12 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  PrimaryColumn,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { ServiceTypes } from './ServiceTypes';
 import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
-import { isTestingEnv } from '../../helpers/helpers';
 import { Invoices } from './Invoices';
 
 @Index('PK__Template__A2B5777CA811BDD6', ['guid'], { unique: true })
 @Entity('Templates', { schema: 'services' })
 export class Templates {
-  @PrimaryColumn('decimal', { name: 'ID', precision: 18, scale: 0 })
+  @Column('decimal', { name: 'ID', precision: 18, scale: 0 })
   id: number;
 
   @Column('datetime', { name: 'CreateDate', default: () => 'getdate()' })
@@ -39,22 +30,11 @@ export class Templates {
   @Column('nvarchar', { name: 'Structure' })
   structure: string;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'Enabled',
-    default: () => '(0)',
-  })
+  @Column('bit', { name: 'Enabled', default: () => '(0)' })
   enabled: boolean;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'IsDefault',
-    default: () => '(0)',
-  })
-  isDefault: boolean;
-
-  @Column('nvarchar', { name: 'DatacenterName', nullable: true, length: 50 })
-  datacenterName: string | null;
-
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+  @Column('uniqueidentifier', {
+    primary: true,
     name: 'Guid',
     default: () => 'newsequentialid()',
   })
@@ -66,7 +46,10 @@ export class Templates {
   @Column('datetime', { name: 'ExpireDate' })
   expireDate: Date;
 
-  @Column('integer', { name: 'Period' })
+  @Column('bit', { name: 'IsDefault' })
+  isDefault: boolean;
+
+  @Column('int', { name: 'Period', nullable: true })
   period: number | null;
 
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)

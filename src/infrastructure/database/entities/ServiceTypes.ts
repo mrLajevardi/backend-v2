@@ -4,7 +4,6 @@ import { Discounts } from './Discounts';
 import { ItemTypes } from './ItemTypes';
 import { Templates } from './Templates';
 import { ServiceInstances } from './ServiceInstances';
-import { isTestingEnv } from '../../helpers/helpers';
 
 @Index('PK_ServiceTypes', ['id', 'datacenterName'], { unique: true })
 @Entity('ServiceTypes', { schema: 'services' })
@@ -15,31 +14,30 @@ export class ServiceTypes {
   @Column('nvarchar', { name: 'Title' })
   title: string;
 
-  @Column('nvarchar', {
-    primary: true,
-    name: 'DatacenterName',
+  @Column('nvarchar', { primary: true, name: 'DatacenterName', length: 50 })
+  datacenterName: string;
+
+  @Column('float', { name: 'BaseFee', nullable: true, precision: 53 })
+  baseFee: number | null;
+
+  @Column('varchar', {
+    name: 'CreateInstanceScript',
     nullable: true,
-    length: 50,
+    length: 255,
   })
-  datacenterName: string | null;
+  createInstanceScript: string | null;
 
-  @Column('float', { name: 'BaseFee', precision: 53 })
-  baseFee: number;
+  @Column('bit', { name: 'VerifyInstance', nullable: true })
+  verifyInstance: boolean | null;
 
-  @Column('varchar', { name: 'CreateInstanceScript', length: 255 })
-  createInstanceScript: string;
+  @Column('int', { name: 'MaxAvailable', nullable: true })
+  maxAvailable: number | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'VerifyInstance' })
-  verifyInstance: boolean;
+  @Column('tinyint', { name: 'Type', nullable: true, default: () => '(0)' })
+  type: number | null;
 
-  @Column('int', { name: 'MaxAvailable' })
-  maxAvailable: number;
-
-  @Column('tinyint', { name: 'Type', default: () => '(0)' })
-  type: number;
-
-  @Column(isTestingEnv() ? 'boolean' : 'bit', { name: 'IsPAYG' })
-  isPayg: boolean;
+  @Column('bit', { name: 'IsPAYG', nullable: true })
+  isPayg: boolean | null;
 
   @Column('time', { name: 'PAYGInterval', nullable: true })
   paygInterval: Date | null;
@@ -47,7 +45,11 @@ export class ServiceTypes {
   @Column('varchar', { name: 'PAYGScript', nullable: true, length: 255 })
   paygScript: string | null;
 
-  @Column('datetime', { name: 'CreateDate', nullable: true })
+  @Column('datetime', {
+    name: 'CreateDate',
+    nullable: true,
+    default: () => 'getdate()',
+  })
   createDate: Date | null;
 
   @OneToMany(() => Configs, (configs) => configs.serviceTypes)
@@ -59,7 +61,7 @@ export class ServiceTypes {
   @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceTypes)
   itemTypes: ItemTypes[];
 
-  @OneToMany(() => Templates, (templates) => templates.serviceType)
+  @OneToMany(() => Templates, (templates) => templates.serviceTypes)
   templates: Templates[];
 
   @OneToMany(

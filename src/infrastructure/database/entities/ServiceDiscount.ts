@@ -1,14 +1,10 @@
 import { Column, Entity, Index } from 'typeorm';
 import { BaseEntity } from '../../entity/base.entity';
-import { isTestingEnv } from '../../helpers/helpers';
 
-@Index('PK__ServiceD__3214EC07E8961BAC', ['id'], { unique: true })
+@Index('PK__ServiceD__3214EC07E8961BAC', ['guid'], { unique: true })
 @Entity('ServiceDiscount', { schema: 'services' })
 export class ServiceDiscount extends BaseEntity {
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
-    name: 'ServiceInstanceId',
-    nullable: true,
-  })
+  @Column('uniqueidentifier', { name: 'ServiceInstanceId', nullable: true })
   serviceInstanceId: string | null;
 
   @Column('float', { name: 'Percent', nullable: true, precision: 53 })
@@ -23,18 +19,10 @@ export class ServiceDiscount extends BaseEntity {
   @Column('datetime', { name: 'ActivateDate', nullable: true })
   activateDate: Date | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'Enabled',
-    nullable: true,
-    default: () => '(1)',
-  })
+  @Column('bit', { name: 'Enabled', nullable: true, default: () => '(1)' })
   enabled: boolean | null;
 
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'Deleted',
-    nullable: true,
-    default: () => '(0)',
-  })
+  @Column('bit', { name: 'Deleted', nullable: true, default: () => '(0)' })
   deleted: boolean | null;
 
   @Column('datetime', { name: 'CreateDate', nullable: true })
@@ -61,4 +49,14 @@ export class ServiceDiscount extends BaseEntity {
 
   @Column('nvarchar', { name: 'IntegCode', nullable: true })
   integCode: string | null;
+
+  @Column('uniqueidentifier', {
+    primary: true,
+    name: 'Guid',
+    default: () => 'newsequentialid()',
+  })
+  guid: string;
+
+  @Column('decimal', { name: 'Id', nullable: true, precision: 18, scale: 0 })
+  id: number | null;
 }
