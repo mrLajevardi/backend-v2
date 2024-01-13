@@ -13,6 +13,7 @@ import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-tok
 import { ClsService } from 'nestjs-cls';
 import axios from 'axios';
 import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
+import * as Sentry from '@sentry/node';
 // import process from 'process';
 
 @Injectable()
@@ -98,6 +99,7 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
           aiToken,
         );
         this.cls.set('userId', user.id);
+
         this.success(token);
         return;
       } else {

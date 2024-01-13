@@ -133,6 +133,7 @@ export class LoginService {
     const payload = {
       username: user.username,
       userId: user.id,
+      guid: user.guid,
       personalVerification: user.personalVerification,
       impersonateAs: !isEmpty(impersonateAs)
         ? {

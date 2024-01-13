@@ -6,6 +6,8 @@ import { HttpExceptionFilter } from './infrastructure/filters/http-exception.fil
 import * as Sentry from '@sentry/node';
 import * as process from 'process';
 import { SentryFilter } from './infrastructure/exceptions/sentry-exception-filter';
+import { LogLevel } from '@sentry/types';
+import { SentryInterceptor } from './infrastructure/logger/Interceptors/SentryInterceptor';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +21,7 @@ async function bootstrap(): Promise<void> {
   Sentry.init({
     dsn: process.env.DSN_SENTRY,
     debug: true,
+    logLevel: LogLevel.Verbose,
   });
 
   const config = new DocumentBuilder()
@@ -36,6 +39,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalFilters(new HttpExceptionFilter());
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new SentryFilter(httpAdapter));
+  app.useGlobalInterceptors(new SentryInterceptor());
   await app.listen(process.env.PORT);
 }
 
