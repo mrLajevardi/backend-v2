@@ -13,6 +13,8 @@ import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 import { TwoFaAuthService } from './two-fa-auth.service';
 import axios from 'axios';
+// import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
+import { UserIsNotActiveException } from '../../../../../infrastructure/exceptions/user-is-not-active.exception';
 import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
 // import process from 'process';
 
@@ -72,10 +74,11 @@ export class LoginService {
         deleted: false,
         active: false,
       });
+      throw new UserIsDeletedException();
     }
 
-    if (!user || user.deleted || !user.active) {
-      throw new UserIsDeletedException();
+    if (!user.active) {
+      throw new UserIsNotActiveException();
     }
 
     const isValid = await comparePassword(user.password, pass);
