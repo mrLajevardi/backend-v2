@@ -1,5 +1,5 @@
-import {getAccept} from "../../../../infrastructure/helpers/get-accept.helper";
-import {VcloudAcceptEnum} from "../../../../infrastructure/enum/vcloud-accept.enum";
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
 
 /**
  * @param {Object} options
