@@ -13,6 +13,7 @@ import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 import { TwoFaAuthService } from './two-fa-auth.service';
 import axios from 'axios';
+import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
 // import process from 'process';
 
 @Injectable()
@@ -68,6 +69,11 @@ export class LoginService {
     if (!user) {
       throw new UnauthorizedException();
     }
+
+    if (user.deleted) {
+      throw new UserIsDeletedException();
+    }
+
     // checking the availablity of the user and
     const isValid = await comparePassword(user.password, pass);
     if (user && isValid) {

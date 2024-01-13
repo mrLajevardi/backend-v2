@@ -80,24 +80,7 @@ export class TransactionsService {
       throw new NotFoundException();
     }
 
-    const settings = await this.systemSettingsTable.find({
-      where: {
-        propertyKey: Like('%credit.%'),
-      },
-    });
-
-    const filteredSettings = {};
-    settings.forEach((setting) => {
-      filteredSettings[setting.propertyKey] = setting.value;
-    });
-    const { amount } = dto;
-
-    if (
-      amount < filteredSettings['credit.minValue'] ||
-      amount > filteredSettings['credit.maxValue']
-    ) {
-      return Promise.reject(new UnprocessableEntity());
-    }
+    await this.validateCreditAmount(dto.amount);
 
     const value =
       dto.amount *
@@ -149,5 +132,25 @@ export class TransactionsService {
       orderBy,
       relations,
     );
+  }
+
+  async validateCreditAmount(credit: number): Promise<void> {
+    const settings = await this.systemSettingsTable.find({
+      where: {
+        propertyKey: Like('%credit.%'),
+      },
+    });
+
+    const filteredSettings = {};
+    settings.forEach((setting) => {
+      filteredSettings[setting.propertyKey] = setting.value;
+    });
+    const amount = Math.abs(credit);
+    if (
+      amount < filteredSettings['credit.minValue'] ||
+      amount > filteredSettings['credit.maxValue']
+    ) {
+      throw new UnprocessableEntity();
+    }
   }
 }

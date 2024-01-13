@@ -78,7 +78,6 @@ export class UserService {
     private readonly transactionsTable: TransactionsTableService,
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionsService: TransactionsService,
-    private readonly roleMappingsTable: RoleMappingTableService,
     private readonly systemSettingsTable: SystemSettingsTableService,
     private readonly logger: LoggerService,
     private readonly paymentService: PaymentService,
@@ -136,6 +135,7 @@ export class UserService {
     userPayload: UserPayload,
     data: ChangePasswordDto,
   ): Promise<boolean> {
+    const user: User = await this.userTable.findById(userPayload.userId);
     if (data.otpVerification) {
       const cacheKey = userPayload.userId + '_changePassword';
       const checkCache = await this.redisCacheService.exist(cacheKey);
@@ -143,11 +143,20 @@ export class UserService {
         throw new ForbiddenException();
       }
     } else {
-      const user: User = await this.userTable.findById(userPayload.userId);
       const isValid = await comparePassword(user.password, data.oldPassword);
       if (!isValid) {
         throw new ForbiddenException();
       }
+    }
+    const checkPassword = await comparePassword(
+      user.password,
+      data.newPassword,
+    );
+
+    if (checkPassword) {
+      throw new ForbiddenException(
+        'رمز عبور جدید باید متفاوت از رمز عبور گذشته باشد.',
+      );
     }
 
     const hashedPassword = await encryptPassword(data.newPassword);
@@ -248,24 +257,8 @@ export class UserService {
   ): Promise<string> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
-    const settings = await this.systemSettingsTable.find({
-      where: {
-        propertyKey: Like('%credit.%'),
-      },
-    });
-    const filteredSettings = {};
-    settings.forEach((setting) => {
-      filteredSettings[setting.propertyKey] = setting.value;
-    });
-    const { amount } = data;
-
-    if (
-      amount < filteredSettings['credit.minValue'] ||
-      amount > filteredSettings['credit.maxValue']
-    ) {
-      return Promise.reject(new UnprocessableEntity());
-    }
-
+    await this.transactionsService.validateCreditAmount(data.amount);
+    const amount = data.amount;
     const zarinpalConfig: ZarinpalConfigDto = {
       email: user.email,
       mobile: user.phoneNumber,

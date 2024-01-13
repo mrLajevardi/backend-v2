@@ -15,6 +15,9 @@ import { UserModule } from '../user/user.module';
 import { VdcModule } from 'src/application/vdc/vdc.module';
 import { PaygCostCalculationService } from './service/payg-cost-calculation.service';
 import { PaygInvoiceService } from './service/payg-invoice.service';
+import { InvoiceStrategy } from './classes/invoice-strategy';
+import { InvoiceAiStrategyService } from './classes/invoice-ai-strategy/invoice-ai-strategy.service';
+import { InvoiceVdcStrategyService } from './classes/invoice-vdc-strategy/invoice-vdc-strategy.service';
 
 @Module({
   imports: [
@@ -39,6 +42,9 @@ import { PaygInvoiceService } from './service/payg-invoice.service';
       provide: BASE_INVOICE_SERVICE,
       useClass: InvoicesService,
     },
+    InvoiceAiStrategyService,
+    InvoiceVdcStrategyService,
+    InvoiceStrategy,
   ],
   controllers: [InvoicesController],
   exports: [
@@ -48,6 +54,9 @@ import { PaygInvoiceService } from './service/payg-invoice.service';
     InvoiceFactoryService,
     PaygCostCalculationService,
     PaygInvoiceService,
+    InvoiceAiStrategyService,
+    InvoiceVdcStrategyService,
+    InvoiceStrategy,
   ],
 })
 export class InvoicesModule {}

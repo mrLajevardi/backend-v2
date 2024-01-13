@@ -1,15 +1,22 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { InvoiceItemsDto } from './create-service-invoice.dto';
-import { IsArray, IsEnum, IsObject, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsObject,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
-export class VdcInvoiceCalculatorResultDto {
+export class InvoiceCalculatorResultDto {
   @ApiProperty({ type: Number })
   cost: number;
 }
 
-export class VdcInvoiceCalculatorDto {
+export class InvoiceCalculatorDto {
   @ApiProperty({
     type: [InvoiceItemsDto],
   })
@@ -25,4 +32,12 @@ export class VdcInvoiceCalculatorDto {
   })
   @IsEnum(ServicePlanTypeEnum)
   servicePlanTypes: ServicePlanTypeEnum;
+
+  @IsOptional()
+  @ApiProperty({
+    type: ServiceTypesEnum,
+    enum: ServiceTypesEnum,
+  })
+  @IsEnum(ServiceTypesEnum)
+  serviceType: ServiceTypesEnum = ServiceTypesEnum.Vdc;
 }
