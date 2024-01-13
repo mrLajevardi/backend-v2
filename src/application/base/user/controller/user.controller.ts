@@ -41,13 +41,11 @@ import { UserProfileDto } from '../dto/user-profile.dto';
 import { LoginService } from '../../security/auth/service/login.service';
 import { VerifyOtpDto } from '../../security/auth/dto/verify-otp.dto';
 import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
-import { OtpErrorException } from '../../../../infrastructure/exceptions/otp-error-exception';
 import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
 import { VerifyEmailDto } from '../dto/verify-email.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangeNameDto } from '../dto/change-name.dto';
-import { VitrificationServiceService } from '../service/vitrification.service.service';
 import {
   ResultDtoCollectionResponse,
   TransactionsResultDto,
@@ -61,6 +59,7 @@ import { Action } from '../../security/ability/enum/action.enum';
 import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 import { Throttle } from '@nestjs/throttler';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 @ApiTags('User')
 @Controller('users')
@@ -76,7 +75,6 @@ export class UserController {
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
     private readonly redisCacheService: RedisCacheService,
-    private readonly vitrificationServiceService: VitrificationServiceService,
   ) {}
 
   @Public()
@@ -127,20 +125,6 @@ export class UserController {
     return { email: info.email };
   }
 
-  // @Put('changePassword')
-  // @ApiOperation({ summary: 'change password ' })
-  // @ApiBody({ type: ChangePasswordDto })
-  // async changePassword(
-  //   @Request() options: SessionRequest,
-  //   @Body() dto: ChangePasswordDto,
-  //   @Res() res: Response,
-  // ): Promise<Response> {
-  //   console.log('change pass');
-  //   console.log(options.user);
-  //   const userId = options.user.userId;
-  //   await this.userService.changePassword(userId, dto.password);
-  //   return res.status(200).json({ message: 'Group created successfully' });
-  // }
   @Get('changePassword/sendOtp')
   @Throttle({ default: { limit: 1, ttl: 120000 } })
   @ApiOperation({ summary: 'send otp to phone number for changing password' })
@@ -186,8 +170,6 @@ export class UserController {
     @Request() options: SessionRequest,
     @Body() data: ChangePasswordDto,
   ): Promise<boolean> {
-    // const hashedPassword = await encryptPassword('12345678');
-    // console.log('password: \n\n\n\n\n\n\n\n' , hashedPassword);
     return await this.userService.changePassword(options.user, data);
   }
 
@@ -459,8 +441,7 @@ export class UserController {
     @Req() options: SessionRequest,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
-    @Query('serviceType') serviceType?: string,
-    @Query('value') value?: number,
+    @Query('serviceType') serviceType?: ServiceTypesEnum,
     @Query('invoiceID') invoiceID?: number,
     @Query('ServiceID') ServiceID?: string,
     @Query('startDateTime') startDateTime?: string,
@@ -478,7 +459,6 @@ export class UserController {
       page,
       pageSize,
       serviceType,
-      value,
       invoiceID,
       ServiceID,
       startDateTime ? new Date(startDateTime) : null,

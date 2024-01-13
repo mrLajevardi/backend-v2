@@ -4,12 +4,14 @@ import {
   IsArray,
   IsEnum,
   IsObject,
+  IsOptional,
   IsString,
   Matches,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 export class UpgradeAndExtendDto {
   @ApiProperty({
@@ -34,4 +36,12 @@ export class UpgradeAndExtendDto {
   })
   @IsEnum(ServicePlanTypeEnum)
   servicePlanTypes: ServicePlanTypeEnum;
+
+  @IsOptional()
+  @ApiProperty({
+    type: ServiceTypesEnum,
+    enum: ServiceTypesEnum,
+  })
+  @IsEnum(ServiceTypesEnum)
+  serviceType: ServiceTypesEnum = ServiceTypesEnum.Vdc;
 }

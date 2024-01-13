@@ -575,81 +575,11 @@ export class ServiceAdminService {
       page,
       pageSize,
       serviceType,
-      value,
       invoiceID,
       ServiceID,
       startDateTime,
       endDateTime,
     );
-    // if (pageSize > 128) {
-    //   return Promise.reject(new BadRequestException());
-    // }
-    // if (startDateTime && !endDateTime) {
-    //   endDateTime = new Date();
-    // }
-
-    // let where: FindOptionsWhere<Transactions> = {};
-    // if (
-    //   isNil(
-    //     serviceType ||
-    //       userId ||
-    //       value ||
-    //       invoiceID ||
-    //       ServiceID ||
-    //       startDateTime ||
-    //       endDateTime,
-    //   )
-    // ) {
-    //   where = {};
-    // } else {
-    //   where = {
-    //     invoiceId: invoiceID,
-    //     userId: userId,
-    //     serviceInstanceId: ServiceID,
-    //     value: value,
-    //     description: ILike(`%${serviceType}%`),
-    //   };
-    // }
-    // if (startDateTime && endDateTime) {
-    //   where['DateTime'] = { $between: [startDateTime, endDateTime] };
-    // }
-
-    // const transaction = await this.transactionsTable.find({
-    //   skip: (page - 1) * pageSize,
-    //   take: pageSize,
-    //   where,
-    //   order: {
-    //     id: 'DESC',
-    //   },
-    //   relations: ['user'],
-    //   // relations: ["users"],
-    // });
-    // const withoutPagination = await this.transactionsTable.find({
-    //   where,
-    //   relations: ['user'],
-    // });
-
-    // // filter returned user fields
-    // const transactionsWithSelectedFields = transaction.map((tx) => {
-    //   const selectedUserFields = {
-    //     id: tx.user.id,
-    //     name: tx.user.name,
-    //     family: tx.user.family,
-    //     active: tx.user.active,
-    //     // Include other user fields you want
-    //   };
-
-    //   return {
-    //     ...tx,
-    //     user: selectedUserFields,
-    //   };
-    // });
-
-    // const totalRecords = withoutPagination.length;
-    // const data = { transaction: transactionsWithSelectedFields, totalRecords };
-    // if (!transaction) {
-    //   return Promise.reject(new ForbiddenException());
-    // }
   }
 
   async updateConfigs(configId: number, data: UpdateConfigsDto): Promise<void> {

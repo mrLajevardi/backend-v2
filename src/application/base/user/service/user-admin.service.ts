@@ -22,6 +22,9 @@ import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.e
 import { VusersTableService } from '../../crud/vusers-table/vusers-table.service';
 import { VUsers } from 'src/infrastructure/database/entities/views/v-users';
 import { UpdateUserAdminDto } from '../dto/update-user-admin.dto';
+import { UnprocessableEntity } from '../../../../infrastructure/exceptions/unprocessable-entity.exception';
+import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
+import { TransactionsService } from '../../transactions/transactions.service';
 
 @Injectable()
 export class UserAdminService {
@@ -53,6 +56,7 @@ export class UserAdminService {
     private readonly groupMappingTable: GroupsMappingTableService,
     private readonly groupTable: GroupsTableService,
     private readonly vUsersTableService: VusersTableService,
+    private readonly transactionsService: TransactionsService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -247,9 +251,13 @@ export class UserAdminService {
     userId: number,
   ): Promise<void> {
     const user = await this.userTable.findById(userId);
+
     if (isNil(user)) {
       return Promise.reject(new ForbiddenException());
     }
+
+    await this.transactionsService.validateCreditAmount(credit);
+
     await this.transactionsTable.create({
       userId: user.id.toString(),
       dateTime: new Date(),
@@ -261,6 +269,7 @@ export class UserAdminService {
       isApproved: true,
       serviceInstanceId: null,
     });
+
     await this.logger.info(
       'user',
       'adminUpdateUserCredit',
@@ -377,7 +386,12 @@ export class UserAdminService {
   }
 
   async getUsers(): Promise<VUsers[]> {
-    const users = await this.vUsersTableService.find();
+    const users = await this.vUsersTableService.find({
+      where: {
+        deleted: false,
+      },
+    });
+
     return users;
   }
 }

@@ -12,6 +12,7 @@ import { ParsedQs } from 'qs';
 import { InvalidTokenException } from 'src/infrastructure/exceptions/invalid-token.exception';
 import { ClsService } from 'nestjs-cls';
 import axios from 'axios';
+import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
 import * as Sentry from '@sentry/node';
 // import process from 'process';
 
@@ -53,6 +54,17 @@ export class OtpStrategy extends PassportStrategy(Strategy, 'otp') {
       if (!userExist || !req.body.otp || !req.body.hash) {
         this.error(new ForbiddenException());
         return;
+      }
+
+      if (user.deleted) {
+        await this.userTable.update(user.id, {
+          deleted: false,
+          active: false,
+        });
+      }
+
+      if (!user || user.deleted || !user.active) {
+        this.error(new UserIsDeletedException());
       }
 
       const otp = req.body.otp;

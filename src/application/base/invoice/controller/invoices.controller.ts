@@ -7,15 +7,16 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
-  ApiQuery,
 } from '@nestjs/swagger';
 import { Invoices } from 'src/infrastructure/database/entities/Invoices';
 import { UpdateInvoicesDto } from '../../crud/invoices-table/dto/update-invoices.dto';
@@ -27,9 +28,9 @@ import {
   BaseInvoiceService,
 } from '../interface/service/invoice.interface';
 import {
-  VdcInvoiceCalculatorDto,
-  VdcInvoiceCalculatorResultDto,
-} from '../dto/vdc-invoice-calculator.dto';
+  InvoiceCalculatorDto,
+  InvoiceCalculatorResultDto,
+} from '../dto/invoice-calculator.dto';
 import { Public } from '../../security/auth/decorators/ispublic.decorator';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
 import { getTransactionsDto } from '../../crud/transactions-table/dto/get-transactions.dto';
@@ -39,19 +40,12 @@ import { CreatePaygVdcServiceDto } from '../dto/create-payg-vdc-service.dto';
 import { InvoiceIdDto } from '../dto/invoice-id.dto';
 import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
-import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
-import { PureAbility, subject } from '@casl/ability';
-import { Action } from '../../security/ability/enum/action.enum';
-import { PredefinedRoles } from '../../security/ability/enum/predefined-enum.type';
-import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
-import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
+import { InvoiceDetailBaseDto } from '../../../vdc/dto/invoice-detail-base.dto';
+import { InvoiceDetailsQueryDto } from '../dto/invoice-details-query.dto';
 
 @ApiTags('Invoices')
 @Controller('invoices')
 @ApiBearerAuth()
-// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) => {
-//   return ability.can(Action.Create, subject(AclSubjectsEnum.Invoices, props));
-// })
 export class InvoicesController {
   constructor(
     @Inject(BASE_INVOICE_SERVICE)
@@ -66,6 +60,21 @@ export class InvoicesController {
   @Get(':id')
   async findById(@Param('id') id: number): Promise<Invoices> {
     return this.invoicesTable.findById(id);
+  }
+  @ApiOperation({ summary: 'get invoice details by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return invoice details , it can be ai or vdc',
+  })
+  @Get('getDetails/:id')
+  async getDetails(
+    @Param('id') id: number,
+    @Query() queryDto: InvoiceDetailsQueryDto,
+  ): Promise<InvoiceDetailBaseDto> {
+    return await this.invoiceService.getDetails(
+      id.toString(),
+      queryDto.preFactor,
+    );
   }
 
   // find items using search criteria
@@ -122,7 +131,7 @@ export class InvoicesController {
   async upgradeAndExtend(
     @Body() dto: UpgradeAndExtendDto,
     @Request() options: SessionRequest,
-  ): Promise<any> {
+  ): Promise<InvoiceIdDto> {
     return this.invoiceService.upgradeAndExtendInvoice(dto, options);
   }
 
@@ -152,17 +161,17 @@ export class InvoicesController {
   }
 
   @Public()
-  @ApiOperation({ summary: 'vdc invoice calculator' })
+  @ApiOperation({ summary: 'service invoice calculator' })
   @ApiResponse({
     status: 200,
     description: '',
-    type: VdcInvoiceCalculatorResultDto,
+    type: InvoiceCalculatorResultDto,
   })
-  @Post('/vdc/calculator')
+  @Post('/service/calculator')
   vdcCalculator(
-    @Body() dto: VdcInvoiceCalculatorDto,
-  ): Promise<VdcInvoiceCalculatorResultDto> {
-    return this.invoiceService.vdcInvoiceCalculator(dto);
+    @Body() dto: InvoiceCalculatorDto,
+  ): Promise<InvoiceCalculatorResultDto> {
+    return this.invoiceService.invoiceCalculator(dto);
   }
 
   @ApiOperation({ summary: 'get transaction' })

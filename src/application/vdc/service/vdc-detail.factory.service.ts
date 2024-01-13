@@ -19,6 +19,7 @@ import { UserPayload } from '../../base/security/auth/dto/user-payload.dto';
 import { VmService } from '../../vm/service/vm.service';
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
 import { GetCodeDisk } from '../utils/disk-functions.utils';
+import { VmFactoryService } from 'src/application/vm/service/vm-factory.service';
 
 @Injectable()
 export class VdcDetailFactoryService {
@@ -27,6 +28,7 @@ export class VdcDetailFactoryService {
     private readonly invoiceVdcFactory: InvoiceFactoryVdcService,
     private readonly vdcDetailFecadeService: VdcDetailFecadeService,
     private readonly vmService: VmService,
+    private readonly vmFactoryService: VmFactoryService,
   ) {}
 
   getVdcDetailItemModel(vdcModels: VdcModel[], res2: VdcDetailsResultDto) {
@@ -242,11 +244,10 @@ export class VdcDetailFactoryService {
     serviceInstanceId: string,
   ) {
     const vmFilters = 'status==POWERED_OFF';
-    const vmOffs = await this.vmService.getAllUserVm(
-      option,
+    const vmOffs = await this.vmFactoryService.getVmList(
       serviceInstanceId,
+      option.user.userId,
       vmFilters,
-      '',
     );
     let ramUsageVmOffs = 0;
     let cpuCoreUsageVmOffs = 0;

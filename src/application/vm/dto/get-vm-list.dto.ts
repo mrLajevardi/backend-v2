@@ -5,9 +5,11 @@ export type VmListValue = {
   cpu: number;
   storage: number;
   memory: number;
-  status: string;
+  status: number;
   containerId: string;
   snapshot: boolean;
+  vmToolsVersion: number;
+  description: string;
 };
 
 export class VmList {

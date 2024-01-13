@@ -10,10 +10,13 @@ import {
   FindOptionsWhere,
   DeleteResult,
   UpdateResult,
+  FindOptionsRelations,
 } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { columnName } from 'typeorm-model-generator/dist/src/NamingStrategy';
 import { PickKeysByType } from 'typeorm/common/PickKeysByType';
+import { FindOptionsOrder } from 'typeorm/find-options/FindOptionsOrder';
+import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
 
 @Injectable()
 export class TransactionsTableService {
@@ -51,6 +54,33 @@ export class TransactionsTableService {
   async find(options?: FindManyOptions<Transactions>): Promise<Transactions[]> {
     const result = await this.repository.find(options);
     return result;
+  }
+
+  async paginate(
+    page: number,
+    pageSize: number,
+    where?: FindOptionsWhere<Transactions>,
+    orderBy?: FindOptionsOrder<Transactions>,
+    relations?: FindOptionsRelations<Transactions>,
+  ): Promise<PaginationReturnDto<Transactions>> {
+    const data = await this.find({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      where,
+      order: orderBy,
+      relations,
+    });
+
+    const totalRecord = await this.count({
+      where,
+    });
+
+    return {
+      page: page,
+      pageSize: pageSize,
+      record: data,
+      total: totalRecord,
+    };
   }
 
   // Count the items

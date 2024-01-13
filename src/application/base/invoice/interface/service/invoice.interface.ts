@@ -1,14 +1,14 @@
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { InvoiceIdDto } from '../../dto/invoice-id.dto';
 import { CreateServiceInvoiceDto } from '../../dto/create-service-invoice.dto';
-import { VdcInvoiceDetailsResultDto } from '../../../../vdc/dto/vdc-invoice-details.result.dto';
-import {
-  VdcInvoiceCalculatorDto,
-  VdcInvoiceCalculatorResultDto,
-} from '../../dto/vdc-invoice-calculator.dto';
 import { Transactions } from 'src/infrastructure/database/entities/Transactions';
-import { UpgradeAndExtendDto } from '../../dto/upgrade-and-extend.dto';
 import { ServiceTypesEnum } from '../../../service/enum/service-types.enum';
+import { InvoiceDetailBaseDto } from '../../../../vdc/dto/invoice-detail-base.dto';
+import {
+  InvoiceCalculatorDto,
+  InvoiceCalculatorResultDto,
+} from '../../dto/invoice-calculator.dto';
+import { UpgradeAndExtendDto } from '../../dto/upgrade-and-extend.dto';
 
 export const BASE_INVOICE_SERVICE = 'BASE_INVOICE_SERVICE';
 
@@ -19,24 +19,14 @@ export interface BaseInvoiceService {
     options: SessionRequest,
   ): Promise<InvoiceIdDto>;
 
-  createAiInvoice(
-    dto: CreateServiceInvoiceDto,
-    options: SessionRequest,
-  ): Promise<InvoiceIdDto>;
-
-  createVdcInvoice(
-    dto: CreateServiceInvoiceDto,
-    options: SessionRequest,
-  ): Promise<InvoiceIdDto>;
-
-  getVdcInvoiceDetails(
+  getDetails(
     invoiceId: string,
-    serviceType: string,
-  ): Promise<VdcInvoiceDetailsResultDto>;
+    preFactor: boolean,
+  ): Promise<InvoiceDetailBaseDto>;
 
-  vdcInvoiceCalculator(
-    dto: VdcInvoiceCalculatorDto,
-  ): Promise<VdcInvoiceCalculatorResultDto>;
+  invoiceCalculator(
+    dto: InvoiceCalculatorDto,
+  ): Promise<InvoiceCalculatorResultDto>;
 
   getTransaction(
     options: SessionRequest,
