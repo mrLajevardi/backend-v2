@@ -125,20 +125,6 @@ export class UserController {
     return { email: info.email };
   }
 
-  // @Put('changePassword')
-  // @ApiOperation({ summary: 'change password ' })
-  // @ApiBody({ type: ChangePasswordDto })
-  // async changePassword(
-  //   @Request() options: SessionRequest,
-  //   @Body() dto: ChangePasswordDto,
-  //   @Res() res: Response,
-  // ): Promise<Response> {
-  //   console.log('change pass');
-  //   console.log(options.user);
-  //   const userId = options.user.userId;
-  //   await this.userService.changePassword(userId, dto.password);
-  //   return res.status(200).json({ message: 'Group created successfully' });
-  // }
   @Get('changePassword/sendOtp')
   @Throttle({ default: { limit: 1, ttl: 120000 } })
   @ApiOperation({ summary: 'send otp to phone number for changing password' })
@@ -184,8 +170,6 @@ export class UserController {
     @Request() options: SessionRequest,
     @Body() data: ChangePasswordDto,
   ): Promise<boolean> {
-    // const hashedPassword = await encryptPassword('12345678');
-    // console.log('password: \n\n\n\n\n\n\n\n' , hashedPassword);
     return await this.userService.changePassword(options.user, data);
   }
 
