@@ -1,38 +1,25 @@
-import {
-  Column,
-  Entity,
-  Index,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from './User';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('PK_Files', ['guid'], { unique: true })
 @Entity('Files', { schema: 'dbo' })
 export class Files {
-  @Column({
-    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
+  @Column('uniqueidentifier', {
     primary: true,
     name: 'Guid',
     default: () => 'newsequentialid()',
   })
   guid: string;
 
-  @Column('decimal', {
+  @PrimaryGeneratedColumn()
+  @Column({
+    type: 'decimal',
     name: 'Id',
     precision: 18,
     scale: 0,
-    primary: true,
-    generated: !isTestingEnv(),
   })
   id: number;
 
-  @Column({
-    type: isTestingEnv() ? 'varchar' : 'varbinary',
-    name: 'FileStream',
-    nullable: true,
-  })
+  @Column('varbinary', { name: 'FileStream', nullable: true })
   fileStream: Buffer | null;
 
   @Column('nvarchar', { name: 'FileType', nullable: true, length: 50 })
@@ -65,7 +52,4 @@ export class Files {
 
   @Column('nvarchar', { name: 'IntegCode', nullable: true })
   integCode: string | null;
-
-  // @OneToOne(() => User, (user) => user.avatar)
-  // user: User;
 }

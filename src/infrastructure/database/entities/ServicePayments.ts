@@ -1,18 +1,16 @@
-import { BeforeInsert, Column, Entity } from 'typeorm';
-import { randomUUID } from 'crypto';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { Column, Entity, Index } from 'typeorm';
 
+@Index('PK_ServicePayments', ['id'], { unique: true })
 @Entity('ServicePayments', { schema: 'dbo' })
 export class ServicePayments {
-  @Column({
-    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
-    name: 'Id',
-    nullable: true,
-    primary: true,
-  })
-  id: string | null;
+  @Column('uniqueidentifier', { primary: true, name: 'Id' })
+  id: string;
 
-  @Column('datetime', { name: 'CreateDate', nullable: true })
+  @Column('datetime', {
+    name: 'CreateDate',
+    nullable: true,
+    default: () => 'getdate()',
+  })
   createDate: Date | null;
 
   @Column('decimal', {
@@ -41,24 +39,15 @@ export class ServicePayments {
   @Column('int', { name: 'InvoiceId', nullable: true })
   invoiceId: number | null;
 
-  @Column({
-    type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
-    name: 'ServiceInstanceId',
-    nullable: true,
-  })
+  @Column('uniqueidentifier', { name: 'ServiceInstanceId', nullable: true })
   serviceInstanceId: string | null;
 
   @Column('decimal', { name: 'Price', nullable: true, precision: 18, scale: 0 })
   price: number | null;
 
+  @Column('nvarchar', { name: 'MetaData', nullable: true })
+  metaData: string | null;
+
   @Column('tinyint', { name: 'TaxPercent', nullable: true })
   taxPercent: number | null;
-
-  @Column('nvarchar', { name: 'MetaData', nullable: true })
-  metaData: string;
-
-  @BeforeInsert()
-  setId() {
-    this.id = randomUUID();
-  }
 }
