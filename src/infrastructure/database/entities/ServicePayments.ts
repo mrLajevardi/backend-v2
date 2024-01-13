@@ -3,7 +3,11 @@ import { Column, Entity, Index } from 'typeorm';
 @Index('PK_ServicePayments', ['id'], { unique: true })
 @Entity('ServicePayments', { schema: 'dbo' })
 export class ServicePayments {
-  @Column('uniqueidentifier', { primary: true, name: 'Id' })
+  @Column('uniqueidentifier', {
+    primary: true,
+    name: 'Id',
+    default: () => 'newsequentialid()',
+  })
   id: string;
 
   @Column('datetime', {
