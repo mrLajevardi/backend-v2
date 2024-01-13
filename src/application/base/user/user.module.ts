@@ -15,12 +15,12 @@ import { LoginService } from '../security/auth/service/login.service';
 import { OtpService } from '../security/security-tools/otp.service';
 import { RedisCacheService } from '../../../infrastructure/utils/services/redis-cache.service';
 import { AuthModule } from '../security/auth/auth.module';
-import { VitrificationServiceService } from './service/vitrification.service.service';
 import { UserInfoService } from './service/user-info.service';
 import { TransactionsModule } from '../transactions/transactions.module';
 import { InvoicesModule } from '../invoice/invoices.module';
 import { UsersFactoryService } from './service/user.factory.service';
 import { ServiceModule } from '../service/service.module';
+import { VerificationServiceService } from './service/verification.service.service';
 
 @Module({
   imports: [
@@ -42,7 +42,7 @@ import { ServiceModule } from '../service/service.module';
     LoginService,
     OtpService,
     RedisCacheService,
-    VitrificationServiceService,
+    VerificationServiceService,
     UserInfoService,
     UsersFactoryService,
     // TwoFaAuthService,

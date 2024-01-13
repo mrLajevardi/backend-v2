@@ -18,7 +18,6 @@ import { forwardRef } from '@nestjs/common';
 import { TransactionsModule } from '../../transactions/transactions.module';
 import { ServiceModule } from '../../service/service.module';
 import { UserInfoService } from '../service/user-info.service';
-import { VitrificationServiceService } from '../service/vitrification.service.service';
 import { UsersFactoryService } from '../service/user.factory.service';
 import { TestBed } from '@automock/jest';
 

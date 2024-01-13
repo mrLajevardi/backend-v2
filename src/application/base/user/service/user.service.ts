@@ -65,6 +65,9 @@ import { UserInfoService } from './user-info.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { UsersFactoryService } from './user.factory.service';
 import { UserPayload } from '../../security/auth/dto/user-payload.dto';
+import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
+import { VerificationServiceService } from './verification.service.service';
+import { ShahkarException } from '../../../../infrastructure/exceptions/shahkar-exception';
 import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
 
 @Injectable()
@@ -86,6 +89,7 @@ export class UserService {
     private readonly fileTableService: FileTableService,
     private readonly userInfoService: UserInfoService,
     private readonly userFactoryService: UsersFactoryService,
+    private readonly verificationServiceService: VerificationServiceService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -611,6 +615,14 @@ export class UserService {
       personalVerification: true,
     };
 
+    const user = await this.userTable.findById(options.user.userId);
+    const validPersonalCode =
+      this.verificationServiceService.isValidIranianNationalCode(
+        data.personalCode,
+      );
+    if (!validPersonalCode) {
+      throw new ShahkarException('کد ملی شما صحیح نمی باشد.');
+    }
     if (!data.personality) {
       const company: Company = await this.companyTable.create(
         plainToClass(CreateCompanyDto, data, { excludeExtraneousValues: true }),
@@ -618,7 +630,23 @@ export class UserService {
       userProfileData.companyId = company.id;
     }
 
-    // verify user with api and change personalVerification to true
+    const shahkarVerify = await this.systemSettingsTable.findOne({
+      where: {
+        propertyKey: SystemSettingsPropertyKeysEnum.ShahkarVerification,
+      },
+    });
+
+    if (!isNil(shahkarVerify) && shahkarVerify.value == '1') {
+      const verifyData =
+        await this.verificationServiceService.checkUserVerification(
+          user.phoneNumber,
+          userProfileData.personalCode,
+        );
+
+      if (verifyData.status.toString() != '200') {
+        throw new ShahkarException(verifyData.message.toString());
+      }
+    }
 
     await this.userTable.update(options.user.userId, userProfileData);
 
@@ -631,7 +659,6 @@ export class UserService {
   }
 
   async getUserProfile(options: SessionRequest) {
-    // const user = await this.userTable.findOne(options.user.userId);
     const user = await this.userTable.findOne({
       where: { id: options.user.userId },
       relations: [
@@ -851,6 +878,7 @@ export class UserService {
 
     return true;
   }
+
   async getTransactions(
     options: SessionRequest,
     page: number,

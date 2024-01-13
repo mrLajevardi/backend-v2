@@ -8,6 +8,8 @@ export type VmListValue = {
   status: string;
   containerId: string;
   snapshot: boolean;
+  vmToolsVersion: number;
+  description: string;
 };
 
 export class VmList {
