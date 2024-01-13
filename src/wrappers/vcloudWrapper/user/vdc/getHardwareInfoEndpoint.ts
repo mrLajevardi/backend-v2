@@ -12,7 +12,7 @@ export function getHardwareInfoEndpoint(options?: any) {
     body: null,
     headers: {
       'Content-Type': 'application/* +json;',
-      Accept: 'application/* +json;version=38.0.0-alpha',
+      Accept: 'application/* +json;version=38.1',
       ...options.headers,
     },
   };
