@@ -9,6 +9,7 @@ import {
   InvoiceCalculatorResultDto,
 } from '../../dto/invoice-calculator.dto';
 import { UpgradeAndExtendDto } from '../../dto/upgrade-and-extend.dto';
+import { ForbiddenException } from '../../../../../infrastructure/exceptions/forbidden.exception';
 
 export const BASE_INVOICE_SERVICE = 'BASE_INVOICE_SERVICE';
 
@@ -22,7 +23,8 @@ export interface BaseInvoiceService {
   getDetails(
     invoiceId: string,
     preFactor: boolean,
-  ): Promise<InvoiceDetailBaseDto>;
+    options: SessionRequest,
+  ): Promise<InvoiceDetailBaseDto | ForbiddenException>;
 
   invoiceCalculator(
     dto: InvoiceCalculatorDto,

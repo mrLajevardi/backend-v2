@@ -19,6 +19,9 @@ import {
   InvoiceCalculatorResultDto,
 } from '../dto/invoice-calculator.dto';
 import { UpgradeAndExtendDto } from '../dto/upgrade-and-extend.dto';
+import { isEmpty } from '../../../../infrastructure/helpers/helpers';
+import { InvoiceDetailBaseDto } from '../../../vdc/dto/invoice-detail-base.dto';
+import { ForbiddenException } from '../../../../infrastructure/exceptions/forbidden.exception';
 
 @Injectable()
 export class InvoicesService implements BaseInvoiceService {
@@ -48,8 +51,18 @@ export class InvoicesService implements BaseInvoiceService {
     return await this.invoiceStrategy.create(dto, options);
   }
 
-  async getDetails(invoiceId: string, preFactor = false) {
+  async getDetails(
+    invoiceId: string,
+    preFactor = false,
+    options: SessionRequest,
+  ): Promise<InvoiceDetailBaseDto | ForbiddenException> {
     const invoice = await this.invoicesTable.findById(Number(invoiceId));
+
+    if (isEmpty(invoice)) return new InvoiceDetailBaseDto();
+
+    if (invoice.userId != options.user.userId) {
+      return new ForbiddenException();
+    }
 
     this.invoiceStrategy.setStrategy(this.dictionary[invoice.serviceTypeId]);
 
