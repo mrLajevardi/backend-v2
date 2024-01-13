@@ -32,6 +32,9 @@ export class InfoLog {
   @Column('varchar', { name: 'IP', nullable: true, length: 40 })
   ip: string | null;
 
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
+  serviceInstanceId: string | null;
+
   @Column('varchar', { name: 'Object', nullable: true })
   object: string | null;
 

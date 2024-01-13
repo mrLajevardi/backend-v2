@@ -1,25 +1,20 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { User } from './User';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
+@Index('PK__EntityLo__3214EC07CC271E87', ['id'], { unique: true })
 @Entity('EntityLog', { schema: 'logs' })
 export class EntityLog {
-  @PrimaryGeneratedColumn({
+  @PrimaryGeneratedColumn()
+  @Column('decimal', {
     name: 'Id',
+    precision: 18,
+    scale: 0,
   })
   id: number;
-
   @Column('nvarchar', { name: 'Before', nullable: true })
   before: string | null;
 
   @Column('nvarchar', { name: 'After', nullable: true })
   after: string | null;
-
   @Column('nvarchar', { name: 'Fields', nullable: true })
   fields: string | null;
 
@@ -48,8 +43,4 @@ export class EntityLog {
     default: () => 'getdate()',
   })
   createDate: Date | null;
-
-  @ManyToOne(() => User)
-  @JoinColumn([{ name: 'UserId', referencedColumnName: 'id' }])
-  user: User;
 }
