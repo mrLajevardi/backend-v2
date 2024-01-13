@@ -153,7 +153,7 @@ export class VdcEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: getAccept(VcloudAcceptEnum.Json),
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },

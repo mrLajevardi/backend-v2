@@ -80,7 +80,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: 'application/json;version=38.1',
         'Content-Type': 'application/json',
         ...options.headers,
       },
