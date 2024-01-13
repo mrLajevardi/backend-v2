@@ -1,21 +1,16 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './User';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Invoices } from './Invoices';
 import { ServiceInstances } from './ServiceInstances';
 
 @Index('PK_Transactions', ['id'], { unique: true })
 @Entity('Transactions', { schema: 'user' })
 export class Transactions {
-  @PrimaryGeneratedColumn({ type: 'integer', name: 'ID' })
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   id: string;
+
+  @Column('int', { name: 'UserID' })
+  userId: number;
 
   @Column('datetime', { name: 'DateTime' })
   dateTime: Date;
@@ -40,26 +35,23 @@ export class Transactions {
   })
   paymentToken: string | null;
 
-  @Column('int', { name: 'UserID' })
-  userId: number;
+  @Column('bit', { name: 'isApproved', nullable: true, default: () => "'0'" })
+  isApproved: boolean | null;
 
-  @Column('decimal', { name: 'RefID', nullable: true })
+  @Column('uniqueidentifier', { name: 'ServiceInstanceID', nullable: true })
+  serviceInstanceId: string | null;
+
+  @Column('nvarchar', { name: 'after', nullable: true, length: 65 })
+  after: string | null;
+
+  @Column('nvarchar', { name: 'before', nullable: true, length: 65 })
+  before: string | null;
+
+  @Column('decimal', { name: 'RefID', nullable: true, precision: 18, scale: 0 })
   refId: number | null;
 
   @Column('nvarchar', { name: 'MetaData', nullable: true })
   metaData: string | null;
-
-  @Column(isTestingEnv() ? 'boolean' : 'bit', {
-    name: 'isApproved',
-    default: () => "'0'",
-  })
-  isApproved: boolean;
-
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
-    name: 'ServiceInstanceID',
-    nullable: true,
-  })
-  serviceInstanceId: string;
 
   @ManyToOne(() => User, (user) => user.transactions, {
     onDelete: 'CASCADE',

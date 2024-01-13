@@ -1,14 +1,16 @@
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { ServiceInstances } from './ServiceInstances';
 
-@Index('PK_ServicePlans', ['id'], { unique: true })
+@Index('PK__ServiceP__3214EC279395D59C', ['id'], { unique: true })
 @Entity('ServicePlans', { schema: 'user' })
 export class ServicePlans {
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
-    name: 'ServiceInstanceID',
-  })
-  serviceInstanceId: string;
-
   @Column('varchar', { name: 'PlanCode', length: 25 })
   planCode: string;
 
@@ -20,4 +22,12 @@ export class ServicePlans {
 
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
+
+  @ManyToOne(
+    () => ServiceInstances,
+    (serviceInstances) => serviceInstances.servicePlans,
+    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  )
+  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  serviceInstance: ServiceInstances;
 }

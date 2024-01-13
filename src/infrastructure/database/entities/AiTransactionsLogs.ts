@@ -6,23 +6,24 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ItemTypes } from './ItemTypes';
 import { ServiceInstances } from './ServiceInstances';
-import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
+import { ItemTypes } from './ItemTypes';
 
 @Index('PK_AITransactionsLogs', ['id'], { unique: true })
 @Entity('AITransactionsLogs', { schema: 'user' })
 export class AiTransactionsLogs {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
+  @PrimaryGeneratedColumn({ type: 'bigint', name: 'ID' })
   id: string;
-
-  @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
+  @Column('uniqueidentifier', {
     name: 'ServiceInstanceID',
   })
   serviceInstanceId: string;
 
   @Column('datetime', { name: 'DateTime' })
   dateTime: Date;
+
+  @Column('int', { name: 'ItemTypeID' })
+  itemTypeId: number;
 
   @Column('nchar', { name: 'Description', nullable: true, length: 50 })
   description: string | null;

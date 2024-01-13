@@ -15,11 +15,11 @@ export class GroupsMapping {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
-  @Column('datetime', { name: 'CreateDate' })
-  createDate: Date;
-
   @Column('int', { name: 'UserID' })
   userId: number;
+
+  @Column('datetime', { name: 'CreateDate' })
+  createDate: Date;
 
   @Column('int', { name: 'GroupID' })
   groupId: number;

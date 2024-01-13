@@ -14,6 +14,9 @@ export class InvoiceDiscounts {
   @Column('int', { name: 'InvoiceID' })
   invoiceId: number;
 
+  @Column('int', { name: 'DiscountID' })
+  discountId: number;
+
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
