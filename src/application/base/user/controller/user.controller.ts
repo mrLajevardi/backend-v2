@@ -290,8 +290,9 @@ export class UserController {
   async verifyCreditIncrement(
     @Param('authority') authority: string,
     @Request() options: SessionRequest,
-  ): Promise<void> {
-    await this.userService.verifyCreditIncrement(options, authority);
+  ): Promise<object> {
+    const x = await this.userService.verifyCreditIncrement(options, authority);
+    return x;
   }
 
   @Public()

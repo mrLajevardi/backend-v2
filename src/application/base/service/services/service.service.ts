@@ -270,176 +270,176 @@ export class ServiceService {
     );
   }
 
-  async verifyZarinpalAuthority(
-    options: SessionRequest,
-    authority: string | null = null,
-  ): Promise<ZarinpalVerifyReturnDto> {
-    const userId = options.user.userId;
-    // find user transaction
-    const transaction = await this.transactionsTable.findOne({
-      where: {
-        paymentToken: authority,
-        userId: userId,
-      },
-    });
-    if (transaction === null) {
-      return Promise.reject(new ForbiddenException());
-    }
-    // find user invoice
-    const invoice = await this.invoicesTable.findOne({
-      where: {
-        userId: userId,
-        id: transaction.invoiceId,
-      },
-    });
-    const paymentRequestData = {
-      merchant_id: process.env.ZARINPAL_MERCHANT_ID,
-      amount: transaction.value,
-      authority: authority,
-    };
-    const { verified, refID } =
-      await this.paymentService.zarinpal.paymentVerify(paymentRequestData);
-    let serviceInstanceId = null;
-    let token = null;
-    let task = null;
-    let taskId = null;
-
-    if (verified && !transaction.isApproved && invoice.type === 1) {
-      const extendedService =
-        await this.extendServiceService.extendServiceInstanceAndToken(
-          options,
-          invoice,
-        );
-      serviceInstanceId = extendedService.serviceInstanceId;
-      token = extendedService['token'];
-
-      // approve user transaction
-      await this.transactionsTable.updateAll(
-        {
-          userId: userId,
-          invoiceId: invoice.id,
-        },
-        {
-          isApproved: true,
-          serviceInstanceId: serviceInstanceId,
-        },
-      );
-      // update user invoice
-      this.invoicesTable.updateAll(
-        {
-          userId: userId,
-          id: transaction.invoiceId,
-        },
-        {
-          payed: true,
-          serviceInstanceId: serviceInstanceId,
-        },
-      );
-    }
-    if (verified && !transaction.isApproved && invoice.type === 0) {
-      // make user service instance
-
-      const createdService =
-        await this.extendServiceService.createServiceInstanceAndToken(
-          options,
-          invoice.endDateTime,
-          invoice.serviceTypeId,
-          transaction,
-          invoice.name,
-          invoice.datacenterName,
-          invoice.servicePlanType,
-        );
-      serviceInstanceId = createdService.serviceInstanceId;
-      token = createdService['token'];
-
-      // options.locals = {
-      //   ...options.locals,
-      //   serviceInstanceId,
-      // };
-      // approve user transaction
-      await this.transactionsTable.updateAll(
-        {
-          userId: userId,
-          paymentToken: authority,
-        },
-        {
-          isApproved: true,
-          serviceInstanceId: serviceInstanceId,
-        },
-      );
-      if (invoice.serviceTypeId === 'vdc') {
-        task = await this.tasksTable.create({
-          userId: options.user.userId,
-          serviceInstanceId: serviceInstanceId,
-          operation: 'createDataCenter',
-          details: null,
-          startTime: new Date(),
-          endTime: null,
-          status: 'running',
-        });
-        await this.taskManagerService.addTask({
-          serviceInstanceId,
-          customTaskId: task.TaskID,
-          vcloudTask: null,
-          nextTask: 'createOrg',
-          requestOptions: {
-            serviceInstanceId: serviceInstanceId,
-            userId: options.user.userId,
-          },
-          target: 'object',
-        });
-        taskId = task.TaskID;
-      }
-
-      if (invoice.serviceTypeId == 'aradAi') {
-        await this.serviceInstancesTableService.updateAll(
-          {
-            id: serviceInstanceId,
-          },
-          {
-            status: 3,
-          },
-        );
-        task = await this.tasksTable.create({
-          userId: options.user.userId,
-          serviceInstanceId: serviceInstanceId,
-          operation: 'aradAi',
-          details: null,
-          startTime: new Date(),
-          endTime: new Date(),
-          status: 'success',
-        });
-        await this.serviceInstancesTableService.updateAll(
-          {
-            id: serviceInstanceId,
-          },
-          {
-            status: 3,
-          },
-        );
-        taskId = task.TaskID;
-      }
-      // update user invoice
-      this.invoicesTable.updateAll(
-        {
-          userId: userId,
-          id: transaction.invoiceId,
-        },
-        {
-          payed: true,
-          serviceInstanceId: serviceInstanceId,
-        },
-      );
-    }
-
-    return Promise.resolve({
-      verified: verified,
-      refID: refID,
-      id: serviceInstanceId,
-      taskId: taskId,
-      token: token,
-    });
-  }
+  // async verifyZarinpalAuthority(
+  //   options: SessionRequest,
+  //   authority: string | null = null,
+  // ): Promise<ZarinpalVerifyReturnDto> {
+  //   const userId = options.user.userId;
+  //   // find user transaction
+  //   const transaction = await this.transactionsTable.findOne({
+  //     where: {
+  //       paymentToken: authority,
+  //       userId: userId,
+  //     },
+  //   });
+  //   if (transaction === null) {
+  //     return Promise.reject(new ForbiddenException());
+  //   }
+  //   // find user invoice
+  //   const invoice = await this.invoicesTable.findOne({
+  //     where: {
+  //       userId: userId,
+  //       id: transaction.invoiceId,
+  //     },
+  //   });
+  //   const paymentRequestData = {
+  //     merchant_id: process.env.ZARINPAL_MERCHANT_ID,
+  //     amount: transaction.value,
+  //     authority: authority,
+  //   };
+  //   const { verified, refID } =
+  //     await this.paymentService.zarinpal.paymentVerify(paymentRequestData);
+  //   let serviceInstanceId = null;
+  //   let token = null;
+  //   let task = null;
+  //   let taskId = null;
+  //
+  //   if (verified && !transaction.isApproved && invoice.type === 1) {
+  //     const extendedService =
+  //       await this.extendServiceService.extendServiceInstanceAndToken(
+  //         options,
+  //         invoice,
+  //       );
+  //     serviceInstanceId = extendedService.serviceInstanceId;
+  //     token = extendedService['token'];
+  //
+  //     // approve user transaction
+  //     await this.transactionsTable.updateAll(
+  //       {
+  //         userId: userId,
+  //         invoiceId: invoice.id,
+  //       },
+  //       {
+  //         isApproved: true,
+  //         serviceInstanceId: serviceInstanceId,
+  //       },
+  //     );
+  //     // update user invoice
+  //     this.invoicesTable.updateAll(
+  //       {
+  //         userId: userId,
+  //         id: transaction.invoiceId,
+  //       },
+  //       {
+  //         payed: true,
+  //         serviceInstanceId: serviceInstanceId,
+  //       },
+  //     );
+  //   }
+  //   if (verified && !transaction.isApproved && invoice.type === 0) {
+  //     // make user service instance
+  //
+  //     const createdService =
+  //       await this.extendServiceService.createServiceInstanceAndToken(
+  //         options,
+  //         invoice.endDateTime,
+  //         invoice.serviceTypeId,
+  //         transaction,
+  //         invoice.name,
+  //         invoice.datacenterName,
+  //         invoice.servicePlanType,
+  //       );
+  //     serviceInstanceId = createdService.serviceInstanceId;
+  //     token = createdService['token'];
+  //
+  //     // options.locals = {
+  //     //   ...options.locals,
+  //     //   serviceInstanceId,
+  //     // };
+  //     // approve user transaction
+  //     await this.transactionsTable.updateAll(
+  //       {
+  //         userId: userId,
+  //         paymentToken: authority,
+  //       },
+  //       {
+  //         isApproved: true,
+  //         serviceInstanceId: serviceInstanceId,
+  //       },
+  //     );
+  //     if (invoice.serviceTypeId === 'vdc') {
+  //       task = await this.tasksTable.create({
+  //         userId: options.user.userId,
+  //         serviceInstanceId: serviceInstanceId,
+  //         operation: 'createDataCenter',
+  //         details: null,
+  //         startTime: new Date(),
+  //         endTime: null,
+  //         status: 'running',
+  //       });
+  //       await this.taskManagerService.addTask({
+  //         serviceInstanceId,
+  //         customTaskId: task.TaskID,
+  //         vcloudTask: null,
+  //         nextTask: 'createOrg',
+  //         requestOptions: {
+  //           serviceInstanceId: serviceInstanceId,
+  //           userId: options.user.userId,
+  //         },
+  //         target: 'object',
+  //       });
+  //       taskId = task.TaskID;
+  //     }
+  //
+  //     if (invoice.serviceTypeId == 'aradAi') {
+  //       await this.serviceInstancesTableService.updateAll(
+  //         {
+  //           id: serviceInstanceId,
+  //         },
+  //         {
+  //           status: 3,
+  //         },
+  //       );
+  //       task = await this.tasksTable.create({
+  //         userId: options.user.userId,
+  //         serviceInstanceId: serviceInstanceId,
+  //         operation: 'aradAi',
+  //         details: null,
+  //         startTime: new Date(),
+  //         endTime: new Date(),
+  //         status: 'success',
+  //       });
+  //       await this.serviceInstancesTableService.updateAll(
+  //         {
+  //           id: serviceInstanceId,
+  //         },
+  //         {
+  //           status: 3,
+  //         },
+  //       );
+  //       taskId = task.TaskID;
+  //     }
+  //     // update user invoice
+  //     this.invoicesTable.updateAll(
+  //       {
+  //         userId: userId,
+  //         id: transaction.invoiceId,
+  //       },
+  //       {
+  //         payed: true,
+  //         serviceInstanceId: serviceInstanceId,
+  //       },
+  //     );
+  //   }
+  //
+  //   return Promise.resolve({
+  //     verified: verified,
+  //     refID: refID,
+  //     id: serviceInstanceId,
+  //     taskId: taskId,
+  //     token: token,
+  //   });
+  // }
 
   // Create Service Items
   async createServiceItems(
