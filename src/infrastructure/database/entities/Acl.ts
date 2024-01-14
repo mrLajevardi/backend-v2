@@ -44,10 +44,10 @@ export class Acl extends BaseEntity {
   })
   roleId: string;
 
-  @ManyToOne(() => Role, (role) => role.acls, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'RoleId', referencedColumnName: 'guid' }])
-  role: Role;
+  // @ManyToOne(() => Role, (role) => role.acls, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'RoleId', referencedColumnName: 'guid' }])
+  // role: Role;
 }

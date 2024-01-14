@@ -21,10 +21,10 @@ export class Tickets {
   @Column('int', { name: 'TicketID' })
   ticketId: number;
 
-  @ManyToOne(
-    () => ServiceInstances,
-    (serviceInstances) => serviceInstances.tickets,
-  )
-  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
-  serviceInstance: ServiceInstances;
+  // @ManyToOne(
+  //   () => ServiceInstances,
+  //   (serviceInstances) => serviceInstances.tickets,
+  // )
+  // @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  // serviceInstance: ServiceInstances;
 }

@@ -53,21 +53,21 @@ export class ServiceTypes {
   })
   createDate: Date | null;
 
-  @OneToMany(() => Configs, (configs) => configs.serviceTypes)
-  configs: Configs[];
+  // @OneToMany(() => Configs, (configs) => configs.serviceTypes)
+  // configs: Configs[];
 
-  @OneToMany(() => Discounts, (discounts) => discounts.serviceTypes)
-  discounts: Discounts[];
+  // @OneToMany(() => Discounts, (discounts) => discounts.serviceTypes)
+  // discounts: Discounts[];
 
-  @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceType)
-  itemTypes: ItemTypes[];
+  // @OneToMany(() => ItemTypes, (itemTypes) => itemTypes.serviceType)
+  // itemTypes: ItemTypes[];
 
-  @OneToMany(() => Templates, (templates) => templates.serviceType)
-  templates: Templates[];
+  // @OneToMany(() => Templates, (templates) => templates.serviceType)
+  // templates: Templates[];
 
-  @OneToMany(
-    () => ServiceInstances,
-    (serviceInstances) => serviceInstances.serviceType,
-  )
-  serviceInstances: ServiceInstances[];
+  // @OneToMany(
+  //   () => ServiceInstances,
+  //   (serviceInstances) => serviceInstances.serviceType,
+  // )
+  // serviceInstances: ServiceInstances[];
 }

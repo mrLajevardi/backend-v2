@@ -15,19 +15,19 @@ export class PermissionMappings {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
-  @ManyToOne(
-    () => Permissions,
-    (permissions) => permissions.permissionMappings,
-    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'PermissionID', referencedColumnName: 'id' }])
-  permission: Permissions;
+  // @ManyToOne(
+  //   () => Permissions,
+  //   (permissions) => permissions.permissionMappings,
+  //   { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'PermissionID', referencedColumnName: 'id' }])
+  // permission: Permissions;
 
-  @ManyToOne(
-    () => PermissionGroups,
-    (permissionGroups) => permissionGroups.permissionMappings,
-    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'PermissionGroupID', referencedColumnName: 'id' }])
-  permissionGroup: PermissionGroups;
+  // @ManyToOne(
+  //   () => PermissionGroups,
+  //   (permissionGroups) => permissionGroups.permissionMappings,
+  //   { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'PermissionGroupID', referencedColumnName: 'id' }])
+  // permissionGroup: PermissionGroups;
 }

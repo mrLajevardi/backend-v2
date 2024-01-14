@@ -50,18 +50,18 @@ export class AiTransactionsLogs {
   @Column('nvarchar', { name: 'IP' })
   ip: string;
 
-  @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.aiTransactionsLogs, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'ItemTypeID', referencedColumnName: 'id' }])
-  itemType: ItemTypes;
+  // @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.aiTransactionsLogs, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'ItemTypeID', referencedColumnName: 'id' }])
+  // itemType: ItemTypes;
 
-  @ManyToOne(
-    () => ServiceInstances,
-    (serviceInstances) => serviceInstances.aiTransactionsLogs,
-    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
-  serviceInstance: ServiceInstances;
+  // @ManyToOne(
+  //   () => ServiceInstances,
+  //   (serviceInstances) => serviceInstances.aiTransactionsLogs,
+  //   { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  // serviceInstance: ServiceInstances;
 }

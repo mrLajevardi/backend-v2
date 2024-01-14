@@ -62,13 +62,13 @@ export class Templates {
   @Column('int', { name: 'Period', nullable: true })
   period: number | null;
 
-  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)
-  @JoinColumn([
-    { name: 'ServiceTypeId', referencedColumnName: 'id' },
-    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
-  ])
-  serviceType: ServiceTypes;
+  // @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)
+  // @JoinColumn([
+  //   { name: 'ServiceTypeId', referencedColumnName: 'id' },
+  //   { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  // ])
+  // serviceType: ServiceTypes;
 
-  @OneToMany(() => Invoices, (invoice) => invoice.templates)
-  invoices: Invoices;
+  // @OneToMany(() => Invoices, (invoice) => invoice.templates)
+  // invoices: Invoices;
 }

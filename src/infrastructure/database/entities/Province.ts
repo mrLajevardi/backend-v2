@@ -55,9 +55,9 @@ export class Province {
   })
   guid: string | null;
 
-  @OneToMany(() => City, (city) => city.province)
-  cities: City[];
+  // @OneToMany(() => City, (city) => city.province)
+  // cities: City[];
 
-  @OneToMany(() => Company, (company) => company.province)
-  companies: Company[];
+  // @OneToMany(() => Company, (company) => company.province)
+  // companies: Company[];
 }

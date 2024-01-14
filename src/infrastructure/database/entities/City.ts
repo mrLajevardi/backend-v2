@@ -66,13 +66,13 @@ export class City {
   })
   guid: string | null;
 
-  @ManyToOne(() => Province, (province) => province.cities, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'ProvinceId', referencedColumnName: 'id' }])
-  province: Province;
+  // @ManyToOne(() => Province, (province) => province.cities, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'ProvinceId', referencedColumnName: 'id' }])
+  // province: Province;
 
-  @OneToMany(() => Company, (company) => company.city)
-  companies: Company[];
+  // @OneToMany(() => Company, (company) => company.city)
+  // companies: Company[];
 }

@@ -55,7 +55,7 @@ export class RoleMapping {
   @Column('nvarchar', { name: 'IntegCode', nullable: true })
   integCode: string | null;
 
-  @ManyToOne(() => Role, (role) => role.roleMappings)
-  @JoinColumn([{ name: 'RoleId', referencedColumnName: 'guid' }])
-  role: Role;
+  // @ManyToOne(() => Role, (role) => role.roleMappings)
+  // @JoinColumn([{ name: 'RoleId', referencedColumnName: 'guid' }])
+  // role: Role;
 }

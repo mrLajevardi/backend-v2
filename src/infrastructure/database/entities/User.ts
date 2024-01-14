@@ -142,30 +142,30 @@ export class User {
 
   @Column('tinyint', { name: 'companyLetterStatus', nullable: true })
   companyLetterStatus: number | null;
-  @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
-  groupsMappings: GroupsMapping[];
+  // @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.user)
+  // groupsMappings: GroupsMapping[];
 
-  @OneToMany(() => Invoices, (invoices) => invoices.user)
-  invoices: Invoices[];
+  // @OneToMany(() => Invoices, (invoices) => invoices.user)
+  // invoices: Invoices[];
 
-  @OneToMany(() => Organization, (organization) => organization.user)
-  organizations: Organization[];
+  // @OneToMany(() => Organization, (organization) => organization.user)
+  // organizations: Organization[];
 
-  @OneToMany(() => Transactions, (transactions) => transactions.user)
-  transactions: Transactions[];
+  // @OneToMany(() => Transactions, (transactions) => transactions.user)
+  // transactions: Transactions[];
 
-  @OneToMany(() => EntityLog, (entityLog) => entityLog.user)
-  entityLog: EntityLog[];
+  // @OneToMany(() => EntityLog, (entityLog) => entityLog.user)
+  // entityLog: EntityLog[];
 
-  @ManyToOne(() => Company, (company) => company.users)
-  @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])
-  company: Company;
+  // @ManyToOne(() => Company, (company) => company.users)
+  // @JoinColumn([{ name: 'companyId', referencedColumnName: 'id' }])
+  // company: Company;
 
-  @ManyToOne(() => Files /*, (file) => file.user*/)
-  @JoinColumn({ name: 'avatarId', referencedColumnName: 'guid' })
-  avatar: Files;
+  // @ManyToOne(() => Files /*, (file) => file.user*/)
+  // @JoinColumn({ name: 'avatarId', referencedColumnName: 'guid' })
+  // avatar: Files;
 
-  @ManyToOne(() => Files)
-  @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'guid' })
-  companyLetter: Files;
+  // @ManyToOne(() => Files)
+  // @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'guid' })
+  // companyLetter: Files;
 }

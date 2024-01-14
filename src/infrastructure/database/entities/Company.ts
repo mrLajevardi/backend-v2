@@ -84,18 +84,18 @@ export class Company {
   })
   guid: string | null;
 
-  @ManyToOne(() => Province, (province) => province.companies)
-  @JoinColumn([{ name: 'ProvinceId', referencedColumnName: 'id' }])
-  province: Province;
+  // @ManyToOne(() => Province, (province) => province.companies)
+  // @JoinColumn([{ name: 'ProvinceId', referencedColumnName: 'id' }])
+  // province: Province;
 
-  @ManyToOne(() => City, (city) => city.companies)
-  @JoinColumn([{ name: 'CityId', referencedColumnName: 'id' }])
-  city: City;
+  // @ManyToOne(() => City, (city) => city.companies)
+  // @JoinColumn([{ name: 'CityId', referencedColumnName: 'id' }])
+  // city: City;
 
-  @OneToMany(() => User, (user) => user.company)
-  users: User[];
+  // @OneToMany(() => User, (user) => user.company)
+  // users: User[];
 
-  @ManyToOne(() => Files)
-  @JoinColumn({ name: 'LogoId', referencedColumnName: 'guid' })
-  companyLogo: Files;
+  // @ManyToOne(() => Files)
+  // @JoinColumn({ name: 'LogoId', referencedColumnName: 'guid' })
+  // companyLogo: Files;
 }

@@ -50,6 +50,6 @@ export class ServiceItems {
   //   onDelete: 'CASCADE',
   //   onUpdate: 'CASCADE',
   // })
-  @JoinColumn([{ name: 'ItemTypeID', referencedColumnName: 'id' }])
-  itemType: ItemTypes;
+  // @JoinColumn([{ name: 'ItemTypeID', referencedColumnName: 'id' }])
+  // itemType: ItemTypes;
 }

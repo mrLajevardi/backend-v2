@@ -25,13 +25,13 @@ export class GroupsMapping {
   @Column('int', { name: 'GroupID' })
   groupId: number;
 
-  @ManyToOne(() => Groups, (groups) => groups.groupsMappings, {
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'GroupID', referencedColumnName: 'id' }])
-  group: Groups;
+  // @ManyToOne(() => Groups, (groups) => groups.groupsMappings, {
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'GroupID', referencedColumnName: 'id' }])
+  // group: Groups;
 
-  @ManyToOne(() => User, (user) => user.groupsMappings, { onDelete: 'CASCADE' })
-  @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
-  user: User;
+  // @ManyToOne(() => User, (user) => user.groupsMappings, { onDelete: 'CASCADE' })
+  // @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
+  // user: User;
 }

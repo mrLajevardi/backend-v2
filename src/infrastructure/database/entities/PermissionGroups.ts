@@ -24,15 +24,15 @@ export class PermissionGroups {
   @Column('datetime', { name: 'CreateDate', nullable: true })
   createDate: Date | null;
 
-  @OneToMany(
-    () => PermissionGroupsMappings,
-    (permissionGroupsMappings) => permissionGroupsMappings.permissionGroup,
-  )
-  permissionGroupsMappings: PermissionGroupsMappings[];
+  // @OneToMany(
+  //   () => PermissionGroupsMappings,
+  //   (permissionGroupsMappings) => permissionGroupsMappings.permissionGroup,
+  // )
+  // permissionGroupsMappings: PermissionGroupsMappings[];
 
-  @OneToMany(
-    () => PermissionMappings,
-    (permissionMappings) => permissionMappings.permissionGroup,
-  )
-  permissionMappings: PermissionMappings[];
+  // @OneToMany(
+  //   () => PermissionMappings,
+  //   (permissionMappings) => permissionMappings.permissionGroup,
+  // )
+  // permissionMappings: PermissionMappings[];
 }

@@ -24,10 +24,10 @@ export class Configs {
   @Column('varchar', { name: 'ServiceTypeID' })
   serviceTypeId: string;
 
-  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.configs)
-  @JoinColumn([
-    { name: 'ServiceTypeID', referencedColumnName: 'id' },
-    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
-  ])
-  serviceTypes: ServiceTypes;
+  // @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.configs)
+  // @JoinColumn([
+  //   { name: 'ServiceTypeID', referencedColumnName: 'id' },
+  //   { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  // ])
+  // serviceTypes: ServiceTypes;
 }

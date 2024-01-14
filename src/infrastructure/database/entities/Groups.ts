@@ -26,6 +26,6 @@ export class Groups {
   @Column('datetime', { name: 'CreateDate' })
   createDate: Date;
 
-  @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.group)
-  groupsMappings: GroupsMapping[];
+  // @OneToMany(() => GroupsMapping, (groupsMapping) => groupsMapping.group)
+  // groupsMappings: GroupsMapping[];
 }

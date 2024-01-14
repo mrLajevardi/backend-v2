@@ -34,14 +34,14 @@ export class InvoiceItems {
   @Column('nvarchar', { name: 'CodeHierarchy', nullable: true, length: 50 })
   codeHierarchy: string | null;
 
-  @ManyToOne(() => Invoices, (invoices) => invoices.invoiceItems)
-  @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
-  invoice: Invoices;
+  // @ManyToOne(() => Invoices, (invoices) => invoices.invoiceItems)
+  // @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
+  // invoice: Invoices;
 
-  @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.invoiceItems, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'ItemID', referencedColumnName: 'id' }])
-  item: ItemTypes;
+  // @ManyToOne(() => ItemTypes, (itemTypes) => itemTypes.invoiceItems, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'ItemID', referencedColumnName: 'id' }])
+  // item: ItemTypes;
 }

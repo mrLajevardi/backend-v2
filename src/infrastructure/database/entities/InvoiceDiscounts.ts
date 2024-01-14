@@ -21,10 +21,10 @@ export class InvoiceDiscounts {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
-  @ManyToOne(() => Discounts, (discounts) => discounts.invoiceDiscounts, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'DiscountID', referencedColumnName: 'id' }])
-  discount: Discounts;
+  // @ManyToOne(() => Discounts, (discounts) => discounts.invoiceDiscounts, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'DiscountID', referencedColumnName: 'id' }])
+  // discount: Discounts;
 }

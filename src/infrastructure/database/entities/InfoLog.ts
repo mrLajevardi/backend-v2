@@ -39,11 +39,11 @@ export class InfoLog {
   @Column('varchar', { name: 'Object', nullable: true })
   object: string | null;
 
-  @ManyToOne(
-    () => ServiceInstances,
-    (serviceInstances) => serviceInstances.infoLogs,
-    { onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
-  serviceInstance: ServiceInstances;
+  // @ManyToOne(
+  //   () => ServiceInstances,
+  //   (serviceInstances) => serviceInstances.infoLogs,
+  //   { onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  // serviceInstance: ServiceInstances;
 }

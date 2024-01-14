@@ -111,40 +111,40 @@ export class ServiceInstances {
   @Column('bit', { name: 'AutoPaid', default: () => '(0)' })
   autoPaid: boolean;
 
-  @OneToMany(
-    () => AiTransactionsLogs,
-    (aiTransactionsLogs) => aiTransactionsLogs.serviceInstance,
-  )
-  aiTransactionsLogs: AiTransactionsLogs[];
+  // @OneToMany(
+  //   () => AiTransactionsLogs,
+  //   (aiTransactionsLogs) => aiTransactionsLogs.serviceInstance,
+  // )
+  // aiTransactionsLogs: AiTransactionsLogs[];
 
-  @OneToMany(() => InfoLog, (infoLog) => infoLog.serviceInstance)
-  infoLogs: InfoLog[];
+  // @OneToMany(() => InfoLog, (infoLog) => infoLog.serviceInstance)
+  // infoLogs: InfoLog[];
 
-  @OneToMany(() => Invoices, (invoices) => invoices.serviceInstance)
-  invoices: Invoices[];
+  // @OneToMany(() => Invoices, (invoices) => invoices.serviceInstance)
+  // invoices: Invoices[];
 
-  @ManyToOne(
-    () => ServiceTypes,
-    (serviceTypes) => serviceTypes.serviceInstances,
-  )
-  @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
-  serviceType: ServiceTypes;
+  // @ManyToOne(
+  //   () => ServiceTypes,
+  //   (serviceTypes) => serviceTypes.serviceInstances,
+  // )
+  // @JoinColumn([{ name: 'ServiceTypeID', referencedColumnName: 'id' }])
+  // serviceType: ServiceTypes;
 
   // @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.serviceInstance)
   // serviceItems: ServiceItems[];
 
-  @OneToMany(() => ServicePlans, (servicePlans) => servicePlans.serviceInstance)
-  servicePlans: ServicePlans[];
+  // @OneToMany(() => ServicePlans, (servicePlans) => servicePlans.serviceInstance)
+  // servicePlans: ServicePlans[];
 
-  @OneToMany(
-    () => ServiceProperties,
-    (serviceProperties) => serviceProperties.serviceInstance,
-  )
-  serviceProperties: ServiceProperties[];
+  // @OneToMany(
+  //   () => ServiceProperties,
+  //   (serviceProperties) => serviceProperties.serviceInstance,
+  // )
+  // serviceProperties: ServiceProperties[];
 
-  @OneToMany(() => Tasks, (tasks) => tasks.serviceInstance)
-  tasks: Tasks[];
+  // @OneToMany(() => Tasks, (tasks) => tasks.serviceInstance)
+  // tasks: Tasks[];
 
-  @OneToMany(() => Tickets, (tickets) => tickets.serviceInstance)
-  tickets: Tickets[];
+  // @OneToMany(() => Tickets, (tickets) => tickets.serviceInstance)
+  // tickets: Tickets[];
 }

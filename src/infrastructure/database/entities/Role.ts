@@ -50,9 +50,9 @@ export class Role {
   @Column('nvarchar', { name: 'IntegCode', nullable: true })
   integCode: string | null;
 
-  @OneToMany(() => Acl, (acl) => acl.role)
-  acls: Acl[];
+  // @OneToMany(() => Acl, (acl) => acl.role)
+  // acls: Acl[];
 
-  @OneToMany(() => RoleMapping, (roleMapping) => roleMapping.role)
-  roleMappings: RoleMapping[];
+  // @OneToMany(() => RoleMapping, (roleMapping) => roleMapping.role)
+  // roleMappings: RoleMapping[];
 }

@@ -25,11 +25,11 @@ export class ServiceProperties {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
 
-  @ManyToOne(
-    () => ServiceInstances,
-    (serviceInstances) => serviceInstances.serviceProperties,
-    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
-  serviceInstance: ServiceInstances;
+  // @ManyToOne(
+  //   () => ServiceInstances,
+  //   (serviceInstances) => serviceInstances.serviceProperties,
+  //   { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  // serviceInstance: ServiceInstances;
 }

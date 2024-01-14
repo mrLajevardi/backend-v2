@@ -23,9 +23,9 @@ export class Permissions {
   @Column('datetime', { name: 'CreateDate', nullable: true })
   createDate: Date | null;
 
-  @OneToMany(
-    () => PermissionMappings,
-    (permissionMappings) => permissionMappings.permission,
-  )
-  permissionMappings: PermissionMappings[];
+  // @OneToMany(
+  //   () => PermissionMappings,
+  //   (permissionMappings) => permissionMappings.permission,
+  // )
+  // permissionMappings: PermissionMappings[];
 }

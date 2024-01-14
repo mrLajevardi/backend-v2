@@ -33,10 +33,10 @@ export class Sessions {
   @Column('bit', { name: 'isAdmin', nullable: true })
   isAdmin: boolean | null;
 
-  @ManyToOne(() => Organization, (organization) => organization.sessions, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'orgId', referencedColumnName: 'id' }])
-  org: Organization;
+  // @ManyToOne(() => Organization, (organization) => organization.sessions, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'orgId', referencedColumnName: 'id' }])
+  // org: Organization;
 }

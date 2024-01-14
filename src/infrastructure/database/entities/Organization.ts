@@ -35,13 +35,13 @@ export class Organization {
   @Column('int', { name: 'userId' })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.organizations, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
-  user: User;
+  // @ManyToOne(() => User, (user) => user.organizations, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'userId', referencedColumnName: 'id' }])
+  // user: User;
 
-  @OneToMany(() => Sessions, (sessions) => sessions.org)
-  sessions: Sessions[];
+  // @OneToMany(() => Sessions, (sessions) => sessions.org)
+  // sessions: Sessions[];
 }

@@ -54,7 +54,7 @@ export class EntityLog {
   })
   createDate: Date | null;
 
-  @ManyToOne(() => User, (user) => user.entityLog)
-  @JoinColumn([{ name: 'UserId', referencedColumnName: 'id' }])
-  user: User;
+  // @ManyToOne(() => User, (user) => user.entityLog)
+  // @JoinColumn([{ name: 'UserId', referencedColumnName: 'id' }])
+  // user: User;
 }

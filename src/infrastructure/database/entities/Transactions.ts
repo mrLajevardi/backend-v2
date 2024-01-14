@@ -60,18 +60,18 @@ export class Transactions {
   @Column('nvarchar', { name: 'MetaData', nullable: true })
   metaData: string | null;
 
-  @ManyToOne(() => User, (user) => user.transactions, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
-  user: User;
+  // @ManyToOne(() => User, (user) => user.transactions, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
+  // user: User;
 
-  @ManyToOne(() => Invoices)
-  @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
-  invoice: Invoices;
+  // @ManyToOne(() => Invoices)
+  // @JoinColumn([{ name: 'InvoiceID', referencedColumnName: 'id' }])
+  // invoice: Invoices;
 
-  @ManyToOne(() => ServiceInstances)
-  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
-  serviceInstance: ServiceInstances;
+  // @ManyToOne(() => ServiceInstances)
+  // @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  // serviceInstance: ServiceInstances;
 }

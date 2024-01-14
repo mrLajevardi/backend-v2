@@ -3,6 +3,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  VirtualColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -91,11 +92,12 @@ export class Invoices {
   invoiceTax: number | null;
 
   @Column({
+    generatedType: 'STORED',
+    asExpression: '[FinalAmount]*((1)+[InvoiceTax])',
     name: 'FinalAmountWithTax',
     nullable: true,
-    type: 'float',
-    precision: 53,
-    insert: false,
+    // type: 'float',
+    // precision: 53,
   })
   finalAmountWithTax: number | null;
 
@@ -105,28 +107,28 @@ export class Invoices {
     name: 'ServiceInstanceID',
   })
   serviceInstanceId: string;
-  @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
-  invoiceItems: InvoiceItems[];
+  // @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.invoice)
+  // invoiceItems: InvoiceItems[];
 
-  @ManyToOne(() => User, (user) => user.invoices, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
-  user: User;
+  // @ManyToOne(() => User, (user) => user.invoices, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'UserID', referencedColumnName: 'id' }])
+  // user: User;
 
-  @ManyToOne(
-    () => ServiceInstances,
-    (serviceInstances) => serviceInstances.invoices,
-    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
-  serviceInstance: ServiceInstances;
+  // @ManyToOne(
+  //   () => ServiceInstances,
+  //   (serviceInstances) => serviceInstances.invoices,
+  //   { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'ServiceInstanceID', referencedColumnName: 'id' }])
+  // serviceInstance: ServiceInstances;
 
-  @ManyToOne(() => Templates, (template) => template.invoices, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-  })
-  @JoinColumn([{ name: 'TemplateID', referencedColumnName: 'guid' }])
-  templates: Templates;
+  // @ManyToOne(() => Templates, (template) => template.invoices, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  // })
+  // @JoinColumn([{ name: 'TemplateID', referencedColumnName: 'guid' }])
+  // templates: Templates;
 }

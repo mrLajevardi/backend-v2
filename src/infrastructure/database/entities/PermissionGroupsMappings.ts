@@ -18,11 +18,11 @@ export class PermissionGroupsMappings {
   @Column('nvarchar', { name: 'RoleID', length: 50 })
   roleId: string;
 
-  @ManyToOne(
-    () => PermissionGroups,
-    (permissionGroups) => permissionGroups.permissionGroupsMappings,
-    { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
-  )
-  @JoinColumn([{ name: 'PermissionGroupID', referencedColumnName: 'id' }])
-  permissionGroup: PermissionGroups;
+  // @ManyToOne(
+  //   () => PermissionGroups,
+  //   (permissionGroups) => permissionGroups.permissionGroupsMappings,
+  //   { onDelete: 'CASCADE', onUpdate: 'CASCADE' },
+  // )
+  // @JoinColumn([{ name: 'PermissionGroupID', referencedColumnName: 'id' }])
+  // permissionGroup: PermissionGroups;
 }

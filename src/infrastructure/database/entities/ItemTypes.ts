@@ -86,20 +86,20 @@ export class ItemTypes {
   @Column('bit', { name: 'IsHidden', nullable: true })
   isHidden: boolean | null;
 
-  @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes)
-  @JoinColumn([
-    { name: 'ServiceTypeID', referencedColumnName: 'id' },
-    { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
-  ])
-  serviceType: ServiceTypes;
-  @OneToMany(
-    () => AiTransactionsLogs,
-    (aiTransactionsLogs) => aiTransactionsLogs.itemType,
-  )
-  aiTransactionsLogs: AiTransactionsLogs[];
+  // @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.itemTypes)
+  // @JoinColumn([
+  //   { name: 'ServiceTypeID', referencedColumnName: 'id' },
+  //   { name: 'DatacenterName', referencedColumnName: 'datacenterName' },
+  // ])
+  // serviceType: ServiceTypes;
+  // @OneToMany(
+  //   () => AiTransactionsLogs,
+  //   (aiTransactionsLogs) => aiTransactionsLogs.itemType,
+  // )
+  // aiTransactionsLogs: AiTransactionsLogs[];
 
-  @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
-  invoiceItems: InvoiceItems[];
+  // @OneToMany(() => InvoiceItems, (invoiceItems) => invoiceItems.item)
+  // invoiceItems: InvoiceItems[];
 
   // @OneToMany(() => ServiceItems, (serviceItems) => serviceItems.itemType)
   // serviceItems: ServiceItems[];
