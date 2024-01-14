@@ -1,3 +1,6 @@
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+
 /**
  * gets network by given id
  * @param {Object} options
@@ -15,7 +18,7 @@ export function getNetworkEndpoint(options?: any) {
     },
     body: null,
     headers: {
-      Accept: 'application/json;version=38.1',
+      Accept: getAccept(VcloudAcceptEnum.Json),
       'Content-Type': 'application/json',
       ...options.headers,
     },

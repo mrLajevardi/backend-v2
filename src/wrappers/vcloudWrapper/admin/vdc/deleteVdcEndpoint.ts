@@ -7,13 +7,16 @@
  * @return {Object}
  */
 
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+
 export function deleteVdcEndpoint(options?: any) {
   return {
     method: 'delete',
     resource: `/api/admin/vdc/${options.urlParams.vdcId[0]}?force=true&recursive=true`,
     params: {},
     headers: {
-      Accept: 'application/*+json;version=36.3',
+      Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
       'Content-Type': 'application/*+json',
       ...options.headers,
     },
