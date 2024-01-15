@@ -49,7 +49,7 @@ export class UserInfoService {
     const where: FindOptionsWhere<Invoices> = {
       userId: options.user.userId,
       isPreInvoice: isPreInvoice,
-      serviceInstanceId: IsNull(),
+      // serviceInstanceId: IsNull(),
     };
 
     if (dateFilter) {
