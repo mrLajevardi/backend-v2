@@ -5,6 +5,8 @@ import { GetFirewallDto } from './dto/get-firewall.dto';
 import { GetFirewallListDto } from './dto/get-firewall-list.dto';
 import { UpdateFirewallDto } from './dto/update-firewall.dto';
 import { UpdateFirewallListDto } from './dto/update-firewall-list.dto';
+import { getAccept } from '../../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class FirewallEndpointService {
@@ -20,7 +22,7 @@ export class FirewallEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -33,7 +35,7 @@ export class FirewallEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -45,7 +47,7 @@ export class FirewallEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -58,7 +60,7 @@ export class FirewallEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -72,7 +74,7 @@ export class FirewallEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };

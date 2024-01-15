@@ -479,6 +479,10 @@ export class UserService {
         .runServiceBasedOnInvoice(transaction.invoiceId, options)
         .catch(console.log);
     }
+    console.log('res verify==>', {
+      verified: verified,
+      refID: refID,
+    });
     return Promise.resolve({
       verified: verified,
       refID: refID,

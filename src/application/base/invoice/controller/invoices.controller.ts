@@ -42,6 +42,7 @@ import { InvoiceTypes } from '../enum/invoice-type.enum';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 import { InvoiceDetailBaseDto } from '../../../vdc/dto/invoice-detail-base.dto';
 import { InvoiceDetailsQueryDto } from '../dto/invoice-details-query.dto';
+import { ForbiddenException } from '../../../../infrastructure/exceptions/forbidden.exception';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -70,10 +71,12 @@ export class InvoicesController {
   async getDetails(
     @Param('id') id: number,
     @Query() queryDto: InvoiceDetailsQueryDto,
-  ): Promise<InvoiceDetailBaseDto> {
+    @Request() options: SessionRequest,
+  ): Promise<InvoiceDetailBaseDto | ForbiddenException> {
     return await this.invoiceService.getDetails(
       id.toString(),
       queryDto.preFactor,
+      options,
     );
   }
 

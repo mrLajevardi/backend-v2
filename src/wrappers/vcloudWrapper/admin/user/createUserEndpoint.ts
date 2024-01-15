@@ -1,3 +1,6 @@
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
+
 /**
  * @param {Object} options
  * @param {Object} options.headers
@@ -13,7 +16,7 @@ export function createUserEndpoint(options?: any) {
     params: {},
     body: options.body,
     headers: {
-      Accept: 'application/*+json;version=36.3',
+      Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
       'Content-Type': 'application/*+json',
       ...options.headers,
     },

@@ -5,6 +5,8 @@ import { DeleteNatDto } from './dto/delete-nat.dto';
 import { UpdateNatDto } from './dto/update-nat.dto';
 import { GetNatDto } from './dto/get-nat.dto';
 import { GetNatListDto } from './dto/get-nat-list.dto';
+import { VcloudAcceptEnum } from '../../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../../infrastructure/helpers/get-accept.helper';
 
 @Injectable()
 export class NatEndpointService {
@@ -19,7 +21,7 @@ export class NatEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -32,7 +34,7 @@ export class NatEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -45,7 +47,7 @@ export class NatEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -58,7 +60,7 @@ export class NatEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -71,7 +73,7 @@ export class NatEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },

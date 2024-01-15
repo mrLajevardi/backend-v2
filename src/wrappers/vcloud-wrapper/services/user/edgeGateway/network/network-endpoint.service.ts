@@ -6,6 +6,8 @@ import { GetNetworkDto } from './dto/get-network.dto';
 import { GetNetworkIpUsageListDto } from './dto/get-network-ip-usage-list.dto';
 import { GetNetworkListDto } from './dto/get-network-list.dto';
 import { UpdateNetworkDto } from './dto/update-network.dto';
+import { VcloudAcceptEnum } from '../../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../../infrastructure/helpers/get-accept.helper';
 
 @Injectable()
 export class NetworkEndpointService {
@@ -20,7 +22,7 @@ export class NetworkEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -33,7 +35,7 @@ export class NetworkEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -48,7 +50,7 @@ export class NetworkEndpointService {
       },
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -63,7 +65,7 @@ export class NetworkEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -76,7 +78,7 @@ export class NetworkEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -89,7 +91,7 @@ export class NetworkEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
