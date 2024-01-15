@@ -15,6 +15,7 @@ import { Organization } from './Organization';
 import { Transactions } from './Transactions';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Files } from './Files';
+import { decryptVdcPassword } from '../../utils/extensions/encrypt.extensions';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
@@ -200,4 +201,9 @@ export class User {
   @ManyToOne(() => Files)
   @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'guid' })
   companyLetter: Files;
+
+  @AfterLoad()
+  decrypt() {
+    this.vdcPassword = decryptVdcPassword(this.vdcPassword);
+  }
 }
