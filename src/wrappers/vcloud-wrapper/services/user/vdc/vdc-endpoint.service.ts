@@ -11,6 +11,8 @@ import { UpdateNamedDiskDto } from './dto/update-named-disk.dto';
 import { VcloudQueryDto } from './dto/vcloud-query.dto';
 import { EditGeneralInfoVdcDto } from './dto/edit-general-info-vdc.dto';
 import { vcdConfig } from '../../../../mainWrapper/vcdConfig';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
 
 @Injectable()
 export class VdcEndpointService {
@@ -25,7 +27,7 @@ export class VdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -38,7 +40,7 @@ export class VdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -52,7 +54,7 @@ export class VdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/*+xml;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusXml),
         'Content-Type': 'application/*+xml;charset=UTF-8',
         'Accept-Language': 'en-US,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -69,7 +71,7 @@ export class VdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -85,7 +87,7 @@ export class VdcEndpointService {
       body: null,
       headers: {
         'Content-Type': 'application/* +json;',
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -99,7 +101,7 @@ export class VdcEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -112,7 +114,7 @@ export class VdcEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -125,7 +127,7 @@ export class VdcEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -138,7 +140,7 @@ export class VdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -151,7 +153,7 @@ export class VdcEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },

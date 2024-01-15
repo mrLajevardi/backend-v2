@@ -1,3 +1,6 @@
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+
 /**
  * @param {Object} options
  * @param {Object} options.headers
@@ -12,7 +15,7 @@ export function attachNamedDisk(options?: any) {
     params: {},
     body: options.body,
     headers: {
-      Accept: 'application/* +json;version=38.0.0-alpha',
+      Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
       'Content-Type': 'application/* +json;',
       ...options.headers,
     },

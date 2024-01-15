@@ -1,10 +1,11 @@
 import { BaseResultDto } from '../../../infrastructure/dto/base.result.dto';
+import { ServiceTypesEnum } from '../../base/service/enum/service-types.enum';
 
 export class InvoiceDetailBaseDto extends BaseResultDto {
   constructor() {
     super();
   }
-
+  serviceType?: ServiceTypesEnum;
   finalPrice?: number;
   finalPriceWithTax?: number;
   finalPriceTax?: number;

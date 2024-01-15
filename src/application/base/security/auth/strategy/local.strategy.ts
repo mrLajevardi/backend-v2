@@ -6,6 +6,8 @@ import { UserPayload } from '../dto/user-payload.dto';
 import axios from 'axios';
 import { ClsService } from 'nestjs-cls';
 import * as process from 'process';
+import * as Sentry from '@sentry/node';
+import { ForbiddenException } from '../../../../../infrastructure/exceptions/forbidden.exception';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -52,6 +54,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       username: user.username,
       personalVerification: user.personalVerification,
       twoFactorAuth: user.twoFactorAuth,
+      guid: user.guid,
       aiAccessToken: aiToken,
     };
 

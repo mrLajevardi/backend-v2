@@ -10,12 +10,12 @@ import {
 import { InvoiceDetailBaseDto } from '../dto/invoice-detail-base.dto';
 import { InvoiceItemList } from '../../../infrastructure/database/entities/views/invoice-item-list';
 import { InvoiceItemListService } from '../../base/crud/invoice-item-list/invoice-item-list.service';
+import { InvoiceVdcStrategyService } from '../../base/invoice/classes/invoice-vdc-strategy/invoice-vdc-strategy.service';
 
 @Injectable()
 export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
   constructor(
-    @Inject(BASE_INVOICE_SERVICE)
-    private readonly invoiceVdcService: BaseInvoiceService,
+    private readonly invoiceVdcStrategyService: InvoiceVdcStrategyService,
   ) {}
 
   getVdcPreFactor(
@@ -33,10 +33,7 @@ export class VdcInvoiceService implements BaseVdcInvoiceServiceInterface {
   ): Promise<VdcInvoiceDetailsResultDto> {
     if (!invoiceId) return Promise.resolve(new VdcInvoiceDetailsResultDto());
 
-    const res = this.invoiceVdcService.getVdcInvoiceDetails(
-      invoiceId,
-      serviceType,
-    );
+    const res = this.invoiceVdcStrategyService.getInvoiceDetails(invoiceId);
 
     return Promise.resolve(res);
   }

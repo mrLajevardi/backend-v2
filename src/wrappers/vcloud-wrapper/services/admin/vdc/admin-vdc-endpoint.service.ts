@@ -12,6 +12,8 @@ import { GetProviderVdcMetadataDto } from './dto/get-provider-vdc-metadata.dto';
 import { GetProviderVdcDto } from './dto/get-provider-vdc.dto';
 import { UpdateProviderVdcMetadataDto } from './dto/update-provider-vdc-metadata.dto';
 import { AddVdcStorageProfileDto } from './dto/add-storage-policy.dto';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class AdminVdcEndpointService {
@@ -26,7 +28,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -39,7 +41,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -52,7 +54,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -65,7 +67,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -80,7 +82,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -93,7 +95,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -108,7 +110,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/*+json;version=37.1',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -122,7 +124,7 @@ export class AdminVdcEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -138,7 +140,7 @@ export class AdminVdcEndpointService {
       params: null,
       body: null,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         ...options.headers,
       },
     };
@@ -151,7 +153,7 @@ export class AdminVdcEndpointService {
       params: null,
       body: null,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         ...options.headers,
       },
     };
@@ -166,7 +168,7 @@ export class AdminVdcEndpointService {
       params: null,
       body: options.body,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -182,7 +184,7 @@ export class AdminVdcEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/*+json;version=37.1',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },

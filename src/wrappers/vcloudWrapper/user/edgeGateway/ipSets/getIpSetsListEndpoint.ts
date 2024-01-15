@@ -1,3 +1,6 @@
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+
 /**
  * get a list of ip sets
  * @param {Object} options
@@ -12,7 +15,7 @@ export function getIpSetsListEndpoint(options?: any) {
     params: options.params,
     body: null,
     headers: {
-      Accept: 'application/json;version=38.0.0-alpha',
+      Accept: getAccept(VcloudAcceptEnum.Json),
       'Content-Type': 'application/json',
       ...options.headers,
     },

@@ -32,6 +32,8 @@ import { UploadFileDto } from './dto/upload-file.dto';
 import { GetMediaItemDto } from './dto/get-media-item.dto';
 import { UpdateNetworkSectionDto } from './dto/update-network-section.dto';
 import { GetEventVmDto } from './dto/get-event-vm.dto';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class VmEndpointService {
@@ -49,7 +51,7 @@ export class VmEndpointService {
       params: options.urlParams,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -62,7 +64,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -75,7 +77,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json',
         ...options.headers,
       },
@@ -88,7 +90,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -101,7 +103,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -114,7 +116,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -127,7 +129,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -140,7 +142,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -153,7 +155,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -166,7 +168,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -179,7 +181,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -193,7 +195,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -206,7 +208,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -219,7 +221,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -232,7 +234,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -245,7 +247,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -260,7 +262,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -273,7 +275,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/octet-stream',
         ...options.headers,
       },
@@ -289,7 +291,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -302,7 +304,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json',
         ...options.headers,
       },
@@ -315,7 +317,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -328,7 +330,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -341,7 +343,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -354,7 +356,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -367,7 +369,7 @@ export class VmEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -380,7 +382,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +xml;',
         ...options.headers,
       },
@@ -395,7 +397,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -408,7 +410,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -423,7 +425,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -438,7 +440,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -451,7 +453,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -464,7 +466,7 @@ export class VmEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type':
           'application/vnd.vmware.vcloud.media+json;charset=UTF-8',
         ...options.headers,

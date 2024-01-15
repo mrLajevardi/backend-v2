@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
 import { UserModule } from './application/base/user/user.module';
 import { VastModule } from './application/vast/vast.module';
@@ -50,6 +50,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ClsModule } from 'nestjs-cls';
 import { EntityLogModule } from './application/base/entity-log/entity-log.module';
 import { BudgetingModule } from './application/base/budgeting/budgeting.module';
+import { SentryInterceptor } from './infrastructure/logger/Interceptors/SentryInterceptor';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
@@ -129,6 +130,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
   controllers: [AppController],
   providers: [
     AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: SentryInterceptor,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

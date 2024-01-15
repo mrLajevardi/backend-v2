@@ -65,6 +65,10 @@ import { UserInfoService } from './user-info.service';
 import { TransactionsService } from '../../transactions/transactions.service';
 import { UsersFactoryService } from './user.factory.service';
 import { UserPayload } from '../../security/auth/dto/user-payload.dto';
+import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table/enum/system-settings-property-keys.enum';
+import { VerificationServiceService } from './verification.service.service';
+import { ShahkarException } from '../../../../infrastructure/exceptions/shahkar-exception';
+import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
 
 @Injectable()
 export class UserService {
@@ -74,7 +78,6 @@ export class UserService {
     private readonly transactionsTable: TransactionsTableService,
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionsService: TransactionsService,
-    private readonly roleMappingsTable: RoleMappingTableService,
     private readonly systemSettingsTable: SystemSettingsTableService,
     private readonly logger: LoggerService,
     private readonly paymentService: PaymentService,
@@ -85,6 +88,7 @@ export class UserService {
     private readonly fileTableService: FileTableService,
     private readonly userInfoService: UserInfoService,
     private readonly userFactoryService: UsersFactoryService,
+    private readonly verificationServiceService: VerificationServiceService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -131,6 +135,7 @@ export class UserService {
     userPayload: UserPayload,
     data: ChangePasswordDto,
   ): Promise<boolean> {
+    const user: User = await this.userTable.findById(userPayload.userId);
     if (data.otpVerification) {
       const cacheKey = userPayload.userId + '_changePassword';
       const checkCache = await this.redisCacheService.exist(cacheKey);
@@ -138,11 +143,20 @@ export class UserService {
         throw new ForbiddenException();
       }
     } else {
-      const user: User = await this.userTable.findById(userPayload.userId);
       const isValid = await comparePassword(user.password, data.oldPassword);
       if (!isValid) {
         throw new ForbiddenException();
       }
+    }
+    const checkPassword = await comparePassword(
+      user.password,
+      data.newPassword,
+    );
+
+    if (checkPassword) {
+      throw new ForbiddenException(
+        'رمز عبور جدید باید متفاوت از رمز عبور گذشته باشد.',
+      );
     }
 
     const hashedPassword = await encryptPassword(data.newPassword);
@@ -243,24 +257,8 @@ export class UserService {
   ): Promise<string> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
-    const settings = await this.systemSettingsTable.find({
-      where: {
-        propertyKey: Like('%credit.%'),
-      },
-    });
-    const filteredSettings = {};
-    settings.forEach((setting) => {
-      filteredSettings[setting.propertyKey] = setting.value;
-    });
-    console.log(filteredSettings);
-    const { amount } = data;
-    if (
-      amount < filteredSettings['credit.minValue'] ||
-      amount > filteredSettings['credit.maxValue']
-    ) {
-      return Promise.reject(new UnprocessableEntity());
-    }
-
+    await this.transactionsService.validateCreditAmount(data.amount);
+    const amount = data.amount;
     const zarinpalConfig: ZarinpalConfigDto = {
       email: user.email,
       mobile: user.phoneNumber,
@@ -614,6 +612,14 @@ export class UserService {
       personalVerification: true,
     };
 
+    const user = await this.userTable.findById(options.user.userId);
+    const validPersonalCode =
+      this.verificationServiceService.isValidIranianNationalCode(
+        data.personalCode,
+      );
+    if (!validPersonalCode) {
+      throw new ShahkarException('کد ملی شما صحیح نمی باشد.');
+    }
     if (!data.personality) {
       const company: Company = await this.companyTable.create(
         plainToClass(CreateCompanyDto, data, { excludeExtraneousValues: true }),
@@ -621,7 +627,23 @@ export class UserService {
       userProfileData.companyId = company.id;
     }
 
-    // verify user with api and change personalVerification to true
+    const shahkarVerify = await this.systemSettingsTable.findOne({
+      where: {
+        propertyKey: SystemSettingsPropertyKeysEnum.ShahkarVerification,
+      },
+    });
+
+    if (!isNil(shahkarVerify) && shahkarVerify.value == '1') {
+      const verifyData =
+        await this.verificationServiceService.checkUserVerification(
+          user.phoneNumber,
+          userProfileData.personalCode,
+        );
+
+      if (verifyData.status.toString() != '200') {
+        throw new ShahkarException(verifyData.message.toString());
+      }
+    }
 
     await this.userTable.update(options.user.userId, userProfileData);
 
@@ -634,7 +656,6 @@ export class UserService {
   }
 
   async getUserProfile(options: SessionRequest) {
-    // const user = await this.userTable.findOne(options.user.userId);
     const user = await this.userTable.findOne({
       where: { id: options.user.userId },
       relations: [
@@ -854,70 +875,44 @@ export class UserService {
 
     return true;
   }
+
   async getTransactions(
     options: SessionRequest,
     page: number,
     pageSize: number,
     serviceType: string,
-    value: number,
     invoiceID: number,
-    ServiceID: string,
+    serviceID: string,
     startDateTime: Date,
     endDateTime: Date,
   ): Promise<{ transaction: TransactionsReturnDto[]; totalRecords: number }> {
-    if (pageSize > 128) {
-      return Promise.reject(new BadRequestException());
-    }
-    if (startDateTime && !endDateTime) {
-      endDateTime = new Date();
-    }
+    const where: FindOptionsWhere<Transactions> = {
+      userId: options.user.userId,
+    };
 
-    let where: FindOptionsWhere<Transactions> = {};
-    if (
-      isNil(
-        serviceType ||
-          value ||
-          invoiceID ||
-          ServiceID ||
-          startDateTime ||
-          endDateTime,
-      )
-    ) {
-      where = {
-        userId: options.user.userId,
-      };
-    } else {
-      where = {
-        invoiceId: invoiceID,
-        userId: options.user.userId,
-        serviceInstanceId: ServiceID,
-        value: value,
-        description: ILike(`%${serviceType}%`),
+    if (!isNil(invoiceID)) {
+      where.invoiceId = invoiceID;
+    }
+    if (!isNil(serviceID)) {
+      where.serviceInstanceId = serviceID;
+    }
+    if (!isNil(serviceType)) {
+      where.invoice = {
+        serviceTypeId: serviceType,
       };
     }
-    if (startDateTime && endDateTime) {
-      where['DateTime'] = { $between: [startDateTime, endDateTime] };
-    }
 
-    const transaction = await this.transactionsTable.find({
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-      where,
-      order: {
-        dateTime: 'DESC',
-      },
-      relations: ['invoice', 'serviceInstance', 'user'],
-    });
-    const withoutPagination = await this.transactionsTable.find({
-      where,
-    });
+    const transaction: PaginationReturnDto<Transactions> =
+      await this.transactionsService.paginate(
+        page,
+        pageSize,
+        where,
+        startDateTime,
+        endDateTime,
+      );
 
-    const totalRecords = withoutPagination.length;
-    const data = { transaction: transaction, totalRecords };
-    if (!transaction) {
-      return Promise.reject(new ForbiddenException());
-    }
+    const totalRecords = transaction.total;
 
-    return data;
+    return { transaction: transaction.record, totalRecords };
   }
 }

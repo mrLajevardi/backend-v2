@@ -166,7 +166,7 @@ export class InvoiceFactoryService {
       datacenterName: groupedItems.generation.vm[0].datacenterName,
       templateId: data.templateId,
       baseAmount: invoiceCost.itemsTotalCosts,
-      isPreInvoice: true,
+      isPreInvoice: false,
       serviceCost: invoiceCost.serviceCost,
       invoiceTax,
     };

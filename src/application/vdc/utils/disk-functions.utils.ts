@@ -41,7 +41,13 @@ export const CalcSwapStorageVdc = async (
   // (used = model.storageUsed - allMemoryVms),
   const swapStorageUsed = allVmMemories * countVm;
 
-  (used = model.storageUsed - swapStorageUsed),
-    (limit = model.storageLimit - swapStorageLimit);
+  (limit =
+    model.storageLimit - swapStorageLimit > 0
+      ? model.storageLimit - swapStorageLimit
+      : 0),
+    (used =
+      model.storageUsed - swapStorageUsed > 0
+        ? model.storageUsed - swapStorageUsed
+        : 0);
   return { used, limit };
 };

@@ -1,3 +1,6 @@
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+
 /**
  * @param {Object} options
  * @param {Object} options.params
@@ -16,7 +19,7 @@ export function getTaskListEndpoint(options?: any) {
     },
     body: null,
     headers: {
-      Accept: 'application/* +json;version=38.0.0-alpha',
+      Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
       'Content-Type': 'application/* +json',
       ...options.headers,
     },

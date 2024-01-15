@@ -4,6 +4,8 @@ import {
   EndpointOptionsInterface,
 } from 'src/wrappers/interfaces/endpoint.interface';
 import { CreateUserDto } from './dto/create-user.dtop';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class AdminUserEndpointService {
@@ -20,7 +22,7 @@ export class AdminUserEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -32,7 +34,7 @@ export class AdminUserEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/*+json;version=36.3',
+        Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
         'Content-Type': 'application/*+json',
         ...options.headers,
       },
@@ -47,7 +49,7 @@ export class AdminUserEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };

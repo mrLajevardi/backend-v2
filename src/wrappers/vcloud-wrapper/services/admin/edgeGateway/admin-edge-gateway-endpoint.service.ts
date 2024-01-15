@@ -5,6 +5,8 @@ import { GetAvailableIpAddressesDto } from './dto/get-available-ip-addresses.dto
 import { GetExternalNetworksDto } from './dto/get-external-networks.dto';
 import { GetNsxtEdgeClustersDto } from './dto/get-nsxt-edge-cluster.dto';
 import { UpdateEdgeGatewayDto } from './dto/update-edge-gateway.dto';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class AdminEdgeGatewayEndpointService {
@@ -19,7 +21,7 @@ export class AdminEdgeGatewayEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -34,7 +36,7 @@ export class AdminEdgeGatewayEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -49,7 +51,7 @@ export class AdminEdgeGatewayEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -64,7 +66,7 @@ export class AdminEdgeGatewayEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -78,7 +80,7 @@ export class AdminEdgeGatewayEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },

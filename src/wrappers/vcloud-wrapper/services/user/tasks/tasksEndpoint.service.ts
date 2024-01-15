@@ -3,6 +3,8 @@ import { EndpointInterface } from 'src/wrappers/interfaces/endpoint.interface';
 import { CancelTaskDto } from './dto/cancel-task.dto';
 import { GetTaskDto } from './dto/get-task.dto';
 import { GetTaskListDto } from './dto/get-task-list.dto';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
 
 @Injectable()
 export class TasksEndpointService {
@@ -18,7 +20,7 @@ export class TasksEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -32,7 +34,7 @@ export class TasksEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +json;',
         ...options.headers,
       },
@@ -51,7 +53,7 @@ export class TasksEndpointService {
       },
       body: null,
       headers: {
-        Accept: 'application/* +json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/* +json',
         ...options.headers,
       },

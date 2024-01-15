@@ -1,4 +1,4 @@
-type Value = {
+export type VmListValue = {
   id: string;
   name: string;
   os: string;
@@ -15,5 +15,5 @@ export class VmList {
   pageSize: number;
   page: number;
   pageCount: number;
-  values: Value[];
+  values: VmListValue[];
 }

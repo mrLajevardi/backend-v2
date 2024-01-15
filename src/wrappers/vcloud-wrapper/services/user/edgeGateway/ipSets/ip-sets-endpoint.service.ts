@@ -5,6 +5,8 @@ import { DeleteIpSetsDto } from './dto/delete-ip-sets.dto';
 import { UpdateIpSetsDto } from './dto/update-ip-sets.dto';
 import { GetIpSetsDto } from './dto/get-ip-sets.dto';
 import { GetIpSetsListDto } from './dto/get-ip-sets-list.dto';
+import { getAccept } from '../../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../../infrastructure/enum/vcloud-accept.enum';
 
 @Injectable()
 export class IpSetsEndpointService {
@@ -20,7 +22,7 @@ export class IpSetsEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -32,7 +34,7 @@ export class IpSetsEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };
@@ -44,7 +46,7 @@ export class IpSetsEndpointService {
       params: {},
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -57,7 +59,7 @@ export class IpSetsEndpointService {
       params: options.params,
       body: null,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         'Content-Type': 'application/json',
         ...options.headers,
       },
@@ -70,7 +72,7 @@ export class IpSetsEndpointService {
       params: {},
       body: options.body,
       headers: {
-        Accept: 'application/json;version=38.0.0-alpha',
+        Accept: getAccept(VcloudAcceptEnum.Json),
         ...options.headers,
       },
     };

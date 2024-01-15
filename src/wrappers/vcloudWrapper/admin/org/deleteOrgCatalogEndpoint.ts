@@ -7,13 +7,16 @@
  * @return {Object}
  */
 
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+
 export function deleteOrgCatalogEndpoint(options?: any) {
   return {
     method: 'delete',
     resource: `/api/admin/catalog/${options.urlParams.catalogId}?recursive=true&force=true`,
     params: {},
     headers: {
-      Accept: 'application/*+json;version=36.3',
+      Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
       'Content-Type': 'application/*+json',
       ...options.headers,
     },
