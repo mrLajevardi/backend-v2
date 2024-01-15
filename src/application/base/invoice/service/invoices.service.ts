@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CostCalculationService } from './cost-calculation.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
@@ -61,7 +61,7 @@ export class InvoicesService implements BaseInvoiceService {
     if (isEmpty(invoice)) return new InvoiceDetailBaseDto();
 
     if (invoice.userId != options.user.userId) {
-      return new ForbiddenException();
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
 
     this.invoiceStrategy.setStrategy(this.dictionary[invoice.serviceTypeId]);
