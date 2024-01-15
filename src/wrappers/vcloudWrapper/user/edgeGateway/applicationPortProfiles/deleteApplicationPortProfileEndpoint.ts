@@ -1,3 +1,6 @@
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+
 /**
  * @param {Object} options
  * @param {Object} options.headers
@@ -13,7 +16,7 @@ export function deleteApplicationPortProfilesEndpoint(options?: any) {
     params: {},
     body: options.body,
     headers: {
-      Accept: 'application/* +json;version=38.1',
+      Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
       ...options.headers,
     },
   };

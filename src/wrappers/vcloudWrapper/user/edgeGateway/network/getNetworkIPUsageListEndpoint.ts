@@ -1,3 +1,6 @@
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+
 /**
  * gets network IP Usage by given id
  * @param {Object} options
@@ -13,7 +16,7 @@ export function getNetworkIPUsageListEndpoint(options?: any) {
     params: {},
     body: null,
     headers: {
-      Accept: 'application/json;version=38.1',
+      Accept: getAccept(VcloudAcceptEnum.Json),
       'Content-Type': 'application/json',
       ...options.headers,
     },

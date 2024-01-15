@@ -1,3 +1,6 @@
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+
 /**
  * @param {Object} options
  * @param {Object} options.headers
@@ -12,7 +15,7 @@ export function deleteDhcpEndpoint(options?: any) {
     params: {},
     body: null,
     headers: {
-      Accept: 'application/json;version=38.1',
+      Accept: getAccept(VcloudAcceptEnum.Json),
       ...options.headers,
     },
   };
