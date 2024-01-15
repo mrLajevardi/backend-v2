@@ -73,9 +73,11 @@ export class InvoicesController {
     @Query() queryDto: InvoiceDetailsQueryDto,
     @Request() options: SessionRequest,
   ): Promise<InvoiceDetailBaseDto | ForbiddenException> {
+    const preFactor =
+      queryDto.preFactor === 'true' || queryDto.preFactor === '1';
     return await this.invoiceService.getDetails(
       id.toString(),
-      queryDto.preFactor,
+      preFactor,
       options,
     );
   }
