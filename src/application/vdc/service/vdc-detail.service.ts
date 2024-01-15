@@ -210,6 +210,8 @@ export class VdcDetailService implements BaseVdcDetailService {
     });
 
     res2.disk = await Promise.all(diskModel);
+
+    res2.description = vdcDetails.description;
   }
 
   async getVdcDetailItems(
