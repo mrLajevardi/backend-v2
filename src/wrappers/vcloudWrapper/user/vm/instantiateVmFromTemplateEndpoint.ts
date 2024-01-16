@@ -1,3 +1,6 @@
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
+
 /**
  * @param {Object} options
  * @param {Object} options.headers
@@ -12,7 +15,7 @@ export function instantiateVmFromTemplateEndpoint(options?: any) {
     params: {},
     body: options.body,
     headers: {
-      Accept: 'application/* +json;version=38.1',
+      Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
       'Content-Type': 'application/* +xml;',
       ...options.headers,
     },
