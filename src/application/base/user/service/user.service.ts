@@ -717,6 +717,20 @@ export class UserService {
   }
 
   async personalVerification(options: SessionRequest) {
+    const userProfile: User = await this.userTable.findById(
+      options.user.userId,
+    );
+
+    const verifyData =
+      await this.verificationServiceService.checkUserVerification(
+        userProfile.phoneNumber,
+        userProfile.personalCode,
+      );
+
+    if (verifyData.status.toString() != '200') {
+      throw new ShahkarException(verifyData.message.toString());
+    }
+
     const userProfileData: UpdateUserDto = {
       personalVerification: true,
     };
