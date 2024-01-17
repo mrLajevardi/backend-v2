@@ -4,6 +4,7 @@ import { join } from 'path';
 import * as jose from 'node-jose';
 import axios from 'axios';
 import * as moment from 'moment';
+import { isAscii } from 'class-validator';
 
 @Injectable()
 export class VerificationServiceService {
@@ -88,6 +89,7 @@ export class VerificationServiceService {
   async getEncryptedToken(inputData: string, inputIat: number) {
     const pemPath = join(__dirname, './public-key.pem');
     const pemKey = fs.readFileSync(pemPath, 'ascii');
+
     const asymmetricJwkKey = await jose.JWK.asKey(pemKey, 'pem');
 
     const payload = {

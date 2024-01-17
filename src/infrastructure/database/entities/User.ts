@@ -51,6 +51,9 @@ export class User {
   @Column('nvarchar', { name: 'name', length: 255 })
   name: string;
 
+  @Column('nvarchar', { name: 'totpSecretKey', length: 50, nullable: true })
+  totpSecretKey: string;
+
   @Column('nvarchar', { name: 'family', length: 255 })
   family: string;
 
