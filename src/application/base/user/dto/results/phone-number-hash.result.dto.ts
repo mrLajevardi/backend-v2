@@ -6,7 +6,7 @@ import { isNil } from 'lodash';
 import { ServiceTypesEnum } from 'src/application/base/service/enum/service-types.enum';
 
 export class PhoneNumberHashResultDto extends BaseResultDto {
-  phoneNumber: string
+  phoneNumber: string;
 
-  hash: string
+  hash: string;
 }

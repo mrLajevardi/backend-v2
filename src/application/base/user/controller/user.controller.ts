@@ -55,7 +55,7 @@ import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
 import { OtpNotMatchException } from '../../../../infrastructure/exceptions/otp-not-match-exception';
 import { Throttle } from '@nestjs/throttler';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
-import {PhoneNumberHashResultDto} from "../dto/results/phone-number-hash.result.dto";
+import { PhoneNumberHashResultDto } from '../dto/results/phone-number-hash.result.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -314,9 +314,7 @@ export class UserController {
   @ApiOperation({
     summary: 'change current user phone number , send otp to old phone number',
   })
-  async changePhoneNumber(
-    @Request() options: SessionRequest,
-  ) {
+  async changePhoneNumber(@Request() options: SessionRequest) {
     const user: UserProfileDto = await this.userService.findById(
       options.user.userId,
     );
@@ -332,15 +330,17 @@ export class UserController {
   @ApiOperation({
     summary: 'verify old phone number otp , send otp to new phone number',
   })
-
   @ApiResponse({
-    type: PhoneNumberHashResultDto ,
+    type: PhoneNumberHashResultDto,
   })
   async changePhoneNumberOldNumberVerifyOtp(
     @Request() options: SessionRequest,
     @Body() dto: ChangePhoneNumberDto,
   ): Promise<PhoneNumberHashResultDto> {
-    return await this.userInfoService.changePhoneNumberOldNumberVerifyOtp(options , dto)
+    return await this.userInfoService.changePhoneNumberOldNumberVerifyOtp(
+      options,
+      dto,
+    );
   }
 
   @Post('/changePhoneNumber/new-phone/verify-otp')
