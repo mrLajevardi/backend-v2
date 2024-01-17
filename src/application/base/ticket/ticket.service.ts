@@ -65,7 +65,7 @@ export class TicketService {
       null,
       data.name,
       data.subject,
-      user.username,
+      user.guid,
     );
     console.log('🐉🐉🐉');
     await this.ticketTable.create({
@@ -83,7 +83,7 @@ export class TicketService {
     const user = await this.userTable.findById(userId);
     try {
       const tickets = await getListOfTickets({
-        actAsEmail: user.username,
+        actAsEmail: user.guid,
         actAsType: 'customer',
       });
       return Promise.resolve(tickets);
@@ -134,7 +134,7 @@ export class TicketService {
       data.message,
       'customer',
       'reply',
-      user.username,
+      user.guid,
       null,
     );
     return Promise.resolve(ticket);
