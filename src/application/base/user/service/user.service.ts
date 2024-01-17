@@ -69,6 +69,7 @@ import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table
 import { VerificationServiceService } from './verification.service.service';
 import { ShahkarException } from '../../../../infrastructure/exceptions/shahkar-exception';
 import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
+import { encryptVdcPassword } from '../../../../infrastructure/utils/extensions/encrypt.extensions';
 
 @Injectable()
 export class UserService {
@@ -211,7 +212,7 @@ export class UserService {
     const createDto: CreateUserDto = {
       phoneNumber: phoneNumber,
       username: `U-${phoneNumber}`,
-      vdcPassword: password,
+      vdcPassword: encryptVdcPassword(password),
       name: 'کاربر',
       family: 'گرامی',
       code: null,
@@ -667,7 +668,6 @@ export class UserService {
         'companyLetter',
       ],
     });
-
     return new UserProfileResultDto().toArray(user);
   }
 
@@ -717,6 +717,20 @@ export class UserService {
   }
 
   async personalVerification(options: SessionRequest) {
+    const userProfile: User = await this.userTable.findById(
+      options.user.userId,
+    );
+
+    const verifyData =
+      await this.verificationServiceService.checkUserVerification(
+        userProfile.phoneNumber,
+        userProfile.personalCode,
+      );
+
+    if (verifyData.status.toString() != '200') {
+      throw new ShahkarException(verifyData.message.toString());
+    }
+
     const userProfileData: UpdateUserDto = {
       personalVerification: true,
     };

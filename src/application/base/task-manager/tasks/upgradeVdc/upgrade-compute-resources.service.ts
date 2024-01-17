@@ -24,6 +24,8 @@ import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-me
 import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
 import { DatacenterService } from 'src/application/base/datacenter/service/datacenter.service';
 import { BASE_DATACENTER_SERVICE } from 'src/application/base/datacenter/interface/datacenter.interface';
+import { TicketService } from '../../../ticket/ticket.service';
+import { SessionRequest } from '../../../../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class UpgradeVdcComputeResourcesService
@@ -41,6 +43,7 @@ export class UpgradeVdcComputeResourcesService
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly userService: UserTableService,
     private readonly ticketingWrapperService: TicketingWrapperService,
+    private readonly ticketService: TicketService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: DatacenterService,
   ) {
@@ -54,14 +57,17 @@ export class UpgradeVdcComputeResourcesService
         job.data.serviceInstanceId,
       );
       const user = await this.userService.findById(service.userId);
-      await this.ticketingWrapperService.createTicket(
-        TicketsMessagesEnum.IncreaseComputeResourcesFailure,
-        ActAsTypeEnum.User,
-        null,
-        user.name,
-        TicketsSubjectEnum.AutomaticTicket,
-        user.username,
-      );
+      const options: SessionRequest = {
+        user: {
+          userId: user.id,
+        },
+      } as SessionRequest;
+      await this.ticketService.createTicket(options, {
+        message: TicketsMessagesEnum.IncreaseComputeResourcesFailure,
+        name: user.name,
+        serviceInstanceId: job.data.serviceInstanceId,
+        subject: TicketsSubjectEnum.AutomaticTicket,
+      });
       return Promise.reject(err);
     }
   }
