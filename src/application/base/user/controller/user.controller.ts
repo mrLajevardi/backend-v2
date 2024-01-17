@@ -308,6 +308,7 @@ export class UserController {
     return await this.userService.personalVerification(options);
   }
 
+  @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('/changePhoneNumber')
   @ApiOperation({
     summary: 'change current user phone number , send otp to old phone number',

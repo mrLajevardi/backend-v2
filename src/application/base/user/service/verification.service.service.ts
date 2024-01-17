@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
-import { join } from 'path';
 import * as jose from 'node-jose';
 import axios from 'axios';
 import * as moment from 'moment';
-import { isAscii } from 'class-validator';
-
+import * as process from 'process';
 @Injectable()
 export class VerificationServiceService {
   async checkUserVerification(
@@ -87,8 +84,7 @@ export class VerificationServiceService {
   }
 
   async getEncryptedToken(inputData: string, inputIat: number) {
-    const pemPath = join(__dirname, './public-key.pem');
-    const pemKey = fs.readFileSync(pemPath, 'ascii');
+    const pemKey = process.env.SHAHKAR_PEM_KEY;
 
     const asymmetricJwkKey = await jose.JWK.asKey(pemKey, 'pem');
 
