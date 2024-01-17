@@ -10,6 +10,8 @@ import { GetNamedDiskDto, Records } from './dto/get-named-disk.dto';
 import { GetVdcComputePolicy } from './dto/get-vdc-compute-policy.dto';
 import { GetVMAttachedNamedDiskDto } from './dto/get-vm-attached-named-disk.dto';
 import * as process from 'process';
+import { getAccept } from '../../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../../infrastructure/enum/vcloud-accept.enum';
 // import process from 'process';
 @Injectable()
 export class VdcWrapperService {
@@ -122,7 +124,10 @@ export class VdcWrapperService {
     const action = await this.vcloudWrapperService.request(
       wrapper({
         ...options,
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          Accept: getAccept(VcloudAcceptEnum.AllPlusXml),
+        },
         urlParams: { vdcId: formattedVdcId },
       }),
     );
