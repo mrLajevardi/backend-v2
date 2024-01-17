@@ -7,12 +7,25 @@ import { FindOptionsWhere, IsNull } from 'typeorm';
 import { Invoices } from '../../../../infrastructure/database/entities/Invoices';
 import { InvoicesService } from '../../invoice/service/invoices.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
+import { ChangePhoneNumberDto } from '../../security/auth/dto/change-phone-number.dto';
+import { OtpNotMatchException } from '../../../../infrastructure/exceptions/otp-not-match-exception';
+import { SecurityToolsService } from '../../security/security-tools/security-tools.service';
+import { RedisCacheService } from '../../../../infrastructure/utils/services/redis-cache.service';
+import { LoginService } from '../../security/auth/service/login.service';
+import { PhoneNumberHashResultDto } from '../dto/results/phone-number-hash.result.dto';
+import { UserTableService } from '../../crud/user-table/user-table.service';
+import { User } from '../../../../infrastructure/database/entities/User';
+import { ForbiddenException } from '../../../../infrastructure/exceptions/forbidden.exception';
 
 @Injectable()
 export class UserInfoService {
   constructor(
     private transactionsTableService: TransactionsTableService,
     private readonly invoicesTableService: InvoicesTableService,
+    private readonly securityToolsService: SecurityToolsService,
+    private readonly redisCacheService: RedisCacheService,
+    private readonly loginService: LoginService,
+    private readonly userTableService: UserTableService,
   ) {}
 
   async getUserCreditBy(userId: number): Promise<number> {
@@ -73,6 +86,43 @@ export class UserInfoService {
     return {
       data: invoices,
       total: withOutPagination,
+    };
+  }
+
+  async changePhoneNumberOldNumberVerifyOtp(
+    options: SessionRequest,
+    data: ChangePhoneNumberDto,
+  ): Promise<PhoneNumberHashResultDto> {
+    const user: User = await this.userTableService.findById(
+      options.user.userId,
+    );
+
+    if (user.phoneNumber != data.oldPhoneNumber) {
+      throw new ForbiddenException();
+    }
+
+    if (user.phoneNumber == data.newPhoneNumber) {
+      throw new BadRequestException();
+    }
+
+    const verify: boolean = this.securityToolsService.otp.otpVerifier(
+      data.oldPhoneNumber,
+      data.otp,
+      data.hash,
+    );
+
+    if (!verify) {
+      throw new OtpNotMatchException();
+    }
+
+    const cacheKey: string = options.user.userId + '_changePhoneNumber';
+    await this.redisCacheService.set(cacheKey, data.oldPhoneNumber, 480000);
+
+    const otp = await this.loginService.generateOtp(data.newPhoneNumber);
+
+    return {
+      phoneNumber: data.newPhoneNumber,
+      hash: otp.hash,
     };
   }
 }

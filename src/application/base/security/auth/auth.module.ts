@@ -30,6 +30,7 @@ import { TwoFaAuthEmailService } from './classes/two-fa-auth-email.service';
 import { TwoFaAuthStrategy } from './classes/two-fa-auth.strategy';
 import { ClsModule, ClsService } from 'nestjs-cls';
 import { TwoFactorAuthController } from './controller/two-factor-auth.controller';
+import { TwoFaAuthTotpService } from './classes/two-fa-auth-totp.service';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { TwoFactorAuthController } from './controller/two-factor-auth.controller
     TwoFaAuthSmsService,
     TwoFaAuthEmailService,
     TwoFaAuthStrategy,
+    TwoFaAuthTotpService,
   ],
   exports: [AuthService, TwoFaAuthService],
 })

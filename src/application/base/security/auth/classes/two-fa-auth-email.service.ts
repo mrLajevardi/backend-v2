@@ -5,7 +5,10 @@ import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { UserPayload } from '../dto/user-payload.dto';
 import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
 import { OtpService } from '../../security-tools/otp.service';
-import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import {
+  BaseSendTwoFactorAuthDto,
+  SendOtpTwoFactorAuthDto,
+} from '../dto/send-otp-two-factor-auth.dto';
 import { isNil } from 'lodash';
 import { BadRequestException } from '../../../../../infrastructure/exceptions/bad-request.exception';
 
@@ -17,7 +20,7 @@ export class TwoFaAuthEmailService implements TwoFaAuthInterface {
     private otpService: OtpService,
   ) {}
 
-  async sendOtp(userPayload: UserPayload): Promise<SendOtpTwoFactorAuthDto> {
+  async sendOtp(userPayload: UserPayload): Promise<BaseSendTwoFactorAuthDto> {
     const user = await this.userTable.findById(userPayload.userId);
 
     if (isNil(user.email) || !user.emailVerified) {

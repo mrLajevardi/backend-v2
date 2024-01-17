@@ -3,7 +3,10 @@ import { UserPayload } from '../dto/user-payload.dto';
 import { TwoFaAuthTypeService } from '../classes/two-fa-auth-type.service';
 import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { TwoFaAuthStrategy } from '../classes/two-fa-auth.strategy';
-import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import {
+  BaseSendTwoFactorAuthDto,
+  SendOtpTwoFactorAuthDto,
+} from '../dto/send-otp-two-factor-auth.dto';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { User } from '../../../../../infrastructure/database/entities/User';
 
@@ -16,22 +19,24 @@ export class TwoFaAuthService {
   ) {}
 
   private dictionary = {
-    1: this.TwoFaAuthType.sms,
-    2: this.TwoFaAuthType.email,
+    [TwoFaAuthTypeEnum.Sms]: this.TwoFaAuthType.sms,
+    [TwoFaAuthTypeEnum.Email]: this.TwoFaAuthType.email,
+    [TwoFaAuthTypeEnum.Totp]: this.TwoFaAuthType.totp,
   };
 
   private convertType = {
     sms: 1,
     email: 2,
+    totp: 3,
   };
 
   public async enable(
     user: UserPayload,
     type: TwoFaAuthTypeEnum,
-  ): Promise<SendOtpTwoFactorAuthDto> {
-    this.TwoFaAuthStrategy.setStrategy(this.dictionary[Number(type)]);
+  ): Promise<BaseSendTwoFactorAuthDto> {
+    this.TwoFaAuthStrategy.setStrategy(this.dictionary[type]);
 
-    return await this.TwoFaAuthStrategy.sendOtp(user);
+    return await this.TwoFaAuthStrategy.enableOtp(user);
   }
 
   public async disable(user: UserPayload, type: TwoFaAuthTypeEnum) {
@@ -61,11 +66,11 @@ export class TwoFaAuthService {
     user: UserPayload,
     type: TwoFaAuthTypeEnum,
     otp: string,
-    hash: string,
+    hash?: string,
   ): Promise<boolean> {
     this.TwoFaAuthStrategy.setStrategy(this.dictionary[Number(type)]);
 
-    const verify: boolean = await this.TwoFaAuthStrategy.verifyOtp(
+    const verify: boolean = await this.TwoFaAuthStrategy.enableVerifyOtp(
       user,
       otp,
       hash,
@@ -84,7 +89,8 @@ export class TwoFaAuthService {
 
     twoFactors.push(Number(type));
 
-    const twoFactorsStr = twoFactors.join(',');
+    const newTwoFactors = [...new Set(twoFactors)];
+    const twoFactorsStr = newTwoFactors.join(',');
 
     await this.userTable.update(user.userId, {
       twoFactorAuth: twoFactorsStr,
@@ -96,7 +102,7 @@ export class TwoFaAuthService {
   public async sendOtp(
     user: UserPayload,
     type: TwoFaAuthTypeEnum,
-  ): Promise<SendOtpTwoFactorAuthDto> {
+  ): Promise<BaseSendTwoFactorAuthDto> {
     const twoFactorTypes: number[] = await this.getUserTwoFactorTypes(
       user.userId,
     );
@@ -114,7 +120,7 @@ export class TwoFaAuthService {
     user: UserPayload,
     type: TwoFaAuthTypeEnum,
     otp: string,
-    hash: string,
+    hash?: string,
   ): Promise<boolean> {
     this.TwoFaAuthStrategy.setStrategy(this.dictionary[type]);
 
