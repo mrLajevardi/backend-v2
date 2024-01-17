@@ -56,6 +56,7 @@ import axios from 'axios';
 import * as process from 'process';
 import { User } from '../../../../infrastructure/database/entities/User';
 import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
+import { TicketService } from '../../ticket/ticket.service';
 
 @Injectable()
 export class CreateServiceService {
@@ -79,6 +80,7 @@ export class CreateServiceService {
     private readonly serviceTypesTableService: ServiceTypesTableService,
     private readonly serviceItemsTableService: ServiceItemsTableService,
     private readonly invoicesTableService: InvoicesTableService,
+    private readonly ticketService: TicketService,
     private dataSource: DataSource,
   ) {}
 
@@ -521,14 +523,12 @@ export class CreateServiceService {
       throw new BadRequestException();
     }
     if (retryCount === 1) {
-      await this.ticketingWrapperService.createTicket(
-        TicketsMessagesEnum.VdcCreationFailure,
-        ActAsTypeEnum.User,
-        null,
-        user.name,
-        TicketsSubjectEnum.AutomaticTicket,
-        user.username,
-      );
+      await this.ticketService.createTicket(options, {
+        subject: TicketsSubjectEnum.AutomaticTicket,
+        message: TicketsMessagesEnum.VdcCreationFailure,
+        name: user.name,
+        serviceInstanceId,
+      });
     }
     const task = await this.tasksTableService.create({
       userId: options.user.userId,

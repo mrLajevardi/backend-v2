@@ -45,6 +45,7 @@ import { TicketModule } from '../ticket/ticket.module';
     DatabaseModule,
     SessionsModule,
     LoggerModule,
+    TicketModule,
     forwardRef(() => UserModule),
     UvdeskWrapperModule,
     PaymentModule,
