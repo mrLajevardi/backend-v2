@@ -239,7 +239,7 @@ export class VdcWrapperService {
           ...options,
           headers: {
             Authorization: `Bearer ${authToken}`,
-            Accept: getAccept(VcloudAcceptEnum.AllPlusXml),
+            Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
           },
           urlParams: { namedDiskId },
         }),
