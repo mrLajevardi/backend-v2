@@ -237,7 +237,10 @@ export class VdcWrapperService {
       await this.vcloudWrapperService.request<GetVMAttachedNamedDiskDto>(
         wrapper({
           ...options,
-          headers: { Authorization: `Bearer ${authToken}` },
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            Accept: getAccept(VcloudAcceptEnum.AllPlusXml),
+          },
           urlParams: { namedDiskId },
         }),
       );
