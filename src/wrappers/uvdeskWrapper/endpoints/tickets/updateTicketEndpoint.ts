@@ -11,6 +11,9 @@ export function updateTicketEndpoint(options?: any) {
     resource: `/ticket/${options.urlParams.ticketId}`,
     params: null,
     body: options.body,
-    headers: options.headers,
+    headers: {
+      Accept: 'application/json',
+      ...options.headers,
+    },
   };
 }
