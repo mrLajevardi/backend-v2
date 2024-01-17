@@ -46,7 +46,10 @@ export class VdcWrapperService {
     const action = await this.vcloudWrapperService.request(
       wrapper({
         ...options,
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          Accept: getAccept(VcloudAcceptEnum.AllPlusJson),
+        },
         urlParams: { vmId },
       }),
     );
@@ -156,7 +159,10 @@ export class VdcWrapperService {
     const action = await this.vcloudWrapperService.request(
       wrapper({
         ...options,
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          Accept: getAccept(VcloudAcceptEnum.AllPlusXml),
+        },
         urlParams: { vmId },
       }),
     );
@@ -250,7 +256,10 @@ export class VdcWrapperService {
     const action = await this.vcloudWrapperService.request(
       wrapper({
         ...options,
-        headers: { Authorization: `Bearer ${authToken}` },
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          Accept: getAccept(VcloudAcceptEnum.AllPlusXml),
+        },
         urlParams: { namedDiskId },
       }),
     );
