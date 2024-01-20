@@ -9,8 +9,25 @@ export class VerificationServiceService {
     phoneNumber: string,
     nationalCode: string,
   ): Promise<{ message: any; status: any }> {
-    const secondsSinceEpoch: number = Math.floor(Date.now() / 1000);
-    const timeString = moment().format('YYYYMMDDHHmmssSSS');
+    const dateInUTC = new Date();
+
+    const dateInTehran = new Date(dateInUTC.toLocaleString('en-US', { timeZone: 'Asia/Tehran' }));
+
+    console.log(dateInTehran.getTime());
+
+    // const date = new Date().toLocaleString('en' , {
+    //   timeZone: 'Asia/Tehran'
+    // });
+    // console.log(date)
+    const secondsSinceEpoch: number = Math.floor(dateInTehran.getTime() / 1000);
+    // const secondsSinceEpoch: number = Math.floor(Date.now() / 1000);
+    const timeString = moment().zone('+0330').format('YYYYMMDDHHmmssSSS');
+    // const timeString = dateInTehran.getFullYear()
+
+    console.log(timeString);
+
+    //2024-01-20 08:52:00 112 000
+    //2024-01-20 12:28:08 695 000
     const requestId = `1279${timeString}000`;
 
     const basicAuth =
@@ -31,7 +48,7 @@ export class VerificationServiceService {
       },
     );
 
-    console.log('getAccessToken', getAccessToken);
+    // console.log('getAccessToken', getAccessToken);
     const accessToken = 'Bearer ' + getAccessToken.data.access_token;
 
     const hashedPhoneNumber: string = await this.getEncryptedToken(
@@ -62,7 +79,7 @@ export class VerificationServiceService {
       },
     );
 
-    console.log('verificationRequest', verificationRequest);
+    // console.log('verificationRequest', verificationRequest);
 
     const status = verificationRequest.data.result.data.result.data.response;
 
