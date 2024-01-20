@@ -66,6 +66,15 @@ export class VerificationServiceService {
 
     const status = verificationRequest.data.result.data.result.data.response;
 
+    console.log(
+      '\n\n\n\n\n verificationRequest_data \n\n\n\n',
+      verificationRequest.data,
+    );
+    console.log(
+      '\n\n\n\n\n verificationRequest_data_res \n\n\n\n',
+      verificationRequest.data?.result,
+    );
+
     const comment = verificationRequest.data.result.data.result.data.comment;
 
     const data: any = {
