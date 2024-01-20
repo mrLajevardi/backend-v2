@@ -3,10 +3,7 @@ import { UserPayload } from '../dto/user-payload.dto';
 import { TwoFaAuthTypeService } from '../classes/two-fa-auth-type.service';
 import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { TwoFaAuthStrategy } from '../classes/two-fa-auth.strategy';
-import {
-  BaseSendTwoFactorAuthDto,
-  SendOtpTwoFactorAuthDto,
-} from '../dto/send-otp-two-factor-auth.dto';
+import { BaseSendTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { User } from '../../../../../infrastructure/database/entities/User';
 
@@ -55,9 +52,16 @@ export class TwoFaAuthService {
       twoFactorTypes.push(TwoFaAuthTypeEnum.None);
     }
 
-    await this.userTable.update(user.userId, {
-      twoFactorAuth: twoFactorTypes.join(','),
-    });
+    if (type == TwoFaAuthTypeEnum.Totp) {
+      await this.userTable.update(user.userId, {
+        twoFactorAuth: twoFactorTypes.join(','),
+        totpSecretKey: null,
+      });
+    } else {
+      await this.userTable.update(user.userId, {
+        twoFactorAuth: twoFactorTypes.join(','),
+      });
+    }
 
     return true;
   }
