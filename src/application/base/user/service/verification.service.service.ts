@@ -77,6 +77,8 @@ export class VerificationServiceService {
 
     const comment = verificationRequest.data.result.data.result.data.comment;
 
+    console.log('\n\n\n\n\n status , comment \n\n\n\n', status, comment);
+
     const data: any = {
       status: status,
       message: comment,
