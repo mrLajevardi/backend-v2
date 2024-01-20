@@ -48,7 +48,7 @@ export class TicketService {
     const defaultUserId = -1;
     const service = await this.serviceInstancesTable.findOne({
       where: {
-        userId: userId,
+        userId: userId | defaultUserId,
         id: data.serviceInstanceId,
       },
     });
