@@ -11,7 +11,9 @@ export class VerificationServiceService {
   ): Promise<{ message: any; status: any }> {
     const dateInUTC = new Date();
 
-    const dateInTehran = new Date(dateInUTC.toLocaleString('en-US', { timeZone: 'Asia/Tehran' }));
+    const dateInTehran = new Date(
+      dateInUTC.toLocaleString('en-US', { timeZone: 'Asia/Tehran' }),
+    );
 
     console.log(dateInTehran.getTime());
 
