@@ -327,7 +327,7 @@ export class CreateServiceService {
 
     let checkCredit = false;
 
-    if (userCredit < invoice.finalAmount) {
+    if (userCredit < invoice.finalAmountWithTax) {
       throw new NotEnoughCreditException();
     } else {
       checkCredit = true;
@@ -337,7 +337,7 @@ export class CreateServiceService {
       description: '',
       invoiceId: invoice.id,
       isApproved: false,
-      value: -invoice.finalAmount,
+      value: -invoice.finalAmountWithTax,
       paymentToken: null,
       paymentType: PaymentTypes.PayByCredit,
       serviceInstanceId: null,

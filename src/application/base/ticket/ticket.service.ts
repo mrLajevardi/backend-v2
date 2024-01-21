@@ -48,7 +48,7 @@ export class TicketService {
     const defaultUserId = -1;
     const service = await this.serviceInstancesTable.findOne({
       where: {
-        userId: userId,
+        userId: userId | defaultUserId,
         id: data.serviceInstanceId,
       },
     });
@@ -81,11 +81,23 @@ export class TicketService {
   ): Promise<{ tickets: object[]; pagination: object }> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
+    const usersTicketsIds = (
+      await this.ticketTable.find({
+        select: { ticketId: true },
+        where: { userId: userId },
+      })
+    ).map((ticket) => ticket.ticketId);
+    const res = [];
     try {
       const tickets = await getListOfTickets({
         actAsEmail: user.username,
         actAsType: 'customer',
       });
+
+      tickets.tickets = tickets.tickets.filter((ticket) =>
+        usersTicketsIds.includes(ticket.id),
+      );
+
       return Promise.resolve(tickets);
     } catch (error) {
       if (error.status === 404) {
