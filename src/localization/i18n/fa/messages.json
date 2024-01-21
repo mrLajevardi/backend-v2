@@ -1,0 +1,8 @@
+{
+  "phoneNumberIsDuplicateWithOld" : "شماره تلفن وارد شده با شماره تلفن قبلی برابر است." ,
+  "passwordIsDuplicateWithOld" : "رمز عبور جدید باید متفاوت از رمز عبور گذشته باشد." ,
+  "aiApiNotResponse" : "سرویس هوش مصنوعی دچار اختلال شده است. " ,
+  "someThingGotWrong" : "سیستم دچار اختلال شده است." ,
+  "userNotHaveEnoughCredit" : "موجودی حساب کافی نمی باشد." ,
+  "notEnoughForWeek" : "موجودی سرویس برای یک هفته کافی نمی باشد."
+}

@@ -25,7 +25,6 @@ import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { Discounts } from 'src/infrastructure/database/entities/Discounts';
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
-import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 import { ServiceTypesEnum } from '../enum/service-types.enum';
 import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
@@ -33,7 +32,6 @@ import { TaskManagerService } from '../../task-manager/service/task-manager.serv
 import { TasksEnum } from '../../task-manager/enum/tasks.enum';
 import { ServiceStatusEnum } from '../enum/service-status.enum';
 import { TicketingWrapperService } from 'src/wrappers/uvdesk-wrapper/service/wrapper/ticketing-wrapper.service';
-import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/act-as-type.enum';
 import { TicketsSubjectEnum } from '../../ticket/enum/tickets-subject.enum';
 import { TicketsMessagesEnum } from '../../ticket/enum/tickets-message.enum';
 import { ServiceServiceFactory } from '../Factory/service.service.factory';
@@ -48,7 +46,6 @@ import { addMonths } from '../../../../infrastructure/helpers/date-time.helper';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { DataSource, QueryRunner } from 'typeorm';
-import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
 import { ServiceItems } from '../../../../infrastructure/database/entities/ServiceItems';
 import { Tasks } from '../../../../infrastructure/database/entities/Tasks';
@@ -57,6 +54,7 @@ import * as process from 'process';
 import { User } from '../../../../infrastructure/database/entities/User';
 import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
 import { TicketService } from '../../ticket/ticket.service';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
 
 @Injectable()
 export class CreateServiceService {
@@ -81,6 +79,7 @@ export class CreateServiceService {
     private readonly serviceItemsTableService: ServiceItemsTableService,
     private readonly invoicesTableService: InvoicesTableService,
     private readonly ticketService: TicketService,
+    private readonly baseFactoryException: BaseFactoryException,
     private dataSource: DataSource,
   ) {}
 
@@ -130,7 +129,7 @@ export class CreateServiceService {
       const userCredit = await this.userInfoService.getUserCreditBy(userId);
       const user: User = await this.userService.findById(userId);
       if (userCredit < invoice.finalAmountWithTax) {
-        return new NotEnoughCreditException();
+        this.baseFactoryException.handle(NotEnoughCreditException);
       }
 
       const transaction: Transactions = await queryRunner.manager.save(
@@ -285,7 +284,7 @@ export class CreateServiceService {
       );
 
       if (![200, 201].includes(createQaList.status)) {
-        throw new AiApiException();
+        this.baseFactoryException.handle(AiApiException);
       }
 
       const taskId = task.taskId;
@@ -328,7 +327,7 @@ export class CreateServiceService {
     let checkCredit = false;
 
     if (userCredit < invoice.finalAmountWithTax) {
-      throw new NotEnoughCreditException();
+      this.baseFactoryException.handle(NotEnoughCreditException);
     } else {
       checkCredit = true;
     }

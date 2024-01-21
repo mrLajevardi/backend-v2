@@ -70,6 +70,10 @@ import { VerificationServiceService } from './verification.service.service';
 import { ShahkarException } from '../../../../infrastructure/exceptions/shahkar-exception';
 import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
 import { encryptVdcPassword } from '../../../../infrastructure/utils/extensions/encrypt.extensions';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
+import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/not-enough-credit.exception';
+import { PasswordIsDuplicateException } from '../../../../infrastructure/exceptions/password-is-duplicate.exception';
 
 @Injectable()
 export class UserService {
@@ -90,6 +94,7 @@ export class UserService {
     private readonly userInfoService: UserInfoService,
     private readonly userFactoryService: UsersFactoryService,
     private readonly verificationServiceService: VerificationServiceService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -155,9 +160,7 @@ export class UserService {
     );
 
     if (checkPassword) {
-      throw new ForbiddenException(
-        'رمز عبور جدید باید متفاوت از رمز عبور گذشته باشد.',
-      );
+      this.baseFactoryException.handle(PasswordIsDuplicateException);
     }
 
     const hashedPassword = await encryptPassword(data.newPassword);
