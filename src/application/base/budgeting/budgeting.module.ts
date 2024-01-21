@@ -3,11 +3,11 @@ import { BudgetingService } from './service/budgeting.service';
 import { BudgetingController } from './controller/budgeting.controller';
 import { DatabaseModule } from '../../../infrastructure/database/database.module';
 import { CrudModule } from '../crud/crud.module';
-import { UserInfoService } from '../user/service/user-info.service';
 import { InvoicesModule } from '../invoice/invoices.module';
 import { VdcModule } from '../../vdc/vdc.module';
 import { AuthModule } from '../security/auth/auth.module';
 import { UserModule } from '../user/user.module';
+import { BaseExceptionModule } from '../../../infrastructure/exceptions/base/base-exception.module';
 
 @Module({
   imports: [
@@ -18,6 +18,7 @@ import { UserModule } from '../user/user.module';
     // InvoicesModule,
     forwardRef(() => InvoicesModule),
     forwardRef(() => VdcModule),
+    BaseExceptionModule,
   ],
   controllers: [BudgetingController],
   providers: [BudgetingService],

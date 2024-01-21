@@ -26,6 +26,7 @@ import {
   InvoiceItemDetailBase,
 } from '../vdc/dto/invoice-detail-base.dto';
 import { InvoiceItemListService } from '../base/crud/invoice-item-list/invoice-item-list.service';
+import { BaseFactoryException } from '../../infrastructure/exceptions/base/base-factory.exception';
 
 @Injectable()
 export class AiService {
@@ -39,6 +40,7 @@ export class AiService {
     private readonly serviceInstancesSP: ServiceInstancesStoredProcedureService,
     private readonly jwtService: JwtService,
     private readonly invoiceItemListService: InvoiceItemListService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   async verifyToken(token: string): Promise<object> {
@@ -99,7 +101,7 @@ export class AiService {
     const constPerRequest = parseInt(verified['costPerRequest']);
 
     if (constPerRequest > user.credit) {
-      throw new NotEnoughCreditException();
+      this.baseFactoryException.handle(NotEnoughCreditException);
     }
     if (verified['qualityPlanCode'] == 'aiDemo') {
       // Muximum use per day

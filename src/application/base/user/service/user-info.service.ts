@@ -16,6 +16,8 @@ import { PhoneNumberHashResultDto } from '../dto/results/phone-number-hash.resul
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { User } from '../../../../infrastructure/database/entities/User';
 import { ForbiddenException } from '../../../../infrastructure/exceptions/forbidden.exception';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { PhoneNumberIsDuplicateException } from '../../../../infrastructure/exceptions/phone-number-is-duplicate.exception';
 
 @Injectable()
 export class UserInfoService {
@@ -26,6 +28,7 @@ export class UserInfoService {
     private readonly redisCacheService: RedisCacheService,
     private readonly loginService: LoginService,
     private readonly userTableService: UserTableService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   async getUserCreditBy(userId: number): Promise<number> {
@@ -102,7 +105,7 @@ export class UserInfoService {
     }
 
     if (user.phoneNumber == data.newPhoneNumber) {
-      throw new BadRequestException();
+      this.baseFactoryException.handle(PhoneNumberIsDuplicateException);
     }
 
     const verify: boolean = this.securityToolsService.otp.otpVerifier(
