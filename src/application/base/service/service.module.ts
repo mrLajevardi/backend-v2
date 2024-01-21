@@ -38,6 +38,7 @@ import { VServiceInstancesDetailTableModule } from '../crud/v-service-instances-
 import { VReportsUserModule } from '../crud/v-reports-user-table/v-reports-user.module';
 import { TicketService } from '../ticket/ticket.service';
 import { TicketModule } from '../ticket/ticket.module';
+import { BaseExceptionModule } from '../../../infrastructure/exceptions/base/base-exception.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { TicketModule } from '../ticket/ticket.module';
     VServiceInstancesDetailTableModule,
     VReportsUserModule,
     TicketModule,
+    BaseExceptionModule,
   ],
   providers: [
     ServiceService,

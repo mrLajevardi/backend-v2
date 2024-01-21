@@ -52,9 +52,13 @@ import { EntityLogModule } from './application/base/entity-log/entity-log.module
 import { BudgetingModule } from './application/base/budgeting/budgeting.module';
 import { SentryInterceptor } from './infrastructure/logger/Interceptors/SentryInterceptor';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { i18nOptions } from './infrastructure/config/i18n-options';
+import { I18nModule } from 'nestjs-i18n';
+import { BaseExceptionModule } from './infrastructure/exceptions/base/base-exception.module';
 
 @Module({
   imports: [
+    I18nModule.forRoot(i18nOptions),
     ClsModule.forRoot({
       global: true,
       guard: { mount: true },
@@ -126,6 +130,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     FileModule,
     EntityLogModule,
     BudgetingModule,
+    BaseExceptionModule,
   ],
   controllers: [AppController],
   providers: [
