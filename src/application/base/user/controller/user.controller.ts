@@ -126,7 +126,7 @@ export class UserController {
   }
 
   @Get('changePassword/sendOtp')
-  // @Throttle({ default: { limit: 1, ttl: 120000 } })
+  @Throttle({ default: { limit: 1, ttl: 120000 } })
   @ApiOperation({ summary: 'send otp to phone number for changing password' })
   async sendOtpChangingPassword(@Request() options: SessionRequest) {
     const user: UserProfileDto = await this.userService.findById(
