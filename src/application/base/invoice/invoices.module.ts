@@ -18,11 +18,13 @@ import { PaygInvoiceService } from './service/payg-invoice.service';
 import { InvoiceStrategy } from './classes/invoice-strategy';
 import { InvoiceAiStrategyService } from './classes/invoice-ai-strategy/invoice-ai-strategy.service';
 import { InvoiceVdcStrategyService } from './classes/invoice-vdc-strategy/invoice-vdc-strategy.service';
+import { BaseExceptionModule } from '../../../infrastructure/exceptions/base/base-exception.module';
 
 @Module({
   imports: [
     DatabaseModule,
     CrudModule,
+    BaseExceptionModule,
     forwardRef(() => DatacenterModule),
     forwardRef(() => UserModule),
     forwardRef(() => VdcModule),
