@@ -4,5 +4,8 @@
   "aiApiNotResponse" : "سرویس هوش مصنوعی دچار اختلال شده است. " ,
   "someThingGotWrong" : "سیستم دچار اختلال شده است." ,
   "userNotHaveEnoughCredit" : "موجودی حساب کافی نمی باشد." ,
+  "permissionDenied" : "شما مجاز به استفاده نمی باشید." ,
+  "notFound" : "نتیجه ای یافت نشد." ,
+  "periodItemNotFound" : "آیتم زمانی یافت نشد." ,
   "notEnoughForWeek" : "موجودی سرویس برای یک هفته کافی نمی باشد."
 }
