@@ -39,7 +39,7 @@ export class TwoFactorAuthController {
   ) {}
 
   @Public()
-  @Throttle({ default: { limit: 1, ttl: 120000 } })
+  // @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Post('/:TwoFactorType/sendOtp')
   @ApiOperation({
     summary: 'send otp sent to user two factor authenticate',
