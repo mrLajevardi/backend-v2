@@ -222,5 +222,4 @@ export class VdcAdminController {
     //     taskId: task['TaskID'],
     // });
   }
-
 }

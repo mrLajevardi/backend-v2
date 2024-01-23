@@ -49,7 +49,6 @@ export class VdcDetailService implements BaseVdcDetailService {
     private readonly vServiceInstancesDetailTableService: VServiceInstancesDetailTableService,
   ) {}
 
-
   async getStorageDetailVdc(
     serviceInstanceId: string,
     memoryAllocation: number,
