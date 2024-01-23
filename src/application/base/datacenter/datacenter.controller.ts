@@ -15,6 +15,7 @@ import {
   Query,
   Body,
   Put,
+  Request,
 } from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
@@ -34,6 +35,8 @@ import { PureAbility, subject } from '@casl/ability';
 import { AclSubjectsEnum } from '../security/ability/enum/acl-subjects.enum';
 import { Action } from '../security/ability/enum/action.enum';
 import { CheckPolicies } from '../security/ability/decorators/check-policies.decorator';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { VdcDetailService } from '../../vdc/service/vdc-detail.service';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -110,20 +113,20 @@ export class DatacenterController {
     return result;
   }
 
-  @Get('/getAllDatacenters')
-  @Public()
-  async getAllDataCenters(): Promise<DataCenterList[]> {
-    const result = await this.service.getAllDataCenters();
-    return result;
-  }
-  @Get('/getDatacenterDetails/:datacenterName')
-  @Public()
-  async getDatacenterDetails(
-    @Param('datacenterName') datacenterName: string,
-  ): Promise<DatacenterDetails> {
-    const result = await this.service.getDatacenterDetails(datacenterName);
-    return result;
-  }
+  // @Get('/getAllDatacenters')
+  // @Public()
+  // async getAllDataCenters(): Promise<DataCenterList[]> {
+  //   const result = await this.service.getAllDataCenters();
+  //   return result;
+  // }
+  // @Get('/getDatacenterDetails/:datacenterName')
+  // @Public()
+  // async getDatacenterDetails(
+  //   @Param('datacenterName') datacenterName: string,
+  // ): Promise<DatacenterDetails> {
+  //   const result = await this.service.getDatacenterDetails(datacenterName);
+  //   return result;
+  // }
 
   @Get('/groupedConfiguration')
   @ApiOperation({
@@ -153,5 +156,22 @@ export class DatacenterController {
   })
   async createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
     return this.service.createDatacenter(dto);
+  }
+
+  @Get('/getAllProvidersStorage')
+  @ApiOperation({ summary: 'getAllProvidersStorage' })
+  // @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  // @ApiResponse({
+  //   status: 201,
+  //   description: 'create a vm from template',
+  //   type: [NamedDiskDto],
+  // })
+  async getAllProviders(
+    @Request()
+    options: SessionRequest,
+    // @Param('serviceInstanceId')
+    // serviceInstanceId: string,
+  ): Promise<{ name: string; code: string }[]> {
+    return this.service.getAllStorageProvider();
   }
 }
