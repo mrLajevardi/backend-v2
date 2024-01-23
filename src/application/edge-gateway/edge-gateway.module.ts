@@ -11,6 +11,8 @@ import { OrganizationTableModule } from '../base/crud/organization-table/organiz
 import { CrudModule } from '../base/crud/crud.module';
 import { ServicePropertiesModule } from '../base/service-properties/service-properties.module';
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
+import { StaticRouteService } from './service/static-route.service';
+import { BaseExceptionModule } from '../../infrastructure/exceptions/base/base-exception.module';
 
 @Module({
   imports: [
@@ -20,12 +22,14 @@ import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module
     CrudModule,
     ServicePropertiesModule,
     MainWrapperModule,
+    BaseExceptionModule,
   ],
   controllers: [EdgeGatewayController],
   providers: [
     EdgeGatewayService,
     ApplicationPortProfileService,
     FirewallService,
+    StaticRouteService,
   ],
   exports: [EdgeGatewayService, FirewallService, ApplicationPortProfileService],
 })

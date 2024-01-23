@@ -28,18 +28,14 @@ import { IpSetsDto } from '../dto/ip-sets.dto';
 import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
 import { UpdateFirewallDto } from '../dto/update-firewall.dto';
 import { EdgeGatewayService } from '../service/edge-gateway.service';
-import { SingleApplicationPortProfileDto } from '../dto/single-application-port-profile.dto';
 import { FirewallListDto } from '../dto/firewall-list.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { GetIpSetsListQueryDto } from '../dto/ip-set-list.dto';
 import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
 import { ApplicationPortProfileListValuesDto } from '../dto/application-port-profile-list-values.dto';
-import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
-import { PureAbility, subject } from '@casl/ability';
-import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
-import { Action } from 'src/application/base/security/ability/enum/action.enum';
-import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
+import { StaticRouteService } from '../service/static-route.service';
+import { CreateStaticRouteVdc } from '../dto/create-static-route-vdc';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
@@ -48,7 +44,10 @@ import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-
 // )
 @ApiBearerAuth()
 export class EdgeGatewayController {
-  constructor(private readonly service: EdgeGatewayService) {}
+  constructor(
+    private readonly service: EdgeGatewayService,
+    private readonly staticRouteService: StaticRouteService,
+  ) {}
   @Post('/:vdcInstanceId/firewalls')
   @ApiOperation({ summary: 'Create a single firewall rule' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
@@ -359,6 +358,53 @@ export class EdgeGatewayController {
       vdcInstanceId,
       firewallId,
       data,
+    );
+  }
+
+  @Post('/:vdcInstanceId/staticRoute')
+  @ApiOperation({ summary: 'Create an Static Route' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
+  async createStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Body() data: CreateStaticRouteVdc,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return await this.staticRouteService.createStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      data,
+    );
+  }
+
+  @Get('/:vdcInstanceId/staticRoute')
+  @ApiOperation({ summary: 'Get Static Route of Service' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  // @ApiResponse({ type: TaskReturnDto })
+  async GetStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Request() options: SessionRequest,
+  ): Promise<any> {
+    return await this.staticRouteService.getStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+    );
+  }
+
+  @Get('/:vdcInstanceId/staticRoute/:routeId/find')
+  @ApiOperation({ summary: 'Find Specific Static Route of Service' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'routeId', description: 'static route ID' })
+  // @ApiResponse({ type: TaskReturnDto })
+  async FindStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Param('routeId') routeId: string,
+    @Request() options: SessionRequest,
+  ): Promise<any> {
+    return await this.staticRouteService.findStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      routeId,
     );
   }
 }
