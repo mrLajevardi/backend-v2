@@ -206,14 +206,13 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
 
   private getModelAllProviders(providerVdcsList: GetProviderVdcsDto) {
     const { values } = providerVdcsList;
-    const providerVdcsFilteredData: Pick<Value, 'id'>[] = values.map(
-      (value) => {
-        const { id, isEnabled } = value;
-        if (isEnabled) {
-          return { id };
-        }
-      },
-    );
+    const providerVdcsFilteredData = [];
+    for (const item of values) {
+      if (item.isEnabled) {
+        providerVdcsFilteredData.push({ id: item.id });
+      }
+    }
+
     return providerVdcsFilteredData;
   }
 
