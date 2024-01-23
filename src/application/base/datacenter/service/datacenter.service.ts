@@ -46,6 +46,9 @@ import { VcloudMetadata } from '../type/vcloud-metadata.type';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
 import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service/user/vdc/dto/provider-vdc-storage-profile.dto';
+import { AdminOrgVdcStorageProfileQuery } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/instantiate-vm-from.templates-admin.dto';
+import { GetCodeDisk } from '../../../vdc/utils/disk-functions.utils';
+import { distinctByProperty } from '../../../../infrastructure/utils/extensions/array.extensions';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -217,18 +220,18 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     return providerVdcsFilteredData;
   }
 
-  private getAllProviders(providerVdcsList: GetProviderVdcsDto) {
-    const providerIdList = [];
-
-    const { values } = providerVdcsList;
-    const providerVdcsFilteredData: Pick<Value, 'id'>[] = values.map(
-      (value) => {
-        const { id } = value;
-        return { id };
-      },
-    );
-    return providerVdcsFilteredData;
-  }
+  // private getAllProviders(providerVdcsList: GetProviderVdcsDto) {
+  //   const providerIdList = [];
+  //
+  //   const { values } = providerVdcsList;
+  //   const providerVdcsFilteredData: Pick<Value, 'id'>[] = values.map(
+  //     (value) => {
+  //       const { id } = value;
+  //       return { id };
+  //     },
+  //   );
+  //   return providerVdcsFilteredData;
+  // }
 
   private async configProvider(
     providerVdcsFilteredData: Pick<Value, 'id'>[],
@@ -324,148 +327,148 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     return Promise.resolve(tree);
   }
 
-  async getAllDataCenters(): Promise<DataCenterList[]> {
-    const adminSession = await this.sessionsService.checkAdminSession();
-    const params = {
-      page: 1,
-      pageSize: 10,
-    };
+  // async getAllDataCenters(): Promise<DataCenterList[]> {
+  //   const adminSession = await this.sessionsService.checkAdminSession();
+  //   const params = {
+  //     page: 1,
+  //     pageSize: 10,
+  //   };
+  //
+  //   const providerVdcsList = await this.adminVdcWrapperService.getProviderVdcs(
+  //     adminSession,
+  //     params,
+  //   );
+  //
+  //   const providerVdcsFilteredData = this.getAllProviders(providerVdcsList);
+  //
+  //   const dataCenterList: DataCenterList[] = [];
+  //
+  //   let index = 0;
+  //   for (const providerVdc of providerVdcsFilteredData) {
+  //     index = index + 1;
+  //     const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
+  //       adminSession,
+  //       providerVdc.id,
+  //     );
+  //     const targetMetadata = this.findAllTargetMetadata(metadata);
+  //     if (targetMetadata.datacenter === null) {
+  //       index = index - 1;
+  //       continue;
+  //     }
+  //
+  //     const targetConfig = dataCenterList.find((value) => {
+  //       return value.datacenter === targetMetadata.datacenter;
+  //     });
+  //     const newGen = {
+  //       name: targetMetadata.generation as string,
+  //       id: providerVdc.id,
+  //       enabled: targetMetadata.enabled,
+  //       cpuSpeed: targetMetadata.cpuSpeed,
+  //     };
+  //     const enabled = await this.GetDatacenterConfigWithGenItems({
+  //       DataCenterId: providerVdc.id,
+  //       GenId: '',
+  //       ServiceTypeId: '',
+  //     });
+  //     if (!targetConfig) {
+  //       const config: DataCenterList = {
+  //         datacenter: targetMetadata.datacenter,
+  //         datacenterTitle: targetMetadata.datacenterTitle,
+  //         gens: [newGen],
+  //         enabled: enabled[0].enabled,
+  //         location: targetMetadata.location,
+  //         number: index,
+  //       };
+  //
+  //       dataCenterList.push(config);
+  //     } else {
+  //       targetConfig.gens.push(newGen);
+  //     }
+  //   }
+  //   return Promise.resolve(dataCenterList);
+  // }
 
-    const providerVdcsList = await this.adminVdcWrapperService.getProviderVdcs(
-      adminSession,
-      params,
-    );
-
-    const providerVdcsFilteredData = this.getAllProviders(providerVdcsList);
-
-    const dataCenterList: DataCenterList[] = [];
-
-    let index = 0;
-    for (const providerVdc of providerVdcsFilteredData) {
-      index = index + 1;
-      const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
-        adminSession,
-        providerVdc.id,
-      );
-      const targetMetadata = this.findAllTargetMetadata(metadata);
-      if (targetMetadata.datacenter === null) {
-        index = index - 1;
-        continue;
-      }
-
-      const targetConfig = dataCenterList.find((value) => {
-        return value.datacenter === targetMetadata.datacenter;
-      });
-      const newGen = {
-        name: targetMetadata.generation as string,
-        id: providerVdc.id,
-        enabled: targetMetadata.enabled,
-        cpuSpeed: targetMetadata.cpuSpeed,
-      };
-      const enabled = await this.GetDatacenterConfigWithGenItems({
-        DataCenterId: providerVdc.id,
-        GenId: '',
-        ServiceTypeId: '',
-      });
-      if (!targetConfig) {
-        const config: DataCenterList = {
-          datacenter: targetMetadata.datacenter,
-          datacenterTitle: targetMetadata.datacenterTitle,
-          gens: [newGen],
-          enabled: enabled[0].enabled,
-          location: targetMetadata.location,
-          number: index,
-        };
-
-        dataCenterList.push(config);
-      } else {
-        targetConfig.gens.push(newGen);
-      }
-    }
-    return Promise.resolve(dataCenterList);
-  }
-
-  async getDatacenterDetails(
-    datacenterName: string,
-  ): Promise<DatacenterDetails> {
-    const result = await this.GetDatacenterConfigWithGenItems(
-      new DatacenterConfigGenItemsQueryDto(datacenterName, '', ''),
-    );
-
-    const disks = result[1].subItems[0].subItems[1].subItems;
-    const diskList: DiskList[] = [];
-
-    for (let i = 0; i < disks.length; i++) {
-      const res = {
-        itemTypeName: disks[i].itemTypeName,
-        enabled: disks[i].enabled,
-      };
-      diskList.push(res);
-    }
-
-    const periods = result[3].subItems;
-
-    const periodList: PeriodList[] = [];
-
-    for (let i = 0; i < periods.length; i++) {
-      const res = {
-        itemTypeName: periods[i].itemTypeName,
-        price: periods[i].price,
-        unit: periods[i].unit,
-        enabled: periods[i].enabled,
-      };
-      periodList.push(res);
-    }
-
-    const datacenterInf = [];
-
-    const allDatacenters = await this.getAllDataCenters();
-
-    for (let i = 0; i < allDatacenters.length; i++) {
-      if (allDatacenters[i].datacenter === datacenterName) {
-        const gen: GenDto[] = [];
-        for (let j = 0; j < allDatacenters[i].gens.length; j++) {
-          const res = {
-            name: allDatacenters[i].gens[j].name,
-            enabled: allDatacenters[i].gens[j].enabled,
-            cpuSpeed: allDatacenters[i].gens[j].cpuSpeed,
-            id: allDatacenters[i].gens[j].id,
-          };
-          gen.push(res);
-        }
-        datacenterInf.push(gen);
-        datacenterInf.push(allDatacenters[i].location);
-        datacenterInf.push(allDatacenters[i].datacenterTitle);
-      }
-    }
-
-    const providersGen = [];
-
-    for (let i = 0; i < datacenterInf[0].length; i++) {
-      const res = {
-        genName: datacenterInf[0][i].name,
-        genCpuSpeed: datacenterInf[0][i].cpuSpeed,
-      };
-      providersGen.push(res);
-    }
-
-    console.log(datacenterInf);
-    const datacenterDetails: any = {
-      name: datacenterName,
-      // title: datacenterInf
-      diskList,
-      periodList,
-      enabled: result[0].enabled,
-      location: datacenterInf[1],
-      title: datacenterInf[2],
-      gens: datacenterInf[0],
-      providers: `${datacenterName}-(${providersGen[0].genName}-${
-        providersGen[0].genCpuSpeed / 1000
-      }/${providersGen[1].genName}-${providersGen[1].genCpuSpeed / 1000})`,
-    };
-
-    return Promise.resolve(datacenterDetails);
-  }
+  // async getDatacenterDetails(
+  //   datacenterName: string,
+  // ): Promise<DatacenterDetails> {
+  //   const result = await this.GetDatacenterConfigWithGenItems(
+  //     new DatacenterConfigGenItemsQueryDto(datacenterName, '', ''),
+  //   );
+  //
+  //   const disks = result[1].subItems[0].subItems[1].subItems;
+  //   const diskList: DiskList[] = [];
+  //
+  //   for (let i = 0; i < disks.length; i++) {
+  //     const res = {
+  //       itemTypeName: disks[i].itemTypeName,
+  //       enabled: disks[i].enabled,
+  //     };
+  //     diskList.push(res);
+  //   }
+  //
+  //   const periods = result[3].subItems;
+  //
+  //   const periodList: PeriodList[] = [];
+  //
+  //   for (let i = 0; i < periods.length; i++) {
+  //     const res = {
+  //       itemTypeName: periods[i].itemTypeName,
+  //       price: periods[i].price,
+  //       unit: periods[i].unit,
+  //       enabled: periods[i].enabled,
+  //     };
+  //     periodList.push(res);
+  //   }
+  //
+  //   const datacenterInf = [];
+  //
+  //   const allDatacenters = await this.getAllDataCenters();
+  //
+  //   for (let i = 0; i < allDatacenters.length; i++) {
+  //     if (allDatacenters[i].datacenter === datacenterName) {
+  //       const gen: GenDto[] = [];
+  //       for (let j = 0; j < allDatacenters[i].gens.length; j++) {
+  //         const res = {
+  //           name: allDatacenters[i].gens[j].name,
+  //           enabled: allDatacenters[i].gens[j].enabled,
+  //           cpuSpeed: allDatacenters[i].gens[j].cpuSpeed,
+  //           id: allDatacenters[i].gens[j].id,
+  //         };
+  //         gen.push(res);
+  //       }
+  //       datacenterInf.push(gen);
+  //       datacenterInf.push(allDatacenters[i].location);
+  //       datacenterInf.push(allDatacenters[i].datacenterTitle);
+  //     }
+  //   }
+  //
+  //   const providersGen = [];
+  //
+  //   for (let i = 0; i < datacenterInf[0].length; i++) {
+  //     const res = {
+  //       genName: datacenterInf[0][i].name,
+  //       genCpuSpeed: datacenterInf[0][i].cpuSpeed,
+  //     };
+  //     providersGen.push(res);
+  //   }
+  //
+  //   console.log(datacenterInf);
+  //   const datacenterDetails: any = {
+  //     name: datacenterName,
+  //     // title: datacenterInf
+  //     diskList,
+  //     periodList,
+  //     enabled: result[0].enabled,
+  //     location: datacenterInf[1],
+  //     title: datacenterInf[2],
+  //     gens: datacenterInf[0],
+  //     providers: `${datacenterName}-(${providersGen[0].genName}-${
+  //       providersGen[0].genCpuSpeed / 1000
+  //     }/${providersGen[1].genName}-${providersGen[1].genCpuSpeed / 1000})`,
+  //   };
+  //
+  //   return Promise.resolve(datacenterDetails);
+  // }
 
   async createDatacenter(dto: CreateDatacenterDto): Promise<void> {
     let generation = dto.staticGenerations;
@@ -734,5 +737,35 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       location: (dsConfig?.location as string) || null,
     };
     return datacenter;
+  }
+
+  async getAllStorageProvider(): Promise<{ name: string; code: string }[]> {
+    const res = [];
+
+    const authToken = await this.sessionsService.checkAdminSession();
+    const vdcData =
+      await this.vdcWrapperService.vcloudQuery<AdminOrgVdcStorageProfileQuery>(
+        authToken,
+        {
+          type: 'adminOrgVdcStorageProfile',
+          format: 'records',
+          page: 1,
+          pageSize: 128,
+          filterEncoded: true,
+          links: true,
+          // filter: `vdc==${props['vdcId']}`,
+        },
+      );
+
+    vdcData.data.record = distinctByProperty(vdcData.data.record, 'name');
+    for (const disk of vdcData.data.record) {
+      const splitHref = disk.href.split('/');
+      const diskId = splitHref[splitHref.length - 1];
+
+      const code = GetCodeDisk(disk.name);
+
+      res.push({ name: disk.name, code: code });
+    }
+    return res;
   }
 }
