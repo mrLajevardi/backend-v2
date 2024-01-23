@@ -1,5 +1,5 @@
 import { StaticRouteWrapperService } from './static-route-wrapper.service';
-import {TestBed} from "@automock/jest";
+import { TestBed } from '@automock/jest';
 
 describe('StaticRouteWrapperService', () => {
   let service: StaticRouteWrapperService;
