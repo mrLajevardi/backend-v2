@@ -193,25 +193,24 @@ export class StaticRouteService {
     });
   }
 
-
   async deleteStaticRouteByVdcInstanceId(
-      options: SessionRequest,
-      serviceInstanceId: string,
-      routeId: string,
+    options: SessionRequest,
+    serviceInstanceId: string,
+    routeId: string,
   ): Promise<TaskReturnDto> {
     const edgeId: string = await this.getEdgeIdByServiceInstanceId(
-        options,
-        serviceInstanceId,
+      options,
+      serviceInstanceId,
     );
     const session: string = await this.getSession(
-        options.user.userId,
-        serviceInstanceId,
+      options.user.userId,
+      serviceInstanceId,
     );
 
     const data = await this.staticRouteWrapperService.delete(
-        session,
-        edgeId,
-        routeId,
+      session,
+      edgeId,
+      routeId,
     );
 
     return Promise.resolve({
