@@ -527,7 +527,7 @@ export class ServiceService {
     } = options;
     let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
     let serviceStatus: ServiceStatusEnum[] = [
-      // 3, 4, 5, 6,7
+      // 3, 4, 5, 6, 7, 8
       ServiceStatusEnum.Deleted,
       ServiceStatusEnum.Error,
       ServiceStatusEnum.DisabledByAdmin,
@@ -535,6 +535,7 @@ export class ServiceService {
       ServiceStatusEnum.Expired,
       ServiceStatusEnum.Pending,
       ServiceStatusEnum.Disabled,
+      ServiceStatusEnum.ExceededEnoughCredit,
     ];
     if (typeId) {
       serviceTypeIds = [typeId];
@@ -591,6 +592,10 @@ export class ServiceService {
       where: {
         serviceType: { id: serviceTypeDB.id },
         servicePlanType: servicePlanType,
+      },
+      order: {
+        period: 'asc',
+        sort: 'asc',
       },
     });
 
