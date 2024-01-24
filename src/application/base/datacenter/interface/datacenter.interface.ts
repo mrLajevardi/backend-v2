@@ -8,6 +8,7 @@ import { DataCenterList } from '../dto/datacenter-list.dto';
 import { DatacenterDetails } from '../dto/datacenter-details.dto';
 import { CreateDatacenterDto } from '../dto/create-datacenter.dto';
 import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
+import { GetProviderVdcsDto } from '../../../../wrappers/main-wrapper/service/admin/vdc/dto/get-provider-vdcs.dto';
 
 export const BASE_DATACENTER_SERVICE = 'BASE_DATACENTER_SERVICE';
 
