@@ -419,6 +419,24 @@ export class EdgeGatewayController {
       routeId,
     );
   }
+  @Delete('/:vdcInstanceId/staticRoute/:routeId')
+  @ApiOperation({ summary: 'Delete Specific Static Route of Service' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'routeId', description: 'static route ID' })
+  @ApiResponse({
+    type: TaskReturnDto,
+  })
+  async DeleteStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Param('routeId') routeId: string,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return await this.staticRouteService.deleteStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      routeId,
+    );
+  }
 
   @Put('/:vdcInstanceId/staticRoute/:routeId')
   @ApiOperation({ summary: 'Create an Static Route' })
