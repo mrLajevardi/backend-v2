@@ -69,6 +69,9 @@ export class Templates {
   @Column('integer', { name: 'Period' })
   period: number | null;
 
+  @Column('tinyint', { name: 'Sort' })
+  sort: number | null;
+
   @ManyToOne(() => ServiceTypes, (serviceTypes) => serviceTypes.templates)
   @JoinColumn([
     { name: 'ServiceTypeId', referencedColumnName: 'id' },

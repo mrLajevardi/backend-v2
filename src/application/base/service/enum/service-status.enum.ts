@@ -7,4 +7,5 @@ export enum ServiceStatusEnum {
   Deleted = 5,
   Expired = 6,
   Disabled = 7,
+  ExceededEnoughCredit = 8,
 }

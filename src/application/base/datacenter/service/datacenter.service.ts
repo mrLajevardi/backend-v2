@@ -18,13 +18,8 @@ import { capitalize, forEach, trim } from 'lodash';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
-import { DataCenterList } from '../dto/datacenter-list.dto';
-import {
-  DatacenterDetails,
-  DiskList,
-  GenDto,
-  PeriodList,
-} from '../dto/datacenter-details.dto';
+import { isNil } from 'lodash';
+
 import {
   CreateDatacenterDto,
   Generation,
@@ -41,7 +36,10 @@ import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
 import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
 import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
-import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import {
+  ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
+  PROVIDER_SPLITTER,
+} from '../../itemType/const/item-type-code-hierarchy.const';
 import { VcloudMetadata } from '../type/vcloud-metadata.type';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { VdcWrapperService } from 'src/wrappers/main-wrapper/service/user/vdc/vdc-wrapper.service';
@@ -49,6 +47,8 @@ import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service
 import { AdminOrgVdcStorageProfileQuery } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/instantiate-vm-from.templates-admin.dto';
 import { GetCodeDisk } from '../../../vdc/utils/disk-functions.utils';
 import { distinctByProperty } from '../../../../infrastructure/utils/extensions/array.extensions';
+import { groupBy } from '../../../../infrastructure/utils/extensions/array.extensions';
+import { ProviderResultDto } from '../dto/provider.result.dto';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -59,7 +59,6 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly datacenterServiceFactory: DatacenterFactoryService,
     private readonly serviceTypesTableService: ServiceTypesTableService,
     private readonly datacenterAdminService: DatacenterAdminService,
-    private readonly invoiceFactoryService: InvoiceFactoryService,
     private readonly itemTypeTableService: ItemTypesTableService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
     private readonly vdcWrapperService: VdcWrapperService,
@@ -134,53 +133,87 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     return targetMetadata;
   }
 
-  public findAllTargetMetadata(
-    metadata: GetProviderVdcsMetadataDto,
-  ): FoundDatacenterMetadata {
-    const targetMetadata: FoundDatacenterMetadata = {
-      datacenter: null,
-      generation: null,
-      datacenterTitle: null,
-      cpuSpeed: null,
-      enabled: null,
-      location: null,
+  // public findAllTargetMetadata(
+  //   metadata: GetProviderVdcsMetadataDto,
+  // ): FoundDatacenterMetadata {
+  //   const targetMetadata: FoundDatacenterMetadata = {
+  //     datacenter: null,
+  //     generation: null,
+  //     datacenterTitle: null,
+  //     cpuSpeed: null,
+  //     enabled: null,
+  //     location: null,
+  //   };
+  //
+  //   for (const value of metadata.metadataEntry) {
+  //     const key = value.key;
+  //
+  //     const metadataValue =
+  //       value.typedValue._type === 'MetadataStringValue'
+  //         ? trim(value.typedValue.value.toString()).toLowerCase()
+  //         : value.typedValue.value;
+  //
+  //     switch (key) {
+  //       case MetaDataDatacenterEnum.Generation:
+  //         targetMetadata.generation = metadataValue;
+  //         break;
+  //       case MetaDataDatacenterEnum.Datacenter:
+  //         targetMetadata.datacenter = metadataValue;
+  //         break;
+  //       case MetaDataDatacenterEnum.DatacenterTitle:
+  //         targetMetadata.datacenterTitle = metadataValue;
+  //         break;
+  //       case MetaDataDatacenterEnum.CpuSpeed:
+  //         targetMetadata.cpuSpeed = metadataValue;
+  //         break;
+  //       case MetaDataDatacenterEnum.Enabled:
+  //         targetMetadata.enabled = metadataValue as boolean;
+  //         break;
+  //       case MetaDataDatacenterEnum.Location:
+  //         targetMetadata.location = metadataValue as string;
+  //         break;
+  //     }
+  //   }
+  //   return targetMetadata;
+  // }
+
+  public async getAllProviders(): Promise<ProviderResultDto[]> {
+    const adminSession = await this.sessionsService.checkAdminSession();
+    const params = {
+      page: 1,
+      pageSize: 10,
     };
+    const providerVdcsList = await this.adminVdcWrapperService.getProviderVdcs(
+      adminSession,
+      params,
+    );
+    const res = providerVdcsList?.values?.map((provider) => {
+      const splits = provider.name?.split(PROVIDER_SPLITTER);
+      const providerName = splits[0];
+      const gen = `${splits[1]}-${splits[2]}`;
+      return { name: providerName, gen };
+    });
 
-    for (const value of metadata.metadataEntry) {
-      const key = value.key;
+    const resGroup: Record<string, { name: string; gen: string }[]> = groupBy(
+      res,
+      (res) => res.name,
+    );
 
-      const metadataValue =
-        value.typedValue._type === 'MetadataStringValue'
-          ? trim(value.typedValue.value.toString()).toLowerCase()
-          : value.typedValue.value;
-
-      switch (key) {
-        case MetaDataDatacenterEnum.Generation:
-          targetMetadata.generation = metadataValue;
-          break;
-        case MetaDataDatacenterEnum.Datacenter:
-          targetMetadata.datacenter = metadataValue;
-          break;
-        case MetaDataDatacenterEnum.DatacenterTitle:
-          targetMetadata.datacenterTitle = metadataValue;
-          break;
-        case MetaDataDatacenterEnum.CpuSpeed:
-          targetMetadata.cpuSpeed = metadataValue;
-          break;
-        case MetaDataDatacenterEnum.Enabled:
-          targetMetadata.enabled = metadataValue as boolean;
-          break;
-        case MetaDataDatacenterEnum.Location:
-          targetMetadata.location = metadataValue as string;
-          break;
-      }
+    const fRes: { name: string; gens: string[] }[] = [];
+    for (const obj of Object.keys(resGroup)) {
+      const gens = resGroup[obj].map((d) => {
+        return d.gen;
+      });
+      fRes.push({ name: obj, gens: gens });
+      console.log(obj);
     }
-    return targetMetadata;
+
+    return fRes;
   }
 
-  public async getDatacenterConfigWithGen(): Promise<
-    DatacenterConfigGenResultDto[]
-  > {
+  public async getDatacenterConfigWithGen(
+    datacenterName?: string,
+  ): Promise<DatacenterConfigGenResultDto[]> {
     const adminSession = await this.sessionsService.checkAdminSession();
     const params = {
       page: 1,
@@ -200,6 +233,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       providerVdcsFilteredData,
       adminSession,
       datacenterConfigs,
+      datacenterName,
     );
 
     // console.log("datacenterConfigs:  ",datacenterConfigs)
@@ -236,6 +270,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     providerVdcsFilteredData: Pick<Value, 'id'>[],
     adminSession: string,
     datacenterConfigs: DatacenterConfigGenResultDto[],
+    dataCenterName = '',
   ) {
     for (const providerVdc of providerVdcsFilteredData) {
       const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
@@ -295,7 +330,17 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
 
         // console.log("config:  ",config);
 
-        datacenterConfigs.push(config);
+        // Should Be Refactor  ==> ZARE
+        if (!isNil(dataCenterName) && dataCenterName.length > 0) {
+          if (
+            (config.datacenter as string).toLowerCase().trim() ==
+            dataCenterName.toLowerCase().trim()
+          ) {
+            datacenterConfigs.push(config);
+          }
+        } else {
+          datacenterConfigs.push(config);
+        }
       } else {
         targetConfig.gens.push(newGen);
         targetConfig.enabledForBusiness =
