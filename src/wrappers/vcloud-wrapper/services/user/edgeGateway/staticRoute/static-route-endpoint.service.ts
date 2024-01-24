@@ -76,4 +76,17 @@ export class StaticRouteEndpointService {
       },
     };
   }
+  deleteStaticRouteEndPoint(options: FindStaticRouteDto): EndpointInterface {
+    return {
+      method: 'DELETE',
+      resource: `/cloudapi/2.0.0/edgeGateways/${options.gatewayId}/routing/staticRoutes/${options.routeId}`,
+      params: {},
+      body: null,
+      headers: {
+        Accept: getAccept(VcloudAcceptEnum.Json),
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    };
+  }
 }
