@@ -23,6 +23,7 @@ import { BaseExceptionModule } from '../../infrastructure/exceptions/base/base-e
     SessionsModule,
     CrudModule,
     MainWrapperModule,
+    BaseExceptionModule,
     // ServiceModule,
     forwardRef(() => ServiceModule),
     forwardRef(() => NetworksModule),

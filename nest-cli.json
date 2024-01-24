@@ -6,7 +6,7 @@
   "compilerOptions": {
     "assets": [
       "**/config/*.json" ,
-      "localization/i18n/**/*"
+      "localization/i18n/**/**/*"
     ]
   }
 }
