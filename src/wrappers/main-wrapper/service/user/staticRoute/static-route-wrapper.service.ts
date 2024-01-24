@@ -123,4 +123,26 @@ export class StaticRouteWrapperService {
       data: staticRoute.data,
     });
   }
+  async delete(authToken: string, gatewayId: string, routeId: string) {
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<'StaticRouteEndpointService'>(
+        'StaticRouteEndpointService',
+      );
+
+    const staticRouteDto: FindStaticRouteDto = {
+      gatewayId: gatewayId,
+      routeId: routeId,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    const endPoint = wrapper.deleteStaticRouteEndPoint(staticRouteDto);
+
+    const staticRoute = await this.vcloudWrapperService.request(endPoint);
+
+    return Promise.resolve({
+      __vcloudTask: staticRoute.headers.location,
+    });
+  }
 }
