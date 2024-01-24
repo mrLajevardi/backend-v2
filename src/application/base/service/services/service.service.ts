@@ -592,6 +592,10 @@ export class ServiceService {
         serviceType: { id: serviceTypeDB.id },
         servicePlanType: servicePlanType,
       },
+      order: {
+        period: 'asc',
+        sort: 'asc',
+      },
     });
 
     if (serviceType == ServiceTypesEnum.Ai) {
