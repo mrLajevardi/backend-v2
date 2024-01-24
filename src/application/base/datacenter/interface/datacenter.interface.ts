@@ -14,6 +14,8 @@ export const BASE_DATACENTER_SERVICE = 'BASE_DATACENTER_SERVICE';
 export interface BaseDatacenterService extends IBaseService {
   getDatacenterConfigWithGen(): Promise<DatacenterConfigGenResultDto[]>;
 
+  getAllStorageProvider(): Promise<{ name: string; code: string }[]>;
+
   GetDatacenterConfigWithGenItems(
     query: DatacenterConfigGenItemsQueryDto,
   ): Promise<DatacenterConfigGenItemsResultDto[]>;
@@ -27,9 +29,9 @@ export interface BaseDatacenterService extends IBaseService {
     genId: string,
   ): Promise<FoundDatacenterMetadata>;
 
-  getAllDataCenters(): Promise<DataCenterList[]>;
+  // getAllDataCenters(): Promise<DataCenterList[]>;
 
-  getDatacenterDetails(datacenterName: string): Promise<DatacenterDetails>;
+  // getDatacenterDetails(datacenterName: string): Promise<DatacenterDetails>;
 
   createDatacenter(dto: CreateDatacenterDto): Promise<void>;
 

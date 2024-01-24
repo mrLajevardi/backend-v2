@@ -48,11 +48,13 @@ export class VdcDetailService implements BaseVdcDetailService {
     private readonly paygCostCalculationService: PaygCostCalculationService,
     private readonly vServiceInstancesDetailTableService: VServiceInstancesDetailTableService,
   ) {}
+
   async getStorageDetailVdc(
     serviceInstanceId: string,
     memoryAllocation: number,
     numberOfvms: number,
     option: SessionRequest,
+    // isFilter = true,
     // bit = 0,
   ): Promise<VdcStoragesDetailResultDto[]> {
     const res: VdcStoragesDetailResultDto[] = [];
