@@ -7,16 +7,16 @@ import { BaseFactoryException } from '../../../infrastructure/exceptions/base/ba
 import { PermissionDeniedException } from '../../../infrastructure/exceptions/permission-denied.exception';
 import { isNil } from 'lodash';
 import { NotFoundDataException } from '../../../infrastructure/exceptions/not-found-data.exception';
-import { ServicePropertiesTableService } from '../../base/crud/service-properties-table/service-properties-table.service';
-import { ServiceProperties } from '../../../infrastructure/database/entities/ServiceProperties';
 import { EdgeGatewayWrapperService } from '../../../wrappers/main-wrapper/service/user/edgeGateway/edge-gateway-wrapper.service';
 import { VdcProperties } from '../../vdc/interface/vdc-properties.interface';
 import { SessionsService } from '../../base/sessions/sessions.service';
 import { StaticRouteWrapperService } from '../../../wrappers/main-wrapper/service/user/staticRoute/static-route-wrapper.service';
 import { CreateStaticRouteDto } from '../../../wrappers/main-wrapper/service/user/staticRoute/dto/create-static-route.dto';
 import { TaskReturnDto } from '../../../infrastructure/dto/task-return.dto';
-import { CreateStaticRouteVdc } from '../dto/create-static-route-vdc';
+import { CreateStaticRouteVdcDto } from '../dto/create-static-route-vdc.dto';
 import { StaticRouteResultDto } from '../dto/result/static-route.result.dto';
+import { UpdateStaticRouteDto } from '../../../wrappers/main-wrapper/service/user/staticRoute/dto/update-static-route.dto';
+import { UpdateStaticRouteVdcDto } from '../dto/update-static-route-vdc.dto';
 
 @Injectable()
 export class StaticRouteService {
@@ -87,7 +87,7 @@ export class StaticRouteService {
   async createStaticRouteByVdcInstanceId(
     options: SessionRequest,
     serviceInstanceId: string,
-    data: CreateStaticRouteVdc,
+    data: CreateStaticRouteVdcDto,
   ): Promise<TaskReturnDto> {
     const edgeId = await this.getEdgeIdByServiceInstanceId(
       options,
@@ -157,5 +157,39 @@ export class StaticRouteService {
     );
 
     return new StaticRouteResultDto().toArray(data.data);
+  }
+
+  async updateStaticRouteByVdcInstanceId(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    routeId: string,
+    data: UpdateStaticRouteVdcDto,
+  ) {
+    const edgeId: string = await this.getEdgeIdByServiceInstanceId(
+      options,
+      serviceInstanceId,
+    );
+    const session: string = await this.getSession(
+      options.user.userId,
+      serviceInstanceId,
+    );
+    const updateStaticRouteDto: UpdateStaticRouteDto = {
+      gatewayId: edgeId,
+      routeId: routeId,
+      name: data.name,
+      description: data.description ?? undefined,
+      networkCidr: data.networkCidr,
+      systemOwned: false,
+      nextHops: data.nextHops,
+    };
+
+    const staticRoute = await this.staticRouteWrapperService.update(
+      session,
+      updateStaticRouteDto,
+    );
+
+    return Promise.resolve({
+      taskId: staticRoute.__vcloudTask.split('task/')[1],
+    });
   }
 }

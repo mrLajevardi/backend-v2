@@ -1,8 +1,11 @@
 import { IsBoolean, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class CreateStaticRouteDto {
+export class UpdateStaticRouteDto {
   @IsString()
   gatewayId: string;
+
+  @IsString()
+  routeId: string;
 
   @IsString()
   name: string;

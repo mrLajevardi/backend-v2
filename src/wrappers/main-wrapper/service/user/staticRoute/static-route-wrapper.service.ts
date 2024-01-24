@@ -13,6 +13,8 @@ import { VcloudWrapperInterface } from '../../../../vcloud-wrapper/interface/vcl
 import { EndpointInterface } from '../../../../interfaces/endpoint.interface';
 import { GetStaticRouteDto } from '../../../../vcloud-wrapper/services/user/edgeGateway/staticRoute/dto/get-static-route.dto';
 import { FindStaticRouteDto } from '../../../../vcloud-wrapper/services/user/edgeGateway/staticRoute/dto/find-static-route.dto';
+import { UpdateStaticRouteVCloudDto } from '../../../../vcloud-wrapper/services/user/edgeGateway/staticRoute/dto/update-static-route.dto';
+import { UpdateStaticRouteDto } from './dto/update-static-route.dto';
 
 @Injectable()
 export class StaticRouteWrapperService {
@@ -38,18 +40,43 @@ export class StaticRouteWrapperService {
         'StaticRouteEndpointService',
       );
 
-    // wrapper(staticRouteDto)
-    console.log(wrapper);
     const endpoint = wrapper.createStaticRouteEndpoint(staticRouteDto);
 
     const staticRoute = await this.vcloudWrapperService.request(endpoint);
 
-    console.log(staticRoute);
     return Promise.resolve({
       __vcloudTask: staticRoute.headers.location,
     });
   }
 
+  async update(authToken: string, dto: UpdateStaticRouteDto) {
+    const staticRouteDto: UpdateStaticRouteVCloudDto = {
+      gatewayId: dto.gatewayId,
+      routeId: dto.routeId,
+      body: {
+        name: dto.name,
+        description: dto.description ?? null,
+        networkCidr: dto.networkCidr,
+        nextHops: dto.nextHops,
+      },
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
+
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<'StaticRouteEndpointService'>(
+        'StaticRouteEndpointService',
+      );
+
+    const endPoint = wrapper.updateStaticRouteEndpoint(staticRouteDto);
+
+    const staticRoute = await this.vcloudWrapperService.request(endPoint);
+
+    return Promise.resolve({
+      __vcloudTask: staticRoute.headers.location,
+    });
+  }
   async get(authToken: string, gatewayId: string, pageSize = 25) {
     const wrapper =
       this.vcloudWrapperService.getWrapper<'StaticRouteEndpointService'>(

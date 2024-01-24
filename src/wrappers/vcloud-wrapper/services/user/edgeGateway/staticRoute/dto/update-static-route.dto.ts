@@ -1,7 +1,8 @@
 import { EndpointOptionsInterface } from '../../../../../../interfaces/endpoint.interface';
 
-export interface CreateStaticRouteVCloudDto extends EndpointOptionsInterface {
+export interface UpdateStaticRouteVCloudDto extends EndpointOptionsInterface {
   gatewayId: string;
+  routeId: string;
   body: CreateStaticRouteBody;
 }
 

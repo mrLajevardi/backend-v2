@@ -5,8 +5,12 @@ import {
   IsOptional,
   IsNumber,
   IsObject,
+  Validate,
+  isIP,
+  IsIP,
 } from 'class-validator';
 import { instance } from 'ts-mockito';
+import isCidr from 'is-cidr';
 
 export class NextHopsScope {
   @ApiProperty({
@@ -46,6 +50,7 @@ export class NextHopsDto {
     required: true,
   })
   @IsString()
+  @IsIP(4)
   ipAddress: string;
 
   @ApiProperty({
@@ -59,15 +64,15 @@ export class NextHopsDto {
 
   @ApiProperty({
     type: NextHopsScope,
-    required: true,
+    required: false,
   })
   @IsObject({
     each: true,
   })
-  scope: NextHopsScope;
+  scope?: NextHopsScope;
 }
 
-export class CreateStaticRouteVdc {
+export class UpdateStaticRouteVdcDto {
   @ApiProperty({ example: 'test', required: true })
   @IsString()
   name: string;
@@ -80,6 +85,10 @@ export class CreateStaticRouteVdc {
     description: 'IP/Port',
   })
   @IsString()
+  @Validate((ipV4: string) => {
+    //TODO must be validation ipV4
+    return true;
+  })
   networkCidr: string;
 
   @ApiProperty()
