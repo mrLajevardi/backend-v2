@@ -11,6 +11,8 @@ export class BaseException {
 
   translateOptions: TranslateOptions;
 
+  args: any;
+
   constructor(
     message = 'messages.someThingGotWrong',
     httpCode: HttpStatus,

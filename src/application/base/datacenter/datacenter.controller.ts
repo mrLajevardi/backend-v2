@@ -35,6 +35,7 @@ import { PureAbility, subject } from '@casl/ability';
 import { AclSubjectsEnum } from '../security/ability/enum/acl-subjects.enum';
 import { Action } from '../security/ability/enum/action.enum';
 import { CheckPolicies } from '../security/ability/decorators/check-policies.decorator';
+import { AdminVdcWrapperService } from '../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SessionRequest } from '../../../infrastructure/types/session-request.type';
 import { VdcDetailService } from '../../vdc/service/vdc-detail.service';
 
@@ -47,7 +48,7 @@ import { VdcDetailService } from '../../vdc/service/vdc-detail.service';
 export class DatacenterController {
   constructor(
     @Inject(BASE_DATACENTER_SERVICE)
-    private readonly service: BaseDatacenterService,
+    private readonly service: BaseDatacenterService, // private readonly adminVdcWrapperService: AdminVdcWrapperService,
   ) {}
 
   @Public()
@@ -156,6 +157,13 @@ export class DatacenterController {
   })
   async createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
     return this.service.createDatacenter(dto);
+  }
+  @Get('/allProviders')
+  @ApiOperation({
+    summary: 'get all providers',
+  })
+  async getAllProviders(): Promise<void> {
+    const providerVdcsList = await this.service.getAllProviders();
   }
 
   @Get('/getAllProvidersStorage')

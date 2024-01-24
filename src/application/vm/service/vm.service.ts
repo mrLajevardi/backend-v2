@@ -50,6 +50,8 @@ import { UploadFileReturnDto } from 'src/wrappers/main-wrapper/service/user/vm/d
 import { DiskItemCodes } from '../../base/itemType/enum/item-type-codes.enum';
 import { GetCodeDisk } from '../../vdc/utils/disk-functions.utils';
 import { PaygServiceService } from '../../base/service/services/payg-service.service';
+import { NotEnoughCreditException } from '../../../infrastructure/exceptions/not-enough-credit.exception';
+import { BaseFactoryException } from '../../../infrastructure/exceptions/base/base-factory.exception';
 
 @Injectable()
 export class VmService {
@@ -79,6 +81,7 @@ export class VmService {
     private readonly itemTypesTableService: ItemTypesTableService,
     private readonly paygService: PaygServiceService,
     private readonly vmWrapperService: VmWrapperService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId): Promise<VmTicket> {
@@ -1701,6 +1704,9 @@ export class VmService {
     serviceInstanceId: string,
     vmId: string,
   ): Promise<TaskReturnDto | ExceedEnoughDiskCountException> {
+    const lengthh = 785;
+    const keys = 785;
+
     const res = groupBy(
       data,
       (setting) => (setting as any).adapterType.legacyId,
@@ -1712,9 +1718,19 @@ export class VmService {
 
       const list = res[key] as [];
       if (list.length > length) {
-        return new ExceedEnoughDiskCountException(
-          `You can not create more than ${length} items for busType ${key}`,
+        this.baseFactoryException.handleWithArgs(
+          ExceedEnoughDiskCountException,
+          {
+            args: {
+              length: length,
+              key: key,
+            },
+          },
         );
+        // this.baseFactoryException.handle(NotEnoughCreditException);
+        // return new ExceedEnoughDiskCountException(
+        //   `You can not create more than ${length} items for busType ${key}`,
+        // );
       }
     }
 
