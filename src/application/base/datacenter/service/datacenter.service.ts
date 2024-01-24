@@ -49,8 +49,6 @@ import { ProviderVdcStorageProfilesDto } from 'src/wrappers/main-wrapper/service
 import { AdminOrgVdcStorageProfileQuery } from '../../../../wrappers/main-wrapper/service/user/vdc/dto/instantiate-vm-from.templates-admin.dto';
 import { GetCodeDisk } from '../../../vdc/utils/disk-functions.utils';
 import { distinctByProperty } from '../../../../infrastructure/utils/extensions/array.extensions';
-import { groupBy } from '../../../../infrastructure/utils/extensions/array.extensions';
-import { ProviderResultDto } from '../dto/provider.result.dto';
 
 @Injectable()
 export class DatacenterService implements BaseDatacenterService, BaseService {
@@ -178,43 +176,6 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       }
     }
     return targetMetadata;
-  }
-
-  public async getAllProviders(): Promise<GetProviderVdcsDto> {
-    const adminSession = await this.sessionsService.checkAdminSession();
-    const params = {
-      page: 1,
-      pageSize: 10,
-    };
-    const providerVdcsList = await this.adminVdcWrapperService.getProviderVdcs(
-      adminSession,
-      params,
-    );
-    const res = providerVdcsList.values.map((provider) => {
-      return { name: provider.name };
-    });
-    const resGroup = groupByNameProvider(res);
-
-    function groupByNameProvider(
-      objects: { name: string }[],
-    ): ProviderResultDto[] {
-      const groupedData: { [name: string]: ProviderResultDto } = {};
-
-      objects.forEach((obj) => {
-        const nameParts = obj.name.split('-');
-        const realName = nameParts[0];
-
-        if (!groupedData[realName]) {
-          groupedData[realName] = { name: realName, gens: [] };
-        }
-
-        groupedData[realName].gens.push(`${nameParts[1]}-${nameParts[2]}`);
-      });
-
-      return Object.values(groupedData);
-    }
-
-    return providerVdcsList;
   }
 
   public async getDatacenterConfigWithGen(): Promise<

@@ -13,7 +13,6 @@ import { VmDetailFactoryService } from './service/vm-detail.factory.service';
 import { VmDetailController } from './controller/vm-detail.controller';
 import { ServiceModule } from '../base/service/service.module';
 import { VmFactoryService } from './service/vm-factory.service';
-import {BaseExceptionModule} from "../../infrastructure/exceptions/base/base-exception.module";
 
 @Module({
   imports: [
@@ -23,7 +22,6 @@ import {BaseExceptionModule} from "../../infrastructure/exceptions/base/base-exc
     SessionsModule,
     CrudModule,
     MainWrapperModule,
-    BaseExceptionModule,
     // ServiceModule,
     forwardRef(() => ServiceModule),
     forwardRef(() => NetworksModule),

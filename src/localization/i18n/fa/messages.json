@@ -7,6 +7,5 @@
   "permissionDenied" : "شما مجاز به استفاده نمی باشید." ,
   "notFound" : "نتیجه ای یافت نشد." ,
   "periodItemNotFound" : "آیتم زمانی یافت نشد." ,
-  "notEnoughForWeek" : "موجودی سرویس برای یک هفته کافی نمی باشد.",
-  "exceedEnoughBusType": "You can not create more than {length} items for busType {key}"
+  "notEnoughForWeek" : "موجودی سرویس برای یک هفته کافی نمی باشد."
 }
