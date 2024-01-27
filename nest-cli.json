@@ -5,7 +5,8 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": [
-      "**/config/*.json"
+      "**/config/*.json" ,
+      "localization/i18n/**/**/*"
     ]
   }
 }

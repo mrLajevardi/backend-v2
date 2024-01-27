@@ -48,18 +48,12 @@ import { TwoFaAuthService } from '../service/two-fa-auth.service';
 import { isNil } from 'lodash';
 import { UserDoesNotExistException } from '../../../../../infrastructure/exceptions/user-does-not-exist.exception';
 import { User } from '../../../../../infrastructure/database/entities/User';
-import { Type } from 'class-transformer';
-import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
 import { RedisCacheService } from '../../../../../infrastructure/utils/services/redis-cache.service';
 import { ChangePasswordDto } from '../../../user/dto/change-password.dto';
 import { ForgotPasswordByOtpDto } from '../dto/forgot-password-by-otp.dto';
-import { PolicyHandlerOptions } from '../../ability/interfaces/policy-handler.interface';
-import { PureAbility, subject } from '@casl/ability';
-import { Action } from '../../ability/enum/action.enum';
-import { AclSubjectsEnum } from '../../ability/enum/acl-subjects.enum';
-import { CheckPolicies } from '../../ability/decorators/check-policies.decorator';
 import { OtpNotMatchException } from '../../../../../infrastructure/exceptions/otp-not-match-exception';
 import { Throttle } from '@nestjs/throttler';
+import { TwoFaAuthTotpService } from '../classes/two-fa-auth-totp.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -139,139 +133,6 @@ export class AuthController {
   async login(@Request() req: SessionRequest): Promise<any> {
     return await this.authService.login.loginProcess(req.user);
   }
-
-  // @Public()
-  // @Post('/twoFactorAuth/:TwoFactorType/sendOtp')
-  // @ApiOperation({
-  //   summary: 'send otp sent to user two factor authenticate',
-  // })
-  // @ApiParam({
-  //   name: 'TwoFactorType',
-  //   type: Number,
-  //   description: 'type of two factor authenticate.',
-  //   example: TwoFaAuthTypeEnum.Sms,
-  // })
-  // @ApiBody({ type: PhoneNumberDto })
-  // async sendTwoFactorAuthenticate(
-  //   @Body() data: PhoneNumberDto,
-  //   @Param('TwoFactorType') type: TwoFaAuthTypeEnum,
-  // ): Promise<SendOtpTwoFactorAuthDto> {
-  //   const user: User = await this.userService.findByPhoneNumber(
-  //     data.phoneNumber,
-  //   );
-  //   if (isNil(user)) {
-  //     throw new UserDoesNotExistException();
-  //   }
-  //   const userPayload: UserPayload = {
-  //     userId: user.id,
-  //     username: user.username,
-  //   };
-  //
-  //   const twoFactorTypes: number[] =
-  //     this.twoFaAuthService.parseTwoFactorStrToArray(user.twoFactorAuth);
-  //
-  //   if (!twoFactorTypes.includes(Number(type))) {
-  //     throw new BadRequestException();
-  //   }
-  //
-  //   const sendOtp = await this.twoFaAuthService.sendOtp(
-  //     userPayload,
-  //     Number(type),
-  //   );
-  //
-  //   return sendOtp;
-  // }
-
-  // @Public()
-  // @Post('/twoFactorAuth/:TwoFactorType/verify')
-  // @ApiOperation({
-  //   summary: 'verify otp sent to user two factor authenticate',
-  // })
-  // @ApiParam({
-  //   name: 'TwoFactorType',
-  //   type: Number,
-  //   description: 'type of two factor authenticate.',
-  //   example: TwoFaAuthTypeEnum.Sms,
-  // })
-  // @ApiBody({ type: VerifyOtpTwoFactorAuthDto })
-  // async verifyTwoFactorAuthenticate(
-  //   @Body() data: VerifyOtpTwoFactorAuthDto,
-  //   @Param('TwoFactorType') type: TwoFaAuthTypeEnum,
-  // ): Promise<AccessTokenDto> {
-  //   const user: User = await this.userService.findByPhoneNumber(
-  //     data.phoneNumber,
-  //   );
-  //
-  //   const twoFactorTypes: number[] =
-  //     this.twoFaAuthService.parseTwoFactorStrToArray(user.twoFactorAuth);
-  //
-  //   if (!twoFactorTypes.includes(Number(type))) {
-  //     throw new BadRequestException();
-  //   }
-  //
-  //   const userPayload: UserPayload = {
-  //     userId: user.id,
-  //     username: user.username,
-  //   };
-  //   const verifyOtp: boolean = await this.twoFaAuthService.verifyOtp(
-  //     userPayload,
-  //     Number(type),
-  //     data.otp,
-  //     data.hash,
-  //   );
-  //
-  //   if (!verifyOtp) {
-  //     throw new OtpErrorException();
-  //   }
-  //
-  //   return await this.authService.login.getLoginToken(userPayload.userId);
-  // }
-  //
-  // @Get('/twoFactorAuth/enable/:twoFactorAuthType')
-  // @ApiOperation({ summary: 'enable two factor authenticate for current user' })
-  // // @UseGuards(LocalAuthGuard)
-  // async enableTwoFactorAuthenticate(
-  //   @Request() req: SessionRequest,
-  //   @Param() twoFactorAuthenticateType: EnableTwoFactorAuthenticateDto,
-  // ): Promise<SendOtpTwoFactorAuthDto> {
-  //   const data: SendOtpTwoFactorAuthDto = await this.twoFaAuthService.enable(
-  //     req.user,
-  //     twoFactorAuthenticateType.twoFactorAuthType,
-  //   );
-  //
-  //   return data;
-  // }
-  //
-  // @Post('/twoFactorAuth/enable/:twoFactorAuthType/verify')
-  // @ApiOperation({
-  //   summary: 'verify enable two factor authenticate for current user',
-  // })
-  // // @UseGuards(LocalAuthGuard)
-  // @ApiBody({ type: VerifyOtpTwoFactorAuthDto })
-  // async verifyEnableTwoFactorAuthenticate(
-  //   @Request() req: SessionRequest,
-  //   @Param() twoFactorAuthenticateType: EnableTwoFactorAuthenticateDto,
-  //   @Body() dto: EnableVerifyOtpTwoFactorAuthDto,
-  // ): Promise<boolean> {
-  //   return await this.twoFaAuthService.enableVerification(
-  //     req.user,
-  //     twoFactorAuthenticateType.twoFactorAuthType,
-  //     dto.otp,
-  //     dto.hash,
-  //   );
-  // }
-  //
-  // @Post('/twoFactorAuth/disable')
-  // @ApiOperation({
-  //   summary:
-  //     'disable specific type of two factor authenticate for current user',
-  // })
-  // async disableTwoFactorAuthenticate(
-  //   @Request() req: SessionRequest,
-  //   @Body() dto: DisableTwoFactorAuthenticateDto,
-  // ): Promise<boolean> {
-  //   return await this.twoFaAuthService.disable(req.user, dto.twoFactorAuthType);
-  // }
 
   @Public()
   @Post('/robot/login')

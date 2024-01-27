@@ -12,7 +12,10 @@ import { RedisCacheService } from '../../../../../infrastructure/utils/services/
 import { Public } from '../decorators/ispublic.decorator';
 import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { PhoneNumberDto } from '../dto/phoneNumber.dto';
-import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import {
+  BaseSendTwoFactorAuthDto,
+  SendOtpTwoFactorAuthDto,
+} from '../dto/send-otp-two-factor-auth.dto';
 import { User } from '../../../../../infrastructure/database/entities/User';
 import { isNil } from 'lodash';
 import { UserDoesNotExistException } from '../../../../../infrastructure/exceptions/user-does-not-exist.exception';
@@ -54,7 +57,7 @@ export class TwoFactorAuthController {
   async sendTwoFactorAuthenticate(
     @Body() data: PhoneNumberDto,
     @Param('TwoFactorType') type: TwoFaAuthTypeEnum,
-  ): Promise<SendOtpTwoFactorAuthDto> {
+  ): Promise<BaseSendTwoFactorAuthDto> {
     const user: User = await this.userService.findByPhoneNumber(
       data.phoneNumber,
     );
@@ -101,6 +104,11 @@ export class TwoFactorAuthController {
       data.phoneNumber,
     );
 
+    const userPayload: UserPayload = {
+      userId: user.id,
+      username: user.username,
+    };
+
     const twoFactorTypes: number[] =
       this.twoFaAuthService.parseTwoFactorStrToArray(user.twoFactorAuth);
 
@@ -108,10 +116,6 @@ export class TwoFactorAuthController {
       throw new BadRequestException();
     }
 
-    const userPayload: UserPayload = {
-      userId: user.id,
-      username: user.username,
-    };
     const verifyOtp: boolean = await this.twoFaAuthService.verifyOtp(
       userPayload,
       Number(type),
@@ -132,8 +136,8 @@ export class TwoFactorAuthController {
   async enableTwoFactorAuthenticate(
     @Request() req: SessionRequest,
     @Param() twoFactorAuthenticateType: EnableTwoFactorAuthenticateDto,
-  ): Promise<SendOtpTwoFactorAuthDto> {
-    const data: SendOtpTwoFactorAuthDto = await this.twoFaAuthService.enable(
+  ): Promise<BaseSendTwoFactorAuthDto> {
+    const data: BaseSendTwoFactorAuthDto = await this.twoFaAuthService.enable(
       req.user,
       twoFactorAuthenticateType.twoFactorAuthType,
     );
@@ -156,7 +160,7 @@ export class TwoFactorAuthController {
       req.user,
       twoFactorAuthenticateType.twoFactorAuthType,
       dto.otp,
-      dto.hash,
+      dto.hash ?? null,
     );
   }
 

@@ -80,17 +80,22 @@ export class TransactionsResultDto extends BaseResultDto {
   }
 
   getName(item: Transactions): string {
-    if (item.paymentType == PaymentTypes.PayToUserCreditByAdmin) {
-      return 'تراکنش اصلاحی توسط ادمین';
-    } else if (item.paymentType == PaymentTypes.PayToUserCreditByBudgeting) {
-      return 'انتقال از بودجه بندی به کیف پول';
-    } else if (!isNil(item.serviceInstance)) {
-      return item.serviceInstance.name;
-    } else if (!isNil(item.invoice)) {
-      return item.invoice.name;
-    } else {
-      return null;
+    switch (item.paymentType) {
+      case PaymentTypes.PayToUserCreditByAdmin:
+        return 'تراکنش اصلاحی توسط ادمین';
+      case PaymentTypes.PayToUserCreditByBudgeting:
+        return 'انتقال از بودجه بندی به کیف پول';
+      case PaymentTypes.PayByZarinpal:
+        return 'افزایش اعتبار از درگاه بانک';
+      default:
+        if (!isNil(item.serviceInstance)) {
+          return item.serviceInstance.name;
+        } else if (!isNil(item.invoice)) {
+          return item.invoice.name;
+        }
     }
+
+    return null;
   }
 
   getUser(user: User) {

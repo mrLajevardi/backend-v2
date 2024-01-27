@@ -5,7 +5,10 @@ import { NotificationService } from '../../../notification/notification.service'
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { OtpService } from '../../security-tools/otp.service';
 import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
-import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import {
+  BaseSendTwoFactorAuthDto,
+  SendOtpTwoFactorAuthDto,
+} from '../dto/send-otp-two-factor-auth.dto';
 
 @Injectable()
 export class TwoFaAuthSmsService implements TwoFaAuthInterface {
@@ -15,7 +18,7 @@ export class TwoFaAuthSmsService implements TwoFaAuthInterface {
     private otpService: OtpService,
   ) {}
 
-  async sendOtp(userPayload: UserPayload): Promise<SendOtpTwoFactorAuthDto> {
+  async sendOtp(userPayload: UserPayload): Promise<BaseSendTwoFactorAuthDto> {
     const user = await this.userTable.findById(userPayload.userId);
     const otpGenerated = this.otpService.otpGenerator(user.phoneNumber);
     if (!otpGenerated) {

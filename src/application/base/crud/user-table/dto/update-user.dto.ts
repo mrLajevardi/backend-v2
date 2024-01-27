@@ -160,4 +160,9 @@ export class UpdateUserDto {
   @IsOptional()
   @ApiProperty({ required: false })
   twoFactorAuth?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ required: false })
+  totpSecretKey?: string;
 }

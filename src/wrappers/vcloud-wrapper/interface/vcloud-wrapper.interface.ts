@@ -13,6 +13,7 @@ import { NetworkEndpointService } from '../services/user/edgeGateway/network/net
 import { TasksEndpointService } from '../services/user/tasks/tasksEndpoint.service';
 import { VdcEndpointService } from '../services/user/vdc/vdc-endpoint.service';
 import { VmEndpointService } from '../services/user/vm/vm-endpoint.service';
+import { StaticRouteEndpointService } from '../services/user/edgeGateway/staticRoute/static-route-endpoint.service';
 
 export interface VcloudWrapperInterface {
   VmEndpointService: VmEndpointService;
@@ -29,6 +30,7 @@ export interface VcloudWrapperInterface {
   AdminEdgeGatewayEndpointService: AdminEdgeGatewayEndpointService;
   AdminUserEndpointService: AdminUserEndpointService;
   AdminOrgEndpointService: AdminOrgEndpointService;
+  StaticRouteEndpointService: StaticRouteEndpointService;
 }
 
 export interface WrapperProvider {

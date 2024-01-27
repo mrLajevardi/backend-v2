@@ -69,6 +69,11 @@ import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table
 import { VerificationServiceService } from './verification.service.service';
 import { ShahkarException } from '../../../../infrastructure/exceptions/shahkar-exception';
 import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
+import { encryptVdcPassword } from '../../../../infrastructure/utils/extensions/encrypt.extensions';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
+import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/not-enough-credit.exception';
+import { PasswordIsDuplicateException } from '../../../../infrastructure/exceptions/password-is-duplicate.exception';
 
 @Injectable()
 export class UserService {
@@ -89,6 +94,7 @@ export class UserService {
     private readonly userInfoService: UserInfoService,
     private readonly userFactoryService: UsersFactoryService,
     private readonly verificationServiceService: VerificationServiceService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -154,9 +160,7 @@ export class UserService {
     );
 
     if (checkPassword) {
-      throw new ForbiddenException(
-        'رمز عبور جدید باید متفاوت از رمز عبور گذشته باشد.',
-      );
+      this.baseFactoryException.handle(PasswordIsDuplicateException);
     }
 
     const hashedPassword = await encryptPassword(data.newPassword);
@@ -211,7 +215,7 @@ export class UserService {
     const createDto: CreateUserDto = {
       phoneNumber: phoneNumber,
       username: `U-${phoneNumber}`,
-      vdcPassword: password,
+      vdcPassword: encryptVdcPassword(password),
       name: 'کاربر',
       family: 'گرامی',
       code: null,
@@ -667,7 +671,6 @@ export class UserService {
         'companyLetter',
       ],
     });
-
     return new UserProfileResultDto().toArray(user);
   }
 
@@ -717,6 +720,20 @@ export class UserService {
   }
 
   async personalVerification(options: SessionRequest) {
+    const userProfile: User = await this.userTable.findById(
+      options.user.userId,
+    );
+
+    const verifyData =
+      await this.verificationServiceService.checkUserVerification(
+        userProfile.phoneNumber,
+        userProfile.personalCode,
+      );
+
+    if (verifyData.status.toString() != '200') {
+      throw new ShahkarException(verifyData.message.toString());
+    }
+
     const userProfileData: UpdateUserDto = {
       personalVerification: true,
     };

@@ -1,16 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { BaseException } from './base/base-exception';
 
-export class NotEnoughServiceCreditForWeekException extends HttpException {
-  constructor(message = 'not enough service credit for a week', cause?: Error) {
-    super(
-      {
-        status: HttpStatus.BAD_REQUEST,
-        error: message,
-      },
-      HttpStatus.BAD_REQUEST,
-      {
-        cause: cause,
-      },
-    );
+export class NotEnoughServiceCreditForWeekException extends BaseException {
+  constructor(message = 'messages.notEnoughForWeek', cause?: Error) {
+    super(message, HttpStatus.BAD_REQUEST, cause);
   }
 }

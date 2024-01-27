@@ -11,6 +11,8 @@ import { getTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/getTicket
 import { replyTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/replyTicket';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { TicketStatusEnum } from './enum/ticket-status.enum';
+import { TicketEditType } from './enum/ticket-edit-type.enum';
 
 @Injectable()
 export class TicketService {
@@ -32,7 +34,7 @@ export class TicketService {
     }
     // update status to 3
     console.log(ticketId, '💀💀💀');
-    await updateTicket('status', 5, ticketId);
+    await updateTicket(TicketEditType.Status, TicketStatusEnum.Close, ticketId);
     return Promise.resolve();
   }
 
@@ -79,11 +81,23 @@ export class TicketService {
   ): Promise<{ tickets: object[]; pagination: object }> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
+    const usersTicketsIds = (
+      await this.ticketTable.find({
+        select: { ticketId: true },
+        where: { userId: userId },
+      })
+    ).map((ticket) => ticket.ticketId);
+    const res = [];
     try {
       const tickets = await getListOfTickets({
         actAsEmail: user.username,
         actAsType: 'customer',
       });
+
+      tickets.tickets = tickets.tickets.filter((ticket) =>
+        usersTicketsIds.includes(ticket.id),
+      );
+
       return Promise.resolve(tickets);
     } catch (error) {
       if (error.status === 404) {

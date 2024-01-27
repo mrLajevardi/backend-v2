@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class VerifyOtpTwoFactorAuthDto {
+  @IsOptional()
   @ApiProperty()
   @IsString()
-  hash: string;
+  hash?: string;
 
   @ApiProperty()
   @IsString()

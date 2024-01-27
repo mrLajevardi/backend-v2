@@ -26,6 +26,8 @@ import { ActAsTypeEnum } from 'src/wrappers/uvdesk-wrapper/service/wrapper/enum/
 import { TicketsMessagesEnum } from 'src/application/base/ticket/enum/tickets-message.enum';
 import { TicketsSubjectEnum } from 'src/application/base/ticket/enum/tickets-subject.enum';
 import { IP_SPLITTER } from '../../../itemType/const/item-type-code-hierarchy.const';
+import { TicketService } from '../../../ticket/ticket.service';
+import { SessionRequest } from '../../../../../infrastructure/types/session-request.type';
 
 @Injectable()
 export class IncreaseNumberOfIpsService
@@ -44,6 +46,7 @@ export class IncreaseNumberOfIpsService
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly tasksTableService: TasksTableService,
     private readonly ticketingWrapperService: TicketingWrapperService,
+    private readonly ticketService: TicketService,
     private readonly userService: UserTableService,
   ) {
     this.stepName = UpgradeVdcStepsEnum.IncreaseNumberOfIps;
@@ -57,14 +60,17 @@ export class IncreaseNumberOfIpsService
         job.data.serviceInstanceId,
       );
       const user = await this.userService.findById(service.userId);
-      await this.ticketingWrapperService.createTicket(
-        TicketsMessagesEnum.IncreaseNumberOfIpsFailure,
-        ActAsTypeEnum.User,
-        null,
-        user.name,
-        TicketsSubjectEnum.AutomaticTicket,
-        user.username,
-      );
+      const options: SessionRequest = {
+        user: {
+          userId: user.id,
+        },
+      } as SessionRequest;
+      await this.ticketService.createTicket(options, {
+        message: TicketsMessagesEnum.IncreaseNumberOfIpsFailure,
+        name: user.name,
+        serviceInstanceId: job.data.serviceInstanceId,
+        subject: TicketsSubjectEnum.AutomaticTicket,
+      });
       console.log(err);
       return Promise.reject(err);
     }

@@ -27,6 +27,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/infrastructure/database/entities/User';
 import { stringify } from 'querystring';
 import { UserOauthLoginGoogleDto } from '../dto/user-oauth-login-google.dto';
+import { encryptVdcPassword } from '../../../../../infrastructure/utils/extensions/encrypt.extensions';
 
 @Injectable()
 export class OauthService {
@@ -458,7 +459,7 @@ export class OauthService {
       ? encryptPassword(data.password)
       : generatePassword();
     newUser.password = await encryptPassword(data.password);
-    newUser.vdcPassword = data.password;
+    newUser.vdcPassword = encryptVdcPassword(data.password);
     newUser.name = firstname || 'کاربر';
     newUser.family = lastname || 'گرامی';
     newUser.phoneNumber = phoneNumber;

@@ -1,18 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import * as fs from 'fs';
-import { join } from 'path';
 import * as jose from 'node-jose';
 import axios from 'axios';
 import * as moment from 'moment';
-
+import * as process from 'process';
 @Injectable()
 export class VerificationServiceService {
   async checkUserVerification(
     phoneNumber: string,
     nationalCode: string,
   ): Promise<{ message: any; status: any }> {
-    const secondsSinceEpoch: number = Math.floor(Date.now() / 1000);
-    const timeString = moment().format('YYYYMMDDHHmmssSSS');
+    const dateInUTC = new Date();
+
+    const dateInTehran = new Date(
+      dateInUTC.toLocaleString('en-US', { timeZone: 'Asia/Tehran' }),
+    );
+
+    console.log(dateInTehran.getTime());
+
+    const secondsSinceEpoch: number = Math.floor(dateInTehran.getTime() / 1000);
+    const timeString = moment().zone('+0330').format('YYYYMMDDHHmmssSSS');
+
     const requestId = `1279${timeString}000`;
 
     const basicAuth =
@@ -86,8 +93,8 @@ export class VerificationServiceService {
   }
 
   async getEncryptedToken(inputData: string, inputIat: number) {
-    const pemPath = join(__dirname, './public-key.pem');
-    const pemKey = fs.readFileSync(pemPath, 'ascii');
+    const pemKey = process.env.SHAHKAR_PEM_KEY;
+
     const asymmetricJwkKey = await jose.JWK.asKey(pemKey, 'pem');
 
     const payload = {

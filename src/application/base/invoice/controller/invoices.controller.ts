@@ -9,6 +9,8 @@ import {
   Put,
   Query,
   Request,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -132,6 +134,7 @@ export class InvoicesController {
     status: 201,
     description: 'The item has been successfully created',
   })
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Put('/upgrade')
   async upgradeAndExtend(
     @Body() dto: UpgradeAndExtendDto,
@@ -172,6 +175,7 @@ export class InvoicesController {
     description: '',
     type: InvoiceCalculatorResultDto,
   })
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Post('/service/calculator')
   vdcCalculator(
     @Body() dto: InvoiceCalculatorDto,

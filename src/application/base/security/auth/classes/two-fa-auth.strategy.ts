@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { TwoFaAuthInterface } from './interface/two-fa-auth.interface';
 import { UserPayload } from '../dto/user-payload.dto';
-import { SendOtpTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
+import {
+  BaseSendTwoFactorAuthDto,
+  SendOtpTwoFactorAuthDto,
+} from '../dto/send-otp-two-factor-auth.dto';
+import { TwoFaAuthTotpService } from './two-fa-auth-totp.service';
 
 @Injectable()
 export class TwoFaAuthStrategy {
@@ -11,14 +15,32 @@ export class TwoFaAuthStrategy {
     this.strategy = strategy;
   }
 
-  public async sendOtp(user: UserPayload): Promise<SendOtpTwoFactorAuthDto> {
+  public async enableOtp(user: UserPayload): Promise<BaseSendTwoFactorAuthDto> {
     return await this.strategy.sendOtp(user);
+  }
+
+  public async enableVerifyOtp(
+    user: UserPayload,
+    otp: string,
+    hash: string,
+  ): Promise<boolean> {
+    return await this.strategy.verifyOtp(user, otp, hash);
+  }
+
+  public async sendOtp(user: UserPayload): Promise<BaseSendTwoFactorAuthDto> {
+    if (this.strategy instanceof TwoFaAuthTotpService) {
+      return {
+        qrCode: null,
+      };
+    } else {
+      return await this.strategy.sendOtp(user);
+    }
   }
 
   public async verifyOtp(
     user: UserPayload,
     otp: string,
-    hash: string,
+    hash?: string,
   ): Promise<boolean> {
     return await this.strategy.verifyOtp(user, otp, hash);
   }
