@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateServiceItemsDto } from '../../crud/service-items-table/dto/create-service-items.dto';
 import { ServiceItemsTableService } from '../../crud/service-items-table/service-items-table.service';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
@@ -27,7 +27,6 @@ import { ServiceInstances } from 'src/infrastructure/database/entities/ServiceIn
 import { ItemTypes } from 'src/infrastructure/database/entities/ItemTypes';
 import { ServiceTypes } from 'src/infrastructure/database/entities/ServiceTypes';
 import { UpdateServiceInstancesDto } from '../../crud/service-instances-table/dto/update-service-instances.dto';
-import { ZarinpalVerifyReturnDto } from '../dto/return/zarinpal-verify.dto';
 import { GetServicesReturnDto } from '../dto/return/get-services.dto';
 import { GetAllVdcServiceWithItemsResultDto } from '../dto/get-all-vdc-service-with-items-result.dto';
 import { VdcService } from '../../../vdc/service/vdc.service';
@@ -48,6 +47,8 @@ import { User } from '../../../../infrastructure/database/entities/User';
 import axios from 'axios';
 import * as process from 'process';
 import { TicketService } from '../../ticket/ticket.service';
+import { InvoiceAiStrategyService } from '../../invoice/classes/invoice-ai-strategy/invoice-ai-strategy.service';
+import { Templates } from '../../../../infrastructure/database/entities/Templates';
 
 @Injectable()
 export class ServiceService {
@@ -76,6 +77,7 @@ export class ServiceService {
     private readonly templatesTableService: TemplatesTableService,
     private readonly vReportsUserTableService: VReportsUserTableService,
     private readonly ticketService: TicketService,
+    private readonly invoiceAiStrategyService: InvoiceAiStrategyService,
   ) {}
 
   async increaseServiceResources(
@@ -525,7 +527,7 @@ export class ServiceService {
     } = options;
     let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
     let serviceStatus: ServiceStatusEnum[] = [
-      // 3, 4, 5, 6,7
+      // 3, 4, 5, 6, 7, 8
       ServiceStatusEnum.Deleted,
       ServiceStatusEnum.Error,
       ServiceStatusEnum.DisabledByAdmin,
@@ -533,6 +535,7 @@ export class ServiceService {
       ServiceStatusEnum.Expired,
       ServiceStatusEnum.Pending,
       ServiceStatusEnum.Disabled,
+      ServiceStatusEnum.ExceededEnoughCredit,
     ];
     if (typeId) {
       serviceTypeIds = [typeId];
@@ -579,25 +582,44 @@ export class ServiceService {
     options: SessionRequest,
     serviceType: ServiceTypesEnum,
     servicePlanType: ServicePlanTypeEnum = ServicePlanTypeEnum.Static,
-  ) {
+  ): Promise<Templates[]> {
     const serviceTypeDB = await this.serviceTypesTable.findOne({
       where: {
         id: serviceType,
       },
     });
-
     const templates = await this.templatesTableService.find({
       where: {
         serviceType: { id: serviceTypeDB.id },
         servicePlanType: servicePlanType,
       },
+      order: {
+        period: 'asc',
+        sort: 'asc',
+      },
     });
 
-    templates.forEach((template) => {
-      template.structure = JSON.parse(template.structure);
-    });
+    if (serviceType == ServiceTypesEnum.Ai) {
+      return await Promise.all(
+        templates.map(async (template: Templates): Promise<Templates> => {
+          template.structure = JSON.parse(template.structure);
+          const prices =
+            await this.invoiceAiStrategyService.calculateTemplatePrice(
+              template.guid,
+            );
+          template.structure['rawPrice'] = prices.rawAmount;
+          template.structure['finalPrice'] = prices.finalAmount;
 
-    return templates;
+          return template;
+        }),
+      );
+    } else {
+      templates.forEach((template) => {
+        template.structure = JSON.parse(template.structure);
+      });
+
+      return templates;
+    }
   }
 
   async getReports(option: SessionRequest) {

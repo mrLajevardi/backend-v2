@@ -56,6 +56,9 @@ import { OtpNotMatchException } from '../../../../infrastructure/exceptions/otp-
 import { Throttle } from '@nestjs/throttler';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 import { PhoneNumberHashResultDto } from '../dto/results/phone-number-hash.result.dto';
+import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
+import { UserProfileResultDto } from '../dto/user-profile.result.dto';
+import { CreateUserProfileResultDto } from '../dto/results/create-user-profile.result.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -286,11 +289,20 @@ export class UserController {
 
   @Post('/createProfile')
   @ApiOperation({ summary: 'create user profile' })
+  @ApiResponse({
+    type: CreateUserProfileResultDto,
+    description:
+      "if user change personalVerification state , response contains tokens object (if doesn't change personalVerification , response doesn't have tokens object)",
+  })
   async createProfile(
     @Request() options: SessionRequest,
     @Body() data: CreateProfileDto,
-  ): Promise<UserProfileDto> {
-    return await this.userService.createProfile(options, data);
+  ): Promise<CreateUserProfileResultDto> {
+    const userData = await this.userService.createProfile(options, data);
+    return {
+      user: new UserProfileResultDto().toArray(userData.user),
+      tokens: userData.tokens ?? undefined,
+    };
   }
 
   @Get('/profile')

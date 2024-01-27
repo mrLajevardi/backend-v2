@@ -28,18 +28,17 @@ import { IpSetsDto } from '../dto/ip-sets.dto';
 import { DhcpForwarderDto } from '../../networks/dto/dhcp-forwarder.dto';
 import { UpdateFirewallDto } from '../dto/update-firewall.dto';
 import { EdgeGatewayService } from '../service/edge-gateway.service';
-import { SingleApplicationPortProfileDto } from '../dto/single-application-port-profile.dto';
 import { FirewallListDto } from '../dto/firewall-list.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { TaskReturnDto } from 'src/infrastructure/dto/task-return.dto';
 import { GetIpSetsListQueryDto } from '../dto/ip-set-list.dto';
 import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
 import { ApplicationPortProfileListValuesDto } from '../dto/application-port-profile-list-values.dto';
-import { CheckPolicies } from 'src/application/base/security/ability/decorators/check-policies.decorator';
-import { PureAbility, subject } from '@casl/ability';
-import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
-import { Action } from 'src/application/base/security/ability/enum/action.enum';
-import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
+import { StaticRouteService } from '../service/static-route.service';
+import { CreateStaticRouteVdcDto } from '../dto/create-static-route-vdc.dto';
+import isCidr from 'is-cidr';
+import { UpdateStaticRouteVdcDto } from '../dto/update-static-route-vdc.dto';
+import { StaticRouteResultType } from '../dto/result/static-route.result.dto';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
@@ -48,7 +47,10 @@ import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-
 // )
 @ApiBearerAuth()
 export class EdgeGatewayController {
-  constructor(private readonly service: EdgeGatewayService) {}
+  constructor(
+    private readonly service: EdgeGatewayService,
+    private readonly staticRouteService: StaticRouteService,
+  ) {}
   @Post('/:vdcInstanceId/firewalls')
   @ApiOperation({ summary: 'Create a single firewall rule' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
@@ -358,6 +360,98 @@ export class EdgeGatewayController {
       options,
       vdcInstanceId,
       firewallId,
+      data,
+    );
+  }
+
+  @Post('/:vdcInstanceId/staticRoute')
+  @ApiOperation({ summary: 'Create an Static Route' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
+  async createStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Body() data: CreateStaticRouteVdcDto,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return await this.staticRouteService.createStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      data,
+    );
+  }
+
+  @Get('/:vdcInstanceId/staticRoute')
+  @ApiOperation({ summary: 'Get Static Route of Service' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({
+    type: StaticRouteResultType,
+    isArray: true,
+    description:
+      'scope object in nextHops array is optional . (it`s mean if static route for all network, scope is empty object)',
+  })
+  async GetStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Request() options: SessionRequest,
+  ): Promise<StaticRouteResultType[]> {
+    return await this.staticRouteService.getStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+    );
+  }
+
+  @Get('/:vdcInstanceId/staticRoute/:routeId/find')
+  @ApiOperation({ summary: 'Find Specific Static Route of Service' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'routeId', description: 'static route ID' })
+  @ApiResponse({
+    type: StaticRouteResultType,
+    description:
+      'scope object in nextHops array is optional . (it`s mean if static route for all network, scope is empty object)',
+  })
+  async FindStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Param('routeId') routeId: string,
+    @Request() options: SessionRequest,
+  ): Promise<StaticRouteResultType> {
+    return await this.staticRouteService.findStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      routeId,
+    );
+  }
+  @Delete('/:vdcInstanceId/staticRoute/:routeId')
+  @ApiOperation({ summary: 'Delete Specific Static Route of Service' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'routeId', description: 'static route ID' })
+  @ApiResponse({
+    type: TaskReturnDto,
+  })
+  async DeleteStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Param('routeId') routeId: string,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return await this.staticRouteService.deleteStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      routeId,
+    );
+  }
+
+  @Put('/:vdcInstanceId/staticRoute/:routeId')
+  @ApiOperation({ summary: 'Create an Static Route' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
+  async updateStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Param('routeId') routeId: string,
+    @Body() data: UpdateStaticRouteVdcDto,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return await this.staticRouteService.updateStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      routeId,
       data,
     );
   }
