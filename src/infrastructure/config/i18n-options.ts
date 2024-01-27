@@ -7,5 +7,6 @@ export const i18nOptions: I18nOptions = {
   loaderOptions: {
     path: path.join(__dirname, '../../localization/i18n/'),
     watch: true,
+    includeSubfolders: true,
   },
 };

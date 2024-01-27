@@ -74,6 +74,8 @@ import { BaseFactoryException } from '../../../../infrastructure/exceptions/base
 import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
 import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/not-enough-credit.exception';
 import { PasswordIsDuplicateException } from '../../../../infrastructure/exceptions/password-is-duplicate.exception';
+import { LoginService } from '../../security/auth/service/login.service';
+import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
 
 @Injectable()
 export class UserService {
@@ -95,6 +97,7 @@ export class UserService {
     private readonly userFactoryService: UsersFactoryService,
     private readonly verificationServiceService: VerificationServiceService,
     private readonly baseFactoryException: BaseFactoryException,
+    private readonly loginService: LoginService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -606,7 +609,7 @@ export class UserService {
   async createProfile(
     options: SessionRequest,
     data: CreateProfileDto,
-  ): Promise<UserProfileDto> {
+  ): Promise<{ user: User; tokens: AccessTokenDto }> {
     const userProfileData: UpdateUserDto = {
       name: data.name,
       family: data.family,
@@ -617,6 +620,7 @@ export class UserService {
     };
 
     const user = await this.userTable.findById(options.user.userId);
+    let tokens: AccessTokenDto = null;
     const validPersonalCode =
       this.verificationServiceService.isValidIranianNationalCode(
         data.personalCode,
@@ -647,6 +651,8 @@ export class UserService {
       if (verifyData.status.toString() != '200') {
         throw new ShahkarException(verifyData.message.toString());
       }
+
+      tokens = await this.loginService.getLoginToken(user.id);
     }
 
     await this.userTable.update(options.user.userId, userProfileData);
@@ -656,7 +662,10 @@ export class UserService {
       relations: ['company'],
     });
 
-    return new UserProfileResultDto().toArray(userWithRelation);
+    return {
+      user: userWithRelation,
+      tokens: tokens,
+    };
   }
 
   async getUserProfile(options: SessionRequest) {
