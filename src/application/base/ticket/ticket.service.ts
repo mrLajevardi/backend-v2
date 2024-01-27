@@ -149,6 +149,11 @@ export class TicketService {
       user.username,
       null,
     );
+    await updateTicket(
+      TicketEditType.Status,
+      TicketStatusEnum.Pending,
+      ticketId,
+    );
     return Promise.resolve(ticket);
   }
 }
