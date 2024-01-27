@@ -137,6 +137,7 @@ export class TicketService {
         userId: userId,
         ticketId: ticketId,
       },
+      
     });
     if (!ticketExists) {
       return Promise.reject(new ForbiddenException());
@@ -149,6 +150,7 @@ export class TicketService {
       user.username,
       null,
     );
+    await updateTicket(TicketEditType.Status, TicketStatusEnum.Pending, ticketId);
     return Promise.resolve(ticket);
   }
 }
