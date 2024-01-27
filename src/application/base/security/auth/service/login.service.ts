@@ -16,6 +16,7 @@ import axios from 'axios';
 // import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
 import { UserIsNotActiveException } from '../../../../../infrastructure/exceptions/user-is-not-active.exception';
 import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
+
 // import process from 'process';
 
 @Injectable()
@@ -203,5 +204,12 @@ export class LoginService {
       two_factor_authenticate: true,
       types: twoFactorTypes,
     };
+  }
+
+  async reGenerateTokens(
+    userId: number,
+    impersonateId?: number,
+  ): Promise<AccessTokenDto> {
+    return await this.getLoginToken(userId, impersonateId);
   }
 }
