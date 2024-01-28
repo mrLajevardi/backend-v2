@@ -482,11 +482,9 @@ export class ServiceService {
       vdcItems: GetOrgVdcResult = null;
     let model: GetAllVdcServiceWithItemsResultDto = {};
     for (const serviceInstance of allServicesInstances) {
-      if (
-        serviceInstance.status != ServiceStatusEnum.Error &&
-        serviceInstance.status != ServiceStatusEnum.Deleted &&
-        serviceInstance.status != ServiceStatusEnum.Pending
-      ) {
+      const status = this.checkViewingStatusService(serviceInstance.status);
+
+      if (status) {
         cpuSpeed = (
           await this.serviceFactory.getConfigServiceInstance(serviceInstance)
         ).cpuSpeed;
@@ -514,6 +512,14 @@ export class ServiceService {
     }
 
     return res;
+  }
+
+  private checkViewingStatusService(status: number) {
+    return (
+      status != ServiceStatusEnum.Error &&
+      status != ServiceStatusEnum.Deleted &&
+      status != ServiceStatusEnum.Pending
+    );
   }
 
   async getServices(
