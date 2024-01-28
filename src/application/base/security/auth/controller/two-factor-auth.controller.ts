@@ -4,42 +4,30 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { TwoFaAuthService } from '../service/two-fa-auth.service';
-import { SecurityToolsService } from '../../security-tools/security-tools.service';
-import { RedisCacheService } from '../../../../../infrastructure/utils/services/redis-cache.service';
 import { Public } from '../decorators/ispublic.decorator';
 import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
 import { PhoneNumberDto } from '../dto/phoneNumber.dto';
 import {
   BaseSendTwoFactorAuthDto,
+  BaseSendTwoFactorAuthDtoSwagger,
   SendOtpTwoFactorAuthDto,
 } from '../dto/send-otp-two-factor-auth.dto';
-import { User } from '../../../../../infrastructure/database/entities/User';
-import { isNil } from 'lodash';
-import { UserDoesNotExistException } from '../../../../../infrastructure/exceptions/user-does-not-exist.exception';
-import { UserPayload } from '../dto/user-payload.dto';
-import { BadRequestException } from '../../../../../infrastructure/exceptions/bad-request.exception';
-import { UserService } from '../../../user/service/user.service';
 import { VerifyOtpTwoFactorAuthDto } from '../dto/verify-otp-two-factor-auth.dto';
 import { AccessTokenDto } from '../dto/access-token.dto';
-import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
 import { SessionRequest } from '../../../../../infrastructure/types/session-request.type';
 import { EnableTwoFactorAuthenticateDto } from '../dto/enable-two-factor-authenticate.dto';
 import { EnableVerifyOtpTwoFactorAuthDto } from '../dto/enable-verify-otp-two-factor-auth.dto';
 import { DisableTwoFactorAuthenticateDto } from '../dto/disable-two-factor-authenticate.dto';
-import { AuthService } from '../service/auth.service';
 import { Throttle } from '@nestjs/throttler';
 @ApiTags('TwoFactorAuthentication')
 @Controller('auth/twoFactorAuth')
 @ApiBearerAuth()
 export class TwoFactorAuthController {
-  constructor(
-    private readonly twoFaAuthService: TwoFaAuthService,
-    private readonly userService: UserService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly twoFaAuthService: TwoFaAuthService) {}
 
   @Public()
   @Throttle({ default: { limit: 1, ttl: 120000 } })
@@ -54,34 +42,18 @@ export class TwoFactorAuthController {
     example: TwoFaAuthTypeEnum.Sms,
   })
   @ApiBody({ type: PhoneNumberDto })
+  @ApiResponse({
+    // TwoFaAuthTypeEnum.Totp doesn't have hash sendOtp
+    type: SendOtpTwoFactorAuthDto,
+  })
   async sendTwoFactorAuthenticate(
     @Body() data: PhoneNumberDto,
     @Param('TwoFactorType') type: TwoFaAuthTypeEnum,
   ): Promise<BaseSendTwoFactorAuthDto> {
-    const user: User = await this.userService.findByPhoneNumber(
+    return await this.twoFaAuthService.sendOtpByPhoneNumber(
       data.phoneNumber,
-    );
-    if (isNil(user)) {
-      throw new UserDoesNotExistException();
-    }
-    const userPayload: UserPayload = {
-      userId: user.id,
-      username: user.username,
-    };
-
-    const twoFactorTypes: number[] =
-      this.twoFaAuthService.parseTwoFactorStrToArray(user.twoFactorAuth);
-
-    if (!twoFactorTypes.includes(Number(type))) {
-      throw new BadRequestException();
-    }
-
-    const sendOtp = await this.twoFaAuthService.sendOtp(
-      userPayload,
       Number(type),
     );
-
-    return sendOtp;
   }
 
   @Public()
@@ -100,39 +72,17 @@ export class TwoFactorAuthController {
     @Body() data: VerifyOtpTwoFactorAuthDto,
     @Param('TwoFactorType') type: TwoFaAuthTypeEnum,
   ): Promise<AccessTokenDto> {
-    const user: User = await this.userService.findByPhoneNumber(
-      data.phoneNumber,
-    );
-
-    const userPayload: UserPayload = {
-      userId: user.id,
-      username: user.username,
-    };
-
-    const twoFactorTypes: number[] =
-      this.twoFaAuthService.parseTwoFactorStrToArray(user.twoFactorAuth);
-
-    if (!twoFactorTypes.includes(Number(type))) {
-      throw new BadRequestException();
-    }
-
-    const verifyOtp: boolean = await this.twoFaAuthService.verifyOtp(
-      userPayload,
-      Number(type),
-      data.otp,
-      data.hash,
-    );
-
-    if (!verifyOtp) {
-      throw new OtpErrorException();
-    }
-
-    return await this.authService.login.getLoginToken(userPayload.userId);
+    return await this.twoFaAuthService.verifyOtpProcess(data, type);
   }
 
   @Get('/enable/:twoFactorAuthType')
   @ApiOperation({ summary: 'enable two factor authenticate for current user' })
   // @UseGuards(LocalAuthGuard)
+  @ApiResponse({
+    type: BaseSendTwoFactorAuthDtoSwagger,
+    description:
+      "sms , email twoFactor have hash but totp doesn't have hash it's have qrCode ",
+  })
   async enableTwoFactorAuthenticate(
     @Request() req: SessionRequest,
     @Param() twoFactorAuthenticateType: EnableTwoFactorAuthenticateDto,

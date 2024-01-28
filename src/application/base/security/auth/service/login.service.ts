@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { NotificationService } from 'src/application/base/notification/notification.service';
@@ -23,10 +28,10 @@ import { UserIsDeletedException } from '../../../../../infrastructure/exceptions
 export class LoginService {
   constructor(
     private userTable: UserTableService,
-    // private userService: UserService,
     private jwtService: JwtService,
     private otpService: OtpService,
     private notificationService: NotificationService,
+    @Inject(forwardRef(() => TwoFaAuthService))
     private twoFaAuthService: TwoFaAuthService,
   ) {}
 

@@ -76,6 +76,7 @@ import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/
 import { PasswordIsDuplicateException } from '../../../../infrastructure/exceptions/password-is-duplicate.exception';
 import { LoginService } from '../../security/auth/service/login.service';
 import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
+import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data.exception';
 
 @Injectable()
 export class UserService {
@@ -111,6 +112,20 @@ export class UserService {
     return await this.userTable.findOne({
       where: { phoneNumber: phoneNumber },
     });
+  }
+
+  async createUserPayloadByPhone(phoneNumber: string): Promise<UserPayload> {
+    const user = await this.findByPhoneNumber(phoneNumber);
+    if (isNil(user)) {
+      this.baseFactoryException.handle(NotFoundDataException);
+    }
+    return {
+      userId: user.id,
+      username: user.username,
+      guid: user.guid,
+      twoFactorAuth: user.twoFactorAuth,
+      personalVerification: user.personalVerification,
+    } as UserPayload;
   }
 
   async findById(userId: number): Promise<User> {
