@@ -8,8 +8,8 @@ export const DiskBusUnitBusNumberSpace = [
     //IDE
     info: [
       // { busUnit: 0, busNumber: 0 },
-      { busUnit: 0, busNumber: 1 },
-      { busUnit: 1, busNumber: 0 },
+      { busUnit: 0, busNumber: 1, isChosen: 0 },
+      { busUnit: 1, busNumber: 0, isChosen: 0 },
       // { busUnit: 0, busNumber: 3 },
     ],
     legacyId: '1',
@@ -20,10 +20,10 @@ export const DiskBusUnitBusNumberSpace = [
 
     //BUS_LOGIC_PARALLEL //RESERVED !!!!
     info: [
-      { busUnit: 0, busNumber: 0 },
-      { busUnit: 0, busNumber: 1 },
-      { busUnit: 0, busNumber: 2 },
-      { busUnit: 0, busNumber: 3 },
+      { busUnit: 0, busNumber: 0, isChosen: 0 },
+      { busUnit: 0, busNumber: 1, isChosen: 0 },
+      { busUnit: 0, busNumber: 2, isChosen: 0 },
+      { busUnit: 0, busNumber: 3, isChosen: 0 },
     ],
     legacyId: '2',
     usable: false,
@@ -35,10 +35,10 @@ export const DiskBusUnitBusNumberSpace = [
 
     //LSI_LOGIC_PARALLEL
     info: [
-      { busUnit: 2, busNumber: 0 },
-      { busUnit: 2, busNumber: 1 },
-      { busUnit: 2, busNumber: 2 },
-      { busUnit: 2, busNumber: 3 },
+      { busUnit: 2, busNumber: 0, isChosen: 0 },
+      { busUnit: 2, busNumber: 1, isChosen: 0 },
+      { busUnit: 2, busNumber: 2, isChosen: 0 },
+      { busUnit: 2, busNumber: 3, isChosen: 0 },
     ],
   },
   {
@@ -47,10 +47,10 @@ export const DiskBusUnitBusNumberSpace = [
     name: 'LSI_LOGIC_SAS',
     //LSI_LOGIC_SAS
     info: [
-      { busUnit: 0, busNumber: 0 },
-      { busUnit: 0, busNumber: 1 },
-      { busUnit: 0, busNumber: 2 },
-      { busUnit: 0, busNumber: 3 },
+      { busUnit: 0, busNumber: 0, isChosen: 0 },
+      { busUnit: 0, busNumber: 1, isChosen: 0 },
+      { busUnit: 0, busNumber: 2, isChosen: 0 },
+      { busUnit: 0, busNumber: 3, isChosen: 0 },
     ],
   },
 
@@ -60,10 +60,10 @@ export const DiskBusUnitBusNumberSpace = [
     usable: true,
     name: 'PARA_VIRTUAL_SCSI',
     info: [
-      { busUnit: 1, busNumber: 0 },
-      { busUnit: 1, busNumber: 1 },
-      { busUnit: 1, busNumber: 2 },
-      { busUnit: 1, busNumber: 3 },
+      { busUnit: 1, busNumber: 0, isChosen: 0 },
+      { busUnit: 1, busNumber: 1, isChosen: 0 },
+      { busUnit: 1, busNumber: 2, isChosen: 0 },
+      { busUnit: 1, busNumber: 3, isChosen: 0 },
     ],
   },
   {
@@ -72,10 +72,10 @@ export const DiskBusUnitBusNumberSpace = [
     usable: true,
     name: 'SATA',
     info: [
-      { busUnit: 0, busNumber: 0 },
-      { busUnit: 0, busNumber: 1 },
-      { busUnit: 0, busNumber: 2 },
-      { busUnit: 0, busNumber: 3 },
+      { busUnit: 0, busNumber: 0, isChosen: 0 },
+      { busUnit: 0, busNumber: 1, isChosen: 0 },
+      { busUnit: 0, busNumber: 2, isChosen: 0 },
+      { busUnit: 0, busNumber: 3, isChosen: 0 },
     ],
   },
   {
@@ -84,10 +84,10 @@ export const DiskBusUnitBusNumberSpace = [
     usable: true,
     name: 'NVME',
     info: [
-      { busUnit: 0, busNumber: 0 },
-      { busUnit: 0, busNumber: 1 },
-      { busUnit: 0, busNumber: 2 },
-      { busUnit: 0, busNumber: 3 },
+      { busUnit: 0, busNumber: 0, isChosen: 0 },
+      { busUnit: 0, busNumber: 1, isChosen: 0 },
+      { busUnit: 0, busNumber: 2, isChosen: 0 },
+      { busUnit: 0, busNumber: 3, isChosen: 0 },
     ],
   },
 ];

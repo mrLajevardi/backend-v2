@@ -40,6 +40,24 @@ function getBusUnitBusNumberFree(
   }
   return res;
 }
+
+// async function getUnitNmberBusNumberFree(
+//   legacyId,
+//   diskFreeByAdaptorType,
+// ): Promise<{ unitNumber: number; busNumber: number }> {
+//   const freesNotChosen = (diskFreeByAdaptorType[legacyId] as any[]).filter(
+//     (section) => section.isChosen == 0,
+//   );
+//
+//   diskFreeByAdaptorType[legacyId][0].isChosen = 1;
+//
+//   const oneFree = freesNotChosen[0];
+//
+//   const uniNumber = (diskFreeByAdaptorType[legacyId] as any[])[0].busNumber;
+//
+//   const busNumber = (diskFreeByAdaptorType[legacyId] as any[])[0].busUnit;
+// }
+
 export async function userUpdateDiskSection(
   authToken,
   vmId,
@@ -119,6 +137,8 @@ export async function userUpdateDiskSection(
         diskFreeByAdaptorType[settings.adapterType.legacyId] as any[]
       )[0].busUnit;
       // console.log(targetAdaptor, controllers, '👌👌');
+      // diskFreeByAdaptorType[settings.adapterType.legacyId] =
+      diskFreeByAdaptorType[settings.adapterType.legacyId].splice(0, 1);
       const newSetting = {
         sizeMb: settings.size,
         // unitNumber: controllers[targetAdaptor][0].unitNumber,
@@ -137,6 +157,7 @@ export async function userUpdateDiskSection(
       };
 
       updatedDiskSettings.push(newSetting);
+
       // controllers[targetAdaptor].splice(0, 1);
     }
   });
