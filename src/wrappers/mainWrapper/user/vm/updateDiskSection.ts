@@ -127,10 +127,15 @@ export async function userUpdateDiskSection(
         busNumber: busNumber,
         adapterType: settings.adapterType.legacyId,
         thinProvisioned: true,
-        overrideVmDefault: false,
+        overrideVmDefault: true,
         virtualQuantityUnit: 'byte',
+        storageProfile: {
+          href: `${vcdConfig.baseUrl}/${vcdConfig.user.storageProfile.name}/${settings.storageId}`,
+          id: `urn:vcloud:vdcstorageProfile:${settings.storageId}`,
+        },
         iops: 0,
       };
+
       updatedDiskSettings.push(newSetting);
       // controllers[targetAdaptor].splice(0, 1);
     }

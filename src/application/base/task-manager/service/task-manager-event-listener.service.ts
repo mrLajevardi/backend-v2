@@ -9,12 +9,16 @@ import { TaskDataType } from '../interface/task-data-type.interface';
 import { JobTypesEnum } from '../enum/job-types.enum';
 import { TasksStatusEnum } from '../../tasks/enum/tasks-status.enum';
 import { FailedJob } from '../interface/failed-job.interface';
+import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
+import { ServiceStatusEnum } from '../../service/enum/service-status.enum';
+import { TasksEnum } from '../enum/tasks.enum';
 
 @QueueEventsListener(QueueNames.NewTaskManager)
 export class TaskManagerEventListenerService extends QueueEventsHost {
   constructor(
     private readonly taskManagerService: TaskManagerService,
     private readonly tasksTableService: TasksTableService,
+    private readonly serviceInstanceTableService: ServiceInstancesTableService,
   ) {
     super();
   }
@@ -28,11 +32,29 @@ export class TaskManagerEventListenerService extends QueueEventsHost {
       details: job.failedReason,
       endTime: new Date(),
     });
+
+    if (jobDetails.data.parent === TasksEnum.UpgradeVdc) {
+      return this.upgradeVdcOnErrorAndFailure(
+        jobDetails.data.serviceInstanceId,
+      );
+    }
   }
 
   @OnQueueEvent('error')
-  onError(job: CompletedJob, err: Error) {
-    console.log(err, job);
+  async onError(job: CompletedJob, err: Error): Promise<void> {
+    const jobDetails: Job<TaskDataType> =
+      await this.taskManagerService.taskQueue.getJob(job.jobId);
+    await this.tasksTableService.update(jobDetails.data.taskId, {
+      status: TasksStatusEnum.Error,
+      details: 'internal task error',
+      endTime: new Date(),
+    });
+
+    if (jobDetails.data.parent === TasksEnum.UpgradeVdc) {
+      return this.upgradeVdcOnErrorAndFailure(
+        jobDetails.data.serviceInstanceId,
+      );
+    }
   }
   @OnQueueEvent('completed')
   async onSuccess(job: CompletedJob): Promise<void> {
@@ -59,5 +81,14 @@ export class TaskManagerEventListenerService extends QueueEventsHost {
             .stepName,
       });
     }
+  }
+
+  private async upgradeVdcOnErrorAndFailure(
+    serviceInstanceId: string,
+  ): Promise<void> {
+    console.log(`upgrading service [${serviceInstanceId}] has been failed`);
+    await this.serviceInstanceTableService.update(serviceInstanceId, {
+      status: ServiceStatusEnum.Error,
+    });
   }
 }

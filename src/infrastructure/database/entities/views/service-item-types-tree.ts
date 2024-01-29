@@ -100,6 +100,12 @@ export class ServiceItemTypesTree {
   })
   deleteDate: Date | null;
 
+  @Column(isTestingEnv() ? 'boolean' : 'bit', {
+    name: 'IsHidden',
+    nullable: true,
+  })
+  isHidden: boolean | null;
+
   @ManyToOne(() => ServiceTypes)
   @JoinColumn({ name: 'ServiceTypeID', referencedColumnName: 'id' })
   serviceTypes: ServiceTypes;

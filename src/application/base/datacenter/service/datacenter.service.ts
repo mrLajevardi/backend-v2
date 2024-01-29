@@ -579,14 +579,12 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       dto.staticGenerations,
       serviceType,
       datacenterName,
-      datacenter,
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateGenerationItems(
       dto.paygGenerations,
       serviceType,
       datacenterName,
-      datacenter,
       queryRunner,
     );
     await queryRunner.commitTransaction();
@@ -686,14 +684,12 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       dto.paygGenerations,
       serviceType,
       datacenterName,
-      datacenter,
       queryRunner,
     );
     await this.datacenterAdminService.createOrUpdateGenerationItems(
       dto.staticGenerations,
       serviceType,
       datacenterName,
-      datacenter,
       queryRunner,
     );
     await queryRunner.commitTransaction();

@@ -6,6 +6,7 @@ import {
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
+  QueryRunner,
   Repository,
   UpdateResult,
 } from 'typeorm';
@@ -56,7 +57,11 @@ export class TemplatesTableService {
   async updateAll(
     where: FindOptionsWhere<Templates>,
     dto: UpdateTemplatesDto,
+    queryRunner?: QueryRunner,
   ): Promise<UpdateResult> {
+    if (queryRunner) {
+      return await queryRunner.manager.update(Templates, where, dto);
+    }
     return await this.repository.update(where, dto);
   }
 

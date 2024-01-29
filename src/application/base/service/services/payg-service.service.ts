@@ -248,13 +248,18 @@ export class PaygServiceService {
             [totalCost, { durationInMin }, totalVpcCost],
           );
         } catch (err) {
-          await this.disablePaygService(
-            props,
-            service.id,
-            tenantHeaders,
-            adminSession,
-            vmslist.data,
-          );
+          await this.serviceInstanceTableService.update(service.id, {
+            status: ServiceStatusEnum.ExceededEnoughCredit,
+          });
+          if (service.status !== ServiceStatusEnum.ExceededEnoughCredit) {
+            await this.disablePaygService(
+              props,
+              service.id,
+              tenantHeaders,
+              adminSession,
+              vmslist.data,
+            );
+          }
         }
         await this.serviceInstanceTableService.update(service.id, {
           offset: new Date(),
@@ -378,9 +383,9 @@ export class PaygServiceService {
       console.log(err);
     }
     await this.adminVdcWrapperService.disableVdc(session, props.vdcId);
-    await this.serviceInstanceTableService.update(serviceInstanceId, {
-      status: ServiceStatusEnum.Disabled,
-    });
+    // await this.serviceInstanceTableService.update(serviceInstanceId, {
+    //   status: ServiceStatusEnum.Disabled,
+    // });
   }
 
   async createPaygVdcService(

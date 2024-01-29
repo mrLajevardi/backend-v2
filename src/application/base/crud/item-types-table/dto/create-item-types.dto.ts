@@ -82,4 +82,6 @@ export class CreateItemTypesDto {
   isDeleted: boolean;
 
   type: ServicePlanTypeEnum;
+
+  isHidden: boolean;
 }
