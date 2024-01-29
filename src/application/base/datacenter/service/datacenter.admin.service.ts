@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  forwardRef,
+} from '@nestjs/common';
 import { FoundDatacenterMetadata } from '../dto/found-datacenter-metadata';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
 import {
@@ -17,10 +22,18 @@ import { And, DataSource, IsNull, Like, Not, QueryRunner } from 'typeorm';
 import { CreateItemTypesDto } from '../../crud/item-types-table/dto/create-item-types.dto';
 import { CheckConfigsOptions } from '../interface/check-configs.interface';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
+import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
+import {
+  BASE_DATACENTER_SERVICE,
+  BaseDatacenterService,
+} from '../interface/datacenter.interface';
+import { DatacenterService } from './datacenter.service';
 @Injectable()
 export class DatacenterAdminService {
   constructor(
     private readonly itemTypesTableService: ItemTypesTableService,
+    @Inject(forwardRef(() => DatacenterService))
+    private readonly datacenterService: DatacenterService,
     private readonly datasource: DataSource,
   ) {}
   async createOrUpdatePeriodItems(
@@ -49,6 +62,7 @@ export class DatacenterAdminService {
         datacenterName,
         id: serviceType.id,
       },
+      isHidden: false,
       createDate: new Date(),
     };
     const periodItemParent =
@@ -75,6 +89,7 @@ export class DatacenterAdminService {
         serviceTypeId: serviceType.id,
         step: 1,
         isDeleted: false,
+        isHidden: false,
       };
       await this.itemTypesTableService.createWithQueryRunner(queryRunner, dto);
     }
@@ -116,6 +131,7 @@ export class DatacenterAdminService {
         createDate: new Date(),
         type: reservationItems[0].type,
         isDeleted: false,
+        isHidden: false,
       });
     for (const cpuReservationItem of reservationItems) {
       const dto = {
@@ -135,6 +151,7 @@ export class DatacenterAdminService {
         serviceTypeId: serviceType.id,
         step: 1,
         isDeleted: false,
+        isHidden: false,
         type: cpuReservationItem.type,
       };
       await this.itemTypesTableService.createWithQueryRunner(queryRunner, dto);
@@ -178,6 +195,7 @@ export class DatacenterAdminService {
         createDate: new Date(),
         isDeleted: false,
         type: reservationItems[0].type,
+        isHidden: false,
       });
     for (const memoryReservationItem of reservationItems) {
       const dto = {
@@ -198,6 +216,7 @@ export class DatacenterAdminService {
         step: 1,
         isDeleted: false,
         type: memoryReservationItem.type,
+        isHidden: false,
       };
       await this.itemTypesTableService.createWithQueryRunner(queryRunner, dto);
     }
@@ -206,7 +225,6 @@ export class DatacenterAdminService {
     generationItems: Generation[],
     serviceType: ServiceTypes,
     datacenterName: string,
-    metaData: FoundDatacenterMetadata,
     queryRunner: QueryRunner,
   ): Promise<void> {
     const generation = await this.itemTypesTableService.createWithQueryRunner(
@@ -230,25 +248,32 @@ export class DatacenterAdminService {
         createDate: new Date(),
         isDeleted: false,
         type: generationItems[0].type,
+        isHidden: false,
       },
     );
     for (const generationItem of generationItems) {
+      const metaData = await this.datacenterService.getDatacenterMetadata(
+        '',
+        generationItem.providerId,
+      );
       const generationName = metaData.generation as string;
       try {
-        // this.checkConfigs(generationItem.items.cpu.levels, {
-        //   checkMinMax: true,
-        //   baseMax: generationItem.items.cpu.baseMax,
-        //   baseMin: generationItem.items.cpu.baseMin,
-        //   checkPercent: true,
-        //   checkPrice: false,
-        // });
-        // this.checkConfigs(generationItem.items.ram.levels, {
-        //   checkMinMax: true,
-        //   baseMax: generationItem.items.ram.baseMax,
-        //   baseMin: generationItem.items.ram.baseMin,
-        //   checkPercent: true,
-        //   checkPrice: false,
-        // });
+        this.checkConfigs(generationItem.items.cpu.levels, {
+          checkMinMax: true,
+          baseMax: generationItem.items.cpu.baseMax,
+          baseMin: generationItem.items.cpu.baseMin,
+          checkPercent: true,
+          checkPrice: false,
+          reversePercent: true,
+        });
+        this.checkConfigs(generationItem.items.ram.levels, {
+          checkMinMax: true,
+          baseMax: generationItem.items.ram.baseMax,
+          baseMin: generationItem.items.ram.baseMin,
+          checkPercent: true,
+          checkPrice: false,
+          reversePercent: true,
+        });
       } catch (err) {
         await queryRunner.rollbackTransaction();
         await queryRunner.release();
@@ -275,6 +300,7 @@ export class DatacenterAdminService {
           createDate: new Date(),
           isDeleted: false,
           type: generationItems[0].type,
+          isHidden: false,
         },
       );
       const vmItem = generationItem.items.vm;
@@ -297,6 +323,7 @@ export class DatacenterAdminService {
         step: vmItem.step,
         isDeleted: false,
         type: generationItem.type,
+        isHidden: false,
       };
       const ipDto = {
         code: VdcGenerationItemCodes.Ip,
@@ -316,6 +343,7 @@ export class DatacenterAdminService {
         step: ipItem.step,
         isDeleted: false,
         type: generationItem.type,
+        isHidden: false,
       };
       const cpuDto = {
         code: VdcGenerationItemCodes.Cpu,
@@ -335,6 +363,7 @@ export class DatacenterAdminService {
         step: null,
         isDeleted: false,
         type: generationItem.type,
+        isHidden: false,
       };
       const ramDto = {
         code: VdcGenerationItemCodes.Ram,
@@ -354,6 +383,7 @@ export class DatacenterAdminService {
         step: null,
         isDeleted: false,
         type: generationItem.type,
+        isHidden: false,
       };
       const diskDto = {
         code: VdcGenerationItemCodes.Disk,
@@ -374,6 +404,7 @@ export class DatacenterAdminService {
         createDate: new Date(),
         isDeleted: false,
         type: generationItem.type,
+        isHidden: false,
       };
       await this.itemTypesTableService.createWithQueryRunner(
         queryRunner,
@@ -419,6 +450,7 @@ export class DatacenterAdminService {
           step: cpuItem.step,
           isDeleted: false,
           type: generationItem.type,
+          isHidden: false,
         };
         await this.itemTypesTableService.createWithQueryRunner(
           queryRunner,
@@ -450,6 +482,7 @@ export class DatacenterAdminService {
           createDate: new Date(),
           isDeleted: false,
           type: generationItem.type,
+          isHidden: false,
         };
         await this.itemTypesTableService.createWithQueryRunner(
           queryRunner,
@@ -457,7 +490,7 @@ export class DatacenterAdminService {
         );
       }
       for (const diskItem of generationItem.items.diskItems) {
-        const diskItemDto = {
+        const diskItemDto: CreateItemTypesDto = {
           code: diskItem.code,
           fee: diskItem.price,
           maxAvailable: null,
@@ -476,6 +509,7 @@ export class DatacenterAdminService {
           createDate: new Date(),
           isDeleted: false,
           type: generationItem.type,
+          isHidden: diskItem.isHidden,
         };
         await this.itemTypesTableService.createWithQueryRunner(
           queryRunner,
@@ -502,7 +536,10 @@ export class DatacenterAdminService {
       }
 
       const checkPercentAndPrice = generationItems.reduce((n, item) => {
-        const checkPercent = item.percent > n.percent || !options.checkPercent;
+        const percentCondition = options.reversePercent
+          ? item.percent < n.percent
+          : item.percent > n.percent;
+        const checkPercent = percentCondition || !options.checkPercent;
         const checkPrice = item.price > n.price || !options.checkPrice;
         const checkMinMax =
           (item.max > n.max && item.min > n.min) || !options.checkMinMax;
