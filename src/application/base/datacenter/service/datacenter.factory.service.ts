@@ -307,6 +307,7 @@ export class DatacenterFactoryService {
               step: diskItem.step,
               percent: diskItem.percent,
               title: diskItem.title,
+              isHidden: diskItem.isHidden,
             };
             generationDto.items.diskItems.push(diskItemDto);
           }
