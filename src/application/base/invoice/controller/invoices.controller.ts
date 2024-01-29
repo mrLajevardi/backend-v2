@@ -9,6 +9,8 @@ import {
   Put,
   Query,
   Request,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -133,6 +135,7 @@ export class InvoicesController {
     description: 'The item has been successfully created',
   })
   @Put('/upgrade')
+  @UsePipes(new ValidationPipe({ transform: true }))
   async upgradeAndExtend(
     @Body() dto: UpgradeAndExtendDto,
     @Request() options: SessionRequest,

@@ -30,6 +30,7 @@ export class Wrapper<T> {
   public async request<U, Header = any>(
     endpoint: EndpointInterface,
   ): Promise<AxiosResponse<U, Header>> {
+    axios.defaults.withCredentials = true;
     try {
       const additionalConfig = endpoint?.additionalConfig || {};
       const request: AxiosResponse<U, Header> = await axios.request({
