@@ -536,6 +536,7 @@ export class ServiceService {
       ServiceStatusEnum.Pending,
       ServiceStatusEnum.Disabled,
       ServiceStatusEnum.ExceededEnoughCredit,
+      // ServiceStatusEnum.Upgrading,
     ];
     if (typeId) {
       serviceTypeIds = [typeId];

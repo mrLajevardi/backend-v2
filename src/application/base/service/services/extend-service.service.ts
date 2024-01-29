@@ -45,6 +45,7 @@ import { ServiceDiscountTableService } from '../../crud/service-discount-table/s
 import { InvoiceTypes } from '../../invoice/enum/invoice-type.enum';
 import { VServiceInstancesDetailTableService } from '../../crud/v-service-instances-detail-table/v-service-instances-detail-table.service';
 import { ITEM_TYPE_CODE_HIERARCHY_SPLITTER } from '../../itemType/const/item-type-code-hierarchy.const';
+import { ServiceStatusEnum } from '../enum/service-status.enum';
 
 @Injectable()
 export class ExtendServiceService {
@@ -414,6 +415,11 @@ export class ExtendServiceService {
     invoiceId: number,
     invoiceType: InvoiceTypes,
   ): Promise<void> {
+    if (invoiceType !== InvoiceTypes.Extend) {
+      await this.serviceInstancesTable.update(serviceInstanceId, {
+        status: ServiceStatusEnum.Upgrading,
+      });
+    }
     if (invoiceType === InvoiceTypes.UpgradeAndExtend) {
       await this.serviceItemsTable.deleteAll({
         serviceInstanceId,

@@ -52,6 +52,12 @@ export class UpgradeVdcComputeResourcesService
   async execute(job: Job<TaskDataType, any, TasksEnum>): Promise<void> {
     try {
       await this.increaseComputeResources(job);
+      await this.serviceInstanceTableService.update(
+        job.data.serviceInstanceId,
+        {
+          status: ServiceStatusEnum.Success,
+        },
+      );
     } catch (err) {
       const service = await this.serviceInstanceTableService.findById(
         job.data.serviceInstanceId,
