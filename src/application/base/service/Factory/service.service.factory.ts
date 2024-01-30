@@ -199,7 +199,7 @@ export class ServiceServiceFactory {
         serviceInstanceId: serviceInstanceId,
         storageLimit: vdcItems.storageLimitMB,
         storageUsed: vdcItems.storageUsedMB,
-        numberOfVms: Number(vmServiceItem.value),
+        numberOfVms: Number(vmServiceItem?.value),
       },
 
       this.vmService,
