@@ -4,4 +4,5 @@ export interface CheckConfigsOptions {
   checkMinMax: boolean;
   checkPrice: boolean;
   checkPercent: boolean;
+  reversePercent?: boolean;
 }

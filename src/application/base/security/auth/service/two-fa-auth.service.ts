@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { UserPayload } from '../dto/user-payload.dto';
 import { TwoFaAuthTypeService } from '../classes/two-fa-auth-type.service';
 import { TwoFaAuthTypeEnum } from '../enum/two-fa-auth-type.enum';
@@ -6,6 +11,12 @@ import { TwoFaAuthStrategy } from '../classes/two-fa-auth.strategy';
 import { BaseSendTwoFactorAuthDto } from '../dto/send-otp-two-factor-auth.dto';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { User } from '../../../../../infrastructure/database/entities/User';
+import { UserService } from '../../../user/service/user.service';
+import { AccessTokenDto } from '../dto/access-token.dto';
+import { VerifyOtpTwoFactorAuthDto } from '../dto/verify-otp-two-factor-auth.dto';
+import { OtpErrorException } from '../../../../../infrastructure/exceptions/otp-error-exception';
+import { AuthService } from './auth.service';
+import { LoginService } from './login.service';
 
 @Injectable()
 export class TwoFaAuthService {
@@ -13,18 +24,15 @@ export class TwoFaAuthService {
     private TwoFaAuthType: TwoFaAuthTypeService,
     private TwoFaAuthStrategy: TwoFaAuthStrategy,
     private readonly userTable: UserTableService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
   ) {}
 
   private dictionary = {
     [TwoFaAuthTypeEnum.Sms]: this.TwoFaAuthType.sms,
     [TwoFaAuthTypeEnum.Email]: this.TwoFaAuthType.email,
     [TwoFaAuthTypeEnum.Totp]: this.TwoFaAuthType.totp,
-  };
-
-  private convertType = {
-    sms: 1,
-    email: 2,
-    totp: 3,
   };
 
   public async enable(
@@ -103,21 +111,61 @@ export class TwoFaAuthService {
     return true;
   }
 
+  public async sendOtpByPhoneNumber(
+    phoneNumber: string,
+    type: TwoFaAuthTypeEnum,
+  ): Promise<BaseSendTwoFactorAuthDto> {
+    const userPayload: UserPayload =
+      await this.userService.createUserPayloadByPhone(phoneNumber);
+
+    return await this.sendOtp(userPayload, type);
+  }
+
   public async sendOtp(
     user: UserPayload,
     type: TwoFaAuthTypeEnum,
   ): Promise<BaseSendTwoFactorAuthDto> {
-    const twoFactorTypes: number[] = await this.getUserTwoFactorTypes(
-      user.userId,
-    );
-
-    if (type == TwoFaAuthTypeEnum.None || !twoFactorTypes.includes(type)) {
-      throw new BadRequestException();
-    }
+    this.validateForUser(user, type);
 
     this.TwoFaAuthStrategy.setStrategy(this.dictionary[type]);
 
     return await this.TwoFaAuthStrategy.sendOtp(user);
+  }
+
+  public validateForUser(
+    userPayload: UserPayload,
+    type: TwoFaAuthTypeEnum,
+  ): void {
+    const twoFactorTypes: number[] = this.parseTwoFactorStrToArray(
+      userPayload.twoFactorAuth,
+    );
+
+    if (!twoFactorTypes.includes(Number(type))) {
+      throw new BadRequestException();
+    }
+  }
+
+  public async verifyOtpProcess(
+    data: VerifyOtpTwoFactorAuthDto,
+    type: TwoFaAuthTypeEnum,
+  ): Promise<AccessTokenDto> {
+    const userPayload: UserPayload =
+      await this.userService.createUserPayloadByPhone(data.phoneNumber);
+
+    this.validateForUser(userPayload, type);
+
+    const verifyOtp: boolean = await this.verifyOtp(
+      userPayload,
+      Number(type),
+      data.otp,
+      data.hash,
+    );
+
+    if (!verifyOtp) {
+      throw new OtpErrorException();
+    }
+
+    return await this.authService.login.getLoginToken(userPayload.userId);
   }
 
   public async verifyOtp(
@@ -137,7 +185,7 @@ export class TwoFaAuthService {
     return this.parseTwoFactorStrToArray(user.twoFactorAuth);
   }
 
-  public parseTwoFactorStrToArray(twoFactorTypes: string) {
+  public parseTwoFactorStrToArray(twoFactorTypes: string): number[] {
     return String(twoFactorTypes)
       .split(',')
       .map((item) => Number(item));

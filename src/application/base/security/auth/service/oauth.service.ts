@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -33,6 +35,7 @@ import { encryptVdcPassword } from '../../../../../infrastructure/utils/extensio
 export class OauthService {
   constructor(
     private readonly userTable: UserTableService,
+    @Inject(forwardRef(() => LoginService))
     private readonly loginService: LoginService,
     private readonly otpService: OtpService,
     private readonly emailJwtService: JwtService,

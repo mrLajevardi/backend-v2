@@ -200,18 +200,14 @@ describe('TwoFaAuthService', () => {
         userId: 1060,
         personalVerification: true,
       };
-      /*
-       *** type can be sms or email
-       */
+
       const mock = jest
-        .spyOn(service, 'getUserTwoFactorTypes')
-        .mockImplementation((userId: number): Promise<number[]> => {
-          return Promise.resolve([
-            TwoFaAuthTypeEnum.Email,
-            TwoFaAuthTypeEnum.Sms,
-            TwoFaAuthTypeEnum.Totp,
-          ]);
-        });
+        .spyOn(service, 'validateForUser')
+        .mockImplementation(
+          (userPayload: UserPayload, type: TwoFaAuthTypeEnum): void => {
+            console.log(type);
+          },
+        );
 
       const type = TwoFaAuthTypeEnum.Email;
       const data = await service.sendOtp(user, type);
@@ -230,14 +226,12 @@ describe('TwoFaAuthService', () => {
        *** type can be sms or email
        */
       const mock = jest
-        .spyOn(service, 'getUserTwoFactorTypes')
-        .mockImplementation((userId: number): Promise<number[]> => {
-          return Promise.resolve([
-            TwoFaAuthTypeEnum.Email,
-            TwoFaAuthTypeEnum.Sms,
-            TwoFaAuthTypeEnum.Totp,
-          ]);
-        });
+        .spyOn(service, 'validateForUser')
+        .mockImplementation(
+          (userPayload: UserPayload, type: TwoFaAuthTypeEnum): void => {
+            console.log(type);
+          },
+        );
 
       const type = TwoFaAuthTypeEnum.Sms;
       const data = await service.sendOtp(user, type);
@@ -254,14 +248,13 @@ describe('TwoFaAuthService', () => {
       };
 
       const mock = jest
-        .spyOn(service, 'getUserTwoFactorTypes')
-        .mockImplementation((userId: number): Promise<number[]> => {
-          return Promise.resolve([
-            TwoFaAuthTypeEnum.Email,
-            TwoFaAuthTypeEnum.Sms,
-            TwoFaAuthTypeEnum.Totp,
-          ]);
-        });
+        .spyOn(service, 'validateForUser')
+        .mockImplementation(
+          (userPayload: UserPayload, type: TwoFaAuthTypeEnum): void => {
+            console.log(type);
+          },
+        );
+
       jest
         .spyOn(mockTwoFaAuthStrategy, 'sendOtp')
         .mockImplementation(
@@ -287,14 +280,12 @@ describe('TwoFaAuthService', () => {
        *** type can be sms or email
        */
       const mock = jest
-        .spyOn(service, 'getUserTwoFactorTypes')
-        .mockImplementation((userId: number): Promise<number[]> => {
-          return Promise.resolve([
-            TwoFaAuthTypeEnum.Email,
-            TwoFaAuthTypeEnum.Sms,
-            TwoFaAuthTypeEnum.Totp,
-          ]);
-        });
+        .spyOn(service, 'validateForUser')
+        .mockImplementation(
+          (userPayload: UserPayload, type: TwoFaAuthTypeEnum): void => {
+            console.log(type);
+          },
+        );
 
       const type = TwoFaAuthTypeEnum.Email;
       const data = await service.verifyOtp(
@@ -317,15 +308,12 @@ describe('TwoFaAuthService', () => {
        *** type can be sms or email
        */
       const mock = jest
-        .spyOn(service, 'getUserTwoFactorTypes')
-        .mockImplementation((userId: number): Promise<number[]> => {
-          return Promise.resolve([
-            TwoFaAuthTypeEnum.Email,
-            TwoFaAuthTypeEnum.Sms,
-            TwoFaAuthTypeEnum.Totp,
-          ]);
-        });
-
+        .spyOn(service, 'validateForUser')
+        .mockImplementation(
+          (userPayload: UserPayload, type: TwoFaAuthTypeEnum): void => {
+            console.log(type);
+          },
+        );
       const type = TwoFaAuthTypeEnum.Sms;
       const data = await service.verifyOtp(
         user,
@@ -347,14 +335,12 @@ describe('TwoFaAuthService', () => {
        *** type can be sms or email
        */
       const mock = jest
-        .spyOn(service, 'getUserTwoFactorTypes')
-        .mockImplementation((userId: number): Promise<number[]> => {
-          return Promise.resolve([
-            TwoFaAuthTypeEnum.Email,
-            TwoFaAuthTypeEnum.Sms,
-            TwoFaAuthTypeEnum.Totp,
-          ]);
-        });
+        .spyOn(service, 'validateForUser')
+        .mockImplementation(
+          (userPayload: UserPayload, type: TwoFaAuthTypeEnum): void => {
+            console.log(type);
+          },
+        );
 
       const type = TwoFaAuthTypeEnum.Totp;
       const data = await service.verifyOtp(user, type, '123456');

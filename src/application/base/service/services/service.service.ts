@@ -482,11 +482,9 @@ export class ServiceService {
       vdcItems: GetOrgVdcResult = null;
     let model: GetAllVdcServiceWithItemsResultDto = {};
     for (const serviceInstance of allServicesInstances) {
-      if (
-        serviceInstance.status != ServiceStatusEnum.Error &&
-        serviceInstance.status != ServiceStatusEnum.Deleted &&
-        serviceInstance.status != ServiceStatusEnum.Pending
-      ) {
+      const status = this.checkViewingStatusService(serviceInstance.status);
+
+      if (status) {
         cpuSpeed = (
           await this.serviceFactory.getConfigServiceInstance(serviceInstance)
         ).cpuSpeed;
@@ -516,6 +514,14 @@ export class ServiceService {
     return res;
   }
 
+  private checkViewingStatusService(status: number) {
+    return (
+      status != ServiceStatusEnum.Error &&
+      status != ServiceStatusEnum.Deleted &&
+      status != ServiceStatusEnum.Pending
+    );
+  }
+
   async getServices(
     options: SessionRequest,
     typeId?: string,
@@ -527,7 +533,7 @@ export class ServiceService {
     } = options;
     let serviceTypeIds = ['vdc', 'vgpu', 'aradAi'];
     let serviceStatus: ServiceStatusEnum[] = [
-      // 3, 4, 5, 6,7
+      // 3, 4, 5, 6, 7, 8
       ServiceStatusEnum.Deleted,
       ServiceStatusEnum.Error,
       ServiceStatusEnum.DisabledByAdmin,
@@ -535,6 +541,8 @@ export class ServiceService {
       ServiceStatusEnum.Expired,
       ServiceStatusEnum.Pending,
       ServiceStatusEnum.Disabled,
+      ServiceStatusEnum.ExceededEnoughCredit,
+      ServiceStatusEnum.Upgrading,
     ];
     if (typeId) {
       serviceTypeIds = [typeId];
@@ -591,6 +599,10 @@ export class ServiceService {
       where: {
         serviceType: { id: serviceTypeDB.id },
         servicePlanType: servicePlanType,
+      },
+      order: {
+        period: 'asc',
+        sort: 'asc',
       },
     });
 

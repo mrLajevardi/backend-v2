@@ -83,6 +83,11 @@ export class DiskItem extends GenerationItem {
   @Expose()
   enabled: boolean;
 
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  @Expose()
+  isHidden: boolean;
+
   @ApiProperty({ type: Number })
   @IsNumber()
   @Expose()

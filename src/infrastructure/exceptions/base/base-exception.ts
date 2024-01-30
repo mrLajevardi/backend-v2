@@ -1,5 +1,4 @@
 import { HttpStatus } from '@nestjs/common';
-import { BaseFactoryException } from './base-factory.exception';
 import { TranslateOptions } from 'nestjs-i18n/dist/services/i18n.service';
 
 export class BaseException {
@@ -10,6 +9,8 @@ export class BaseException {
   cause: Error;
 
   translateOptions: TranslateOptions;
+
+  args: any;
 
   constructor(
     message = 'messages.someThingGotWrong',

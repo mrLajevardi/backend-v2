@@ -15,6 +15,9 @@ import { timestamp } from 'rxjs';
 import { VmDetailFactoryService } from './vm-detail.factory.service';
 import { formatVcloudDate } from '../../../infrastructure/utils/extensions/date.extension';
 import { VmTasksQueryDto } from '../dto/vm-tasks.query.dto';
+import { groupBy } from '../../../infrastructure/utils/extensions/array.extensions';
+import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
+import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
 
 @Injectable()
 export class VmDetailService {

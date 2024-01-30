@@ -63,13 +63,13 @@ export class UpgradeDiskResourcesService
           userId: user.id,
         },
       } as SessionRequest;
+      console.log(err);
       await this.ticketService.createTicket(options, {
         message: TicketsMessagesEnum.IncreaseStorageResourceFailure,
         name: user.name,
         serviceInstanceId: job.data.serviceInstanceId,
         subject: TicketsSubjectEnum.AutomaticTicket,
       });
-      console.log(err);
       return Promise.reject(err);
     }
   }

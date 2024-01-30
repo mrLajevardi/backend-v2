@@ -3,9 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { SortDateTypeEnum } from '../../../infrastructure/filters/sort-date-type.enum';
 import { getDateMinusDay } from '../../../infrastructure/utils/extensions/date.extension';
 import { VmStatusEnum } from '../enums/vm-status.enum';
+import { groupBy } from '../../../infrastructure/utils/extensions/array.extensions';
+import { DiskBusUnitBusNumberSpace } from '../../../wrappers/mainWrapper/user/vm/diskBusUnitBusNumberSpace';
+import { ExceedEnoughDiskCountException } from '../exceptions/exceed-enough-disk-count.exception';
+import { BaseFactoryException } from '../../../infrastructure/exceptions/base/base-factory.exception';
 
 @Injectable()
 export class VmDetailFactoryService {
+  constructor(private readonly baseFactoryException: BaseFactoryException) {}
   filterDateVmDetails(
     startDate: Date,
     endDate: Date,
@@ -56,6 +61,37 @@ export class VmDetailFactoryService {
     }
 
     return filterDate;
+  }
+
+  checkPutDiskValidation(data) {
+    const res = groupBy(
+      data,
+      (setting) => (setting as any).adapterType.legacyId,
+    );
+    for (const key in res) {
+      const busTypeInfo = DiskBusUnitBusNumberSpace.find(
+        (bus) => bus.legacyId == key,
+      );
+
+      const length = busTypeInfo.info.length;
+
+      const list = res[key] as [];
+      if (list.length > length) {
+        this.baseFactoryException.handleWithArgs(
+          ExceedEnoughDiskCountException,
+          {
+            args: {
+              length: length,
+              key: busTypeInfo.name,
+            },
+          },
+        );
+        // this.baseFactoryException.handle(NotEnoughCreditException);
+        // return new ExceedEnoughDiskCountException(
+        //   `You can not create more than ${length} items for busType ${key}`,
+        // );
+      }
+    }
   }
 
   async getCountOfNetworksVm(
