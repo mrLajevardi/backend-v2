@@ -37,7 +37,7 @@ export class StaticRouteNextHopeResultType {
   @ApiResponseProperty({
     type: StaticRouteNextHopeScopeResultType,
   })
-  scope?: StaticRouteNextHopeScopeResultType;
+  scope?: StaticRouteNextHopeScopeResultType | undefined;
 }
 export class StaticRouteResultType {
   @ApiResponseProperty({
@@ -102,11 +102,13 @@ export class StaticRouteResultDto extends BaseResultDto {
       return {
         ipAddress: item.ipAddress,
         adminDistance: item.adminDistance,
-        scope: {
-          id: item.scope?.id,
-          name: item.scope?.name,
-          scopeType: item.scope?.scopeType,
-        },
+        scope: item.scope?.id
+          ? {
+              id: item.scope?.id,
+              name: item.scope?.name,
+              scopeType: item.scope?.scopeType,
+            }
+          : undefined,
       };
     });
   }

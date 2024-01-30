@@ -14,9 +14,13 @@ import { StaticRouteWrapperService } from '../../../wrappers/main-wrapper/servic
 import { CreateStaticRouteDto } from '../../../wrappers/main-wrapper/service/user/staticRoute/dto/create-static-route.dto';
 import { TaskReturnDto } from '../../../infrastructure/dto/task-return.dto';
 import { CreateStaticRouteVdcDto } from '../dto/create-static-route-vdc.dto';
-import { StaticRouteResultDto } from '../dto/result/static-route.result.dto';
+import {
+  StaticRouteResultDto,
+  StaticRouteResultType,
+} from '../dto/result/static-route.result.dto';
 import { UpdateStaticRouteDto } from '../../../wrappers/main-wrapper/service/user/staticRoute/dto/update-static-route.dto';
 import { UpdateStaticRouteVdcDto } from '../dto/update-static-route-vdc.dto';
+import { UpdateDescriptionStaticRouteVdcDto } from '../dto/update-description-static-route-vdc.dto';
 
 @Injectable()
 export class StaticRouteService {
@@ -191,6 +195,34 @@ export class StaticRouteService {
     return Promise.resolve({
       taskId: staticRoute.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async updateDescriptionStaticRouteByVdcInstanceId(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    routeId: string,
+    data: UpdateDescriptionStaticRouteVdcDto,
+  ) {
+    const staticRoute: StaticRouteResultType =
+      await this.findStaticRouteByVdcInstanceId(
+        options,
+        serviceInstanceId,
+        routeId,
+      );
+
+    const updateDto: UpdateStaticRouteVdcDto = {
+      name: staticRoute.name,
+      description: data.description,
+      networkCidr: staticRoute.networkCidr,
+      nextHops: staticRoute.nextHops,
+    };
+
+    return await this.updateStaticRouteByVdcInstanceId(
+      options,
+      serviceInstanceId,
+      routeId,
+      updateDto,
+    );
   }
 
   async deleteStaticRouteByVdcInstanceId(

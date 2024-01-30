@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -39,6 +40,7 @@ import { CreateStaticRouteVdcDto } from '../dto/create-static-route-vdc.dto';
 import isCidr from 'is-cidr';
 import { UpdateStaticRouteVdcDto } from '../dto/update-static-route-vdc.dto';
 import { StaticRouteResultType } from '../dto/result/static-route.result.dto';
+import { UpdateDescriptionStaticRouteVdcDto } from '../dto/update-description-static-route-vdc.dto';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
@@ -439,7 +441,7 @@ export class EdgeGatewayController {
   }
 
   @Put('/:vdcInstanceId/staticRoute/:routeId')
-  @ApiOperation({ summary: 'Create an Static Route' })
+  @ApiOperation({ summary: 'Update an Static Route' })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   @ApiResponse({ type: TaskReturnDto })
   async updateStaticRoute(
@@ -449,6 +451,24 @@ export class EdgeGatewayController {
     @Request() options: SessionRequest,
   ): Promise<TaskReturnDto> {
     return await this.staticRouteService.updateStaticRouteByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      routeId,
+      data,
+    );
+  }
+
+  @Patch('/:vdcInstanceId/staticRoute/:routeId/description')
+  @ApiOperation({ summary: 'Update description of specific Static Route' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
+  async updateDescriptionStaticRoute(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Param('routeId') routeId: string,
+    @Body() data: UpdateDescriptionStaticRouteVdcDto,
+    @Request() options: SessionRequest,
+  ): Promise<TaskReturnDto> {
+    return await this.staticRouteService.updateDescriptionStaticRouteByVdcInstanceId(
       options,
       vdcInstanceId,
       routeId,
