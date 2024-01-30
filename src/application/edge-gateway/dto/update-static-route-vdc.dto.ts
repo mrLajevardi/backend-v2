@@ -69,7 +69,7 @@ export class NextHopsDto {
   @IsObject({
     each: true,
   })
-  scope?: NextHopsScope;
+  scope?: NextHopsScope | undefined;
 }
 
 export class UpdateStaticRouteVdcDto {
