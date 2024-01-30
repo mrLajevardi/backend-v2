@@ -151,7 +151,6 @@ export class LoginService {
           }
         : null,
     };
-
     if (isNil(aiAccessToken)) {
       try {
         const axiosConfig = {
@@ -162,15 +161,16 @@ export class LoginService {
           },
         };
         const aiToken: string = null;
-        const aiUrl = process.env.AI_BACK_URL + '/api/Auth/SsoLogin';
+        const aiUrl = process.env.AI_BACK_URL + '/api/Cloud/login';
+
+        const phoneNumber = impersonateAs?.phoneNumber ?? user.phoneNumber;
         const aiRequest = await axios.post(
           aiUrl,
           {
-            phoneNumber: user.phoneNumber,
+            phoneNumber: phoneNumber,
           },
           axiosConfig,
         );
-
         if (aiRequest.status == 200) {
           aiAccessToken = aiRequest.data.token;
         }
