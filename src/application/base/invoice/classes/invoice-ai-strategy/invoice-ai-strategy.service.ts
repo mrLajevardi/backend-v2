@@ -24,6 +24,14 @@ import { InvoiceItemsTableService } from '../../../crud/invoice-items-table/invo
 import { InvoiceDetailBaseDto } from '../../../../vdc/dto/invoice-detail-base.dto';
 import { InvoiceItemListService } from '../../../crud/invoice-item-list/invoice-item-list.service';
 import { InvoiceBaseStrategyInterface } from '../interface/invoice-base-strategy.interface';
+import { BaseFactoryException } from '../../../../../infrastructure/exceptions/base/base-factory.exception';
+import { NotFoundDataException } from '../../../../../infrastructure/exceptions/not-found-data-exception';
+import { ServiceItemTypesTree } from '../../../../../infrastructure/database/entities/views/service-item-types-tree';
+import iban from '@faker-js/faker/modules/finance/iban';
+import {
+  CalculationInvoiceItemsType,
+  InvoiceCalculatorAmountDto,
+} from '../../dto/invoice-calculator-amount.dto';
 
 @Injectable()
 export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
@@ -35,7 +43,9 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
     private readonly serviceTypesTableService: ServiceTypesTableService,
     private readonly invoiceItemsTableService: InvoiceItemsTableService,
     private readonly invoiceItemListService: InvoiceItemListService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
+
   async createInvoice(
     dto: CreateServiceInvoiceDto,
     options: SessionRequest,
@@ -81,47 +91,17 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
       dataItemType = data.itemsTypes;
     }
 
-    const periodItem = dataItemType.find(
-      (item) => item.code === ItemTypeCodes.Period,
+    const invoiceItems: CalculationInvoiceItemsType[] =
+      await this.convertInvoiceItemsToCalculationType(dataItemType);
+    const periodItem: ServiceItemTypesTree = await this.getPeriodItem(
+      dataItemType,
     );
-    if (!periodItem) {
-      throw new BadRequestException('Period item not found');
-    }
-    const checkPeriodItem = await this.serviceItemTreeTableService.findById(
-      periodItem.itemTypeId,
+
+    const { baseAmount, finalAmount, rawAmount } = this.calculatePriceItemTypes(
+      invoiceItems,
+      periodItem,
+      discountPercent,
     );
-    if (checkPeriodItem.codeHierarchy.split('_')[0] !== ItemTypeCodes.Period) {
-      throw new BadRequestException('Invalid period item type');
-    }
-
-    const itemTypesId = dataItemType.map((item) => item.itemTypeId);
-    const itemTypes = await this.serviceItemTreeTableService.find({
-      where: { id: In(itemTypesId) },
-    });
-
-    const invoiceItems = dataItemType.map((item) => {
-      const itemType = itemTypes.find(
-        (serviceItem) => serviceItem.id === item.itemTypeId,
-      );
-      const fee =
-        item.itemTypeId !== checkPeriodItem.id
-          ? this.calculateFee(item.value, itemType.fee)
-          : null;
-      return {
-        ItemID: item.itemTypeId,
-        Fee: fee,
-        value: item.value,
-        codeHierarchy: itemType.codeHierarchy,
-      };
-    });
-
-    const baseAmount = invoiceItems.reduce(
-      (acc, item) => acc + item.Fee || 0,
-      0,
-    );
-    const rawAmount = baseAmount * checkPeriodItem.maxPerRequest;
-    const finalAmount =
-      rawAmount * (1 + checkPeriodItem.percent) * discountPercent;
 
     // Retrieve tax percent
     const taxPercent = await this.systemSettingsTableService.findOne({
@@ -234,8 +214,9 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
     );
     // TODO must be check template belongs to ai templates
     if (isNil(template)) {
-      throw new BadRequestException();
+      this.baseFactoryException.handle(NotFoundDataException);
     }
+
     const decode = JSON.parse(template.structure);
     const invoiceItemsDto: InvoiceItemsDto[] = [];
 
@@ -254,5 +235,101 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
     return !isNil(value) && value.trim() !== '' && Number(value) !== 0
       ? Number(value) * fee
       : fee;
+  }
+
+  calculatePriceItemTypes(
+    invoiceItems: CalculationInvoiceItemsType[],
+    periodItem: ServiceItemTypesTree,
+    discountPercent: number,
+  ): InvoiceCalculatorAmountDto {
+    const baseAmount = invoiceItems.reduce(
+      (acc, item) => acc + item.Fee || 0,
+      0,
+    );
+
+    const finalAmount = baseAmount * (1 + periodItem.percent) * discountPercent;
+
+    return {
+      baseAmount,
+      finalAmount,
+      rawAmount: baseAmount,
+    };
+  }
+  async calculateTemplatePrice(
+    templateId: string,
+  ): Promise<InvoiceCalculatorAmountDto> {
+    const invoiceItems: InvoiceItemsDto[] =
+      await this.convertTemplateToItemType(templateId);
+
+    const calculationItems: CalculationInvoiceItemsType[] =
+      await this.convertInvoiceItemsToCalculationType(invoiceItems);
+
+    const calculateDiscountTemplate: number =
+      await this.calculateTemplateDiscount(templateId);
+
+    const discountPercent = 1 - calculateDiscountTemplate;
+
+    const periodItem = await this.getPeriodItem(invoiceItems);
+
+    return this.calculatePriceItemTypes(
+      calculationItems,
+      periodItem,
+      discountPercent,
+    );
+  }
+
+  async convertInvoiceItemsToCalculationType(
+    invoiceItemsDto: InvoiceItemsDto[],
+  ): Promise<CalculationInvoiceItemsType[]> {
+    const periodItem = await this.getPeriodItem(invoiceItemsDto);
+
+    const itemTypesId: number[] = invoiceItemsDto.map(
+      (item: InvoiceItemsDto) => item.itemTypeId,
+    );
+
+    const itemTypes: ServiceItemTypesTree[] =
+      await this.serviceItemTreeTableService.find({
+        where: { id: In(itemTypesId) },
+      });
+
+    return invoiceItemsDto.map((item) => {
+      const itemType = itemTypes.find(
+        (serviceItem) => serviceItem.id === item.itemTypeId,
+      );
+      const fee =
+        item.itemTypeId !== periodItem.id
+          ? this.calculateFee(item.value, itemType.fee)
+          : null;
+      return {
+        ItemID: Number(item.itemTypeId),
+        Fee: fee,
+        value: item.value,
+        codeHierarchy: itemType.codeHierarchy,
+      };
+    });
+  }
+
+  async getPeriodItem(
+    invoiceItemsDto: InvoiceItemsDto[],
+  ): Promise<ServiceItemTypesTree> {
+    const periodItem = invoiceItemsDto.find(
+      (item) => item.code === ItemTypeCodes.Period,
+    );
+    if (!periodItem) {
+      this.baseFactoryException.handle(
+        NotFoundDataException,
+        'messages.periodItemNotFound',
+      );
+    }
+    const checkPeriodItem: ServiceItemTypesTree =
+      await this.serviceItemTreeTableService.findById(periodItem.itemTypeId);
+    if (checkPeriodItem.codeHierarchy.split('_')[0] !== ItemTypeCodes.Period) {
+      this.baseFactoryException.handle(
+        NotFoundDataException,
+        'messages.periodItemNotFound',
+      );
+    }
+
+    return checkPeriodItem;
   }
 }

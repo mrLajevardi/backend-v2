@@ -1,6 +1,8 @@
 import xml2js, { Builder } from 'xml2js';
 import { VcloudWrapper } from '../../../vcloudWrapper/vcloudWrapper';
 import { vcloudQuery } from '../vdc/vcloudQuery';
+import { getAccept } from '../../../../infrastructure/helpers/get-accept.helper';
+import { VcloudAcceptEnum } from '../../../../infrastructure/enum/vcloud-accept.enum';
 /**
  *
  * @param {String} authToken
@@ -46,7 +48,10 @@ export async function userUpdateNamedDisk(
 
   const action = await new VcloudWrapper().posts('user.vdc.updateNamedDisk', {
     ...options,
-    headers: { Authorization: `Bearer ${authToken}` },
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+      Accept: getAccept(VcloudAcceptEnum.AllPlusXml),
+    },
     urlParams: { vdcId: formattedVdcId, nameDiskID },
   });
   return Promise.resolve({

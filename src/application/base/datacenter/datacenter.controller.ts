@@ -15,6 +15,8 @@ import {
   Query,
   Body,
   Put,
+  Request,
+  Provider,
 } from '@nestjs/common';
 import { DatacenterConfigGenResultDto } from './dto/datacenter-config-gen.result.dto';
 import { DatacenterConfigGenItemsResultDto } from './dto/datacenter-config-gen-items.result.dto';
@@ -34,6 +36,10 @@ import { PureAbility, subject } from '@casl/ability';
 import { AclSubjectsEnum } from '../security/ability/enum/acl-subjects.enum';
 import { Action } from '../security/ability/enum/action.enum';
 import { CheckPolicies } from '../security/ability/decorators/check-policies.decorator';
+import { AdminVdcWrapperService } from '../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { VdcDetailService } from '../../vdc/service/vdc-detail.service';
+import { ProviderResultDto } from './dto/provider.result.dto';
 
 @ApiTags('Datacenter')
 @Controller('datacenter')
@@ -44,7 +50,7 @@ import { CheckPolicies } from '../security/ability/decorators/check-policies.dec
 export class DatacenterController {
   constructor(
     @Inject(BASE_DATACENTER_SERVICE)
-    private readonly service: BaseDatacenterService,
+    private readonly service: BaseDatacenterService, // private readonly adminVdcWrapperService: AdminVdcWrapperService,
   ) {}
 
   @Public()
@@ -57,8 +63,18 @@ export class DatacenterController {
     description: 'All Enabled Datacenters With Their Gens',
     type: [DatacenterConfigGenResultDto],
   })
-  async getDatacenterWithGens(): Promise<DatacenterConfigGenResultDto[]> {
-    const result = await this.service.getDatacenterConfigWithGen();
+  @ApiQuery({
+    name: 'datacenterName',
+    type: String,
+    description: 'datacenterName',
+    required: false,
+  })
+  async getDatacenterWithGens(
+    @Query('datacenterName') datacenterName?: string,
+  ): Promise<DatacenterConfigGenResultDto[]> {
+    const result = await this.service.getDatacenterConfigWithGen(
+      datacenterName,
+    );
     return result;
   }
 
@@ -110,21 +126,6 @@ export class DatacenterController {
     return result;
   }
 
-  @Get('/getAllDatacenters')
-  @Public()
-  async getAllDataCenters(): Promise<DataCenterList[]> {
-    const result = await this.service.getAllDataCenters();
-    return result;
-  }
-  @Get('/getDatacenterDetails/:datacenterName')
-  @Public()
-  async getDatacenterDetails(
-    @Param('datacenterName') datacenterName: string,
-  ): Promise<DatacenterDetails> {
-    const result = await this.service.getDatacenterDetails(datacenterName);
-    return result;
-  }
-
   @Get('/groupedConfiguration')
   @ApiOperation({
     summary: 'return grouped by Datacenter configurations',
@@ -153,5 +154,22 @@ export class DatacenterController {
   })
   async createDatacenter(@Body() dto: CreateDatacenterDto): Promise<void> {
     return this.service.createDatacenter(dto);
+  }
+  @Get('/allProviders')
+  @ApiOperation({
+    summary: 'get all providers',
+  })
+  async getAllProviders(): Promise<ProviderResultDto[]> {
+    const providerVdcsList = await this.service.getAllProviders();
+    return providerVdcsList;
+  }
+
+  @Get('/getAllProvidersStorage')
+  @ApiOperation({ summary: 'getAllProvidersStorage' })
+  async getAllProvidersStorage(
+    @Request()
+    options: SessionRequest,
+  ): Promise<{ name: string; code: string }[]> {
+    return this.service.getAllStorageProvider();
   }
 }

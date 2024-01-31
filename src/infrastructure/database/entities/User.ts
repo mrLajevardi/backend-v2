@@ -15,6 +15,7 @@ import { Organization } from './Organization';
 import { Transactions } from './Transactions';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Files } from './Files';
+import { decryptVdcPassword } from '../../utils/extensions/encrypt.extensions';
 
 @Index('PK__User__3214EC0774485CFE', ['id'], { unique: true })
 @Entity('User', { schema: 'security' })
@@ -49,6 +50,9 @@ export class User {
 
   @Column('nvarchar', { name: 'name', length: 255 })
   name: string;
+
+  @Column('nvarchar', { name: 'totpSecretKey', length: 50, nullable: true })
+  totpSecretKey: string;
 
   @Column('nvarchar', { name: 'family', length: 255 })
   family: string;
@@ -200,4 +204,9 @@ export class User {
   @ManyToOne(() => Files)
   @JoinColumn({ name: 'companyLetterId', referencedColumnName: 'guid' })
   companyLetter: Files;
+
+  @AfterLoad()
+  decrypt() {
+    this.vdcPassword = decryptVdcPassword(this.vdcPassword);
+  }
 }

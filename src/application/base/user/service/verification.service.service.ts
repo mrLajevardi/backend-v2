@@ -9,8 +9,17 @@ export class VerificationServiceService {
     phoneNumber: string,
     nationalCode: string,
   ): Promise<{ message: any; status: any }> {
-    const secondsSinceEpoch: number = Math.floor(Date.now() / 1000);
-    const timeString = moment().format('YYYYMMDDHHmmssSSS');
+    const dateInUTC = new Date();
+
+    const dateInTehran = new Date(
+      dateInUTC.toLocaleString('en-US', { timeZone: 'Asia/Tehran' }),
+    );
+
+    console.log(dateInTehran.getTime());
+
+    const secondsSinceEpoch: number = Math.floor(dateInTehran.getTime() / 1000);
+    const timeString = moment().zone('+0330').format('YYYYMMDDHHmmssSSS');
+
     const requestId = `1279${timeString}000`;
 
     const basicAuth =

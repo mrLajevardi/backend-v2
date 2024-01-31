@@ -19,6 +19,7 @@ import {
   VcloudWrapperInterface,
   WrapperProvider,
 } from './interface/vcloud-wrapper.interface';
+import { StaticRouteEndpointService } from './services/user/edgeGateway/staticRoute/static-route-endpoint.service';
 @Module({
   imports: [ConfigModule],
   providers: [
@@ -47,6 +48,7 @@ import {
         AdminEdgeGatewayEndpointService,
         AdminUserEndpointService,
         AdminOrgEndpointService,
+        StaticRouteEndpointService,
       ],
     },
     VmEndpointService,
@@ -65,6 +67,7 @@ import {
     AdminOrgEndpointService,
     ConfigService,
     VcloudWrapperService,
+    StaticRouteEndpointService,
   ],
   exports: [VcloudWrapperService],
 })

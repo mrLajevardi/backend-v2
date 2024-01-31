@@ -4,7 +4,6 @@ import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { User } from '../../../../infrastructure/database/entities/User';
-
 import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/not-enough-credit.exception';
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
@@ -27,6 +26,7 @@ import { BudgetingResultDtoFormat } from '../dto/results/budgeting.result.dto';
 import { NotEnoughServiceCreditForWeekException } from '../../../../infrastructure/exceptions/not-enough-service-credit-for-week.exception';
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
 
 @Injectable()
 export class BudgetingService {
@@ -40,6 +40,7 @@ export class BudgetingService {
     private readonly systemSettingsTableService: SystemSettingsTableService,
     private readonly paygCostCalculationService: PaygCostCalculationService,
     private readonly vdcFactoryService: VdcFactoryService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   async getUserBudgeting(userId: number): Promise<BudgetingResultDtoFormat[]> {
@@ -97,7 +98,7 @@ export class BudgetingService {
     }
 
     if (userCredit < data.increaseAmount) {
-      throw new NotEnoughCreditException();
+      this.baseFactoryException.handle(NotEnoughCreditException);
     }
 
     await this.transactionsTableService.create({
@@ -212,7 +213,7 @@ export class BudgetingService {
       return PaymentTypes.PayToBudgetingByUserCreditAutoPaid;
     }
     if (exception) {
-      throw new NotEnoughCreditException();
+      this.baseFactoryException.handle(NotEnoughCreditException);
     }
   }
 
@@ -241,7 +242,7 @@ export class BudgetingService {
     }
 
     if (userCredit == 0 || paidAmountWithTax > userCredit) {
-      throw new NotEnoughCreditException();
+      this.baseFactoryException.handle(NotEnoughCreditException);
     }
 
     const transactionDto: CreateTransactionsDto = {
@@ -295,7 +296,7 @@ export class BudgetingService {
       throw new NotFoundException();
     }
     if (vServiceInstance.credit == 0 || amount > vServiceInstance.credit) {
-      throw new NotEnoughCreditException();
+      this.baseFactoryException.handle(NotEnoughCreditException);
     }
 
     const perHourCost: number = await this.calculateCostPerHour(
@@ -303,7 +304,7 @@ export class BudgetingService {
     );
 
     if (vServiceInstance.credit <= perHourCost * 24 * 7) {
-      throw new NotEnoughServiceCreditForWeekException();
+      this.baseFactoryException.handle(NotEnoughServiceCreditForWeekException);
     }
 
     const user: User = await this.userTableService.findById(userId);

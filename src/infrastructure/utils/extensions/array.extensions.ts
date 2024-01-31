@@ -5,7 +5,17 @@
 //       return objectsByKeyValue;
 //     }, {} as Record<string, T[]>);
 type KeySelector<T> = (item: T) => string;
-
+export function distinctByProperty(objects: any[], property: keyof any): any[] {
+  const uniqueValues: Record<string, boolean> = {};
+  return objects.filter((obj) => {
+    const value = obj[property];
+    if (!uniqueValues[value]) {
+      uniqueValues[value] = true;
+      return true;
+    }
+    return false;
+  });
+}
 export function groupBy<T>(
   array: Iterable<T>,
   keySelector: KeySelector<T>,
