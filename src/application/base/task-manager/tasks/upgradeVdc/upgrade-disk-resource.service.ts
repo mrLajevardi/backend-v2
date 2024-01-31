@@ -28,6 +28,7 @@ import { VdcDetailService } from 'src/application/vdc/service/vdc-detail.service
 import { VdcStorageProfileParams } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/create-vdc.dto';
 import { AddVdcStoragePolicyDto } from 'src/wrappers/main-wrapper/service/admin/vdc/dto/add-vdc-storage-policy.dto';
 import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
+import { TicketService } from '../../../ticket/ticket.service';
 @Injectable()
 export class UpgradeDiskResourcesService
   implements BaseTask<UpgradeVdcStepsEnum>
@@ -43,6 +44,7 @@ export class UpgradeDiskResourcesService
     private readonly serviceInstanceTableService: ServiceInstancesTableService,
     private readonly userService: UserTableService,
     private readonly ticketingWrapperService: TicketingWrapperService,
+    private readonly ticketService: TicketService,
     @Inject(forwardRef(() => VdcDetailService))
     private readonly vdcDetailService: VdcDetailService,
   ) {
@@ -56,15 +58,18 @@ export class UpgradeDiskResourcesService
         job.data.serviceInstanceId,
       );
       const user = await this.userService.findById(service.userId);
-      await this.ticketingWrapperService.createTicket(
-        TicketsMessagesEnum.IncreaseStorageResourceFailure,
-        ActAsTypeEnum.User,
-        null,
-        user.name,
-        TicketsSubjectEnum.AutomaticTicket,
-        user.username,
-      );
+      const options: SessionRequest = {
+        user: {
+          userId: user.id,
+        },
+      } as SessionRequest;
       console.log(err);
+      await this.ticketService.createTicket(options, {
+        message: TicketsMessagesEnum.IncreaseStorageResourceFailure,
+        name: user.name,
+        serviceInstanceId: job.data.serviceInstanceId,
+        subject: TicketsSubjectEnum.AutomaticTicket,
+      });
       return Promise.reject(err);
     }
   }

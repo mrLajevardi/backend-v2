@@ -69,6 +69,14 @@ import { SystemSettingsPropertyKeysEnum } from '../../crud/system-settings-table
 import { VerificationServiceService } from './verification.service.service';
 import { ShahkarException } from '../../../../infrastructure/exceptions/shahkar-exception';
 import { PaginationReturnDto } from '../../../../infrastructure/dto/pagination-return.dto';
+import { encryptVdcPassword } from '../../../../infrastructure/utils/extensions/encrypt.extensions';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
+import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/not-enough-credit.exception';
+import { PasswordIsDuplicateException } from '../../../../infrastructure/exceptions/password-is-duplicate.exception';
+import { LoginService } from '../../security/auth/service/login.service';
+import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
+import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data.exception';
 
 @Injectable()
 export class UserService {
@@ -89,6 +97,8 @@ export class UserService {
     private readonly userInfoService: UserInfoService,
     private readonly userFactoryService: UsersFactoryService,
     private readonly verificationServiceService: VerificationServiceService,
+    private readonly baseFactoryException: BaseFactoryException,
+    private readonly loginService: LoginService,
   ) {}
 
   async checkPhoneNumber(phoneNumber: string): Promise<boolean> {
@@ -102,6 +112,20 @@ export class UserService {
     return await this.userTable.findOne({
       where: { phoneNumber: phoneNumber },
     });
+  }
+
+  async createUserPayloadByPhone(phoneNumber: string): Promise<UserPayload> {
+    const user = await this.findByPhoneNumber(phoneNumber);
+    if (isNil(user)) {
+      this.baseFactoryException.handle(NotFoundDataException);
+    }
+    return {
+      userId: user.id,
+      username: user.username,
+      guid: user.guid,
+      twoFactorAuth: user.twoFactorAuth,
+      personalVerification: user.personalVerification,
+    } as UserPayload;
   }
 
   async findById(userId: number): Promise<User> {
@@ -154,9 +178,7 @@ export class UserService {
     );
 
     if (checkPassword) {
-      throw new ForbiddenException(
-        'رمز عبور جدید باید متفاوت از رمز عبور گذشته باشد.',
-      );
+      this.baseFactoryException.handle(PasswordIsDuplicateException);
     }
 
     const hashedPassword = await encryptPassword(data.newPassword);
@@ -211,7 +233,7 @@ export class UserService {
     const createDto: CreateUserDto = {
       phoneNumber: phoneNumber,
       username: `U-${phoneNumber}`,
-      vdcPassword: password,
+      vdcPassword: encryptVdcPassword(password),
       name: 'کاربر',
       family: 'گرامی',
       code: null,
@@ -602,7 +624,7 @@ export class UserService {
   async createProfile(
     options: SessionRequest,
     data: CreateProfileDto,
-  ): Promise<UserProfileDto> {
+  ): Promise<{ user: User; tokens: AccessTokenDto }> {
     const userProfileData: UpdateUserDto = {
       name: data.name,
       family: data.family,
@@ -613,6 +635,7 @@ export class UserService {
     };
 
     const user = await this.userTable.findById(options.user.userId);
+    let tokens: AccessTokenDto = null;
     const validPersonalCode =
       this.verificationServiceService.isValidIranianNationalCode(
         data.personalCode,
@@ -634,15 +657,11 @@ export class UserService {
     });
 
     if (!isNil(shahkarVerify) && shahkarVerify.value == '1') {
-      const verifyData =
-        await this.verificationServiceService.checkUserVerification(
-          user.phoneNumber,
-          userProfileData.personalCode,
-        );
-
-      if (verifyData.status.toString() != '200') {
-        throw new ShahkarException(verifyData.message.toString());
-      }
+      tokens = await this.shahkarVerify(
+        options,
+        user.phoneNumber,
+        data.personalCode,
+      );
     }
 
     await this.userTable.update(options.user.userId, userProfileData);
@@ -652,7 +671,32 @@ export class UserService {
       relations: ['company'],
     });
 
-    return new UserProfileResultDto().toArray(userWithRelation);
+    return {
+      user: userWithRelation,
+      tokens: tokens,
+    };
+  }
+
+  async shahkarVerify(
+    options: SessionRequest,
+    phoneNumber: string,
+    personalCode: string,
+  ): Promise<AccessTokenDto> {
+    const verifyData =
+      await this.verificationServiceService.checkUserVerification(
+        phoneNumber,
+        personalCode,
+      );
+
+    if (verifyData.status.toString() != '200') {
+      throw new ShahkarException(verifyData.message.toString());
+    }
+
+    await this.userTable.update(options.user.userId, {
+      personalVerification: true,
+    });
+
+    return await this.loginService.getLoginToken(options.user.userId);
   }
 
   async getUserProfile(options: SessionRequest) {
@@ -667,7 +711,6 @@ export class UserService {
         'companyLetter',
       ],
     });
-
     return new UserProfileResultDto().toArray(user);
   }
 
@@ -717,6 +760,20 @@ export class UserService {
   }
 
   async personalVerification(options: SessionRequest) {
+    const userProfile: User = await this.userTable.findById(
+      options.user.userId,
+    );
+
+    const verifyData =
+      await this.verificationServiceService.checkUserVerification(
+        userProfile.phoneNumber,
+        userProfile.personalCode,
+      );
+
+    if (verifyData.status.toString() != '200') {
+      throw new ShahkarException(verifyData.message.toString());
+    }
+
     const userProfileData: UpdateUserDto = {
       personalVerification: true,
     };

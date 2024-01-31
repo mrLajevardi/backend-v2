@@ -27,8 +27,9 @@ import { InvoicesModule } from '../invoice/invoices.module';
     },
     DatacenterFactoryService,
     DatacenterAdminService,
+    DatacenterService,
   ],
   controllers: [DatacenterController],
-  exports: [BASE_DATACENTER_SERVICE],
+  exports: [BASE_DATACENTER_SERVICE, DatacenterService],
 })
 export class DatacenterModule {}

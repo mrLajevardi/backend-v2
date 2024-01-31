@@ -180,21 +180,33 @@ export class VmController {
     return this.vmService.deleteMedia(options, serviceInstanceId, mediaId);
   }
 
-  @Delete('/:serviceInstanceId/:vmId/template')
+  @Delete('/:serviceInstanceId/:containerId/template')
   @ApiOperation({ summary: '' })
-  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
-  @ApiParam({ name: 'vmId', description: 'vm id' })
+  @ApiParam({
+    name: 'serviceInstanceId',
+    description: 'VDC instance ID',
+    example: '053CCE96-37B8-EE11-A56D-005056A89991',
+  })
+  @ApiParam({
+    name: 'containerId',
+    description: 'container value in templates list',
+    example: 'vappTemplate-c8adf900-e590-4226-b380-70bdd814f781',
+  })
   @ApiResponse({
     status: 201,
     description: 'acquire vm tickets',
     type: 'object',
   })
   async deleteTemplate(
-    @Param('vmId') vmId: string,
+    @Param('containerId') containerId: string,
     @Param('serviceInstanceId') serviceInstanceId: string,
     @Request() options,
   ): Promise<TaskReturnDto> {
-    return this.vmService.deleteTemplate(options, serviceInstanceId, vmId);
+    return this.vmService.deleteTemplate(
+      options,
+      serviceInstanceId,
+      containerId,
+    );
   }
 
   @Delete('/:serviceInstanceId/:vmId/')

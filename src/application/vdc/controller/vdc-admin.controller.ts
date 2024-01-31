@@ -1,5 +1,10 @@
-import { Controller, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Param, Request, UseGuards } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { isEmpty } from 'lodash';
 import { ServiceInstancesTableService } from 'src/application/base/crud/service-instances-table/service-instances-table.service';
 import { TasksTableService } from 'src/application/base/crud/tasks-table/tasks-table.service';
@@ -12,6 +17,10 @@ import { TaskManagerService } from 'src/application/base/tasks/service/task-mana
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { LoggerService } from 'src/infrastructure/logger/logger.service';
 import { mainWrapper } from 'src/wrappers/mainWrapper/mainWrapper';
+import { NamedDiskDto } from '../dto/named-disk.dto';
+import { SessionRequest } from '../../../infrastructure/types/session-request.type';
+import { VdcService } from '../service/vdc.service';
+import { VdcDetailService } from '../service/vdc-detail.service';
 
 @Controller('vdc/admin')
 @ApiBearerAuth()
@@ -25,6 +34,7 @@ export class VdcAdminController {
     private readonly taskManagerService: TaskManagerService,
     private readonly servicePropertiesService: ServicePropertiesService,
     private readonly logger: LoggerService,
+    private readonly vdcDetailService: VdcDetailService,
   ) {}
   /**
    * delete vdc by admin

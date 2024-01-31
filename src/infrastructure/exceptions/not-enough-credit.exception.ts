@@ -1,16 +1,11 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { BaseException } from './base/base-exception';
 
-export class NotEnoughCreditException extends HttpException {
-  constructor(message = 'not enough credit', cause?: Error) {
-    super(
-      {
-        status: HttpStatus.BAD_REQUEST,
-        error: message,
-      },
-      HttpStatus.BAD_REQUEST,
-      {
-        cause: cause,
-      },
-    );
+export class NotEnoughCreditException extends BaseException {
+  constructor(
+    message = 'common.messages.userNotHaveEnoughCredit',
+    cause?: Error,
+  ) {
+    super(message, HttpStatus.BAD_REQUEST, cause);
   }
 }

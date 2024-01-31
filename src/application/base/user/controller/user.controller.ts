@@ -53,13 +53,12 @@ import {
 import { UserInfoService } from '../service/user-info.service';
 import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
 import { OtpNotMatchException } from '../../../../infrastructure/exceptions/otp-not-match-exception';
-import { PureAbility, subject } from '@casl/ability';
-import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-handler.interface';
-import { Action } from '../../security/ability/enum/action.enum';
-import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
-import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
 import { Throttle } from '@nestjs/throttler';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
+import { PhoneNumberHashResultDto } from '../dto/results/phone-number-hash.result.dto';
+import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
+import { UserProfileResultDto } from '../dto/user-profile.result.dto';
+import { CreateUserProfileResultDto } from '../dto/results/create-user-profile.result.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -290,11 +289,20 @@ export class UserController {
 
   @Post('/createProfile')
   @ApiOperation({ summary: 'create user profile' })
+  @ApiResponse({
+    type: CreateUserProfileResultDto,
+    description:
+      "if user change personalVerification state , response contains tokens object (if doesn't change personalVerification , response doesn't have tokens object)",
+  })
   async createProfile(
     @Request() options: SessionRequest,
     @Body() data: CreateProfileDto,
-  ): Promise<UserProfileDto> {
-    return await this.userService.createProfile(options, data);
+  ): Promise<CreateUserProfileResultDto> {
+    const userData = await this.userService.createProfile(options, data);
+    return {
+      user: new UserProfileResultDto().toArray(userData.user),
+      tokens: userData.tokens ?? undefined,
+    };
   }
 
   @Get('/profile')
@@ -313,14 +321,12 @@ export class UserController {
     return await this.userService.personalVerification(options);
   }
 
+  @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('/changePhoneNumber')
   @ApiOperation({
     summary: 'change current user phone number , send otp to old phone number',
   })
-  async changePhoneNumber(
-    @Request() options: SessionRequest,
-    // @Body() data: PhoneNumberDto
-  ) {
+  async changePhoneNumber(@Request() options: SessionRequest) {
     const user: UserProfileDto = await this.userService.findById(
       options.user.userId,
     );
@@ -336,29 +342,17 @@ export class UserController {
   @ApiOperation({
     summary: 'verify old phone number otp , send otp to new phone number',
   })
+  @ApiResponse({
+    type: PhoneNumberHashResultDto,
+  })
   async changePhoneNumberOldNumberVerifyOtp(
     @Request() options: SessionRequest,
-    @Body() data: ChangePhoneNumberDto,
-  ) {
-    const verify: boolean = this.securityTools.otp.otpVerifier(
-      data.oldPhoneNumber,
-      data.otp,
-      data.hash,
+    @Body() dto: ChangePhoneNumberDto,
+  ): Promise<PhoneNumberHashResultDto> {
+    return await this.userInfoService.changePhoneNumberOldNumberVerifyOtp(
+      options,
+      dto,
     );
-
-    if (!verify) {
-      throw new OtpNotMatchException();
-    }
-
-    const cacheKey: string = options.user.userId + '_changePhoneNumber';
-    await this.redisCacheService.set(cacheKey, data.oldPhoneNumber, 480000);
-
-    const otp = await this.loginService.generateOtp(data.newPhoneNumber);
-
-    return {
-      phoneNumber: data.newPhoneNumber,
-      hash: otp.hash,
-    };
   }
 
   @Post('/changePhoneNumber/new-phone/verify-otp')

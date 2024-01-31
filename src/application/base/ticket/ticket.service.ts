@@ -11,6 +11,8 @@ import { getTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/getTicket
 import { replyTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/replyTicket';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { CreateTicketDto } from './dto/create-ticket.dto';
+import { TicketStatusEnum } from './enum/ticket-status.enum';
+import { TicketEditType } from './enum/ticket-edit-type.enum';
 
 @Injectable()
 export class TicketService {
@@ -32,7 +34,7 @@ export class TicketService {
     }
     // update status to 3
     console.log(ticketId, '💀💀💀');
-    await updateTicket('status', 5, ticketId);
+    await updateTicket(TicketEditType.Status, TicketStatusEnum.Close, ticketId);
     return Promise.resolve();
   }
 
@@ -146,6 +148,11 @@ export class TicketService {
       'reply',
       user.username,
       null,
+    );
+    await updateTicket(
+      TicketEditType.Status,
+      TicketStatusEnum.Pending,
+      ticketId,
     );
     return Promise.resolve(ticket);
   }

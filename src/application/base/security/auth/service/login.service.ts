@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserTableService } from '../../../crud/user-table/user-table.service';
 import { NotificationService } from 'src/application/base/notification/notification.service';
@@ -16,16 +21,17 @@ import axios from 'axios';
 // import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
 import { UserIsNotActiveException } from '../../../../../infrastructure/exceptions/user-is-not-active.exception';
 import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
+
 // import process from 'process';
 
 @Injectable()
 export class LoginService {
   constructor(
     private userTable: UserTableService,
-    // private userService: UserService,
     private jwtService: JwtService,
     private otpService: OtpService,
     private notificationService: NotificationService,
+    @Inject(forwardRef(() => TwoFaAuthService))
     private twoFaAuthService: TwoFaAuthService,
   ) {}
 
@@ -145,7 +151,6 @@ export class LoginService {
           }
         : null,
     };
-
     if (isNil(aiAccessToken)) {
       try {
         const axiosConfig = {
@@ -156,15 +161,16 @@ export class LoginService {
           },
         };
         const aiToken: string = null;
-        const aiUrl = process.env.AI_BACK_URL + '/api/Auth/SsoLogin';
+        const aiUrl = process.env.AI_BACK_URL + '/api/Cloud/login';
+
+        const phoneNumber = impersonateAs?.phoneNumber ?? user.phoneNumber;
         const aiRequest = await axios.post(
           aiUrl,
           {
-            phoneNumber: user.phoneNumber,
+            phoneNumber: phoneNumber,
           },
           axiosConfig,
         );
-
         if (aiRequest.status == 200) {
           aiAccessToken = aiRequest.data.token;
         }
@@ -203,5 +209,12 @@ export class LoginService {
       two_factor_authenticate: true,
       types: twoFactorTypes,
     };
+  }
+
+  async reGenerateTokens(
+    userId: number,
+    impersonateId?: number,
+  ): Promise<AccessTokenDto> {
+    return await this.getLoginToken(userId, impersonateId);
   }
 }
