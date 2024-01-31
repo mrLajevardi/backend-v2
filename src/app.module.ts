@@ -72,7 +72,6 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
     }),
     ThrottlerModule.forRoot([
       {
-
         ttl: 60000,
         limit: 40,
       },
