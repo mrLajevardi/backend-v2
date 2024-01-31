@@ -657,17 +657,11 @@ export class UserService {
     });
 
     if (!isNil(shahkarVerify) && shahkarVerify.value == '1') {
-      const verifyData =
-        await this.verificationServiceService.checkUserVerification(
-          user.phoneNumber,
-          userProfileData.personalCode,
-        );
-
-      if (verifyData.status.toString() != '200') {
-        throw new ShahkarException(verifyData.message.toString());
-      }
-
-      tokens = await this.loginService.getLoginToken(user.id);
+      tokens = await this.shahkarVerify(
+        options,
+        user.phoneNumber,
+        data.personalCode,
+      );
     }
 
     await this.userTable.update(options.user.userId, userProfileData);
@@ -681,6 +675,28 @@ export class UserService {
       user: userWithRelation,
       tokens: tokens,
     };
+  }
+
+  async shahkarVerify(
+    options: SessionRequest,
+    phoneNumber: string,
+    personalCode: string,
+  ): Promise<AccessTokenDto> {
+    const verifyData =
+      await this.verificationServiceService.checkUserVerification(
+        phoneNumber,
+        personalCode,
+      );
+
+    if (verifyData.status.toString() != '200') {
+      throw new ShahkarException(verifyData.message.toString());
+    }
+
+    await this.userTable.update(options.user.userId, {
+      personalVerification: true,
+    });
+
+    return await this.loginService.getLoginToken(options.user.userId);
   }
 
   async getUserProfile(options: SessionRequest) {
