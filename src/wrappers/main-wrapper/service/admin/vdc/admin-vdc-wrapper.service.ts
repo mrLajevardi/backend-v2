@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { vcdConfig } from 'src/wrappers/main-wrapper/vcdConfig';
 import { VcloudWrapperService } from 'src/wrappers/vcloud-wrapper/services/vcloud-wrapper.service';
 import { AdminEdgeGatewayWrapperService } from '../edgeGateway/admin-edge-gateway-wrapper.service';
@@ -241,6 +241,9 @@ export class AdminVdcWrapperService {
     config: UpdateVdcStoragePolicyDto,
     vdcId: string,
   ): Promise<void> {
+    if (!config.providerVdcStorageProfile.name) {
+      throw new InternalServerErrorException();
+    }
     const queryOptions = {
       headers: { Authorization: `Bearer ${config.authToken}` },
       params: {
@@ -248,7 +251,7 @@ export class AdminVdcWrapperService {
         page: 1,
         pageSize: 15,
         format: 'records',
-        filter: `(vdc==${vdcId})`,
+        filter: `(vdc==${vdcId});name==${config.providerVdcStorageProfile.name}`,
       },
     };
     const queryEndpoint = 'VdcEndpointService.vcloudQueryEndpoint';
