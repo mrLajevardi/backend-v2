@@ -12,10 +12,16 @@ import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { ServiceTypes } from '../../../../infrastructure/database/entities/ServiceTypes';
 import { isNil } from 'lodash';
+import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data-exception';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
 
 @Injectable()
 export class InvoiceFactoryVdcService {
-  constructor(private readonly invoicesTable: InvoicesTableService) {}
+  constructor(
+    private readonly invoicesTable: InvoicesTableService,
+    private readonly baseFactoryException: BaseFactoryException,
+  ) {}
+
   async getVdcInvoiceDetailModel(
     invoiceId: string,
     serviceTypeWhere = 'vdc',
@@ -55,6 +61,13 @@ export class InvoiceFactoryVdcService {
       )
       .addSelect(`ST.Title as DatacenterTitle`)
       .getRawMany();
+
+    if (isNil(invoiceModels) || invoiceModels.length == 0) {
+      console.error(
+        `Not Found invoiceItems about invoiceId : ${invoiceId} or something about it`,
+      );
+      this.baseFactoryException.handle(NotFoundDataException);
+    }
 
     return invoiceModels.map((model) => {
       const res: InvoiceDetailVdcModel = {
