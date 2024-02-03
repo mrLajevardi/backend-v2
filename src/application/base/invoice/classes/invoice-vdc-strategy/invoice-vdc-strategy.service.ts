@@ -173,8 +173,6 @@ export class InvoiceVdcStrategyService implements InvoiceVdcStrategyInterface {
       period,
     );
 
-
-
     return res;
   }
 
