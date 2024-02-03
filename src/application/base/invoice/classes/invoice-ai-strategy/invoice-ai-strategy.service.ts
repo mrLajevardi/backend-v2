@@ -323,7 +323,7 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
     }
     const checkPeriodItem: ServiceItemTypesTree =
       await this.serviceItemTreeTableService.findById(periodItem.itemTypeId);
-    if (checkPeriodItem.codeHierarchy.split('_')[0] !== ItemTypeCodes.Period) {
+    if (checkPeriodItem.codeHierarchy?.split('_')[0] !== ItemTypeCodes.Period) {
       this.baseFactoryException.handle(
         NotFoundDataException,
         'messages.periodItemNotFound',
