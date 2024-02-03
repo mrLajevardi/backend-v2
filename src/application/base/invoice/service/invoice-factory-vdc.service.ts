@@ -14,6 +14,7 @@ import { ServiceTypes } from '../../../../infrastructure/database/entities/Servi
 import { isNil } from 'lodash';
 import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data-exception';
 import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 @Injectable()
 export class InvoiceFactoryVdcService {
@@ -69,7 +70,7 @@ export class InvoiceFactoryVdcService {
       this.baseFactoryException.handle(NotFoundDataException);
     }
 
-    return invoiceModels.map((model) => {
+    const res = invoiceModels.map((model) => {
       const res: InvoiceDetailVdcModel = {
         code: model.Code,
         value: model.Value,
@@ -97,6 +98,7 @@ export class InvoiceFactoryVdcService {
 
       return res;
     });
+    return res;
   }
 
   getVdcInvoiceItemType(
@@ -267,6 +269,8 @@ export class InvoiceFactoryVdcService {
     res.serviceCostTax = res.serviceCostWithDiscount * ramModel.invoiceTax;
 
     res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
+
+    res.serviceType = ServiceTypesEnum.Vdc;
   }
 
   private calcDiskInvoice(
