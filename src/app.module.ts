@@ -73,7 +73,7 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 40,
+        limit: 600,
       },
     ]),
 
@@ -139,10 +139,10 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
       provide: APP_INTERCEPTOR,
       useClass: SentryInterceptor,
     },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
 
     {
       provide: APP_GUARD,

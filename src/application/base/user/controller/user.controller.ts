@@ -364,6 +364,7 @@ export class UserController {
     return await this.userService.changeUserPhoneNumber(options, data);
   }
 
+  @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Post('/insertEmail')
   @ApiOperation({ summary: 'insert or update email , then send otp to email' })
   async insertEmail(
