@@ -1,7 +1,7 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('PK_InvoicePlans', ['id'], { unique: true })
-@Entity('InvoicePlans', { schema: 'financial' })
+@Entity('InvoicePlans', { schema: 'user' })
 export class InvoicePlans {
   @Column('int', { name: 'InvoiceID' })
   invoiceId: number;

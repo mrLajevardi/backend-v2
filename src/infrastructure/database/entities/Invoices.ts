@@ -14,7 +14,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Templates } from './Templates';
 
 @Index('PK_Invoices', ['id'], { unique: true })
-@Entity('Invoices', { schema: 'financial' })
+@Entity('Invoices', { schema: 'user' })
 export class Invoices {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;

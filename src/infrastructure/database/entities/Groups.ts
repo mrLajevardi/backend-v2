@@ -8,7 +8,7 @@ import {
 import { GroupsMapping } from './GroupsMapping';
 
 @Index('PK__Groups__3214EC27686FB04E', ['id'], { unique: true })
-@Entity('Groups', { schema: 'security' })
+@Entity('Groups', { schema: 'user' })
 export class Groups {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
