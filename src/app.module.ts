@@ -55,6 +55,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { i18nOptions } from './infrastructure/config/i18n-options';
 import { I18nModule } from 'nestjs-i18n';
 import { BaseExceptionModule } from './infrastructure/exceptions/base/base-exception.module';
+import { ZammadWrapperModule } from './wrappers/zammad-wrapper/zammad-wrapper.module';
+import { WrapperModule } from './wrappers/wrapper.module';
 
 @Module({
   imports: [
@@ -131,6 +133,7 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
     EntityLogModule,
     BudgetingModule,
     BaseExceptionModule,
+    WrapperModule,
   ],
   controllers: [AppController],
   providers: [
