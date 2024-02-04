@@ -1,0 +1,10 @@
+export enum IpSecVpnDhGroupVersionEnum {
+  GROUP2 = 'GROUP2',
+  GROUP5 = 'GROUP2',
+  GROUP14 = 'GROUP14',
+  GROUP15 = 'GROUP15',
+  GROUP16 = 'GROUP16',
+  GROUP19 = 'GROUP19',
+  GROUP20 = 'GROUP20',
+  GROUP21 = 'GROUP21',
+}

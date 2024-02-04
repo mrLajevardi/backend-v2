@@ -231,6 +231,7 @@ export class DatacenterFactoryService {
         providerId: targetDs?.id || null,
         type,
         items: {} as GenerationItems,
+        name: targetDs.name.toString(),
       };
       const items = await this.serviceItemTypesTreeService.find({
         where: {

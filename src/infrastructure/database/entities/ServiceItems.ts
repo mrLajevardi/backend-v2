@@ -12,7 +12,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { VServiceInstances } from './views/v-serviceInstances';
 
 @Index('PK_ServiceResources', ['id'], { unique: true })
-@Entity('ServiceItems', { schema: 'user' })
+@Entity('ServiceItems', { schema: 'services' })
 export class ServiceItems {
   @Column('float', { name: 'Quantity', precision: 53 })
   quantity: number;

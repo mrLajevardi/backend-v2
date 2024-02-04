@@ -12,7 +12,7 @@ import { VServiceInstanceDetail } from './v-serviceInstanceDetail';
 
 // @Index('index_zare_IsDeleted', ['isDeleted'], {})
 // @Index('PK_ServiceInstances', ['id'], { unique: true })
-@Entity('V_ServiceInstances', { schema: 'user' })
+@Entity('V_ServiceInstances', { schema: 'services' })
 export class VServiceInstances {
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     primary: true,

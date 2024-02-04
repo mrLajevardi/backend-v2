@@ -160,6 +160,11 @@ export class Generation {
   @Expose()
   providerId: string;
 
+  @ApiProperty({ type: String })
+  @IsString()
+  @Expose()
+  name: string;
+
   @ApiProperty({
     enum: ServicePlanTypeEnum,
     type: ServicePlanTypeEnum,
