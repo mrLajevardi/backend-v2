@@ -14,6 +14,7 @@ import { VServiceInstances } from './v-serviceInstances';
 
 @Entity({
   name: 'V_ServiceDetail',
+  schema: 'services',
 })
 export class VServiceInstanceDetail {
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
