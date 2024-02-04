@@ -191,6 +191,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       const splits = provider.name?.split(PROVIDER_SPLITTER);
       const providerName = splits[0];
       const gen = `${splits[1]}-${splits[2]}`;
+      // const gen = `${splits[1]}`;
       return { name: providerName, gen };
     });
 

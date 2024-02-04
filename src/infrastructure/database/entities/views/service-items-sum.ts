@@ -1,7 +1,7 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity({
-  schema: 'user',
+  schema: 'services',
   name: 'ServiceItemsSum',
 })
 export class ServiceItemsSum {
