@@ -20,6 +20,7 @@ import {
   WrapperProvider,
 } from './interface/vcloud-wrapper.interface';
 import { StaticRouteEndpointService } from './services/user/edgeGateway/staticRoute/static-route-endpoint.service';
+import { IpSecVpnEndpointService } from './services/user/edgeGateway/ipSecVpn/ip-sec-vpn-endpoint.service';
 @Module({
   imports: [ConfigModule],
   providers: [
@@ -49,6 +50,7 @@ import { StaticRouteEndpointService } from './services/user/edgeGateway/staticRo
         AdminUserEndpointService,
         AdminOrgEndpointService,
         StaticRouteEndpointService,
+        IpSecVpnEndpointService,
       ],
     },
     VmEndpointService,
@@ -68,6 +70,7 @@ import { StaticRouteEndpointService } from './services/user/edgeGateway/staticRo
     ConfigService,
     VcloudWrapperService,
     StaticRouteEndpointService,
+    IpSecVpnEndpointService,
   ],
   exports: [VcloudWrapperService],
 })

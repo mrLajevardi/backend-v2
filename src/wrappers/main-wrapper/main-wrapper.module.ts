@@ -19,6 +19,7 @@ import { VmDeleteWrapperService } from './service/user/vm/vm-delete-wrapper.serv
 import { VmGetWrapperService } from './service/user/vm/vm-get-wrapper.service';
 import { VmUpdateWrapperService } from './service/user/vm/vm-update-wrapper.service';
 import { StaticRouteWrapperService } from './service/user/staticRoute/static-route-wrapper.service';
+import { IpSecVpnWrapperService } from './service/user/ipSecVpn/ip-sec-vpn-wrapper.service';
 @Module({
   imports: [VcloudWrapperModule],
   providers: [
@@ -41,6 +42,7 @@ import { StaticRouteWrapperService } from './service/user/staticRoute/static-rou
     AdminUserWrapperService,
     AdminVdcWrapperService,
     StaticRouteWrapperService,
+    IpSecVpnWrapperService,
   ],
   exports: [
     ApplicationPortProfileWrapperService,
@@ -62,6 +64,7 @@ import { StaticRouteWrapperService } from './service/user/staticRoute/static-rou
     AdminUserWrapperService,
     AdminVdcWrapperService,
     StaticRouteWrapperService,
+    IpSecVpnWrapperService,
   ],
 })
 export class MainWrapperModule {}
