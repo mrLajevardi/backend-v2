@@ -307,8 +307,9 @@ export class DatacenterFactoryService {
               price: diskItem.fee,
               step: diskItem.step,
               percent: diskItem.percent,
-              title: diskItem.title,
+              title: diskItem.title.split('-')[0],
               isHidden: diskItem.isHidden,
+              iops: Number(diskItem.title.split('-')[1]),
             };
             generationDto.items.diskItems.push(diskItemDto);
           }
