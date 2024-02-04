@@ -5,9 +5,6 @@ import { WrapperStrategyType } from './type/wrapper-strategy.type';
 import { WrappersEnum } from './enum/wrappers.enum';
 import { WrapperStrategy } from './strategy/wrapper.strategy';
 
-export interface testtt extends WrapperBuilderInterface {
-  setName(): this;
-}
 export class WrapperService {
   private dictionary: WrapperStrategyType;
   constructor(

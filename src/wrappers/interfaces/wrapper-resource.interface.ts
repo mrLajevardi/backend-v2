@@ -1,5 +1,4 @@
 import { AxiosResponse, Method } from 'axios';
-import { BaseExceptionType } from '../../infrastructure/types/base-exception.type';
 
 export interface WrapperResourceInterface<
   Body,

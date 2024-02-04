@@ -1,6 +1,5 @@
-import { AxiosRequestHeaders, Method, RawAxiosRequestHeaders } from 'axios';
+import { Method, RawAxiosRequestHeaders } from 'axios';
 import { WrapperResourceInterface } from './wrapper-resource.interface';
-import { BaseExceptionType } from '../../infrastructure/types/base-exception.type';
 
 export interface WrapperBuilderInterface<
   B = unknown,

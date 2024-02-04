@@ -1,4 +1,4 @@
-import { AxiosRequestConfig, Method, RawAxiosRequestHeaders } from 'axios';
+import { AxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
 
 export interface EndpointInterface {
   method: string;

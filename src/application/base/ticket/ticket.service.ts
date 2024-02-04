@@ -13,6 +13,7 @@ import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { TicketStatusEnum } from './enum/ticket-status.enum';
 import { TicketEditType } from './enum/ticket-edit-type.enum';
+import { ZammadTicketWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/zammad-ticket-wrapper.service';
 
 @Injectable()
 export class TicketService {
@@ -20,6 +21,7 @@ export class TicketService {
     private readonly userTable: UserTableService,
     private readonly ticketTable: TicketsTableService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
+    private readonly zammadTicketService: ZammadTicketWrapperService
   ) {}
   async closeTicket(options: SessionRequest, ticketId: number): Promise<void> {
     const userId = options.user.userId;
@@ -59,6 +61,7 @@ export class TicketService {
     const message = `${data.message}\nنام سرویس: ${
       service.name || ''
     }, نوع سرویس: ${service.serviceTypeId}`;
+    const ticket = await this.
     const { ticketId } = await createTicket(
       message,
       'customer',

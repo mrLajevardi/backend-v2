@@ -1,4 +1,4 @@
-import { AxiosRequestHeaders, Method, RawAxiosRequestHeaders } from 'axios';
+import { Method, RawAxiosRequestHeaders } from 'axios';
 import { WrapperBuilderInterface } from '../interfaces/wrapper-builder.interface';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { WrapperResourceInterface } from '../interfaces/wrapper-resource.interface';

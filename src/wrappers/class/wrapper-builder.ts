@@ -1,15 +1,8 @@
-import axios, {
-  AxiosHeaders,
-  AxiosRequestHeaders,
-  AxiosResponse,
-  Method,
-  RawAxiosRequestHeaders,
-} from 'axios';
+import axios, { AxiosResponse, Method, RawAxiosRequestHeaders } from 'axios';
 import { WrapperBuilderInterface } from '../interfaces/wrapper-builder.interface';
 import { WrapperResourceInterface } from '../interfaces/wrapper-resource.interface';
 import * as https from 'https';
 import { InternalServerErrorException } from '@nestjs/common';
-import { BaseExceptionType } from '../../infrastructure/types/base-exception.type';
 
 export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
   implements WrapperBuilderInterface<B, P, H, C>
@@ -128,5 +121,3 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
     return this;
   }
 }
-
-// s.then((rs) => { rs.data })
