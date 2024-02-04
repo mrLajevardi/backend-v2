@@ -496,7 +496,7 @@ export class DatacenterAdminService {
           maxAvailable: null,
           maxPerRequest: diskItem.max,
           minPerRequest: diskItem.min,
-          title: diskItem.title,
+          title: `${diskItem.title}-${diskItem.iops}`,
           unit: ItemTypeUnits.Disk,
           datacenterName,
           enabled: diskItem.enabled,
