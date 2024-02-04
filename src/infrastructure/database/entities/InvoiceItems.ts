@@ -10,7 +10,7 @@ import { Invoices } from './Invoices';
 import { ItemTypes } from './ItemTypes';
 
 @Index('PK_InvoiceItems', ['id'], { unique: true })
-@Entity('InvoiceItems', { schema: 'user' })
+@Entity('InvoiceItems', { schema: 'financial' })
 export class InvoiceItems {
   @Column('int', { name: 'ItemID' })
   itemId: number;
