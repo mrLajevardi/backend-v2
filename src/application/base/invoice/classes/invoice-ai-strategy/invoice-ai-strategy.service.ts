@@ -144,7 +144,7 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
           value: item.value?.trim() == '' ? null : item.value,
           fee: item.Fee,
           quantity: 0,
-          codeHierarchy: item.codeHierarchy,
+          codeHierarchy: item?.codeHierarchy,
         } as CreateInvoiceItemsDto;
       },
     );
@@ -179,7 +179,7 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
           fee: item.fee,
           value: item.value,
           code: item.code,
-          codeHierarchy: item.codeHierarchy,
+          codeHierarchy: item?.codeHierarchy,
         });
       });
     res.fillTaxAndDiscountProperties();
@@ -304,7 +304,7 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
         ItemID: Number(item.itemTypeId),
         Fee: fee,
         value: item.value,
-        codeHierarchy: itemType.codeHierarchy,
+        codeHierarchy: itemType?.codeHierarchy,
       };
     });
   }
@@ -323,7 +323,9 @@ export class InvoiceAiStrategyService implements InvoiceBaseStrategyInterface {
     }
     const checkPeriodItem: ServiceItemTypesTree =
       await this.serviceItemTreeTableService.findById(periodItem.itemTypeId);
-    if (checkPeriodItem.codeHierarchy?.split('_')[0] !== ItemTypeCodes.Period) {
+    if (
+      checkPeriodItem?.codeHierarchy?.split('_')[0] !== ItemTypeCodes.Period
+    ) {
       this.baseFactoryException.handle(
         NotFoundDataException,
         'messages.periodItemNotFound',
