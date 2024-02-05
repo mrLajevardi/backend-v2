@@ -21,6 +21,7 @@ import axios from 'axios';
 // import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
 import { UserIsNotActiveException } from '../../../../../infrastructure/exceptions/user-is-not-active.exception';
 import { UserIsDeletedException } from '../../../../../infrastructure/exceptions/user-is-deleted.exception';
+import { LoginProcessResultDto } from '../dto/result/login-process.result.dto';
 
 // import process from 'process';
 
@@ -185,7 +186,7 @@ export class LoginService {
     };
   }
 
-  async loginProcess(user: UserPayload) {
+  async loginProcess(user: UserPayload): Promise<LoginProcessResultDto> {
     // if (!user.twoFactorAuth || user.twoFactorAuth === TwoFaAuthTypeEnum.None) {
     if (
       user.twoFactorAuth.split(',').includes(TwoFaAuthTypeEnum.None.toString())
@@ -199,7 +200,7 @@ export class LoginService {
       return {
         two_factor_authenticate: false,
         ...tokens,
-      };
+      } as LoginProcessResultDto;
     }
 
     const twoFactorTypes: number[] =
@@ -208,7 +209,7 @@ export class LoginService {
     return {
       two_factor_authenticate: true,
       types: twoFactorTypes,
-    };
+    } as LoginProcessResultDto;
   }
 
   async reGenerateTokens(

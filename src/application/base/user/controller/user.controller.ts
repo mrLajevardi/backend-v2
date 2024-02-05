@@ -59,6 +59,7 @@ import { PhoneNumberHashResultDto } from '../dto/results/phone-number-hash.resul
 import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
 import { UserProfileResultDto } from '../dto/user-profile.result.dto';
 import { CreateUserProfileResultDto } from '../dto/results/create-user-profile.result.dto';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
 
 @ApiTags('User')
 @Controller('users')
@@ -74,6 +75,7 @@ export class UserController {
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
     private readonly redisCacheService: RedisCacheService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   @Public()
@@ -154,7 +156,7 @@ export class UserController {
     );
 
     if (!verify) {
-      throw new OtpNotMatchException();
+      this.baseFactoryException.handle(OtpNotMatchException);
     }
 
     const cacheKey: string = options.user.userId + '_changePassword';
