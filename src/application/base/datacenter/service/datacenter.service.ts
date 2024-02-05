@@ -784,7 +784,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
   }
 
   async getAllStorageProvider(): Promise<any[]> {
-    const res = [];
+    // const res = [];
 
     const queryBuilder =
       await this.serviceItemTypesTreeService.getQueryBuilder();
@@ -828,6 +828,6 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     //   res.push({ code: code });
     // }
     // return res;
-    return rree;
+    return res;
   }
 }
