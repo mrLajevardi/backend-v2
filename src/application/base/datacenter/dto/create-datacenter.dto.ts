@@ -23,8 +23,9 @@ export class GenerationItem {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Expose()
-  code: string;
+  code?: string;
 
   @ApiProperty({ type: Number })
   @IsNumber()
@@ -38,8 +39,9 @@ export class GenerationItem {
 
   @ApiProperty({ type: Number })
   @IsNumber()
+  @IsOptional()
   @Expose()
-  step: number;
+  step?: number;
 
   @ApiProperty({ type: Number })
   @IsNumber()
@@ -68,6 +70,11 @@ export class ComputeItem {
   @IsNumber()
   @Expose()
   baseMin: number;
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  @Expose()
+  baseStep: number;
 
   @ApiProperty({ type: [GenerationItem] })
   @IsArray()
@@ -99,7 +106,7 @@ export class DiskItem extends GenerationItem {
   title: string;
 
   @ApiProperty({ type: Number })
-  @IsString()
+  @IsNumber()
   @Expose()
   iops: number;
 }

@@ -245,6 +245,7 @@ export class DatacenterFactoryService {
             baseMax: item.maxPerRequest,
             baseMin: item.minPerRequest,
             basePrice: item.fee,
+            baseStep: item.step,
             levels: [],
           };
           const cpuLevels = await this.serviceItemTypesTreeService.find({
@@ -270,6 +271,7 @@ export class DatacenterFactoryService {
             baseMax: item.maxPerRequest,
             baseMin: item.minPerRequest,
             basePrice: item.fee,
+            baseStep: item.step,
             levels: [],
           };
           const ramLevels = await this.serviceItemTypesTreeService.find({
