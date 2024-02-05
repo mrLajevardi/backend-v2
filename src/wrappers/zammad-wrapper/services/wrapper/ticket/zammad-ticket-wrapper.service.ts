@@ -18,11 +18,17 @@ export class ZammadTicketWrapperService {
     public readonly articleService: ZammadArticleWrapperService,
   ) {}
 
-  async createTicket(dto: CreateTicketDto): Promise<CreateTicketResultDto> {
+  async createTicket(
+    dto: CreateTicketDto,
+    authToken: string,
+  ): Promise<CreateTicketResultDto> {
     const result = await this.wrapperService
       .getBuilder(WrappersEnum.Zammad)
       .setUrl(`/api/${ZAMMAD_API_VERSION}/tickets`)
       .setBody<CreateTicketDto>(dto)
+      .setHeaders<RawAxiosRequestHeaders>({
+        Authorization: authToken,
+      })
       .setMethod('post')
       .build()
       .request<CreateTicketResultDto>();

@@ -1,7 +1,7 @@
 export interface CreateTicketDto {
   title: string;
   group: string;
-  customer: string;
+  customer?: string;
   article?: Article;
 }
 

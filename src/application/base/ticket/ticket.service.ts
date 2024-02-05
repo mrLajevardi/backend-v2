@@ -14,6 +14,12 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { TicketStatusEnum } from './enum/ticket-status.enum';
 import { TicketEditType } from './enum/ticket-edit-type.enum';
 import { ZammadTicketWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/zammad-ticket-wrapper.service';
+import { ZammadUserWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/user/zammad-users-wrapper.service';
+import { ZammadGroupsEnum } from '../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-groups.enum';
+import { ZammadRolesEnum } from '../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-roles.enum';
+import { User } from '../../../infrastructure/database/entities/User';
+import { encodePassword } from '../../../wrappers/zammad-wrapper/services/helper/encode-password.helper';
+import { ZammadArticleTypeEnum } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/enum/zammad-article-type.enum';
 
 @Injectable()
 export class TicketService {
@@ -21,7 +27,8 @@ export class TicketService {
     private readonly userTable: UserTableService,
     private readonly ticketTable: TicketsTableService,
     private readonly serviceInstancesTable: ServiceInstancesTableService,
-    private readonly zammadTicketService: ZammadTicketWrapperService
+    private readonly zammadTicketService: ZammadTicketWrapperService,
+    private readonly zammadUserService: ZammadUserWrapperService,
   ) {}
   async closeTicket(options: SessionRequest, ticketId: number): Promise<void> {
     const userId = options.user.userId;
@@ -55,28 +62,46 @@ export class TicketService {
       },
     });
     console.log(data);
-    if (!service || isNil(data.serviceInstanceId)) {
-      return Promise.reject(new ForbiddenException());
+    // if (!service || isNil(data.serviceInstanceId)) {
+    //   return Promise.reject(new ForbiddenException());
+    // }
+    // const message = `${data.message}\nنام سرویس: ${
+    //   service?.name ?? ''
+    // }, نوع سرویس: ${service?.serviceTypeId}`;
+    const zammadUser = await this.zammadUserService.searchUser(user.guid);
+    if (zammadUser.length === 0) {
+      await this.createTicketingUser(user);
     }
-    const message = `${data.message}\nنام سرویس: ${
-      service.name || ''
-    }, نوع سرویس: ${service.serviceTypeId}`;
-    const ticket = await this.
-    const { ticketId } = await createTicket(
-      message,
-      'customer',
-      null,
-      data.name,
-      data.subject,
-      user.username,
+    const ticket = await this.zammadTicketService.createTicket(
+      {
+        title: data.subject,
+        group: ZammadGroupsEnum.Users,
+      },
+      encodePassword(user.guid),
     );
+    await this.zammadTicketService.articleService.createArticle(
+      {
+        body: data.message,
+        ticket_id: ticket.id,
+        type: ZammadArticleTypeEnum.Note,
+      },
+      encodePassword(user.guid),
+    );
+    // const { ticketId } = await createTicket(
+    //   message,
+    //   'customer',
+    //   null,
+    //   data.name,
+    //   data.subject,
+    //   user.username,
+    // );
     console.log('🐉🐉🐉');
     await this.ticketTable.create({
-      ticketId: ticketId,
+      ticketId: ticket.id,
       userId: userId,
-      serviceInstanceId: data.serviceInstanceId,
+      serviceInstanceId: data.serviceInstanceId ?? null,
     });
-    return Promise.resolve({ ticketId });
+    return Promise.resolve({ ticketId: ticket.id });
   }
 
   async getAllTickets(
@@ -84,6 +109,10 @@ export class TicketService {
   ): Promise<{ tickets: object[]; pagination: object }> {
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
+    const tickets = await this.zammadTicketService.getAllTickets(
+      encodePassword(user.guid),
+    );
+    return tickets as any;
     const usersTicketsIds = (
       await this.ticketTable.find({
         select: { ticketId: true },
@@ -91,40 +120,43 @@ export class TicketService {
       })
     ).map((ticket) => ticket.ticketId);
     const res = [];
-    try {
-      const tickets = await getListOfTickets({
-        actAsEmail: user.username,
-        actAsType: 'customer',
-      });
+    // try {
+    //   const tickets = await getListOfTickets({
+    //     actAsEmail: user.username,
+    //     actAsType: 'customer',
+    //   });
 
-      tickets.tickets = tickets.tickets.filter((ticket) =>
-        usersTicketsIds.includes(ticket.id),
-      );
+    //   tickets.tickets = tickets.tickets.filter((ticket) =>
+    //     usersTicketsIds.includes(ticket.id),
+    //   );
 
-      return Promise.resolve(tickets);
-    } catch (error) {
-      if (error.status === 404) {
-        return {
-          tickets: [],
-          pagination: {},
-        };
-      }
-      return Promise.reject(error);
-    }
+    //   return Promise.resolve(tickets);
+    // } catch (error) {
+    //   if (error.status === 404) {
+    //     return {
+    //       tickets: [],
+    //       pagination: {},
+    //     };
+    //   }
+    //   return Promise.reject(error);
+    // }
   }
 
   async getTicket(options: SessionRequest, ticketId: number): Promise<object> {
-    const userId = options.user.userId;
-    const ticketExists = await this.ticketTable.findOne({
-      where: {
-        userId: userId,
-        ticketId: ticketId,
-      },
-    });
-    if (!ticketExists) {
-      return Promise.reject(new ForbiddenException());
-    }
-    const ticket = await getTicket(ticketId);
+    const userGuid = options.user.guid;
+    // const ticketExists = await this.ticketTable.findOne({
+    //   where: {
+    //     userId: userId,
+    //     ticketId: ticketId,
+    //   },
+    // });
+    // if (!ticketExists) {
+    //   return Promise.reject(new ForbiddenException());
+    // }
+    const ticket = await this.zammadTicketService.articleService.getArticle(
+      ticketId,
+      encodePassword(userGuid),
+    );
     return Promise.resolve(ticket);
   }
 
@@ -132,31 +164,26 @@ export class TicketService {
     options: SessionRequest,
     data: { message: string },
     ticketId: number,
-  ): Promise<object> {
-    const userId = options.user.userId;
-    const user = await this.userTable.findById(userId);
-    const ticketExists = await this.ticketTable.findOne({
-      where: {
-        userId: userId,
-        ticketId: ticketId,
+  ): Promise<void> {
+    await this.zammadTicketService.articleService.createArticle(
+      {
+        body: data.message,
+        ticket_id: ticketId,
+        type: ZammadArticleTypeEnum.Note,
       },
+      encodePassword(options.user.guid),
+    );
+  }
+
+  private async createTicketingUser(user: User): Promise<void> {
+    await this.zammadUserService.createUser({
+      email: user.email,
+      firstname: user.name,
+      lastname: user.family,
+      login: user.guid,
+      organization: null,
+      password: process.env.ZAMMAD_USER_PASSWORD,
+      roles: [ZammadRolesEnum.Customer],
     });
-    if (!ticketExists) {
-      return Promise.reject(new ForbiddenException());
-    }
-    const ticket = await replyTicket(
-      ticketId,
-      data.message,
-      'customer',
-      'reply',
-      user.username,
-      null,
-    );
-    await updateTicket(
-      TicketEditType.Status,
-      TicketStatusEnum.Pending,
-      ticketId,
-    );
-    return Promise.resolve(ticket);
   }
 }

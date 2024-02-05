@@ -64,4 +64,7 @@ export class WrapperStrategy implements WrapperBuilderInterface {
     this.strategy.setException(exception);
     return this;
   }
+  reset(): this {
+    throw new InternalServerErrorException();
+  }
 }

@@ -1,19 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { WrapperService } from '../../../../wrapper.service';
 import { WrappersEnum } from '../../../../enum/wrappers.enum';
-import { CreateUserBody } from '../../../../vcloud-wrapper/services/admin/user/dto/create-user.dtop';
 import { CreateUserResultDto } from './dto/create-user-result.dto';
 import { SearchUserDto, SearchUserQueryParams } from './dto/search-user.dto';
 import { RawAxiosRequestHeaders } from 'axios';
 import { ZAMMAD_API_VERSION } from '../../../const/zammad-version.const';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class ZammadUserWrapperService {
   constructor(private readonly wrapperService: WrapperService) {}
-  async createUser(dto: CreateUserBody): Promise<any> {
+  async createUser(dto: CreateUserDto): Promise<void> {
     await this.wrapperService
       .getBuilder(WrappersEnum.Zammad)
-      .setBody<CreateUserBody>(dto)
+      .setBody<CreateUserDto>(dto)
       .setUrl(`/api/${ZAMMAD_API_VERSION}/users`)
       .setHeaders<RawAxiosRequestHeaders>({
         Authorization: `Token token=${process.env.ZAMMAD_ADMIN_TOKEN}`,
@@ -23,7 +23,7 @@ export class ZammadUserWrapperService {
       .request<CreateUserResultDto>();
   }
 
-  async searchUser(login: string): Promise<SearchUserDto> {
+  async searchUser(login: string): Promise<SearchUserDto[]> {
     const result = await this.wrapperService
       .getBuilder(WrappersEnum.Zammad)
       .setMethod('GET')
@@ -36,7 +36,7 @@ export class ZammadUserWrapperService {
         query: `login:${login}`,
       })
       .build()
-      .request<SearchUserDto>();
+      .request<SearchUserDto[]>();
     return result.data;
   }
 }

@@ -50,8 +50,8 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
     if (!this._resource.headers) {
       this._resource.headers = { ...headers } as unknown as H;
     }
-    this._resource.body = {
-      ...this._resource.body,
+    this._resource.headers = {
+      ...this._resource.headers,
       headers,
     };
     return this as WrapperBuilder<B, P, H & T, C>;
@@ -66,8 +66,8 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
     if (!this._resource.params) {
       this._resource.params = { ...params } as unknown as P;
     }
-    this._resource.body = {
-      ...this._resource.body,
+    this._resource.params = {
+      ...this._resource.params,
       params,
     };
     return this as WrapperBuilder<B, P & T, H, C>;
@@ -98,7 +98,7 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
           headers: this.headers as RawAxiosRequestHeaders,
           baseURL: this.baseUrl,
           params: this.params,
-          data: this.body && null,
+          data: this.body ?? null,
           maxContentLength: Infinity,
           maxBodyLength: Infinity,
           ...additionalConfig,
@@ -108,7 +108,9 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
         await this.exceptionHan(err);
       }
     };
-    return this._resource;
+    const resource = this._resource;
+    this.reset();
+    return resource;
   }
 
   setException(exception: (error: Error) => Promise<Error>): this {
@@ -118,6 +120,11 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
   }
 
   setDefault(): this {
+    return this;
+  }
+
+  reset(): this {
+    this._resource = {} as WrapperResourceInterface<B, H, P, C>;
     return this;
   }
 }

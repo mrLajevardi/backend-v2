@@ -19,5 +19,6 @@ export interface WrapperBuilderInterface<
   setBaseUrl(baseUrl: string): this;
   setDefault(): this;
   setException(exception: (error: Error) => Promise<Error>): this;
+  reset(): this;
   build(): WrapperResourceInterface<B, H, P, C>;
 }
