@@ -231,7 +231,7 @@ export class DatacenterFactoryService {
         providerId: targetDs?.id || null,
         type,
         items: {} as GenerationItems,
-        name: targetDs.name.toString(),
+        name: targetDs?.name.toString() ?? null,
       };
       const items = await this.serviceItemTypesTreeService.find({
         where: {
@@ -245,6 +245,7 @@ export class DatacenterFactoryService {
             baseMax: item.maxPerRequest,
             baseMin: item.minPerRequest,
             basePrice: item.fee,
+            baseStep: item.step,
             levels: [],
           };
           const cpuLevels = await this.serviceItemTypesTreeService.find({
@@ -270,6 +271,7 @@ export class DatacenterFactoryService {
             baseMax: item.maxPerRequest,
             baseMin: item.minPerRequest,
             basePrice: item.fee,
+            baseStep: item.step,
             levels: [],
           };
           const ramLevels = await this.serviceItemTypesTreeService.find({
