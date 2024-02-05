@@ -192,18 +192,18 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       const providerName = splits[0];
       const gen = `${splits[1]}-${splits[2]}`;
       // const gen = `${splits[1]}`;
-      return { name: providerName, gen };
+      return { name: providerName, gen, id: provider.id };
     });
 
-    const resGroup: Record<string, { name: string; gen: string }[]> = groupBy(
-      res,
-      (res) => res.name,
-    );
+    const resGroup: Record<
+      string,
+      { name: string; gen: string; id: string }[]
+    > = groupBy(res, (res) => res.name);
 
-    const fRes: { name: string; gens: string[] }[] = [];
+    const fRes: { name: string; gens: { name: string; id: string }[] }[] = [];
     for (const obj of Object.keys(resGroup)) {
       const gens = resGroup[obj].map((d) => {
-        return d.gen;
+        return { name: d.gen, id: d.id };
       });
       fRes.push({ name: obj, gens: gens });
       console.log(obj);
