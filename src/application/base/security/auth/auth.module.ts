@@ -31,6 +31,7 @@ import { TwoFaAuthStrategy } from './classes/two-fa-auth.strategy';
 import { ClsModule } from 'nestjs-cls';
 import { TwoFactorAuthController } from './controller/two-factor-auth.controller';
 import { TwoFaAuthTotpService } from './classes/two-fa-auth-totp.service';
+import { BaseExceptionModule } from '../../../../infrastructure/exceptions/base/base-exception.module';
 
 @Module({
   imports: [
@@ -43,6 +44,7 @@ import { TwoFaAuthTotpService } from './classes/two-fa-auth-totp.service';
     NotificationModule,
     LoggerModule,
     SecurityToolsModule,
+    BaseExceptionModule,
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
