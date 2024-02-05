@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
-import { And, FindManyOptions, Like, Not } from 'typeorm';
+import { And, FindManyOptions, IsNull, Like, MoreThan, Not } from 'typeorm';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -34,7 +34,10 @@ import { DatacenterOperationTypeEnum } from '../enum/datacenter-opertation-type.
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
-import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import {
+  ItemTypeCodes,
+  VdcGenerationItemCodes,
+} from '../../itemType/enum/item-type-codes.enum';
 import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
 import {
   ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
@@ -192,18 +195,18 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       const providerName = splits[0];
       const gen = `${splits[1]}-${splits[2]}`;
       // const gen = `${splits[1]}`;
-      return { name: providerName, gen };
+      return { name: providerName, gen, id: provider.id };
     });
 
-    const resGroup: Record<string, { name: string; gen: string }[]> = groupBy(
-      res,
-      (res) => res.name,
-    );
+    const resGroup: Record<
+      string,
+      { name: string; gen: string; id: string }[]
+    > = groupBy(res, (res) => res.name);
 
-    const fRes: { name: string; gens: string[] }[] = [];
+    const fRes: { name: string; gens: { name: string; id: string }[] }[] = [];
     for (const obj of Object.keys(resGroup)) {
       const gens = resGroup[obj].map((d) => {
-        return d.gen;
+        return { name: d.gen, id: d.id };
       });
       fRes.push({ name: obj, gens: gens });
       console.log(obj);
@@ -780,33 +783,51 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     return datacenter;
   }
 
-  async getAllStorageProvider(): Promise<{ name: string; code: string }[]> {
-    const res = [];
+  async getAllStorageProvider(): Promise<any[]> {
+    // const res = [];
 
-    const authToken = await this.sessionsService.checkAdminSession();
-    const vdcData =
-      await this.vdcWrapperService.vcloudQuery<AdminOrgVdcStorageProfileQuery>(
-        authToken,
-        {
-          type: 'adminOrgVdcStorageProfile',
-          format: 'records',
-          page: 1,
-          pageSize: 128,
-          filterEncoded: true,
-          links: true,
-          // filter: `vdc==${props['vdcId']}`,
-        },
-      );
-
-    vdcData.data.record = distinctByProperty(vdcData.data.record, 'name');
-    for (const disk of vdcData.data.record) {
-      const splitHref = disk.href.split('/');
-      const diskId = splitHref[splitHref.length - 1];
-
-      const code = GetCodeDisk(disk.name);
-
-      res.push({ name: disk.name, code: code });
-    }
+    const queryBuilder =
+      await this.serviceItemTypesTreeService.getQueryBuilder();
+    const res = await queryBuilder
+      .select('code')
+      .where(
+        `DatacenterName IS NULL AND CodeHierarchy LIKE  :diskCode 
+  AND  LEVEL != :level`,
+        { level: 1, diskCode: `%${VdcGenerationItemCodes.Disk}%` },
+      )
+      .distinct(true)
+      .getRawMany<{ code: string }>();
+    //
+    // const ress = await this.serviceItemTypesTreeService.find({
+    //   where: {
+    //     datacenterName: IsNull(),
+    //     codeHierarchy: Like(`%disk%`),
+    //     level: MoreThan(1),
+    //   },
+    //   select: { code: true },
+    // });
+    // const authToken = await this.sessionsService.checkAdminSession();
+    // const vdcData =
+    //   await this.vdcWrapperService.vcloudQuery<AdminOrgVdcStorageProfileQuery>(
+    //     authToken,
+    //     {
+    //       type: 'adminOrgVdcStorageProfile',
+    //       format: 'records',
+    //       page: 1,
+    //       pageSize: 128,
+    //       filterEncoded: true,
+    //       links: true,
+    //       // filter: `vdc==${props['vdcId']}`,
+    //     },
+    //   );
+    //
+    // vdcData.data.record = distinctByProperty(vdcData.data.record, 'name');
+    // for (const disk of vdcData.data.record) {
+    //   const code = GetCodeDisk(disk.name);
+    //
+    //   res.push({ code: code });
+    // }
+    // return res;
     return res;
   }
 }

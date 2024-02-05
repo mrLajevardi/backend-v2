@@ -12,7 +12,7 @@ import { randomUUID } from 'crypto';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__tasks__7C6949D195E39C4E', ['taskId'], { unique: true })
-@Entity('Tasks', { schema: 'services' })
+@Entity('Tasks', { schema: 'user' })
 export class Tasks {
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'TaskID',

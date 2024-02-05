@@ -12,7 +12,7 @@ import { Sessions } from './Sessions';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__organiza__3213E83F513E7650', ['id'], { unique: true })
-@Entity('Organization', { schema: 'services' })
+@Entity('Organization', { schema: 'vdc' })
 export class Organization {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;

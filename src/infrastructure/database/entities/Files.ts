@@ -9,7 +9,7 @@ import { User } from './User';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_Files', ['guid'], { unique: true })
-@Entity('Files', { schema: 'system' })
+@Entity('Files', { schema: 'dbo' })
 export class Files {
   @Column({
     type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
