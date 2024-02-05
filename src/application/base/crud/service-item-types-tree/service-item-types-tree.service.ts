@@ -10,6 +10,10 @@ export class ServiceItemTypesTreeService {
     private readonly repository: Repository<ServiceItemTypesTree>,
   ) {}
 
+  async getQueryBuilder(alias = 'ServiceItemTypesTree') {
+    return this.repository.createQueryBuilder(alias);
+  }
+
   // Find One Item by its ID
   async findById(id: number): Promise<ServiceItemTypesTree> {
     const serviceType = await this.repository.findOne({ where: { id: id } });
