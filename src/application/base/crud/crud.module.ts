@@ -36,7 +36,6 @@ import { TasksTableModule } from './tasks-table/tasks-table.module';
 import { TicketsTableModule } from './tickets-table/tickets-table.module';
 import { TransactionsTableModule } from './transactions-table/transactions-table.module';
 import { UserTableModule } from './user-table/user-table.module';
-import { ServiceItemsSumModule } from './service-items-sum/service-items-sum.module';
 import { ServicePlansTableModule } from './service-plans-table/service-plans-table.module';
 import { InvoiceItemListModule } from './invoice-item-list/invoice-item-list.module';
 import { ServiceReportsViewModule } from './service-reports-view/service-reports-view.module';
@@ -93,7 +92,6 @@ import { UserAclsTableModule } from './user-acls-table/user-acls-table.module';
     TicketsTableModule,
     TransactionsTableModule,
     UserTableModule,
-    ServiceItemsSumModule,
     ServicePlansTableModule,
     InvoiceItemListModule,
     ServiceReportsViewModule,
@@ -149,7 +147,6 @@ import { UserAclsTableModule } from './user-acls-table/user-acls-table.module';
     TicketsTableModule,
     TransactionsTableModule,
     UserTableModule,
-    ServiceItemsSumModule,
     ServicePlansTableModule,
     InvoiceItemListModule,
     ServiceReportsViewModule,

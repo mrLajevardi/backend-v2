@@ -3,7 +3,6 @@ import {
   CreateServiceInvoiceDto,
   InvoiceItemsDto,
 } from '../dto/create-service-invoice.dto';
-import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { isNil } from 'lodash';
 import { InvoiceItemLimits } from '../enum/invoice-item-limits.enum';
 import { And, In, Like, Not } from 'typeorm';
@@ -31,7 +30,7 @@ import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 export class InvoiceValidationService {
   vdcCode: string;
   constructor(
-    private readonly serviceItemsSumService: ServiceItemsSumService,
+    // private readonly serviceItemsSumService: ServiceItemsSumService,
     @Inject(BASE_DATACENTER_SERVICE)
     private readonly datacenterService: BaseDatacenterService,
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
@@ -312,19 +311,19 @@ export class InvoiceValidationService {
       );
     }
     // check if sum of items is more than maxAvailable
-    const itemTypeSum = await this.serviceItemsSumService.findOne({
-      where: {
-        id: itemType.serviceTypeId,
-      },
-    });
-    if (
-      checkMaxAvailable &&
-      parsedValue + itemTypeSum.sum > itemType.maxAvailable
-    ) {
-      throw new BadRequestException(
-        `insufficient resources for item [${itemType.id}]`,
-      );
-    }
+    // const itemTypeSum = await this.serviceItemsSumService.findOne({
+    //   where: {
+    //     id: itemType.serviceTypeId,
+    //   },
+    // });
+    // if (
+    //   checkMaxAvailable &&
+    //   parsedValue + itemTypeSum.sum > itemType.maxAvailable
+    // ) {
+    //   throw new BadRequestException(
+    //     `insufficient resources for item [${itemType.id}]`,
+    //   );
+    // }
 
     // checks if steps mod is zero
     if (
