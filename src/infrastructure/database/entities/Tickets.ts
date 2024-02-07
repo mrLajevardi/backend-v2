@@ -21,6 +21,12 @@ export class Tickets {
   @Column('int', { name: 'TicketID' })
   ticketId: number;
 
+  @PrimaryGeneratedColumn({ name: 'Code', type: 'decimal' })
+  code: number;
+
+  @Column('tinyint', { name: 'Topic' })
+  topic: number;
+
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'ServiceInstanceID',
     nullable: true,

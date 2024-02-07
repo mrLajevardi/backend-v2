@@ -30,6 +30,7 @@ import { AddVdcStoragePolicyDto } from 'src/wrappers/main-wrapper/service/admin/
 import { TaskQueryTypes } from 'src/application/base/tasks/enum/task-query-types.enum';
 import { TicketService } from '../../../ticket/ticket.service';
 import { ZammadGroupsEnum } from '../../../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-groups.enum';
+import { TicketTopics } from '../../../crud/tickets-table/enum/ticket-topics.enum';
 @Injectable()
 export class UpgradeDiskResourcesService
   implements BaseTask<UpgradeVdcStepsEnum>
@@ -67,7 +68,8 @@ export class UpgradeDiskResourcesService
       console.log(err);
       await this.ticketService.createTicket(options, {
         message: TicketsMessagesEnum.IncreaseStorageResourceFailure,
-        group: ZammadGroupsEnum.Users,
+        group: ZammadGroupsEnum.TechnicalUser,
+        topic: TicketTopics.Vdc,
         serviceInstanceId: job.data.serviceInstanceId,
         subject: TicketsSubjectEnum.AutomaticTicket,
       });

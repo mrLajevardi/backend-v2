@@ -1,7 +1,10 @@
+import { TicketTopicType } from '../type/ticket-topic.type';
+
 export interface CreateTicketDto {
   title: string;
   group: string;
   customer?: string;
+  topic: TicketTopicType;
   article?: Article;
 }
 

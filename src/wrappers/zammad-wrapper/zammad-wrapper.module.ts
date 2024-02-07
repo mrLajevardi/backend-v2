@@ -5,6 +5,7 @@ import { ZammadTicketWrapperService } from './services/wrapper/ticket/zammad-tic
 import { WrapperModule } from '../wrapper.module';
 import { ZammadUserWrapperService } from './services/wrapper/user/zammad-users-wrapper.service';
 import { ZammadArticleWrapperService } from './services/wrapper/ticket/zammad-article-wrapper.service';
+import { ZammadStatesWrapperService } from './services/wrapper/ticket/zammad-states-wrapper.service';
 
 @Module({
   imports: [forwardRef(() => WrapperModule)],
@@ -16,6 +17,7 @@ import { ZammadArticleWrapperService } from './services/wrapper/ticket/zammad-ar
     ZammadTicketWrapperService,
     ZammadUserWrapperService,
     ZammadArticleWrapperService,
+    ZammadStatesWrapperService,
   ],
   exports: [
     ZAMMAD_WRAPPER_SERVICE,

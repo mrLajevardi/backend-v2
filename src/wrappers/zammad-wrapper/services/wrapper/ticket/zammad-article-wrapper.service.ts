@@ -5,6 +5,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { GetTicketArticlesDto } from './dto/get-ticket-articles.dto';
 import { ZAMMAD_API_VERSION } from '../../../const/zammad-version.const';
 import { RawAxiosRequestHeaders } from 'axios';
+import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ZammadArticleWrapperService {
@@ -38,5 +39,22 @@ export class ZammadArticleWrapperService {
       .build()
       .request<GetTicketArticlesDto[]>();
     return result.data;
+  }
+
+  async updateArticle(
+    authToken: string,
+    ticketId: number,
+    dto: UpdateArticleDto,
+  ): Promise<void> {
+    await this.wrapperService
+      .getBuilder(WrappersEnum.Zammad)
+      .setBody<UpdateArticleDto>(dto)
+      .setHeaders<RawAxiosRequestHeaders>({
+        Authorization: authToken,
+      })
+      .setMethod('PUT')
+      .setUrl(`/api/${ZAMMAD_API_VERSION}/ticket_articles/${ticketId}`)
+      .build()
+      .request();
   }
 }

@@ -1,3 +1,5 @@
+import { ZammadArticleTypeEnum } from '../enum/zammad-article-type.enum';
+
 export interface GetTicketArticlesDto {
   id: number;
   ticket_id: number;
@@ -15,14 +17,16 @@ export interface GetTicketArticlesDto {
   references: null;
   body: string;
   internal: boolean;
-  preferences: null;
+  preferences: {
+    highlight: string;
+  };
   updated_by_id: number;
   created_by_id: number;
   origin_by_id: null;
   created_at: Date;
   updated_at: Date;
   attachments: any[];
-  type: string;
+  type: ZammadArticleTypeEnum;
   sender: string;
   created_by: string;
   updated_by: string;

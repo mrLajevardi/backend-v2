@@ -29,6 +29,7 @@ import { IP_SPLITTER } from '../../../itemType/const/item-type-code-hierarchy.co
 import { TicketService } from '../../../ticket/ticket.service';
 import { SessionRequest } from '../../../../../infrastructure/types/session-request.type';
 import { ZammadGroupsEnum } from '../../../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-groups.enum';
+import { TicketTopics } from '../../../crud/tickets-table/enum/ticket-topics.enum';
 
 @Injectable()
 export class IncreaseNumberOfIpsService
@@ -68,7 +69,8 @@ export class IncreaseNumberOfIpsService
       } as SessionRequest;
       await this.ticketService.createTicket(options, {
         message: TicketsMessagesEnum.IncreaseNumberOfIpsFailure,
-        group: ZammadGroupsEnum.Users,
+        group: ZammadGroupsEnum.TechnicalUser,
+        topic: TicketTopics.Vdc,
         serviceInstanceId: job.data.serviceInstanceId,
         subject: TicketsSubjectEnum.AutomaticTicket,
       });

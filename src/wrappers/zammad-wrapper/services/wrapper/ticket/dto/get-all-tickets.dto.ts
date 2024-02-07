@@ -1,3 +1,5 @@
+import { TicketTopicType } from '../type/ticket-topic.type';
+
 export interface GetAllTicketsDto {
   id: number;
   group_id: number;
@@ -36,4 +38,5 @@ export interface GetAllTicketsDto {
   created_by_id: number;
   created_at: Date;
   updated_at: Date;
+  topic: TicketTopicType;
 }

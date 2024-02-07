@@ -10,12 +10,14 @@ import { GetAllTicketsDto } from './dto/get-all-tickets.dto';
 import { ZAMMAD_API_VERSION } from '../../../const/zammad-version.const';
 import { ZammadArticleWrapperService } from './zammad-article-wrapper.service';
 import { RawAxiosRequestHeaders } from 'axios';
+import { ZammadStatesWrapperService } from './zammad-states-wrapper.service';
 
 @Injectable()
 export class ZammadTicketWrapperService {
   constructor(
     private readonly wrapperService: WrapperService,
     public readonly articleService: ZammadArticleWrapperService,
+    public readonly statesService: ZammadStatesWrapperService,
   ) {}
 
   async createTicket(

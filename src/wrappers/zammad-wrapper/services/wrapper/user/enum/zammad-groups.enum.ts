@@ -1,3 +1,5 @@
 export enum ZammadGroupsEnum {
-  Users = 'Users',
+  TechnicalUser = 'Users::technical',
+  SalesUser = 'Users::sales',
+  FinancialUser = 'Users::financial',
 }

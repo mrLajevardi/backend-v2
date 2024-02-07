@@ -1,25 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserTableService } from '../crud/user-table/user-table.service';
 import { TicketsTableService } from '../crud/tickets-table/tickets-table.service';
 import { ForbiddenException } from 'src/infrastructure/exceptions/forbidden.exception';
 import { ServiceInstancesTableService } from '../crud/service-instances-table/service-instances-table.service';
-import { isNil } from 'lodash';
-import { updateTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/updateTicket';
-import { createTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/createTicket';
-import { getListOfTickets } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/getListOfTickets';
-import { getTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/getTicket';
-import { replyTicket } from 'src/wrappers/uvdeskWrapper/wrappers/tickets/replyTicket';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
 import { CreateTicketDto } from './dto/create-ticket.dto';
-import { TicketStatusEnum } from './enum/ticket-status.enum';
-import { TicketEditType } from './enum/ticket-edit-type.enum';
 import { ZammadTicketWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/zammad-ticket-wrapper.service';
 import { ZammadUserWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/user/zammad-users-wrapper.service';
-import { ZammadGroupsEnum } from '../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-groups.enum';
 import { ZammadRolesEnum } from '../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-roles.enum';
 import { User } from '../../../infrastructure/database/entities/User';
 import { encodePassword } from '../../../wrappers/zammad-wrapper/services/helper/encode-password.helper';
 import { ZammadArticleTypeEnum } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/enum/zammad-article-type.enum';
+import { ZammadTicketStatesEnum } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/enum/zammad-ticket-states.enum';
+import { TicketTopics } from '../crud/tickets-table/enum/ticket-topics.enum';
+import { TicketTopicType } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/type/ticket-topic.type';
+import { ArticleReactionEnum } from './enum/article-reaction.enum';
+import { ArticleReactionDto } from './dto/article-rection.dto';
+import { ArticleListDto } from './dto/article-list.dto';
+import { ReplyTicketDto } from './dto/reply-ticket.dto';
+import { GetTicketArticlesDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/get-ticket-articles.dto';
 
 @Injectable()
 export class TicketService {
@@ -32,6 +31,7 @@ export class TicketService {
   ) {}
   async closeTicket(options: SessionRequest, ticketId: number): Promise<void> {
     const userId = options.user.userId;
+    const authToken = encodePassword(options.user.guid);
     const ticketExists = await this.ticketTable.findOne({
       where: {
         userId: userId,
@@ -41,9 +41,13 @@ export class TicketService {
     if (!ticketExists) {
       return Promise.reject(new ForbiddenException());
     }
-    // update status to 3
-    console.log(ticketId, '💀💀💀');
-    await updateTicket(TicketEditType.Status, TicketStatusEnum.Close, ticketId);
+    await this.zammadTicketService.updateTicket(
+      ticketId,
+      {
+        state: ZammadTicketStatesEnum.Close,
+      },
+      authToken,
+    );
     return Promise.resolve();
   }
 
@@ -51,127 +55,150 @@ export class TicketService {
     options: SessionRequest,
     data: CreateTicketDto,
   ): Promise<{ ticketId: number }> {
-    console.log('create ticket');
     const userId = options.user.userId;
     const user = await this.userTable.findById(userId);
-    const defaultUserId = -1;
+    const authToken = encodePassword(user.guid);
     const service = await this.serviceInstancesTable.findOne({
       where: {
-        userId: userId | defaultUserId,
+        userId: userId,
         id: data.serviceInstanceId,
       },
     });
-    console.log(data);
-    // if (!service || isNil(data.serviceInstanceId)) {
-    //   return Promise.reject(new ForbiddenException());
-    // }
-    // const message = `${data.message}\nنام سرویس: ${
-    //   service?.name ?? ''
-    // }, نوع سرویس: ${service?.serviceTypeId}`;
+    if (!service) {
+      throw new ForbiddenException();
+    }
     const zammadUser = await this.zammadUserService.searchUser(user.guid);
     if (zammadUser.length === 0) {
       await this.createTicketingUser(user);
+      console.log('zammad user created');
     }
     const ticket = await this.zammadTicketService.createTicket(
       {
+        topic: this.convertTopicEnumToKey(data.topic),
         title: data.subject,
-        group: ZammadGroupsEnum.Users,
+        group: data.group,
       },
-      encodePassword(user.guid),
+      authToken,
     );
+    console.log('zammad ticket created');
     await this.zammadTicketService.articleService.createArticle(
       {
         body: data.message,
         ticket_id: ticket.id,
         type: ZammadArticleTypeEnum.Note,
+        attachments: data.attachments,
       },
-      encodePassword(user.guid),
+      authToken,
     );
-    // const { ticketId } = await createTicket(
-    //   message,
-    //   'customer',
-    //   null,
-    //   data.name,
-    //   data.subject,
-    //   user.username,
-    // );
-    console.log('🐉🐉🐉');
-    await this.ticketTable.create({
+    console.log('zammad article created');
+    const createdTicket = await this.ticketTable.create({
       ticketId: ticket.id,
       userId: userId,
       serviceInstanceId: data.serviceInstanceId ?? null,
+      topic: data.topic,
     });
+    await this.zammadTicketService.updateTicket(
+      ticket.id,
+      {
+        ticket_code: createdTicket.code,
+      },
+      authToken,
+    );
+    console.log('zammad article updated');
     return Promise.resolve({ ticketId: ticket.id });
   }
 
-  async getAllTickets(
-    options: SessionRequest,
-  ): Promise<{ tickets: object[]; pagination: object }> {
-    const userId = options.user.userId;
-    const user = await this.userTable.findById(userId);
-    const tickets = await this.zammadTicketService.getAllTickets(
-      encodePassword(user.guid),
-    );
-    return tickets as any;
-    const usersTicketsIds = (
-      await this.ticketTable.find({
-        select: { ticketId: true },
-        where: { userId: userId },
-      })
-    ).map((ticket) => ticket.ticketId);
-    const res = [];
-    // try {
-    //   const tickets = await getListOfTickets({
-    //     actAsEmail: user.username,
-    //     actAsType: 'customer',
-    //   });
-
-    //   tickets.tickets = tickets.tickets.filter((ticket) =>
-    //     usersTicketsIds.includes(ticket.id),
-    //   );
-
-    //   return Promise.resolve(tickets);
-    // } catch (error) {
-    //   if (error.status === 404) {
-    //     return {
-    //       tickets: [],
-    //       pagination: {},
-    //     };
-    //   }
-    //   return Promise.reject(error);
-    // }
+  async getAllTickets(options: SessionRequest): Promise<any[]> {
+    const authToken = encodePassword(options.user.guid);
+    const tickets = await this.zammadTicketService.getAllTickets(authToken);
+    const states =
+      await this.zammadTicketService.statesService.getAllTicketStates(
+        authToken,
+      );
+    const extendedTickets = tickets.map((ticket) => {
+      const state = states.find(
+        (targeState) => targeState.id === ticket.state_id,
+      );
+      return {
+        ...ticket,
+        topic: TicketTopics[ticket.topic],
+        state: state.name,
+      };
+    });
+    return extendedTickets;
   }
 
-  async getTicket(options: SessionRequest, ticketId: number): Promise<object> {
-    const userGuid = options.user.guid;
-    // const ticketExists = await this.ticketTable.findOne({
-    //   where: {
-    //     userId: userId,
-    //     ticketId: ticketId,
-    //   },
-    // });
-    // if (!ticketExists) {
-    //   return Promise.reject(new ForbiddenException());
-    // }
-    const ticket = await this.zammadTicketService.articleService.getArticle(
-      ticketId,
-      encodePassword(userGuid),
-    );
-    return Promise.resolve(ticket);
+  async getTicket(
+    options: SessionRequest,
+    ticketId: number,
+  ): Promise<ArticleListDto[]> {
+    const authToken = encodePassword(options.user.guid);
+    let articles: GetTicketArticlesDto[];
+    try {
+      articles = await this.zammadTicketService.articleService.getArticle(
+        ticketId,
+        authToken,
+      );
+    } catch (err) {
+      if (err.status === HttpStatus.NOT_FOUND) {
+        throw new ForbiddenException();
+      }
+    }
+    const extendedTicket = articles.map((article) => {
+      let reaction: ArticleReactionEnum;
+      if (article.preferences?.highlight?.includes('Pink')) {
+        reaction = ArticleReactionEnum.Dislike;
+      } else if (article.preferences?.highlight?.includes('Green')) {
+        reaction = ArticleReactionEnum.Like;
+      } else {
+        reaction = null;
+      }
+      return {
+        ...article,
+        reaction,
+      };
+    });
+    return extendedTicket as any;
   }
 
   async replyToTicket(
     options: SessionRequest,
-    data: { message: string },
+    data: ReplyTicketDto,
     ticketId: number,
   ): Promise<void> {
+    const authToken = encodePassword(options.user.guid);
     await this.zammadTicketService.articleService.createArticle(
       {
         body: data.message,
         ticket_id: ticketId,
         type: ZammadArticleTypeEnum.Note,
+        attachments: data.attachments,
       },
-      encodePassword(options.user.guid),
+      authToken,
+    );
+  }
+
+  async articleReaction(
+    dto: ArticleReactionDto,
+    ticketId: number,
+    options: SessionRequest,
+  ): Promise<void> {
+    const articles = await this.getTicket(options, ticketId);
+    const article = articles.find((article) => article.id === dto.articleId);
+    if (!article) {
+      throw new ForbiddenException();
+    }
+    const reaction =
+      dto.reaction === ArticleReactionEnum.Like ? 'Green' : 'Pink';
+    const highlight = `type:TextRange|0$${article.body.length}$1$highlight-${reaction}$article-content-${dto.articleId}`;
+    await this.zammadTicketService.articleService.updateArticle(
+      `Token token=${process.env.ZAMMAD_ADMIN_TOKEN}`,
+      dto.articleId,
+      {
+        preferences: {
+          highlight,
+        },
+      },
     );
   }
 
@@ -185,5 +212,13 @@ export class TicketService {
       password: process.env.ZAMMAD_USER_PASSWORD,
       roles: [ZammadRolesEnum.Customer],
     });
+  }
+
+  private convertTopicEnumToKey(topic: TicketTopics): TicketTopicType {
+    if (topic === TicketTopics.Ai) {
+      return 'Ai';
+    } else if (topic === TicketTopics.Vdc) {
+      return 'Vdc';
+    }
   }
 }

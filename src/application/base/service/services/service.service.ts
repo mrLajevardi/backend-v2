@@ -635,8 +635,7 @@ export class ServiceService {
       where: { userId: userId },
     });
 
-    const ticketCount = (await this.ticketService.getAllTickets(option))
-      ?.tickets?.length;
+    const ticketCount = (await this.ticketService.getAllTickets(option)).length;
 
     return {
       unpaidInvoices: res?.activeInvoices,

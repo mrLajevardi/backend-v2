@@ -26,7 +26,7 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
     }
     this._resource.additionalConfigs = {
       ...this._resource.additionalConfigs,
-      configs,
+      ...configs,
     };
     return this as WrapperBuilder<B, P, H, C & T>;
   }
@@ -36,10 +36,11 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
   setBody<T>(body: T): WrapperBuilder<B & T, P, H, C> {
     if (!this._resource.body) {
       this._resource.body = { ...body } as unknown as B;
+      return this as WrapperBuilder<B & T, P, H, C>;
     }
     this._resource.body = {
       ...this._resource.body,
-      body,
+      ...body,
     };
     return this as WrapperBuilder<B & T, P, H, C>;
   }
@@ -49,10 +50,11 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
   ): WrapperBuilder<B, P, H & T, C> {
     if (!this._resource.headers) {
       this._resource.headers = { ...headers } as unknown as H;
+      return this as WrapperBuilder<B, P, H & T, C>;
     }
     this._resource.headers = {
       ...this._resource.headers,
-      headers,
+      ...headers,
     };
     return this as WrapperBuilder<B, P, H & T, C>;
   }
@@ -65,10 +67,11 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
   setParams<T>(params: T): WrapperBuilder<B, P & T, H, C> {
     if (!this._resource.params) {
       this._resource.params = { ...params } as unknown as P;
+      return this as WrapperBuilder<B, P & T, H, C>;
     }
     this._resource.params = {
       ...this._resource.params,
-      params,
+      ...params,
     };
     return this as WrapperBuilder<B, P & T, H, C>;
   }
