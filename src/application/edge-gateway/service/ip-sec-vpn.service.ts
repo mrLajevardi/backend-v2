@@ -18,6 +18,12 @@ import { UpdateIpSecVpnWrapperDto } from '../../../wrappers/main-wrapper/service
 import { UpdateIpSecVpnVdcDto } from '../dto/update-ip-sec-vpn-vdc.dto';
 import { UpdateIpSecVpnConnectionPropertyWrapperDto } from '../../../wrappers/main-wrapper/service/user/ipSecVpn/dto/update-ip-sec-vpn-connection-property-wrapper.dto';
 import { UpdateIpSecVpnConnectionPropertyVdcDto } from '../dto/update-ip-sec-vpn-connection-property-vdc.dto';
+import { PatchIpSecVpnVdcDto } from '../dto/patch-ip-sec-vpn-vdc.dto';
+import {
+  IpSecVpnResultDto,
+  IpSecVpnResultType,
+} from '../dto/result/ip-sec-vpn.result.dto';
+import { IpSecVpnAuthModeEnum } from '../enum/ip-sec-vpn-auth-mode.enum';
 
 @Injectable()
 export class IpSecVpnService {
@@ -211,6 +217,58 @@ export class IpSecVpnService {
     return Promise.resolve({
       taskId: ipSecVpn.__vcloudTask.split('task/')[1],
     });
+  }
+
+  async pathIpSecVpnByVdcInstanceId(
+    options: SessionRequest,
+    serviceInstanceId: string,
+    ipSecVpnId: string,
+    dto: PatchIpSecVpnVdcDto,
+  ): Promise<TaskReturnDto> {
+    const ipSecVpn = await this.findIpSecVpnByVdcInstanceId(
+      options,
+      serviceInstanceId,
+      ipSecVpnId,
+    );
+    const result: IpSecVpnResultType = new IpSecVpnResultDto().toArray(
+      ipSecVpn,
+    );
+    const updateIpSecVpnDto: UpdateIpSecVpnVdcDto = {
+      name: dto.name ?? result.name,
+      description: dto.description ?? result.description,
+      active: dto.active ?? result.active,
+      preSharedKey: dto.preSharedKey ?? result.preSharedKey,
+      authenticationMode:
+        IpSecVpnAuthModeEnum[
+          dto.authenticationMode ?? result.authenticationMode
+        ],
+      securityType: dto.securityType ?? result.securityType,
+      localEndpoint: {
+        localId: dto.localEndpoint?.localId ?? result.localEndpoint.localId,
+        localAddress:
+          dto.localEndpoint?.localAddress ?? result.localEndpoint.localAddress,
+        localNetworks:
+          dto.localEndpoint?.localNetworks ??
+          result.localEndpoint.localNetworks,
+      },
+      remoteEndpoint: {
+        remoteId:
+          dto.remoteEndpoint?.remoteId ?? result.remoteEndpoint.remoteId,
+        remoteAddress:
+          dto.remoteEndpoint?.remoteAddress ??
+          result.remoteEndpoint.remoteAddress,
+        remoteNetworks:
+          dto.remoteEndpoint?.remoteNetworks ??
+          result.remoteEndpoint.remoteNetworks,
+      },
+    };
+
+    return await this.updateIpSecVpnByVdcInstanceId(
+      options,
+      serviceInstanceId,
+      ipSecVpnId,
+      updateIpSecVpnDto,
+    );
   }
 
   async deleteIpSecVpnByVdcInstanceId(

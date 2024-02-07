@@ -8,7 +8,7 @@ import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/
 import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 import { PaidFromBudgetCreditDto } from '../dto/paid-from-budget-credit.dto';
-import { isNil } from 'lodash';
+import { assignWith, isNil } from 'lodash';
 import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
 import { PaidFromUserCreditDto } from '../dto/paid-from-user-credit.dto';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
@@ -27,6 +27,7 @@ import { NotEnoughServiceCreditForWeekException } from '../../../../infrastructu
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
 import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { ServiceStatusEnum } from '../../service/enum/service-status.enum';
 
 @Injectable()
 export class BudgetingService {
@@ -146,15 +147,20 @@ export class BudgetingService {
 
     const priceWithTax: number = this.priceWithTax(data.paidAmount, taxPercent);
 
-    const paymentType: PaymentTypes = this.handleInsufficientCredit(
+    const paymentType: PaymentTypes = await this.handleInsufficientCredit(
       priceWithTax,
       vServiceInstance.credit,
       vServiceInstance.userCredit,
       vServiceInstance.autoPaid,
       false,
+      vServiceInstance.id,
     );
 
     if (paymentType == PaymentTypes.PayToBudgetingByUserCreditAutoPaid) {
+      await this.serviceInstancesTableService.update(vServiceInstance.id, {
+        status: ServiceStatusEnum.ExceededEnoughCreditAndUsingUserCredit,
+      });
+
       await this.transactionsTableService.create({
         userId: vServiceInstance.userId.toString(),
         serviceInstanceId: serviceInstanceId,
@@ -175,12 +181,13 @@ export class BudgetingService {
       taxPercent: taxPercent,
     });
 
-    this.handleInsufficientCredit(
+    await this.handleInsufficientCredit(
       priceWithTax,
       vServiceInstance.credit,
       vServiceInstance.userCredit,
       vServiceInstance.autoPaid,
       true,
+      vServiceInstance.id,
     );
 
     const priceForNextPeriodWithTax: number = this.priceWithTax(
@@ -188,30 +195,46 @@ export class BudgetingService {
       taxPercent,
     );
 
-    this.handleInsufficientCredit(
+    await this.handleInsufficientCredit(
       priceForNextPeriodWithTax,
       vServiceInstance.credit,
       vServiceInstance.userCredit,
       vServiceInstance.autoPaid,
       true,
+      vServiceInstance.id,
     );
 
     return true;
   }
 
-  handleInsufficientCredit(
+  async handleInsufficientCredit(
     price: number,
     serviceCredit: number,
     userCredit: number,
     autoPaid: boolean,
     exception: boolean,
-  ): PaymentTypes {
+    serviceInstanceId: string,
+  ): Promise<PaymentTypes> {
     if (price < serviceCredit) {
       return PaymentTypes.PayToServiceByBudgeting;
+    } else if (!autoPaid && price > serviceCredit) {
+      await this.serviceInstancesTableService.update(serviceInstanceId, {
+        status: ServiceStatusEnum.ExceededEnoughCredit,
+      });
     }
+
     if (price < userCredit + serviceCredit && autoPaid) {
       return PaymentTypes.PayToBudgetingByUserCreditAutoPaid;
+    } else if (
+      autoPaid &&
+      price > userCredit + serviceCredit &&
+      !isNil(serviceInstanceId)
+    ) {
+      await this.serviceInstancesTableService.update(serviceInstanceId, {
+        status: ServiceStatusEnum.ExceededEnoughCreditAndNotEnoughUserCredit,
+      });
     }
+
     if (exception) {
       this.baseFactoryException.handle(NotEnoughCreditException);
     }

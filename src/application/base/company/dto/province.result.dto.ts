@@ -1,13 +1,47 @@
 import { Province } from '../../../../infrastructure/database/entities/Province';
 import { isArray } from 'class-validator';
 import { City } from '../../../../infrastructure/database/entities/City';
+import { ApiResponseProperty } from '@nestjs/swagger';
+
+export class CityResultDtoFormat {
+  @ApiResponseProperty({
+    type: Number,
+    example: 25,
+  })
+  id: number;
+
+  @ApiResponseProperty({
+    type: String,
+    example: 'qom',
+  })
+  cityName: string;
+}
 
 export class ProvinceResultDtoFormat {
+  @ApiResponseProperty({
+    type: Number,
+    example: 15,
+  })
   id: number;
+
+  @ApiResponseProperty({
+    type: String,
+    example: 'qom',
+  })
   provinceName: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: '025',
+  })
   phoneCode: string | null;
+
+  @ApiResponseProperty({
+    type: Array(CityResultDtoFormat),
+  })
   cities: CityResultDtoFormat[] | null;
 }
+
 export class ProvinceResultDto {
   collection(data: Province[]): ProvinceResultDtoFormat[] {
     return data.map((item: Province) => {
@@ -26,11 +60,6 @@ export class ProvinceResultDto {
           : null,
     };
   }
-}
-
-export class CityResultDtoFormat {
-  id: number;
-  cityName: string;
 }
 
 export class CityResultDto {
