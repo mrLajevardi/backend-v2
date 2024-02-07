@@ -248,10 +248,12 @@ export class PaygServiceService {
             [totalCost, { durationInMin }, totalVpcCost],
           );
         } catch (err) {
-          await this.serviceInstanceTableService.update(service.id, {
-            status: ServiceStatusEnum.ExceededEnoughCredit,
-          });
-          if (service.status !== ServiceStatusEnum.ExceededEnoughCredit) {
+          if (
+            ![
+              ServiceStatusEnum.ExceededEnoughCredit,
+              ServiceStatusEnum.ExceededEnoughCreditAndNotEnoughUserCredit,
+            ].includes(service.status)
+          ) {
             await this.disablePaygService(
               props,
               service.id,

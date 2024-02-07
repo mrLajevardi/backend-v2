@@ -1,16 +1,8 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
+import { BaseException } from './base/base-exception';
 
-export class OtpNotMatchException extends HttpException {
-  constructor(message = 'Error otp not matching', cause?: Error) {
-    super(
-      {
-        status: HttpStatus.UNAUTHORIZED,
-        error: message,
-      },
-      HttpStatus.UNAUTHORIZED,
-      {
-        cause: cause,
-      },
-    );
+export class OtpNotMatchException extends BaseException {
+  constructor(message = 'auth.messages.otpNotMatch', cause?: Error) {
+    super(message, HttpStatus.BAD_REQUEST, cause);
   }
 }

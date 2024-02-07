@@ -648,6 +648,7 @@ export class UserService {
         plainToClass(CreateCompanyDto, data, { excludeExtraneousValues: true }),
       );
       userProfileData.companyId = company.id;
+      userProfileData.companyLetterStatus = CompanyLetterStatusEnum.Inserted;
     }
 
     const shahkarVerify = await this.systemSettingsTable.findOne({

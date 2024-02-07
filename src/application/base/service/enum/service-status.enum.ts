@@ -9,4 +9,6 @@ export enum ServiceStatusEnum {
   Disabled = 7,
   ExceededEnoughCredit = 8,
   Upgrading = 9,
+  ExceededEnoughCreditAndUsingUserCredit = 10,
+  ExceededEnoughCreditAndNotEnoughUserCredit = 11,
 }

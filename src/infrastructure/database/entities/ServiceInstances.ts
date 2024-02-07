@@ -19,7 +19,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { VmPowerStateEventEnum } from '../../../wrappers/main-wrapper/service/user/vm/enum/vm-power-state-event.enum';
 @Index('index_zare_IsDeleted', ['isDeleted'], {})
 @Index('PK_ServiceInstances', ['id'], { unique: true })
-@Entity('ServiceInstances', { schema: 'user' })
+@Entity('ServiceInstances', { schema: 'services' })
 export class ServiceInstances {
   @PrimaryGeneratedColumn('uuid', {
     name: 'ID',

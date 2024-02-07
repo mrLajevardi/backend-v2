@@ -45,6 +45,10 @@ export class UpdateIpSecVpnConnectionPropertyIkeConfigurationVdc {
   })
   dhGroups: IpSecVpnDhGroupVersionEnum[];
 
+  @ApiProperty({
+    type: Number,
+    required: true,
+  })
   @IsNumber()
   saLifeTime: number;
 }
