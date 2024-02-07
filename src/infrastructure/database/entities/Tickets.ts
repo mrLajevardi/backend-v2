@@ -10,7 +10,7 @@ import { ServiceInstances } from './ServiceInstances';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK__Tickets__3214EC2736EDC157', ['id'], { unique: true })
-@Entity('Tickets', { schema: 'services' })
+@Entity('Tickets', { schema: 'user' })
 export class Tickets {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;

@@ -12,7 +12,7 @@ import { InvoiceDiscounts } from './InvoiceDiscounts';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('PK_Discounts', ['id'], { unique: true })
-@Entity('Discounts', { schema: 'financial' })
+@Entity('Discounts', { schema: 'services' })
 export class Discounts {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;

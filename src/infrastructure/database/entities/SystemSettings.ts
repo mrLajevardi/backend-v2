@@ -1,7 +1,7 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Index('PK__SystemSe__3214EC271FD0CEF8', ['id'], { unique: true })
-@Entity('SystemSettings', { schema: 'system' })
+@Entity('SystemSettings', { schema: 'security' })
 export class SystemSettings {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
