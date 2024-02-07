@@ -158,6 +158,11 @@ export class GenerationItems {
 }
 
 export class Generation {
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  @Expose()
+  enabled: boolean;
+
   @ApiProperty({ type: GenerationItems })
   @IsDefined()
   @IsNotEmptyObject()
