@@ -6,18 +6,71 @@ import {
   ProvinceResultDtoFormat,
 } from './province.result.dto';
 import { isNil } from 'lodash';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
 export class CompanyResultDtoFormat {
+  @ApiResponseProperty({
+    type: Number,
+    example: 12,
+  })
   id: number;
+
+  @ApiResponseProperty({
+    type: String,
+    example: 'testName',
+  })
   companyName: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: '02132659874',
+  })
   companyPhoneNumber: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: '134679852',
+  })
   companyPostalCode: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: 'test Address',
+  })
   companyAddress: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: '134679852',
+  })
   companyCode: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: '134679852',
+  })
   economyCode: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: '134679852',
+  })
   submittedCode: string | null;
+
+  @ApiResponseProperty({
+    type: String,
+    example: 'hugdf-dgfgdfgd-dfgdfgdfg-dfgdfg',
+  })
   companyLogo: string | null;
+
+  @ApiResponseProperty({
+    type: ProvinceResultDtoFormat,
+  })
   province: ProvinceResultDtoFormat | null;
+
+  @ApiResponseProperty({
+    type: CityResultDtoFormat,
+  })
   city: CityResultDtoFormat | null;
 }
 

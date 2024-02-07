@@ -77,6 +77,7 @@ import { PasswordIsDuplicateException } from '../../../../infrastructure/excepti
 import { LoginService } from '../../security/auth/service/login.service';
 import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
 import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data.exception';
+import { ChangeCompanyLetterStatusAdminDto } from '../dto/change-company-letter-status-admin.dto';
 
 @Injectable()
 export class UserService {

@@ -25,6 +25,9 @@ import { UpdateUserAdminDto } from '../dto/update-user-admin.dto';
 import { UnprocessableEntity } from '../../../../infrastructure/exceptions/unprocessable-entity.exception';
 import { SystemSettingsTableService } from '../../crud/system-settings-table/system-settings-table.service';
 import { TransactionsService } from '../../transactions/transactions.service';
+import { ChangeCompanyLetterStatusAdminDto } from '../dto/change-company-letter-status-admin.dto';
+import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data.exception';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
 
 @Injectable()
 export class UserAdminService {
@@ -57,6 +60,7 @@ export class UserAdminService {
     private readonly groupTable: GroupsTableService,
     private readonly vUsersTableService: VusersTableService,
     private readonly transactionsService: TransactionsService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
@@ -393,5 +397,27 @@ export class UserAdminService {
     });
 
     return users;
+  }
+
+  async changeCompanyLetterStatus(
+    userId: number,
+    dto: ChangeCompanyLetterStatusAdminDto,
+  ): Promise<User> {
+    const user: User = await this.userTable.findById(userId);
+
+    if (isNil(user)) {
+      this.baseFactoryException.handle(NotFoundDataException);
+    }
+
+    await this.userTable.update(userId, {
+      companyLetterStatus: dto.companyLetterStatus,
+    });
+
+    return await this.userTable.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['company'],
+    });
   }
 }
