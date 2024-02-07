@@ -1,13 +1,12 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity({
-  schema: 'user',
-  name: 'ServiceItemsSum',
-})
+// @Entity({
+//   schema: 'services',
+//   name: 'ServiceItemsSum',
+// })
 export class ServiceItemsSum {
-  @PrimaryColumn()
-  id: string;
-
-  @Column({ type: 'int' })
-  sum: number;
+  // @PrimaryColumn()
+  // id: string;
+  // @Column({ type: 'int' })
+  // sum: number;
 }

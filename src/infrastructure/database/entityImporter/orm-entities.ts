@@ -66,7 +66,7 @@ import { VReportsUser } from '../entities/views/v-reports-user';
 export const dbEntities = [
   //Views
   QualityPlans,
-  ServiceItemsSum,
+  // ServiceItemsSum,
   InvoiceItemList,
   ServiceItemTypesTree,
   VUsers,

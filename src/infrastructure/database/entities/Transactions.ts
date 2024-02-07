@@ -12,7 +12,7 @@ import { Invoices } from './Invoices';
 import { ServiceInstances } from './ServiceInstances';
 
 @Index('PK_Transactions', ['id'], { unique: true })
-@Entity('Transactions', { schema: 'user' })
+@Entity('Transactions', { schema: 'financial' })
 export class Transactions {
   @PrimaryGeneratedColumn({ type: 'integer', name: 'ID' })
   id: string;

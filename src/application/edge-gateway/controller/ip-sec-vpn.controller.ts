@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Request,
@@ -37,6 +38,7 @@ import {
   IpSecVpnStatisticsResultDto,
   IpSecVpnStatisticsResultType,
 } from '../dto/result/ip-sec-vpn-statistics.result.dto';
+import { PatchIpSecVpnVdcDto } from '../dto/patch-ip-sec-vpn-vdc.dto';
 
 @Controller('ipsec-vpn')
 @ApiTags('IpSec Vpn')
@@ -107,6 +109,24 @@ export class IpSecVpnController {
     @Body() dto: UpdateIpSecVpnVdcDto,
   ): Promise<TaskReturnDto> {
     return await this.ipSecVpnService.updateIpSecVpnByVdcInstanceId(
+      options,
+      vdcInstanceId,
+      ipSecVpnId,
+      dto,
+    );
+  }
+  @Patch('/:vdcInstanceId/tunnels/:ipSecVpnId')
+  @ApiOperation({ summary: 'Update Ip Sec Vpn of Service' })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'ipSecVpnId', description: 'IP SEC VPN ID' })
+  @ApiResponse({ type: TaskReturnDto })
+  async PatchIpSecVpn(
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Param('ipSecVpnId') ipSecVpnId: string,
+    @Request() options: SessionRequest,
+    @Body() dto: PatchIpSecVpnVdcDto,
+  ): Promise<TaskReturnDto> {
+    return await this.ipSecVpnService.pathIpSecVpnByVdcInstanceId(
       options,
       vdcInstanceId,
       ipSecVpnId,

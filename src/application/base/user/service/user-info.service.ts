@@ -115,7 +115,7 @@ export class UserInfoService {
     );
 
     if (!verify) {
-      throw new OtpNotMatchException();
+      this.baseFactoryException.handle(OtpNotMatchException);
     }
 
     const cacheKey: string = options.user.userId + '_changePhoneNumber';

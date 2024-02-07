@@ -14,7 +14,6 @@ import { DisabledServiceException } from 'src/infrastructure/exceptions/disabled
 import { NotDisabledServiceException } from 'src/infrastructure/exceptions/not-disabled-service.exception';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { ItemTypesTableService } from '../../crud/item-types-table/item-types-table.service';
-import { ServiceItemsSumService } from '../../crud/service-items-sum/service-items-sum.service';
 import { ServiceReportsViewService } from '../../crud/service-reports-view/service-reports-view.service';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { TransactionsTableService } from '../../crud/transactions-table/transactions-table.service';
@@ -53,7 +52,7 @@ export class ServiceAdminService {
     private readonly logger: LoggerService,
     private readonly configsTable: ConfigsTableService,
     private readonly itemTypesTable: ItemTypesTableService,
-    private readonly serviceItemsSumTable: ServiceItemsSumService,
+    // private readonly serviceItemsSumTable: ServiceItemsSumService,
     private readonly serviceReportsTable: ServiceReportsViewService,
     private readonly invoicesTable: InvoicesTableService,
     private readonly transactionsTable: TransactionsTableService,
@@ -346,65 +345,65 @@ export class ServiceAdminService {
     });
   }
 
-  async getItemTypes(
-    options: SessionRequest,
-    page: number,
-    pageSize: number,
-    serviceTypeId: string,
-    title: string,
-    unit: string,
-    fee: number,
-    code: string,
-    maxAvailable: number,
-    maxPerRequest: number,
-    minPerRequest: number,
-  ): Promise<PaginationReturnDto<ItemTypeWithConsumption>> {
-    let skip = 0;
-    let limit = 10;
-    if (!isEmpty(page)) {
-      skip = pageSize * (page - 1);
-    }
-    const where: FindOptionsWhere<ItemTypes> = {
-      serviceTypeId: serviceTypeId,
-      title: title ? Like(`%${title}%`) : undefined,
-      unit: unit ? Like(`%${unit}%`) : undefined,
-      fee: fee ? fee : undefined,
-      code: code ? Like(`%${code}%`) : undefined,
-      maxAvailable: maxAvailable ? maxAvailable : undefined,
-      maxPerRequest: maxPerRequest ? maxPerRequest : undefined,
-      minPerRequest: minPerRequest ? minPerRequest : undefined,
-    };
-    if (!isEmpty(pageSize)) {
-      limit = pageSize;
-    }
-
-    const itemTypes = await this.itemTypesTable.find({
-      where: where,
-      take: limit,
-      skip: skip,
-    });
-
-    let itemTypesWithConsumption: ItemTypeWithConsumption[];
-    for (const itemType of itemTypes) {
-      const sum = await this.serviceItemsSumTable.findOne({
-        where: {
-          id: itemType.code,
-        },
-      });
-      const itc: ItemTypeWithConsumption = {
-        ...itemType,
-        consumption: sum.sum,
-      };
-      itemTypesWithConsumption.push(itc);
-    }
-    const countAll = await this.itemTypesTable.count({ where: where });
-    return Promise.resolve({
-      total: countAll,
-      page,
-      pageSize,
-      record: itemTypesWithConsumption,
-    });
-  }
+  // async getItemTypes(
+  //   options: SessionRequest,
+  //   page: number,
+  //   pageSize: number,
+  //   serviceTypeId: string,
+  //   title: string,
+  //   unit: string,
+  //   fee: number,
+  //   code: string,
+  //   maxAvailable: number,
+  //   maxPerRequest: number,
+  //   minPerRequest: number,
+  // ): Promise<PaginationReturnDto<ItemTypeWithConsumption>> {
+  //   let skip = 0;
+  //   let limit = 10;
+  //   if (!isEmpty(page)) {
+  //     skip = pageSize * (page - 1);
+  //   }
+  //   const where: FindOptionsWhere<ItemTypes> = {
+  //     serviceTypeId: serviceTypeId,
+  //     title: title ? Like(`%${title}%`) : undefined,
+  //     unit: unit ? Like(`%${unit}%`) : undefined,
+  //     fee: fee ? fee : undefined,
+  //     code: code ? Like(`%${code}%`) : undefined,
+  //     maxAvailable: maxAvailable ? maxAvailable : undefined,
+  //     maxPerRequest: maxPerRequest ? maxPerRequest : undefined,
+  //     minPerRequest: minPerRequest ? minPerRequest : undefined,
+  //   };
+  //   if (!isEmpty(pageSize)) {
+  //     limit = pageSize;
+  //   }
+  //
+  //   const itemTypes = await this.itemTypesTable.find({
+  //     where: where,
+  //     take: limit,
+  //     skip: skip,
+  //   });
+  //
+  //   let itemTypesWithConsumption: ItemTypeWithConsumption[];
+  //   for (const itemType of itemTypes) {
+  //     const sum = await this.serviceItemsSumTable.findOne({
+  //       where: {
+  //         id: itemType.code,
+  //       },
+  //     });
+  //     const itc: ItemTypeWithConsumption = {
+  //       ...itemType,
+  //       consumption: sum.sum,
+  //     };
+  //     itemTypesWithConsumption.push(itc);
+  //   }
+  //   const countAll = await this.itemTypesTable.count({ where: where });
+  //   return Promise.resolve({
+  //     total: countAll,
+  //     page,
+  //     pageSize,
+  //     record: itemTypesWithConsumption,
+  //   });
+  // }
 
   async getReports(
     options: SessionRequest,

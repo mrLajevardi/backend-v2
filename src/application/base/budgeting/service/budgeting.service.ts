@@ -5,12 +5,10 @@ import { IncreaseBudgetCreditDto } from '../dto/increase-budget-credit.dto';
 import { UserTableService } from '../../crud/user-table/user-table.service';
 import { User } from '../../../../infrastructure/database/entities/User';
 import { NotEnoughCreditException } from '../../../../infrastructure/exceptions/not-enough-credit.exception';
-import { CreateTransactionsDto } from '../../crud/transactions-table/dto/create-transactions.dto';
 import { PaymentTypes } from '../../crud/transactions-table/enum/payment-types.enum';
 import { PaidFromBudgetCreditDto } from '../dto/paid-from-budget-credit.dto';
 import { isNil } from 'lodash';
 import { NotFoundException } from '../../../../infrastructure/exceptions/not-found.exception';
-import { PaidFromUserCreditDto } from '../dto/paid-from-user-credit.dto';
 import { BadRequestException } from '../../../../infrastructure/exceptions/bad-request.exception';
 import { ServicePaymentsTableService } from '../../crud/service-payments-table/service-payments-table.service';
 import { UserInfoService } from '../../user/service/user-info.service';
@@ -27,6 +25,7 @@ import { NotEnoughServiceCreditForWeekException } from '../../../../infrastructu
 import { ServiceInstancesTableService } from '../../crud/service-instances-table/service-instances-table.service';
 import { ServiceInstances } from '../../../../infrastructure/database/entities/ServiceInstances';
 import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { ServiceStatusEnum } from '../../service/enum/service-status.enum';
 
 @Injectable()
 export class BudgetingService {
@@ -130,6 +129,52 @@ export class BudgetingService {
     return Number(taxPercent.value);
   }
 
+  async handleInsufficientCredit(
+    vServiceInstance: VServiceInstances,
+    price: number,
+  ): Promise<PaymentTypes> {
+    if (price < vServiceInstance.credit) {
+      return PaymentTypes.PayToServiceByBudgeting;
+    } else if (
+      price < vServiceInstance.userCredit + vServiceInstance.credit &&
+      vServiceInstance.autoPaid
+    ) {
+      return PaymentTypes.PayToBudgetingByUserCreditAutoPaid;
+    }
+
+    const exception: boolean = await this.handleServiceStatus(
+      vServiceInstance,
+      price,
+    );
+
+    if (exception) {
+      this.baseFactoryException.handle(NotEnoughCreditException);
+    }
+  }
+
+  async handleServiceStatus(
+    vServiceInstance: VServiceInstances,
+    price: number,
+  ): Promise<boolean> {
+    if (!vServiceInstance.autoPaid && price > vServiceInstance.credit) {
+      await this.serviceInstancesTableService.update(vServiceInstance.id, {
+        status: ServiceStatusEnum.ExceededEnoughCredit,
+      });
+      return Promise.resolve(true);
+    } else if (
+      vServiceInstance.autoPaid &&
+      price > vServiceInstance.userCredit + vServiceInstance.credit
+    ) {
+      await this.serviceInstancesTableService.update(vServiceInstance.id, {
+        status: ServiceStatusEnum.ExceededEnoughCreditAndNotEnoughUserCredit,
+      });
+
+      return Promise.resolve(true);
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+
   async paidFromBudgetCredit(
     serviceInstanceId: string,
     data: PaidFromBudgetCreditDto,
@@ -146,18 +191,51 @@ export class BudgetingService {
 
     const priceWithTax: number = this.priceWithTax(data.paidAmount, taxPercent);
 
-    const paymentType: PaymentTypes = this.handleInsufficientCredit(
-      priceWithTax,
-      vServiceInstance.credit,
-      vServiceInstance.userCredit,
-      vServiceInstance.autoPaid,
-      false,
+    await this.paidFromUserCredit(vServiceInstance, priceWithTax);
+
+    await this.servicePaymentTableService.create({
+      userId: vServiceInstance.userId,
+      serviceInstanceId: serviceInstanceId,
+      price: -priceWithTax,
+      paymentType:
+        priceWithTax < vServiceInstance.userCredit + vServiceInstance.credit &&
+        vServiceInstance.autoPaid
+          ? PaymentTypes.PayToBudgetingByUserCreditAutoPaid
+          : PaymentTypes.PayToServiceByBudgeting,
+      metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
+      taxPercent: taxPercent,
+    });
+
+    await this.handleInsufficientCredit(vServiceInstance, priceWithTax);
+
+    const priceForNextPeriodWithTax: number = this.priceWithTax(
+      data.paidAmountForNextPeriod,
+      taxPercent,
     );
 
-    if (paymentType == PaymentTypes.PayToBudgetingByUserCreditAutoPaid) {
+    await this.handleInsufficientCredit(
+      vServiceInstance,
+      priceForNextPeriodWithTax,
+    );
+
+    return true;
+  }
+
+  async paidFromUserCredit(
+    vServiceInstance: VServiceInstances,
+    priceWithTax: number,
+  ): Promise<void> {
+    if (
+      vServiceInstance.autoPaid &&
+      priceWithTax < vServiceInstance.userCredit + vServiceInstance.credit
+    ) {
+      await this.serviceInstancesTableService.update(vServiceInstance.id, {
+        status: ServiceStatusEnum.ExceededEnoughCreditAndUsingUserCredit,
+      });
+
       await this.transactionsTableService.create({
         userId: vServiceInstance.userId.toString(),
-        serviceInstanceId: serviceInstanceId,
+        serviceInstanceId: vServiceInstance.id,
         paymentType: PaymentTypes.PayToBudgetingByUserCreditAutoPaid,
         value: -(priceWithTax - vServiceInstance.credit),
         isApproved: true,
@@ -165,117 +243,10 @@ export class BudgetingService {
         description: 'auto paid from user credit to service budgeting',
       });
     }
-
-    await this.servicePaymentTableService.create({
-      userId: vServiceInstance.userId,
-      serviceInstanceId: serviceInstanceId,
-      price: -priceWithTax,
-      paymentType: paymentType,
-      metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
-      taxPercent: taxPercent,
-    });
-
-    this.handleInsufficientCredit(
-      priceWithTax,
-      vServiceInstance.credit,
-      vServiceInstance.userCredit,
-      vServiceInstance.autoPaid,
-      true,
-    );
-
-    const priceForNextPeriodWithTax: number = this.priceWithTax(
-      data.paidAmountForNextPeriod,
-      taxPercent,
-    );
-
-    this.handleInsufficientCredit(
-      priceForNextPeriodWithTax,
-      vServiceInstance.credit,
-      vServiceInstance.userCredit,
-      vServiceInstance.autoPaid,
-      true,
-    );
-
-    return true;
-  }
-
-  handleInsufficientCredit(
-    price: number,
-    serviceCredit: number,
-    userCredit: number,
-    autoPaid: boolean,
-    exception: boolean,
-  ): PaymentTypes {
-    if (price < serviceCredit) {
-      return PaymentTypes.PayToServiceByBudgeting;
-    }
-    if (price < userCredit + serviceCredit && autoPaid) {
-      return PaymentTypes.PayToBudgetingByUserCreditAutoPaid;
-    }
-    if (exception) {
-      this.baseFactoryException.handle(NotEnoughCreditException);
-    }
   }
 
   priceWithTax(price: number, taxPercent: number) {
     return price * (1 + taxPercent);
-  }
-
-  async paidFromUserCredit(
-    userId: number,
-    serviceInstanceId: string,
-    data: PaidFromUserCreditDto,
-    metaData?: any[],
-  ): Promise<boolean> {
-    const user: User = await this.userTableService.findById(userId);
-    const userCredit = await this.userInfoService.getUserCreditBy(userId);
-    const taxPercent = await this.systemSettingsTableService.findOne({
-      where: {
-        propertyKey: 'TaxPercent',
-      },
-    });
-    const paidAmountWithTax: number =
-      data.paidAmount * (1 + Number(taxPercent.value));
-
-    if (isNil(user)) {
-      throw new NotFoundException();
-    }
-
-    if (userCredit == 0 || paidAmountWithTax > userCredit) {
-      this.baseFactoryException.handle(NotEnoughCreditException);
-    }
-
-    const transactionDto: CreateTransactionsDto = {
-      userId: userId.toString(),
-      dateTime: new Date(),
-      value: -paidAmountWithTax,
-      paymentType: PaymentTypes.PayToBudgetingByUserCredit,
-      description: '',
-      serviceInstanceId: serviceInstanceId,
-      invoiceId: null,
-      paymentToken: null,
-      isApproved: true,
-    };
-
-    await this.transactionsTableService.create(transactionDto);
-
-    await this.servicePaymentTableService.create({
-      userId: userId,
-      serviceInstanceId: serviceInstanceId,
-      paymentType: PaymentTypes.PayToServiceByBudgeting,
-      price: paidAmountWithTax,
-    });
-
-    await this.servicePaymentTableService.create({
-      userId: userId,
-      serviceInstanceId: serviceInstanceId,
-      paymentType: PaymentTypes.PayToServiceByUserCredit,
-      price: -paidAmountWithTax,
-      taxPercent: Number(taxPercent.value),
-      metaData: !isNil(metaData) ? JSON.stringify(metaData) : null,
-    });
-
-    return true;
   }
 
   async withdrawServiceCreditToUserCredit(
@@ -330,28 +301,6 @@ export class BudgetingService {
     });
 
     return true;
-  }
-
-  async getCredit(
-    serviceInstanceId: string,
-  ): Promise<BudgetingResultDtoFormat> {
-    const vServiceInstance: VServiceInstances =
-      await this.vServiceInstancesTableService.findById(serviceInstanceId);
-    const perHour: number = await this.calculateCostPerHour(
-      vServiceInstance.serviceItems,
-    );
-    const hoursLeft: number = Number(vServiceInstance.credit) / perHour;
-
-    // const budgetingResult: BudgetingResultDtoFormat = {
-    //     id: vServiceInstance.id,
-    //     name: vServiceInstance.name,
-    //     credit: vServiceInstance.credit,
-    //     perHour: perHour,
-    //     hoursLeft: hoursLeft,
-    //     serviceType: vServiceInstance.serviceTypeId,
-    // };
-
-    return await this.resolveResponse(vServiceInstance);
   }
 
   async calculateCostPerHour(serviceItems: ServiceItems[]) {
