@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryColumn, ViewEntity, ViewColumn } from 'typeorm';
 @Entity({
-  schema: 'financial',
+  schema: 'user',
   name: 'InvoiceItemList',
 })
 export class InvoiceItemList {

@@ -11,7 +11,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
 @Index('IX_ServiceProperties', ['serviceInstanceId'], {})
 @Index('PK_ServiceProperties', ['id'], { unique: true })
-@Entity('ServiceProperties', { schema: 'services' })
+@Entity('ServiceProperties', { schema: 'user' })
 export class ServiceProperties {
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'ServiceInstanceID',

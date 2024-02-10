@@ -507,6 +507,27 @@ export class VmController {
     return this.vmService.getVAppTemplate(options, serviceInstanceId, templeId);
   }
 
+  @Get('/:serviceInstanceId/:templateId/vAppTemplate/networkSection')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'templateId', description: 'template id' })
+  @ApiResponse({
+    status: 201,
+    description: 'acquire vm tickets',
+    type: 'object',
+  })
+  async getVAppTemplateNetworkSection(
+    @Param('serviceInstanceId') serviceInstanceId: string,
+    @Param('templateId') templeId: string,
+    @Request() options,
+  ): Promise<any> {
+    return this.vmService.getNetworksVappTemplate(
+      options,
+      serviceInstanceId,
+      templeId,
+    );
+  }
+
   @Get('/:serviceInstanceId/:vmId/computeSection')
   @ApiOperation({ summary: '' })
   @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })

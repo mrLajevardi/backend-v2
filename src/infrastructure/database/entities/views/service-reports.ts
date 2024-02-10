@@ -2,7 +2,7 @@ import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity({
-  schema: 'services',
+  schema: 'user',
   name: 'ServiceReports',
 })
 export class ServiceReports {
