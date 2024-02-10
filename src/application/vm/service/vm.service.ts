@@ -53,6 +53,7 @@ import { PaygServiceService } from '../../base/service/services/payg-service.ser
 import { NotEnoughCreditException } from '../../../infrastructure/exceptions/not-enough-credit.exception';
 import { BaseFactoryException } from '../../../infrastructure/exceptions/base/base-factory.exception';
 import { VmDetailFactoryService } from './vm-detail.factory.service';
+import { VcloudSectionTypeEnum } from '../../../infrastructure/enum/vcloud-sectionType.enum';
 
 @Injectable()
 export class VmService {
@@ -1139,6 +1140,19 @@ export class VmService {
     });
   }
 
+  async getNetworksVappTemplate(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    templateId: string,
+  ): Promise<any> {
+    const vapp = await this.getVAppTemplate(options, vdcInstanceId, templateId);
+    const networks = vapp.section?.find(
+      (sec) => sec._type == VcloudSectionTypeEnum.Network,
+    ).networkConnection;
+    // networks =networks.networkConnection;
+    return Promise.resolve(networks);
+  }
+
   async getVAppTemplate(options, serviceInstanceId, templateId) {
     const userId = options.user.userId;
     const props: any =
@@ -1154,14 +1168,14 @@ export class VmService {
       templateId,
     );
     const data = vmTemplate.data;
-    const { status, name, description, dateCreated } = data;
-    const filteredData = {
-      status,
-      name,
-      description,
-      dateCreated,
-    };
-    return Promise.resolve(filteredData);
+    // const { status, name, description, dateCreated } = data;
+    // const filteredData = {
+    //   status,
+    //   name,
+    //   description,
+    //   dateCreated,
+    // };
+    return Promise.resolve(data);
   }
 
   async getVmComputeSection(
