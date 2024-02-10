@@ -713,7 +713,6 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const datacenterCondition =
       datacenterName !== null ? capitalize(datacenterName) : datacenterName;
     const itemTypes = await this.serviceItemTypesTreeService.find({
-
       where: {
         datacenterName: datacenterCondition,
         serviceTypeId,
