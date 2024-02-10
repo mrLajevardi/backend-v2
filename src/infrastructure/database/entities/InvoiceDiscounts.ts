@@ -9,7 +9,7 @@ import {
 import { Discounts } from './Discounts';
 
 @Index('PK_InvoiceDiscounts', ['id'], { unique: true })
-@Entity('InvoiceDiscounts', { schema: 'user' })
+@Entity('InvoiceDiscounts', { schema: 'financial' })
 export class InvoiceDiscounts {
   @Column('int', { name: 'InvoiceID' })
   invoiceId: number;

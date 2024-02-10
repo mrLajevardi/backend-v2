@@ -10,7 +10,7 @@ import { Groups } from './Groups';
 import { User } from './User';
 
 @Index('PK__GroupsMa__3214EC2799DAAC74', ['id'], { unique: true })
-@Entity('GroupsMapping', { schema: 'user' })
+@Entity('GroupsMapping', { schema: 'security' })
 export class GroupsMapping {
   @PrimaryGeneratedColumn({ type: 'int', name: 'ID' })
   id: number;
