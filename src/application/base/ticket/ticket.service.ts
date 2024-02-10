@@ -64,7 +64,7 @@ export class TicketService {
         id: data.serviceInstanceId,
       },
     });
-    if (!service) {
+    if (!service && data.serviceInstanceId) {
       throw new ForbiddenException();
     }
     const zammadUser = await this.zammadUserService.searchUser(user.guid);
