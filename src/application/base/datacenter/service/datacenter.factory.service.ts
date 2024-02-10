@@ -228,6 +228,7 @@ export class DatacenterFactoryService {
         ? null
         : dsConfig.gens.find((gen) => gen.name === generation.code);
       const generationDto: Generation = {
+        enabled: false,
         providerId: targetDs?.id || null,
         type,
         items: {} as GenerationItems,
