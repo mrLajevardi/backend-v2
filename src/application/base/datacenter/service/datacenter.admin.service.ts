@@ -517,6 +517,9 @@ export class DatacenterAdminService {
           type: generationItem.type,
           isHidden: diskItem.isHidden,
         };
+        if (diskItem.code === 'archive' && generationItem.type === 1) {
+          console.log(diskItemDto);
+        }
         await this.itemTypesTableService.createWithQueryRunner(
           queryRunner,
           diskItemDto,

@@ -71,13 +71,17 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
   async getDatacenterMetadata(
     datacenterName: string,
     genId: string,
+    filterEnabled = true,
   ): Promise<FoundDatacenterMetadata> {
     const adminToken: string = await this.sessionsService.checkAdminSession();
     const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
       adminToken,
       genId,
     );
-    const res: FoundDatacenterMetadata = this.findTargetMetadata(metadata);
+    const res: FoundDatacenterMetadata = this.findTargetMetadata(
+      metadata,
+      filterEnabled,
+    );
     return res;
   }
 
@@ -533,6 +537,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const datacenter = await this.getDatacenterMetadata(
       '',
       generation[0].providerId,
+      false,
     );
     const datacenterName = datacenter.datacenter as string;
     const serviceType = await this.serviceTypesTableService.create({
@@ -645,6 +650,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const datacenter = await this.getDatacenterMetadata(
       '',
       generation[0].providerId,
+      false,
     );
     const datacenterName = datacenter.datacenter as string;
     const queryRunner = await this.itemTypeTableService.getQueryRunner();
