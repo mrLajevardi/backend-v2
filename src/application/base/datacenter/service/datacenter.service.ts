@@ -773,7 +773,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       staticReservationRam: reservationRamItems.filter(
         (item) => item.type === ServicePlanTypeEnum.Static,
       ),
-      enabled: true,
+      enabled: dsConfig.enabledForBusiness,
       paygGenerations,
       staticGenerations,
       period: periodItems,
