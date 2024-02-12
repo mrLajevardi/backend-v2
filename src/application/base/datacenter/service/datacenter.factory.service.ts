@@ -8,7 +8,7 @@ import {
   Not,
 } from 'typeorm';
 
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 import {
@@ -27,6 +27,7 @@ import {
   Generation,
   GenerationItem,
   GenerationItems,
+  GenerationStatus,
   Period,
   Reservation,
 } from '../dto/create-datacenter.dto';
@@ -35,10 +36,13 @@ import { DatacenterDetails } from '../dto/datacenter-details.dto';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { capitalize, isEmpty } from 'lodash';
+import { DatacenterService } from './datacenter.service';
 @Injectable()
 export class DatacenterFactoryService {
   constructor(
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
+    @Inject(forwardRef(() => DatacenterService))
+    private readonly datacenterService: DatacenterService,
   ) {}
   public GetFindOptionBy(
     query: DatacenterConfigGenItemsQueryDto,
@@ -228,7 +232,6 @@ export class DatacenterFactoryService {
         ? null
         : dsConfig.gens.find((gen) => gen.name === generation.code);
       const generationDto: Generation = {
-        enabled: false,
         providerId: targetDs?.id || null,
         type,
         items: {} as GenerationItems,
@@ -341,5 +344,17 @@ export class DatacenterFactoryService {
       generationsDto.push(generationDto);
     }
     return generationsDto;
+  }
+
+  setGenerationStatus(
+    config: DatacenterConfigGenResultDto,
+  ): GenerationStatus[] {
+    const generationsStatus: GenerationStatus[] = config.gens.map((gen) => {
+      return {
+        enabled: gen.enable,
+        providerId: gen.id,
+      };
+    });
+    return generationsStatus;
   }
 }
