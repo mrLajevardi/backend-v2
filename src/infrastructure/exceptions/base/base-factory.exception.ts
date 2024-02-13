@@ -2,6 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { BaseException } from './base-exception';
 import { I18nService } from 'nestjs-i18n';
 import { TranslateOptions } from 'nestjs-i18n/dist/services/i18n.service';
+import { BaseExceptionType } from '../../types/base-exception.type';
 
 @Injectable()
 export class BaseFactoryException {
@@ -23,7 +24,7 @@ export class BaseFactoryException {
     );
   }
 
-  handle(exception: new (name: string) => BaseException, message?: string) {
+  handle(exception: BaseExceptionType, message?: string) {
     const exceptionObj = new exception(message ?? undefined);
 
     return this.throwIt(exceptionObj);
