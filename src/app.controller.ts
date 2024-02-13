@@ -13,6 +13,7 @@ import { Roles } from './application/base/security/ability/decorators/roles.deco
 import { SystemSettings } from './infrastructure/database/entities/SystemSettings';
 import { AclSubjectsEnum } from './application/base/security/ability/enum/acl-subjects.enum';
 import { PolicyHandlerOptions } from './application/base/security/ability/interfaces/policy-handler.interface';
+import { ZammadUserWrapperService } from './wrappers/zammad-wrapper/services/wrapper/user/zammad-users-wrapper.service';
 
 // @UseInterceptors(SentryInterceptor) // This is a test to make sure that sentry is okay !!
 @Controller()
@@ -23,11 +24,14 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly systemSettingsService: SystemSettingsTableService,
+    private readonly z: ZammadUserWrapperService,
   ) {}
 
   @Get()
   @Public()
-  getHello(): string {
+  async getHello(): Promise<string> {
+    const r = await this.z.searchUser('ali');
+    console.log(r);
     return this.appService.getHello();
   }
 

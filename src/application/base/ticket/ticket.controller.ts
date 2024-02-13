@@ -5,6 +5,7 @@ import {
   ApiCreatedResponse,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
@@ -16,6 +17,9 @@ import { PureAbility, subject } from '@casl/ability';
 import { PolicyHandlerOptions } from '../../base/security/ability/interfaces/policy-handler.interface';
 import { AclSubjectsEnum } from '../../base/security/ability/enum/acl-subjects.enum';
 import { Action } from '../../base/security/ability/enum/action.enum';
+import { ArticleReactionDto } from './dto/article-rection.dto';
+import { ArticleListDto } from './dto/article-list.dto';
+import { TicketListDto } from './dto/ticket-list.dto';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
@@ -28,7 +32,7 @@ export class TicketController {
 
   @Post('/:ticketId/close')
   @ApiOperation({ summary: 'close a ticket' })
-  @ApiParam({ name: 'ticketId', type: 'number' })
+  @ApiParam({ name: 'ticketId', type: Number })
   async closeTicket(
     @Param('ticketId') ticketId: number,
     @Request() options: SessionRequest,
@@ -53,16 +57,18 @@ export class TicketController {
 
   @Get()
   @ApiOperation({ summary: 'get a list of tickets' })
-  async getAllTickets(
-    @Request() options: SessionRequest,
-  ): Promise<{ tickets: object[]; pagination: object }> {
+  @ApiResponse({
+    type: [TicketListDto],
+  })
+  async getAllTickets(@Request() options: SessionRequest): Promise<any> {
     const tickets = await this.service.getAllTickets(options);
     return tickets;
   }
 
   @Get(':ticketId')
   @ApiOperation({ summary: 'get a ticket' })
-  @ApiParam({ name: 'ticketId', type: 'number' })
+  @ApiParam({ name: 'ticketId', type: Number })
+  @ApiResponse({ type: [ArticleListDto] })
   async getTicket(
     @Param('ticketId') ticketId: number,
     @Request() options: SessionRequest,
@@ -73,14 +79,24 @@ export class TicketController {
 
   @Post(':ticketId/reply')
   @ApiOperation({ summary: 'reply to ticket' })
-  @ApiParam({ name: 'ticketId', type: 'number' })
-  @ApiBody({ type: ReplyTicketDto })
+  @ApiParam({ name: 'ticketId', type: Number })
   async replyToTicket(
     @Param('ticketId') ticketId: number,
     @Body() data: ReplyTicketDto,
     @Request() options: SessionRequest,
-  ): Promise<any> {
+  ): Promise<void> {
     const replyData = await this.service.replyToTicket(options, data, ticketId);
     return replyData;
+  }
+
+  @Post(':ticketId/reaction')
+  @ApiParam({ name: 'ticketId', type: Number })
+  @ApiOperation({ summary: 'react to ticket' })
+  async reactToArticle(
+    @Param('ticketId') ticketId: number,
+    @Body() data: ArticleReactionDto,
+    @Request() options: SessionRequest,
+  ): Promise<void> {
+    await this.service.articleReaction(data, ticketId, options);
   }
 }

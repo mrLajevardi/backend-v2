@@ -55,6 +55,8 @@ import { User } from '../../../../infrastructure/database/entities/User';
 import { AiApiException } from '../../../../infrastructure/exceptions/ai-api.exception';
 import { TicketService } from '../../ticket/ticket.service';
 import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { ZammadGroupsEnum } from '../../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-groups.enum';
+import { TicketTopics } from '../../crud/tickets-table/enum/ticket-topics.enum';
 
 @Injectable()
 export class CreateServiceService {
@@ -524,8 +526,9 @@ export class CreateServiceService {
     if (retryCount === 1) {
       await this.ticketService.createTicket(options, {
         subject: TicketsSubjectEnum.AutomaticTicket,
+        topic: TicketTopics.Vdc,
         message: TicketsMessagesEnum.VdcCreationFailure,
-        name: user.name,
+        group: ZammadGroupsEnum.TechnicalUser,
         serviceInstanceId,
       });
     }
