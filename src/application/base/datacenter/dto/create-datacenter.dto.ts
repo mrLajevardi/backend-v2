@@ -158,11 +158,6 @@ export class GenerationItems {
 }
 
 export class Generation {
-  @ApiProperty({ type: Boolean })
-  @IsBoolean()
-  @Expose()
-  enabled: boolean;
-
   @ApiProperty({ type: GenerationItems })
   @IsDefined()
   @IsNotEmptyObject()
@@ -233,6 +228,17 @@ export class Reservation {
   @IsEnum(ServicePlanTypeEnum)
   type: ServicePlanTypeEnum;
 }
+
+export class GenerationStatus {
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  enabled: boolean;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @Expose()
+  providerId: string;
+}
 export class CreateDatacenterDto {
   @ApiProperty({ type: String })
   @IsString()
@@ -255,10 +261,6 @@ export class CreateDatacenterDto {
   @ValidateNested({ each: true })
   @ApiProperty({ type: [Generation] })
   staticGenerations: Generation[];
-
-  @ApiProperty({ type: Boolean })
-  @IsBoolean()
-  enabled: boolean;
 
   @IsArray({})
   @IsObject({ each: true })
@@ -296,4 +298,11 @@ export class CreateDatacenterDto {
   @ValidateNested({ each: true })
   @ApiProperty({ type: [Reservation] })
   staticReservationRam: Reservation[];
+
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => GenerationStatus)
+  @ValidateNested({ each: true })
+  @ApiProperty({ type: [GenerationStatus] })
+  generationsStatus: GenerationStatus[];
 }
