@@ -3,7 +3,7 @@ import { BaseEntity } from '../../entity/base.entity';
 import { isTestingEnv } from '../../helpers/helpers';
 
 @Index('PK__ServiceD__3214EC07E8961BAC', ['id'], { unique: true })
-@Entity('ServiceDiscount', { schema: 'services' })
+@Entity('ServiceDiscount', { schema: 'financial' })
 export class ServiceDiscount extends BaseEntity {
   @Column(isTestingEnv() ? 'text' : 'uniqueidentifier', {
     name: 'ServiceInstanceId',
