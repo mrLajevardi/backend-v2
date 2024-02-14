@@ -65,7 +65,9 @@ export class ServiceInstancesTableService {
     return await this.repository.query(this.expiredServicesSql, params);
   }
 
-  private async enabledServiceExtended(params: any[]): Promise<ServiceInstances[]> {
+  private async enabledServiceExtended(
+    params: any[],
+  ): Promise<ServiceInstances[]> {
     const result: ServiceInstanceModel[] = await this.repository.query(
       this.enabledServiceExtendedSql,
       params,
