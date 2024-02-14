@@ -761,8 +761,10 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         case ItemTypeCodes.MemoryReservationItem:
           this.datacenterServiceFactory.setReservation(
             itemType,
+
             reservationRamItems,
           );
+
           break;
       }
     }

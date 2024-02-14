@@ -69,11 +69,19 @@ export class DatacenterController {
     description: 'datacenterName',
     required: false,
   })
+  @ApiQuery({
+    name: 'filterEnabled',
+    type: Boolean,
+    example: true,
+    required: true,
+  })
   async getDatacenterWithGens(
     @Query('datacenterName') datacenterName?: string,
+    @Query('filterEnabled') filterEnabled?: string,
   ): Promise<DatacenterConfigGenResultDto[]> {
     const result = await this.service.getDatacenterConfigWithGen(
       datacenterName,
+      JSON.parse(filterEnabled ?? 'true'),
     );
     return result;
   }

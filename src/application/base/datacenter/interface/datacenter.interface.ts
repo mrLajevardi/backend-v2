@@ -13,6 +13,7 @@ export const BASE_DATACENTER_SERVICE = 'BASE_DATACENTER_SERVICE';
 export interface BaseDatacenterService extends IBaseService {
   getDatacenterConfigWithGen(
     datacenterName?,
+    filterEnabled?: boolean,
   ): Promise<DatacenterConfigGenResultDto[]>;
 
   getAllProviders(): Promise<ProviderResultDto[]>;
