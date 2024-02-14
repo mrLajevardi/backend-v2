@@ -1,8 +1,16 @@
-import { HttpStatus } from '@nestjs/common';
-import { BaseException } from './base/base-exception';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
-export class DisabledUserException extends BaseException {
-  constructor(message = 'auth.messages.userIsDeactivate', cause?: Error) {
-    super(message, HttpStatus.BAD_REQUEST, cause);
+export class DisabledUserException extends HttpException {
+  constructor(message = 'user is disabled', cause?: Error) {
+    super(
+      {
+        status: HttpStatus.FORBIDDEN,
+        error: message,
+      },
+      HttpStatus.FORBIDDEN,
+      {
+        cause: cause,
+      },
+    );
   }
 }

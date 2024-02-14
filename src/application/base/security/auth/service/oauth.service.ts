@@ -10,6 +10,7 @@ import * as https from 'https';
 import { UserTableService } from 'src/application/base/crud/user-table/user-table.service';
 import { BadRequestException } from 'src/infrastructure/exceptions/bad-request.exception';
 import { DisabledUserException } from 'src/infrastructure/exceptions/disabled-user.exception';
+import { InvalidPhoneTokenException } from 'src/infrastructure/exceptions/invalid-phone-token.exception';
 import {
   encryptPassword,
   generatePassword,
@@ -20,17 +21,15 @@ import { OauthResponseDto } from '../dto/oauth-response.dto';
 import { VerifyOauthDto } from '../dto/verify-oauth.dto';
 import { AccessTokenDto } from '../dto/access-token.dto';
 import { SessionRequest } from 'src/infrastructure/types/session-request.type';
+import { InvalidEmailTokenException } from 'src/infrastructure/exceptions/invalid-email-token.exception';
 import { OtpService } from '../../security-tools/otp.service';
-import { isEmpty, isNil } from 'lodash';
+import { isEmpty } from 'lodash';
 import { CreateUserDto } from 'src/application/base/crud/user-table/dto/create-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/infrastructure/database/entities/User';
 import { stringify } from 'querystring';
 import { UserOauthLoginGoogleDto } from '../dto/user-oauth-login-google.dto';
 import { encryptVdcPassword } from '../../../../../infrastructure/utils/extensions/encrypt.extensions';
-import { BaseFactoryException } from '../../../../../infrastructure/exceptions/base/base-factory.exception';
-import { OtpNotMatchException } from '../../../../../infrastructure/exceptions/otp-not-match-exception';
-import { InvalidEmailHashTokenException } from '../../../../../infrastructure/exceptions/invalid-email-hash-token.exception';
 
 @Injectable()
 export class OauthService {
@@ -40,7 +39,6 @@ export class OauthService {
     private readonly loginService: LoginService,
     private readonly otpService: OtpService,
     private readonly emailJwtService: JwtService,
-    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   getGoogleConsentURL() {
@@ -72,7 +70,6 @@ export class OauthService {
 
     return `https://github.com/login/oauth/authorize?client_id=${clientID}&client_secret=${clientSecret}&state=${state}`;
   }
-
   async googleOauth(code: string): Promise<OauthResponseDto> {
     let email: string;
     let error: Error;
@@ -297,7 +294,7 @@ export class OauthService {
       return Promise.resolve(this.createModelOauthLogin(emailToken, false, ''));
     }
     if (!user.active) {
-      this.baseFactoryException.handle(DisabledUserException);
+      return Promise.reject(new DisabledUserException());
     }
 
     accessToken = (await this.loginService.getLoginToken(user.id)).access_token;
@@ -331,7 +328,7 @@ export class OauthService {
       return Promise.resolve(this.createModelOauthLogin(token, false, ''));
     }
     if (!user.active) {
-      this.baseFactoryException.handle(DisabledUserException);
+      return Promise.reject(new DisabledUserException());
     }
 
     const accessToken = (await this.loginService.getLoginToken(user.id))
@@ -368,7 +365,7 @@ export class OauthService {
       // });
     }
     if (!user.active) {
-      this.baseFactoryException.handle(DisabledUserException);
+      return Promise.reject(new DisabledUserException());
     }
     // return this.loginService.getLoginToken(user.id);
     const accessToken = (await this.loginService.getLoginToken(user.id))
@@ -403,7 +400,6 @@ export class OauthService {
     const phoneNumber = data.phoneNumber;
     const phoneHash = data.otpHash;
     const otpCode = data.otpCode;
-
     const phoneVerified = this.otpService.otpVerifier(
       phoneNumber,
       otpCode,
@@ -411,17 +407,15 @@ export class OauthService {
     );
 
     if (!phoneVerified) {
-      this.baseFactoryException.handle(OtpNotMatchException);
+      return Promise.reject(new InvalidPhoneTokenException());
     }
-
-    const userFindByPhone = await this.userTable.findOne({
+    const user = await this.userTable.findOne({
       where: {
         phoneNumber: phoneNumber,
       },
     });
-
     if (!data.emailToken) {
-      this.baseFactoryException.handle(InvalidEmailHashTokenException);
+      return Promise.reject(new BadRequestException('no email token'));
     }
 
     const { email, firstname, lastname, emailVerified } = this.decodeEmailToken(
@@ -429,14 +423,7 @@ export class OauthService {
     );
 
     if (!emailVerified) {
-      this.baseFactoryException.handle(InvalidEmailHashTokenException);
-    }
-
-    if (!isNil(userFindByPhone.email) && userFindByPhone.email != email) {
-      this.baseFactoryException.handle(
-        InvalidEmailHashTokenException,
-        'auth.messages.emailIsAlreadyRegistered',
-      );
+      throw new InvalidEmailTokenException();
     }
 
     const findEmail = await this.userTable.findOne({
@@ -445,49 +432,57 @@ export class OauthService {
       },
     });
 
+    // email already in use
     if (findEmail) {
-      this.baseFactoryException.handle(
-        InvalidEmailHashTokenException,
-        'auth.messages.emailAlreadyInUser',
-      );
+      return Promise.reject(new BadRequestException('email already in use'));
     }
 
-    if (userFindByPhone) {
-      if (!userFindByPhone.active) {
-        this.baseFactoryException.handle(DisabledUserException);
+    if (user) {
+      await this.userTable.updateAll(
+        {
+          id: user.id,
+        },
+        {
+          email,
+          name: firstname,
+          family: lastname,
+          phoneNumber: phoneNumber,
+        },
+      );
+      if (!user.active) {
+        return Promise.reject(new ForbiddenException());
       }
 
-      await this.userTable.update(userFindByPhone.id, {
-        email: email,
-        emailVerified: true,
-        name: firstname,
-        family: lastname,
-      });
-
-      return this.loginService.getLoginToken(userFindByPhone.id);
+      return this.loginService.getLoginToken(user.id);
     }
 
-    const CreateUserDto: CreateUserDto = {
-      username: `U-${phoneNumber}`,
-      phoneNumber: phoneNumber,
-      password: await encryptPassword(data.password),
-      vdcPassword: encryptVdcPassword(data.password),
-      name: firstname || 'کاربر',
-      family: lastname || 'گرامی',
-      email: email,
-      active: true,
-      phoneVerified: true,
-      acceptTermsOfService: data.acceptTermsOfService,
-      emailVerified: emailVerified ?? false,
-      deleted: false,
-      code: null,
-      realm: null,
-      hasVdc: null,
-      emailToken: null,
-    };
+    const newUser: CreateUserDto = new User();
+    newUser.username = `U-${phoneNumber}`;
+    const password = data.password
+      ? encryptPassword(data.password)
+      : generatePassword();
+    newUser.password = await encryptPassword(data.password);
+    newUser.vdcPassword = encryptVdcPassword(data.password);
+    newUser.name = firstname || 'کاربر';
+    newUser.family = lastname || 'گرامی';
+    newUser.phoneNumber = phoneNumber;
+    newUser.email = email;
+    newUser.active = true;
+    newUser.phoneVerified = true;
+    newUser.acceptTermsOfService = data.acceptTermsOfService;
+    newUser.code = null;
+    newUser.realm = null;
+    newUser.hasVdc = null;
+    newUser.emailToken = null;
+    // newUser.credit = 0;
+    newUser.emailVerified = false;
+    newUser.deleted = false;
 
-    const createdUser = await this.userTable.create(CreateUserDto);
+    const createdUser = await this.userTable.create(newUser);
 
+    if (!createdUser.active) {
+      return Promise.reject(new ForbiddenException());
+    }
     return this.loginService.getLoginToken(createdUser.id);
   }
 }
