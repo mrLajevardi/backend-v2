@@ -27,7 +27,7 @@ function getBusUnitBusNumberFree(
       };
     });
     const freeSpace = DiskBusUnitBusNumberSpace.find(
-      (bus) => bus.legacyId == adapterType,
+      (bus) => bus.legacyId == Number(adapterType),
     ).info.filter((s) => {
       const x = model.filter(
         (f) => f.unitNumber == s.busNumber && f.busNumber == s.busUnit,
