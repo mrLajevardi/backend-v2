@@ -34,6 +34,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
     const originalData = {
       userId: payload.userId.toString(),
+      guid: payload.guid,
       username: payload.username,
       personalVerification: payload.personalVerification,
     };
