@@ -240,6 +240,11 @@ export class GenerationStatus {
   providerId: string;
 }
 export class CreateDatacenterDto {
+  @ApiProperty({ type: Boolean })
+  @IsString()
+  @IsOptional()
+  enabled?: boolean;
+
   @ApiProperty({ type: String })
   @IsString()
   title: string;
