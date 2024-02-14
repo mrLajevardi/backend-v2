@@ -25,106 +25,101 @@ export class VgpuPayAsYouGoService {
   ) {}
 
   async vgpuPayAsYouGoRobot() {
-    /**
-     * checks if user have enough credit or not if not shut down user's vms
-     */
-    const adminSession: any = await this.sessionService.checkAdminSession();
-    // configs properties
-    const configsData: Configs[] =
-      await this.configsTable.getVgpuRobotConfigData();
-    // filtered configs
-    const configs = {};
-    configsData.forEach((property) => {
-      configs[property.propertyKey] = property.value;
-    });
-
-    const orgName = configs['config.vgpu.orgName'];
-    const orgId = configs['config.vgpu.orgId'];
-    const vdcId = configs['config.vgpu.vdcId'];
-    const bronzePlan = configs['QualityPlans.bronze.costPerHour'];
-    const goldPlan = configs['QualityPlans.gold.costPerHour'];
-    const silverPlan = configs['QualityPlans.silver.costPerHour'];
-
-    // plans
-    const plans = {
-      gold: goldPlan,
-      bronze: bronzePlan,
-      silver: silverPlan,
-    };
-    // list of powered_on vms
-    const query = await mainWrapper.user.vdc.vcloudQuery(
-      adminSession,
-      {
-        type: 'vm',
-        filter: `(isVAppTemplate==false;vdc==${vdcId
-          .split(':')
-          .slice(-1)});(status==POWERED_ON)`,
-      },
-      {
-        'X-vCloud-Authorization': orgName,
-        'X-VMWARE-VCLOUD-AUTH-CONTEXT': orgName,
-        'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgId,
-      },
-    );
-    const { record: vms } = query.data;
-    // serviceIds of vms
-    let gpuIds = vms.map((vm) => {
-      return vm.name;
-    });
-    // params of sql query in statement
-    let params = '(';
-    gpuIds.forEach((id, index) => {
-      params += `@param${index + 2}`;
-      if (index < gpuIds.length - 1) {
-        params += ',';
-      }
-    });
-    params += ')';
-    gpuIds = gpuIds.map((id) => {
-      return id.slice(0, id.length - 2);
-    });
-    // Finds a list of powered-on VMs which it's last pay as you go payment date is one hour after now
-
-    // const expiredServicesQuery = this.serviceInstancesTable
-    //   .getQueryBuilder()
-    //   .select(['serviceInstances.ID', 'serviceInstances.NextPAYG'])
-    //   .where('DATEDIFF(hour, serviceInstances.NextPAYG, @0) > 0', [
-    //     Date(),
-    //   ])
-    //   .andWhere('serviceInstances.ID IN (:...@0)',[gpuIds]);
-    console.log(gpuIds);
-
-    // return if no gpu id is present
-    if (isEmpty(gpuIds)) {
-      return Promise.resolve(null);
-    }
-    const expiredServices = await this.serviceInstancesTable.expiredServices([
-      Date(),
-      gpuIds,
-    ]);
-
-    //console.log(expiredServices, 'expired');
-    const targetServiceIDs = expiredServices.map((service) => {
-      return service.id;
-    });
-    const targetServiceProperties = await this.servicePropertiesTable.find({
-      where: {
-        serviceInstanceId: In(targetServiceIDs),
-      },
-    });
-    //console.log(gpuIds);
-    // service id and service plan
-    const targetServices = [];
-    for (const targetProps of targetServiceProperties) {
-      if (targetProps.propertyKey === 'plan') {
-        targetServices.push({
-          plan: targetProps.value,
-          ID: targetProps.serviceInstanceId,
-        });
-      }
-    }
-    await this.servicePayment(targetServices, plans);
-    return Promise.resolve(targetServiceProperties);
+    // /**
+    //  * checks if user have enough credit or not if not shut down user's vms
+    //  */
+    // const adminSession: any = await this.sessionService.checkAdminSession();
+    // // configs properties
+    // const configsData: Configs[] =
+    //   await this.configsTable.getVgpuRobotConfigData();
+    // // filtered configs
+    // const configs = {};
+    // configsData.forEach((property) => {
+    //   configs[property.propertyKey] = property.value;
+    // });
+    // const orgName = configs['config.vgpu.orgName'];
+    // const orgId = configs['config.vgpu.orgId'];
+    // const vdcId = configs['config.vgpu.vdcId'];
+    // const bronzePlan = configs['QualityPlans.bronze.costPerHour'];
+    // const goldPlan = configs['QualityPlans.gold.costPerHour'];
+    // const silverPlan = configs['QualityPlans.silver.costPerHour'];
+    // // plans
+    // const plans = {
+    //   gold: goldPlan,
+    //   bronze: bronzePlan,
+    //   silver: silverPlan,
+    // };
+    // // list of powered_on vms
+    // const query = await mainWrapper.user.vdc.vcloudQuery(
+    //   adminSession,
+    //   {
+    //     type: 'vm',
+    //     filter: `(isVAppTemplate==false;vdc==${vdcId
+    //       .split(':')
+    //       .slice(-1)});(status==POWERED_ON)`,
+    //   },
+    //   {
+    //     'X-vCloud-Authorization': orgName,
+    //     'X-VMWARE-VCLOUD-AUTH-CONTEXT': orgName,
+    //     'X-VMWARE-VCLOUD-TENANT-CONTEXT': orgId,
+    //   },
+    // );
+    // const { record: vms } = query.data;
+    // // serviceIds of vms
+    // let gpuIds = vms.map((vm) => {
+    //   return vm.name;
+    // });
+    // // params of sql query in statement
+    // let params = '(';
+    // gpuIds.forEach((id, index) => {
+    //   params += `@param${index + 2}`;
+    //   if (index < gpuIds.length - 1) {
+    //     params += ',';
+    //   }
+    // });
+    // params += ')';
+    // gpuIds = gpuIds.map((id) => {
+    //   return id.slice(0, id.length - 2);
+    // });
+    // // Finds a list of powered-on VMs which it's last pay as you go payment date is one hour after now
+    // // const expiredServicesQuery = this.serviceInstancesTable
+    // //   .getQueryBuilder()
+    // //   .select(['serviceInstances.ID', 'serviceInstances.NextPAYG'])
+    // //   .where('DATEDIFF(hour, serviceInstances.NextPAYG, @0) > 0', [
+    // //     Date(),
+    // //   ])
+    // //   .andWhere('serviceInstances.ID IN (:...@0)',[gpuIds]);
+    // console.log(gpuIds);
+    // // return if no gpu id is present
+    // if (isEmpty(gpuIds)) {
+    //   return Promise.resolve(null);
+    // }
+    // // const expiredServices = await this.serviceInstancesTable.expiredServices([
+    // //   Date(),
+    // //   gpuIds,
+    // // ]);
+    // //console.log(expiredServices, 'expired');
+    // const targetServiceIDs = expiredServices.map((service) => {
+    //   return service.id;
+    // });
+    // const targetServiceProperties = await this.servicePropertiesTable.find({
+    //   where: {
+    //     serviceInstanceId: In(targetServiceIDs),
+    //   },
+    // });
+    // //console.log(gpuIds);
+    // // service id and service plan
+    // const targetServices = [];
+    // for (const targetProps of targetServiceProperties) {
+    //   if (targetProps.propertyKey === 'plan') {
+    //     targetServices.push({
+    //       plan: targetProps.value,
+    //       ID: targetProps.serviceInstanceId,
+    //     });
+    //   }
+    // }
+    // await this.servicePayment(targetServices, plans);
+    // return Promise.resolve(targetServiceProperties);
   }
 
   async servicePayment(serviceList: any[], plans: any) {

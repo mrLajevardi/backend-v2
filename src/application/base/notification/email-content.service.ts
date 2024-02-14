@@ -36,6 +36,7 @@ export class EmailContentService {
             ${message}
         </h4>`;
     return {
+      sender: process.env.EMAIL_FROM,
       subject,
       to,
       html: htmlContent,
