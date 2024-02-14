@@ -780,6 +780,13 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     );
     const generationsStatus =
       this.datacenterServiceFactory.setGenerationStatus(dsConfig);
+
+    const isEnabledDatacenter = generationsStatus
+      .map((gs) => {
+        return gs.enabled;
+      })
+      .some((ee) => ee == true);
+
     const datacenter: CreateDatacenterDto = {
       paygReservationCpu: reservationCpuItems.filter(
         (item) => item.type === ServicePlanTypeEnum.Payg,
@@ -799,6 +806,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       generationsStatus,
       title: (dsConfig?.title as string) || null,
       location: (dsConfig?.location as string) || null,
+      enabled: isEnabledDatacenter,
     };
     return datacenter;
   }
