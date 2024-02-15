@@ -41,6 +41,7 @@ import isCidr from 'is-cidr';
 import { UpdateStaticRouteVdcDto } from '../dto/update-static-route-vdc.dto';
 import { StaticRouteResultType } from '../dto/result/static-route.result.dto';
 import { UpdateDescriptionStaticRouteVdcDto } from '../dto/update-description-static-route-vdc.dto';
+import { CreateFirewallDto } from '../dto/create-firewall.dto';
 
 @ApiTags('Edge Gateway')
 @Controller('edge-gateway')
@@ -54,7 +55,7 @@ export class EdgeGatewayController {
     private readonly staticRouteService: StaticRouteService,
   ) {}
   @Post('/:vdcInstanceId/firewalls')
-  @ApiOperation({ summary: 'Create a single firewall rule' })
+  @ApiOperation({ summary: 'Create a single firewall rule', deprecated: true })
   @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
   async addToFirewallList(
     @Param('vdcInstanceId') vdcInstanceId: string,
@@ -362,6 +363,22 @@ export class EdgeGatewayController {
       options,
       vdcInstanceId,
       firewallId,
+      data,
+    );
+  }
+
+  @Post('/:vdcInstanceId/firewall')
+  @ApiOperation({ summary: 'creates firewall', tags: ['new'] })
+  @ApiParam({ name: 'vdcInstanceId', description: 'VDC instance ID' })
+  @ApiResponse({ type: TaskReturnDto })
+  async createFirewall(
+    @Request() options: SessionRequest,
+    @Param('vdcInstanceId') vdcInstanceId: string,
+    @Body() data: CreateFirewallDto,
+  ): Promise<TaskReturnDto> {
+    return await this.service.firewall.createFirewall(
+      options,
+      vdcInstanceId,
       data,
     );
   }

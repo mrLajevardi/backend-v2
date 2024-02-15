@@ -11,6 +11,10 @@ import { FirewallWrapperService } from 'src/wrappers/main-wrapper/service/user/f
 import { FirewallListItemDto } from '../dto/firewall-list-item.dto';
 import { UpdateFirewallBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/update-firewall.dto';
 import { UpdateFirewallDto } from '../dto/update-firewall.dto';
+import { CreateFirewallBody } from '../../../wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/create-firewall.dto';
+import { CreateFirewallDto } from '../dto/create-firewall.dto';
+import { FirewallIpProtocolEnum } from '../../../wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/enum/firewall-ip-protocol.enum';
+import { FirewallDirectionEnum } from '../../../wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/enum/firewall-direction.enum';
 
 @Injectable()
 export class FirewallService {
@@ -60,8 +64,8 @@ export class FirewallService {
     }
     const newFirewall = {
       ...data,
-      direction: 'IN_OUT',
-      ipProtocol: 'IPV4',
+      direction: FirewallDirectionEnum.InOut,
+      ipProtocol: FirewallIpProtocolEnum.Ipv4,
       logging: false,
     };
     const userDefinedRules =
@@ -209,12 +213,12 @@ export class FirewallService {
       name: firewall.name,
       applicationPortProfiles: firewall.applicationPortProfiles,
       comments: firewall.comments,
-      ipProtocol: 'IPV4',
+      ipProtocol: FirewallIpProtocolEnum.Ipv4,
       logging: false,
       enabled: firewall.enabled,
       sourceFirewallGroups: firewall.sourceFirewallGroups,
       destinationFirewallGroups: firewall.destinationFirewallGroups,
-      direction: 'IN_OUT',
+      direction: FirewallDirectionEnum.InOut,
       actionValue: firewall.actionValue,
       ...(firewall.id && { id: firewall.id }),
     };
@@ -240,18 +244,61 @@ export class FirewallService {
       name: data.name,
       applicationPortProfiles: data.applicationPortProfiles,
       comments: data.comments,
-      ipProtocol: 'IPV4',
+      ipProtocol: FirewallIpProtocolEnum.Ipv4,
       logging: false,
       enabled: data.enabled,
       sourceFirewallGroups: data.sourceFirewallGroups,
       destinationFirewallGroups: data.destinationFirewallGroups,
-      direction: 'IN_OUT',
+      direction: FirewallDirectionEnum.InOut,
       actionValue: data.actionValue,
       id: ruleId,
     };
     const firewall = await this.firewallWrapperService.updateSingleFirewall(
       session,
       ruleId,
+      config,
+      props['edgeName'],
+    );
+    return Promise.resolve({
+      taskId: firewall.__vcloudTask.split('task/')[1],
+    });
+  }
+
+  async createFirewall(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    data: CreateFirewallDto,
+  ): Promise<TaskReturnDto> {
+    const userId = options.user.userId;
+    const props = await this.servicePropertiesService.getAllServiceProperties(
+      vdcInstanceId,
+    );
+    const session = await this.sessionService.checkUserSession(
+      userId,
+      props['orgId'],
+    );
+    const config: CreateFirewallBody = {
+      name: data.name,
+      applicationPortProfiles: data.applicationPortProfiles,
+      comments: data.comments,
+      ipProtocol: FirewallIpProtocolEnum.Ipv4,
+      logging: false,
+      active: data.active,
+      sourceFirewallGroups: data.sourceFirewallGroups,
+      destinationFirewallGroups: data.destinationFirewallGroups,
+      direction: FirewallDirectionEnum.InOut,
+      actionValue: data.actionValue,
+      destinationFirewallIpAddresses: null,
+      networkContextProfiles: null,
+      rawPortProtocols: null,
+      sourceFirewallIpAddresses: null,
+      relativePosition: {
+        rulePosition: 'BEFORE',
+        adjacentRuleId: data.adjacentRuleId,
+      },
+    };
+    const firewall = await this.firewallWrapperService.createFirewall(
+      session,
       config,
       props['edgeName'],
     );
