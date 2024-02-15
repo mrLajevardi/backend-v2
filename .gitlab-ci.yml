@@ -9,16 +9,16 @@ variables:
 
 .job-cache:
   cache:  # Cache modules in between jobs
-    key: 
+    key:
       files:
         - package-lock.json
     paths:
       - .npm/
   before_script:
     - npm ci --cache .npm --prefer-offline
-    
+
 unit-test-job:   # This job runs in the test stage.
-  stage: test 
+  stage: test
   needs: []
   extends:
     - .job-cache
@@ -35,7 +35,7 @@ unit-test-job:   # This job runs in the test stage.
       - jest-junit.xml
     reports:
       junit: jest-junit.xml
-    expire_in: 1 day  
+    expire_in: 1 day
 
 lint-test-job:
   stage: test
@@ -57,6 +57,44 @@ lint-test-job:
       junit: eslint-junit.xml
     expire_in: 1 day
 
+build develop image:
+  image: docker
+  stage: publish
+  only:
+    - develop
+  tags:
+    - dev
+  services:
+    - docker:dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
+  script:
+    - echo "$CI_REGISTRY_IMAGE"
+    - cp /var/services/configs/.env ./ -f
+    - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
+    # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
+    # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
+    - docker push "$CI_REGISTRY/$IMAGE_NAME"
+
+deploy dev image:
+  stage: deploy
+  only:
+    - develop
+  services:
+    - docker:dind
+  tags:
+    - dev
+  before_script:
+    - export IMAGE_NAME="$IMAGE_NAME"
+  script:
+    - cp /var/services/configs/.env ./ -f
+    - cp /var/services/sa_password.txt ./ -f
+    - cat ./sa_password.txt
+    - cat .env
+    - export IMAGE_NAME=${IMAGE_FULLPATH}
+    - echo $IMAGE_NAME
+    - docker compose up -d
 develop server deploy job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   only:
@@ -79,13 +117,13 @@ develop server deploy job:      # This job runs in the deploy stage.
 build image:
   image: docker
   stage: publish
-  only: 
-   - release
+  only:
+    - release
   tags:
     - release
   services:
     - docker:dind
-  before_script: 
+  before_script:
     - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
   script:
@@ -98,8 +136,8 @@ build image:
 
 deploy image:
   stage: deploy
-  only: 
-   - release
+  only:
+    - release
   services:
     - docker:dind
   tags:
@@ -112,20 +150,20 @@ deploy image:
     - cat ./sa_password.txt
     - cat .env
     - export IMAGE_NAME=${IMAGE_FULLPATH}
-    - echo $IMAGE_NAME 
+    - echo $IMAGE_NAME
     - docker compose up -d
 
 
 build prod image:
   image: docker
   stage: publish
-  only: 
-   - main
+  only:
+    - main
   tags:
     - production
   services:
     - docker:dind
-  before_script: 
+  before_script:
     - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
   script:
@@ -134,6 +172,7 @@ build prod image:
     - cp /var/services/configs/vcdConfig.ts ./src/wrappers/mainWrapper/vcdConfig.ts -f
     - cp /var/services/configs/vcdAuthConfig.ts ./src/wrappers/mainWrapper/vcdAuthConfig.ts -f
     - cp /var/services/vcdConfig.ts ./src/wrappers/main-wrapper/vcdConfig.ts -f
+    - cp /var/services/sa_password.txt ./sa_password.txt -f
     - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
     # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
     # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
@@ -141,8 +180,8 @@ build prod image:
 
 deploy prod image:
   stage: deploy
-  only: 
-   - main
+  only:
+    - main
   services:
     - docker:dind
   tags:
@@ -155,5 +194,5 @@ deploy prod image:
     - cat ./sa_password.txt
     - cat .env
     - export IMAGE_NAME=${IMAGE_FULLPATH}
-    - echo $IMAGE_NAME 
+    - echo $IMAGE_NAME
     - docker compose up -d
