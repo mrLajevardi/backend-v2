@@ -16,7 +16,11 @@ export class RobotController {
 
   @Put('sendEmailToExpiredServices')
   async sendEmailToExpiredServices() {
-    await this.service.checkService.sendEmailToExpiredServices();
+    try {
+      await this.service.checkService.sendEmailToExpiredServices();
+    } catch (err) {
+      console.log(err);
+    }
     await this.service.checkService.disableAndDeleteService();
   }
 

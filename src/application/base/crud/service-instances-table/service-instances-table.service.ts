@@ -20,15 +20,15 @@ import {
 
 @Injectable()
 export class ServiceInstancesTableService {
-  private enabledServiceSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [user].[ServiceInstances]
+  private enabledServiceSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [services].[ServiceInstances]
   WHERE DATEDIFF(dd, ExpireDate, @0) = 0 AND ServiceTypeID = @1 AND IsDeleted=0 AND IsDisabled=0 AND ServicePlanType=0`;
-  private disabledServiceSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [user].[ServiceInstances]
+  private disabledServiceSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent FROM [services].[ServiceInstances]
   WHERE DATEDIFF(dd, ExpireDate, @0) = 0 AND ServiceTypeID = @1 AND IsDeleted=0 AND IsDisabled=1 AND ServicePlanType=0`;
-  private enabledServiceExtendedSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent, Status FROM [user].[ServiceInstances]
+  private enabledServiceExtendedSql = `SELECT ExpireDate, ID, UserID, ServiceTypeID, WarningSent, Status FROM [services].[ServiceInstances]
   WHERE (DATEDIFF(dd, ExpireDate, @0) = 0 AND ServiceTypeID = @1 AND IsDeleted=0 AND IsDisabled=0 AND ServicePlanType=0) 
   OR (Status=4 AND ServiceTypeID='vdc' AND IsDeleted=0 AND IsDisabled=0 AND ServicePlanType=0)`;
   private expiredServicesSql = `SELECT ID, NextPAYG
-  FROM [user].[ServiceInstances] 
+  FROM [services].[ServiceInstances] 
   WHERE DATEDIFF(hh, NextPAYG, @0) > 0 AND ID IN (@1)`;
   constructor(
     @InjectRepository(ServiceInstances)
@@ -39,7 +39,7 @@ export class ServiceInstancesTableService {
     return this.repository.createQueryBuilder('serviceInstances');
   }
 
-  async enabledServices(params: any[]): Promise<ServiceInstances[]> {
+  private async enabledServices(params: any[]): Promise<ServiceInstances[]> {
     const result: ServiceInstanceModel[] = await this.repository.query(
       this.enabledServiceSql,
       params,
@@ -50,7 +50,7 @@ export class ServiceInstancesTableService {
     return formattedResult;
   }
 
-  async disabledServices(params: any[]): Promise<ServiceInstances[]> {
+  private async disabledServices(params: any[]): Promise<ServiceInstances[]> {
     const result: ServiceInstanceModel[] = await this.repository.query(
       this.disabledServiceSql,
       params,
@@ -61,11 +61,13 @@ export class ServiceInstancesTableService {
     return formattedResult;
   }
 
-  async expiredServices(params: any[]): Promise<any> {
+  private async expiredServices(params: any[]): Promise<any> {
     return await this.repository.query(this.expiredServicesSql, params);
   }
 
-  async enabledServiceExtended(params: any[]): Promise<ServiceInstances[]> {
+  private async enabledServiceExtended(
+    params: any[],
+  ): Promise<ServiceInstances[]> {
     const result: ServiceInstanceModel[] = await this.repository.query(
       this.enabledServiceExtendedSql,
       params,
