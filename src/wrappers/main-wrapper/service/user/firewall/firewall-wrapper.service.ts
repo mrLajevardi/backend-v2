@@ -8,6 +8,7 @@ import { GetFirewallListDto } from './dto/get-firewall-list.dto';
 import { UpdateFirewallBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/update-firewall.dto';
 import { GetFirewallDto } from './dto/get-firewall.dto';
 import { UpdateFirewallListBody } from 'src/wrappers/vcloud-wrapper/services/user/edgeGateway/firewall/dto/update-firewall-list.dto';
+import { CreateFirewallBody } from '../../../../vcloud-wrapper/services/user/edgeGateway/firewall/dto/create-firewall.dto';
 
 @Injectable()
 export class FirewallWrapperService {
@@ -163,6 +164,37 @@ export class FirewallWrapperService {
         urlParams: {
           gatewayId,
           ruleId,
+        },
+        body: config,
+      }),
+    );
+    return Promise.resolve({
+      __vcloudTask: firewall.headers['location'],
+    });
+  }
+
+  async createFirewall(
+    authToken: string,
+    config: CreateFirewallBody,
+    edgeName: string,
+  ): Promise<VcloudTask> {
+    const gateway = await this.edgeGatewayWrapperService.getEdgeGateway(
+      authToken,
+    );
+    if (isEmpty(gateway.values[0])) {
+      return Promise.reject(new NoIpIsAssignedException());
+    }
+    const gatewayId = gateway.values.filter(
+      (value) => value.name === edgeName,
+    )[0].id;
+    const endpoint = 'FirewallEndpointService.createFirewallEndpoint';
+    const wrapper =
+      this.vcloudWrapperService.getWrapper<typeof endpoint>(endpoint);
+    const firewall = await this.vcloudWrapperService.request(
+      wrapper({
+        headers: { Authorization: `Bearer ${authToken}` },
+        urlParams: {
+          gatewayId,
         },
         body: config,
       }),
