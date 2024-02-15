@@ -113,7 +113,7 @@ deploy image:
     - cat .env
     - export IMAGE_NAME=${IMAGE_FULLPATH}
     - echo $IMAGE_NAME 
-    - docker compose up -d
+    - docker-compose up -d
 
 
 build prod image:
@@ -156,4 +156,4 @@ deploy prod image:
     - cat .env
     - export IMAGE_NAME=${IMAGE_FULLPATH}
     - echo $IMAGE_NAME 
-    - docker compose up -d
+    - docker-compose up -d
