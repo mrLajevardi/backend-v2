@@ -53,6 +53,7 @@ import { CheckPolicies } from 'src/application/base/security/ability/decorators/
 import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
 import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
 import { Action } from 'src/application/base/security/ability/enum/action.enum';
+import { TemplateNetworkSection } from '../dto/template-network-section.dto';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -514,7 +515,7 @@ export class VmController {
   @ApiResponse({
     status: 201,
     description: 'acquire vm tickets',
-    type: 'object',
+    type: [TemplateNetworkSection],
   })
   async getVAppTemplateNetworkSection(
     @Param('serviceInstanceId') serviceInstanceId: string,
