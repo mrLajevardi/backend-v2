@@ -95,14 +95,14 @@ deploy dev image:
     - export IMAGE_NAME=${IMAGE_FULLPATH}
     - echo $IMAGE_NAME
     - docker compose up -d
-develop server deploy job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  only:
-    - develop
-    # - main
-  dependencies: []
-  script:
-    - .\deploy.ps1
+#develop server deploy job:      # This job runs in the deploy stage.
+#  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+#  only:
+#    - develop
+#    # - main
+#  dependencies: []
+#  script:
+#    - .\deploy.ps1
 
 # test server deploy job:
 #   stage: deploy
