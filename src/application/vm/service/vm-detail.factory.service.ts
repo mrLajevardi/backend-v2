@@ -17,10 +17,7 @@ export class VmDetailFactoryService {
     dateFilter: SortDateTypeEnum,
     fieldName: string,
   ): string {
-    const date2 = new Date()
-      .toISOString
-      //Test
-      ();
+    const date2 = new Date().toISOString();
     let filterDate = `${fieldName}=le=${date2};`;
     if (startDate != null && endDate != null) {
       filterDate = `${fieldName}=le=${endDate.toISOString()};${fieldName}=ge=${startDate.toISOString()}`;
