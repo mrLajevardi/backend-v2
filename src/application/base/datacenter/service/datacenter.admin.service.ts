@@ -261,6 +261,7 @@ export class DatacenterAdminService {
       const metaData = await this.datacenterService.getDatacenterMetadata(
         '',
         generationItem.providerId,
+        false,
       );
       const generationName = metaData.generation as string;
       try {

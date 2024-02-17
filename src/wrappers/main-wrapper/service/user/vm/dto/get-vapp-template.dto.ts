@@ -1,41 +1,8 @@
+import { NetworkAdapterTypes } from '../../vdc/dto/get-hard-disk-adaptors.dto';
+import { AllocationModes } from './create-vm.dto';
+
 export interface GetVappTemplateDto {
-  otherAttributes: ChildrenOtherAttributes;
-  link: Link[];
-  href: string;
-  type: string;
-  id: string;
-  operationKey: null;
-  description: null;
-  tasks: null;
-  name: string;
-  files: null;
-  status: number;
-  owner: Owner;
-  copyTpmOnInstantiate: boolean;
-  children: Children;
-  section: GetVappTemplateDtoSection[];
-  defaultStorageProfile: null;
-  vdcComputePolicy: null;
-  computePolicy: null;
-  dateCreated: Date;
-  bootOptions: null;
-  trustedPlatformModule: null;
-  ovfDescriptorUploaded: boolean;
-  goldMaster: boolean;
-  vAppScopedLocalId: null;
-  vCloudExtension: any[];
-}
-
-export interface Children {
-  otherAttributes: ChildrenOtherAttributes;
-  vm: VM[];
-  vCloudExtension: any[];
-}
-
-type ChildrenOtherAttributes = Record<string, never>;
-
-export interface VM {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   link: Link[];
   href: string;
   type: string;
@@ -47,15 +14,15 @@ export interface VM {
   files: null;
   status: number;
   owner: null;
-  copyTpmOnInstantiate: null;
+  copyTpmOnInstantiate: boolean;
   children: null;
-  section: VMSection[];
+  section: Section[];
   defaultStorageProfile: null;
   vdcComputePolicy: null;
   computePolicy: null;
   dateCreated: Date;
   bootOptions: BootOptions;
-  trustedPlatformModule: Owner;
+  trustedPlatformModule: TrustedPlatformModule;
   ovfDescriptorUploaded: null;
   goldMaster: boolean;
   vAppScopedLocalId: string;
@@ -63,7 +30,7 @@ export interface VM {
 }
 
 export interface BootOptions {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   link: any[];
   href: string;
   type: string;
@@ -76,13 +43,15 @@ export interface BootOptions {
   vCloudExtension: any[];
 }
 
+export type BootOptionsOtherAttributes = Record<string, never>;
+
 export interface Link {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   href: string;
   id: null | string;
-  type: null | string;
+  type: string;
   name: null | string;
-  rel?: string;
+  rel?: Rel;
   model?: null;
   vCloudExtension: any[];
   _type?: Type;
@@ -92,11 +61,17 @@ export enum Type {
   LinkType = 'LinkType',
 }
 
-export interface VMSection {
+export enum Rel {
+  Down = 'down',
+  StorageProfile = 'storageProfile',
+  Up = 'up',
+}
+
+export interface Section {
   _type: string;
-  info: Info;
+  info: Description;
   required: boolean;
-  otherAttributes: PurpleOtherAttributes;
+  otherAttributes: SectionOtherAttributes;
   primaryNetworkConnectionIndex?: number;
   networkConnection?: NetworkConnection[];
   link?: any[];
@@ -120,11 +95,11 @@ export interface VMSection {
   resetPasswordRequired?: boolean;
   customizationScript?: null;
   computerName?: string;
-  description?: Info;
+  description?: Description;
   id?: number | string;
   version?: null;
   system?: System;
-  item?: PurpleItem[];
+  item?: Item[];
   transport?: string;
   osType?: string;
   firmware?: string;
@@ -143,29 +118,29 @@ export interface VMSection {
 }
 
 export interface CPUResourceMhz {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   configured: number;
-  reservation: number;
-  limit: number;
-  sharesLevel: string;
-  shares: number;
+  reservation: null;
+  limit: null;
+  sharesLevel: null;
+  shares: null;
   vCloudExtension: any[];
 }
 
-export interface Info {
+export interface Description {
   value: string;
   msgid: string;
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
 }
 
 export interface DiskSection {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   diskSettings: DiskSetting[];
   vCloudExtension: any[];
 }
 
 export interface DiskSetting {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   diskId: string;
   sizeMb: number;
   unitNumber: number;
@@ -192,12 +167,12 @@ export interface HardwareVersion {
   type: string;
 }
 
-export interface PurpleItem {
+export interface Item {
   address: ElementName | null;
   addressOnParent: ElementName | null;
   allocationUnits: ElementName | null;
   automaticAllocation: AutomaticAllocation | null;
-  automaticDellocation: null;
+  automaticDeallocation: null;
   caption: null;
   changeableType: null;
   configurationName: null;
@@ -208,19 +183,19 @@ export interface PurpleItem {
   generation: null;
   hostResource: HostResource[];
   instanceID: ElementName;
-  limit: Limit | null;
+  limit: null;
   mappingBehavior: null;
   otherResourceType: null;
   parent: ElementName | null;
   poolID: null;
-  reservation: Limit | null;
+  reservation: Reservation | null;
   resourceSubType: ElementName | null;
   resourceType: ElementName;
-  virtualQuantity: Limit | null;
+  virtualQuantity: Reservation | null;
   virtualQuantityUnits: ElementName | null;
-  weight: Limit | null;
+  weight: Reservation | null;
   any: Any[];
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   required: boolean;
   configuration: null;
   bound: null;
@@ -228,19 +203,19 @@ export interface PurpleItem {
 
 export interface ElementName {
   value: string;
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
 }
 
 export interface Any {
   _type: string;
   value: number;
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   required: boolean;
 }
 
 export interface AutomaticAllocation {
   value: boolean;
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
 }
 
 export interface Connection {
@@ -267,19 +242,19 @@ export interface HostResourceOtherAttributes {
   '{http://www.vmware.com/vcloud/v1.5}storageProfileOverrideVmDefault'?: string;
 }
 
-export interface Limit {
+export interface Reservation {
   value: number;
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
 }
 
 export interface MediaSection {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   mediaSettings: MediaSetting[];
   vCloudExtension: any[];
 }
 
 export interface MediaSetting {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   deviceId: string;
   mediaImage: null;
   mediaType: string;
@@ -291,7 +266,7 @@ export interface MediaSetting {
 }
 
 export interface NetworkConnection {
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
   networkConnectionIndex: number;
   ipAddress: null;
   ipType: null;
@@ -299,16 +274,16 @@ export interface NetworkConnection {
   secondaryIpType: null;
   externalIpAddress: null;
   isConnected: boolean;
-  ipAddressAllocationMode: string;
-  secondaryIpAddressAllocationMode: null;
-  networkAdapterType: string;
+  ipAddressAllocationMode: AllocationModes;
+  secondaryIpAddressAllocationMode: string;
+  networkAdapterType: NetworkAdapterTypes;
   network: string;
   needsCustomization: boolean;
   macAddress: string;
   vCloudExtension: any[];
 }
 
-export interface PurpleOtherAttributes {
+export interface SectionOtherAttributes {
   '{http://www.vmware.com/vcloud/v1.5}type'?: string;
   '{http://www.vmware.com/schema/ovf}osType'?: string;
   '{http://www.vmware.com/vcloud/v1.5}href'?: string;
@@ -340,110 +315,14 @@ export interface System {
   virtualSystemIdentifier: ElementName;
   virtualSystemType: ElementName;
   any: any[];
-  otherAttributes: ChildrenOtherAttributes;
+  otherAttributes: BootOptionsOtherAttributes;
 }
 
-export interface Owner {
-  otherAttributes: ChildrenOtherAttributes;
+export interface TrustedPlatformModule {
+  otherAttributes: BootOptionsOtherAttributes;
   link: any[];
-  href: null | string;
-  type: null | string;
-  tpmPresent?: boolean;
-  vCloudExtension: any[];
-  user?: Link;
-}
-
-export interface GetVappTemplateDtoSection {
-  _type: string;
-  info: Info;
-  required: boolean;
-  otherAttributes: FluffyOtherAttributes;
-  network?: Network[];
-  any: Link[];
-  link?: any[];
-  networkConfig?: NetworkConfig[];
-  href?: string;
-  type?: string;
-  deploymentLeaseInSeconds?: null;
-  storageLeaseInSeconds?: number;
-  deploymentLeaseExpiration?: null;
-  storageLeaseExpiration?: Date;
-  customizeOnInstantiate?: boolean;
-  goldMaster?: boolean;
-  item?: FluffyItem[];
-}
-
-export interface FluffyItem {
-  id: string;
-  order: number;
-  startDelay: number;
-  waitingForGuest: boolean;
-  stopDelay: number;
-  startAction: string;
-  stopAction: string;
-  otherAttributes: ChildrenOtherAttributes;
-}
-
-export interface Network {
-  description: Info;
-  name: string;
-  otherAttributes: ChildrenOtherAttributes;
-}
-
-export interface NetworkConfig {
-  otherAttributes: ChildrenOtherAttributes;
-  link: any[];
-  href: null;
+  href: string;
   type: null;
-  description: string;
-  configuration: Configuration;
-  isDeployed: boolean;
-  networkName: string;
+  tpmPresent: boolean;
   vCloudExtension: any[];
-}
-
-export interface Configuration {
-  otherAttributes: ChildrenOtherAttributes;
-  backwardCompatibilityMode: null;
-  ipScopes: IPScopes;
-  parentNetwork: null;
-  fenceMode: string;
-  retainNetInfoAcrossDeployments: null;
-  features: null;
-  syslogServerSettings: null;
-  routerInfo: null;
-  subInterface: null;
-  distributedInterface: null;
-  serviceInterface: null;
-  guestVlanAllowed: null;
-  connected: null;
-  dualStackNetwork: null;
-  vCloudExtension: any[];
-}
-
-export interface IPScopes {
-  otherAttributes: ChildrenOtherAttributes;
-  ipScope: IPScope[];
-  vCloudExtension: any[];
-}
-
-export interface IPScope {
-  otherAttributes: ChildrenOtherAttributes;
-  isInherited: boolean;
-  gateway: string;
-  netmask: string;
-  subnetPrefixLength: null;
-  dns1: string;
-  dns2: null;
-  dnsSuffix: null;
-  isEnabled: null;
-  ipRanges: null;
-  allocatedIpAddresses: null;
-  subAllocations: null;
-  vCloudExtension: any[];
-}
-
-export interface FluffyOtherAttributes {
-  '{http://www.vmware.com/vcloud/v1.5}type'?: string;
-  '{http://www.vmware.com/vcloud/v1.5}href'?: string;
 }

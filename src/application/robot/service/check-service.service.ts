@@ -12,7 +12,7 @@ import { User } from 'src/infrastructure/database/entities/User';
 import { ServiceStatusEnum } from 'src/application/base/service/enum/service-status.enum';
 import { ServiceTypesEnum } from 'src/application/base/service/enum/service-types.enum';
 import { ServicePlanTypeEnum } from 'src/application/base/service/enum/service-plan-type.enum';
-import { Not } from 'typeorm';
+import { LessThanOrEqual, Not } from 'typeorm';
 
 @Injectable()
 export class CheckServiceService {
@@ -38,17 +38,14 @@ export class CheckServiceService {
   async sendEmailToExpiredServices() {
     const warningsSettings: any = this.getWarningsSettings();
     for (const warningsProp of warningsSettings.props) {
-      const date = new Date(
-        new Date().getTime() + warningsProp.daysAfterNow * 24 * 60 * 60 * 1000,
-      );
-      let data = await this.serviceInstancesTable.enabledServices([
-        date,
-        'vdc',
-      ]);
-      if (warningsProp.daysAfterNow === -13) {
-        data = await this.serviceInstancesTable.disabledServices([date, 'vdc']);
-        console.log('tes', { data, date });
-      }
+      const data = await this.serviceInstancesTable.find({
+        where: {
+          isDeleted: false,
+          servicePlanType: ServicePlanTypeEnum.Static,
+          serviceTypeId: ServiceTypesEnum.Vdc,
+          daysLeft: warningsProp.daysAfterNow,
+        },
+      });
       for (const service of data) {
         if (service.warningSent < warningsProp.index) {
           await this.serviceInstancesTable.updateAll(
@@ -59,7 +56,7 @@ export class CheckServiceService {
               warningSent: service.warningSent + 1,
             },
           );
-          const user: User = await this.userTable.findById(service.userId);
+          const user = await this.userTable.findById(service.userId);
           if (!user.email) {
             return;
           }
@@ -85,11 +82,15 @@ export class CheckServiceService {
         new Date().getTime() + warningsProp.daysAfterNow * 24 * 60 * 60 * 1000,
       );
       if (warningsProp.code === 'deleteService') {
-        console.log('hello');
-        const data = await this.serviceInstancesTable.disabledServices([
-          date,
-          'vdc',
-        ]);
+        const data = await this.serviceInstancesTable.find({
+          where: {
+            daysLeft: LessThanOrEqual(warningsProp.daysAfterNow),
+            isDeleted: false,
+            isDisabled: true,
+            servicePlanType: ServicePlanTypeEnum.Static,
+            serviceTypeId: ServiceTypesEnum.Vdc,
+          },
+        });
         for (const service of data) {
           // console.log(service);
           await this.taskManagerService.addTask({
@@ -101,12 +102,33 @@ export class CheckServiceService {
             target: 'object',
           });
         }
+      } else if (warningsProp.code === 'beforeDelete') {
+        const data = await this.serviceInstancesTable.find({
+          where: {
+            daysLeft: LessThanOrEqual(warningsProp.daysAfterNow),
+            isDeleted: false,
+            isDisabled: true,
+            servicePlanType: ServicePlanTypeEnum.Static,
+            serviceTypeId: ServiceTypesEnum.Vdc,
+          },
+        });
+        for (const service of data) {
+          // console.log(service);
+          await this.serviceInstancesTable.update(service.id, {
+            status: ServiceStatusEnum.Deleted,
+          });
+        }
       } else if (warningsProp.code === 'disableService') {
         console.log('first');
-        const data = await this.serviceInstancesTable.enabledServiceExtended([
-          date,
-          'vdc',
-        ]);
+        const data = await this.serviceInstancesTable.find({
+          where: {
+            daysLeft: LessThanOrEqual(warningsProp.daysAfterNow),
+            isDeleted: false,
+            isDisabled: false,
+            servicePlanType: ServicePlanTypeEnum.Static,
+            serviceTypeId: ServiceTypesEnum.Vdc,
+          },
+        });
         // console.log({ data, date });
         for (const service of data) {
           const props =

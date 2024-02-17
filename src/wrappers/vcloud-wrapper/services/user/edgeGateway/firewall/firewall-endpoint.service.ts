@@ -7,6 +7,7 @@ import { UpdateFirewallDto } from './dto/update-firewall.dto';
 import { UpdateFirewallListDto } from './dto/update-firewall-list.dto';
 import { getAccept } from '../../../../../../infrastructure/helpers/get-accept.helper';
 import { VcloudAcceptEnum } from '../../../../../../infrastructure/enum/vcloud-accept.enum';
+import { CreateFirewallDto } from './dto/create-firewall.dto';
 
 @Injectable()
 export class FirewallEndpointService {
@@ -71,6 +72,19 @@ export class FirewallEndpointService {
     return {
       method: 'put',
       resource: `/cloudapi/1.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules`,
+      params: {},
+      body: options.body,
+      headers: {
+        Accept: getAccept(VcloudAcceptEnum.Json),
+        ...options.headers,
+      },
+    };
+  }
+
+  createFirewallEndpoint(options: CreateFirewallDto): EndpointInterface {
+    return {
+      method: 'post',
+      resource: `/cloudapi/2.0.0/edgeGateways/${options.urlParams.gatewayId}/firewall/rules`,
       params: {},
       body: options.body,
       headers: {
