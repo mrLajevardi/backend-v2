@@ -77,6 +77,27 @@ export class TicketController {
     return ticket;
   }
 
+  @Get(':ticketId/:articleId/:attachmentId')
+  @ApiOperation({ summary: 'get an attachment' })
+  @ApiParam({ name: 'ticketId', type: Number })
+  @ApiParam({ name: 'articleId', type: Number })
+  @ApiParam({ name: 'attachmentId', type: Number })
+  @ApiResponse({ type: [ArticleListDto] })
+  async getAttachment(
+    @Param('ticketId') ticketId: number,
+    @Param('articleId') articleId: number,
+    @Param('attachmentId') attachmentId: number,
+    @Request() options: SessionRequest,
+  ): Promise<Buffer> {
+    const ticket = await this.service.getAttachment(
+      options,
+      ticketId,
+      articleId,
+      attachmentId,
+    );
+    return ticket;
+  }
+
   @Post(':ticketId/reply')
   @ApiOperation({ summary: 'reply to ticket' })
   @ApiParam({ name: 'ticketId', type: Number })

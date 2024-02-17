@@ -67,11 +67,6 @@ export class TicketService {
     if (!service && data.serviceInstanceId) {
       throw new ForbiddenException();
     }
-    const zammadUser = await this.zammadUserService.searchUser(user.guid);
-    if (zammadUser.length === 0) {
-      await this.createTicketingUser(user);
-      console.log('zammad user created');
-    }
     const ticket = await this.zammadTicketService.createTicket(
       {
         topic: this.convertTopicEnumToKey(data.topic),
@@ -110,6 +105,12 @@ export class TicketService {
 
   async getAllTickets(options: SessionRequest): Promise<any[]> {
     const authToken = encodePassword(options.user.guid);
+    const user = await this.userTable.findById(options.user.userId);
+    const zammadUser = await this.zammadUserService.searchUser(user.guid);
+    if (zammadUser.length === 0) {
+      await this.createTicketingUser(user);
+      console.log('zammad user created');
+    }
     const tickets = await this.zammadTicketService.getAllTickets(authToken);
     const states =
       await this.zammadTicketService.statesService.getAllTicketStates(
@@ -202,6 +203,20 @@ export class TicketService {
     );
   }
 
+  async getAttachment(
+    options: SessionRequest,
+    ticketId: number,
+    articleId: number,
+    attachmentId: number,
+  ): Promise<Buffer> {
+    const authToken = encodePassword(options.user.guid);
+    return await this.zammadTicketService.articleService.getAttachment(
+      authToken,
+      ticketId,
+      articleId,
+      attachmentId,
+    );
+  }
   private async createTicketingUser(user: User): Promise<void> {
     await this.zammadUserService.createUser({
       email: user.email,
