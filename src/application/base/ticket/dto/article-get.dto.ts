@@ -7,4 +7,5 @@ export class ArticleGetDto {
   group?: string;
   articles?: any[];
   state?: string;
+  title?: string;
 }
