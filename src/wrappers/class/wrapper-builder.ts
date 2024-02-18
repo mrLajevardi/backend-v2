@@ -93,7 +93,7 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
       });
       console.log(this);
       try {
-        const additionalConfig = this.additionalConfigs && {};
+        const additionalConfig = this.additionalConfigs ?? {};
         const request = await axios.request<T>({
           url: this.url,
           httpsAgent: httpsAgent,

@@ -6,6 +6,7 @@ import { WrapperModule } from '../wrapper.module';
 import { ZammadUserWrapperService } from './services/wrapper/user/zammad-users-wrapper.service';
 import { ZammadArticleWrapperService } from './services/wrapper/ticket/zammad-article-wrapper.service';
 import { ZammadStatesWrapperService } from './services/wrapper/ticket/zammad-states-wrapper.service';
+import { ZammadGroupWrapperService } from './services/wrapper/group/zammad-group-wrapper.service';
 
 @Module({
   imports: [forwardRef(() => WrapperModule)],
@@ -18,11 +19,13 @@ import { ZammadStatesWrapperService } from './services/wrapper/ticket/zammad-sta
     ZammadUserWrapperService,
     ZammadArticleWrapperService,
     ZammadStatesWrapperService,
+    ZammadGroupWrapperService,
   ],
   exports: [
     ZAMMAD_WRAPPER_SERVICE,
     ZammadTicketWrapperService,
     ZammadUserWrapperService,
+    ZammadGroupWrapperService,
   ],
 })
 export class ZammadWrapperModule {}

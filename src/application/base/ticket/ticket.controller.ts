@@ -1,4 +1,13 @@
-import { Body, Controller, Param, Get, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Get,
+  Post,
+  Request,
+  Header,
+  Response,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,6 +29,8 @@ import { Action } from '../../base/security/ability/enum/action.enum';
 import { ArticleReactionDto } from './dto/article-rection.dto';
 import { ArticleListDto } from './dto/article-list.dto';
 import { TicketListDto } from './dto/ticket-list.dto';
+import { Response as rs } from 'express';
+import axios from 'axios';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
@@ -83,19 +94,57 @@ export class TicketController {
   @ApiParam({ name: 'articleId', type: Number })
   @ApiParam({ name: 'attachmentId', type: Number })
   @ApiResponse({ type: [ArticleListDto] })
+  // @Header('Content-Type', 'image/png')
+  // @Header('Content-Length', '13318')
+  // @Header('Content-Transfer-Encoding', 'binary')
+  // @Header('Content-Disposition', `inline; filename="hi"; filename*=UTF-8''hi`)
+  // @Header('X-Download-Options', `noopen`)
   async getAttachment(
     @Param('ticketId') ticketId: number,
     @Param('articleId') articleId: number,
     @Param('attachmentId') attachmentId: number,
     @Request() options: SessionRequest,
-  ): Promise<Buffer> {
+    @Response() res: rs,
+  ): Promise<any> {
     const ticket = await this.service.getAttachment(
       options,
       ticketId,
       articleId,
       attachmentId,
     );
-    return ticket;
+
+    const config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: 'http://185.213.10.206:9090/api/v1/ticket_attachment/31/45/5',
+      headers: {
+        Cookie: '_zammad_session_a138cfd0f37=b051b73e9273f19899cc535d7cd9390e',
+      },
+    };
+
+    axios
+      .request(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    // res.setHeader('Content-Type', 'image/png');
+    // res.setHeader('Content-Disposition', 'inline; filename=image.png');
+    res.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Disposition': 'inline; filename=image.png',
+    });
+    res.write(ticket);
+    res.end();
+    // res.send(ticket);
+    // const resp = Buffer.from(ticket as any, 'binary');
+    // res.end(resp);
+    // res.setHeader('Content-Type', 'image/png');
+    // res.json(ticket);
+    // return resp;
   }
 
   @Post(':ticketId/reply')
