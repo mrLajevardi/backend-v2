@@ -112,39 +112,9 @@ export class TicketController {
       articleId,
       attachmentId,
     );
-
-    const config = {
-      method: 'get',
-      maxBodyLength: Infinity,
-      url: 'http://185.213.10.206:9090/api/v1/ticket_attachment/31/45/5',
-      headers: {
-        Cookie: '_zammad_session_a138cfd0f37=b051b73e9273f19899cc535d7cd9390e',
-      },
-    };
-
-    axios
-      .request(config)
-      .then((response) => {
-        console.log(JSON.stringify(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    // res.setHeader('Content-Type', 'image/png');
-    // res.setHeader('Content-Disposition', 'inline; filename=image.png');
-    res.writeHead(200, {
-      'Content-Type': 'image/png',
-      'Content-Disposition': 'inline; filename=image.png',
-    });
-    res.write(ticket);
-    res.end();
-    // res.send(ticket);
-    // const resp = Buffer.from(ticket as any, 'binary');
-    // res.end(resp);
-    // res.setHeader('Content-Type', 'image/png');
-    // res.json(ticket);
-    // return resp;
+    res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Content-Disposition', 'inline; filename=image.png');
+    res.send(ticket);
   }
 
   @Post(':ticketId/reply')

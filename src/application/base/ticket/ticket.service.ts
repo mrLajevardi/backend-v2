@@ -214,7 +214,7 @@ export class TicketService {
     ticketId: number,
     articleId: number,
     attachmentId: number,
-  ): Promise<Buffer> {
+  ): Promise<any> {
     const authToken = encodePassword(options.user.guid);
     return await this.zammadTicketService.articleService.getAttachment(
       authToken,
