@@ -58,16 +58,23 @@ export class ZammadArticleWrapperService {
       .request();
   }
 
-  async getAttachment(authToken: string, ticketId: number,
-    articleId: number, attachmentId: number): Promise<any> {
-      const result = await this.wrapperService.getBuilder(WrappersEnum.Zammad).setHeaders<RawAxiosRequestHeaders>({
+  async getAttachment(
+    authToken: string,
+    ticketId: number,
+    articleId: number,
+    attachmentId: number,
+  ): Promise<any> {
+    return await this.wrapperService
+      .getBuilder(WrappersEnum.Zammad)
+      .setHeaders<RawAxiosRequestHeaders>({
         Authorization: authToken,
       })
       .setMethod('GET')
-      .setUrl(`/api/${ZAMMAD_API_VERSION}/ticket_attachment/${ticketId}/${articleId}/${attachmentId}`)
-      .setParams({view: 'preview'})
+      .setUrl(
+        `/api/${ZAMMAD_API_VERSION}/ticket_attachment/${ticketId}/${articleId}/${attachmentId}`,
+      )
+      .setParams({ view: 'preview' })
       .build()
       .request<any>();
-      return result;
-    }
+  }
 }
