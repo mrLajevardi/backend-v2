@@ -64,7 +64,7 @@ export class ZammadArticleWrapperService {
     articleId: number,
     attachmentId: number,
   ): Promise<any> {
-    return await this.wrapperService
+    const result = await this.wrapperService
       .getBuilder(WrappersEnum.Zammad)
       .setHeaders<RawAxiosRequestHeaders>({
         Authorization: authToken,
@@ -73,8 +73,10 @@ export class ZammadArticleWrapperService {
       .setUrl(
         `/api/${ZAMMAD_API_VERSION}/ticket_attachment/${ticketId}/${articleId}/${attachmentId}`,
       )
-      .setParams({ view: 'preview' })
+      // .setParams({ view: 'preview' })
+      .setAdditionalConfigs({ responseType: 'arrayBuffer' })
       .build()
       .request<any>();
+    return result.data;
   }
 }
