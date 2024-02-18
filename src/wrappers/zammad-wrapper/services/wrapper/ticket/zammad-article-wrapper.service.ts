@@ -74,7 +74,7 @@ export class ZammadArticleWrapperService {
         `/api/${ZAMMAD_API_VERSION}/ticket_attachment/${ticketId}/${articleId}/${attachmentId}`,
       )
       // .setParams({ view: 'preview' })
-      .setAdditionalConfigs<AxiosRequestConfig>({ responseType: 'arraybuffer'})
+      .setAdditionalConfigs<AxiosRequestConfig>({ responseType: 'arraybuffer' })
       .build()
       .request<any>();
     return result.data;
