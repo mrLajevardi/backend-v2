@@ -174,6 +174,7 @@ export class TicketService {
     res.ticket_code = listTicket.ticket_code;
     res.state = listTicket.state;
     res.group = listTicket.group;
+    res.title = listTicket.title;
     // const ff = extendedTicket as ArticleListDto[];
     return res;
   }
