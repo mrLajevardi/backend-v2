@@ -64,7 +64,7 @@ export class ZammadArticleWrapperService {
     articleId: number,
     attachmentId: number,
   ): Promise<any> {
-    const result = await this.wrapperService
+    return await this.wrapperService
       .getBuilder(WrappersEnum.Zammad)
       .setHeaders<RawAxiosRequestHeaders>({
         Authorization: authToken,
@@ -76,6 +76,5 @@ export class ZammadArticleWrapperService {
       .setParams({ view: 'preview' })
       .build()
       .request<any>();
-    return result;
   }
 }
