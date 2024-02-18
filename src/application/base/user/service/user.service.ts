@@ -642,7 +642,7 @@ export class UserService {
         data.personalCode,
       );
     if (!validPersonalCode) {
-      throw new ShahkarException('کد ملی شما صحیح نمی باشد.');
+      this.baseFactoryException.handle(ShahkarException);
     }
     if (!data.personality) {
       const company: Company = await this.companyTable.create(
@@ -691,7 +691,10 @@ export class UserService {
       );
 
     if (verifyData.status.toString() != '200') {
-      throw new ShahkarException(verifyData.message.toString());
+      this.baseFactoryException.handle(
+        ShahkarException,
+        verifyData.message.toString(),
+      );
     }
 
     await this.userTable.update(options.user.userId, {
@@ -773,7 +776,10 @@ export class UserService {
       );
 
     if (verifyData.status.toString() != '200') {
-      throw new ShahkarException(verifyData.message.toString());
+      this.baseFactoryException.handle(
+        ShahkarException,
+        verifyData.message.toString(),
+      );
     }
 
     const userProfileData: UpdateUserDto = {

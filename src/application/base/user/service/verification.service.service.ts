@@ -83,11 +83,14 @@ export class VerificationServiceService {
       case 200:
         return data;
       case 600:
-        return data;
+        return {
+          status: 422,
+          message: 'user.messages.personalCodeNotMatch',
+        };
       default:
         return {
           status: 400,
-          message: 'فرآیند احرازهویت با اختلال مواجه شده است.',
+          message: 'user.messages.shakarFailed',
         };
     }
   }
