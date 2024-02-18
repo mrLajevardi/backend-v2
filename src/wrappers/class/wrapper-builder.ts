@@ -94,7 +94,7 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
       console.log(this);
       try {
         const additionalConfig = this.additionalConfigs ?? {};
-        const request = await axios.request<T>({
+        const t = {
           url: this.url,
           httpsAgent: httpsAgent,
           method: this.method,
@@ -105,7 +105,8 @@ export class WrapperBuilder<B = unknown, P = unknown, H = unknown, C = unknown>
           maxContentLength: Infinity,
           maxBodyLength: Infinity,
           ...additionalConfig,
-        });
+        };
+        const request = await axios.request<T>(t);
         return Promise.resolve(request);
       } catch (err) {
         await this.exceptionHan(err);

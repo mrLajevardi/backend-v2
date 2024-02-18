@@ -11,13 +11,14 @@ export class BaseFactoryException {
   throwIt(exception: BaseException) {
     throw new HttpException(
       {
-        status: exception.statusCode,
+        // status: exception.statusCode,
         error: this.i18n.t(
           exception.message,
           exception.translateOptions ?? undefined,
         ),
       },
-      exception.statusCode,
+      485,
+      // exception.statusCode,
       {
         cause: exception.cause,
       },

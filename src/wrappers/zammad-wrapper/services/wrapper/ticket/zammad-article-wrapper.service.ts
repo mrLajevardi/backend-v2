@@ -4,7 +4,7 @@ import { WrappersEnum } from '../../../../enum/wrappers.enum';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { GetTicketArticlesDto } from './dto/get-ticket-articles.dto';
 import { ZAMMAD_API_VERSION } from '../../../const/zammad-version.const';
-import { RawAxiosRequestHeaders } from 'axios';
+import { AxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
 import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
@@ -74,7 +74,7 @@ export class ZammadArticleWrapperService {
         `/api/${ZAMMAD_API_VERSION}/ticket_attachment/${ticketId}/${articleId}/${attachmentId}`,
       )
       // .setParams({ view: 'preview' })
-      .setAdditionalConfigs({ responseType: 'arrayBuffer' })
+      .setAdditionalConfigs<AxiosRequestConfig>({ responseType: 'arraybuffer'})
       .build()
       .request<any>();
     return result.data;

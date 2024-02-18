@@ -51,7 +51,11 @@ import {
   TransactionsResultDto,
 } from '../../transactions/dto/results/transactions.result.dto';
 import { UserInfoService } from '../service/user-info.service';
-import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
+import {
+  InvoiceUserList,
+  InvoiceUserListResultDtoFormat,
+  InvoiceUserListResultDtoFormatType,
+} from '../dto/results/invoice-user-list.result.dto';
 import { OtpNotMatchException } from '../../../../infrastructure/exceptions/otp-not-match-exception';
 import { Throttle } from '@nestjs/throttler';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
@@ -474,6 +478,7 @@ export class UserController {
   @ApiQuery({ name: 'isPreInvoice', type: Boolean, required: false })
   @ApiQuery({ name: 'startDateTime', type: String, required: false })
   @ApiQuery({ name: 'endDateTime', type: String, required: false })
+  @ApiResponse({ type: InvoiceUserListResultDtoFormatType })
   async getUserInvoices(
     @Req() options: SessionRequest,
     @Query('page') page?: number,
@@ -481,7 +486,7 @@ export class UserController {
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
     @Query('isPreInvoice') isPreInvoice?: boolean,
-  ) {
+  ): Promise<InvoiceUserListResultDtoFormatType> {
     const data = await this.userInfoService.getInvoices(
       options,
       page,
