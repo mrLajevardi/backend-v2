@@ -19,6 +19,7 @@ import { ArticleReactionDto } from './dto/article-rection.dto';
 import { ArticleListDto } from './dto/article-list.dto';
 import { ReplyTicketDto } from './dto/reply-ticket.dto';
 import { GetTicketArticlesDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/get-ticket-articles.dto';
+import { ArticleGetDto } from './dto/article-get.dto';
 
 @Injectable()
 export class TicketService {
@@ -129,10 +130,11 @@ export class TicketService {
     return extendedTickets;
   }
 
-  async getTicket(
-    options: SessionRequest,
-    ticketId: number,
-  ): Promise<ArticleListDto[]> {
+  async getTicket(options: SessionRequest, ticketId: number): Promise<any> {
+    const listTicket = (await this.getAllTickets(options)).find(
+      (ticket) => ticket.id == ticketId,
+    );
+
     const authToken = encodePassword(options.user.guid);
     let articles: GetTicketArticlesDto[];
     try {
@@ -159,7 +161,14 @@ export class TicketService {
         reaction,
       };
     });
-    return extendedTicket as any;
+
+    const res: ArticleGetDto = {};
+    res.articles = extendedTicket;
+    res.topic = listTicket.topic;
+    res.ticket_code = listTicket.ticket_code;
+    res.state = listTicket.state;
+    // const ff = extendedTicket as ArticleListDto[];
+    return res;
   }
 
   async replyToTicket(
