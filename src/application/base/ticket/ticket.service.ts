@@ -19,6 +19,7 @@ import { ArticleReactionDto } from './dto/article-rection.dto';
 import { ArticleListDto } from './dto/article-list.dto';
 import { ReplyTicketDto } from './dto/reply-ticket.dto';
 import { GetTicketArticlesDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/get-ticket-articles.dto';
+import { ZammadGroupWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/group/zammad-group-wrapper.service';
 
 @Injectable()
 export class TicketService {
@@ -28,6 +29,7 @@ export class TicketService {
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly zammadTicketService: ZammadTicketWrapperService,
     private readonly zammadUserService: ZammadUserWrapperService,
+    private readonly zammadGroupService: ZammadGroupWrapperService,
   ) {}
   async closeTicket(options: SessionRequest, ticketId: number): Promise<void> {
     const userId = options.user.userId;
@@ -105,6 +107,7 @@ export class TicketService {
 
   async getAllTickets(options: SessionRequest): Promise<any[]> {
     const authToken = encodePassword(options.user.guid);
+    const adminToken = `Token token=${process.env.ZAMMAD_ADMIN_TOKEN}`;
     const user = await this.userTable.findById(options.user.userId);
     const zammadUser = await this.zammadUserService.searchUser(user.guid);
     if (zammadUser.length === 0) {
@@ -116,14 +119,17 @@ export class TicketService {
       await this.zammadTicketService.statesService.getAllTicketStates(
         authToken,
       );
+    const groups = await this.zammadGroupService.getGroups(adminToken);
     const extendedTickets = tickets.map((ticket) => {
       const state = states.find(
         (targeState) => targeState.id === ticket.state_id,
       );
+      const group = groups.find((group) => ticket.group_id === group.id);
       return {
         ...ticket,
         topic: TicketTopics[ticket.topic],
         state: state.name,
+        group: group.name,
       };
     });
     return extendedTickets;

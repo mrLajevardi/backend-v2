@@ -13,4 +13,7 @@ export class TicketListDto {
 
   @ApiProperty({ enum: TicketTopics })
   topic: TicketTopics;
+
+  @ApiProperty({ type: String })
+  group: string;
 }
