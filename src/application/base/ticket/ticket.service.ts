@@ -173,6 +173,7 @@ export class TicketService {
     res.topic = listTicket.topic;
     res.ticket_code = listTicket.ticket_code;
     res.state = listTicket.state;
+    res.group = listTicket.group;
     // const ff = extendedTicket as ArticleListDto[];
     return res;
   }
