@@ -82,10 +82,12 @@ export class StaticRouteService {
         serviceInstanceId,
       );
 
-    return await this.sessionService.checkUserSession(
-      userId,
-      Number(serviceProperties.orgId),
-    );
+    const data = await this.sessionService.createAdminSession();
+    return data.token;
+    // return await this.sessionService.createAdminSession(
+    //   userId,
+    //   Number(serviceProperties.orgId),
+    // );
   }
 
   async createStaticRouteByVdcInstanceId(
