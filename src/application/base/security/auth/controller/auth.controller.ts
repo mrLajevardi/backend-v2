@@ -305,7 +305,7 @@ export class AuthController {
   }
 
   @Public()
-  @Throttle({ default: { limit: 1, ttl: 120000 } })
+  // @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('forgot-password/sendOtp/:phoneNumber')
   @ApiOperation({ summary: 'send otp to phone number for changing password' })
   async sendOtpChangingPassword(@Param() dto: PhoneNumberDto) {

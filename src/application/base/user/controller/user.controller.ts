@@ -131,7 +131,7 @@ export class UserController {
   }
 
   @Get('changePassword/sendOtp')
-  @Throttle({ default: { limit: 1, ttl: 120000 } })
+  // @Throttle({ default: { limit: 1, ttl: 120000 } })
   @ApiOperation({ summary: 'send otp to phone number for changing password' })
   async sendOtpChangingPassword(@Request() options: SessionRequest) {
     const user: UserProfileDto = await this.userService.findById(
@@ -327,7 +327,7 @@ export class UserController {
     return await this.userService.personalVerification(options);
   }
 
-  @Throttle({ default: { limit: 1, ttl: 120000 } })
+  // @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('/changePhoneNumber')
   @ApiOperation({
     summary: 'change current user phone number , send otp to old phone number',
@@ -370,7 +370,7 @@ export class UserController {
     return await this.userService.changeUserPhoneNumber(options, data);
   }
 
-  @Throttle({ default: { limit: 1, ttl: 120000 } })
+  // @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Post('/insertEmail')
   @ApiOperation({ summary: 'insert or update email , then send otp to email' })
   async insertEmail(
