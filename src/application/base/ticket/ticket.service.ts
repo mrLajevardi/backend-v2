@@ -19,6 +19,9 @@ import { ArticleReactionDto } from './dto/article-rection.dto';
 import { ArticleListDto } from './dto/article-list.dto';
 import { ReplyTicketDto } from './dto/reply-ticket.dto';
 import { GetTicketArticlesDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/get-ticket-articles.dto';
+import { ZammadGroupWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/group/zammad-group-wrapper.service';
+import { ArticleGetDto } from './dto/article-get.dto';
+import { CreateArticleResultDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/create-article.dto';
 
 @Injectable()
 export class TicketService {
@@ -28,6 +31,7 @@ export class TicketService {
     private readonly serviceInstancesTable: ServiceInstancesTableService,
     private readonly zammadTicketService: ZammadTicketWrapperService,
     private readonly zammadUserService: ZammadUserWrapperService,
+    private readonly zammadGroupService: ZammadGroupWrapperService,
   ) {}
   async closeTicket(options: SessionRequest, ticketId: number): Promise<void> {
     const userId = options.user.userId;
@@ -105,6 +109,7 @@ export class TicketService {
 
   async getAllTickets(options: SessionRequest): Promise<any[]> {
     const authToken = encodePassword(options.user.guid);
+    const adminToken = `Token token=${process.env.ZAMMAD_ADMIN_TOKEN}`;
     const user = await this.userTable.findById(options.user.userId);
     const zammadUser = await this.zammadUserService.searchUser(user.guid);
     if (zammadUser.length === 0) {
@@ -116,23 +121,27 @@ export class TicketService {
       await this.zammadTicketService.statesService.getAllTicketStates(
         authToken,
       );
+    const groups = await this.zammadGroupService.getGroups(adminToken);
     const extendedTickets = tickets.map((ticket) => {
       const state = states.find(
         (targeState) => targeState.id === ticket.state_id,
       );
+      const group = groups.find((group) => ticket.group_id === group.id);
       return {
         ...ticket,
         topic: TicketTopics[ticket.topic],
         state: state.name,
+        group: group.name,
       };
     });
     return extendedTickets;
   }
 
-  async getTicket(
-    options: SessionRequest,
-    ticketId: number,
-  ): Promise<ArticleListDto[]> {
+  async getTicket(options: SessionRequest, ticketId: number): Promise<any> {
+    const listTicket = (await this.getAllTickets(options)).find(
+      (ticket) => ticket.id == ticketId,
+    );
+
     const authToken = encodePassword(options.user.guid);
     let articles: GetTicketArticlesDto[];
     try {
@@ -159,16 +168,25 @@ export class TicketService {
         reaction,
       };
     });
-    return extendedTicket as any;
+
+    const res: ArticleGetDto = {};
+    res.articles = extendedTicket;
+    res.topic = listTicket.topic;
+    res.ticket_code = listTicket.ticket_code;
+    res.state = listTicket.state;
+    res.group = listTicket.group;
+    res.title = listTicket.title;
+    // const ff = extendedTicket as ArticleListDto[];
+    return res;
   }
 
   async replyToTicket(
     options: SessionRequest,
     data: ReplyTicketDto,
     ticketId: number,
-  ): Promise<void> {
+  ): Promise<CreateArticleResultDto> {
     const authToken = encodePassword(options.user.guid);
-    await this.zammadTicketService.articleService.createArticle(
+    return await this.zammadTicketService.articleService.createArticle(
       {
         body: data.message,
         ticket_id: ticketId,
@@ -185,7 +203,9 @@ export class TicketService {
     options: SessionRequest,
   ): Promise<void> {
     const articles = await this.getTicket(options, ticketId);
-    const article = articles.find((article) => article.id === dto.articleId);
+    const article = articles.articles.find(
+      (article) => article.id === dto.articleId,
+    );
     if (!article) {
       throw new ForbiddenException();
     }
@@ -208,14 +228,18 @@ export class TicketService {
     ticketId: number,
     articleId: number,
     attachmentId: number,
-  ): Promise<Buffer> {
+  ): Promise<string> {
     const authToken = encodePassword(options.user.guid);
-    return await this.zammadTicketService.articleService.getAttachment(
+    const buffer = await this.zammadTicketService.articleService.getAttachment(
       authToken,
       ticketId,
       articleId,
       attachmentId,
     );
+    const data =
+      'data:image/png;base64,' +
+      Buffer.from(buffer, 'binary').toString('base64');
+    return data;
   }
   private async createTicketingUser(user: User): Promise<void> {
     await this.zammadUserService.createUser({

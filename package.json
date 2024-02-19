@@ -80,6 +80,7 @@
     "nestjs-cls": "^3.6.0",
     "nestjs-i18n": "^10.4.0",
     "node": "^16.10.0",
+    "node-fetch-commonjs": "^3.3.2",
     "node-jose": "^2.2.0",
     "nodemailer": "^6.9.3",
     "otp-generator": "^4.0.1",

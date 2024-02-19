@@ -1,4 +1,13 @@
-import { Body, Controller, Param, Get, Post, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Get,
+  Post,
+  Request,
+  Header,
+  Response,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -20,6 +29,9 @@ import { Action } from '../../base/security/ability/enum/action.enum';
 import { ArticleReactionDto } from './dto/article-rection.dto';
 import { ArticleListDto } from './dto/article-list.dto';
 import { TicketListDto } from './dto/ticket-list.dto';
+import { Response as rs } from 'express';
+import axios from 'axios';
+import { CreateArticleResultDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/create-article.dto';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
@@ -83,29 +95,39 @@ export class TicketController {
   @ApiParam({ name: 'articleId', type: Number })
   @ApiParam({ name: 'attachmentId', type: Number })
   @ApiResponse({ type: [ArticleListDto] })
+  // @Header('Content-Type', 'image/png')
+  // @Header('Content-Length', '13318')
+  // @Header('Content-Transfer-Encoding', 'binary')
+  // @Header('Content-Disposition', `inline; filename="hi"; filename*=UTF-8''hi`)
+  // @Header('X-Download-Options', `noopen`)
   async getAttachment(
     @Param('ticketId') ticketId: number,
     @Param('articleId') articleId: number,
     @Param('attachmentId') attachmentId: number,
     @Request() options: SessionRequest,
-  ): Promise<Buffer> {
+    // @Response() res: rs,
+  ): Promise<any> {
     const ticket = await this.service.getAttachment(
       options,
       ticketId,
       articleId,
       attachmentId,
     );
+    // res.setHeader('Content-Type', 'image/png');
+    // res.setHeader('Content-Disposition', 'inline; filename=image.png');
+    // res.send(ticket);
     return ticket;
   }
 
   @Post(':ticketId/reply')
   @ApiOperation({ summary: 'reply to ticket' })
+  @ApiResponse({ type: ArticleListDto })
   @ApiParam({ name: 'ticketId', type: Number })
   async replyToTicket(
     @Param('ticketId') ticketId: number,
     @Body() data: ReplyTicketDto,
     @Request() options: SessionRequest,
-  ): Promise<void> {
+  ): Promise<CreateArticleResultDto> {
     const replyData = await this.service.replyToTicket(options, data, ticketId);
     return replyData;
   }

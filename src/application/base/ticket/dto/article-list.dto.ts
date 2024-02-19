@@ -26,6 +26,9 @@ export class ArticleListDto {
 
   preferences: null;
 
+  @ApiProperty({
+    type: [Attachment],
+  })
   attachments: Attachment[];
 
   @ApiProperty({ enum: ZammadArticleTypeEnum })
