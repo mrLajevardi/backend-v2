@@ -203,7 +203,9 @@ export class TicketService {
     options: SessionRequest,
   ): Promise<void> {
     const articles = await this.getTicket(options, ticketId);
-    const article = articles.find((article) => article.id === dto.articleId);
+    const article = articles.articles.find(
+      (article) => article.id === dto.articleId,
+    );
     if (!article) {
       throw new ForbiddenException();
     }
