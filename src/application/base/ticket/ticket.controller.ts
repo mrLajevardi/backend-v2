@@ -31,6 +31,7 @@ import { ArticleListDto } from './dto/article-list.dto';
 import { TicketListDto } from './dto/ticket-list.dto';
 import { Response as rs } from 'express';
 import axios from 'axios';
+import { CreateArticleResultDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/create-article.dto';
 
 @ApiTags('Tickets')
 @ApiBearerAuth()
@@ -119,12 +120,13 @@ export class TicketController {
 
   @Post(':ticketId/reply')
   @ApiOperation({ summary: 'reply to ticket' })
+  @ApiResponse({ type: ArticleListDto })
   @ApiParam({ name: 'ticketId', type: Number })
   async replyToTicket(
     @Param('ticketId') ticketId: number,
     @Body() data: ReplyTicketDto,
     @Request() options: SessionRequest,
-  ): Promise<void> {
+  ): Promise<CreateArticleResultDto> {
     const replyData = await this.service.replyToTicket(options, data, ticketId);
     return replyData;
   }

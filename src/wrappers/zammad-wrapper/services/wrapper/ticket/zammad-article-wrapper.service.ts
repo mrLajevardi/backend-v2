@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { WrapperService } from '../../../../wrapper.service';
 import { WrappersEnum } from '../../../../enum/wrappers.enum';
-import { CreateArticleDto } from './dto/create-article.dto';
+import {
+  CreateArticleDto,
+  CreateArticleResultDto,
+} from './dto/create-article.dto';
 import { GetTicketArticlesDto } from './dto/get-ticket-articles.dto';
 import { ZAMMAD_API_VERSION } from '../../../const/zammad-version.const';
 import { AxiosRequestConfig, RawAxiosRequestHeaders } from 'axios';
@@ -11,8 +14,11 @@ import { UpdateArticleDto } from './dto/update-article.dto';
 export class ZammadArticleWrapperService {
   constructor(private readonly wrapperService: WrapperService) {}
 
-  async createArticle(dto: CreateArticleDto, authToken: string): Promise<void> {
-    await this.wrapperService
+  async createArticle(
+    dto: CreateArticleDto,
+    authToken: string,
+  ): Promise<CreateArticleResultDto> {
+    const article = await this.wrapperService
       .getBuilder(WrappersEnum.Zammad)
       .setBody<CreateArticleDto>(dto)
       .setHeaders<RawAxiosRequestHeaders>({
@@ -21,7 +27,8 @@ export class ZammadArticleWrapperService {
       .setMethod('POST')
       .setUrl(`/api/${ZAMMAD_API_VERSION}/ticket_articles`)
       .build()
-      .request();
+      .request<CreateArticleResultDto>();
+    return article.data;
   }
   async getArticle(
     ticketId: number,
@@ -73,7 +80,6 @@ export class ZammadArticleWrapperService {
       .setUrl(
         `/api/${ZAMMAD_API_VERSION}/ticket_attachment/${ticketId}/${articleId}/${attachmentId}`,
       )
-      // .setParams({ view: 'preview' })
       .setAdditionalConfigs<AxiosRequestConfig>({ responseType: 'arraybuffer' })
       .build()
       .request<any>();
