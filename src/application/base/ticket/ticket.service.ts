@@ -21,6 +21,7 @@ import { ReplyTicketDto } from './dto/reply-ticket.dto';
 import { GetTicketArticlesDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/get-ticket-articles.dto';
 import { ZammadGroupWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/group/zammad-group-wrapper.service';
 import { ArticleGetDto } from './dto/article-get.dto';
+import { CreateArticleResultDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/create-article.dto';
 
 @Injectable()
 export class TicketService {
@@ -183,9 +184,9 @@ export class TicketService {
     options: SessionRequest,
     data: ReplyTicketDto,
     ticketId: number,
-  ): Promise<void> {
+  ): Promise<CreateArticleResultDto> {
     const authToken = encodePassword(options.user.guid);
-    await this.zammadTicketService.articleService.createArticle(
+    return await this.zammadTicketService.articleService.createArticle(
       {
         body: data.message,
         ticket_id: ticketId,
