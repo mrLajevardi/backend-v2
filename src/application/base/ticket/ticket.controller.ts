@@ -105,7 +105,7 @@ export class TicketController {
     @Param('articleId') articleId: number,
     @Param('attachmentId') attachmentId: number,
     @Request() options: SessionRequest,
-    @Response() res: rs,
+    // @Response() res: rs,
   ): Promise<any> {
     const ticket = await this.service.getAttachment(
       options,
@@ -113,9 +113,10 @@ export class TicketController {
       articleId,
       attachmentId,
     );
-    res.setHeader('Content-Type', 'image/png');
-    res.setHeader('Content-Disposition', 'inline; filename=image.png');
-    res.send(ticket);
+    // res.setHeader('Content-Type', 'image/png');
+    // res.setHeader('Content-Disposition', 'inline; filename=image.png');
+    // res.send(ticket);
+    return ticket;
   }
 
   @Post(':ticketId/reply')

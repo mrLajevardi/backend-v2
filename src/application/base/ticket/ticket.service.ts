@@ -226,14 +226,18 @@ export class TicketService {
     ticketId: number,
     articleId: number,
     attachmentId: number,
-  ): Promise<any> {
+  ): Promise<string> {
     const authToken = encodePassword(options.user.guid);
-    return await this.zammadTicketService.articleService.getAttachment(
+    const buffer = await this.zammadTicketService.articleService.getAttachment(
       authToken,
       ticketId,
       articleId,
       attachmentId,
     );
+    const data =
+      'data:image/png;base64,' +
+      Buffer.from(buffer, 'binary').toString('base64');
+    return data;
   }
   private async createTicketingUser(user: User): Promise<void> {
     await this.zammadUserService.createUser({
