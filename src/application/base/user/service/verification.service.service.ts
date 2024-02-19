@@ -70,9 +70,11 @@ export class VerificationServiceService {
       },
     );
 
-    const status = verificationRequest.data.result.data.result.data.response;
+    const status =
+      verificationRequest?.data?.result?.data?.result?.data?.response ?? 400;
 
-    const comment = verificationRequest.data.result.data.result.data.comment;
+    const comment =
+      verificationRequest?.data?.result?.data?.result?.data?.comment ?? null;
 
     const data: any = {
       status: status,

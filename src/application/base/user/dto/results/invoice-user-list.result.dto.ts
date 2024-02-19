@@ -58,11 +58,11 @@ export class InvoiceUserListResultDtoFormat {
   })
   finalAmount: number;
 
-  @ApiResponseProperty({
-    type: Number,
-    example: 109,
-  })
-  finalAmountWithTax: number;
+  // @ApiResponseProperty({
+  //   type: Number,
+  //   example: 109,
+  // })
+  // finalAmountWithTax: number;
 
   @ApiResponseProperty({
     type: Number,
@@ -156,8 +156,8 @@ export class InvoiceUserList extends BaseResultDto {
       servicePlanType: item.servicePlanType,
       serviceTypeId: item.serviceTypeId,
       name: item.name,
-      finalAmount: item.finalAmount,
-      finalAmountWithTax: item.finalAmountWithTax,
+      finalAmount: item.finalAmountWithTax,
+      // finalAmountWithTax: item.finalAmountWithTax,
       code: item.code,
       description: item.description,
       dateTime: item.dateTime,
