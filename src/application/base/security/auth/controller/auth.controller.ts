@@ -72,7 +72,7 @@ export class AuthController {
   ) {}
 
   @Public()
-  @Throttle({ default: { limit: 1, ttl: 120000 } })
+  // @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('/sendOtp/:phoneNumber')
   @ApiOperation({ summary: 'generate otp and send it to user' })
   @ApiParam({
