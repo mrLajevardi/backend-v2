@@ -108,9 +108,11 @@ export class TicketService {
   }
 
   async getAllTickets(options: SessionRequest): Promise<any[]> {
-    const authToken = encodePassword(options.user.guid);
-    const adminToken = `Token token=${process.env.ZAMMAD_ADMIN_TOKEN}`;
     const user = await this.userTable.findById(options.user.userId);
+
+    // const authToken = encodePassword(options.user.guid);
+    const authToken = encodePassword(user.guid);
+    const adminToken = `Token token=${process.env.ZAMMAD_ADMIN_TOKEN}`;
     const zammadUser = await this.zammadUserService.searchUser(user.guid);
     if (zammadUser.length === 0) {
       await this.createTicketingUser(user);
