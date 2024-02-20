@@ -34,8 +34,10 @@ export class TicketService {
     private readonly zammadGroupService: ZammadGroupWrapperService,
   ) {}
   async closeTicket(options: SessionRequest, ticketId: number): Promise<void> {
+    const user = await this.userTable.findById(options.user.userId);
+
     const userId = options.user.userId;
-    const authToken = encodePassword(options.user.guid);
+    const authToken = encodePassword(user.guid);
     const ticketExists = await this.ticketTable.findOne({
       where: {
         userId: userId,
@@ -145,11 +147,12 @@ export class TicketService {
   }
 
   async getTicket(options: SessionRequest, ticketId: number): Promise<any> {
+    const user = await this.userTable.findById(options.user.userId);
     const listTicket = (await this.getAllTickets(options)).find(
       (ticket) => ticket.id == ticketId,
     );
 
-    const authToken = encodePassword(options.user.guid);
+    const authToken = encodePassword(user.guid);
     let articles: GetTicketArticlesDto[];
     try {
       articles = await this.zammadTicketService.articleService.getArticle(
@@ -192,7 +195,9 @@ export class TicketService {
     data: ReplyTicketDto,
     ticketId: number,
   ): Promise<CreateArticleResultDto> {
-    const authToken = encodePassword(options.user.guid);
+    const user = await this.userTable.findById(options.user.userId);
+
+    const authToken = encodePassword(user.guid);
     return await this.zammadTicketService.articleService.createArticle(
       {
         body: data.message,
@@ -236,7 +241,8 @@ export class TicketService {
     articleId: number,
     attachmentId: number,
   ): Promise<string> {
-    const authToken = encodePassword(options.user.guid);
+    const user = await this.userTable.findById(options.user.userId);
+    const authToken = encodePassword(user.guid);
     const buffer = await this.zammadTicketService.articleService.getAttachment(
       authToken,
       ticketId,
