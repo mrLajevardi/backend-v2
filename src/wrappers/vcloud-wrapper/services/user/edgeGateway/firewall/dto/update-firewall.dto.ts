@@ -1,4 +1,7 @@
 import { EndpointOptionsInterface } from 'src/wrappers/interfaces/endpoint.interface';
+import { FirewallDirectionEnum } from '../enum/firewall-direction.enum';
+import { FirewallIpProtocolEnum } from '../enum/firewall-ip-protocol.enum';
+import { FirewallActionValue } from '../../../../../../main-wrapper/service/user/firewall/enum/firewall-action-value.enum';
 
 export interface UpdateFirewallDto extends EndpointOptionsInterface {
   urlParams: UpdateFirewallUrlParams;
@@ -15,13 +18,13 @@ export class UpdateFirewallBody {
   name: string;
   applicationPortProfiles: ApplicationPortProfile[];
   comments: string;
-  ipProtocol: string;
+  ipProtocol: FirewallIpProtocolEnum;
   logging: boolean;
   enabled: boolean;
   sourceFirewallGroups: FirewallGroup[];
   destinationFirewallGroups: FirewallGroup[];
-  direction: string;
-  actionValue: string;
+  direction: FirewallDirectionEnum;
+  actionValue: FirewallActionValue;
 }
 
 export class ApplicationPortProfile {

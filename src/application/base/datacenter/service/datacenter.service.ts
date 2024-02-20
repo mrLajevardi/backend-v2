@@ -1,9 +1,9 @@
 import { BaseService } from '../../../../infrastructure/service/BaseService';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { DatacenterConfigGenItemsQueryDto } from '../dto/datacenter-config-gen-items.query.dto';
 import { DataCenterTableService } from '../../crud/datacenter-table/data-center-table.service';
-import { And, FindManyOptions, Like, Not } from 'typeorm';
+import { And, FindManyOptions, IsNull, Like, MoreThan, Not } from 'typeorm';
 import { DatacenterFactoryService } from './datacenter.factory.service';
 import { AdminVdcWrapperService } from 'src/wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
 import { SessionsService } from '../../sessions/sessions.service';
@@ -34,7 +34,10 @@ import { DatacenterOperationTypeEnum } from '../enum/datacenter-opertation-type.
 import { InvoiceFactoryService } from '../../invoice/service/invoice-factory.service';
 import { InvoiceItemsDto } from '../../invoice/dto/create-service-invoice.dto';
 import { ServiceItemTypesTreeService } from '../../crud/service-item-types-tree/service-item-types-tree.service';
-import { ItemTypeCodes } from '../../itemType/enum/item-type-codes.enum';
+import {
+  ItemTypeCodes,
+  VdcGenerationItemCodes,
+} from '../../itemType/enum/item-type-codes.enum';
 import { GetDatacenterConfigsQueryDto } from '../dto/get-datacenter-configs.dto';
 import {
   ITEM_TYPE_CODE_HIERARCHY_SPLITTER,
@@ -56,6 +59,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     private readonly dataCenterTableService: DataCenterTableService,
     private readonly adminVdcWrapperService: AdminVdcWrapperService,
     private readonly sessionsService: SessionsService,
+    @Inject(forwardRef(() => DatacenterFactoryService))
     private readonly datacenterServiceFactory: DatacenterFactoryService,
     private readonly serviceTypesTableService: ServiceTypesTableService,
     private readonly datacenterAdminService: DatacenterAdminService,
@@ -67,18 +71,23 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
   async getDatacenterMetadata(
     datacenterName: string,
     genId: string,
+    filterEnabled = true,
   ): Promise<FoundDatacenterMetadata> {
     const adminToken: string = await this.sessionsService.checkAdminSession();
     const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
       adminToken,
       genId,
     );
-    const res: FoundDatacenterMetadata = this.findTargetMetadata(metadata);
+    const res: FoundDatacenterMetadata = this.findTargetMetadata(
+      metadata,
+      filterEnabled,
+    );
     return res;
   }
 
   public findTargetMetadata(
     metadata: GetProviderVdcsMetadataDto,
+    filterEnabled = true,
   ): FoundDatacenterMetadata {
     const targetMetadata: FoundDatacenterMetadata = {
       datacenter: null,
@@ -98,7 +107,8 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
           : value.typedValue.value;
       if (
         value.key === MetaDataDatacenterEnum.Enabled &&
-        !value.typedValue.value
+        !value.typedValue.value &&
+        filterEnabled
       ) {
         return {
           datacenter: null,
@@ -190,19 +200,20 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const res = providerVdcsList?.values?.map((provider) => {
       const splits = provider.name?.split(PROVIDER_SPLITTER);
       const providerName = splits[0];
-      const gen = `${splits[1]}-${splits[2]}`;
-      return { name: providerName, gen };
+      // const gen = `${splits[1]}-${splits[2]}`;
+      const gen = `${splits[1]}`;
+      return { name: providerName, gen, id: provider.id };
     });
 
-    const resGroup: Record<string, { name: string; gen: string }[]> = groupBy(
-      res,
-      (res) => res.name,
-    );
+    const resGroup: Record<
+      string,
+      { name: string; gen: string; id: string }[]
+    > = groupBy(res, (res) => res.name);
 
-    const fRes: { name: string; gens: string[] }[] = [];
+    const fRes: { name: string; gens: { name: string; id: string }[] }[] = [];
     for (const obj of Object.keys(resGroup)) {
       const gens = resGroup[obj].map((d) => {
-        return d.gen;
+        return { name: d.gen, id: d.id };
       });
       fRes.push({ name: obj, gens: gens });
       console.log(obj);
@@ -213,6 +224,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
 
   public async getDatacenterConfigWithGen(
     datacenterName?: string,
+    filter = true,
   ): Promise<DatacenterConfigGenResultDto[]> {
     const adminSession = await this.sessionsService.checkAdminSession();
     const params = {
@@ -234,6 +246,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       adminSession,
       datacenterConfigs,
       datacenterName,
+      filter,
     );
 
     // console.log("datacenterConfigs:  ",datacenterConfigs)
@@ -271,6 +284,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     adminSession: string,
     datacenterConfigs: DatacenterConfigGenResultDto[],
     dataCenterName = '',
+    filter = true,
   ) {
     for (const providerVdc of providerVdcsFilteredData) {
       const metadata = await this.adminVdcWrapperService.getProviderVdcMetadata(
@@ -280,7 +294,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
 
       // console.log("metadata:  ",metadata);
 
-      const targetMetadata = this.findTargetMetadata(metadata);
+      const targetMetadata = this.findTargetMetadata(metadata, filter);
       if (targetMetadata.datacenter === null) {
         continue;
       }
@@ -523,6 +537,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const datacenter = await this.getDatacenterMetadata(
       '',
       generation[0].providerId,
+      false,
     );
     const datacenterName = datacenter.datacenter as string;
     const serviceType = await this.serviceTypesTableService.create({
@@ -589,6 +604,9 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     );
     await queryRunner.commitTransaction();
     await queryRunner.release();
+    await this.datacenterAdminService.updateGenerationStatus(
+      dto.generationsStatus,
+    );
   }
 
   async updateDatacenterMetadata(
@@ -632,6 +650,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const datacenter = await this.getDatacenterMetadata(
       '',
       generation[0].providerId,
+      false,
     );
     const datacenterName = datacenter.datacenter as string;
     const queryRunner = await this.itemTypeTableService.getQueryRunner();
@@ -694,6 +713,9 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     );
     await queryRunner.commitTransaction();
     await queryRunner.release();
+    await this.datacenterAdminService.updateGenerationStatus(
+      dto.generationsStatus,
+    );
   }
 
   async getDatacenterConfigs(
@@ -702,7 +724,7 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
     const { serviceTypeId } = query;
     const datacenterName = query?.datacenterName || null;
     const dsConfig = datacenterName
-      ? (await this.getDatacenterConfigWithGen()).find(
+      ? (await this.getDatacenterConfigWithGen('', false)).find(
           (item) => item.datacenter === datacenterName.toLowerCase(),
         )
       : null;
@@ -739,8 +761,10 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
         case ItemTypeCodes.MemoryReservationItem:
           this.datacenterServiceFactory.setReservation(
             itemType,
+
             reservationRamItems,
           );
+
           break;
       }
     }
@@ -756,6 +780,15 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       dsConfig,
       ServicePlanTypeEnum.Static,
     );
+    const generationsStatus =
+      this.datacenterServiceFactory.setGenerationStatus(dsConfig);
+
+    const isEnabledDatacenter = generationsStatus
+      .map((gs) => {
+        return gs.enabled;
+      })
+      .some((ee) => ee == true);
+
     const datacenter: CreateDatacenterDto = {
       paygReservationCpu: reservationCpuItems.filter(
         (item) => item.type === ServicePlanTypeEnum.Payg,
@@ -769,43 +802,62 @@ export class DatacenterService implements BaseDatacenterService, BaseService {
       staticReservationRam: reservationRamItems.filter(
         (item) => item.type === ServicePlanTypeEnum.Static,
       ),
-      enabled: true,
       paygGenerations,
       staticGenerations,
       period: periodItems,
+      generationsStatus,
       title: (dsConfig?.title as string) || null,
       location: (dsConfig?.location as string) || null,
+      enabled: isEnabledDatacenter,
     };
     return datacenter;
   }
 
-  async getAllStorageProvider(): Promise<{ name: string; code: string }[]> {
-    const res = [];
+  async getAllStorageProvider(): Promise<any[]> {
+    // const res = [];
 
-    const authToken = await this.sessionsService.checkAdminSession();
-    const vdcData =
-      await this.vdcWrapperService.vcloudQuery<AdminOrgVdcStorageProfileQuery>(
-        authToken,
-        {
-          type: 'adminOrgVdcStorageProfile',
-          format: 'records',
-          page: 1,
-          pageSize: 128,
-          filterEncoded: true,
-          links: true,
-          // filter: `vdc==${props['vdcId']}`,
-        },
-      );
-
-    vdcData.data.record = distinctByProperty(vdcData.data.record, 'name');
-    for (const disk of vdcData.data.record) {
-      const splitHref = disk.href.split('/');
-      const diskId = splitHref[splitHref.length - 1];
-
-      const code = GetCodeDisk(disk.name);
-
-      res.push({ name: disk.name, code: code });
-    }
+    const queryBuilder =
+      await this.serviceItemTypesTreeService.getQueryBuilder();
+    const res = await queryBuilder
+      .select('code')
+      .where(
+        `DatacenterName IS NULL AND CodeHierarchy LIKE  :diskCode 
+  AND  LEVEL != :level`,
+        { level: 1, diskCode: `%${VdcGenerationItemCodes.Disk}%` },
+      )
+      .distinct(true)
+      .getRawMany<{ code: string }>();
+    //
+    // const ress = await this.serviceItemTypesTreeService.find({
+    //   where: {
+    //     datacenterName: IsNull(),
+    //     codeHierarchy: Like(`%disk%`),
+    //     level: MoreThan(1),
+    //   },
+    //   select: { code: true },
+    // });
+    // const authToken = await this.sessionsService.checkAdminSession();
+    // const vdcData =
+    //   await this.vdcWrapperService.vcloudQuery<AdminOrgVdcStorageProfileQuery>(
+    //     authToken,
+    //     {
+    //       type: 'adminOrgVdcStorageProfile',
+    //       format: 'records',
+    //       page: 1,
+    //       pageSize: 128,
+    //       filterEncoded: true,
+    //       links: true,
+    //       // filter: `vdc==${props['vdcId']}`,
+    //     },
+    //   );
+    //
+    // vdcData.data.record = distinctByProperty(vdcData.data.record, 'name');
+    // for (const disk of vdcData.data.record) {
+    //   const code = GetCodeDisk(disk.name);
+    //
+    //   res.push({ code: code });
+    // }
+    // return res;
     return res;
   }
 }

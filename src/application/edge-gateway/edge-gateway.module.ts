@@ -13,6 +13,8 @@ import { ServicePropertiesModule } from '../base/service-properties/service-prop
 import { MainWrapperModule } from 'src/wrappers/main-wrapper/main-wrapper.module';
 import { StaticRouteService } from './service/static-route.service';
 import { BaseExceptionModule } from '../../infrastructure/exceptions/base/base-exception.module';
+import { IpSecVpnService } from './service/ip-sec-vpn.service';
+import { IpSecVpnController } from './controller/ip-sec-vpn.controller';
 
 @Module({
   imports: [
@@ -24,12 +26,13 @@ import { BaseExceptionModule } from '../../infrastructure/exceptions/base/base-e
     MainWrapperModule,
     BaseExceptionModule,
   ],
-  controllers: [EdgeGatewayController],
+  controllers: [EdgeGatewayController, IpSecVpnController],
   providers: [
     EdgeGatewayService,
     ApplicationPortProfileService,
     FirewallService,
     StaticRouteService,
+    IpSecVpnService,
   ],
   exports: [EdgeGatewayService, FirewallService, ApplicationPortProfileService],
 })

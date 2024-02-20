@@ -26,6 +26,8 @@ import { DatacenterService } from 'src/application/base/datacenter/service/datac
 import { BASE_DATACENTER_SERVICE } from 'src/application/base/datacenter/interface/datacenter.interface';
 import { TicketService } from '../../../ticket/ticket.service';
 import { SessionRequest } from '../../../../../infrastructure/types/session-request.type';
+import { ZammadGroupsEnum } from '../../../../../wrappers/zammad-wrapper/services/wrapper/user/enum/zammad-groups.enum';
+import { TicketTopics } from '../../../crud/tickets-table/enum/ticket-topics.enum';
 
 @Injectable()
 export class UpgradeVdcComputeResourcesService
@@ -70,7 +72,8 @@ export class UpgradeVdcComputeResourcesService
       } as SessionRequest;
       await this.ticketService.createTicket(options, {
         message: TicketsMessagesEnum.IncreaseComputeResourcesFailure,
-        name: user.name,
+        group: ZammadGroupsEnum.TechnicalUser,
+        topic: TicketTopics.Vdc,
         serviceInstanceId: job.data.serviceInstanceId,
         subject: TicketsSubjectEnum.AutomaticTicket,
       });

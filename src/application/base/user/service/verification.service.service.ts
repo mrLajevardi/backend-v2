@@ -71,20 +71,11 @@ export class VerificationServiceService {
       },
     );
 
-    // console.log('verificationRequest', verificationRequest);
+    const status =
+      verificationRequest?.data?.result?.data?.result?.data?.response ?? 400;
 
-    const status = verificationRequest.data.result.data.result.data.response;
-
-    console.log(
-      '\n\n\n\n\n verificationRequest_data \n\n\n\n',
-      verificationRequest.data,
-    );
-    console.log(
-      '\n\n\n\n\n verificationRequest_data_res \n\n\n\n',
-      verificationRequest.data?.result,
-    );
-
-    const comment = verificationRequest.data.result.data.result.data.comment;
+    const comment =
+      verificationRequest?.data?.result?.data?.result?.data?.comment ?? null;
 
     console.log('\n\n\n\n\n status , comment \n\n\n\n', status, comment);
 
@@ -97,11 +88,14 @@ export class VerificationServiceService {
       case 200:
         return data;
       case 600:
-        return data;
+        return {
+          status: 422,
+          message: 'user.messages.personalCodeNotMatch',
+        };
       default:
         return {
           status: 400,
-          message: 'فرآیند احرازهویت با اختلال مواجه شده است.',
+          message: 'user.messages.shakarFailed',
         };
     }
   }

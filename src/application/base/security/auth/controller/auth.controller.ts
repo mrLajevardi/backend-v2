@@ -53,13 +53,12 @@ import { ChangePasswordDto } from '../../../user/dto/change-password.dto';
 import { ForgotPasswordByOtpDto } from '../dto/forgot-password-by-otp.dto';
 import { OtpNotMatchException } from '../../../../../infrastructure/exceptions/otp-not-match-exception';
 import { Throttle } from '@nestjs/throttler';
-import { TwoFaAuthTotpService } from '../classes/two-fa-auth-totp.service';
+import { ForgotPasswordVerifyOtpDto } from '../dto/forgot-password-verify-otp.dto';
+import { BaseFactoryException } from '../../../../../infrastructure/exceptions/base/base-factory.exception';
+import { LoginProcessResultDto } from '../dto/result/login-process.result.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
-// @CheckPolicies((ability: PureAbility, props: PolicyHandlerOptions) =>
-//   ability.can(Action.Manage, subject(AclSubjectsEnum.Auth, props)),
-// )
 @ApiBearerAuth() // Requires authentication with a JWT token
 export class AuthController {
   constructor(
@@ -69,10 +68,11 @@ export class AuthController {
     private readonly securityTools: SecurityToolsService,
     private readonly userService: UserService,
     private readonly redisCacheService: RedisCacheService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   @Public()
-  @Throttle({ default: { limit: 1, ttl: 120000 } })
+  // @Throttle({ default: { limit: 1, ttl: 120000 } })
   @Get('/sendOtp/:phoneNumber')
   @ApiOperation({ summary: 'generate otp and send it to user' })
   @ApiParam({
@@ -126,7 +126,11 @@ export class AuthController {
 
   @Public()
   @ApiOperation({ summary: 'User login' })
-  @ApiResponse({ status: 200, description: 'Returns the JWT token' })
+  @ApiResponse({
+    type: LoginProcessResultDto,
+    status: 200,
+    description: 'Returns the JWT token',
+  })
   @ApiBody({ type: LoginDto })
   @UseGuards(LocalAuthGuard)
   @Post('login')
@@ -326,58 +330,14 @@ export class AuthController {
   @ApiOperation({
     summary: 'verify otp sent to phone number for changing password',
   })
+  @ApiResponse({
+    type: LoginProcessResultDto,
+    description:
+      "if user has two factor authenticate , response have two_factor_authenticate and types , if doesn't have two factor authenticate , response have two_factor_authenticate and access_token and ai_token",
+  })
   async verifyOtpChangingPassword(
-    @Body() data: VerifyOtpDto,
-  ): Promise<boolean> {
-    const user: User = await this.userService.findByPhoneNumber(
-      data.phoneNumber,
-    );
-
-    if (isNil(user)) {
-      throw new UserDoesNotExistException();
-    }
-
-    const verify: boolean = this.securityTools.otp.otpVerifier(
-      data.phoneNumber,
-      data.otp,
-      data.hash,
-    );
-
-    if (!verify) {
-      throw new OtpNotMatchException();
-    }
-
-    const cacheKey: string = user.id + '_changePassword';
-    await this.redisCacheService.set(cacheKey, data.phoneNumber, 480000);
-
-    return true;
-  }
-
-  @Public()
-  @Put('forgot-password')
-  @ApiOperation({ summary: 'change password for current user ' })
-  async changePassword(
-    @Body() dto: ForgotPasswordByOtpDto,
-  ): Promise<AccessTokenDto> {
-    const user: User = await this.userService.findByPhoneNumber(
-      dto.phoneNumber,
-    );
-
-    if (isNil(user)) {
-      throw new UserDoesNotExistException();
-    }
-    const userPayload: UserPayload = {
-      userId: user.id,
-      username: user.username,
-      twoFactorAuth: user.twoFactorAuth,
-    };
-    const data: ChangePasswordDto = {
-      otpVerification: true,
-      newPassword: dto.password,
-    };
-
-    await this.userService.changePassword(userPayload, data);
-
-    return await this.authService.login.getLoginToken(userPayload.userId);
+    @Body() data: ForgotPasswordVerifyOtpDto,
+  ): Promise<LoginProcessResultDto> {
+    return await this.authService.forgotPassword(data);
   }
 }

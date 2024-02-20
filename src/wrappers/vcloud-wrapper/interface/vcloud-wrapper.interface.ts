@@ -1,4 +1,3 @@
-import { Provider } from '@nestjs/common';
 import { AdminEdgeGatewayEndpointService } from '../services/admin/edgeGateway/admin-edge-gateway-endpoint.service';
 import { AdminOrgEndpointService } from '../services/admin/org/admin-org-endpoint.service';
 import { AdminUserEndpointService } from '../services/admin/user/admin-user-endpoint.service';
@@ -14,6 +13,7 @@ import { TasksEndpointService } from '../services/user/tasks/tasksEndpoint.servi
 import { VdcEndpointService } from '../services/user/vdc/vdc-endpoint.service';
 import { VmEndpointService } from '../services/user/vm/vm-endpoint.service';
 import { StaticRouteEndpointService } from '../services/user/edgeGateway/staticRoute/static-route-endpoint.service';
+import { IpSecVpnEndpointService } from '../services/user/edgeGateway/ipSecVpn/ip-sec-vpn-endpoint.service';
 
 export interface VcloudWrapperInterface {
   VmEndpointService: VmEndpointService;
@@ -31,6 +31,7 @@ export interface VcloudWrapperInterface {
   AdminUserEndpointService: AdminUserEndpointService;
   AdminOrgEndpointService: AdminOrgEndpointService;
   StaticRouteEndpointService: StaticRouteEndpointService;
+  IpSecVpnEndpointService: IpSecVpnEndpointService;
 }
 
 export interface WrapperProvider {

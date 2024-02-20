@@ -10,6 +10,7 @@ import {
   CreateDatacenterDto,
   Generation,
   GenerationItem,
+  GenerationStatus,
   Reservation,
 } from '../dto/create-datacenter.dto';
 import {
@@ -28,6 +29,9 @@ import {
   BaseDatacenterService,
 } from '../interface/datacenter.interface';
 import { DatacenterService } from './datacenter.service';
+import { SessionsService } from '../../sessions/sessions.service';
+import { AdminVdcWrapperService } from '../../../../wrappers/main-wrapper/service/admin/vdc/admin-vdc-wrapper.service';
+import { MetaDataDatacenterEnum } from '../enum/meta-data-datacenter-enum';
 @Injectable()
 export class DatacenterAdminService {
   constructor(
@@ -35,6 +39,8 @@ export class DatacenterAdminService {
     @Inject(forwardRef(() => DatacenterService))
     private readonly datacenterService: DatacenterService,
     private readonly datasource: DataSource,
+    private readonly sessionsService: SessionsService,
+    private readonly adminVdcWrapperService: AdminVdcWrapperService,
   ) {}
   async createOrUpdatePeriodItems(
     dto: CreateDatacenterDto,
@@ -255,6 +261,7 @@ export class DatacenterAdminService {
       const metaData = await this.datacenterService.getDatacenterMetadata(
         '',
         generationItem.providerId,
+        false,
       );
       const generationName = metaData.generation as string;
       try {
@@ -360,7 +367,7 @@ export class DatacenterAdminService {
         required: false,
         rule: null,
         serviceTypeId: serviceType.id,
-        step: null,
+        step: generationItem.items.cpu.baseStep,
         isDeleted: false,
         type: generationItem.type,
         isHidden: false,
@@ -380,7 +387,7 @@ export class DatacenterAdminService {
         required: false,
         rule: null,
         serviceTypeId: serviceType.id,
-        step: null,
+        step: generationItem.items.ram.baseStep,
         isDeleted: false,
         type: generationItem.type,
         isHidden: false,
@@ -447,7 +454,7 @@ export class DatacenterAdminService {
           required: false,
           rule: null,
           serviceTypeId: serviceType.id,
-          step: cpuItem.step,
+          step: generationItem.items.cpu.baseStep,
           isDeleted: false,
           type: generationItem.type,
           isHidden: false,
@@ -478,7 +485,7 @@ export class DatacenterAdminService {
           required: false,
           rule: null,
           serviceTypeId: serviceType.id,
-          step: ramItem.step,
+          step: generationItem.items.ram.baseStep,
           createDate: new Date(),
           isDeleted: false,
           type: generationItem.type,
@@ -496,7 +503,7 @@ export class DatacenterAdminService {
           maxAvailable: null,
           maxPerRequest: diskItem.max,
           minPerRequest: diskItem.min,
-          title: diskItem.title,
+          title: `${diskItem.title}-${diskItem.iops}`,
           unit: ItemTypeUnits.Disk,
           datacenterName,
           enabled: diskItem.enabled,
@@ -511,6 +518,9 @@ export class DatacenterAdminService {
           type: generationItem.type,
           isHidden: diskItem.isHidden,
         };
+        if (diskItem.code === 'archive' && generationItem.type === 1) {
+          console.log(diskItemDto);
+        }
         await this.itemTypesTableService.createWithQueryRunner(
           queryRunner,
           diskItemDto,
@@ -590,6 +600,31 @@ export class DatacenterAdminService {
           guarantyItem,
         );
       }
+    }
+  }
+
+  async updateGenerationStatus(
+    generationStatus: GenerationStatus[],
+  ): Promise<void> {
+    for (const provider of generationStatus) {
+      const adminSession = await this.sessionsService.checkAdminSession();
+      const providerList =
+        await this.adminVdcWrapperService.getProviderVdcMetadata(
+          adminSession,
+          provider.providerId,
+        );
+      for (const providerItem of providerList.metadataEntry) {
+        if (providerItem.key === MetaDataDatacenterEnum.Enabled) {
+          providerItem.typedValue.value = provider.enabled;
+        }
+      }
+      await this.adminVdcWrapperService.updateProviderMetadata(
+        {
+          metadataEntry: providerList.metadataEntry,
+        },
+        adminSession,
+        provider.providerId,
+      );
     }
   }
 }

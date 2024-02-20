@@ -12,7 +12,7 @@ export const DiskBusUnitBusNumberSpace = [
       { busUnit: 1, busNumber: 0, isChosen: 0 },
       // { busUnit: 0, busNumber: 3 },
     ],
-    legacyId: '1',
+    legacyId: 1,
     usable: true,
   },
   {
@@ -25,11 +25,11 @@ export const DiskBusUnitBusNumberSpace = [
       { busUnit: 0, busNumber: 2, isChosen: 0 },
       { busUnit: 0, busNumber: 3, isChosen: 0 },
     ],
-    legacyId: '2',
+    legacyId: 2,
     usable: false,
   },
   {
-    legacyId: '3',
+    legacyId: 3,
     usable: true,
     name: 'LSI_LOGIC_PARALLEL',
 
@@ -42,7 +42,7 @@ export const DiskBusUnitBusNumberSpace = [
     ],
   },
   {
-    legacyId: '4',
+    legacyId: 4,
     usable: true,
     name: 'LSI_LOGIC_SAS',
     //LSI_LOGIC_SAS
@@ -56,7 +56,7 @@ export const DiskBusUnitBusNumberSpace = [
 
   {
     //PARA_VIRTUAL_SCSI
-    legacyId: '5',
+    legacyId: 5,
     usable: true,
     name: 'PARA_VIRTUAL_SCSI',
     info: [
@@ -68,7 +68,7 @@ export const DiskBusUnitBusNumberSpace = [
   },
   {
     //SATA
-    legacyId: '6',
+    legacyId: 6,
     usable: true,
     name: 'SATA',
     info: [
@@ -80,7 +80,7 @@ export const DiskBusUnitBusNumberSpace = [
   },
   {
     //NVME
-    legacyId: '7',
+    legacyId: 7,
     usable: true,
     name: 'NVME',
     info: [

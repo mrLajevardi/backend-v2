@@ -70,7 +70,7 @@ export class VmDetailFactoryService {
     );
     for (const key in res) {
       const busTypeInfo = DiskBusUnitBusNumberSpace.find(
-        (bus) => bus.legacyId == key,
+        (bus) => bus.legacyId == Number(key),
       );
 
       const length = busTypeInfo.info.length;

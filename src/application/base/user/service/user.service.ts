@@ -77,6 +77,7 @@ import { PasswordIsDuplicateException } from '../../../../infrastructure/excepti
 import { LoginService } from '../../security/auth/service/login.service';
 import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
 import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data.exception';
+import { ChangeCompanyLetterStatusAdminDto } from '../dto/change-company-letter-status-admin.dto';
 
 @Injectable()
 export class UserService {
@@ -641,13 +642,14 @@ export class UserService {
         data.personalCode,
       );
     if (!validPersonalCode) {
-      throw new ShahkarException('کد ملی شما صحیح نمی باشد.');
+      this.baseFactoryException.handle(ShahkarException);
     }
     if (!data.personality) {
       const company: Company = await this.companyTable.create(
         plainToClass(CreateCompanyDto, data, { excludeExtraneousValues: true }),
       );
       userProfileData.companyId = company.id;
+      userProfileData.companyLetterStatus = CompanyLetterStatusEnum.Inserted;
     }
 
     const shahkarVerify = await this.systemSettingsTable.findOne({
@@ -689,7 +691,10 @@ export class UserService {
       );
 
     if (verifyData.status.toString() != '200') {
-      throw new ShahkarException(verifyData.message.toString());
+      this.baseFactoryException.handle(
+        ShahkarException,
+        verifyData.message.toString(),
+      );
     }
 
     await this.userTable.update(options.user.userId, {
@@ -771,7 +776,10 @@ export class UserService {
       );
 
     if (verifyData.status.toString() != '200') {
-      throw new ShahkarException(verifyData.message.toString());
+      this.baseFactoryException.handle(
+        ShahkarException,
+        verifyData.message.toString(),
+      );
     }
 
     const userProfileData: UpdateUserDto = {

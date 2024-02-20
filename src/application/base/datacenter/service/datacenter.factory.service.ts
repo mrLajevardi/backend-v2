@@ -8,7 +8,7 @@ import {
   Not,
 } from 'typeorm';
 
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { DatacenterConfigGenItemsResultDto } from '../dto/datacenter-config-gen-items.result.dto';
 import { ItemTypes } from '../../../../infrastructure/database/entities/ItemTypes';
 import {
@@ -27,6 +27,7 @@ import {
   Generation,
   GenerationItem,
   GenerationItems,
+  GenerationStatus,
   Period,
   Reservation,
 } from '../dto/create-datacenter.dto';
@@ -35,10 +36,13 @@ import { DatacenterDetails } from '../dto/datacenter-details.dto';
 import { ServicePlanTypeEnum } from '../../service/enum/service-plan-type.enum';
 import { DatacenterConfigGenResultDto } from '../dto/datacenter-config-gen.result.dto';
 import { capitalize, isEmpty } from 'lodash';
+import { DatacenterService } from './datacenter.service';
 @Injectable()
 export class DatacenterFactoryService {
   constructor(
     private readonly serviceItemTypesTreeService: ServiceItemTypesTreeService,
+    @Inject(forwardRef(() => DatacenterService))
+    private readonly datacenterService: DatacenterService,
   ) {}
   public GetFindOptionBy(
     query: DatacenterConfigGenItemsQueryDto,
@@ -231,6 +235,7 @@ export class DatacenterFactoryService {
         providerId: targetDs?.id || null,
         type,
         items: {} as GenerationItems,
+        name: targetDs?.name.toString() ?? null,
       };
       const items = await this.serviceItemTypesTreeService.find({
         where: {
@@ -244,6 +249,7 @@ export class DatacenterFactoryService {
             baseMax: item.maxPerRequest,
             baseMin: item.minPerRequest,
             basePrice: item.fee,
+            baseStep: item.step,
             levels: [],
           };
           const cpuLevels = await this.serviceItemTypesTreeService.find({
@@ -269,6 +275,7 @@ export class DatacenterFactoryService {
             baseMax: item.maxPerRequest,
             baseMin: item.minPerRequest,
             basePrice: item.fee,
+            baseStep: item.step,
             levels: [],
           };
           const ramLevels = await this.serviceItemTypesTreeService.find({
@@ -306,8 +313,9 @@ export class DatacenterFactoryService {
               price: diskItem.fee,
               step: diskItem.step,
               percent: diskItem.percent,
-              title: diskItem.title,
+              title: diskItem.title.split('-')[0],
               isHidden: diskItem.isHidden,
+              iops: Number(diskItem.title.split('-')[1]),
             };
             generationDto.items.diskItems.push(diskItemDto);
           }
@@ -336,5 +344,17 @@ export class DatacenterFactoryService {
       generationsDto.push(generationDto);
     }
     return generationsDto;
+  }
+
+  setGenerationStatus(
+    config: DatacenterConfigGenResultDto,
+  ): GenerationStatus[] {
+    const generationsStatus: GenerationStatus[] = config.gens.map((gen) => {
+      return {
+        enabled: gen.enable,
+        providerId: gen.id,
+      };
+    });
+    return generationsStatus;
   }
 }

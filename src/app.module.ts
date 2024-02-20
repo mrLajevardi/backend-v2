@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
+import { Module, Scope } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './application/base/security/auth/guard/jwt-auth.guard';
 import { UserModule } from './application/base/user/user.module';
 import { VastModule } from './application/vast/vast.module';
@@ -55,6 +55,9 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { i18nOptions } from './infrastructure/config/i18n-options';
 import { I18nModule } from 'nestjs-i18n';
 import { BaseExceptionModule } from './infrastructure/exceptions/base/base-exception.module';
+import { ZammadWrapperModule } from './wrappers/zammad-wrapper/zammad-wrapper.module';
+import { WrapperModule } from './wrappers/wrapper.module';
+import { HttpExceptionFilter } from './infrastructure/filters/http-exception.filter';
 
 @Module({
   imports: [
@@ -73,7 +76,7 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
-        limit: 40,
+        limit: 600,
       },
     ]),
 
@@ -131,6 +134,7 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
     EntityLogModule,
     BudgetingModule,
     BaseExceptionModule,
+    WrapperModule,
   ],
   controllers: [AppController],
   providers: [
@@ -139,10 +143,10 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
       provide: APP_INTERCEPTOR,
       useClass: SentryInterceptor,
     },
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
 
     {
       provide: APP_GUARD,
@@ -157,6 +161,11 @@ import { BaseExceptionModule } from './infrastructure/exceptions/base/base-excep
       provide: APP_GUARD,
       useClass: PoliciesGuard,
     },
+    // {
+    //   provide: APP_FILTER,
+    //   useClass: HttpExceptionFilter,
+    //   scope: Scope.REQUEST,
+    // },
     NetworkService,
     ApplicationPortProfileService,
     // EntitySubscriber,

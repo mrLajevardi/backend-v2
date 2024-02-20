@@ -51,7 +51,11 @@ import {
   TransactionsResultDto,
 } from '../../transactions/dto/results/transactions.result.dto';
 import { UserInfoService } from '../service/user-info.service';
-import { InvoiceUserList } from '../dto/results/invoice-user-list.result.dto';
+import {
+  InvoiceUserList,
+  InvoiceUserListResultDtoFormat,
+  InvoiceUserListResultDtoFormatType,
+} from '../dto/results/invoice-user-list.result.dto';
 import { OtpNotMatchException } from '../../../../infrastructure/exceptions/otp-not-match-exception';
 import { Throttle } from '@nestjs/throttler';
 import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
@@ -59,6 +63,7 @@ import { PhoneNumberHashResultDto } from '../dto/results/phone-number-hash.resul
 import { AccessTokenDto } from '../../security/auth/dto/access-token.dto';
 import { UserProfileResultDto } from '../dto/user-profile.result.dto';
 import { CreateUserProfileResultDto } from '../dto/results/create-user-profile.result.dto';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
 
 @ApiTags('User')
 @Controller('users')
@@ -74,6 +79,7 @@ export class UserController {
     private readonly loginService: LoginService,
     private readonly securityTools: SecurityToolsService,
     private readonly redisCacheService: RedisCacheService,
+    private readonly baseFactoryException: BaseFactoryException,
   ) {}
 
   @Public()
@@ -154,7 +160,7 @@ export class UserController {
     );
 
     if (!verify) {
-      throw new OtpNotMatchException();
+      this.baseFactoryException.handle(OtpNotMatchException);
     }
 
     const cacheKey: string = options.user.userId + '_changePassword';
@@ -472,6 +478,7 @@ export class UserController {
   @ApiQuery({ name: 'isPreInvoice', type: Boolean, required: false })
   @ApiQuery({ name: 'startDateTime', type: String, required: false })
   @ApiQuery({ name: 'endDateTime', type: String, required: false })
+  @ApiResponse({ type: InvoiceUserListResultDtoFormatType })
   async getUserInvoices(
     @Req() options: SessionRequest,
     @Query('page') page?: number,
@@ -479,7 +486,7 @@ export class UserController {
     @Query('startDateTime') startDateTime?: string,
     @Query('endDateTime') endDateTime?: string,
     @Query('isPreInvoice') isPreInvoice?: boolean,
-  ) {
+  ): Promise<InvoiceUserListResultDtoFormatType> {
     const data = await this.userInfoService.getInvoices(
       options,
       page,

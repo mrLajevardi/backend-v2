@@ -23,8 +23,9 @@ export class GenerationItem {
     type: String,
   })
   @IsString()
+  @IsOptional()
   @Expose()
-  code: string;
+  code?: string;
 
   @ApiProperty({ type: Number })
   @IsNumber()
@@ -38,8 +39,9 @@ export class GenerationItem {
 
   @ApiProperty({ type: Number })
   @IsNumber()
+  @IsOptional()
   @Expose()
-  step: number;
+  step?: number;
 
   @ApiProperty({ type: Number })
   @IsNumber()
@@ -69,6 +71,11 @@ export class ComputeItem {
   @Expose()
   baseMin: number;
 
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  @Expose()
+  baseStep: number;
+
   @ApiProperty({ type: [GenerationItem] })
   @IsArray()
   @IsObject({ each: true })
@@ -97,6 +104,11 @@ export class DiskItem extends GenerationItem {
   @IsString()
   @Expose()
   title: string;
+
+  @ApiProperty({ type: Number })
+  @IsNumber()
+  @Expose()
+  iops: number;
 }
 export class GenerationItems {
   @ApiProperty({ type: ComputeItem })
@@ -160,6 +172,11 @@ export class Generation {
   @Expose()
   providerId: string;
 
+  @ApiProperty({ type: String })
+  @IsString()
+  @Expose()
+  name: string;
+
   @ApiProperty({
     enum: ServicePlanTypeEnum,
     type: ServicePlanTypeEnum,
@@ -211,7 +228,23 @@ export class Reservation {
   @IsEnum(ServicePlanTypeEnum)
   type: ServicePlanTypeEnum;
 }
+
+export class GenerationStatus {
+  @ApiProperty({ type: Boolean })
+  @IsBoolean()
+  enabled: boolean;
+
+  @ApiProperty({ type: String })
+  @IsString()
+  @Expose()
+  providerId: string;
+}
 export class CreateDatacenterDto {
+  @ApiProperty({ type: Boolean })
+  @IsString()
+  @IsOptional()
+  enabled?: boolean;
+
   @ApiProperty({ type: String })
   @IsString()
   title: string;
@@ -233,10 +266,6 @@ export class CreateDatacenterDto {
   @ValidateNested({ each: true })
   @ApiProperty({ type: [Generation] })
   staticGenerations: Generation[];
-
-  @ApiProperty({ type: Boolean })
-  @IsBoolean()
-  enabled: boolean;
 
   @IsArray({})
   @IsObject({ each: true })
@@ -274,4 +303,11 @@ export class CreateDatacenterDto {
   @ValidateNested({ each: true })
   @ApiProperty({ type: [Reservation] })
   staticReservationRam: Reservation[];
+
+  @IsArray()
+  @IsObject({ each: true })
+  @Type(() => GenerationStatus)
+  @ValidateNested({ each: true })
+  @ApiProperty({ type: [GenerationStatus] })
+  generationsStatus: GenerationStatus[];
 }

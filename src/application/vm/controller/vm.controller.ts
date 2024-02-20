@@ -53,6 +53,7 @@ import { CheckPolicies } from 'src/application/base/security/ability/decorators/
 import { PolicyHandlerOptions } from 'src/application/base/security/ability/interfaces/policy-handler.interface';
 import { AclSubjectsEnum } from 'src/application/base/security/ability/enum/acl-subjects.enum';
 import { Action } from 'src/application/base/security/ability/enum/action.enum';
+import { TemplateNetworkSection } from '../dto/template-network-section.dto';
 
 @ApiTags('VM')
 @Controller('vm')
@@ -505,6 +506,27 @@ export class VmController {
     @Request() options,
   ): Promise<any> {
     return this.vmService.getVAppTemplate(options, serviceInstanceId, templeId);
+  }
+
+  @Get('/:serviceInstanceId/:templateId/vAppTemplate/networkSection')
+  @ApiOperation({ summary: '' })
+  @ApiParam({ name: 'serviceInstanceId', description: 'VDC instance ID' })
+  @ApiParam({ name: 'templateId', description: 'template id' })
+  @ApiResponse({
+    status: 201,
+    description: 'acquire vm tickets',
+    type: [TemplateNetworkSection],
+  })
+  async getVAppTemplateNetworkSection(
+    @Param('serviceInstanceId') serviceInstanceId: string,
+    @Param('templateId') templeId: string,
+    @Request() options,
+  ): Promise<any> {
+    return this.vmService.getNetworksVappTemplate(
+      options,
+      serviceInstanceId,
+      templeId,
+    );
   }
 
   @Get('/:serviceInstanceId/:vmId/computeSection')

@@ -142,49 +142,49 @@ export class ServiceAdminController {
     );
   }
 
-  @Get('itemTypes')
-  @ApiOperation({ summary: 'Return service item types for admin' })
-  @ApiQuery({ name: 'page', type: Number, required: false })
-  @ApiQuery({ name: 'pageSize', type: Number, required: false })
-  @ApiQuery({ name: 'serviceTypeID', type: String, required: false })
-  @ApiQuery({ name: 'title', type: String, required: false })
-  @ApiQuery({ name: 'unit', type: String, required: false })
-  @ApiQuery({ name: 'fee', type: Number, required: false })
-  @ApiQuery({ name: 'code', type: String, required: false })
-  @ApiQuery({ name: 'maxAvailable', type: Number, required: false })
-  @ApiQuery({ name: 'maxPerRequest', type: Number, required: false })
-  @ApiQuery({ name: 'minPerRequest', type: Number, required: false })
-  @ApiOkResponse({
-    description: 'The array of service item types',
-    type: [ItemTypes],
-  })
-  async adminGetItemTypes(
-    @Req() options: SessionRequest,
-    @Query('page') page?: number,
-    @Query('pageSize') pageSize?: number,
-    @Query('serviceTypeID') serviceTypeID?: string,
-    @Query('title') title?: string,
-    @Query('unit') unit?: string,
-    @Query('fee') fee?: number,
-    @Query('code') code?: string,
-    @Query('maxAvailable') maxAvailable?: number,
-    @Query('maxPerRequest') maxPerRequest?: number,
-    @Query('minPerRequest') minPerRequest?: number,
-  ): Promise<PaginationReturnDto<ItemTypeWithConsumption>> {
-    return await this.service.getItemTypes(
-      options,
-      page,
-      pageSize,
-      serviceTypeID,
-      title,
-      unit,
-      fee,
-      code,
-      maxAvailable,
-      maxPerRequest,
-      minPerRequest,
-    );
-  }
+  // @Get('itemTypes')
+  // @ApiOperation({ summary: 'Return service item types for admin' })
+  // @ApiQuery({ name: 'page', type: Number, required: false })
+  // @ApiQuery({ name: 'pageSize', type: Number, required: false })
+  // @ApiQuery({ name: 'serviceTypeID', type: String, required: false })
+  // @ApiQuery({ name: 'title', type: String, required: false })
+  // @ApiQuery({ name: 'unit', type: String, required: false })
+  // @ApiQuery({ name: 'fee', type: Number, required: false })
+  // @ApiQuery({ name: 'code', type: String, required: false })
+  // @ApiQuery({ name: 'maxAvailable', type: Number, required: false })
+  // @ApiQuery({ name: 'maxPerRequest', type: Number, required: false })
+  // @ApiQuery({ name: 'minPerRequest', type: Number, required: false })
+  // @ApiOkResponse({
+  //   description: 'The array of service item types',
+  //   type: [ItemTypes],
+  // })
+  // async adminGetItemTypes(
+  //   @Req() options: SessionRequest,
+  //   @Query('page') page?: number,
+  //   @Query('pageSize') pageSize?: number,
+  //   @Query('serviceTypeID') serviceTypeID?: string,
+  //   @Query('title') title?: string,
+  //   @Query('unit') unit?: string,
+  //   @Query('fee') fee?: number,
+  //   @Query('code') code?: string,
+  //   @Query('maxAvailable') maxAvailable?: number,
+  //   @Query('maxPerRequest') maxPerRequest?: number,
+  //   @Query('minPerRequest') minPerRequest?: number,
+  // ): Promise<PaginationReturnDto<ItemTypeWithConsumption>> {
+  //   return await this.service.getItemTypes(
+  //     options,
+  //     page,
+  //     pageSize,
+  //     serviceTypeID,
+  //     title,
+  //     unit,
+  //     fee,
+  //     code,
+  //     maxAvailable,
+  //     maxPerRequest,
+  //     minPerRequest,
+  //   );
+  // }
 
   @Get('reports')
   @ApiOperation({ summary: 'Return reports of services' })

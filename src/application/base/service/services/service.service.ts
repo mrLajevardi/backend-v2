@@ -469,7 +469,6 @@ export class ServiceService {
   > {
     const res: GetAllVdcServiceWithItemsResultDto[] = [];
 
-    //To Do ==> get Config ExtensionDaysLimit from SystemSettings
     const extensionDaysLeft = (
       await this.systemSettingsService.findOne({
         where: { propertyKey: 'ExtensionDaysLimit' },
@@ -477,7 +476,6 @@ export class ServiceService {
     ).value;
     const allServicesInstances = await this.getServices(options, typeId, id);
     let cpuSpeed: VcloudMetadata = 0,
-      // daysLeft = 0,
       isTicketSent = false,
       vdcItems: GetOrgVdcResult = null;
     let model: GetAllVdcServiceWithItemsResultDto = {};
@@ -491,12 +489,10 @@ export class ServiceService {
 
         vdcItems = await this.vdcService.getVdc(options, serviceInstance.id);
       }
-      // if (vdcItems != null) {
       const info = ({ isTicketSent } =
         await this.serviceFactory.getPropertiesOfServiceInstance(
           serviceInstance,
         ));
-      // (daysLeft = info.daysLeft),
       isTicketSent = info.isTicketSent;
       model = await this.serviceFactory.configModelServiceInstanceList(
         serviceInstance,
@@ -508,7 +504,6 @@ export class ServiceService {
       );
 
       res.push(model);
-      // }
     }
 
     return res;
@@ -635,8 +630,7 @@ export class ServiceService {
       where: { userId: userId },
     });
 
-    const ticketCount = (await this.ticketService.getAllTickets(option))
-      ?.tickets?.length;
+    const ticketCount = (await this.ticketService.getAllTickets(option)).length;
 
     return {
       unpaidInvoices: res?.activeInvoices,

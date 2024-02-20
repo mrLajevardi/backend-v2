@@ -81,13 +81,14 @@ export class UserProfileResultDtoFormat {
   companyLetter: string;
 
   @ApiResponseProperty({
-    type: Number,
-    example: 0,
+    type: CompanyLetterStatusEnum,
+    example: CompanyLetterStatusEnum.None,
+    enum: CompanyLetterStatusEnum,
   })
-  companyLetterStatus: number;
+  companyLetterStatus: CompanyLetterStatusEnum;
 
   @ApiResponseProperty({
-    type: Object,
+    type: CompanyResultDtoFormat,
   })
   company: CompanyResultDtoFormat | null;
 }

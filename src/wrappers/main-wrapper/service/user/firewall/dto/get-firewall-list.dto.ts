@@ -1,3 +1,5 @@
+import { FirewallDirectionEnum } from '../../../../../vcloud-wrapper/services/user/edgeGateway/firewall/enum/firewall-direction.enum';
+import { FirewallIpProtocolEnum } from '../../../../../vcloud-wrapper/services/user/edgeGateway/firewall/enum/firewall-ip-protocol.enum';
 import { FirewallActionValue } from '../enum/firewall-action-value.enum';
 import {
   ApplicationPortProfile,
@@ -14,9 +16,9 @@ interface Rule {
   enabled: boolean;
   description: string;
   comments: string;
-  ipProtocol: string;
+  ipProtocol: FirewallIpProtocolEnum;
   logging: boolean;
-  direction: string;
+  direction: FirewallDirectionEnum;
 }
 
 export interface GetFirewallListDto {

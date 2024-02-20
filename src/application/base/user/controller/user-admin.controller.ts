@@ -18,6 +18,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiQuery,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { UpdateUserDto } from '../../crud/user-table/dto/update-user.dto';
@@ -45,6 +46,11 @@ import { PolicyHandlerOptions } from '../../security/ability/interfaces/policy-h
 import { Action } from '../../security/ability/enum/action.enum';
 import { AclSubjectsEnum } from '../../security/ability/enum/acl-subjects.enum';
 import { CheckPolicies } from '../../security/ability/decorators/check-policies.decorator';
+import { ChangeCompanyLetterStatusAdminDto } from '../dto/change-company-letter-status-admin.dto';
+import {
+  UserProfileResultDto,
+  UserProfileResultDtoFormat,
+} from '../dto/user-profile.result.dto';
 
 @ApiTags('User-admin')
 @Controller('admin/users')
@@ -310,5 +316,20 @@ export class UserAdminController {
   ): Promise<Response> {
     await this.userService.changePasswordAdmin(userId, dto.password);
     return res.status(200).json({ message: 'Password changed successfully' });
+  }
+  @Put(':id/changeCompanyLetterStatus')
+  @ApiOperation({ summary: 'change company letter status : Admin ' })
+  @ApiBody({ type: ChangeCompanyLetterStatusAdminDto })
+  @ApiResponse({ type: UserProfileResultDtoFormat })
+  async changeCompanyLetterStatus(
+    @Param('id') userId: number,
+    @Body() dto: ChangeCompanyLetterStatusAdminDto,
+  ): Promise<UserProfileResultDtoFormat> {
+    const data: User = await this.userAdminService.changeCompanyLetterStatus(
+      userId,
+      dto,
+    );
+
+    return new UserProfileResultDto().toArray(data);
   }
 }

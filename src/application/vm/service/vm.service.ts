@@ -53,6 +53,9 @@ import { PaygServiceService } from '../../base/service/services/payg-service.ser
 import { NotEnoughCreditException } from '../../../infrastructure/exceptions/not-enough-credit.exception';
 import { BaseFactoryException } from '../../../infrastructure/exceptions/base/base-factory.exception';
 import { VmDetailFactoryService } from './vm-detail.factory.service';
+import { VcloudSectionTypeEnum } from '../../../infrastructure/enum/vcloud-sectionType.enum';
+import { VmGetWrapperService } from '../../../wrappers/main-wrapper/service/user/vm/vm-get-wrapper.service';
+import { TemplateNetworkSection } from '../dto/template-network-section.dto';
 
 @Injectable()
 export class VmService {
@@ -83,6 +86,7 @@ export class VmService {
     private readonly paygService: PaygServiceService,
     private readonly vmWrapperService: VmWrapperService,
     private readonly vmDetailFactoryService: VmDetailFactoryService,
+    private readonly vmGetWrapperService: VmGetWrapperService,
   ) {}
 
   async acquireVMTicket(options, vdcInstanceId, vAppId): Promise<VmTicket> {
@@ -1139,6 +1143,35 @@ export class VmService {
     });
   }
 
+  async getNetworksVappTemplate(
+    options: SessionRequest,
+    vdcInstanceId: string,
+    templateId: string,
+  ): Promise<TemplateNetworkSection[]> {
+    const vapp = await this.getVAppTemplate(options, vdcInstanceId, templateId);
+    const networks = vapp.section?.find(
+      (sec) => sec._type == VcloudSectionTypeEnum.Network,
+    );
+    const networkData: TemplateNetworkSection[] =
+      networks.networkConnection.map((item) => {
+        const isPrimary =
+          item.networkConnectionIndex ===
+          networks.primaryNetworkConnectionIndex;
+        return {
+          ipAddressAllocationMode: item.ipAddressAllocationMode,
+          isConnected: item.isConnected,
+          networkConnectionIndex: item.networkConnectionIndex,
+          network: item.network,
+          needsCustomization: item.needsCustomization,
+          macAddress: item.macAddress,
+          networkAdapterType: item.networkAdapterType,
+          isPrimary,
+        };
+      });
+    // networks = networks.networkConnection;
+    return networkData;
+  }
+
   async getVAppTemplate(options, serviceInstanceId, templateId) {
     const userId = options.user.userId;
     const props: any =
@@ -1149,19 +1182,19 @@ export class VmService {
       userId,
       props.orgId,
     );
-    const vmTemplate = await mainWrapper.user.vm.getVappTemplate(
+    const vmTemplate = await this.vmGetWrapperService.getVAppTemplate(
       session,
       templateId,
     );
     const data = vmTemplate.data;
-    const { status, name, description, dateCreated } = data;
-    const filteredData = {
-      status,
-      name,
-      description,
-      dateCreated,
-    };
-    return Promise.resolve(filteredData);
+    // const { status, name, description, dateCreated } = data;
+    // const filteredData = {
+    //   status,
+    //   name,
+    //   description,
+    //   dateCreated,
+    // };
+    return Promise.resolve(data);
   }
 
   async getVmComputeSection(

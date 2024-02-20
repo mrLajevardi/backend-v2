@@ -12,10 +12,17 @@ import { Injectable } from '@nestjs/common';
 import { InvoicesTableService } from '../../crud/invoices-table/invoices-table.service';
 import { ServiceTypes } from '../../../../infrastructure/database/entities/ServiceTypes';
 import { isNil } from 'lodash';
+import { NotFoundDataException } from '../../../../infrastructure/exceptions/not-found-data-exception';
+import { BaseFactoryException } from '../../../../infrastructure/exceptions/base/base-factory.exception';
+import { ServiceTypesEnum } from '../../service/enum/service-types.enum';
 
 @Injectable()
 export class InvoiceFactoryVdcService {
-  constructor(private readonly invoicesTable: InvoicesTableService) {}
+  constructor(
+    private readonly invoicesTable: InvoicesTableService,
+    private readonly baseFactoryException: BaseFactoryException,
+  ) {}
+
   async getVdcInvoiceDetailModel(
     invoiceId: string,
     serviceTypeWhere = 'vdc',
@@ -56,7 +63,14 @@ export class InvoiceFactoryVdcService {
       .addSelect(`ST.Title as DatacenterTitle`)
       .getRawMany();
 
-    return invoiceModels.map((model) => {
+    if (isNil(invoiceModels) || invoiceModels.length == 0) {
+      console.error(
+        `Not Found invoiceItems about invoiceId : ${invoiceId} or something about it`,
+      );
+      this.baseFactoryException.handle(NotFoundDataException);
+    }
+
+    const res = invoiceModels.map((model) => {
       const res: InvoiceDetailVdcModel = {
         code: model.Code,
         value: model.Value,
@@ -84,6 +98,7 @@ export class InvoiceFactoryVdcService {
 
       return res;
     });
+    return res;
   }
 
   getVdcInvoiceItemType(
@@ -254,6 +269,8 @@ export class InvoiceFactoryVdcService {
     res.serviceCostTax = res.serviceCostWithDiscount * ramModel.invoiceTax;
 
     res.serviceCostFinal = res.serviceCostTax + res.serviceCostWithDiscount;
+
+    res.serviceType = ServiceTypesEnum.Vdc;
   }
 
   private calcDiskInvoice(
