@@ -126,6 +126,11 @@ export class TicketService {
       const state = states.find(
         (targeState) => targeState.id === ticket.state_id,
       );
+
+      if (state.name == 'pending close') {
+        state.name = 'closed';
+      }
+
       const group = groups.find((group) => ticket.group_id === group.id);
       return {
         ...ticket,
