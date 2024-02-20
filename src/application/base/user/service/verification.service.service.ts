@@ -40,6 +40,7 @@ export class VerificationServiceService {
       },
     );
 
+    // console.log('getAccessToken', getAccessToken);
     const accessToken = 'Bearer ' + getAccessToken.data.access_token;
 
     const hashedPhoneNumber: string = await this.getEncryptedToken(
@@ -75,6 +76,8 @@ export class VerificationServiceService {
 
     const comment =
       verificationRequest?.data?.result?.data?.result?.data?.comment ?? null;
+
+    console.log('\n\n\n\n\n status , comment \n\n\n\n', status, comment);
 
     const data: any = {
       status: status,
