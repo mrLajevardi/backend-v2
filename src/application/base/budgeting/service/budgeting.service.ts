@@ -191,6 +191,22 @@ export class BudgetingService {
 
     const priceWithTax: number = this.priceWithTax(data.paidAmount, taxPercent);
 
+    if (vServiceInstance.userId == 2250) {
+      console.log(
+        ' \n\n\n\n\n\n<debug_payg>: vServiceInstance ok ',
+        vServiceInstance,
+        '\n\n\n\n\n\n',
+      );
+    }
+
+    if (vServiceInstance.userId == 2250) {
+      console.log(
+        ' \n\n\n\n\n\n<debug_payg>: price ok ',
+        priceWithTax,
+        '\n\n\n\n\n\n',
+      );
+    }
+
     await this.paidFromUserCredit(vServiceInstance, priceWithTax);
 
     await this.servicePaymentTableService.create({
@@ -213,6 +229,13 @@ export class BudgetingService {
       taxPercent,
     );
 
+    if (vServiceInstance.userId == 2250) {
+      console.log(
+        ' \n\n\n\n\n\n<debug_payg>: priceForNextPeriodWithTax ok ',
+        priceForNextPeriodWithTax,
+        '\n\n\n\n\n\n',
+      );
+    }
     await this.handleInsufficientCredit(
       vServiceInstance,
       priceForNextPeriodWithTax,

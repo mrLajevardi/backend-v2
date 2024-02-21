@@ -91,7 +91,15 @@ export class PaygServiceService {
           servicePlanType: ServicePlanTypeEnum.Payg,
         },
       }));
+
     for (const service of activeServices) {
+      if (service.userId == 2250) {
+        console.log(
+          ' \n\n\n\n\n\n<debug_payg>: service ok ',
+          service,
+          '\n\n\n\n\n\n',
+        );
+      }
       try {
         const props =
           await this.servicePropertiesService.getAllServiceProperties<VdcProperties>(
@@ -118,6 +126,13 @@ export class PaygServiceService {
         );
         const totalVpcCost: InvoiceItemCost[][] = [];
         for (const vm of vmslist.data.record) {
+          if (service.userId == 2250) {
+            console.log(
+              ' \n\n\n\n\n\n<debug_payg>: vm ok ',
+              vm,
+              '\n\n\n\n\n\n',
+            );
+          }
           const containerId = vm.container.split('/').slice(-1)[0];
           const id = vm.href.split('/').slice(-1)[0];
           const sortAsc = 'timestamp';
@@ -239,6 +254,14 @@ export class PaygServiceService {
             service,
           );
         try {
+          if (service.userId == 2250) {
+            console.log(
+              ' \n\n\n\n\n\n<debug_payg>: try ok ',
+              fullTimeCost,
+              totalCost,
+              '\n\n\n\n\n\n',
+            );
+          }
           await this.budgetingService.paidFromBudgetCredit(
             service.id,
             {
@@ -247,14 +270,33 @@ export class PaygServiceService {
             },
             [totalCost, { durationInMin }, totalVpcCost],
           );
+          if (service.userId == 2250) {
+            console.log(
+              ' \n\n\n\n\n\n<debug_payg>: budget ok ',
+              '\n\n\n\n\n\n',
+            );
+          }
         } catch (err) {
-          console.log('paygError: ', err, service);
+          if (service.userId == 2250) {
+            console.log(
+              ' \n\n\n\n\n\n<debug_payg>: entered catch ',
+              err,
+              '\n\n\n\n\n\n',
+            );
+          }
+          // console.log('paygError: ', err, service);
           if (
             ![
               ServiceStatusEnum.ExceededEnoughCredit,
               ServiceStatusEnum.ExceededEnoughCreditAndNotEnoughUserCredit,
             ].includes(service.status)
           ) {
+            if (service.userId == 2250) {
+              console.log(
+                ' \n\n\n\n\n\n<debug_payg>: entered disabled ok ',
+                '\n\n\n\n\n\n',
+              );
+            }
             await this.disablePaygService(
               props,
               service.id,
@@ -262,6 +304,12 @@ export class PaygServiceService {
               adminSession,
               vmslist.data,
             );
+            if (service.userId == 2250) {
+              console.log(
+                ' \n\n\n\n\n\n<debug_payg>: disable ok ',
+                '\n\n\n\n\n\n',
+              );
+            }
           }
         }
         await this.serviceInstanceTableService.update(service.id, {
@@ -280,6 +328,13 @@ export class PaygServiceService {
           },
         );
       } catch (err) {
+        if (service.userId == 2250) {
+          console.log(
+            ' \n\n\n\n\n\n<debug_payg>: my catch ok ',
+            err,
+            '\n\n\n\n\n\n',
+          );
+        }
         console.log(err);
       }
     }
