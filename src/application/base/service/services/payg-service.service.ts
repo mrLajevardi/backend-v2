@@ -248,6 +248,7 @@ export class PaygServiceService {
             [totalCost, { durationInMin }, totalVpcCost],
           );
         } catch (err) {
+          console.log('paygError: ', err, service);
           if (
             ![
               ServiceStatusEnum.ExceededEnoughCredit,
