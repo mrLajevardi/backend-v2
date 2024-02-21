@@ -41,12 +41,12 @@ describe('TicketService', () => {
         .spyOn(ticketTableService, 'findOne')
         .mockImplementation(async () => null);
       jest
-          .spyOn(userTableService, 'findById')
-          .mockImplementation(async (): Promise<User> => {
-            return {
-              guid: 'guid',
-            } as User;
-          });
+        .spyOn(userTableService, 'findById')
+        .mockImplementation(async (): Promise<User> => {
+          return {
+            guid: 'guid',
+          } as User;
+        });
       const options: SessionRequest = {
         user: {
           guid: 'guid',
@@ -76,12 +76,12 @@ describe('TicketService', () => {
           return ticket;
         });
       jest
-          .spyOn(userTableService, 'findById')
-          .mockImplementation(async (): Promise<User> => {
-            return {
-              guid: 'guid',
-            } as User;
-          });
+        .spyOn(userTableService, 'findById')
+        .mockImplementation(async (): Promise<User> => {
+          return {
+            guid: 'guid',
+          } as User;
+        });
       const updateTicket = jest
         .spyOn(zammadTicketService, 'updateTicket')
         .mockImplementation(async () => {
