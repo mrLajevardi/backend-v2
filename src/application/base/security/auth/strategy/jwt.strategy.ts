@@ -43,6 +43,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       retVal = {
         userId: impersonateAs.userId,
         username: impersonateAs.username,
+        guid: impersonateAs.guid,
+        personalVerification: impersonateAs.personalVerification,
         originalUser: originalData,
       };
     } else {
