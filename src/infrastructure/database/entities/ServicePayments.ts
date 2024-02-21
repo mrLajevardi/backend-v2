@@ -2,7 +2,7 @@ import { BeforeInsert, Column, Entity } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { isTestingEnv } from 'src/infrastructure/helpers/helpers';
 
-@Entity('ServicePayments', { schema: 'services' })
+@Entity('ServicePayments', { schema: 'financial' })
 export class ServicePayments {
   @Column({
     type: isTestingEnv() ? 'nvarchar' : 'uniqueidentifier',
