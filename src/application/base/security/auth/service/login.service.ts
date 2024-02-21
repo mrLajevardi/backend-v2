@@ -147,8 +147,10 @@ export class LoginService {
       personalVerification: user.personalVerification,
       impersonateAs: !isEmpty(impersonateAs)
         ? {
+            guid: impersonateAs.guid,
             username: impersonateAs.username,
             userId: impersonateAs.id,
+            personalVerification: impersonateAs.personalVerification,
           }
         : null,
     };
