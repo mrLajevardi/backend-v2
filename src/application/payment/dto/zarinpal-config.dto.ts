@@ -4,4 +4,5 @@ export class ZarinpalConfigDto {
   merchant_id: string;
   callback_url: string;
   description: string;
+  amount?: number;
 }

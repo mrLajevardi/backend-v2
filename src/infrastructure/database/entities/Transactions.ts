@@ -17,6 +17,14 @@ export class Transactions {
   @PrimaryGeneratedColumn({ type: 'integer', name: 'ID' })
   id: string;
 
+  @Column({
+    type: 'uniqueidentifier',
+    name: 'Guid',
+    unique: true,
+    generated: true,
+  })
+  guid: string;
+
   @Column('datetime', { name: 'DateTime' })
   dateTime: Date;
 
@@ -31,6 +39,9 @@ export class Transactions {
 
   @Column('int', { name: 'PaymentType', default: () => "'0'" })
   paymentType: number;
+
+  @Column('nvarchar', { name: 'PaymentGatewayType', nullable: true })
+  paymentGatewayType: string;
 
   @Column('nvarchar', {
     name: 'PaymentToken',

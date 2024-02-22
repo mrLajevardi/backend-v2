@@ -85,7 +85,7 @@ export class TransactionsResultDto extends BaseResultDto {
         return 'تراکنش اصلاحی توسط ادمین';
       case PaymentTypes.PayToUserCreditByBudgeting:
         return 'انتقال از بودجه بندی به کیف پول';
-      case PaymentTypes.PayByZarinpal:
+      case PaymentTypes.PayByPaymentGateway:
         return 'افزایش اعتبار از درگاه بانک';
       default:
         if (!isNil(item.serviceInstance)) {

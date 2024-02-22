@@ -1,5 +1,12 @@
-import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaymentGatewayTypeEnum } from '../../../../payment/enum/payment-gateway-type.enum';
 
 export class CreateTransactionsDto {
   @IsString()
@@ -28,6 +35,14 @@ export class CreateTransactionsDto {
   @IsNumber()
   @ApiProperty()
   paymentType: number;
+
+  @ApiProperty({
+    type: PaymentGatewayTypeEnum,
+    enum: PaymentGatewayTypeEnum,
+    required: false,
+  })
+  @IsEnum(PaymentGatewayTypeEnum)
+  paymentGatewayType?: PaymentGatewayTypeEnum;
 
   @IsString()
   @IsOptional()

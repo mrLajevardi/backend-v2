@@ -1,3 +1,5 @@
+import { PaymentGatewayTypeEnum } from '../../../../payment/enum/payment-gateway-type.enum';
+
 export enum PaymentTypes {
   /*
     pay by credit mean : paid invoice
@@ -9,7 +11,7 @@ export enum PaymentTypes {
     pay by zarinpal mean : increase credit amount
   */
 
-  PayByZarinpal = 1,
+  PayByPaymentGateway = 1,
 
   PayToBudgetingByUserCredit = 2,
 

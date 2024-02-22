@@ -304,7 +304,7 @@ export class UserService {
         value: amount,
         invoiceId,
         description: 'INC',
-        paymentType: PaymentTypes.PayByZarinpal,
+        paymentType: PaymentTypes.PayByPaymentGateway,
         paymentToken: authorityCode,
         isApproved: false,
         serviceInstanceId: null, // added because in main code in loopback was not exist
