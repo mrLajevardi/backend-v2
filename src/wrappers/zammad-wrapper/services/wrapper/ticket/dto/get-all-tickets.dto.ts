@@ -36,6 +36,7 @@ export interface GetAllTicketsDto {
   preferences: null;
   updated_by_id: number;
   created_by_id: number;
+  ticket_code: number;
   created_at: Date;
   updated_at: Date;
   topic: TicketTopicType;
