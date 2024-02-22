@@ -22,6 +22,7 @@ import { GetTicketArticlesDto } from '../../../wrappers/zammad-wrapper/services/
 import { ZammadGroupWrapperService } from '../../../wrappers/zammad-wrapper/services/wrapper/group/zammad-group-wrapper.service';
 import { ArticleGetDto } from './dto/article-get.dto';
 import { CreateArticleResultDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/create-article.dto';
+import { GetAllTicketsDto } from '../../../wrappers/zammad-wrapper/services/wrapper/ticket/dto/get-all-tickets.dto';
 
 @Injectable()
 export class TicketService {
@@ -126,23 +127,25 @@ export class TicketService {
         authToken,
       );
     const groups = await this.zammadGroupService.getGroups(adminToken);
-    const extendedTickets = tickets.map((ticket) => {
+    const extendedTickets = [];
+    for (let ticket of tickets) {
+      if (!ticket.ticket_code) {
+        ticket = await this.syncTicket(ticket, options.user.userId);
+      }
       const state = states.find(
         (targeState) => targeState.id === ticket.state_id,
       );
-
       if (state.name == 'pending close') {
         state.name = 'closed';
       }
-
       const group = groups.find((group) => ticket.group_id === group.id);
-      return {
+      extendedTickets.push({
         ...ticket,
         topic: TicketTopics[ticket.topic],
         state: state.name,
         group: group.name,
-      };
-    });
+      });
+    }
     return extendedTickets;
   }
 
@@ -272,5 +275,27 @@ export class TicketService {
     } else if (topic === TicketTopics.Vdc) {
       return 'Vdc';
     }
+  }
+
+  private async syncTicket(
+    ticket: GetAllTicketsDto,
+    userId: number,
+  ): Promise<GetAllTicketsDto> {
+    const selectedTicket = await this.ticketTable.findOne({
+      where: {
+        ticketId: ticket.id,
+      },
+    });
+    if (!selectedTicket) {
+      const createdTicket = await this.ticketTable.create({
+        ticketId: ticket.id,
+        topic: TicketTopics[ticket.topic],
+        userId,
+      });
+      ticket.ticket_code = createdTicket.code;
+      return ticket;
+    }
+    ticket.ticket_code = selectedTicket.code;
+    return ticket;
   }
 }
