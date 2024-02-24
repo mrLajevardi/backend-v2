@@ -57,57 +57,14 @@ lint-test-job:
       junit: eslint-junit.xml
     expire_in: 1 day
 
-
-build develop image:
-  image: docker
-  stage: publish
+develop server deploy job:      # This job runs in the deploy stage.
+  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   only:
     - develop
-  tags:
-    - dev
-  services:
-    - docker:dind
-  before_script:
-    - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    # - echo "$MY_PASSWORD" | docker login -u "$MY_USER" "$CI_REGISTRY" --password-stdin
+    # - main
+  dependencies: []
   script:
-    - echo "$CI_REGISTRY_IMAGE"
-    - cp /var/services/configs/.env ./ -f
-    - docker build . --tag "$CI_REGISTRY/$IMAGE_NAME"
-    # - echo "$CI_REGISTRY_USER" "$CI_REGISTRY_IMAGE"
-    # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
-    - docker push "$CI_REGISTRY/$IMAGE_NAME"
-
-deploy develop image:
-  stage: deploy
-  only:
-    - develop
-  services:
-    - docker:dind
-  tags:
-    - dev
-  before_script:
-    - export IMAGE_NAME="$IMAGE_NAME"
-  script:
-    - cp /var/services/configs/.env ./ -f
-    - cp /var/services/sa_password.txt ./ -f
-    - cat ./sa_password.txt
-    - cat .env
-    - export IMAGE_NAME=${IMAGE_FULLPATH}
-    - echo $IMAGE_NAME
-    - docker compose up -d
-
-
-
-
-#develop server deploy job:      # This job runs in the deploy stage.
-#  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-#  only:
-#    - develop
-#    # - main
-#  dependencies: []
-#  script:
-#    - .\deploy.ps1
+    - .\deploy.ps1
 
 # test server deploy job:
 #   stage: deploy
@@ -119,13 +76,13 @@ deploy develop image:
 #   script: 
 #     - sh deploy.sh
 
-build release image:
+build image:
   image: docker
   stage: publish
   only: 
    - release
   tags:
-    - qa
+    - release
   services:
     - docker:dind
   before_script: 
@@ -139,14 +96,14 @@ build release image:
     # - echo "$CI_REGISTRY_PASSWORD" |docker login -u "$CI_REGISTRY_USER" "$CI_REGISTRY" --password-stdin
     - docker push "$CI_REGISTRY/$IMAGE_NAME"
 
-deploy release image:
+deploy image:
   stage: deploy
   only: 
    - release
   services:
     - docker:dind
   tags:
-    - qa
+    - release
   before_script:
     - export IMAGE_NAME="$IMAGE_NAME"
   script:
@@ -159,20 +116,13 @@ deploy release image:
     - docker compose up -d
 
 
-
-
-
 build prod image:
   image: docker
   stage: publish
-  parallel:
-    matrix:
-      - RUNNER: amin
-      - RUNNER: asia
   only: 
    - main
   tags:
-    - ${RUNNER}
+    - production
   services:
     - docker:dind
   before_script: 
@@ -191,16 +141,12 @@ build prod image:
 
 deploy prod image:
   stage: deploy
-  parallel:
-    matrix:
-      - RUNNER: amin
-      - RUNNER: asia
   only: 
    - main
   services:
     - docker:dind
   tags:
-    - ${RUNNER}
+    - production
   before_script:
     - export IMAGE_NAME="$IMAGE_NAME"
   script:
